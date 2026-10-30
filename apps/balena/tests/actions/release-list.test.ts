@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-list.ts";
 
@@ -16,7 +17,7 @@ const releases = {
 };
 
 /** A release row exists as soon as a build starts. */
-Deno.test("release-list: returns only successful, valid releases by default", async () => {
+test("release-list: returns only successful, valid releases by default", async () => {
   const { ctx, calls } = mockCtx([fleet, releases]);
   const result = await action.execute({ fleet: "acme/sensors" }, ctx) as Record<string, unknown>;
 
@@ -29,7 +30,7 @@ Deno.test("release-list: returns only successful, valid releases by default", as
   assertEquals((result.latest as { id: number }).id, 900);
 });
 
-Deno.test("release-list: counts the builds it filtered out", async () => {
+test("release-list: counts the builds it filtered out", async () => {
   const { ctx } = mockCtx([fleet, releases]);
   const result = await action.execute({ fleet: "acme/sensors" }, ctx) as Record<string, unknown>;
   assertEquals(result.failedCount, 1);
@@ -38,7 +39,7 @@ Deno.test("release-list: counts the builds it filtered out", async () => {
 });
 
 /** Withdrawn, not deleted — devices already on it keep running. */
-Deno.test("release-list: notes invalidated releases without including them", async () => {
+test("release-list: notes invalidated releases without including them", async () => {
   const { ctx, logs } = mockCtx([fleet, releases]);
   await action.execute({ fleet: "acme/sensors" }, ctx);
   assert(
@@ -47,7 +48,7 @@ Deno.test("release-list: notes invalidated releases without including them", asy
   );
 });
 
-Deno.test("release-list: the toggles include the ones it hides", async () => {
+test("release-list: the toggles include the ones it hides", async () => {
   const { ctx } = mockCtx([fleet, releases]);
   const result = await action.execute(
     { fleet: "acme/sensors", includeUnsuccessful: true, includeInvalidated: true },
@@ -57,7 +58,7 @@ Deno.test("release-list: the toggles include the ones it hides", async () => {
   assertEquals((result.latest as { id: number }).id, 903, "the newest is a build still running");
 });
 
-Deno.test("release-list: requires a fleet, and refuses an unknown one", async () => {
+test("release-list: requires a fleet, and refuses an unknown one", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`fleet` is required");
   assertEquals(calls.length, 0);
@@ -70,7 +71,7 @@ Deno.test("release-list: requires a fleet, and refuses an unknown one", async ()
   );
 });
 
-Deno.test("release-list: the limit is clamped", async () => {
+test("release-list: the limit is clamped", async () => {
   const { ctx, calls } = mockCtx([fleet, { status: 200, body: { d: [] } }]);
   await action.execute({ fleet: "acme/sensors", limit: 5000 }, ctx);
   assertEquals(new URL(calls[1].url).searchParams.get("$top"), "200");

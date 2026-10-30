@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/retention-query.ts";
@@ -10,7 +11,7 @@ const retention = ok({
   },
 });
 
-Deno.test("retention-query: sends both events and the mode", async () => {
+test("retention-query: sends both events and the mode", async () => {
   const { ctx, calls } = mockCtx([retention], { display });
   await action.execute!({
     startEvent: '{"event_type":"_new"}',
@@ -26,7 +27,7 @@ Deno.test("retention-query: sends both events and the mode", async () => {
 });
 
 /** The same data produces three different curves depending on the mode. */
-Deno.test("retention-query: the mode is returned, because the number means nothing without it", async () => {
+test("retention-query: the mode is returned, because the number means nothing without it", async () => {
   const { ctx } = mockCtx([retention], { display });
   const result = await action.execute!({
     startEvent: '{"event_type":"_new"}',
@@ -39,7 +40,7 @@ Deno.test("retention-query: the mode is returned, because the number means nothi
   assertEquals(result.cohorts, ["2026-08-01", "2026-08-02"]);
 });
 
-Deno.test("retention-query: each mode reaches the wire", async () => {
+test("retention-query: each mode reaches the wire", async () => {
   for (const mode of ["n", "rolling", "brackets"]) {
     const { ctx, calls } = mockCtx([retention], { display });
     await action.execute!({
@@ -53,7 +54,7 @@ Deno.test("retention-query: each mode reaches the wire", async () => {
   }
 });
 
-Deno.test("retention-query: needs both events and both dates", async () => {
+test("retention-query: needs both events and both dates", async () => {
   const noStart = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -78,7 +79,7 @@ Deno.test("retention-query: needs both events and both dates", async () => {
   );
 });
 
-Deno.test("retention-query: logs the mode and cohort count, never the numbers", async () => {
+test("retention-query: logs the mode and cohort count, never the numbers", async () => {
   const { ctx, logs } = mockCtx([retention], { display });
   await action.execute!({
     startEvent: '{"event_type":"a"}',
@@ -89,7 +90,7 @@ Deno.test("retention-query: logs the mode and cohort count, never the numbers", 
   assertEquals(logs[0].data, { mode: "n", cohorts: 2 });
 });
 
-Deno.test("retention-query: says the two events are different roles", () => {
+test("retention-query: says the two events are different roles", () => {
   const returnEvent = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "returnEvent")!;
   assert(/repeat usage, not retention/.test(returnEvent.hint!), returnEvent.hint);

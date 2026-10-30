@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import purchaseList from "../../actions/purchase-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("purchase-list: maps the documented filters", async () => {
+test("purchase-list: maps the documented filters", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "purchases") }]);
   await purchaseList.execute({
     siteId: "111",
@@ -28,7 +29,7 @@ Deno.test("purchase-list: maps the documented filters", async () => {
  * being dropped as "unset". Collapsing them would assert they partition the
  * set, which the spec never says.
  */
-Deno.test("purchase-list: a false boolean filter is sent, not dropped", async () => {
+test("purchase-list: a false boolean filter is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "purchases") }]);
   await purchaseList.execute({ deactivated: false }, ctx);
   assertEquals(queryOf(calls[0])["filter[deactivated]"], "false");
@@ -39,7 +40,7 @@ Deno.test("purchase-list: a false boolean filter is sent, not dropped", async ()
  * example reads `filter[referrer_cont]`. The declared name wins — it is the
  * generated half of the document.
  */
-Deno.test("purchase-list: sends the declared referrer parameter name", async () => {
+test("purchase-list: sends the declared referrer parameter name", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "purchases") }]);
   await purchaseList.execute({ referrer: "partner" }, ctx);
   const q = queryOf(calls[0]);
@@ -47,7 +48,7 @@ Deno.test("purchase-list: sends the declared referrer parameter name", async () 
   assertEquals(q["filter[referrer_cont]"], undefined);
 });
 
-Deno.test("purchase-list: sends no query at all when nothing is filled in", async () => {
+test("purchase-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "purchases") }]);
   await purchaseList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});

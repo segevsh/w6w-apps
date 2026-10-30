@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
@@ -15,7 +16,7 @@ const users = {
 };
 
 /** This is where every write action's performAs comes from. */
-Deno.test("user-list: returns an email-to-id map and excludes leavers", async () => {
+test("user-list: returns an email-to-id map and excludes leavers", async () => {
   const { ctx, calls } = mockCtx([users], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/users");
@@ -25,7 +26,7 @@ Deno.test("user-list: returns an email-to-id map and excludes leavers", async ()
 });
 
 /** A leaver's id still works as performAs. */
-Deno.test("user-list: includes leavers on request and says their ids still work", async () => {
+test("user-list: includes leavers on request and says their ids still work", async () => {
   const { ctx, logs } = mockCtx([users], D);
   const result = await action.execute({ includeDeactivated: true }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 3);
@@ -35,14 +36,14 @@ Deno.test("user-list: includes leavers on request and says their ids still work"
   );
 });
 
-Deno.test("user-list: counts the access roles and names the admins", async () => {
+test("user-list: counts the access roles and names the admins", async () => {
   const { ctx } = mockCtx([users], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.roles, { "super admin": 1, interviewer: 1 });
   assertEquals(result.admins, ["ada@example.com"]);
 });
 
-Deno.test("user-list: an email filter reaches the query", async () => {
+test("user-list: an email filter reaches the query", async () => {
   const { ctx, calls } = mockCtx([users], D);
   await action.execute({ email: "ada@example.com" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("email"), "ada@example.com");

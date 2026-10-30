@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/rank-tracker-overview-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = { "projectId": 12, "device": "desktop", "date": "2026-10-01" };
 
-Deno.test("rank-tracker-overview-get: GETs /rank-tracker/overview and returns the overviews with cost headers", async () => {
+test("rank-tracker-overview-get: GETs /rank-tracker/overview and returns the overviews with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { overviews: [{ a: 1 }] },
     headers: {
@@ -29,14 +30,14 @@ Deno.test("rank-tracker-overview-get: GETs /rank-tracker/overview and returns th
   );
 });
 
-Deno.test("rank-tracker-overview-get: omits cost fields when headers are absent and passes optional params", async () => {
+test("rank-tracker-overview-get: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { overviews: [{ a: 1 }] } }]);
   const out = await action.execute!({ ...input, limit: 5 }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "5");
 });
 
-Deno.test("rank-tracker-overview-get: a 403 array error body is surfaced", async () => {
+test("rank-tracker-overview-get: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

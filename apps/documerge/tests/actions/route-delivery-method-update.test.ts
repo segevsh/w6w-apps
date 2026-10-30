@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeDeliveryMethodUpdate from "../../actions/route-delivery-method-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-delivery-method-update: PUT /api/routes/delivery-methods/{routeId}/{deliveryMethodId}", async () => {
+test("route-delivery-method-update: PUT /api/routes/delivery-methods/{routeId}/{deliveryMethodId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeDeliveryMethodUpdate.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("route-delivery-method-update: PUT /api/routes/delivery-methods/{route
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("route-delivery-method-update: settings given as a JSON string are parsed; a non-object is refused", async () => {
+test("route-delivery-method-update: settings given as a JSON string are parsed; a non-object is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   await routeDeliveryMethodUpdate.execute(
     {
@@ -59,7 +60,7 @@ Deno.test("route-delivery-method-update: settings given as a JSON string are par
   );
 });
 
-Deno.test("route-delivery-method-update: a vendor error surfaces its own message", async () => {
+test("route-delivery-method-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -80,5 +81,5 @@ Deno.test("route-delivery-method-update: a vendor error surfaces its own message
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("route-delivery-method-update: idempotency is declared as true", () =>
+test("route-delivery-method-update: idempotency is declared as true", () =>
   assertEquals(routeDeliveryMethodUpdate.idempotent, true));

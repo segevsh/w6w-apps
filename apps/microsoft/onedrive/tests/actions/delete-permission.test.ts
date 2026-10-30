@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-permission.ts";
 
-Deno.test("delete-permission: DELETEs one grant and reports 204", async () => {
+test("delete-permission: DELETEs one grant and reports 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await action.execute({ itemId: "01ABC", permissionId: "perm1" }, ctx);
   assertEquals(
@@ -13,7 +14,7 @@ Deno.test("delete-permission: DELETEs one grant and reports 204", async () => {
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("delete-permission: encodes a permission id that needs it", async () => {
+test("delete-permission: encodes a permission id that needs it", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute({ itemId: "i", permissionId: "aTh#b/c" }, ctx);
   assertEquals(
@@ -22,7 +23,7 @@ Deno.test("delete-permission: encodes a permission id that needs it", async () =
   );
 });
 
-Deno.test("delete-permission: works from a path-addressed item", async () => {
+test("delete-permission: works from a path-addressed item", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute({ itemPath: "Reports/Q3.pdf", permissionId: "p" }, ctx);
   assertEquals(
@@ -31,13 +32,13 @@ Deno.test("delete-permission: works from a path-addressed item", async () => {
   );
 });
 
-Deno.test("delete-permission: passes if-match through", async () => {
+test("delete-permission: passes if-match through", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute({ itemId: "i", permissionId: "p", ifMatch: '"e"' }, ctx);
   assertEquals(calls[0].headers["if-match"], '"e"');
 });
 
-Deno.test("delete-permission: requires an item", async () => {
+test("delete-permission: requires an item", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => action.execute({ permissionId: "p" }, ctx) as Promise<unknown>,
@@ -46,6 +47,6 @@ Deno.test("delete-permission: requires an item", async () => {
   );
 });
 
-Deno.test("delete-permission: is idempotent — the end state is the same either way", () => {
+test("delete-permission: is idempotent — the end state is the same either way", () => {
   assertEquals(action.idempotent, true);
 });

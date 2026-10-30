@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-email-list.ts";
 
-Deno.test("get-email-list: identity", () => {
+test("get-email-list: identity", () => {
   assertEquals(action.key, "get-email-list");
   assertEquals(action.type, "read");
   assertEquals(action.resource, "email-list");
 });
 
-Deno.test("get-email-list: sends GET /api/v1/email/lists/l1", async () => {
+test("get-email-list: sends GET /api/v1/email/lists/l1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     emailListUid: "l1",
@@ -24,7 +25,7 @@ Deno.test("get-email-list: sends GET /api/v1/email/lists/l1", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("get-email-list: a failure names the status and the request", async () => {
+test("get-email-list: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

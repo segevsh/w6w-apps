@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/signature-request-remove.ts";
 
 /** Removing access is irreversible, so a blank field must not reach the wire. */
-Deno.test("remove: refuses to run without an explicit confirmation", async () => {
+test("remove: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ signatureRequestId: "sr1" }, ctx),
@@ -13,7 +14,7 @@ Deno.test("remove: refuses to run without an explicit confirmation", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("remove: with confirmation it POSTs the remove path", async () => {
+test("remove: with confirmation it POSTs the remove path", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({ signatureRequestId: "sr1", confirm: true }, ctx);
   assertEquals(calls[0].url, "https://api.hellosign.com/v3/signature_request/remove/sr1");
@@ -22,7 +23,7 @@ Deno.test("remove: with confirmation it POSTs the remove path", async () => {
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("remove: a blank id fails before any request", async () => {
+test("remove: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ confirm: true }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cancelPayment from "../../actions/cancel-payment.ts";
 import { envelope, mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
-Deno.test("cancel-payment: POST …/actions/cancel with no credential or key of its own", async () => {
+test("cancel-payment: POST …/actions/cancel with no credential or key of its own", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("payments", { id: "PM1", status: "cancelled" }) },
   ]);
@@ -16,7 +17,7 @@ Deno.test("cancel-payment: POST …/actions/cancel with no credential or key of 
   assertEquals((out as { status: string }).status, "cancelled");
 });
 
-Deno.test("cancel-payment: no Idempotency-Key even when the step has one", async () => {
+test("cancel-payment: no Idempotency-Key even when the step has one", async () => {
   const { ctx, calls } = mockCtxWithInvocation(
     [{ body: envelope("payments", { id: "PM1" }) }],
     "inv-1",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldDelete from "../../actions/field-delete.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-delete: DELETE /customers/42/fields/plan/ with the documented query and body", async () => {
+test("field-delete: DELETE /customers/42/fields/plan/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await fieldDelete.execute({ "customerId": 42, "fieldName": "plan" } as never, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("field-delete: DELETE /customers/42/fields/plan/ with the documented q
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("field-delete: a Landbot error surfaces its status and message", async () => {
+test("field-delete: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -26,7 +27,7 @@ Deno.test("field-delete: a Landbot error surfaces its status and message", async
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("field-delete: declares perform", () => {
+test("field-delete: declares perform", () => {
   assertEquals(fieldDelete.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

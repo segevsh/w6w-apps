@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import dealUpsert from "../../actions/deal-upsert.ts";
 import { dataEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-upsert: posts to /v2/deals/upsert with the filter in the query", async () => {
+test("deal-upsert: posts to /v2/deals/upsert with the filter in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await dealUpsert.execute({ filterContactId: 1, name: "Website Redesign for Coffeeshop" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("deal-upsert: posts to /v2/deals/upsert with the filter in the query",
   assertEquals(body.data.name, "Website Redesign for Coffeeshop");
 });
 
-Deno.test("deal-upsert: refuses to run with no filter", async () => {
+test("deal-upsert: refuses to run with no filter", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await dealUpsert.execute({ name: "x" }, ctx),

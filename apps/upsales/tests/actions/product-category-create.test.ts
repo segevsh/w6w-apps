@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import productCategoryCreate from "../../actions/product-category-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("product-category-create: POSTs /productCategories with the mapped body", async () => {
+test("product-category-create: POSTs /productCategories with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await productCategoryCreate.execute({ "name": "One-off products" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("product-category-create: POSTs /productCategories with the mapped bod
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("product-category-create: the free-form fields object is merged and typed params win", async () => {
+test("product-category-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await productCategoryCreate.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("product-category-create: the free-form fields object is merged and ty
   assertEquals(sent["name"], "One-off products");
 });
 
-Deno.test("product-category-create: fields may be a JSON string", async () => {
+test("product-category-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await productCategoryCreate.execute(
     { "name": "One-off products", "fields": '{"extraKey":1}' } as never,
@@ -37,7 +38,7 @@ Deno.test("product-category-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("product-category-create: invalid fields JSON is refused before any request", async () => {
+test("product-category-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await productCategoryCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -47,12 +48,12 @@ Deno.test("product-category-create: invalid fields JSON is refused before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("product-category-create: required params are declared", () => {
+test("product-category-create: required params are declared", () => {
   const required = (productCategoryCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["name"]);
 });
 
-Deno.test("product-category-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("product-category-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -65,7 +66,7 @@ Deno.test("product-category-create: a rejected key surfaces Upsales' plain-text 
   );
 });
 
-Deno.test("product-category-create: a JSON error envelope surfaces the vendor key", async () => {
+test("product-category-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

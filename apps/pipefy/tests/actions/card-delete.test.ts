@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardDelete from "../../actions/card-delete.ts";
 
-Deno.test("card-delete: deletes and returns success", async () => {
+test("card-delete: deletes and returns success", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { deleteCard: { success: true } } } }]);
   const out = await cardDelete.execute({ id: "1" }, ctx) as { success: boolean };
   assertEquals(out.success, true);
@@ -10,7 +11,7 @@ Deno.test("card-delete: deletes and returns success", async () => {
   assertEquals(q, "mutation { deleteCard(input: { id: 1 }) { success } }");
 });
 
-Deno.test("card-delete: throws when success is false", async () => {
+test("card-delete: throws when success is false", async () => {
   const { ctx } = mockCtx([{ body: { data: { deleteCard: { success: false } } } }]);
   let threw = false;
   try {
@@ -21,7 +22,7 @@ Deno.test("card-delete: throws when success is false", async () => {
   assert(threw);
 });
 
-Deno.test("card-delete: type/resource/idempotency metadata", () => {
+test("card-delete: type/resource/idempotency metadata", () => {
   assertEquals(cardDelete.type, "perform");
   assertEquals(cardDelete.resource, "card");
   assertEquals(cardDelete.idempotent, true);

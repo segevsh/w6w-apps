@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/resume-parse.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("resume-parse: calls ocr/resume_parser with the nested input and shapes the output", async () => {
+test("resume-parse: calls ocr/resume_parser with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("resume-parse: calls ocr/resume_parser with the nested input and shape
   assertEquals(out.output, { extracted_data: {} });
 });
 
-Deno.test("resume-parse: a provider failure inside a 200 is thrown", async () => {
+test("resume-parse: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "affinda", error: { message: "provider down" } },
   }]);
@@ -39,7 +40,7 @@ Deno.test("resume-parse: a provider failure inside a 200 is thrown", async () =>
   );
 });
 
-Deno.test("resume-parse: fallbacks and a provider model reach the request", async () => {
+test("resume-parse: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ file: "https://x/cv.pdf", provider: "affinda" },

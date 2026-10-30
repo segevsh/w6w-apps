@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/shared-key.ts";
 import { API_VERSION } from "../../lib/signing.ts";
@@ -14,7 +15,7 @@ const signRequest = async (request: {
 }) => await auth.sign!({ request, credential: cred } as never, mockCtx([]).ctx) as typeof request;
 
 /** The only scheme in this pack that signs entirely inside the hook. */
-Deno.test("shared-key: stamps the version, the date and the signature", async () => {
+test("shared-key: stamps the version, the date and the signature", async () => {
   const signed = await signRequest({
     url: "https://myaccount.blob.core.windows.net/?comp=list",
     method: "GET",
@@ -29,7 +30,7 @@ Deno.test("shared-key: stamps the version, the date and the signature", async ()
 });
 
 /** The signature covers the query, so it has to be read off the URL. */
-Deno.test("shared-key: signs the query as actually sent", async () => {
+test("shared-key: signs the query as actually sent", async () => {
   const withQuery = await signRequest({
     url: "https://myaccount.blob.core.windows.net/c?restype=container&comp=list",
     method: "GET",
@@ -47,7 +48,7 @@ Deno.test("shared-key: signs the query as actually sent", async () => {
 });
 
 /** URLSearchParams decodes on read, which is what the canonical form wants. */
-Deno.test("shared-key: an encoded query value is signed decoded", async () => {
+test("shared-key: an encoded query value is signed decoded", async () => {
   const signed = await signRequest({
     url: "https://myaccount.blob.core.windows.net/c?prefix=my%20folder%2F&restype=container",
     method: "GET",
@@ -57,7 +58,7 @@ Deno.test("shared-key: an encoded query value is signed decoded", async () => {
 });
 
 /** Empty string, not "0" — the line that makes reads work and writes fail. */
-Deno.test("shared-key: a body contributes a byte count and an empty one does not", async () => {
+test("shared-key: a body contributes a byte count and an empty one does not", async () => {
   const empty = await signRequest({
     url: "https://myaccount.blob.core.windows.net/c/b",
     method: "PUT",
@@ -80,7 +81,7 @@ Deno.test("shared-key: a body contributes a byte count and an empty one does not
  * must sign identically to four ASCII characters and differently from three —
  * which is what `String.length` would have got wrong.
  */
-Deno.test("shared-key: the content length is measured in bytes, not characters", async () => {
+test("shared-key: the content length is measured in bytes, not characters", async () => {
   const put = (body: string) =>
     signRequest({
       url: "https://myaccount.blob.core.windows.net/c/b",
@@ -105,7 +106,7 @@ Deno.test("shared-key: the content length is measured in bytes, not characters",
 });
 
 /** The method is signed, so a GET signature does not authorize a DELETE. */
-Deno.test("shared-key: the method is part of the signature", async () => {
+test("shared-key: the method is part of the signature", async () => {
   const read = await signRequest({
     url: "https://myaccount.blob.core.windows.net/c/b",
     method: "GET",
@@ -120,7 +121,7 @@ Deno.test("shared-key: the method is part of the signature", async () => {
 });
 
 /** The x-ms-* headers the caller set are canonicalized too. */
-Deno.test("shared-key: extra x-ms headers change the signature", async () => {
+test("shared-key: extra x-ms headers change the signature", async () => {
   const plain = await signRequest({
     url: "https://myaccount.blob.core.windows.net/c/b",
     method: "PUT",
@@ -135,7 +136,7 @@ Deno.test("shared-key: extra x-ms headers change the signature", async () => {
   assertEquals(tagged.headers["x-ms-meta-owner"], "jane", "the header survives signing");
 });
 
-Deno.test("shared-key: the test lists containers and reports the account", async () => {
+test("shared-key: the test lists containers and reports the account", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "<EnumerationResults/>" }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assert(
@@ -148,7 +149,7 @@ Deno.test("shared-key: the test lists containers and reports the account", async
 });
 
 /** A storage account is DNS: a wrong name does not resolve. */
-Deno.test("shared-key: an unresolvable account says so rather than blaming the key", async () => {
+test("shared-key: an unresolvable account says so rather than blaming the key", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns error")),
     log: () => {},
@@ -158,7 +159,7 @@ Deno.test("shared-key: an unresolvable account says so rather than blaming the k
   assert(/fails to resolve rather than answering 404/.test(result.message!), result.message);
 });
 
-Deno.test("shared-key: a rejected signature surfaces Azure's explanation", async () => {
+test("shared-key: a rejected signature surfaces Azure's explanation", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body:
@@ -170,7 +171,7 @@ Deno.test("shared-key: a rejected signature surfaces Azure's explanation", async
   assert(/base64-decoded/.test(result.message!), result.message);
 });
 
-Deno.test("shared-key: missing fields and a bad account name fail before any request", async () => {
+test("shared-key: missing fields and a bad account name fail before any request", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals((await auth.test!({ credential: { account: "a" } } as never, none.ctx)).ok, false);
@@ -185,7 +186,7 @@ Deno.test("shared-key: missing fields and a bad account name fail before any req
 });
 
 /** The account is the hostname, so every action needs it recorded. */
-Deno.test("shared-key: afterConnect records the account and never the key", () => {
+test("shared-key: afterConnect records the account and never the key", () => {
   const display = auth.afterConnect!(
     { credential: cred },
     mockCtx([]).ctx,
@@ -195,7 +196,7 @@ Deno.test("shared-key: afterConnect records the account and never the key", () =
 });
 
 /** The key is the whole account, not a scoped credential. */
-Deno.test("shared-key: says what the key actually grants", () => {
+test("shared-key: says what the key actually grants", () => {
   assert(/FULL control of the entire account/.test(auth.description!), auth.description);
   assertEquals(auth.fields!.find((f) => f.key === "key")!.type, "secret");
   assert(/closer to a root password/.test(auth.fields!.find((f) => f.key === "key")!.hint!));

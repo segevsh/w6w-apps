@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-delete.ts";
 
@@ -9,7 +10,7 @@ const ok = {
   headers: { "x-ratelimit-remaining": "50" },
 };
 
-Deno.test("record-delete: sends the ids in the body", async () => {
+test("record-delete: sends the ids in the body", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   const result = await action.execute(
     { tableId: "mtbl1", recordIds: "1, 2", confirm: true },
@@ -21,13 +22,13 @@ Deno.test("record-delete: sends the ids in the body", async () => {
   assertEquals(result.requestsRemaining, 50);
 });
 
-Deno.test("record-delete: a JSON array of ids works too", async () => {
+test("record-delete: a JSON array of ids works too", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   await action.execute({ tableId: "mtbl1", recordIds: "[1,2]", confirm: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), [{ Id: 1 }, { Id: 2 }]);
 });
 
-Deno.test("record-delete: honours a different primary key column", async () => {
+test("record-delete: honours a different primary key column", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   await action.execute(
     { tableId: "mtbl1", recordIds: "A1", idField: "sku", confirm: true },
@@ -37,7 +38,7 @@ Deno.test("record-delete: honours a different primary key column", async () => {
 });
 
 /** NocoDB's API has no undo, and an external base loses the row too. */
-Deno.test("record-delete: refuses without confirmation, before any request", async () => {
+test("record-delete: refuses without confirmation, before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", recordIds: "1" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("record-delete: refuses without confirmation, before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-delete: refuses an empty id list, and says there is no filter", async () => {
+test("record-delete: refuses an empty id list, and says there is no filter", async () => {
   const { ctx } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", recordIds: "", confirm: true }, ctx),
@@ -58,7 +59,7 @@ Deno.test("record-delete: refuses an empty id list, and says there is no filter"
 });
 
 /** A link left behind renders as an empty cell rather than an error. */
-Deno.test("record-delete: warns about the links it breaks", async () => {
+test("record-delete: warns about the links it breaks", async () => {
   const { ctx, logs } = mockCtx([ok], D);
   await action.execute({ tableId: "mtbl1", recordIds: "1", confirm: true }, ctx);
   assert(

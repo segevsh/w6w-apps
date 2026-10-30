@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-email.ts";
 
-Deno.test("invoice-email: POSTs /invoices/{id}/email with the mail fields, splitting comma lists", async () => {
+test("invoice-email: POSTs /invoices/{id}/email with the mail fields, splitting comma lists", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "Your invoice has been emailed to the customer(s)." } },
   ]);
@@ -24,7 +25,7 @@ Deno.test("invoice-email: POSTs /invoices/{id}/email with the mail fields, split
   });
 });
 
-Deno.test("invoice-email: omits cc when not given, rather than sending an empty array", async () => {
+test("invoice-email: omits cc when not given, rather than sending an empty array", async () => {
   const { ctx, calls } = mockInvoiceCtx([{ body: { code: 0, message: "ok" } }]);
   await action.execute({ recordId: "77", toMailIds: "a@example.com" }, ctx);
   const body = JSON.parse(calls[0].body!);

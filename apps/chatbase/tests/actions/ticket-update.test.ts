@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketUpdate from "../../actions/ticket-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-update: PATCH with only provided fields", async () => {
+test("ticket-update: PATCH with only provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { ticketNumber: 1, statusCategory: "closed" } }]);
   await ticketUpdate.execute({ agentId: "a1", ticketNumber: 1, statusCategory: "closed" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("ticket-update: PATCH with only provided fields", async () => {
   assertEquals(JSON.parse(calls[0].body!), { statusCategory: "closed" });
 });
 
-Deno.test("ticket-update: unassign sends an explicit assigneeId: null, ignoring assigneeEmail", async () => {
+test("ticket-update: unassign sends an explicit assigneeId: null, ignoring assigneeEmail", async () => {
   const { ctx, calls } = mockCtx([{ body: { ticketNumber: 1, assigneeId: null } }]);
   await ticketUpdate.execute(
     { agentId: "a1", ticketNumber: 1, unassign: true, assigneeEmail: "ignored@example.com" },
@@ -20,7 +21,7 @@ Deno.test("ticket-update: unassign sends an explicit assigneeId: null, ignoring 
   assertEquals(JSON.parse(calls[0].body!), { assigneeId: null });
 });
 
-Deno.test("ticket-update: clearTeam sends an explicit teamId: null, ignoring teamId", async () => {
+test("ticket-update: clearTeam sends an explicit teamId: null, ignoring teamId", async () => {
   const { ctx, calls } = mockCtx([{ body: { ticketNumber: 1, teamId: null } }]);
   await ticketUpdate.execute(
     { agentId: "a1", ticketNumber: 1, clearTeam: true, teamId: "ignored-uuid" },

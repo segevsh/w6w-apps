@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: hits /tasks/v1/lists/{id}/tasks and invents no defaults", async () => {
+test("list-tasks: hits /tasks/v1/lists/{id}/tasks and invents no defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { kind: "tasks#tasks", items: [] } }]);
   await action.execute!({ taskList: "L1" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("list-tasks: hits /tasks/v1/lists/{id}/tasks and invents no defaults",
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-tasks: forwards every documented filter", async () => {
+test("list-tasks: forwards every documented filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({
     taskList: "L1",
@@ -44,7 +45,7 @@ Deno.test("list-tasks: forwards every documented filter", async () => {
   assertEquals(p.get("pageToken"), "tok");
 });
 
-Deno.test("list-tasks: declares only parameters the Tasks API actually defines", () => {
+test("list-tasks: declares only parameters the Tasks API actually defines", () => {
   const keys = action.params!.map((p) => p.key).sort();
   assertEquals(keys, [
     "completedMax",

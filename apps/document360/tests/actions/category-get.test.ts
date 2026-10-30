@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryGet from "../../actions/category-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("category-get: GETs the category", async () => {
+test("category-get: GETs the category", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "c1", name: "Guides" }) }]);
   const out = await categoryGet.execute({ categoryId: "c1" }, ctx) as { name: string };
 
@@ -14,7 +15,7 @@ Deno.test("category-get: GETs the category", async () => {
   assertEquals(out.name, "Guides");
 });
 
-Deno.test("category-get: a vendor error surfaces its code and message", async () => {
+test("category-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailForward from "../../actions/email-forward.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-forward: POSTs /emails/forward", async () => {
+test("email-forward: POSTs /emails/forward", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e2" } }]);
   const out = await emailForward.execute(
     {
@@ -23,6 +24,6 @@ Deno.test("email-forward: POSTs /emails/forward", async () => {
   assertEquals(out.id, "e2");
 });
 
-Deno.test("email-forward: is declared non-idempotent", () => {
+test("email-forward: is declared non-idempotent", () => {
   assertEquals(emailForward.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-search.ts";
 
@@ -24,7 +25,7 @@ const stories = {
 };
 
 /** The question the delivery API cannot answer. */
-Deno.test("story-search: names the stories that are live and edited since", async () => {
+test("story-search: names the stories that are live and edited since", async () => {
   const { ctx, calls } = mockCtx([stories], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/123/stories");
@@ -33,7 +34,7 @@ Deno.test("story-search: names the stories that are live and edited since", asyn
   assertEquals(result.folders, ["blog"]);
 });
 
-Deno.test("story-search: the state filter maps onto is_published", async () => {
+test("story-search: the state filter maps onto is_published", async () => {
   const published = mockCtx([stories], M);
   await action.execute({ state: "published" }, published.ctx);
   assertEquals(new URL(published.calls[0].url).searchParams.get("is_published"), "true");
@@ -47,7 +48,7 @@ Deno.test("story-search: the state filter maps onto is_published", async () => {
   assertEquals(new URL(all.calls[0].url).searchParams.get("is_published"), null);
 });
 
-Deno.test("story-search: search, prefix and content type reach the query", async () => {
+test("story-search: search, prefix and content type reach the query", async () => {
   const { ctx, calls } = mockCtx([stories], M);
   await action.execute({ search: "boots", startsWith: "blog/", contentType: "article" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -56,7 +57,7 @@ Deno.test("story-search: search, prefix and content type reach the query", async
   assertEquals(q.get("contain_component"), "article");
 });
 
-Deno.test("story-search: refuses a delivery connection", async () => {
+test("story-search: refuses a delivery connection", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () => await action.execute({}, ctx), Error);
   assert(/MANAGEMENT connection/.test(err.message), err.message);
@@ -64,6 +65,6 @@ Deno.test("story-search: refuses a delivery connection", async () => {
 });
 
 /** It is also the slow one. */
-Deno.test("story-search: says the Management API is 3 to 6 requests a second", () => {
+test("story-search: says the Management API is 3 to 6 requests a second", () => {
   assert(/3 to 6 requests a second/.test(action.description!), action.description);
 });

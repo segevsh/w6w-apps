@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keyDelete from "../../actions/key-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("key-delete: DELETEs a key and returns the raw success shape", async () => {
+test("key-delete: DELETEs a key and returns the raw success shape", async () => {
   const { ctx, calls } = mockCtx([
     { body: { project_id: "p1", key_removed: true, keys_locked: 0 } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("key-delete: DELETEs a key and returns the raw success shape", async (
  * The documented Lokalise example: a 200 whose key was NOT removed because
  * it is locked. This must be surfaced, not swallowed as a generic success.
  */
-Deno.test("key-delete: a locked key surfaces key_removed:false despite a 200 status", async () => {
+test("key-delete: a locked key surfaces key_removed:false despite a 200 status", async () => {
   const { ctx } = mockCtx([
     { body: { project_id: "p1", key_removed: false, keys_locked: 1 } },
   ]);
@@ -28,6 +29,6 @@ Deno.test("key-delete: a locked key surfaces key_removed:false despite a 200 sta
   assertEquals(out.keys_locked, 1);
 });
 
-Deno.test("key-delete: is idempotent", () => {
+test("key-delete: is idempotent", () => {
   assertEquals(keyDelete.idempotent, true);
 });

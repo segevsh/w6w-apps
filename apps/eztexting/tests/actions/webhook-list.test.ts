@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: calls GET /webhooks/subscriptions and returns the documented shape", async () => {
+test("webhook-list: calls GET /webhooks/subscriptions and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "w1", type: "inbound_text.received" }]) }]);
   const result = await webhookList.execute({ "page": 0 } as never, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("webhook-list: calls GET /webhooks/subscriptions and returns the docum
   });
 });
 
-Deno.test("webhook-list: carries no credential — auth is the sign hook's job", async () => {
+test("webhook-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "w1", type: "inbound_text.received" }]) }]);
   await webhookList.execute({ "page": 0 } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

@@ -1,4 +1,5 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import apiToken, { authHeaders, isScopeRefusal, PROBE_PATH } from "../../auth/api-token.ts";
 import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 import type { HookContext } from "@w6w/types";
@@ -7,14 +8,14 @@ type Sign = (a: { request: { headers: Record<string, string> }; credential: unkn
   headers: Record<string, string>;
 };
 
-Deno.test("auth: bearer type with one secret field", () => {
+test("auth: bearer type with one secret field", () => {
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.fields?.length, 1);
   assertEquals(apiToken.fields?.[0].key, "apiToken");
   assertEquals(apiToken.fields?.[0].type, "secret");
 });
 
-Deno.test("sign: stamps Authorization: Bearer <token>, trimmed, and nothing else", () => {
+test("sign: stamps Authorization: Bearer <token>, trimmed, and nothing else", () => {
   const req = { headers: { accept: "application/json" } };
   const out = (apiToken.sign as unknown as Sign)({
     request: req,
@@ -24,7 +25,7 @@ Deno.test("sign: stamps Authorization: Bearer <token>, trimmed, and nothing else
   assertEquals(authHeaders({}), { authorization: "Bearer " });
 });
 
-Deno.test("test: a 200 from GET /companies/?limit=1 is ok, and the token is sent in the header only", async () => {
+test("test: a 200 from GET /companies/?limit=1 is ok, and the token is sent in the header only", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [], next_link: null } }]);
   const res = await apiToken.test({ credential: { apiToken: "tok" } }, ctx);
 
@@ -35,7 +36,7 @@ Deno.test("test: a 200 from GET /companies/?limit=1 is ok, and the token is sent
   assertEquals(calls[0].url.includes("tok"), false);
 });
 
-Deno.test("test: the live 401 body ('Incorrect authentication credentials.') fails with a revocation hint", async () => {
+test("test: the live 401 body ('Incorrect authentication credentials.') fails with a revocation hint", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("Incorrect authentication credentials."),
@@ -46,7 +47,7 @@ Deno.test("test: the live 401 body ('Incorrect authentication credentials.') fai
   assertStringIncludes(res.message ?? "", "Incorrect authentication credentials.");
 });
 
-Deno.test("test: a 403 that names a scope means the token authenticated; any other 403 fails", async () => {
+test("test: a 403 that names a scope means the token authenticated; any other 403 fails", async () => {
   const scoped = mockCtx([{
     status: 403,
     body: errorBody("Insufficient oauth scopes to access companies"),
@@ -62,7 +63,7 @@ Deno.test("test: a 403 that names a scope means the token authenticated; any oth
   assertEquals(isScopeRefusal(401, "Insufficient oauth scopes"), false);
 });
 
-Deno.test("test: 429, 500 and a missing token each fail without a false pass", async () => {
+test("test: 429, 500 and a missing token each fail without a false pass", async () => {
   const rate = mockCtx([{ status: 429, body: {} }]);
   assertStringIncludes(
     (await apiToken.test({ credential: { apiToken: "t" } }, rate.ctx)).message ?? "",
@@ -81,7 +82,7 @@ Deno.test("test: 429, 500 and a missing token each fail without a false pass", a
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("afterConnect: publishes only the company name; any failure is silent", async () => {
+test("afterConnect: publishes only the company name; any failure is silent", async () => {
   const good = mockCtx([{
     status: 200,
     body: { results: [{ name: "Acme Corporation", primary_email: "admin@acme.com" }] },

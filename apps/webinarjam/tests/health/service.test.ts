@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ function summary(components: Array<Record<string, unknown>>, indicator = "none")
   };
 }
 
-Deno.test("service: is a live, unsigned, app-scoped check", () => {
+test("service: is a live, unsigned, app-scoped check", () => {
   assertEquals(typeof service.check, "function");
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
@@ -20,7 +21,7 @@ Deno.test("service: is a live, unsigned, app-scoped check", () => {
   assertEquals(service.network?.allow, ["status.webinarjam.com"]);
 });
 
-Deno.test("service: fetches the real Statuspage URL", async () => {
+test("service: fetches the real Statuspage URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: summary([{ id: "hp3k3vsyhhhh", name: "API", status: "operational" }]),
   }]);
@@ -28,7 +29,7 @@ Deno.test("service: fetches the real Statuspage URL", async () => {
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: reports ok when the API component is operational", async () => {
+test("service: reports ok when the API component is operational", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "rpx85djxt5ck", name: "WebinarJam App", status: "operational" },
@@ -44,7 +45,7 @@ Deno.test("service: reports ok when the API component is operational", async () 
  * unrelated components: an incident on something this app never touches must
  * not report the developer API as degraded.
  */
-Deno.test("service: an incident on WebinarJam App does not degrade the API component", async () => {
+test("service: an incident on WebinarJam App does not degrade the API component", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "rpx85djxt5ck", name: "WebinarJam App", status: "major_outage" },
@@ -55,7 +56,7 @@ Deno.test("service: an incident on WebinarJam App does not degrade the API compo
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: an incident on the API component itself is reported", async () => {
+test("service: an incident on the API component itself is reported", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ id: "hp3k3vsyhhhh", name: "API", status: "major_outage" }], "major"),
   }]);
@@ -63,7 +64,7 @@ Deno.test("service: an incident on the API component itself is reported", async 
   assertEquals(result.state, "down");
 });
 
-Deno.test("service: falls back to the page-wide rollup when the API component is absent", async () => {
+test("service: falls back to the page-wide rollup when the API component is absent", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ id: "x", name: "Something Else", status: "operational" }], "minor"),
   }]);
@@ -72,13 +73,13 @@ Deno.test("service: falls back to the page-wide rollup when the API component is
   assert(result.message!.includes('"API" component not found'), result.message);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await service.check!({} as never, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as WebinarJam's is unknown", async () => {
+test("service: a page that no longer self-identifies as WebinarJam's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { id: "x", name: "Someone Else", url: "https://status.example.com" },

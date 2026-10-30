@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   formatRecruitError,
   moduleName,
@@ -8,12 +9,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, mockRecruitCtx } from "../_helpers.ts";
 
-Deno.test("moduleName: accepts letters, digits and underscores", () => {
+test("moduleName: accepts letters, digits and underscores", () => {
   assertEquals(moduleName("Job_Openings"), "Job_Openings");
   assertEquals(moduleName("Candidates"), "Candidates");
 });
 
-Deno.test("moduleName: rejects anything else", () => {
+test("moduleName: rejects anything else", () => {
   for (const bad of ["../secrets", "Job Openings", "Job-Openings", ""]) {
     let threw = false;
     try {
@@ -25,7 +26,7 @@ Deno.test("moduleName: rejects anything else", () => {
   }
 });
 
-Deno.test("formatRecruitError: surfaces the vendor's own code and message", () => {
+test("formatRecruitError: surfaces the vendor's own code and message", () => {
   const msg = formatRecruitError(
     401,
     "GET",
@@ -37,20 +38,20 @@ Deno.test("formatRecruitError: surfaces the vendor's own code and message", () =
   assert(msg.includes("401"));
 });
 
-Deno.test("formatRecruitError: falls back to the raw body when it is not the documented shape", () => {
+test("formatRecruitError: falls back to the raw body when it is not the documented shape", () => {
   const msg = formatRecruitError(500, "GET", "/recruit/v2/Candidates", "upstream exploded");
   assert(msg.includes("upstream exploded"));
   assert(msg.includes("500"));
 });
 
-Deno.test("unwrapRecordResult: returns the single entry on success", () => {
+test("unwrapRecordResult: returns the single entry on success", () => {
   const entry = unwrapRecordResult({
     data: [{ code: "SUCCESS", status: "success", details: { id: "1" }, message: "record added" }],
   });
   assertEquals(entry.code, "SUCCESS");
 });
 
-Deno.test("unwrapRecordResult: throws on a per-item error even though the call itself succeeded", () => {
+test("unwrapRecordResult: throws on a per-item error even though the call itself succeeded", () => {
   assertThrows(
     () =>
       unwrapRecordResult({
@@ -61,7 +62,7 @@ Deno.test("unwrapRecordResult: throws on a per-item error even though the call i
   );
 });
 
-Deno.test("unwrapRecordResult: throws when the response carries no data at all", () => {
+test("unwrapRecordResult: throws when the response carries no data at all", () => {
   let threw = false;
   try {
     unwrapRecordResult({});
@@ -71,7 +72,7 @@ Deno.test("unwrapRecordResult: throws when the response carries no data at all",
   assert(threw);
 });
 
-Deno.test("unwrapStatusResult: flattens the nested data[0] array on success", () => {
+test("unwrapStatusResult: flattens the nested data[0] array on success", () => {
   const results = unwrapStatusResult({
     data: [[
       { code: "SUCCESS", status: "success", details: { id: "1" }, message: "status changed" },
@@ -81,7 +82,7 @@ Deno.test("unwrapStatusResult: flattens the nested data[0] array on success", ()
   assertEquals(results[0].code, "SUCCESS");
 });
 
-Deno.test("unwrapStatusResult: throws if any per-id entry failed", () => {
+test("unwrapStatusResult: throws if any per-id entry failed", () => {
   let threw = false;
   try {
     unwrapStatusResult({
@@ -97,14 +98,14 @@ Deno.test("unwrapStatusResult: throws if any per-id entry failed", () => {
   assert(threw);
 });
 
-Deno.test("ZohoRecruitClient: addresses the connection's recorded region host", async () => {
+test("ZohoRecruitClient: addresses the connection's recorded region host", async () => {
   const { ctx, calls } = mockRecruitCtx([{ body: { data: [] } }], "recruit.zoho.eu");
   await new ZohoRecruitClient(ctx).request("/Candidates");
   assertEquals(new URL(calls[0].url).host, "recruit.zoho.eu");
   assertEquals(new URL(calls[0].url).pathname, "/recruit/v2/Candidates");
 });
 
-Deno.test("ZohoRecruitClient: falls back to the US host when the connection carries none", async () => {
+test("ZohoRecruitClient: falls back to the US host when the connection carries none", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new ZohoRecruitClient(ctx).request("/Candidates");
   assertEquals(new URL(calls[0].url).host, "recruit.zoho.com");

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-delete.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("user-delete: DELETEs /users/me with reassign and force=true", async () => {
+test("user-delete: DELETEs /users/me with reassign and force=true", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ reassign: "1" }, ctx);
   const url = new URL(calls[0].url);

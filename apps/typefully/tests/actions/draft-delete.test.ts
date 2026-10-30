@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import draftDelete from "../../actions/draft-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("draft-delete: DELETEs the draft and returns the 204 status", async () => {
+test("draft-delete: DELETEs the draft and returns the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await draftDelete.execute({ socialSetId: 4, draftId: 12 }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("draft-delete: DELETEs the draft and returns the 204 status", async ()
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("draft-delete: is idempotent — a retry after 404 is safe", () => {
+test("draft-delete: is idempotent — a retry after 404 is safe", () => {
   assertEquals(draftDelete.idempotent, true);
 });

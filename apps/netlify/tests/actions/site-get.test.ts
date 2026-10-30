@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/site-get.ts";
 
-Deno.test("site-get: GETs /sites/{id}", async () => {
+test("site-get: GETs /sites/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "site1", name: "example" } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("site-get: GETs /sites/{id}", async () => {
   assertEquals(result, { id: "site1", name: "example" });
 });
 
-Deno.test("site-get: requires siteId", async () => {
+test("site-get: requires siteId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "siteId");
 });

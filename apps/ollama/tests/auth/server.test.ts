@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/server.ts";
 
@@ -11,7 +12,7 @@ const failingCtx = (message = "ECONNREFUSED") =>
     log: () => {},
   }) as unknown as Parameters<NonNullable<typeof auth.test>>[1];
 
-Deno.test("server: the contract's only secret-free option is `custom`, with the key optional", () => {
+test("server: the contract's only secret-free option is `custom`, with the key optional", () => {
   assertEquals(auth.type, "custom");
   const fields = Object.fromEntries(auth.fields!.map((f) => [f.key, f]));
   assertEquals(Object.keys(fields), ["host", "port", "scheme", "apiKey"]);
@@ -26,7 +27,7 @@ Deno.test("server: the contract's only secret-free option is `custom`, with the 
   );
 });
 
-Deno.test("server: sign adds a bearer only when a key was entered", () => {
+test("server: sign adds a bearer only when a key was entered", () => {
   const sign = (credential: unknown) => {
     const request = { url: "http://x/api/tags", headers: {} as Record<string, string> };
     return (auth.sign!({ request, credential } as never, mockCtx([]).ctx) as typeof request)
@@ -38,7 +39,7 @@ Deno.test("server: sign adds a bearer only when a key was entered", () => {
   assertEquals(sign({ ...cred, apiKey: "   " })["authorization"], undefined);
 });
 
-Deno.test("server: the test hits /api/version on the address built from the fields", async () => {
+test("server: the test hits /api/version on the address built from the fields", async () => {
   const { ctx, calls } = mockCtx([version]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].url, "http://192.168.1.50:11434/api/version");
@@ -47,7 +48,7 @@ Deno.test("server: the test hits /api/version on the address built from the fiel
   assert(/0\.34\.1/.test(result.message!), result.message);
 });
 
-Deno.test("server: a custom port and https are honoured, and the key is sent when set", async () => {
+test("server: a custom port and https are honoured, and the key is sent when set", async () => {
   const { ctx, calls } = mockCtx([version]);
   await auth.test!({
     credential: { scheme: "https", host: "ollama.example.com", port: "443", apiKey: "k" },
@@ -57,7 +58,7 @@ Deno.test("server: a custom port and https are honoured, and the key is sent whe
 });
 
 /** The most common failure: reported as what it is, not as a timeout. */
-Deno.test("server: an unreachable LAN address is explained, not reported as a timeout", async () => {
+test("server: an unreachable LAN address is explained, not reported as a timeout", async () => {
   for (const host of ["192.168.1.50", "10.0.0.5", "localhost", "nas.local", "100.64.1.2"]) {
     const result = await auth.test!({ credential: { ...cred, host } } as never, failingCtx());
     assertEquals(result.ok, false);
@@ -69,7 +70,7 @@ Deno.test("server: an unreachable LAN address is explained, not reported as a ti
   }
 });
 
-Deno.test("server: an unreachable public host is reported plainly but still names OLLAMA_HOST", async () => {
+test("server: an unreachable public host is reported plainly but still names OLLAMA_HOST", async () => {
   const result = await auth.test!(
     { credential: { ...cred, host: "ollama.example.com" } } as never,
     failingCtx("dns error"),
@@ -80,7 +81,7 @@ Deno.test("server: an unreachable public host is reported plainly but still name
   assert(/OLLAMA_HOST/.test(result.message!), result.message);
 });
 
-Deno.test("server: a 401 without a key says a proxy is in the way; with a key it says it was rejected", async () => {
+test("server: a 401 without a key says a proxy is in the way; with a key it says it was rejected", async () => {
   const noKey = await auth.test!(
     { credential: cred } as never,
     mockCtx([{ status: 401, body: "no" }]).ctx,
@@ -97,7 +98,7 @@ Deno.test("server: a 401 without a key says a proxy is in the way; with a key it
   assert(!/bad/.test(withKey.message!.replace("rejected", "")), "the key must not be echoed");
 });
 
-Deno.test("server: a 200 that is not Ollama is named as the wrong port or a proxy page", async () => {
+test("server: a 200 that is not Ollama is named as the wrong port or a proxy page", async () => {
   for (const body of ["<html>Login</html>", { hello: "world" }]) {
     const result = await auth.test!(
       { credential: cred } as never,
@@ -108,7 +109,7 @@ Deno.test("server: a 200 that is not Ollama is named as the wrong port or a prox
   }
 });
 
-Deno.test("server: a bad address fails before any request", async () => {
+test("server: a bad address fails before any request", async () => {
   for (
     const bad of [
       { ...cred, host: "" },
@@ -125,7 +126,7 @@ Deno.test("server: a bad address fails before any request", async () => {
   }
 });
 
-Deno.test("server: afterConnect records the address and version, never the key", async () => {
+test("server: afterConnect records the address and version, never the key", async () => {
   const { ctx, calls } = mockCtx([version]);
   const display = await auth.afterConnect!(
     { credential: { ...cred, apiKey: "sk-secret" } },
@@ -144,7 +145,7 @@ Deno.test("server: afterConnect records the address and version, never the key",
   assert(!JSON.stringify(display).includes("sk-secret"));
 });
 
-Deno.test("server: afterConnect still records the address when the server will not answer", async () => {
+test("server: afterConnect still records the address when the server will not answer", async () => {
   const display = await auth.afterConnect!({ credential: cred }, failingCtx()) as Record<
     string,
     unknown
@@ -154,7 +155,7 @@ Deno.test("server: afterConnect still records the address when the server will n
   assertEquals(display.version, undefined);
 });
 
-Deno.test("server: the hints carry the reachability and bind-address warnings", () => {
+test("server: the hints carry the reachability and bind-address warnings", () => {
   const host = auth.fields!.find((f) => f.key === "host")!;
   assert(/same network/.test(host.hint!), host.hint);
   assert(/self-hosted runner/.test(host.hint!), host.hint);

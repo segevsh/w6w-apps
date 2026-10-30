@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/look-get.ts";
 
@@ -18,7 +19,7 @@ const look = {
 };
 
 /** The definition is what a workflow is really depending on. */
-Deno.test("look-get: returns the query behind the Look", async () => {
+test("look-get: returns the query behind the Look", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: look }], D);
   const result = await action.execute({ lookId: "1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/4.0/looks/1");
@@ -30,7 +31,7 @@ Deno.test("look-get: returns the query behind the Look", async () => {
 });
 
 /** Looker's own documentation: -1 means unlimited. */
-Deno.test("look-get: reads -1 and a missing limit as unbounded", async () => {
+test("look-get: reads -1 and a missing limit as unbounded", async () => {
   for (const limit of ["-1", undefined, ""]) {
     const { ctx, logs } = mockCtx([{
       status: 200,
@@ -43,7 +44,7 @@ Deno.test("look-get: reads -1 and a missing limit as unbounded", async () => {
 });
 
 /** A deleted Look still answers a fetch, so fetching is not an existence test. */
-Deno.test("look-get: warns that a soft-deleted Look still answers here", async () => {
+test("look-get: warns that a soft-deleted Look still answers here", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { ...look, deleted: true } }], D);
   const result = await action.execute({ lookId: "9" }, ctx) as Record<string, unknown>;
   assertEquals(result.deleted, true);
@@ -53,13 +54,13 @@ Deno.test("look-get: warns that a soft-deleted Look still answers here", async (
   );
 });
 
-Deno.test("look-get: requires an id", async () => {
+test("look-get: requires an id", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`lookId` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("look-get: an id with a slash cannot escape the path", async () => {
+test("look-get: an id with a slash cannot escape the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: look }], D);
   await action.execute({ lookId: "1/../users" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/4.0/looks/1%2F..%2Fusers");

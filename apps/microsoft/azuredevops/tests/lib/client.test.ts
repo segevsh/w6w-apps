@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_VERSION,
@@ -15,7 +16,7 @@ import {
 
 const display = { organization: "contoso" };
 
-Deno.test("compact: drops unset keys so a filter is absent rather than empty", () => {
+test("compact: drops unset keys so a filter is absent rather than empty", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: [], f: false }), {
     a: 1,
     f: false,
@@ -23,7 +24,7 @@ Deno.test("compact: drops unset keys so a filter is absent rather than empty", (
 });
 
 /** Azure DevOps takes comma-delimited lists, not repeated keys. */
-Deno.test("query: joins arrays with commas and drops blanks", () => {
+test("query: joins arrays with commas and drops blanks", () => {
   assertEquals(query({ a: 1, b: false, c: ["x", "y"], d: "", e: undefined }), {
     a: 1,
     b: false,
@@ -31,12 +32,12 @@ Deno.test("query: joins arrays with commas and drops blanks", () => {
   });
 });
 
-Deno.test("csv: splits, trims and drops empties", () => {
+test("csv: splits, trims and drops empties", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
 });
 
-Deno.test("json: parses text and names the bad field", () => {
+test("json: parses text and names the bad field", () => {
   assertEquals(json('{"a":1}', "fields"), { a: 1 });
   try {
     json("{oops", "fields");
@@ -46,7 +47,7 @@ Deno.test("json: parses text and names the bad field", () => {
   }
 });
 
-Deno.test("organizationFromConnection: refuses with an actionable message when unset", () => {
+test("organizationFromConnection: refuses with an actionable message when unset", () => {
   assertEquals(organizationFromConnection({ display } as never), "contoso");
   try {
     organizationFromConnection({ display: {} } as never);
@@ -60,7 +61,7 @@ Deno.test("organizationFromConnection: refuses with an actionable message when u
  * A caller writing `title` is not corrected by Azure DevOps — the field is
  * simply not set.
  */
-Deno.test("qualifyField: expands short names and leaves qualified ones alone", () => {
+test("qualifyField: expands short names and leaves qualified ones alone", () => {
   assertEquals(qualifyField("title"), "System.Title");
   assertEquals(qualifyField("assignedTo"), "System.AssignedTo");
   assertEquals(qualifyField("priority"), "Microsoft.VSTS.Common.Priority");
@@ -69,23 +70,23 @@ Deno.test("qualifyField: expands short names and leaves qualified ones alone", (
   assertEquals(qualifyField("Custom.TeamArea"), "Custom.TeamArea");
 });
 
-Deno.test("qualifyField: an unknown short name falls back to the System namespace", () => {
+test("qualifyField: an unknown short name falls back to the System namespace", () => {
   assertEquals(qualifyField("BoardColumn"), "System.BoardColumn");
 });
 
 /** Work items are the only part of the API that takes a patch document. */
-Deno.test("fieldsToPatch: builds add operations with qualified paths", () => {
+test("fieldsToPatch: builds add operations with qualified paths", () => {
   assertEquals(fieldsToPatch({ title: "Fix login", priority: 1 }), [
     { op: "add", path: "/fields/System.Title", value: "Fix login" },
     { op: "add", path: "/fields/Microsoft.VSTS.Common.Priority", value: 1 },
   ]);
 });
 
-Deno.test("fieldsToPatch: unset fields produce no operations", () => {
+test("fieldsToPatch: unset fields produce no operations", () => {
   assertEquals(fieldsToPatch({ title: "", state: undefined, tags: null }), []);
 });
 
-Deno.test("client: builds an org-scoped path and pins the api-version", async () => {
+test("client: builds an org-scoped path and pins the api-version", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { value: [] } }], { display });
   const client = new AzureDevOpsClient(ctx);
   await client.list(client.path("_apis/projects"));
@@ -95,7 +96,7 @@ Deno.test("client: builds an org-scoped path and pins the api-version", async ()
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: path segments are encoded but slashes inside one are kept", async () => {
+test("client: path segments are encoded but slashes inside one are kept", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   const client = new AzureDevOpsClient(ctx);
   await client.request(client.path("My Project", "_apis/git/repositories", "my repo"));
@@ -109,14 +110,14 @@ Deno.test("client: path segments are encoded but slashes inside one are kept", a
  * THE finding. A rejected credential answers 302 to a sign-in page, so
  * following redirects turns an auth failure into a 200 of HTML.
  */
-Deno.test("client: never follows redirects", async () => {
+test("client: never follows redirects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { value: [] } }], { display });
   const client = new AzureDevOpsClient(ctx);
   await client.list(client.path("_apis/projects"));
   assertEquals(calls[0].redirect, "manual");
 });
 
-Deno.test("client: a 302 is reported as a rejected credential, not a success", async () => {
+test("client: a 302 is reported as a rejected credential, not a success", async () => {
   const { ctx } = mockCtx([{ status: 302, body: "<html>sign in</html>" }], { display });
   const client = new AzureDevOpsClient(ctx);
   await assertRejects(
@@ -126,7 +127,7 @@ Deno.test("client: a 302 is reported as a rejected credential, not a success", a
   );
 });
 
-Deno.test("client: unwraps a {count, value} collection", async () => {
+test("client: unwraps a {count, value} collection", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { count: 2, value: [{ id: "a" }, { id: "b" }] } }],
     {
@@ -137,7 +138,7 @@ Deno.test("client: unwraps a {count, value} collection", async () => {
   assertEquals((await client.list(client.path("_apis/projects"))).length, 2);
 });
 
-Deno.test("client: a work item body can carry the patch content type", async () => {
+test("client: a work item body can carry the patch content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }], { display });
   const client = new AzureDevOpsClient(ctx);
   await client.request(client.path("p", "_apis/wit/workitems", "$Bug"), {
@@ -149,16 +150,16 @@ Deno.test("client: a work item body can carry the patch content type", async () 
 });
 
 /** A missing scope answers 404, which reads as a missing project. */
-Deno.test("describeError: a 404 warns that it may be a scope", () => {
+test("describeError: a 404 warns that it may be a scope", () => {
   const out = describeError(404, JSON.stringify({ message: "Not found" }));
   assert(/missing scope can look like a missing project/.test(out), out);
 });
 
-Deno.test("describeError: a 401 points at the token's per-area scopes", () => {
+test("describeError: a 401 points at the token's per-area scopes", () => {
   assert(/scoped per area/.test(describeError(401, "{}")));
 });
 
-Deno.test("describeError: keeps the machine-readable typeKey alongside the message", () => {
+test("describeError: keeps the machine-readable typeKey alongside the message", () => {
   const out = describeError(
     400,
     JSON.stringify({ message: "The value is invalid", typeKey: "InvalidArgumentValueException" }),
@@ -167,7 +168,7 @@ Deno.test("describeError: keeps the machine-readable typeKey alongside the messa
 });
 
 /** An HTML body means a sign-in redirect was followed somewhere. */
-Deno.test("describeError: an HTML body is named as a followed redirect", () => {
+test("describeError: an HTML body is named as a followed redirect", () => {
   const out = describeError(200, "<html><body>Sign in</body></html>");
   assert(/sign-in redirect was followed/.test(out), out);
 });
@@ -176,7 +177,7 @@ Deno.test("describeError: an HTML body is named as a followed redirect", () => {
  * `$` is part of the route for work item creation — `_apis/wit/workitems/$Bug`
  * — and `%24Bug` is a different path that does not exist.
  */
-Deno.test("client: leaves a dollar sign unencoded in a path segment", async () => {
+test("client: leaves a dollar sign unencoded in a path segment", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }], { display });
   const client = new AzureDevOpsClient(ctx);
   await client.request(client.path("P", "_apis/wit/workitems", "$User Story"), { method: "POST" });

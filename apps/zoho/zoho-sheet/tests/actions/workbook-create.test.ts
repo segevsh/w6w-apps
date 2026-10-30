@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/workbook-create.ts";
 
-Deno.test("workbook-create: POSTs workbook.create to /api/v2/create", async () => {
+test("workbook-create: POSTs workbook.create to /api/v2/create", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {

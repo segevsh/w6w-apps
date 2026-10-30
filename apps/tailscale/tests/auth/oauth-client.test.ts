@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth-client.ts";
 
@@ -6,7 +7,7 @@ const fields = { clientId: "cid", clientSecret: "tskey-client-xyz", tailnet: "-"
 const token = { status: 200, body: { access_token: "tok-1", expires_in: 3600 } };
 
 /** Form-encoded client credentials, which is what the endpoint takes. */
-Deno.test("oauth-client: mints a token with form-encoded client credentials", async () => {
+test("oauth-client: mints a token with form-encoded client credentials", async () => {
   const { ctx, calls } = mockCtx([token]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
 
@@ -21,7 +22,7 @@ Deno.test("oauth-client: mints a token with form-encoded client credentials", as
 });
 
 /** The client itself never expires; its tokens last an hour. */
-Deno.test("oauth-client: keeps the client so refresh can mint again", async () => {
+test("oauth-client: keeps the client so refresh can mint again", async () => {
   const { ctx } = mockCtx([token]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
   assertEquals(credential.clientId, "cid");
@@ -35,13 +36,13 @@ Deno.test("oauth-client: keeps the client so refresh can mint again", async () =
 });
 
 /** A missing expiry is treated as the documented hour. */
-Deno.test("oauth-client: a token with no expires_in still gets an expiry", async () => {
+test("oauth-client: a token with no expires_in still gets an expiry", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { access_token: "tok-3" } }]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
   assert(new Date(String(credential.expiresAt)).getTime() > Date.now());
 });
 
-Deno.test("oauth-client: signs with the minted token, not the client secret", () => {
+test("oauth-client: signs with the minted token, not the client secret", () => {
   const request = { url: "https://x", headers: {} as Record<string, string> };
   const signed = auth.sign!(
     { request, credential: { accessToken: "tok-1", clientSecret: "tskey-client-xyz" } } as never,
@@ -50,7 +51,7 @@ Deno.test("oauth-client: signs with the minted token, not the client secret", ()
   assertEquals(signed.headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("oauth-client: exchange refuses without both halves", async () => {
+test("oauth-client: exchange refuses without both halves", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -63,7 +64,7 @@ Deno.test("oauth-client: exchange refuses without both halves", async () => {
 });
 
 /** A scope cannot be added to an existing client. */
-Deno.test("oauth-client: a 403 on the test names the missing scope and the only fix", async () => {
+test("oauth-client: a 403 on the test names the missing scope and the only fix", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "forbidden" } }]);
   const result = await auth.test!(
     { credential: { ...fields, accessToken: "tok-1" } } as never,
@@ -74,7 +75,7 @@ Deno.test("oauth-client: a 403 on the test names the missing scope and the only 
   assert(/A new client is the only fix/.test(result.message!), result.message);
 });
 
-Deno.test("oauth-client: a working client reports that it does not expire", async () => {
+test("oauth-client: a working client reports that it does not expire", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { devices: [{}, {}] } }]);
   const result = await auth.test!(
     { credential: { ...fields, accessToken: "tok-1" } } as never,
@@ -85,7 +86,7 @@ Deno.test("oauth-client: a working client reports that it does not expire", asyn
   assert(/does not expire/.test(result.message!), result.message);
 });
 
-Deno.test("oauth-client: afterConnect records the client id and never the secret", () => {
+test("oauth-client: afterConnect records the client id and never the secret", () => {
   const display = auth.afterConnect!(
     { credential: { ...fields, accessToken: "tok-1" } },
     mockCtx([]).ctx,

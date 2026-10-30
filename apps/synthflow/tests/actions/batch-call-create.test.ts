@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import batchCallCreate from "../../actions/batch-call-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("batch-call-create: POST /calls/batch with parsed tasks and window", async () => {
+test("batch-call-create: POST /calls/batch with parsed tasks and window", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ batch_call_id: "b1", status: "scheduled", total_task_count: 1 }),
   }]);

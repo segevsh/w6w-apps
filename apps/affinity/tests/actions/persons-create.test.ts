@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import personsCreate from "../../actions/persons-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("persons-create: POSTs first_name/last_name/emails/organization_ids", async () => {
+test("persons-create: POSTs first_name/last_name/emails/organization_ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 860197, first_name: "Alice" } }]);
   await personsCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("persons-create: POSTs first_name/last_name/emails/organization_ids", 
   });
 });
 
-Deno.test("persons-create: sends emails: [] (not omitted) when no emails are given", async () => {
+test("persons-create: sends emails: [] (not omitted) when no emails are given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await personsCreate.execute({ firstName: "No", lastName: "Email" }, ctx);
   const body = JSON.parse(calls[0].body!);

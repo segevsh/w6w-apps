@@ -37,8 +37,10 @@ const action: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
-      hint: "e.g. `tickets` to include ticket class name and sales channel.",
+      type: "multiselect",
+      options: [{ value: "tickets", label: "Tickets" }],
+      config: { valueFormat: "csv" },
+      hint: "Include ticket class names and sales channels.",
     },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],

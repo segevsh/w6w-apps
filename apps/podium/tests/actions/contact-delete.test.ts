@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 
-Deno.test("contact-delete: sends every documented field in its documented place", async () => {
+test("contact-delete: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("contact-delete: sends every documented field in its documented place"
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-delete: declares its params and kind", () => {
+test("contact-delete: declares its params and kind", () => {
   assertEquals((contactDelete.params ?? []).map((p) => p.key), ["identifier"]);
   assertEquals((contactDelete.params ?? []).filter((p) => p.required).map((p) => p.key), [
     "identifier",

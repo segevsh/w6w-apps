@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: declares a bearer type with a secret accessToken field", () => {
+test("access-token: declares a bearer type with a secret accessToken field", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "bearer");
 });
 
-Deno.test("access-token: sign appends Bearer access token", async () => {
+test("access-token: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -18,7 +19,7 @@ Deno.test("access-token: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("access-token: test without accessToken makes no call", async () => {
+test("access-token: test without accessToken makes no call", async () => {
   const { ctx, calls } = mockCtx();
   const r = await auth.test({ credential: {} }, ctx);
   assertEquals(r.ok, false);
@@ -26,7 +27,7 @@ Deno.test("access-token: test without accessToken makes no call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test probes /me?fields=id and never echoes the token", async () => {
+test("access-token: test probes /me?fields=id and never echoes the token", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1" } }]);
   const r = await auth.test({ credential: { accessToken: "SECRET-TOK" } }, ctx);
   assertEquals(r.ok, true);
@@ -37,7 +38,7 @@ Deno.test("access-token: test probes /me?fields=id and never echoes the token", 
   assert(!JSON.stringify(r).includes("SECRET-TOK"));
 });
 
-Deno.test("access-token: a Graph error body fails the test even on 200", async () => {
+test("access-token: a Graph error body fails the test even on 200", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { error: { message: "Invalid OAuth access token", code: 190 } },
@@ -47,14 +48,14 @@ Deno.test("access-token: a Graph error body fails the test even on 200", async (
   assert((r.message ?? "").includes("190"));
 });
 
-Deno.test("access-token: non-ok status and id-less body fail", async () => {
+test("access-token: non-ok status and id-less body fail", async () => {
   let m = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await auth.test({ credential: { accessToken: "t" } }, m.ctx)).ok, false);
   m = mockCtx([{ body: {} }]);
   assertEquals((await auth.test({ credential: { accessToken: "t" } }, m.ctx)).ok, false);
 });
 
-Deno.test("access-token: afterConnect returns the user identity", async () => {
+test("access-token: afterConnect returns the user identity", async () => {
   const { ctx } = mockCtx([{ body: { id: "u1", name: "N" } }]);
   const r = await auth.afterConnect!({ credential: { accessToken: "t" } } as never, ctx);
   assertEquals(r, { account: { id: "u1", name: "N" } });

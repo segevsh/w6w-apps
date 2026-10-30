@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-releases.ts";
 
-Deno.test("list-releases: metadata", () => {
+test("list-releases: metadata", () => {
   assertEquals(action.key, "list-releases");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("list-releases: metadata", () => {
   ]);
 });
 
-Deno.test("list-releases: calls GET /releases on the NA host", async () => {
+test("list-releases: calls GET /releases on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "releases": [{ "uid": "bltr" }] } }]);
   const out = await action.execute({ "includeItemsCount": true, "limit": 20 }, ctx);
   assertEquals(calls.length, 1);
@@ -29,7 +30,7 @@ Deno.test("list-releases: calls GET /releases on the NA host", async () => {
   assertEquals(out, { "releases": [{ "uid": "bltr" }] });
 });
 
-Deno.test("list-releases: uses the connection's regional host", async () => {
+test("list-releases: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "releases": [{ "uid": "bltr" }] } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -40,7 +41,7 @@ Deno.test("list-releases: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("list-releases: sends the branch header only when a branch is given", async () => {
+test("list-releases: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "releases": [{ "uid": "bltr" }] } }, {
     body: { "releases": [{ "uid": "bltr" }] },
   }]);
@@ -50,7 +51,7 @@ Deno.test("list-releases: sends the branch header only when a branch is given", 
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("list-releases: surfaces Contentstack's own error body", async () => {
+test("list-releases: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

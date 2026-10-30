@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-worksheet.ts";
 
-Deno.test("delete-worksheet: DELETEs the worksheet and reports 204", async () => {
+test("delete-worksheet: DELETEs the worksheet and reports 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ itemId: "ITEM1", worksheet: "Sheet1" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("delete-worksheet: DELETEs the worksheet and reports 204", async () =>
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("delete-worksheet: encodes a brace-wrapped id in the path", async () => {
+test("delete-worksheet: encodes a brace-wrapped id in the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute(
     { itemPath: "Q3.xlsx", worksheet: "{00000000-0001-0000-0000-000000000000}" },
@@ -26,19 +27,19 @@ Deno.test("delete-worksheet: encodes a brace-wrapped id in the path", async () =
   );
 });
 
-Deno.test("delete-worksheet: logs a warning, because there is no undo", async () => {
+test("delete-worksheet: logs a warning, because there is no undo", async () => {
   const { ctx, logs } = mockCtx([{ status: 204 }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1" }, ctx);
   assert(logs.some((l) => l.level === "warn"), "a destructive action should say so");
 });
 
-Deno.test("delete-worksheet: forwards the session header", async () => {
+test("delete-worksheet: forwards the session header", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", sessionId: "s1" }, ctx);
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("delete-worksheet: refuses an empty worksheet identifier", async () => {
+test("delete-worksheet: refuses an empty worksheet identifier", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", worksheet: "  " }, ctx),

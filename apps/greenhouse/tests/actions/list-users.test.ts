@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listUsers from "../../actions/list-users.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-users: calls GET /v3/users", async () => {
+test("list-users: calls GET /v3/users", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listUsers.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/users");
 });
 
-Deno.test("list-users: maps the external-system lookups Greenhouse offers", async () => {
+test("list-users: maps the external-system lookups Greenhouse offers", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listUsers.execute({
     primaryEmail: "a@b.com",
@@ -34,7 +35,7 @@ Deno.test("list-users: maps the external-system lookups Greenhouse offers", asyn
  * are hidden unless asked for, and omitting `deactivated` returns leavers
  * alongside everyone else.
  */
-Deno.test("list-users: service accounts are only requested when explicitly asked for", async () => {
+test("list-users: service accounts are only requested when explicitly asked for", async () => {
   const { ctx, calls } = mockCtx([listPage([]), listPage([])]);
   await listUsers.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -43,13 +44,13 @@ Deno.test("list-users: service accounts are only requested when explicitly asked
   assertEquals(queryOf(calls[1].url), { show_service_accounts: "true", deactivated: "false" });
 });
 
-Deno.test("list-users: the hidden-default fields say so in their hints", () => {
+test("list-users: the hidden-default fields say so in their hints", () => {
   const byKey = Object.fromEntries((listUsers.params ?? []).map((p) => [p.key, p]));
   assert(byKey.showServiceAccounts.hint?.includes("hidden by default"));
   assert(byKey.deactivated.hint?.includes("leavers"));
 });
 
-Deno.test("list-users: a cursor rejects the e-mail filter it already carries", () => {
+test("list-users: a cursor rejects the e-mail filter it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(
     () => listUsers.execute({ cursor: "N", primaryEmail: "a@b.com" }, ctx),

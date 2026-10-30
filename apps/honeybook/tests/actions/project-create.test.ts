@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -22,7 +23,7 @@ const INPUT = {
   "maxCustomFields": 5,
 };
 
-Deno.test("project-create: sends POST /projects with the mapped fields", async () => {
+test("project-create: sends POST /projects with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "r1", marker: "m" } }]);
   const out = await projectCreate.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -52,14 +53,14 @@ Deno.test("project-create: sends POST /projects with the mapped fields", async (
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("project-create: sends only what was supplied", async () => {
+test("project-create: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "r1", marker: "m" } }]);
   await projectCreate.execute({} as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("project-create: surfaces the API error type and message", async () => {
+test("project-create: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await projectCreate.execute(INPUT, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-group-owner.ts";
 
-Deno.test("add-group-owner: POSTs a users reference to /owners/$ref", async () => {
+test("add-group-owner: POSTs a users reference to /owners/$ref", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ groupId: "g1", ownerId: "u1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("add-group-owner: POSTs a users reference to /owners/$ref", async () =
   assertEquals(out, { added: true, groupId: "g1", ownerId: "u1" });
 });
 
-Deno.test("add-group-owner: requires an owner and is not idempotent", async () => {
+test("add-group-owner: requires an owner and is not idempotent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "g1", ownerId: "" }, ctx),

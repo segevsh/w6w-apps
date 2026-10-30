@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentDelete from "../../actions/comment-delete.ts";
 import { errorBody, mockCtx, url } from "../_helpers.ts";
 
-Deno.test("comment-delete: DELETEs /videos/{id}/comments/{id}", async () => {
+test("comment-delete: DELETEs /videos/{id}/comments/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await commentDelete.execute({ videoId: "/videos/1", commentId: "12345" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -15,7 +16,7 @@ Deno.test("comment-delete: DELETEs /videos/{id}/comments/{id}", async () => {
  * comment wasn't deleted and still exists" — so a 404 must surface as an error
  * rather than be swallowed as the reassuring already-gone kind.
  */
-Deno.test("comment-delete: a 404 surfaces rather than reading as already deleted", async () => {
+test("comment-delete: a 404 surfaces rather than reading as already deleted", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody(5000, "The comment wasn't deleted and still exists.") },
   ]);
@@ -26,7 +27,7 @@ Deno.test("comment-delete: a 404 surfaces rather than reading as already deleted
   assertEquals(err.message.includes("still exists"), true);
 });
 
-Deno.test("comment-delete: is a retry-safe perform", () => {
+test("comment-delete: is a retry-safe perform", () => {
   assertEquals(commentDelete.type, "perform");
   assertEquals(commentDelete.idempotent, true);
 });

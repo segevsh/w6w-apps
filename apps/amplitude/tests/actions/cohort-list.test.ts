@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/cohort-list.ts";
 
-Deno.test("cohort-list: returns the definitions and a rough total", async () => {
+test("cohort-list: returns the definitions and a rough total", async () => {
   const { ctx, calls } = mockCtx([
     ok({
       cohorts: [
@@ -23,23 +24,23 @@ Deno.test("cohort-list: returns the definitions and a rough total", async () => 
   assertEquals(result.names, ["Power users", "Churn risk"]);
 });
 
-Deno.test("cohort-list: a cohort with no size does not make the total NaN", async () => {
+test("cohort-list: a cohort with no size does not make the total NaN", async () => {
   const { ctx } = mockCtx([ok({ cohorts: [{ id: "a" }, { id: "b", size: 10 }] })], { display });
   const result = await action.execute!({}, ctx) as { totalMembers: number };
   assertEquals(result.totalMembers, 10);
 });
 
-Deno.test("cohort-list: no cohorts is a count of zero", async () => {
+test("cohort-list: no cohorts is a count of zero", async () => {
   const { ctx } = mockCtx([ok({ cohorts: [] })], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 0);
 });
 
-Deno.test("cohort-list: takes no parameters", () => {
+test("cohort-list: takes no parameters", () => {
   assertEquals(action.params?.length ?? 0, 0);
 });
 
 /** Sizes are snapshots from each cohort's own last computation. */
-Deno.test("cohort-list: says size is as of the last recomputation", () => {
+test("cohort-list: says size is as of the last recomputation", () => {
   assert(/last recomputation/.test(action.description!), action.description);
 });

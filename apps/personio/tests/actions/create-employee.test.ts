@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-employee.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-employee: posts a JSON body nested under 'employee' and returns id/message", async () => {
+test("create-employee: posts a JSON body nested under 'employee' and returns id/message", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { success: true, data: { id: 81723, message: "success" } } },
   ]);
@@ -27,7 +28,7 @@ Deno.test("create-employee: posts a JSON body nested under 'employee' and return
   assertEquals(out, { id: 81723, message: "success" });
 });
 
-Deno.test("create-employee: omits unset optional fields rather than sending them empty", async () => {
+test("create-employee: omits unset optional fields rather than sending them empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: { id: 1 } } }]);
   await action.execute({ email: "a@b.com", firstName: "A", lastName: "B" }, ctx);
   const body = JSON.parse(calls[0].body!);

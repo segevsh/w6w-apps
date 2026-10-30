@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventUpdate from "../../actions/event-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-update: posts only event_id when nothing else changes", async () => {
+test("event-update: posts only event_id when nothing else changes", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await eventUpdate.execute({ eventId: "evt-1" }, ctx);
 
@@ -11,14 +12,14 @@ Deno.test("event-update: posts only event_id when nothing else changes", async (
   assertEquals(out, { ok: true });
 });
 
-Deno.test("event-update: only the named field changes, everything else stays unset", async () => {
+test("event-update: only the named field changes, everything else stays unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await eventUpdate.execute({ eventId: "evt-1", name: "New Name" }, ctx);
 
   assertEquals(JSON.parse(calls[0].body!), { event_id: "evt-1", name: "New Name" });
 });
 
-Deno.test("event-update: latitude/longitude combine into coordinate, same as create", async () => {
+test("event-update: latitude/longitude combine into coordinate, same as create", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await eventUpdate.execute({ eventId: "evt-1", latitude: 1, longitude: 2 }, ctx);
 

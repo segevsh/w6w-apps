@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import updateBooking from "../../actions/update-booking.ts";
 
-Deno.test("update-booking: sends only the fields set, PUT /v1/reservation/booking/{id}", async () => {
+test("update-booking: sends only the fields set, PUT /v1/reservation/booking/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   await updateBooking.execute({ bookingId: 8, firstName: "Grace", note: "late arrival" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -13,7 +14,7 @@ Deno.test("update-booking: sends only the fields set, PUT /v1/reservation/bookin
   });
 });
 
-Deno.test("update-booking: an update with no fields is refused", async () => {
+test("update-booking: an update with no fields is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(updateBooking.execute({ bookingId: 8 }, ctx)),

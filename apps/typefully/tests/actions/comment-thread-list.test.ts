@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentThreadList from "../../actions/comment-thread-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-thread-list: defaults to unresolved", () => {
+test("comment-thread-list: defaults to unresolved", () => {
   const statusParam = commentThreadList.params?.find((p) => p.key === "status");
   assertEquals(statusParam?.default, "unresolved");
 });
 
-Deno.test("comment-thread-list: lists threads on a draft with the given filters", async () => {
+test("comment-thread-list: lists threads on a draft with the given filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "t1", status: "resolved" }]) }]);
   await commentThreadList.execute({
     socialSetId: 4,

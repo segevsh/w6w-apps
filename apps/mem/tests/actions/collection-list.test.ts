@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionList from "../../actions/collection-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const RESPONSE = {
   "total": 1,
 };
 
-Deno.test("collection-list: GET /v2/collections", async () => {
+test("collection-list: GET /v2/collections", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionList.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -32,13 +33,13 @@ Deno.test("collection-list: GET /v2/collections", async () => {
   assertEquals(out.nextPage, null);
 });
 
-Deno.test("collection-list: puts no credential on the request (sign owns that)", async () => {
+test("collection-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionList.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-list: a vendor error surfaces its own message", async () => {
+test("collection-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

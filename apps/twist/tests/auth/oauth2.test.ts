@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("oauth2: endpoints and comma scope separator match the reference", () => {
+test("oauth2: endpoints and comma scope separator match the reference", () => {
   assertEquals(oauth2.type, "oauth2");
   assertEquals(oauth2.oauth2!.authorizationUrl, "https://twist.com/oauth/authorize");
   assertEquals(oauth2.oauth2!.tokenUrl, "https://twist.com/oauth/access_token");
@@ -11,7 +12,7 @@ Deno.test("oauth2: endpoints and comma scope separator match the reference", () 
   assert(oauth2.oauth2!.scopes!.includes("threads:write"));
 });
 
-Deno.test("oauth2: sign stamps the access token as a bearer", async () => {
+test("oauth2: sign stamps the access token as a bearer", async () => {
   const req = {
     url: "https://api.twist.com/x",
     method: "GET",
@@ -24,7 +25,7 @@ Deno.test("oauth2: sign stamps the access token as a bearer", async () => {
   assertEquals((out as typeof req).headers, { authorization: "Bearer at" });
 });
 
-Deno.test("oauth2: test probes /workspaces/get with the access token", async () => {
+test("oauth2: test probes /workspaces/get with the access token", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   assertEquals(await oauth2.test({ credential: { accessToken: "at" } } as never, ctx), {
     ok: true,
@@ -33,7 +34,7 @@ Deno.test("oauth2: test probes /workspaces/get with the access token", async () 
   assertEquals(calls[0].headers.authorization, "Bearer at");
 });
 
-Deno.test("oauth2: a rejected token fails, a missing one fails without a request", async () => {
+test("oauth2: a rejected token fails, a missing one fails without a request", async () => {
   const bad = mockCtx([{ status: 403, body: { error_code: 200, error_string: "Invalid token" } }]);
   assertEquals(
     (await oauth2.test({ credential: { accessToken: "x" } } as never, bad.ctx)).ok,
@@ -45,7 +46,7 @@ Deno.test("oauth2: a rejected token fails, a missing one fails without a request
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect labels the connection with the user's name", async () => {
+test("oauth2: afterConnect labels the connection with the user's name", async () => {
   const { ctx } = mockCtx([{ body: { id: 1, name: "Grace", token: "SECRET" } }]);
   const out = await oauth2.afterConnect!({ credential: { accessToken: "at" } } as never, ctx);
   assertEquals(out, { name: "Grace", userId: 1 });

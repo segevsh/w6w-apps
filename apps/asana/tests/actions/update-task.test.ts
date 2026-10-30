@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-task.ts";
 
-Deno.test("update-task: PUTs /tasks/{id} with provided fields only", async () => {
+test("update-task: PUTs /tasks/{id} with provided fields only", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ id: "t-1", name: "n2", completed: true }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,21 +12,21 @@ Deno.test("update-task: PUTs /tasks/{id} with provided fields only", async () =>
   assertEquals(sent, { data: { name: "n2", completed: true } });
 });
 
-Deno.test("update-task: omits id from the body", async () => {
+test("update-task: omits id from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ id: "t-1", notes: "hi" }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assert(!("id" in sent.data));
 });
 
-Deno.test("update-task: new params are keyed exactly as Asana spells the field (the wholesale forward relies on it)", () => {
+test("update-task: new params are keyed exactly as Asana spells the field (the wholesale forward relies on it)", () => {
   const declared = new Set(action.params?.map((p) => p.key));
   for (const k of ["custom_fields", "followers", "html_notes", "start_on", "due_at"]) {
     assert(declared.has(k), `expected a param declared with key "${k}"`);
   }
 });
 
-Deno.test("update-task: forwards custom_fields/followers/html_notes/start_on/due_at verbatim", async () => {
+test("update-task: forwards custom_fields/followers/html_notes/start_on/due_at verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({
     id: "t-1",

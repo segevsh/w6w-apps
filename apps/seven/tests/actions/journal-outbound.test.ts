@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import journalOutbound from "../../actions/journal-outbound.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "date_from": "2026-09-01",
 } as Parameters<typeof journalOutbound.execute>[0];
 
-Deno.test("journal-outbound: GET /api/journal/outbound with the documented fields", async () => {
+test("journal-outbound: GET /api/journal/outbound with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": "1", "dlr": "DELIVERED" }] }]);
   const out = await journalOutbound.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -30,7 +31,7 @@ Deno.test("journal-outbound: GET /api/journal/outbound with the documented field
   assertEquals((out.entries as unknown[]).length, 1);
 });
 
-Deno.test("journal-outbound: declares type read-or-search and every required param", () => {
+test("journal-outbound: declares type read-or-search and every required param", () => {
   const required = (journalOutbound.params ?? []).filter((p) => p.required).map((p) => p.key)
     .sort();
   assertEquals(required, []);
@@ -38,7 +39,7 @@ Deno.test("journal-outbound: declares type read-or-search and every required par
   assertEquals(journalOutbound.type === "perform", false);
 });
 
-Deno.test("journal-outbound: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("journal-outbound: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

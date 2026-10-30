@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import singleCheck from "../../actions/single-check.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("single-check: builds the query string and returns the parsed body", async () => {
+test("single-check: builds the query string and returns the parsed body", async () => {
   const body = {
     status: "success",
     result: "valid",
@@ -24,7 +25,7 @@ Deno.test("single-check: builds the query string and returns the parsed body", a
   assertEquals(result, body);
 });
 
-Deno.test("single-check: address_info/credits_info booleans become 1", async () => {
+test("single-check: address_info/credits_info booleans become 1", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", result: "valid", execution_time: 1 } },
   ]);
@@ -40,7 +41,7 @@ Deno.test("single-check: address_info/credits_info booleans become 1", async () 
   assertEquals(url.searchParams.get("timeout"), "10");
 });
 
-Deno.test("single-check: throws on a non-success status, per NeverBounce's error-in-200 shape", async () => {
+test("single-check: throws on a non-success status, per NeverBounce's error-in-200 shape", async () => {
   const { ctx } = mockCtx([
     { body: { status: "auth_failure", message: "Invalid API Key", execution_time: 1 } },
   ]);

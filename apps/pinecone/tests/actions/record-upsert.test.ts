@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-upsert.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
-Deno.test("record-upsert: posts vectors to the index's own host", async () => {
+test("record-upsert: posts vectors to the index's own host", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: { upsertedCount: 2 } }]);
   const out = await action.execute!({
     indexName: "idx",
@@ -18,7 +19,7 @@ Deno.test("record-upsert: posts vectors to the index's own host", async () => {
 });
 
 /** Pinecone caps a batch at 1000 and rejects the WHOLE request over it. */
-Deno.test("record-upsert: a batch over 1000 is refused before the wire", async () => {
+test("record-upsert: a batch over 1000 is refused before the wire", async () => {
   const { ctx, calls } = mockCtx();
   const many = Array.from({ length: 1001 }, (_, i) => ({ id: `v${i}`, values: [0.1] }));
   await assertRejects(
@@ -33,7 +34,7 @@ Deno.test("record-upsert: a batch over 1000 is refused before the wire", async (
  * A ragged batch is always a bug, and Pinecone reports it as a mismatch against
  * the INDEX, which sends people looking in the wrong place.
  */
-Deno.test("record-upsert: mixed vector lengths are caught locally", async () => {
+test("record-upsert: mixed vector lengths are caught locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>
@@ -47,7 +48,7 @@ Deno.test("record-upsert: mixed vector lengths are caught locally", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-upsert: a record without an id is refused, with its position", async () => {
+test("record-upsert: a record without an id is refused, with its position", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", vectors: '[{"values":[0.1]}]' }, ctx),
@@ -57,7 +58,7 @@ Deno.test("record-upsert: a record without an id is refused, with its position",
 });
 
 /** Upsert by id is replace-by-id, so the same call twice is the same state. */
-Deno.test("record-upsert: declares itself idempotent, and says it replaces", () => {
+test("record-upsert: declares itself idempotent, and says it replaces", () => {
   assertEquals(action.idempotent, true);
   assert(/replace, not merge/i.test(action.description!), action.description);
 });

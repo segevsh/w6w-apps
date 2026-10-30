@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-member-ids-set.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("group-member-ids-set: PUTs the id list", async () => {
+test("group-member-ids-set: PUTs the id list", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], D);
   const result = await action.execute({
     groupId: "3f2b8c1e-5a4d-4e6f-9a1b-7c8d9e0f1a2b",
@@ -17,7 +18,7 @@ Deno.test("group-member-ids-set: PUTs the id list", async () => {
   assertEquals(result.count, 2);
 });
 
-Deno.test("group-member-ids-set: rejects an id that is not a UUID before any request", async () => {
+test("group-member-ids-set: rejects an id that is not a UUID before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({

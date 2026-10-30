@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workflowCommentCreate from "../../actions/workflow-comment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workflow-comment-create: POST /workflows/{id}/comments, never the deprecated /comment", async () => {
+test("workflow-comment-create: POST /workflows/{id}/comments, never the deprecated /comment", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", commentMessage: "hi" } }]);
   const out = await workflowCommentCreate.execute(
     { workflowId: "w1", comment: "hi", repliedToActivityFeedMessageId: "c0" },

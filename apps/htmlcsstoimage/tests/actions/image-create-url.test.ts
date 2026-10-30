@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import imageCreateUrl from "../../actions/image-create-url.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-create-url: POSTs the url with page options and parsed headers", async () => {
+test("image-create-url: POSTs the url with page options and parsed headers", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i2", url: "https://hcti.io/v1/image/i2" } }]);
   const out = await imageCreateUrl.execute({
     url: "https://example.com",
@@ -25,7 +26,7 @@ Deno.test("image-create-url: POSTs the url with page options and parsed headers"
   assertEquals(out, { id: "i2", url: "https://hcti.io/v1/image/i2" });
 });
 
-Deno.test("image-create-url: url is required; a lone viewport side is rejected before any request", async () => {
+test("image-create-url: url is required; a lone viewport side is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await imageCreateUrl.execute({ url: "" }, ctx),
@@ -40,7 +41,7 @@ Deno.test("image-create-url: url is required; a lone viewport side is rejected b
   assertEquals(calls.length, 0);
 });
 
-Deno.test("image-create-url: a 402 plan limit surfaces with its hint; not idempotent", async () => {
+test("image-create-url: a 402 plan limit surfaces with its hint; not idempotent", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: errorBody("Payment Required", "Out of credits", 402),

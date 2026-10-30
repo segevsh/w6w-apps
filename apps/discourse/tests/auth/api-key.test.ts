@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth, { authHeaders } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const CRED = {
   apiUsername: "system",
 };
 
-Deno.test("auth: declares the api-key type and the header the key goes in", () => {
+test("auth: declares the api-key type and the header the key goes in", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -17,7 +18,7 @@ Deno.test("auth: declares the api-key type and the header the key goes in", () =
   assertEquals(auth.apiKey?.prefix, "");
 });
 
-Deno.test("auth: sign stamps BOTH headers, on every method and path", () => {
+test("auth: sign stamps BOTH headers, on every method and path", () => {
   for (const method of ["GET", "POST", "PUT", "DELETE"]) {
     const request = { method, url: "https://forum.example.com/t/1.json", headers: {} };
     const signed = auth.sign!({ request, credential: CRED } as never, undefined as never) as {
@@ -31,7 +32,7 @@ Deno.test("auth: sign stamps BOTH headers, on every method and path", () => {
   }
 });
 
-Deno.test("auth: sign preserves headers the client already set", () => {
+test("auth: sign preserves headers the client already set", () => {
   const request = {
     method: "POST",
     url: "https://forum.example.com/posts.json",
@@ -45,7 +46,7 @@ Deno.test("auth: sign preserves headers the client already set", () => {
   assertEquals(signed.headers["Api-Key"], CRED.apiKey);
 });
 
-Deno.test("authHeaders: the one place the wire format is built", () => {
+test("authHeaders: the one place the wire format is built", () => {
   assertEquals(authHeaders(CRED), {
     "Api-Key": CRED.apiKey,
     "Api-Username": "system",
@@ -55,7 +56,7 @@ Deno.test("authHeaders: the one place the wire format is built", () => {
   assertEquals(authHeaders({}), { "Api-Key": "", "Api-Username": "" });
 });
 
-Deno.test("auth: fields are siteUrl, apiKey, apiUsername — and only the key is masked", () => {
+test("auth: fields are siteUrl, apiKey, apiUsername — and only the key is masked", () => {
   const fields = auth.fields ?? [];
   assertEquals(fields.map((f) => f.key), ["siteUrl", "apiKey", "apiUsername"]);
   assertEquals(fields.every((f) => f.required), true);
@@ -65,7 +66,7 @@ Deno.test("auth: fields are siteUrl, apiKey, apiUsername — and only the key is
   assertEquals(fields.find((f) => f.key === "apiUsername")?.default, "system");
 });
 
-Deno.test("auth: test probes the acting user's own record, unsigned URL built from siteUrl", async () => {
+test("auth: test probes the acting user's own record, unsigned URL built from siteUrl", async () => {
   const { ctx, calls } = mockCtx([{ body: { user: { id: 1, username: "system" } } }]);
   const result = await auth.test!({ credential: CRED } as never, ctx);
   assertEquals(result.ok, true);
@@ -75,13 +76,13 @@ Deno.test("auth: test probes the acting user's own record, unsigned URL built fr
   assertEquals(calls[0].headers["api-username"], "system");
 });
 
-Deno.test("auth: test URL-encodes the username rather than concatenating it", async () => {
+test("auth: test URL-encodes the username rather than concatenating it", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await auth.test!({ credential: { ...CRED, apiUsername: "a b/c" } } as never, ctx);
   assertEquals(calls[0].url, "https://forum.example.com/u/a%20b%2Fc.json");
 });
 
-Deno.test("auth: test reports a rejected key on 403, not just on 401", async () => {
+test("auth: test reports a rejected key on 403, not just on 401", async () => {
   // Discourse answers 403 for a bad API key. Treating only 401 as a credential
   // failure would misreport every one of them.
   for (const status of [401, 403]) {
@@ -93,14 +94,14 @@ Deno.test("auth: test reports a rejected key on 403, not just on 401", async () 
   }
 });
 
-Deno.test("auth: test tells a missing user apart from a bad key", async () => {
+test("auth: test tells a missing user apart from a bad key", async () => {
   const { ctx } = mockCtx([{ status: 404, body: {} }]);
   const result = await auth.test!({ credential: { ...CRED, apiUsername: "ghost" } } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("ghost"));
 });
 
-Deno.test("auth: test refuses an incomplete credential before touching the network", async () => {
+test("auth: test refuses an incomplete credential before touching the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(
     (await auth.test!({ credential: { apiKey: "k", apiUsername: "u" } } as never, ctx)).ok,
@@ -123,14 +124,14 @@ Deno.test("auth: test refuses an incomplete credential before touching the netwo
   assertEquals(calls.length, 0, "an incomplete credential must not hit the network");
 });
 
-Deno.test("auth: test reports an unusable site URL rather than throwing", async () => {
+test("auth: test reports an unusable site URL rather than throwing", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: { ...CRED, siteUrl: "   " } } as never, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth: afterConnect publishes a normalised origin and no credential", () => {
+test("auth: afterConnect publishes a normalised origin and no credential", () => {
   const display = auth.afterConnect!(
     { credential: { ...CRED, siteUrl: "forum.example.com/latest" } } as never,
     undefined as never,
@@ -142,7 +143,7 @@ Deno.test("auth: afterConnect publishes a normalised origin and no credential", 
   assert(!JSON.stringify(display).includes(CRED.apiKey));
 });
 
-Deno.test("auth: afterConnect degrades to empty rather than throwing on a bad URL", () => {
+test("auth: afterConnect degrades to empty rather than throwing on a bad URL", () => {
   assertEquals(
     auth.afterConnect!(
       { credential: { ...CRED, siteUrl: "https://" } } as never,

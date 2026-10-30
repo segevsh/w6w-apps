@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collector-get-many.ts";
 
-Deno.test("collector-get-many: GETs /surveys/{id}/collectors with mapped query", async () => {
+test("collector-get-many: GETs /surveys/{id}/collectors with mapped query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], total: 0 } }]);
   await action.execute(
     { surveyId: "s1", name: "Email blast", sortBy: "name", sortOrder: "ASC" },

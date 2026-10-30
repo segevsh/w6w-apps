@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-clock.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-clock: GETs /v2/clock, with users_id only when given", async () => {
+test("get-clock: GETs /v2/clock, with users_id only when given", async () => {
   const a = mockCtx([{ body: { running: { id: 1 }, stopped: null, current_time: "t" } }]);
   assertEquals(await exec(action, {}, a.ctx), {
     running: { id: 1 },
@@ -16,7 +17,7 @@ Deno.test("get-clock: GETs /v2/clock, with users_id only when given", async () =
   assertEquals(out.running, null);
 });
 
-Deno.test("get-clock: a non-JSON body fails with the HTTP status", async () => {
+test("get-clock: a non-JSON body fails with the HTTP status", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const e = await assertRejects(() => exec(action, {}, ctx), Error);
   assert(String(e).includes("502"));

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: uses Google's identity endpoints with offline access", () => {
+test("oauth2: uses Google's identity endpoints with offline access", () => {
   assertEquals(auth.oauth2!.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
   assertEquals(auth.oauth2!.tokenUrl, "https://oauth2.googleapis.com/token");
   assertEquals(auth.oauth2!.refreshUrl, "https://oauth2.googleapis.com/token");
@@ -12,7 +13,7 @@ Deno.test("oauth2: uses Google's identity endpoints with offline access", () => 
   assertEquals(auth.oauth2!.pkce, true);
 });
 
-Deno.test("oauth2: asks for the two GA4 scopes and not the legacy UA one", () => {
+test("oauth2: asks for the two GA4 scopes and not the legacy UA one", () => {
   assertEquals(auth.oauth2!.scopes, [
     "https://www.googleapis.com/auth/analytics.readonly",
     "https://www.googleapis.com/auth/analytics.edit",
@@ -22,7 +23,7 @@ Deno.test("oauth2: asks for the two GA4 scopes and not the legacy UA one", () =>
   assert(!auth.oauth2!.scopes!.includes("https://www.googleapis.com/auth/analytics"));
 });
 
-Deno.test("oauth2: signs with the bearer", async () => {
+test("oauth2: signs with the bearer", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://analyticsdata.googleapis.com/v1beta/properties/1:runReport",
@@ -33,7 +34,7 @@ Deno.test("oauth2: signs with the bearer", async () => {
   assertEquals(out.headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: test probes the one endpoint that needs no ids", async () => {
+test("oauth2: test probes the one endpoint that needs no ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { accountSummaries: [] } }]);
   assertEquals(await auth.test!({ credential: { accessToken: "at" } } as never, ctx), { ok: true });
   assertEquals(
@@ -42,7 +43,7 @@ Deno.test("oauth2: test probes the one endpoint that needs no ids", async () => 
   );
 });
 
-Deno.test("oauth2: 401 and 403 are different problems and say so", async () => {
+test("oauth2: 401 and 403 are different problems and say so", async () => {
   const unauth = mockCtx([{ status: 401, body: "" }]);
   const a = await auth.test!({ credential: { accessToken: "at" } } as never, unauth.ctx) as {
     ok: boolean;
@@ -62,7 +63,7 @@ Deno.test("oauth2: 401 and 403 are different problems and say so", async () => {
   assert(b.message.includes("not enabled"), b.message);
 });
 
-Deno.test("oauth2: afterConnect records the property and labels it", async () => {
+test("oauth2: afterConnect records the property and labels it", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -82,7 +83,7 @@ Deno.test("oauth2: afterConnect records the property and labels it", async () =>
   assertEquals(display.timeZone, "America/New_York");
 });
 
-Deno.test("oauth2: a failed lookup still records the id actions cannot work without", async () => {
+test("oauth2: a failed lookup still records the id actions cannot work without", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(
     await auth.afterConnect!(

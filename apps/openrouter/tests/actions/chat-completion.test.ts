@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-completion.ts";
 
-Deno.test("chat-completion: POSTs /chat/completions with just messages by default", async () => {
+test("chat-completion: POSTs /chat/completions with just messages by default", async () => {
   const body = { id: "gen-1", choices: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -19,7 +20,7 @@ Deno.test("chat-completion: POSTs /chat/completions with just messages by defaul
   assertEquals(result, body);
 });
 
-Deno.test("chat-completion: forwards model and sampling params with snake_case keys", async () => {
+test("chat-completion: forwards model and sampling params with snake_case keys", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -58,7 +59,7 @@ Deno.test("chat-completion: forwards model and sampling params with snake_case k
   assertEquals(sent.logit_bias, { "123": -100 });
 });
 
-Deno.test("chat-completion: forwards tools, tool_choice and parallel_tool_calls", async () => {
+test("chat-completion: forwards tools, tool_choice and parallel_tool_calls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const tools = [{ type: "function", function: { name: "get_weather" } }];
   await action.execute!(
@@ -76,7 +77,7 @@ Deno.test("chat-completion: forwards tools, tool_choice and parallel_tool_calls"
   assertEquals(body.parallel_tool_calls, false);
 });
 
-Deno.test("chat-completion: forwards OpenRouter-only routing fields", async () => {
+test("chat-completion: forwards OpenRouter-only routing fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const provider = { order: ["OpenAI"], allow_fallbacks: false };
   await action.execute!(
@@ -98,7 +99,7 @@ Deno.test("chat-completion: forwards OpenRouter-only routing fields", async () =
   assertEquals(body.user, "user-123");
 });
 
-Deno.test("chat-completion: omits unset optional params from the request body", async () => {
+test("chat-completion: omits unset optional params from the request body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ messages: [] }, ctx);
   const sent = JSON.parse(calls[0].body!);

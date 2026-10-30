@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-search: POSTs a filter given as JSON text", async () => {
+test("contact-search: POSTs a filter given as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "c1" }] } }]);
   const out = await action.execute!({
     filter: '{"field":"email","operator":"equals","value":"a@b.com"}',

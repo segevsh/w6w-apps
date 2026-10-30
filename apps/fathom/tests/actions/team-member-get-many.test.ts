@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, page } from "../_helpers.ts";
 import action from "../../actions/team-member-get-many.ts";
 
-Deno.test("team-member-get-many: GETs /team_members with cursor and team filter", async () => {
+test("team-member-get-many: GETs /team_members with cursor and team filter", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ name: "Bob Lee", email: "bob.lee@acme.com" }], null, 10) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("team-member-get-many: GETs /team_members with cursor and team filter"
   assertEquals(result.items, [{ name: "Bob Lee", email: "bob.lee@acme.com" }]);
 });
 
-Deno.test("team-member-get-many: omits unset params", async () => {
+test("team-member-get-many: omits unset params", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

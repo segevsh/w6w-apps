@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: GETs v1/search with mapped params", async () => {
+test("search: GETs v1/search with mapped params", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: { results: [], total_count: 0, count: 0 } }]);
   await action.execute({
     query: "budget",
@@ -30,7 +31,7 @@ Deno.test("search: GETs v1/search with mapped params", async () => {
   });
 });
 
-Deno.test("search: only the query is sent by default", async () => {
+test("search: only the query is sent by default", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: { results: [] } }]);
   assertEquals(await action.execute({ query: "abc" }, ctx), { results: [] });
   assertEquals(calls[0].url, "https://acme.egnyte.com/pubapi/v1/search?query=abc");

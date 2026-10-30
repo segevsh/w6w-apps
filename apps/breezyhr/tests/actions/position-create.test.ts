@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/position-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("position-create: POSTs the nested location and salary", async () => {
+test("position-create: POSTs the nested location and salary", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "p1" } }]);
   const out = await action.execute!({
     companyId: "c1",
@@ -29,7 +30,7 @@ Deno.test("position-create: POSTs the nested location and salary", async () => {
   assertEquals(out, { _id: "p1" });
 });
 
-Deno.test("position-create: unset optional fields are never sent", async () => {
+test("position-create: unset optional fields are never sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     companyId: "c1",

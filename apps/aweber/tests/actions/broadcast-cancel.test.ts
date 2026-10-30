@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastCancel from "../../actions/broadcast-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("broadcast-cancel: posts to /cancel and returns the self_link", async () => {
+test("broadcast-cancel: posts to /cancel and returns the self_link", async () => {
   const { ctx, calls } = mockCtx([
     { body: { self_link: "https://api.aweber.com/1.0/accounts/1/lists/2/broadcasts/1" } },
   ]);

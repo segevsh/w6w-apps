@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import { envelope, mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 import { API_HOSTS } from "../../lib/client.ts";
 
-Deno.test("api-key: declares the APIKEY header scheme", () => {
+test("api-key: declares the APIKEY header scheme", () => {
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "APIKEY" });
 });
 
-Deno.test("api-key: the key field is a secret and the region field is required", () => {
+test("api-key: the key field is a secret and the region field is required", () => {
   const apiKeyField = auth.fields?.find((f) => f.key === "apiKey");
   assertEquals(apiKeyField?.type, "secret");
   assertEquals(apiKeyField?.required, true);
@@ -24,7 +25,7 @@ Deno.test("api-key: the key field is a secret and the region field is required",
   );
 });
 
-Deno.test("api-key: sign stamps the credential onto the APIKEY header", () => {
+test("api-key: sign stamps the credential onto the APIKEY header", () => {
   const request: SignableRequest = {
     url: "https://api.jotform.com/user",
     method: "GET",
@@ -37,7 +38,7 @@ Deno.test("api-key: sign stamps the credential onto the APIKEY header", () => {
   assertEquals(signed.headers["apikey"], "sekret");
 });
 
-Deno.test("api-key: test probes GET /user on the credential's region host", async () => {
+test("api-key: test probes GET /user on the credential's region host", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ username: "johnsmith" }) }]);
   const result = await auth.test({ credential: { apiKey: "k", region: "eu" } }, ctx);
 
@@ -49,7 +50,7 @@ Deno.test("api-key: test probes GET /user on the credential's region host", asyn
   assertEquals(calls[0].headers["apikey"], "k");
 });
 
-Deno.test("api-key: test reports Jotform's own message on a rejected key", async () => {
+test("api-key: test reports Jotform's own message on a rejected key", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { responseCode: 401, message: "You're not authorized to use (/user) " } },
   ]);
@@ -58,14 +59,14 @@ Deno.test("api-key: test reports Jotform's own message on a rejected key", async
   assert(result.message?.includes("not authorized"));
 });
 
-Deno.test("api-key: test fails fast when the credential has no key", async () => {
+test("api-key: test fails fast when the credential has no key", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result, { ok: false, message: "credential missing apiKey" });
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect records the region, host and user for the client", async () => {
+test("api-key: afterConnect records the region, host and user for the client", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ username: "johnsmith" }) }]);
   const display = await auth.afterConnect!({ credential: { region: "hipaa" } }, ctx);
 
@@ -79,7 +80,7 @@ Deno.test("api-key: afterConnect records the region, host and user for the clien
   assertEquals(calls[0].headers["apikey"], undefined);
 });
 
-Deno.test("api-key: afterConnect still records the host when the whoami fails", async () => {
+test("api-key: afterConnect still records the host when the whoami fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "oops", headers: {} }]);
   const display = await auth.afterConnect!({ credential: {} }, ctx);
   assertEquals(display, { region: "us", apiHost: API_HOSTS.us });

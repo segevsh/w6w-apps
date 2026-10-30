@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/schedule-list.ts";
 
-Deno.test("schedule-list: fetches the first page by default", async () => {
+test("schedule-list: fetches the first page by default", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { schedules: [{ id: "SCH1" }], more: false } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("schedule-list: fetches the first page by default", async () => {
   assertEquals(result, [{ id: "SCH1" }]);
 });
 
-Deno.test("schedule-list: returnAll paginates", async () => {
+test("schedule-list: returnAll paginates", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { schedules: [{ id: "SCH1" }], more: true } },
     { status: 200, body: { schedules: [{ id: "SCH2" }], more: false } },

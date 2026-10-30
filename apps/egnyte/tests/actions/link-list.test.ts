@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/link-list.ts";
 
-Deno.test("link-list: GETs v2/links with mapped filters", async () => {
+test("link-list: GETs v2/links with mapped filters", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: { links: [], count: 0 } }]);
   const out = await action.execute({
     path: "/a",
@@ -29,7 +30,7 @@ Deno.test("link-list: GETs v2/links with mapped filters", async () => {
   assertEquals(out, { links: [], count: 0 });
 });
 
-Deno.test("link-list: no filters means no query string", async () => {
+test("link-list: no filters means no query string", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: {} }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.egnyte.com/pubapi/v2/links");

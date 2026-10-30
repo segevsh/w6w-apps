@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import customerEdit from "../../actions/customer-edit.ts";
 
-Deno.test("customer-edit: patches only the given fields", async () => {
+test("customer-edit: patches only the given fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -22,7 +23,7 @@ Deno.test("customer-edit: patches only the given fields", async () => {
   assertEquals(body.variables.input, { id: "c1", email: "new@example.com" });
 });
 
-Deno.test("customer-edit: type/resource/idempotency metadata", () => {
+test("customer-edit: type/resource/idempotency metadata", () => {
   assertEquals(customerEdit.type, "perform");
   assertEquals(customerEdit.resource, "customer");
   assertEquals(customerEdit.idempotent, true);

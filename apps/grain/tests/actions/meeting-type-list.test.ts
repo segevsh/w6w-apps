@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/meeting-type-list.ts";
 
-Deno.test("meeting-type-list: POSTs /v2/meeting_types with an empty body and no params", async () => {
+test("meeting-type-list: POSTs /v2/meeting_types with an empty body and no params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { meeting_types: [{ id: "mt1", name: "Sales", scope: "external" }] } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("meeting-type-list: POSTs /v2/meeting_types with an empty body and no 
   assertEquals(action.params, []);
 });
 
-Deno.test("meeting-type-list: defaults to an empty array when Grain omits meeting_types", async () => {
+test("meeting-type-list: defaults to an empty array when Grain omits meeting_types", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({}, ctx);
   assertEquals(result, { meetingTypes: [] });

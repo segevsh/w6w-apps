@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { DeepSeekClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new DeepSeekClient(ctx);
   const result = await client.request("/user/balance");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx, carrying the status", async () => {
+test("client: throws a descriptive Error on non-2xx, carrying the status", async () => {
   const { ctx } = mockCtx([
     { status: 402, statusText: "Payment Required", body: '{"error":"insufficient balance"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx, carrying the status", 
   assertEquals(err.message.includes("/chat/completions"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new DeepSeekClient(ctx);
   await client.request("/x", {
@@ -35,7 +36,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new DeepSeekClient(ctx);
   await client.request("/chat/completions", {
@@ -49,7 +50,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new DeepSeekClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -58,7 +59,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: non-JSON responses returned as text", async () => {
+test("client: non-JSON responses returned as text", async () => {
   const { ctx } = mockCtx([
     { body: "line1\nline2", headers: { "content-type": "text/plain" } },
   ]);
@@ -67,7 +68,7 @@ Deno.test("client: non-JSON responses returned as text", async () => {
   assertEquals(result, "line1\nline2");
 });
 
-Deno.test("client: defaults to GET without a request body", async () => {
+test("client: defaults to GET without a request body", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   const client = new DeepSeekClient(ctx);
   await client.request("/models");

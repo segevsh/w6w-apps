@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ function summary(
   return { status: { indicator: "none", description: "All Systems Operational" }, components };
 }
 
-Deno.test("service: ok when all Developer API children are operational", async () => {
+test("service: ok when all Developer API children are operational", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "g1", name: "Developer API", status: "operational", group_id: null },
@@ -25,7 +26,7 @@ Deno.test("service: ok when all Developer API children are operational", async (
   assertEquals(report.components?.["documentation"].state, "ok");
 });
 
-Deno.test("service: degraded when REST API reports partial_outage", async () => {
+test("service: degraded when REST API reports partial_outage", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "g1", name: "Developer API", status: "operational", group_id: null },
@@ -39,7 +40,7 @@ Deno.test("service: degraded when REST API reports partial_outage", async () => 
   assertEquals(report.components?.["rest-api"].state, "degraded");
 });
 
-Deno.test("service: an unrelated component outage (Documentation) never worsens the verdict", async () => {
+test("service: an unrelated component outage (Documentation) never worsens the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "g1", name: "Developer API", status: "operational", group_id: null },
@@ -54,7 +55,7 @@ Deno.test("service: an unrelated component outage (Documentation) never worsens 
   assertEquals(report.components?.["documentation"].state, "down");
 });
 
-Deno.test("service: down when the OAuth Identity Provider has a major outage", async () => {
+test("service: down when the OAuth Identity Provider has a major outage", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "g1", name: "Developer API", status: "operational", group_id: null },
@@ -67,13 +68,13 @@ Deno.test("service: down when the OAuth Identity Provider has a major outage", a
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: unknown when the status page itself fails", async () => {
+test("service: unknown when the status page itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the Developer API group disappears from the page", async () => {
+test("service: unknown when the Developer API group disappears from the page", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ id: "x", name: "Something Else", status: "operational" }]),
   }]);
@@ -81,7 +82,7 @@ Deno.test("service: unknown when the Developer API group disappears from the pag
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is app-scoped, unsigned, and allows only the status host", () => {
+test("service: is app-scoped, unsigned, and allows only the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.patreon.com"]);
 });

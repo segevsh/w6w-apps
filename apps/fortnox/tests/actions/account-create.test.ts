@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-create.ts";
 
-Deno.test("account-create: POST /3/accounts with a wrapped body", async () => {
+test("account-create: POST /3/accounts with a wrapped body", async () => {
   const reply = { "Account": { "Id": 1 } };
   const { ctx, calls } = mockCtx([{ status: 201, body: reply }]);
   const result = await action.execute!({
@@ -42,7 +43,7 @@ Deno.test("account-create: POST /3/accounts with a wrapped body", async () => {
   assertEquals(Object.fromEntries(new URL(bare.calls[0].url).searchParams), {});
 });
 
-Deno.test("account-create: rejects an additionalFields that is not a JSON object", async () => {
+test("account-create: rejects an additionalFields that is not a JSON object", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ "number": 7, "additionalFields": "[1]" } as never, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobScheduleUpdate from "../../actions/job-schedule-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-schedule-update: PUTs the schedule window", async () => {
+test("job-schedule-update: PUTs the schedule window", async () => {
   const { ctx, calls } = mockCtx([{ body: { start_time: "2026-03-23T15:30:00" } }]);
   await jobScheduleUpdate.execute({
     jobId: "j1",
@@ -22,7 +23,7 @@ Deno.test("job-schedule-update: PUTs the schedule window", async () => {
   });
 });
 
-Deno.test("job-schedule-update: employee ids are wrapped as {employee_id} objects", async () => {
+test("job-schedule-update: employee ids are wrapped as {employee_id} objects", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await jobScheduleUpdate.execute({
     jobId: "j1",
@@ -36,11 +37,11 @@ Deno.test("job-schedule-update: employee ids are wrapped as {employee_id} object
   ]);
 });
 
-Deno.test("job-schedule-update: only start_time is required, matching the reference", () => {
+test("job-schedule-update: only start_time is required, matching the reference", () => {
   const required = (jobScheduleUpdate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["jobId", "startTime"]);
 });
 
-Deno.test("job-schedule-update: says the endpoint needs a partner credential", () => {
+test("job-schedule-update: says the endpoint needs a partner credential", () => {
   assertEquals(jobScheduleUpdate.description?.includes("integration-partner"), true);
 });

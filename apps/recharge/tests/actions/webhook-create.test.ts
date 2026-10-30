@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs the address and topic to /webhooks", async () => {
+test("webhook-create: POSTs the address and topic to /webhooks", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -25,6 +26,6 @@ Deno.test("webhook-create: POSTs the address and topic to /webhooks", async () =
   assertEquals(out.id, 19451);
 });
 
-Deno.test("webhook-create: is not marked idempotent, since a repeat call registers a second webhook", () => {
+test("webhook-create: is not marked idempotent, since a repeat call registers a second webhook", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/organic-competitor-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = { "target": "example.com", "date": "2026-10-01", "country": "US" };
 
-Deno.test("organic-competitor-list: GETs /site-explorer/organic-competitors and returns the competitors with cost headers", async () => {
+test("organic-competitor-list: GETs /site-explorer/organic-competitors and returns the competitors with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { competitors: [{ a: 1 }] },
     headers: {
@@ -32,14 +33,14 @@ Deno.test("organic-competitor-list: GETs /site-explorer/organic-competitors and 
   );
 });
 
-Deno.test("organic-competitor-list: omits cost fields when headers are absent and passes optional params", async () => {
+test("organic-competitor-list: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { competitors: [{ a: 1 }] } }]);
   const out = await action.execute!({ ...input, limit: 5 }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "5");
 });
 
-Deno.test("organic-competitor-list: a 403 array error body is surfaced", async () => {
+test("organic-competitor-list: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

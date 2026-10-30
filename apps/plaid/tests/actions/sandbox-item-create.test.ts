@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sandbox-item-create.ts";
 
-Deno.test("sandbox-item-create: creates an Item with no browser", async () => {
+test("sandbox-item-create: creates an Item with no browser", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { public_token: "public-sandbox-1" } }], {
     display: { environment: "sandbox" },
   });
@@ -14,7 +15,7 @@ Deno.test("sandbox-item-create: creates an Item with no browser", async () => {
 });
 
 /** In production this route does not exist, and the reason is the design. */
-Deno.test("sandbox-item-create: refuses on a production connection, with the reason", async () => {
+test("sandbox-item-create: refuses on a production connection, with the reason", async () => {
   const { ctx, calls } = mockCtx([], { display: { environment: "production" } });
   const err = await assertRejects(async () => await action.execute!({}, ctx), Error);
   assert(/sandbox/.test(String(err)), String(err));

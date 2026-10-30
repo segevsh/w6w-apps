@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/generate-video.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("generate-video: sends the documented request and maps the answer", async () => {
+test("generate-video: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "dryRun": false,
@@ -39,7 +40,7 @@ Deno.test("generate-video: sends the documented request and maps the answer", as
   });
 });
 
-Deno.test("generate-video: a 401 surfaces Runway's error text", async () => {
+test("generate-video: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },
@@ -59,7 +60,7 @@ Deno.test("generate-video: a 401 surfaces Runway's error text", async () => {
   );
 });
 
-Deno.test("generate-video: a dry run returns routing and no task id", async () => {
+test("generate-video: a dry run returns routing and no task id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { dryRun: true, routing: { model: "gen4.5", estimatedCost: { credits: 50 } } },
   }]);

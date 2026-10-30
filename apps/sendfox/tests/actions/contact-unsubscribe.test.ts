@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUnsubscribe from "../../actions/contact-unsubscribe.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-unsubscribe: PATCHes the email to /unsubscribe", async () => {
+test("contact-unsubscribe: PATCHes the email to /unsubscribe", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2, email: "reader@example.com" } }]);
   const out = await contactUnsubscribe.execute({ email: "reader@example.com" }, ctx) as {
     id: number;
@@ -14,6 +15,6 @@ Deno.test("contact-unsubscribe: PATCHes the email to /unsubscribe", async () => 
   assertEquals(out.id, 2);
 });
 
-Deno.test("contact-unsubscribe: is safe to retry", () => {
+test("contact-unsubscribe: is safe to retry", () => {
   assertEquals(contactUnsubscribe.idempotent, true);
 });

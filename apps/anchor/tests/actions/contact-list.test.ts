@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: sends GET /contacts", async () => {
+test("contact-list: sends GET /contacts", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "entries": [], "page": 2, "limit": 50, "totalCount": 0 },
   }]);
@@ -29,7 +30,7 @@ Deno.test("contact-list: sends GET /contacts", async () => {
   assertEquals(out.entries, []);
 });
 
-Deno.test("contact-list: a non-2xx answer throws with the vendor's error code", async () => {
+test("contact-list: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

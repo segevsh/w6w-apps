@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-chart-image.ts";
 
-Deno.test("get-chart-image: emits the full three-parameter image() form by default", async () => {
+test("get-chart-image: emits the full three-parameter image() form by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: "aGVsbG8=" } }]);
   const out = await action.execute({
     itemId: "ITEM1",
@@ -19,13 +20,13 @@ Deno.test("get-chart-image: emits the full three-parameter image() form by defau
   assertEquals(out.value, "aGVsbG8=");
 });
 
-Deno.test("get-chart-image: encodes the chart name in the path segment", async () => {
+test("get-chart-image: encodes the chart name in the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: "x" } }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", chart: "Chart 1" }, ctx);
   assert(new URL(calls[0].url).pathname.includes("/charts/Chart%201/"), calls[0].url);
 });
 
-Deno.test("get-chart-image: passes width, height and fitting mode through", async () => {
+test("get-chart-image: passes width, height and fitting mode through", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: "x" } }]);
   await action.execute({
     itemId: "ITEM1",
@@ -42,7 +43,7 @@ Deno.test("get-chart-image: passes width, height and fitting mode through", asyn
   );
 });
 
-Deno.test("get-chart-image: assembles a data URI locally, with no extra request", async () => {
+test("get-chart-image: assembles a data URI locally, with no extra request", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: "aGVsbG8=" } }]);
   const out = await action.execute({
     itemId: "ITEM1",
@@ -53,7 +54,7 @@ Deno.test("get-chart-image: assembles a data URI locally, with no extra request"
   assertEquals(calls.length, 1);
 });
 
-Deno.test("get-chart-image: leaves the data URI undefined when Graph returns no image", async () => {
+test("get-chart-image: leaves the data URI undefined when Graph returns no image", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await action.execute({
     itemId: "ITEM1",
@@ -64,7 +65,7 @@ Deno.test("get-chart-image: leaves the data URI undefined when Graph returns no 
   assertEquals(out.dataUri, undefined);
 });
 
-Deno.test("get-chart-image: works under the path form and forwards the session", async () => {
+test("get-chart-image: works under the path form and forwards the session", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: "x" } }]);
   await action.execute({
     itemPath: "Reports/Q3.xlsx",
@@ -79,7 +80,7 @@ Deno.test("get-chart-image: works under the path form and forwards the session",
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("get-chart-image: refuses an empty chart identifier", async () => {
+test("get-chart-image: refuses an empty chart identifier", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", chart: " " }, ctx),

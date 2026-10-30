@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/generate-content.ts";
 
-Deno.test("generate-content: POSTs to /models/{model}:generateContent with contents", async () => {
+test("generate-content: POSTs to /models/{model}:generateContent with contents", async () => {
   const { ctx, calls } = mockCtx([{ body: { candidates: [] } }]);
   await action.execute!(
     {
@@ -20,7 +21,7 @@ Deno.test("generate-content: POSTs to /models/{model}:generateContent with conte
   assertEquals("systemInstruction" in body, false);
 });
 
-Deno.test("generate-content: accepts a bare model id or a full models/… name", async () => {
+test("generate-content: accepts a bare model id or a full models/… name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute!({ model: "gemini-3.5-flash", contents: [] }, ctx);
   await action.execute!({ model: "models/gemini-3.5-flash", contents: [] }, ctx);
@@ -28,7 +29,7 @@ Deno.test("generate-content: accepts a bare model id or a full models/… name",
   assertEquals(new URL(calls[1].url).pathname, "/v1beta/models/gemini-3.5-flash:generateContent");
 });
 
-Deno.test("generate-content: folds generation params into generationConfig", async () => {
+test("generate-content: folds generation params into generationConfig", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -62,7 +63,7 @@ Deno.test("generate-content: folds generation params into generationConfig", asy
   });
 });
 
-Deno.test("generate-content: wraps a plain-text systemInstruction as a Content", async () => {
+test("generate-content: wraps a plain-text systemInstruction as a Content", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "gemini-3.5-flash", contents: [], systemInstruction: "Be concise." },
@@ -72,7 +73,7 @@ Deno.test("generate-content: wraps a plain-text systemInstruction as a Content",
   assertEquals(body.systemInstruction, { parts: [{ text: "Be concise." }] });
 });
 
-Deno.test("generate-content: forwards safetySettings verbatim when supplied", async () => {
+test("generate-content: forwards safetySettings verbatim when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const safetySettings = [{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" }];
   await action.execute!({ model: "gemini-3.5-flash", contents: [], safetySettings }, ctx);
@@ -82,7 +83,7 @@ Deno.test("generate-content: forwards safetySettings verbatim when supplied", as
 
 // ── Function calling and response schemas ──────────────────────────────────
 
-Deno.test("generate-content: forwards tools and toolConfig at the top level", async () => {
+test("generate-content: forwards tools and toolConfig at the top level", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const tools = [{ functionDeclarations: [{ name: "get_weather" }] }];
   const toolConfig = { functionCallingConfig: { mode: "ANY" } };
@@ -97,7 +98,7 @@ Deno.test("generate-content: forwards tools and toolConfig at the top level", as
   assertEquals(body.generationConfig, undefined);
 });
 
-Deno.test("generate-content: responseSchema rides in generationConfig alongside JSON output", async () => {
+test("generate-content: responseSchema rides in generationConfig alongside JSON output", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const responseSchema = { type: "object" };
   await action.execute!(
@@ -112,7 +113,7 @@ Deno.test("generate-content: responseSchema rides in generationConfig alongside 
   assertEquals(JSON.parse(calls[0].body!).generationConfig.responseSchema, responseSchema);
 });
 
-Deno.test("generate-content: a responseSchema without JSON output rejects rather than no-op", async () => {
+test("generate-content: a responseSchema without JSON output rejects rather than no-op", async () => {
   const { ctx, calls } = mockCtx();
   let threw = false;
   try {

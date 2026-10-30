@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 29);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 1);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description, an output and an execute hook", () => {
+test("index: every action declares a valid type, a description, an output and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description, an output a
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every action is grouped under a resource", () => {
+test("index: every action is grouped under a resource", () => {
   for (const a of app.actions) {
     assert(typeof a.resource === "string" && a.resource.length > 0, `${a.key}: no resource`);
   }
@@ -46,14 +48,14 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
 /**
  * `credential` is matched only where it is NOT preceded by a quote — a bare
  * `credential` identifier (`input.credential`) is the thing being banned, not
  * a health-taxonomy string value.
  */
-Deno.test("index: no action reads a credential or sets Authorization itself", async () => {
+test("index: no action reads a credential or sets Authorization itself", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^"'\w])credential/i.test(src), `${a.key}: references a credential`);
@@ -62,13 +64,13 @@ Deno.test("index: no action reads a credential or sets Authorization itself", as
   }
 });
 
-Deno.test("index: the credential guard still catches a real read", () => {
+test("index: the credential guard still catches a real read", () => {
   assert(/(^|[^"'\w])credential/i.test("const c = input.credential;"));
   assert(/(^|[^"'\w])credential/i.test("const { credential } = input;"));
   assert(!/(^|[^"'\w])credential/i.test('healthCheck: { kind: "credential" }'));
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -81,7 +83,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * one endpoint. An action that built its own URL would be reaching past the
  * allowlist declaration in `package.json`.
  */
-Deno.test("index: no action hard-codes a URL — the endpoint belongs to the client", async () => {
+test("index: no action hard-codes a URL — the endpoint belongs to the client", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/https?:\/\//.test(src), `${a.key}: hard-codes a URL`);
@@ -96,7 +98,7 @@ Deno.test("index: no action hard-codes a URL — the endpoint belongs to the cli
  * if it happened. `card-update-field`/`card-move` select `success`
  * alongside other data and are expected NOT to match this narrow shape.
  */
-Deno.test("index: every action selecting only `{ success }` routes through expectSuccess", async () => {
+test("index: every action selecting only `{ success }` routes through expectSuccess", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     if (!/\{\s*success\s*\}/.test(src)) continue;
@@ -107,7 +109,7 @@ Deno.test("index: every action selecting only `{ success }` routes through expec
   }
 });
 
-Deno.test("index: every mutation-bearing action is a perform, and every perform mutates", async () => {
+test("index: every mutation-bearing action is a perform, and every perform mutates", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     const hasMutation = /\bmutation\s*\{/.test(src) || /\bmutation\s*\(/.test(src);
@@ -118,13 +120,13 @@ Deno.test("index: every mutation-bearing action is a perform, and every perform 
   }
 });
 
-Deno.test("index: both auth methods Pipefy documents are present, Service Account first", () => {
+test("index: both auth methods Pipefy documents are present, Service Account first", () => {
   assertEquals(app.auth.map((a) => a.key), ["client-credentials", "personal-access-token"]);
   assertEquals(app.auth[0].type, "custom");
   assertEquals(app.auth[1].type, "bearer");
 });
 
-Deno.test("index: health checks cover the one question this app can answer, and it isn't a stub", () => {
+test("index: health checks cover the one question this app can answer, and it isn't a stub", () => {
   const keys = app.healthChecks!.map((h) => h.key).sort();
   assertEquals(keys, ["service"]);
   for (const h of app.healthChecks!) {
@@ -139,7 +141,7 @@ Deno.test("index: health checks cover the one question this app can answer, and 
  * pin the App at `unknown` forever. This app declares none — the assertion
  * exists so that adding one later cannot skip the severity.
  */
-Deno.test("index: any unavailable check must be informational", () => {
+test("index: any unavailable check must be informational", () => {
   for (const h of app.healthChecks ?? []) {
     if (h.unavailable) {
       assertEquals(h.severity, "informational", `${h.key}: unavailable without informational`);
@@ -147,7 +149,7 @@ Deno.test("index: any unavailable check must be informational", () => {
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// credential\nconst a = 1;").trim(), "const a = 1;");
   assert(code('const u = "https://x/y";').includes("https://x/y"));

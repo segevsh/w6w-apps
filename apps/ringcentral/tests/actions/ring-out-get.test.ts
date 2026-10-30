@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ringOutGet from "../../actions/ring-out-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ring-out-get: builds the ring-out status path", async () => {
+test("ring-out-get: builds the ring-out status path", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ro1", status: { callStatus: "Success" } } }]);
   const out = await ringOutGet.execute({ ringoutId: "ro1" }, ctx) as Record<string, unknown>;
 

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transcriptSubtitlesGet from "../../actions/transcript-subtitles-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const VTT = "WEBVTT\n\n00:00.250 --> 00:06.350\nSmoke from hundreds of wildfires.";
 
-Deno.test("transcript-subtitles-get: GETs /v2/transcript/{id}/{format} and returns raw text, not JSON", async () => {
+test("transcript-subtitles-get: GETs /v2/transcript/{id}/{format} and returns raw text, not JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: VTT }]);
   const out = await transcriptSubtitlesGet.execute(
     { transcriptId: "t1", subtitleFormat: "vtt", charsPerCaption: 40 },
@@ -15,7 +16,7 @@ Deno.test("transcript-subtitles-get: GETs /v2/transcript/{id}/{format} and retur
   assertEquals(out.subtitles.startsWith("WEBVTT"), true);
 });
 
-Deno.test("transcript-subtitles-get: defaults to srt and offers both formats", () => {
+test("transcript-subtitles-get: defaults to srt and offers both formats", () => {
   const formatParam = transcriptSubtitlesGet.params?.find((p) => p.key === "subtitleFormat");
   assertEquals(formatParam?.default, "srt");
   assertEquals(

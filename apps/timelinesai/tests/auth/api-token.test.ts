@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import apiToken from "../../auth/api-token.ts";
 
 const WS = "https://app.timelines.ai/integrations/api/workspace";
 const cred = { apiToken: "tok-123" };
 
-Deno.test("sign: stamps the bearer header and nothing else", () => {
+test("sign: stamps the bearer header and nothing else", () => {
   const req = {
     url: WS,
     method: "GET",
@@ -19,7 +20,7 @@ Deno.test("sign: stamps the bearer header and nothing else", () => {
   assertEquals(out.headers["accept"], "application/json");
 });
 
-Deno.test("test: a status ok body with a workspace is a live token", async () => {
+test("test: a status ok body with a workspace is a live token", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "ok", data: { workspace_id: "w1", display_name: "Acme" } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("test: a status ok body with a workspace is a live token", async () =>
   assertEquals(calls[0].url, WS);
 });
 
-Deno.test("test: a rejected token is told apart by its body, not its status", async () => {
+test("test: a rejected token is told apart by its body, not its status", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -42,7 +43,7 @@ Deno.test("test: a rejected token is told apart by its body, not its status", as
   assert(!r.message!.includes("tok-123"), "must never echo the credential");
 });
 
-Deno.test("test: a 200 in the wrong shape is not proof of a live token", async () => {
+test("test: a 200 in the wrong shape is not proof of a live token", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -50,18 +51,18 @@ Deno.test("test: a 200 in the wrong shape is not proof of a live token", async (
   assertEquals((await apiToken.test!({ credential: cred } as never, ctx)).ok, false);
 });
 
-Deno.test("test: a 200 carrying status error is a failure", async () => {
+test("test: a 200 carrying status error is a failure", async () => {
   const { ctx } = mockCtx([{ body: { status: "error", error_code: "permission_denied" } }]);
   assertEquals((await apiToken.test!({ credential: cred } as never, ctx)).ok, false);
 });
 
-Deno.test("test: a missing credential fails before the network", async () => {
+test("test: a missing credential fails before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiToken.test!({ credential: {} } as never, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: labels the connection from the workspace, never the token", async () => {
+test("afterConnect: labels the connection from the workspace, never the token", async () => {
   const { ctx } = mockCtx([{
     body: { status: "ok", data: { workspace_id: "w1", display_name: "Acme", plan: "pro" } },
   }]);
@@ -70,7 +71,7 @@ Deno.test("afterConnect: labels the connection from the workspace, never the tok
   assertEquals(JSON.stringify(out).includes("tok-123"), false);
 });
 
-Deno.test("afterConnect: a failure yields no label rather than failing the connection", async () => {
+test("afterConnect: a failure yields no label rather than failing the connection", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { status: "error" } }]);
   assertEquals(await apiToken.afterConnect!({ credential: cred } as never, ctx), {});
 });

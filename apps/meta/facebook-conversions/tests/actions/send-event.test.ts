@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-event.ts";
 
@@ -10,7 +11,7 @@ function eventFrom(body: Record<string, unknown>): Record<string, unknown> {
   return data[0];
 }
 
-Deno.test("send-event: POSTs /{datasetId}/events with a JSON data array", async () => {
+test("send-event: POSTs /{datasetId}/events with a JSON data array", async () => {
   const { ctx, calls } = mockCtx([OK]);
   const result = await action.execute(
     { eventName: "Purchase", userData: { email: "test@example.com" } },
@@ -27,7 +28,7 @@ Deno.test("send-event: POSTs /{datasetId}/events with a JSON data array", async 
   assertEquals(result, { events_received: 1, messages: [], fbtrace_id: "trace-1" });
 });
 
-Deno.test("send-event: hashes the email before it leaves the app", async () => {
+test("send-event: hashes the email before it leaves the app", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ eventName: "Lead", userData: { email: "TEST@Example.com" } }, ctx);
   const event = eventFrom(jsonBody(calls[0]));
@@ -36,7 +37,7 @@ Deno.test("send-event: hashes the email before it leaves the app", async () => {
   assertEquals(calls[0].body!.includes("@"), false);
 });
 
-Deno.test("send-event: maps the friendly form keys onto Meta's user_data keys", async () => {
+test("send-event: maps the friendly form keys onto Meta's user_data keys", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Purchase",
@@ -84,7 +85,7 @@ Deno.test("send-event: maps the friendly form keys onto Meta's user_data keys", 
   assertEquals(userData.external_id, "customer-42");
 });
 
-Deno.test("send-event: defaults event_time to now and event_id to the invocation id", async () => {
+test("send-event: defaults event_time to now and event_id to the invocation id", async () => {
   const before = Math.floor(Date.now() / 1000);
   const { ctx, calls } = mockCtx([OK], { invocationId: "inv-xyz" });
   await action.execute({ eventName: "Lead", userData: { email: "test@example.com" } }, ctx);
@@ -94,7 +95,7 @@ Deno.test("send-event: defaults event_time to now and event_id to the invocation
   assertEquals(event.action_source, "website");
 });
 
-Deno.test("send-event: honours an explicit event id, time and action source", async () => {
+test("send-event: honours an explicit event id, time and action source", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Purchase",
@@ -113,7 +114,7 @@ Deno.test("send-event: honours an explicit event id, time and action source", as
   assertEquals(event.opt_out, true);
 });
 
-Deno.test("send-event: merges value/currency into custom_data", async () => {
+test("send-event: merges value/currency into custom_data", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Purchase",
@@ -130,13 +131,13 @@ Deno.test("send-event: merges value/currency into custom_data", async () => {
   });
 });
 
-Deno.test("send-event: omits custom_data entirely when nothing was supplied", async () => {
+test("send-event: omits custom_data entirely when nothing was supplied", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ eventName: "Lead", userData: { email: "test@example.com" } }, ctx);
   assertEquals("custom_data" in eventFrom(jsonBody(calls[0])), false);
 });
 
-Deno.test("send-event: accepts JSON params as strings", async () => {
+test("send-event: accepts JSON params as strings", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Lead",
@@ -149,7 +150,7 @@ Deno.test("send-event: accepts JSON params as strings", async () => {
   assertEquals((event.user_data as Record<string, unknown>).ig_sid, "178414");
 });
 
-Deno.test("send-event: test_event_code rides at the top level, not on the event", async () => {
+test("send-event: test_event_code rides at the top level, not on the event", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Lead",
@@ -161,7 +162,7 @@ Deno.test("send-event: test_event_code rides at the top level, not on the event"
   assertEquals("test_event_code" in eventFrom(body), false);
 });
 
-Deno.test("send-event: splits data processing options into an array", async () => {
+test("send-event: splits data processing options into an array", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     eventName: "Lead",
@@ -176,7 +177,7 @@ Deno.test("send-event: splits data processing options into an array", async () =
   assertEquals(event.data_processing_options_state, 1000);
 });
 
-Deno.test("send-event: pre-hashed mode rejects raw PII without making a request", async () => {
+test("send-event: pre-hashed mode rejects raw PII without making a request", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     () =>
@@ -192,7 +193,7 @@ Deno.test("send-event: pre-hashed mode rejects raw PII without making a request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-event: pre-hashed mode forwards an existing digest", async () => {
+test("send-event: pre-hashed mode forwards an existing digest", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute(
     { eventName: "Lead", hashing: "pre-hashed", userData: { email: EM } },
@@ -201,7 +202,7 @@ Deno.test("send-event: pre-hashed mode forwards an existing digest", async () =>
   assertEquals((eventFrom(jsonBody(calls[0])).user_data as Record<string, unknown>).em, EM);
 });
 
-Deno.test("send-event: an empty user_data is rejected without a request", async () => {
+test("send-event: an empty user_data is rejected without a request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ eventName: "Lead" }, ctx)),
@@ -211,7 +212,7 @@ Deno.test("send-event: an empty user_data is rejected without a request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-event: an explicit datasetId overrides the connection's", async () => {
+test("send-event: an explicit datasetId overrides the connection's", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute(
     { eventName: "Lead", datasetId: "999", userData: { email: "test@example.com" } },
@@ -220,7 +221,7 @@ Deno.test("send-event: an explicit datasetId overrides the connection's", async 
   assertEquals(new URL(calls[0].url).pathname, "/v25.0/999/events");
 });
 
-Deno.test("send-event: an OAuth connection with no dataset says so", async () => {
+test("send-event: an OAuth connection with no dataset says so", async () => {
   const { ctx, calls } = mockCtx([], { dataset: null, auth: "oauth2" });
   await assertRejects(
     () =>
@@ -233,7 +234,7 @@ Deno.test("send-event: an OAuth connection with no dataset says so", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-event: logs identifier names only, never their values", async () => {
+test("send-event: logs identifier names only, never their values", async () => {
   const { ctx, logs } = mockCtx([OK]);
   await action.execute({
     eventName: "Lead",
@@ -245,7 +246,7 @@ Deno.test("send-event: logs identifier names only, never their values", async ()
   assertEquals(serialised.includes("John"), false);
 });
 
-Deno.test("send-event: surfaces Meta's error message on failure", async () => {
+test("send-event: surfaces Meta's error message on failure", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error: { message: "Invalid parameter", code: 100 } } },
   ]);
@@ -259,14 +260,14 @@ Deno.test("send-event: surfaces Meta's error message on failure", async () => {
   );
 });
 
-Deno.test("send-event: omits authorization (the runtime injects it)", async () => {
+test("send-event: omits authorization (the runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ eventName: "Lead", userData: { email: "test@example.com" } }, ctx);
   assert(!("authorization" in calls[0].headers));
   assertEquals(new URL(calls[0].url).searchParams.get("access_token"), null);
 });
 
-Deno.test("send-event: declares itself idempotent (Meta dedupes on event_name + event_id)", () => {
+test("send-event: declares itself idempotent (Meta dedupes on event_name + event_id)", () => {
   assertEquals(action.idempotent, true);
   assertEquals(action.type, "perform");
 });

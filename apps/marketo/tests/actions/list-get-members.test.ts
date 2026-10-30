@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-get-members.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("list-get-members: GETs one page by default", async () => {
+test("list-get-members: GETs one page by default", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1 }, { id: 2 }], nextPageToken: "TOKEN1" } },
   ], conn);
@@ -14,7 +15,7 @@ Deno.test("list-get-members: GETs one page by default", async () => {
   assertEquals(out, [{ id: 1 }, { id: 2 }]);
 });
 
-Deno.test("list-get-members: returnAll pages until nextPageToken is absent", async () => {
+test("list-get-members: returnAll pages until nextPageToken is absent", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1 }], nextPageToken: "TOKEN1" } },
     { body: { success: true, result: [{ id: 2 }], nextPageToken: "TOKEN2" } },
@@ -27,7 +28,7 @@ Deno.test("list-get-members: returnAll pages until nextPageToken is absent", asy
   assertEquals(out, [{ id: 1 }, { id: 2 }, { id: 3 }]);
 });
 
-Deno.test("list-get-members: returnAll stops on an empty page even if a token is still present", async () => {
+test("list-get-members: returnAll stops on an empty page even if a token is still present", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [], nextPageToken: "TOKEN1" } },
   ], conn);

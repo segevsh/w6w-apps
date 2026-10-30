@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import reportGet from "../../actions/report-get.ts";
 import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("report-get: GETs /v1/reporting with type, arrays and bracketed filters", async () => {
+test("report-get: GETs /v1/reporting with type, arrays and bracketed filters", async () => {
   const reply = { data: { detractors: 5, passives: 21, promoters: 40 }, count: 66, nps: 53 };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await reportGet.execute(
@@ -34,13 +35,13 @@ Deno.test("report-get: GETs /v1/reporting with type, arrays and bracketed filter
   assertEquals(out, reply);
 });
 
-Deno.test("report-get: only the type is sent when nothing else is set", async () => {
+test("report-get: only the type is sent when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { views: 1, responses: 1 } }]);
   await reportGet.execute({ type: "count" }, ctx);
   assertEquals(queryOf(calls[0].url), { type: "count" });
 });
 
-Deno.test("report-get: a vendor error surfaces its own message", async () => {
+test("report-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(reportGet.execute({ type: "nps" }, ctx)),

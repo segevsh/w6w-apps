@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-delete.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("product-delete: DELETEs /products/{id} with force=true by default", async () => {
+test("product-delete: DELETEs /products/{id} with force=true by default", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ productId: "42" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -13,7 +14,7 @@ Deno.test("product-delete: DELETEs /products/{id} with force=true by default", a
   assertEquals(url.searchParams.get("force"), "true");
 });
 
-Deno.test("product-delete: force=false moves to trash", async () => {
+test("product-delete: force=false moves to trash", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ productId: "42", force: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("force"), "false");

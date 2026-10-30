@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/custom-dimension-list.ts";
 
-Deno.test("custom-dimension-list: lists the property's custom dimensions", async () => {
+test("custom-dimension-list: lists the property's custom dimensions", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { customDimensions: [{ parameterName: "plan" }] },

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeOffTypeList from "../../actions/time-off-type-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-off-type-list: GET /resource-planner/time-off-types with the documented query and body", async () => {
+test("time-off-type-list: GET /resource-planner/time-off-types with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await timeOffTypeList.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("time-off-type-list: GET /resource-planner/time-off-types with the doc
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("time-off-type-list: an Everhour error surfaces its message and status", async () => {
+test("time-off-type-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timeOffTypeList.execute({}, ctx)),
@@ -30,6 +31,6 @@ Deno.test("time-off-type-list: an Everhour error surfaces its message and status
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("time-off-type-list: declares search", () => {
+test("time-off-type-list: declares search", () => {
   assertEquals(timeOffTypeList.type, "search");
 });

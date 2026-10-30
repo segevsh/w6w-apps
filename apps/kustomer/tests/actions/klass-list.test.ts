@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
 import action from "../../actions/klass-list.ts";
 
-Deno.test("klass-list: GETs /klasses with the optional filters", async () => {
+test("klass-list: GETs /klasses with the optional filters", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: [], meta: { page: 1 } } }]);
   const out = await action.execute({ name: "order", status: "enabled", page: 1 }, ctx);
   assertEquals(

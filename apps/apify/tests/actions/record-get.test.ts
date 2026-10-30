@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import recordGet from "../../actions/record-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * The vendor's third documented envelope exception: the body is the stored
  * value, served under the content type it was written with.
  */
-Deno.test("record-get: a JSON record comes back parsed", async () => {
+test("record-get: a JSON record comes back parsed", async () => {
   const { ctx, calls } = mockCtx([
     { body: { total: 7 }, headers: { "content-type": "application/json; charset=utf-8" } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("record-get: a JSON record comes back parsed", async () => {
   assertEquals(out.contentType, "application/json; charset=utf-8");
 });
 
-Deno.test("record-get: a text record comes back as text, unparsed", async () => {
+test("record-get: a text record comes back as text, unparsed", async () => {
   const { ctx } = mockCtx([
     { body: "hello, world", headers: { "content-type": "text/plain; charset=utf-8" } },
   ]);
@@ -40,7 +41,7 @@ Deno.test("record-get: a text record comes back as text, unparsed", async () => 
  * string is lossy and irreversible, so the action reports the record rather than
  * returning something that looks like data and is not.
  */
-Deno.test("record-get: a binary record is reported, not returned mangled", async () => {
+test("record-get: a binary record is reported, not returned mangled", async () => {
   const { ctx } = mockCtx([{ body: "PNG...", headers: { "content-type": "image/png" } }]);
   const out = await recordGet.execute({ storeId: "s1", recordKey: "screenshot" }, ctx) as {
     value: unknown;
@@ -53,7 +54,7 @@ Deno.test("record-get: a binary record is reported, not returned mangled", async
   assert(/not text/i.test(out.note ?? ""), out.note);
 });
 
-Deno.test("record-get: a record served as JSON that is not JSON degrades to text", async () => {
+test("record-get: a record served as JSON that is not JSON degrades to text", async () => {
   const { ctx } = mockCtx([
     { body: "{definitely not json", headers: { "content-type": "application/json" } },
   ]);
@@ -71,7 +72,7 @@ Deno.test("record-get: a record served as JSON that is not JSON degrades to text
  * Apify makes small security-motivated edits to stored HTML before serving it;
  * `attachment` is the only documented way to get the bytes back unmodified.
  */
-Deno.test("record-get: attachment is sent only when requested", async () => {
+test("record-get: attachment is sent only when requested", async () => {
   const { ctx, calls } = mockCtx([
     { body: "<html></html>", headers: { "content-type": "text/html" } },
     { body: "<html></html>", headers: { "content-type": "text/html" } },
@@ -83,7 +84,7 @@ Deno.test("record-get: attachment is sent only when requested", async () => {
   assertEquals(queryOf(calls[1].url).attachment, "1");
 });
 
-Deno.test("record-get: a record key with a slash cannot escape the path", async () => {
+test("record-get: a record key with a slash cannot escape the path", async () => {
   const { ctx, calls } = mockCtx([{ body: "", headers: { "content-type": "text/plain" } }]);
   await recordGet.execute({ storeId: "s1", recordKey: "a/b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/key-value-stores/s1/records/a%2Fb");

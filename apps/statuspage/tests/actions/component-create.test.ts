@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/component-create.ts";
 
 const conn = { display: { pageId: "pg1" } };
 
-Deno.test("component-create: posts the component, shown by default", async () => {
+test("component-create: posts the component, shown by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }], conn);
   await action.execute!({ name: "Search API", groupId: "g1" }, ctx);
   const sent = JSON.parse(calls[0].body!).component;
@@ -13,13 +14,13 @@ Deno.test("component-create: posts the component, shown by default", async () =>
   assertEquals(sent.showcase, true);
 });
 
-Deno.test("component-create: a missing name is refused", async () => {
+test("component-create: a missing name is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "name");
 });
 
 /** Without showcase the component is invisible however red it goes. */
-Deno.test("component-create: warns that names are not unique and showcase matters", () => {
+test("component-create: warns that names are not unique and showcase matters", () => {
   assert(/not unique/.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: POSTs the fields wrapped in a data array", async () => {
+test("lead-create: POSTs the fields wrapped in a data array", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "1" } }] } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("lead-create: POSTs the fields wrapped in a data array", async () => {
   assertEquals(out.details, { id: "1" });
 });
 
-Deno.test("lead-create: surfaces a per-item error as a thrown error", async () => {
+test("lead-create: surfaces a per-item error as a thrown error", async () => {
   const { ctx } = mockZohoCtx([
     { body: { data: [{ code: "MANDATORY_NOT_FOUND", status: "error", message: "Last_Name" }] } },
   ]);
@@ -24,6 +25,6 @@ Deno.test("lead-create: surfaces a per-item error as a thrown error", async () =
   );
 });
 
-Deno.test("lead-create: not idempotent — Zoho mints a new id per call", () => {
+test("lead-create: not idempotent — Zoho mints a new id per call", () => {
   assertEquals(action.idempotent, false);
 });

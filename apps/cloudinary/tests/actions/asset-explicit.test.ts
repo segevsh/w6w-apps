@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-explicit.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("asset-explicit: sends the public id, the required type and the eager work", async () => {
+test("asset-explicit: sends the public id, the required type and the eager work", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { public_id: "hero" } }], conn);
   await action.execute!({ publicId: "hero", eager: "w_400,c_fill" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1_1/acme/image/explicit");
@@ -17,7 +18,7 @@ Deno.test("asset-explicit: sends the public id, the required type and the eager 
   assertEquals(sent.get("eager_async"), "true");
 });
 
-Deno.test("asset-explicit: with nothing to do it refuses rather than calling", async () => {
+test("asset-explicit: with nothing to do it refuses rather than calling", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ publicId: "hero" }, ctx),

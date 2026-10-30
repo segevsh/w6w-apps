@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/leave-types-get.ts";
 
-Deno.test("leave-types-get: GETs getLeaveTypeDetails with userId", async () => {
+test("leave-types-get: GETs getLeaveTypeDetails with userId", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: {
       response: {
@@ -19,7 +20,7 @@ Deno.test("leave-types-get: GETs getLeaveTypeDetails with userId", async () => {
   assertEquals(out.result[0].Id, 46007);
 });
 
-Deno.test("leave-types-get: requires userId", async () => {
+test("leave-types-get: requires userId", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ userId: "" }, ctx) as Promise<unknown>,

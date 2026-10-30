@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getLead from "../../actions/get-lead.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-lead: reads a lead by ID", async () => {
+test("get-lead: reads a lead by ID", async () => {
   const lead = {
     id: "18kPq7GPye-YQ3LyKyAZPw",
     business_id: "VXi7gzRqPKp63X0u6fUtbg",
@@ -19,7 +20,7 @@ Deno.test("get-lead: reads a lead by ID", async () => {
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("get-lead: path-escapes the lead ID", async () => {
+test("get-lead: path-escapes the lead ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await getLead.execute({ leadId: "weird/id with space" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/leads/weird%2Fid%20with%20space");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-asset.ts";
 
-Deno.test("get-asset: GETs /spaces/{s}/environments/{e}/assets/{id} on CDN by default", async () => {
+test("get-asset: GETs /spaces/{s}/environments/{e}/assets/{id} on CDN by default", async () => {
   const body = { sys: { id: "a-1" }, fields: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -15,7 +16,7 @@ Deno.test("get-asset: GETs /spaces/{s}/environments/{e}/assets/{id} on CDN by de
   assertEquals(result, body);
 });
 
-Deno.test("get-asset: routes to Preview API when source=preview", async () => {
+test("get-asset: routes to Preview API when source=preview", async () => {
   const { ctx, calls } = mockCtx([{ body: { sys: { id: "a-1" } } }]);
   await action.execute!(
     { assetId: "a-1", spaceId: "sp", environmentId: "master", source: "preview" },
@@ -24,7 +25,7 @@ Deno.test("get-asset: routes to Preview API when source=preview", async () => {
   assertEquals(new URL(calls[0].url).origin, "https://preview.contentful.com");
 });
 
-Deno.test("get-asset: falls back to connection.display for space/env", async () => {
+test("get-asset: falls back to connection.display for space/env", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], {
     connection: {
       display: { space: { id: "conn-sp" }, environment: { id: "staging" } },

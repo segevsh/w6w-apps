@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listPeople from "../../actions/list-people.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-people: calls GET /people/v2/people and maps attributes", async () => {
+test("list-people: calls GET /people/v2/people and maps attributes", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: collection(
@@ -40,14 +41,14 @@ Deno.test("list-people: calls GET /people/v2/people and maps attributes", async 
   assertEquals(out.totalCount, 1);
 });
 
-Deno.test("list-people: search maps to where[search_name_or_email_or_phone_number]", async () => {
+test("list-people: search maps to where[search_name_or_email_or_phone_number]", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Person", []) }]);
   await listPeople.execute({ search: "jane" }, ctx);
 
   assertEquals(queryOf(calls[0].url)["where[search_name_or_email_or_phone_number]"], "jane");
 });
 
-Deno.test("list-people: defaults per_page to 25 and offset to 0", async () => {
+test("list-people: defaults per_page to 25 and offset to 0", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Person", []) }]);
   await listPeople.execute({}, ctx);
 
@@ -56,7 +57,7 @@ Deno.test("list-people: defaults per_page to 25 and offset to 0", async () => {
   assertEquals(q["offset"], "0");
 });
 
-Deno.test("list-people: pagination meta surfaces the next offset", async () => {
+test("list-people: pagination meta surfaces the next offset", async () => {
   const { ctx } = mockCtx([{
     body: collection("Person", [], { total_count: 200, next: { offset: 25 } }),
   }]);

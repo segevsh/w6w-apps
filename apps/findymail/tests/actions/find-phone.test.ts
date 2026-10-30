@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/find-phone.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("find-phone: POSTs the profile and wraps the response", async () => {
+test("find-phone: POSTs the profile and wraps the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "phone": "+33 6 12 34 56 78" } }]);
   const out = await action.execute!({ "linkedin_url": "johndoe" } as never, ctx);
   const url = new URL(calls[0].url);

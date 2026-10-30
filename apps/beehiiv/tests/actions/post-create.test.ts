@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import postCreate from "../../actions/post-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("post-create: POSTs to /publications/:id/posts with a compacted body", async () => {
+test("post-create: POSTs to /publications/:id/posts with a compacted body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { data: { id: "post_1", preview_url: "https://x/preview" } },
@@ -31,7 +32,7 @@ Deno.test("post-create: POSTs to /publications/:id/posts with a compacted body",
   assertEquals(out.id, "post_1");
 });
 
-Deno.test("post-create: rejects bodyContent and blocks provided together, before any fetch", async () => {
+test("post-create: rejects bodyContent and blocks provided together, before any fetch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -45,7 +46,7 @@ Deno.test("post-create: rejects bodyContent and blocks provided together, before
   assertEquals(calls.length, 0);
 });
 
-Deno.test("post-create: accepts a JSON-string blocks param via asOptionalJson", async () => {
+test("post-create: accepts a JSON-string blocks param via asOptionalJson", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "post_1" } } }]);
   await postCreate.execute({
     publicationId: "pub_1",
@@ -56,7 +57,7 @@ Deno.test("post-create: accepts a JSON-string blocks param via asOptionalJson", 
   assertEquals(sent.blocks, [{ type: "paragraph" }]);
 });
 
-Deno.test("post-create: is a non-idempotent perform action", () => {
+test("post-create: is a non-idempotent perform action", () => {
   assertEquals(postCreate.type, "perform");
   assertEquals(postCreate.idempotent, false);
 });

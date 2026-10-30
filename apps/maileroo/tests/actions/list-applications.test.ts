@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-applications.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-applications: drops smtp_password and sending_key from every row", async () => {
+test("list-applications: drops smtp_password and sending_key from every row", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -34,7 +35,7 @@ Deno.test("list-applications: drops smtp_password and sending_key from every row
   assertEquals(JSON.stringify(out).includes("SECRET"), false);
 });
 
-Deno.test("list-applications: errors throw", async () => {
+test("list-applications: errors throw", async () => {
   await assertRejects(
     () => run(action, {}, mockCtx([{ status: 500, body: { error: { message: "boom" } } }]).ctx),
     Error,

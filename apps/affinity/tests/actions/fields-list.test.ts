@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldsList from "../../actions/fields-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("fields-list: calls GET /fields with no filters by default", async () => {
+test("fields-list: calls GET /fields with no filters by default", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1234, name: "Deal Status" }] }]);
   await fieldsList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/fields");
   assertEquals(Object.keys(queryOf(calls[0].url)).length, 0);
 });
 
-Deno.test("fields-list: forwards list_id/value_type/entity_type filters", async () => {
+test("fields-list: forwards list_id/value_type/entity_type filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await fieldsList.execute({ listId: 11, valueType: 3, entityType: 1 }, ctx);
   const q = queryOf(calls[0].url);

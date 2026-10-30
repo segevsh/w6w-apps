@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/repo-create.ts";
 
@@ -8,7 +9,7 @@ const created = {
 };
 
 /** The Hub's own default is public, which an automation rarely means. */
-Deno.test("repo-create: defaults to private, against the Hub", async () => {
+test("repo-create: defaults to private, against the Hub", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute({ name: "scores", type: "model" }, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("repo-create: defaults to private, against the Hub", async () => {
   assert(/defaults to PRIVATE/.test(action.description!), action.description);
 });
 
-Deno.test("repo-create: posts to the create endpoint and returns the URL and id", async () => {
+test("repo-create: posts to the create endpoint and returns the URL and id", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute({ name: "scores", type: "dataset" }, ctx) as Record<
     string,
@@ -34,7 +35,7 @@ Deno.test("repo-create: posts to the create endpoint and returns the URL and id"
 });
 
 /** A token can create under the user or under any of its organisations. */
-Deno.test("repo-create: the namespace is explicit, not implied by the token", async () => {
+test("repo-create: the namespace is explicit, not implied by the token", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({ name: "scores", type: "model", organization: "acme" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).organization, "acme");
@@ -45,7 +46,7 @@ Deno.test("repo-create: the namespace is explicit, not implied by the token", as
 });
 
 /** Creating in the wrong place is a move-and-relink job, not a rename. */
-Deno.test("repo-create: a namespaced name is refused, pointing at the right field", async () => {
+test("repo-create: a namespaced name is refused, pointing at the right field", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -57,7 +58,7 @@ Deno.test("repo-create: a namespaced name is refused, pointing at the right fiel
   assertEquals(calls.length, 0);
 });
 
-Deno.test("repo-create: a Space needs an SDK, and other types do not", async () => {
+test("repo-create: a Space needs an SDK, and other types do not", async () => {
   const missing = mockCtx([]);
   let message = "";
   try {
@@ -78,7 +79,7 @@ Deno.test("repo-create: a Space needs an SDK, and other types do not", async () 
 });
 
 /** Turning it off publishes to everyone, which is worth a line in the log. */
-Deno.test("repo-create: creating a public repository logs a warning", async () => {
+test("repo-create: creating a public repository logs a warning", async () => {
   const publicRepo = mockCtx([created]);
   await action.execute({ name: "scores", type: "model", private: false }, publicRepo.ctx);
   assertEquals(publicRepo.logs[0].level, "warn");
@@ -89,7 +90,7 @@ Deno.test("repo-create: creating a public repository logs a warning", async () =
   assertEquals(privateRepo.logs[0].level, "info");
 });
 
-Deno.test("repo-create: a name is required and creates nothing without one", async () => {
+test("repo-create: a name is required and creates nothing without one", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -102,7 +103,7 @@ Deno.test("repo-create: a name is required and creates nothing without one", asy
 });
 
 /** There is no converting one type into another. */
-Deno.test("repo-create: the type hint says it is fixed at creation", () => {
+test("repo-create: the type hint says it is fixed at creation", () => {
   const type = action.params!.find((p) => p.key === "type")!;
   assert(/no converting one type into another/.test(type.hint!), type.hint);
   assertEquals(action.idempotent, false);

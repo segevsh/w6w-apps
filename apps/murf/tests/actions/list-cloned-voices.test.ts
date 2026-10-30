@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-cloned-voices.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("list-cloned-voices: GETs /v1/speech/voices/cloned and counts", async () => {
+test("list-cloned-voices: GETs /v1/speech/voices/cloned and counts", async () => {
   const voices = [{
     voiceId: "cln_1",
     displayName: "Me",
@@ -15,7 +16,7 @@ Deno.test("list-cloned-voices: GETs /v1/speech/voices/cloned and counts", async 
   assertEquals(out, { voices, count: 1 });
 });
 
-Deno.test("list-cloned-voices: a 403 or a non-array body fails", async () => {
+test("list-cloned-voices: a 403 or a non-array body fails", async () => {
   const a = mockCtx([{ status: 403, body: { error_message: "Forbidden", error_code: 403 } }]);
   assertEquals((await failure(action, {}, a.ctx)).includes("Forbidden"), true);
   const b = mockCtx([{ body: { x: 1 } }]);

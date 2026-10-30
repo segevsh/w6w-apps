@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { API_ROOT, count, mockCtx, page, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: calls GET /contacts and returns the page", async () => {
+test("contact-list: calls GET /contacts and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, email: "a@b.c" }], { total: 340 }) }]);
   const out = await contactList.execute({ perPage: 100 }, ctx) as { total: number };
 
@@ -12,19 +13,19 @@ Deno.test("contact-list: calls GET /contacts and returns the page", async () => 
   assertEquals(out.total, 340);
 });
 
-Deno.test("contact-list: the URL is built against api.sendfox.com", async () => {
+test("contact-list: the URL is built against api.sendfox.com", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute({}, ctx);
   assertEquals(calls[0].url.startsWith(`${API_ROOT}/contacts`), true, calls[0].url);
 });
 
-Deno.test("contact-list: prefills the vendor's own 100 per page", () => {
+test("contact-list: prefills the vendor's own 100 per page", () => {
   const perPage = (contactList.params ?? []).find((p) => p.key === "perPage");
   assertEquals(perPage?.default, 100);
   assertEquals(perPage?.validation?.max, 1000);
 });
 
-Deno.test("contact-list: count_only returns {count, filter} and sends the flag", async () => {
+test("contact-list: count_only returns {count, filter} and sends the flag", async () => {
   const { ctx, calls } = mockCtx([{ body: count(128, "filter: never_opened") }]);
   const out = await contactList.execute({ countOnly: true }, ctx) as { count: number };
 
@@ -32,7 +33,7 @@ Deno.test("contact-list: count_only returns {count, filter} and sends the flag",
   assertEquals(out.count, 128);
 });
 
-Deno.test("contact-list: falsy booleans are sent as false, not dropped", async () => {
+test("contact-list: falsy booleans are sent as false, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute({ unsubscribed: false, neverOpened: false }, ctx);
 
@@ -42,7 +43,7 @@ Deno.test("contact-list: falsy booleans are sent as false, not dropped", async (
   });
 });
 
-Deno.test("contact-list: the filter grammar is mapped to SendFox's own bracket names", async () => {
+test("contact-list: the filter grammar is mapped to SendFox's own bracket names", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute(
     {
@@ -68,7 +69,7 @@ Deno.test("contact-list: the filter grammar is mapped to SendFox's own bracket n
  * on the wire as a repeated key — never comma-joined, which Laravel would read as
  * one bad id.
  */
-Deno.test("contact-list: id-array filters are sent as a repeated key", async () => {
+test("contact-list: id-array filters are sent as a repeated key", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute({ inListIds: [1, 2], tagIds: [7] }, ctx);
 
@@ -77,7 +78,7 @@ Deno.test("contact-list: id-array filters are sent as a repeated key", async () 
   assertEquals(queryOf(calls[0].url)["filter[in_list_ids]"], "2");
 });
 
-Deno.test("contact-list: an empty id list and an empty search are omitted entirely", async () => {
+test("contact-list: an empty id list and an empty search are omitted entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute({ inListIds: [], query: "" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

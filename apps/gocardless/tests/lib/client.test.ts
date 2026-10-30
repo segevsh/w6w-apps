@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_BASE,
   API_HOSTS,
@@ -20,7 +21,7 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, mockCtxWithInvocation, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("hosts: both environments, with live as the default origin", () => {
+test("hosts: both environments, with live as the default origin", () => {
   assertEquals(API_HOSTS.live, "api.gocardless.com");
   assertEquals(API_HOSTS.sandbox, "api-sandbox.gocardless.com");
   assertEquals(API_BASE, "https://api.gocardless.com");
@@ -34,7 +35,7 @@ Deno.test("hosts: both environments, with live as the default origin", () => {
   assertEquals(environmentOf("nonsense"), "live");
 });
 
-Deno.test("compact: unset keys go, false and 0 stay", () => {
+test("compact: unset keys go, false and 0 stay", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -42,26 +43,26 @@ Deno.test("compact: unset keys go, false and 0 stay", () => {
   });
 });
 
-Deno.test("envelope: the body is wrapped in the resource's plural name", () => {
+test("envelope: the body is wrapped in the resource's plural name", () => {
   assertEquals(envelope("customers", { email: "a@b.co" }), { customers: { email: "a@b.co" } });
   // The empty action envelope used by the cancel endpoints.
   assertEquals(envelope("payments"), { payments: {} });
 });
 
-Deno.test("encodeId: legal ids survive, path metacharacters do not", () => {
+test("encodeId: legal ids survive, path metacharacters do not", () => {
   assertEquals(encodeId("MD0000"), "MD0000");
   assertEquals(encodeId("  PM1 "), "PM1");
   assertEquals(encodeId("PM1/../creditors"), "PM1%2F..%2Fcreditors");
 });
 
-Deno.test("truncate: says how much it dropped", () => {
+test("truncate: says how much it dropped", () => {
   assertEquals(truncate("short", 100), "short");
   const long = truncate("x".repeat(50), 10);
   assertEquals(long.startsWith("x".repeat(10)), true);
   assertEquals(long.includes("50 bytes truncated"), true);
 });
 
-Deno.test("asOptionalJson: parsed values pass through, JSON text is parsed, junk throws", () => {
+test("asOptionalJson: parsed values pass through, JSON text is parsed, junk throws", () => {
   assertEquals(asOptionalJson({ a: 1 }, "Metadata"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "Metadata"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "Metadata"), undefined);
@@ -76,7 +77,7 @@ Deno.test("asOptionalJson: parsed values pass through, JSON text is parsed, junk
 
 // --- the error envelope ------------------------------------------------------
 
-Deno.test("parseGoCardlessError: the documented envelope, and nothing else", () => {
+test("parseGoCardlessError: the documented envelope, and nothing else", () => {
   const parsed = parseGoCardlessError(JSON.stringify(errorBody("invalid_api_usage", {
     code: 401,
     errors: [{ reason: "unauthorized" }],
@@ -89,7 +90,7 @@ Deno.test("parseGoCardlessError: the documented envelope, and nothing else", () 
   assertEquals(parseGoCardlessError('{"result":"ok"}'), undefined);
 });
 
-Deno.test("errorCodeOf: `reason` for most types, `field` for validation_failed", () => {
+test("errorCodeOf: `reason` for most types, `field` for validation_failed", () => {
   const reason = parseGoCardlessError(JSON.stringify(errorBody("invalid_state", {
     errors: [{ reason: "mandate_not_active" }],
   })));
@@ -102,7 +103,7 @@ Deno.test("errorCodeOf: `reason` for most types, `field` for validation_failed",
   assertEquals(errorCodeOf(undefined), undefined);
 });
 
-Deno.test("formatGoCardlessError: one line, in the documented shape", () => {
+test("formatGoCardlessError: one line, in the documented shape", () => {
   const line = formatGoCardlessError(
     422,
     "POST",
@@ -120,7 +121,7 @@ Deno.test("formatGoCardlessError: one line, in the documented shape", () => {
   );
 });
 
-Deno.test("formatGoCardlessError: the vendor's code wins over the status line", () => {
+test("formatGoCardlessError: the vendor's code wins over the status line", () => {
   const line = formatGoCardlessError(
     400,
     "GET",
@@ -130,7 +131,7 @@ Deno.test("formatGoCardlessError: the vendor's code wins over the status line", 
   assertEquals(line.startsWith("GoCardless 403 gocardless for GET /customers"), true, line);
 });
 
-Deno.test("formatGoCardlessError: an idempotency conflict names the existing resource", () => {
+test("formatGoCardlessError: an idempotency conflict names the existing resource", () => {
   const line = formatGoCardlessError(
     409,
     "POST",
@@ -149,7 +150,7 @@ Deno.test("formatGoCardlessError: an idempotency conflict names the existing res
   assertEquals(line.includes("PM0000ABC"), true, line);
 });
 
-Deno.test("conflictingResourceIdOf: only for the conflict reason, only when linked", () => {
+test("conflictingResourceIdOf: only for the conflict reason, only when linked", () => {
   const conflict = parseGoCardlessError(JSON.stringify(errorBody("invalid_state", {
     errors: [{ reason: "idempotent_creation_conflict", links: { conflicting_resource_id: "PM1" } }],
   })));
@@ -161,12 +162,12 @@ Deno.test("conflictingResourceIdOf: only for the conflict reason, only when link
   assertEquals(conflictingResourceIdOf(other), undefined);
 });
 
-Deno.test("formatGoCardlessError: a body that is not JSON falls back to the raw text", () => {
+test("formatGoCardlessError: a body that is not JSON falls back to the raw text", () => {
   const line = formatGoCardlessError(500, "GET", "/creditors", "<html>oops</html>");
   assertEquals(line, "GoCardless 500 for GET /creditors: <html>oops</html>");
 });
 
-Deno.test("formatGoCardlessError: an empty body is admitted rather than rendered blank", () => {
+test("formatGoCardlessError: an empty body is admitted rather than rendered blank", () => {
   assertEquals(
     formatGoCardlessError(502, "GET", "/creditors", ""),
     "GoCardless 502 for GET /creditors (empty response body)",
@@ -175,7 +176,7 @@ Deno.test("formatGoCardlessError: an empty body is admitted rather than rendered
 
 // --- the client's wire format ------------------------------------------------
 
-Deno.test("client: a GET sends accept and nothing that looks like a credential", async () => {
+test("client: a GET sends accept and nothing that looks like a credential", async () => {
   const { ctx, calls } = mockCtx([{ body: { customers: [] } }]);
   await new GoCardlessClient(ctx).json("/customers?limit=1");
 
@@ -185,7 +186,7 @@ Deno.test("client: a GET sends accept and nothing that looks like a credential",
   assertEquals(calls[0].headers, { accept: "application/json" });
 });
 
-Deno.test("client: a body brings content-type, and blank query values are dropped", async () => {
+test("client: a body brings content-type, and blank query values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { customers: {} } }]);
   await new GoCardlessClient(ctx).json("/customers", {
     method: "POST",
@@ -197,7 +198,7 @@ Deno.test("client: a body brings content-type, and blank query values are droppe
   assertEquals(queryOf(calls[0].url), { zero: "0" });
 });
 
-Deno.test("client: an Idempotency-Key is only sent when there is one", async () => {
+test("client: an Idempotency-Key is only sent when there is one", async () => {
   const first = mockCtx([{ body: { customers: {} } }]);
   await new GoCardlessClient(first.ctx).create("customers", "/customers", {}, "key-1");
   assertEquals(first.calls[0].headers["idempotency-key"], "key-1");
@@ -208,7 +209,7 @@ Deno.test("client: an Idempotency-Key is only sent when there is one", async () 
 });
 
 /** `ctx.invocation.invocationId` is the fallback, exactly as the README says. */
-Deno.test("resolveIdempotencyKey: the typed key wins, the invocation id is the fallback", () => {
+test("resolveIdempotencyKey: the typed key wins, the invocation id is the fallback", () => {
   const { ctx } = mockCtxWithInvocation([], "inv-1");
   assertEquals(resolveIdempotencyKey("typed", ctx), "typed");
   assertEquals(resolveIdempotencyKey("   ", ctx), "inv-1");
@@ -217,7 +218,7 @@ Deno.test("resolveIdempotencyKey: the typed key wins, the invocation id is the f
   assertEquals(resolveIdempotencyKey("", mockCtx().ctx), undefined);
 });
 
-Deno.test("client: a list read reports null cursors when meta is absent", async () => {
+test("client: a list read reports null cursors when meta is absent", async () => {
   const { ctx } = mockCtx([{ body: { customers: [{ id: "CU1" }] } }]);
   const page = await new GoCardlessClient(ctx).list("customers", "/customers");
   assertEquals(page.items, [{ id: "CU1" }]);
@@ -225,7 +226,7 @@ Deno.test("client: a list read reports null cursors when meta is absent", async 
   assertEquals(page.limit, undefined);
 });
 
-Deno.test("client: a failure throws a typed error carrying the vendor's own code", async () => {
+test("client: a failure throws a typed error carrying the vendor's own code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid_state", {
@@ -246,7 +247,7 @@ Deno.test("client: a failure throws a typed error carrying the vendor's own code
   assertEquals(err.message.includes("invalid_state/mandate_not_active"), true, err.message);
 });
 
-Deno.test("client: a success body that is not JSON is refused rather than guessed", async () => {
+test("client: a success body that is not JSON is refused rather than guessed", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: { "content-type": "text/html" },

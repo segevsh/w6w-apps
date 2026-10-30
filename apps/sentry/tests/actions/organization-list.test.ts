@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: needs no org on the connection", async () => {
+test("organization-list: needs no org on the connection", async () => {
   // The one action that works before a slug is known — it is how you find one.
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ slug: "acme" }] }], {
     display: { endpoint: "https://us.sentry.io" },
@@ -12,7 +13,7 @@ Deno.test("organization-list: needs no org on the connection", async () => {
   assertEquals(result, [{ slug: "acme" }]);
 });
 
-Deno.test("organization-list: owner is only sent when asked for", async () => {
+test("organization-list: owner is only sent when asked for", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }, { status: 200, body: [] }], {
     display: {},
   });

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/snapshot-create.ts";
 
 const droplet = (status: string) => ({ status: 200, body: { droplet: { status } } });
 const accepted = { status: 201, body: { action: { id: 7654321, status: "in-progress" } } };
 
-Deno.test("snapshot-create: checks the droplet, then posts the snapshot action", async () => {
+test("snapshot-create: checks the droplet, then posts the snapshot action", async () => {
   const { ctx, calls } = mockCtx([droplet("off"), accepted]);
   const result = await action.execute(
     { dropletId: "3164444", name: "pre-upgrade" },
@@ -17,7 +18,7 @@ Deno.test("snapshot-create: checks the droplet, then posts the snapshot action",
 });
 
 /** Allowed, and the same state as after a power cut. */
-Deno.test("snapshot-create: a running droplet gives a crash-consistent snapshot, and warns", async () => {
+test("snapshot-create: a running droplet gives a crash-consistent snapshot, and warns", async () => {
   const { ctx, logs } = mockCtx([droplet("active"), accepted]);
   const result = await action.execute(
     { dropletId: "3164444", name: "nightly" },
@@ -30,7 +31,7 @@ Deno.test("snapshot-create: a running droplet gives a crash-consistent snapshot,
 });
 
 /** Nothing else records why a snapshot was taken. */
-Deno.test("snapshot-create: a name is required, and says why", async () => {
+test("snapshot-create: a name is required, and says why", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -43,7 +44,7 @@ Deno.test("snapshot-create: a name is required, and says why", async () => {
 });
 
 /** Insurance with a monthly premium and no cancellation date. */
-Deno.test("snapshot-create: reports that it bills monthly forever", async () => {
+test("snapshot-create: reports that it bills monthly forever", async () => {
   const { ctx } = mockCtx([droplet("off"), accepted]);
   const result = await action.execute(
     { dropletId: "3164444", name: "x" },

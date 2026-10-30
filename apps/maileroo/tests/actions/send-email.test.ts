@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("send-email: posts the vendor body to /emails on the Email API", async () => {
+test("send-email: posts the vendor body to /emails on the Email API", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       success: true,
@@ -41,7 +42,7 @@ Deno.test("send-email: posts the vendor body to /emails on the Email API", async
   });
 });
 
-Deno.test("send-email: a plain-text-only email sends plain and no html", async () => {
+test("send-email: a plain-text-only email sends plain and no html", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { reference_id: "a".repeat(24) } },
   }]);
@@ -51,7 +52,7 @@ Deno.test("send-email: a plain-text-only email sends plain and no html", async (
   assertEquals(sent.html, undefined);
 });
 
-Deno.test("send-email: needs a body, validates locally, and surfaces success:false", async () => {
+test("send-email: needs a body, validates locally, and surfaces success:false", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { success: false, message: "domain not verified" },

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteCreate from "../../actions/note-create.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-create: POST /v1/notes with the documented parameters", async () => {
+test("note-create: POST /v1/notes with the documented parameters", async () => {
   const response = { id: "n1", title: "Hello" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteCreate.execute({
@@ -27,7 +28,7 @@ Deno.test("note-create: POST /v1/notes with the documented parameters", async ()
   assertEquals(out, response);
 });
 
-Deno.test("note-create: a vendor error surfaces its own message and id", async () => {
+test("note-create: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -46,7 +47,7 @@ Deno.test("note-create: a vendor error surfaces its own message and id", async (
   );
 });
 
-Deno.test("note-create: a blank title, or a bad listPosition, is refused before any request", async () => {
+test("note-create: a blank title, or a bad listPosition, is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await noteCreate.execute({ title: "  " }, ctx), Error, "title");
   await assertRejects(
@@ -57,7 +58,7 @@ Deno.test("note-create: a blank title, or a bad listPosition, is refused before 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("note-create: only the title is sent when nothing else is given", async () => {
+test("note-create: only the title is sent when nothing else is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await noteCreate.execute({ title: "T", markdown: "", templateId: "tpl" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "null"), { title: "T", templateId: "tpl" });

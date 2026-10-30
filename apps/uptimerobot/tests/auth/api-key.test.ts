@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is a body-located apiKey method with a single apiKey field", () => {
+test("api-key: is a body-located apiKey method with a single apiKey field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "body", name: "api_key" });
@@ -12,7 +13,7 @@ Deno.test("api-key: is a body-located apiKey method with a single apiKey field",
   assertEquals(field.type, "secret");
 });
 
-Deno.test("api-key: sign injects api_key into an EMPTY body (e.g. account-get)", async () => {
+test("api-key: sign injects api_key into an EMPTY body (e.g. account-get)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.uptimerobot.com/v2/getAccountDetails",
@@ -28,7 +29,7 @@ Deno.test("api-key: sign injects api_key into an EMPTY body (e.g. account-get)",
   assertEquals(out.headers["authorization"], undefined);
 });
 
-Deno.test("api-key: sign MERGES api_key into a body an action already populated", async () => {
+test("api-key: sign MERGES api_key into a body an action already populated", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.uptimerobot.com/v2/newMonitor",
@@ -47,7 +48,7 @@ Deno.test("api-key: sign MERGES api_key into a body an action already populated"
   assertEquals(params.get("format"), "json");
 });
 
-Deno.test("api-key: sign sets the form-urlencoded content-type header", async () => {
+test("api-key: sign sets the form-urlencoded content-type header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.uptimerobot.com/v2/getAccountDetails",
@@ -59,7 +60,7 @@ Deno.test("api-key: sign sets the form-urlencoded content-type header", async ()
   assertEquals(out.headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("api-key: sign does not double-set format if an action already sent one", async () => {
+test("api-key: sign does not double-set format if an action already sent one", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.uptimerobot.com/v2/getMonitors",
@@ -72,7 +73,7 @@ Deno.test("api-key: sign does not double-set format if an action already sent on
   assertEquals(params.get("format"), "xml");
 });
 
-Deno.test("api-key: test POSTs api_key and format=json in the body to getAccountDetails", async () => {
+test("api-key: test POSTs api_key and format=json in the body to getAccountDetails", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { stat: "ok", account: { email: "a@b.com" } },
@@ -92,7 +93,7 @@ Deno.test("api-key: test POSTs api_key and format=json in the body to getAccount
   assertEquals(body.get("format"), "json");
 });
 
-Deno.test("api-key: test reports failure when UptimeRobot's stat is not ok", async () => {
+test("api-key: test reports failure when UptimeRobot's stat is not ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { stat: "fail", error: { type: "invalid_parameter", message: "api_key is invalid." } },
@@ -102,14 +103,14 @@ Deno.test("api-key: test reports failure when UptimeRobot's stat is not ok", asy
   assert(result.message?.includes("invalid"));
 });
 
-Deno.test("api-key: test reports failure on an HTTP-level error", async () => {
+test("api-key: test reports failure on an HTTP-level error", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await auth.test({ credential: { apiKey: "k" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("500"));
 });
 
-Deno.test("api-key: test reports failure when the field is missing", async () => {
+test("api-key: test reports failure when the field is missing", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

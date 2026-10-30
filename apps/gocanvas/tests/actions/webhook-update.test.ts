@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PATCH /api/v3/forms/346127/webhooks/1 with the documented shape", async () => {
+test("webhook-update: PATCH /api/v3/forms/346127/webhooks/1 with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "message": "Webhook has been updated successfully" },
   }]);

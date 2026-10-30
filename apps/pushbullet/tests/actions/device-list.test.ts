@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deviceList from "../../actions/device-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("device-list: GETs /v2/devices with mapped query params", async () => {
+test("device-list: GETs /v2/devices with mapped query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { devices: [{ iden: "d1" }] } }]);
   const out = await deviceList.execute({ active: true, limit: 5 }, ctx) as { devices: unknown[] };
 
@@ -12,7 +13,7 @@ Deno.test("device-list: GETs /v2/devices with mapped query params", async () => 
   assertEquals(out.devices.length, 1);
 });
 
-Deno.test("device-list: defaults to an empty array when the key is absent", async () => {
+test("device-list: defaults to an empty array when the key is absent", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await deviceList.execute({}, ctx) as { devices: unknown[] };
   assertEquals(out.devices, []);

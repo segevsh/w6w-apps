@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-update.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("asset-update: posts the changed fields, form-encoded", async () => {
+test("asset-update: posts the changed fields, form-encoded", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ publicId: "products/hero", tags: "a,b" }, ctx);
   assertEquals(
@@ -15,13 +16,13 @@ Deno.test("asset-update: posts the changed fields, form-encoded", async () => {
 });
 
 /** The tag field here replaces everything; the additive route is asset-tag. */
-Deno.test("asset-update: the tags hint warns that it replaces", () => {
+test("asset-update: the tags hint warns that it replaces", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "tags")!;
   assert(/REPLACES/.test(p.hint!), p.hint);
   assert(/Manage Tags/i.test(action.description!), action.description);
 });
 
-Deno.test("asset-update: an empty update is refused rather than sent", async () => {
+test("asset-update: an empty update is refused rather than sent", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ publicId: "x" }, ctx), Error, "nothing");
   assertEquals(calls.length, 0);

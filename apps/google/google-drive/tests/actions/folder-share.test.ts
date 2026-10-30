@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-share.ts";
 
-Deno.test("folder-share: POSTs a permission on /files/{folderId}/permissions", async () => {
+test("folder-share: POSTs a permission on /files/{folderId}/permissions", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "perm-1" } }]);
   await action.execute!(
     {

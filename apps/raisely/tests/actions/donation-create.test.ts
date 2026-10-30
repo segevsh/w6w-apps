@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import donationCreate from "../../actions/donation-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("donation-create: POST /v3/donations with the documented wrapped body", async () => {
+test("donation-create: POST /v3/donations with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "r-1" }) }]);
   const out = await donationCreate.execute({
     "private": true,
@@ -36,12 +37,12 @@ Deno.test("donation-create: POST /v3/donations with the documented wrapped body"
   assertEquals(out, { uuid: "r-1" });
 });
 
-Deno.test("donation-create: is a perform action marked idempotent=false", () => {
+test("donation-create: is a perform action marked idempotent=false", () => {
   assertEquals(donationCreate.type, "perform");
   assertEquals(donationCreate.idempotent, false);
 });
 
-Deno.test("donation-create: only the fields given are sent", async () => {
+test("donation-create: only the fields given are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await donationCreate.execute({
     "email": "e@b.org",
@@ -61,7 +62,7 @@ Deno.test("donation-create: only the fields given are sent", async () => {
   });
 });
 
-Deno.test("donation-create: malformed JSON in a custom-field param fails before any request", async () => {
+test("donation-create: malformed JSON in a custom-field param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -85,7 +86,7 @@ Deno.test("donation-create: malformed JSON in a custom-field param fails before 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("donation-create: an HTTP error becomes a readable Raisely error", async () => {
+test("donation-create: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

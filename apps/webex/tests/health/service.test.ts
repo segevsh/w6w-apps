@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HealthFeedEntry, HealthFeedInput } from "@w6w/types";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -25,7 +26,7 @@ const run = (feed: HealthFeedInput | undefined) => {
   return service.check!({ feed }, ctx);
 };
 
-Deno.test("service: is a feed-backed, unsigned, app-scoped, informational check", () => {
+test("service: is a feed-backed, unsigned, app-scoped, informational check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
   assertEquals(service.feed?.url, "https://status.webex.com/history.rss");
@@ -41,11 +42,11 @@ Deno.test("service: is a feed-backed, unsigned, app-scoped, informational check"
   assertEquals(service.unavailable, undefined);
 });
 
-Deno.test("service: no open incidents is ok", async () => {
+test("service: no open incidents is ok", async () => {
   assertEquals((await run(feedInput({}))).state, "ok");
 });
 
-Deno.test("service: an open incident is degraded and names itself", async () => {
+test("service: an open incident is degraded and names itself", async () => {
   const r = await run(
     feedInput({
       latest: [entry("Webex Services: Login failures for the Webex API service", "investigating")],
@@ -55,7 +56,7 @@ Deno.test("service: an open incident is degraded and names itself", async () => 
   assert(r.message?.includes("Webex Services: Login failures for the Webex API service"));
 });
 
-Deno.test("service: a resolved/completed/monitoring incident is not a live outage", async () => {
+test("service: a resolved/completed/monitoring incident is not a live outage", async () => {
   for (const marker of ["resolved", "completed", "monitoring"]) {
     const r = await run(
       feedInput({ latest: [entry("Webex Calling Service Maintenance", `in progress ${marker}`)] }),
@@ -64,7 +65,7 @@ Deno.test("service: a resolved/completed/monitoring incident is not a live outag
   }
 });
 
-Deno.test("service: a mixed feed reports only what is still open", async () => {
+test("service: a mixed feed reports only what is still open", async () => {
   const r = await run(feedInput({
     latest: [
       entry("Old maintenance", "completed"),
@@ -75,12 +76,12 @@ Deno.test("service: a mixed feed reports only what is still open", async () => {
   assertEquals(r.message, "Live incident");
 });
 
-Deno.test("service: an unreadable feed is unknown, never down", async () => {
+test("service: an unreadable feed is unknown, never down", async () => {
   assertEquals((await run(feedInput({ error: "502" }))).state, "unknown");
   assertEquals((await run(undefined)).state, "unknown");
 });
 
-Deno.test("service: the check makes no network call of its own", async () => {
+test("service: the check makes no network call of its own", async () => {
   const { ctx, calls } = mockCtx();
   await service.check!({ feed: feedInput({}) }, ctx);
   assertEquals(calls.length, 0);

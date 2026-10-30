@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import targetsList from "../../actions/targets-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("targets-list: returns targets and a count", async () => {
+test("targets-list: returns targets and a count", async () => {
   const targets = [{ key: "inbox", type: "system", name: null }];
   const { ctx, calls } = mockCtx([{ body: { targets } }]);
   const out = await targetsList.execute({}, ctx) as { targets: unknown[]; count: number };

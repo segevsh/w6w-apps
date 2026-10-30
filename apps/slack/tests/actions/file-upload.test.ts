@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-upload.ts";
 
-Deno.test("file-upload: runs the 3-step v2 flow (getUploadURLExternal → PUT → completeUploadExternal)", async () => {
+test("file-upload: runs the 3-step v2 flow (getUploadURLExternal → PUT → completeUploadExternal)", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

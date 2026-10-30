@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobGet from "../../actions/job-get.ts";
 import { envelope, hostOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-get: GETs /v2/jobs/{id} on the async host", async () => {
+test("job-get: GETs /v2/jobs/{id} on the async host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "j1", status: "processing" }),
@@ -14,19 +15,19 @@ Deno.test("job-get: GETs /v2/jobs/{id} on the async host", async () => {
   assertEquals(out.id, "j1");
 });
 
-Deno.test("job-get: passes include as a comma-joined query value", async () => {
+test("job-get: passes include as a comma-joined query value", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "j1" }) }]);
   await jobGet.execute({ jobId: "j1", include: ["tasks"] }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "tasks" });
 });
 
-Deno.test("job-get: URL-encodes the job id", async () => {
+test("job-get: URL-encodes the job id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   await jobGet.execute({ jobId: "abc def" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/jobs/abc%20def");
 });
 
-Deno.test("job-get: exposes no redirect param", () => {
+test("job-get: exposes no redirect param", () => {
   const keys = jobGet.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("redirect"), false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callSummaryGet from "../../actions/call-summary-get.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-summary-get: hits calls/summary.json and forwards group_by + tags/trackers arrays", async () => {
+test("call-summary-get: hits calls/summary.json and forwards group_by + tags/trackers arrays", async () => {
   const { ctx, calls } = mockCtx([{
     body: { start_date: "2016-10-10", end_date: "2016-11-09", total_results: { total_calls: 160 } },
   }]);

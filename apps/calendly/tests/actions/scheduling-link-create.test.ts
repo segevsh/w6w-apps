@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/scheduling-link-create.ts";
 
-Deno.test("scheduling-link-create: POSTs the owner as an EventType", async () => {
+test("scheduling-link-create: POSTs the owner as an EventType", async () => {
   const { ctx, calls } = mockCtx([{ body: { resource: { booking_url: "https://x" } } }]);
   await action.execute({ owner: "https://api.calendly.com/event_types/CCCC" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdateStatus from "../../actions/contact-update-status.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update-status: PUTs to /v2.1/contacts/status with the DND/DNM/blacklist lists", async () => {
+test("contact-update-status: PUTs to /v2.1/contacts/status with the DND/DNM/blacklist lists", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 1234 }) }]);
   await contactUpdateStatus.execute({ id: 1234, add_to: ["dnd", "dnm"] }, ctx);
 

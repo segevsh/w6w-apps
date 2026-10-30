@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/customer-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("customer-create: POSTs references as {xNumber} objects and omits unset fields", async () => {
+test("customer-create: POSTs references as {xNumber} objects and omits unset fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { customerNumber: 42, name: "Acme" } }]);
   const out = await action.execute!({
     name: "Acme",
@@ -28,7 +29,7 @@ Deno.test("customer-create: POSTs references as {xNumber} objects and omits unse
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("customer-create: flattens the annotated validation errors into the message", async () => {
+test("customer-create: flattens the annotated validation errors into the message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

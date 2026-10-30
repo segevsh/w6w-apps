@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-calendar-one-time-link-create.ts";
 
-Deno.test("booking-calendar-one-time-link-create: POSTs /booking-calendars/{id}/one-time-links", async () => {
+test("booking-calendar-one-time-link-create: POSTs /booking-calendars/{id}/one-time-links", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "QUHVEKLPD93M", url: "https://oncehub.com/.QUHVEKLPD93M" },
   }]);

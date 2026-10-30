@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import collectionUnshare from "../../actions/collection-unshare.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-unshare: DELETEs /collection/{id}/sharing", async () => {
+test("collection-unshare: DELETEs /collection/{id}/sharing", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   const out = await collectionUnshare.execute({ id: 8492393 }, ctx) as { result: boolean };
 
@@ -18,7 +19,7 @@ Deno.test("collection-unshare: DELETEs /collection/{id}/sharing", async () => {
  * out — which makes this assertion the guard on the one thing this action can
  * actually do about it.
  */
-Deno.test("collection-unshare: the description spells out both outcomes", () => {
+test("collection-unshare: the description spells out both outcomes", () => {
   const description = collectionUnshare.description ?? "";
   assert(/owns/i.test(description), description);
   assert(/ALL collaborators/i.test(description), description);

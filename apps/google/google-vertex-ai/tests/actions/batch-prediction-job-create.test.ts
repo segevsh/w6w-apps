@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import jobCreate from "../../actions/batch-prediction-job-create.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 const BASE = "https://us-central1-aiplatform.googleapis.com/v1/projects/p1/locations/us-central1";
 
-Deno.test("batch-prediction-job-create: GCS jsonl in, GCS out", async () => {
+test("batch-prediction-job-create: GCS jsonl in, GCS out", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "n", state: "JOB_STATE_PENDING" } }], {
     display,
   });
@@ -31,7 +32,7 @@ Deno.test("batch-prediction-job-create: GCS jsonl in, GCS out", async () => {
   assertEquals(out, { name: "n", state: "JOB_STATE_PENDING" });
 });
 
-Deno.test("batch-prediction-job-create: BigQuery in and out, and the required inputs", async () => {
+test("batch-prediction-job-create: BigQuery in and out, and the required inputs", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await jobCreate.execute!({
     displayName: "bq",

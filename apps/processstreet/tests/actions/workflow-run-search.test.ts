@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-run-search.ts";
 
-Deno.test("workflow-run-search: is a `search` action, distinct from workflow-run-list", () => {
+test("workflow-run-search: is a `search` action, distinct from workflow-run-list", () => {
   assertEquals(action.type, "search");
 });
 
-Deno.test("workflow-run-search: GETs /workflow-runs and reads the `workflowRuns` envelope", async () => {
+test("workflow-run-search: GETs /workflow-runs and reads the `workflowRuns` envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { workflowRuns: [{ id: "run1", status: "Active", workflowId: "w1" }] },
   }]);

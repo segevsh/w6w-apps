@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/site-get.ts";
 
-Deno.test("site-get: targets /sites/{siteId} with no extra path segment", async () => {
+test("site-get: targets /sites/{siteId} with no extra path segment", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { site: { id: "site-1", name: "Marketing", contentUrl: "marketing" } } }],
     { display: DEFAULT_DISPLAY },
@@ -12,7 +13,7 @@ Deno.test("site-get: targets /sites/{siteId} with no extra path segment", async 
   assertEquals(result, { id: "site-1", name: "Marketing", contentUrl: "marketing" });
 });
 
-Deno.test("site-get: includeUsage reaches the query string", async () => {
+test("site-get: includeUsage reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { site: {} } }], {
     display: DEFAULT_DISPLAY,
   });

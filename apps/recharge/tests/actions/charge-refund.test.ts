@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import chargeRefund from "../../actions/charge-refund.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("charge-refund: POSTs the amount to /charges/{id}/refund", async () => {
+test("charge-refund: POSTs the amount to /charges/{id}/refund", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("charge", { id: 1, status: "refunded" }) },
   ]);
@@ -11,7 +12,7 @@ Deno.test("charge-refund: POSTs the amount to /charges/{id}/refund", async () =>
   assertEquals(JSON.parse(calls[0].body!), { amount: "10.00", full_refund: true });
 });
 
-Deno.test("charge-refund: includes retry/error/errorType only when the caller supplies them", async () => {
+test("charge-refund: includes retry/error/errorType only when the caller supplies them", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("charge", { id: 1, status: "error" }) }]);
   await chargeRefund.execute(
     {

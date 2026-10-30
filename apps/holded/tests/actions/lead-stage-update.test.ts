@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadStageUpdate from "../../actions/lead-stage-update.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-stage-update: metadata — idempotent", () => {
+test("lead-stage-update: metadata — idempotent", () => {
   assertEquals(leadStageUpdate.type, "perform");
   assertEquals(leadStageUpdate.idempotent, true);
 });
 
-Deno.test("lead-stage-update: PUT /leads/{leadId}/stages with {stageId}", async () => {
+test("lead-stage-update: PUT /leads/{leadId}/stages with {stageId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "l1") }]);
   const result = asMutation(
     await leadStageUpdate.execute({ leadId: "l1", stageId: "stage-2" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/move-message.ts";
 
-Deno.test("move-message: POSTs destinationId to /move", async () => {
+test("move-message: POSTs destinationId to /move", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "new-id", parentFolderId: "f2", subject: "hi" },
@@ -16,6 +17,6 @@ Deno.test("move-message: POSTs destinationId to /move", async () => {
   assertEquals((out as { id: string }).id, "new-id");
 });
 
-Deno.test("move-message: is not idempotent — the source id stops resolving", () => {
+test("move-message: is not idempotent — the source id stops resolving", () => {
   assertEquals(action.idempotent, false);
 });

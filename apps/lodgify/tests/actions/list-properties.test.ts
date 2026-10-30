@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import listProperties from "../../actions/list-properties.ts";
 
-Deno.test("list-properties: GETs /v2/properties with the documented paging and filters", async () => {
+test("list-properties: GETs /v2/properties with the documented paging and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 1, items: [{ id: 7 }] } }]);
   const out = await listProperties.execute({
     page: 2,
@@ -25,7 +26,7 @@ Deno.test("list-properties: GETs /v2/properties with the documented paging and f
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("list-properties: sends no query when nothing is set, and never an auth header", async () => {
+test("list-properties: sends no query when nothing is set, and never an auth header", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listProperties.execute({}, ctx);
   assertEquals(calls[0].url, "https://api.lodgify.com/v2/properties");

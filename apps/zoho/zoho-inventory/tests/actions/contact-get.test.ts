@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: GETs /contacts/{id} with organization_id and unwraps contact", async () => {
+test("contact-get: GETs /contacts/{id} with organization_id and unwraps contact", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", contact: { contact_id: "1", contact_name: "Acme" } } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("contact-get: GETs /contacts/{id} with organization_id and unwraps con
   assertEquals(out, { contact_id: "1", contact_name: "Acme" });
 });
 
-Deno.test("contact-get: percent-encodes the id rather than letting it retarget the path", async () => {
+test("contact-get: percent-encodes the id rather than letting it retarget the path", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", contact: { contact_id: "1" } } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("contact-get: percent-encodes the id rather than letting it retarget t
   assertEquals(new URL(calls[0].url).pathname, "/inventory/v1/contacts/1%2F..%2F2");
 });
 
-Deno.test("contact-get: an envelope without the contact key throws instead of returning undefined", async () => {
+test("contact-get: an envelope without the contact key throws instead of returning undefined", async () => {
   const { ctx } = mockInventoryCtx([{ body: { code: 0, message: "success" } }]);
   let threw = false;
   try {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import transferCancel from "../../actions/transfer-cancel.ts";
 import { mockCtx, pathOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("transfer-cancel: PUTs /transfers/{transferId}/cancel", async () => {
+test("transfer-cancel: PUTs /transfers/{transferId}/cancel", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, status: "cancelled" } }]);
   const out = await transferCancel.execute({ transferId: 3 }, ctx) as { status: string };
 
@@ -11,7 +12,7 @@ Deno.test("transfer-cancel: PUTs /transfers/{transferId}/cancel", async () => {
   assertEquals(out.status, "cancelled");
 });
 
-Deno.test("transfer-cancel: surfaces Wise's documented 409 conflict verbatim", async () => {
+test("transfer-cancel: surfaces Wise's documented 409 conflict verbatim", async () => {
   const { ctx } = mockCtx([
     {
       status: 409,
@@ -25,6 +26,6 @@ Deno.test("transfer-cancel: surfaces Wise's documented 409 conflict verbatim", a
   );
 });
 
-Deno.test("transfer-cancel: is declared idempotent", () => {
+test("transfer-cancel: is declared idempotent", () => {
   assert(transferCancel.idempotent === true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-delete.ts";
 
-Deno.test("sheet-delete: batchUpdate/deleteSheet by numeric sheetId", async () => {
+test("sheet-delete: batchUpdate/deleteSheet by numeric sheetId", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ spreadsheetId: "ss-1", sheetId: 42 }, ctx);
 

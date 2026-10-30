@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-list: fetches GET /contacts?page=N with pagesize/include headers", async () => {
+test("contact-list: fetches GET /contacts?page=N with pagesize/include headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { contacts: [{ id: 1 }], meta: { total_records: 1, total_pages: 1 } },
   }]);
@@ -17,13 +18,13 @@ Deno.test("contact-list: fetches GET /contacts?page=N with pagesize/include head
   assertEquals(out.meta?.total_records, 1);
 });
 
-Deno.test("contact-list: omits unset headers entirely", async () => {
+test("contact-list: omits unset headers entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await contactList.execute({}, ctx);
   assertEquals(calls[0].headers["pagesize"], undefined);
   assertEquals(calls[0].headers["include"], undefined);
 });
 
-Deno.test("contact-list: is a search action", () => {
+test("contact-list: is a search action", () => {
   assertEquals(contactList.type, "search");
 });

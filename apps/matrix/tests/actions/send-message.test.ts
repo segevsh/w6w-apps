@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sendMessage from "../../actions/send-message.ts";
 import { HOMESERVER, mockCtx } from "../_helpers.ts";
 
 const display = { homeserverUrl: HOMESERVER, userId: "@alice:example.org" };
 
-Deno.test("send-message: PUTs /send/m.room.message/{txnId} using the invocation id as txnId", async () => {
+test("send-message: PUTs /send/m.room.message/{txnId} using the invocation id as txnId", async () => {
   const { ctx, calls } = mockCtx([{ body: { event_id: "$evt1:example.org" } }], {
     display,
     invocationId: "inv-123",
@@ -19,7 +20,7 @@ Deno.test("send-message: PUTs /send/m.room.message/{txnId} using the invocation 
   assertEquals(result, { eventId: "$evt1:example.org" });
 });
 
-Deno.test("send-message: a formatted body sets format to org.matrix.custom.html", async () => {
+test("send-message: a formatted body sets format to org.matrix.custom.html", async () => {
   const { ctx, calls } = mockCtx([{ body: { event_id: "$evt2:example.org" } }], {
     display,
     invocationId: "inv-124",
@@ -33,7 +34,7 @@ Deno.test("send-message: a formatted body sets format to org.matrix.custom.html"
   assertEquals(body.formatted_body, "<b>hi</b>");
 });
 
-Deno.test("send-message: with no tracked invocation, a fresh random id is used each call", async () => {
+test("send-message: with no tracked invocation, a fresh random id is used each call", async () => {
   const first = mockCtx([{ body: { event_id: "$e1:example.org" } }], { display });
   await sendMessage.execute({ roomId: "!x:example.org", body: "one" }, first.ctx);
   const second = mockCtx([{ body: { event_id: "$e2:example.org" } }], { display });
@@ -44,6 +45,6 @@ Deno.test("send-message: with no tracked invocation, a fresh random id is used e
   assertEquals(txn1 === txn2, false);
 });
 
-Deno.test("send-message: declares idempotent — the homeserver de-dupes retries by txnId", () => {
+test("send-message: declares idempotent — the homeserver de-dupes retries by txnId", () => {
   assertEquals(sendMessage.idempotent, true);
 });

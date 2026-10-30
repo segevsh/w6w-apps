@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-companies.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("search-companies: POSTs the query to /v5/company/search", async () => {
+test("search-companies: POSTs the query to /v5/company/search", async () => {
   const query = { term: { website: "google.com" } };
   const { ctx, calls } = mockCtx([{ body: { status: 200, data: [{ name: "google" }], total: 1 } }]);
   const out = await action.execute!({ query, size: 5 } as never, ctx) as Record<string, unknown>;
@@ -12,7 +13,7 @@ Deno.test("search-companies: POSTs the query to /v5/company/search", async () =>
   assertEquals(out.found, true);
 });
 
-Deno.test("search-companies: no query is refused; 404 is an empty page", async () => {
+test("search-companies: no query is refused; 404 is an empty page", async () => {
   const none = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({} as never, none.ctx),

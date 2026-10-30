@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-report.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
 
 const EXP = { date: "2026-01-01", currency: "USD", merchant: "Cafe", amount: 1234 };
 
-Deno.test("create-report: posts create/report with report title+fields and the expenses", async () => {
+test("create-report: posts create/report with report title+fields and the expenses", async () => {
   const { ctx, calls } = mockCtx([{
     body: { responseCode: 200, reportName: "Trip", reportID: "R006AseGxMka" },
   }]);
@@ -30,7 +31,7 @@ Deno.test("create-report: posts create/report with report title+fields and the e
   assertEquals(out, { reportID: "R006AseGxMka", reportName: "Trip" });
 });
 
-Deno.test("create-report: omits fields and employeeEmail when not given", async () => {
+test("create-report: omits fields and employeeEmail when not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { responseCode: 200, reportName: "T", reportID: "R1" },
   }]);
@@ -40,7 +41,7 @@ Deno.test("create-report: omits fields and employeeEmail when not given", async 
   assert(!("employeeEmail" in s));
 });
 
-Deno.test("create-report: validates inputs locally (date key is `date`, not `created`)", async () => {
+test("create-report: validates inputs locally (date key is `date`, not `created`)", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ policyID: "", title: "T", expenses: [EXP] }, ctx),
@@ -75,7 +76,7 @@ Deno.test("create-report: validates inputs locally (date key is `date`, not `cre
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-report: surfaces the not-enabled authorisation error", async () => {
+test("create-report: surfaces the not-enabled authorisation error", async () => {
   const { ctx } = mockCtx([{
     body: {
       responseMessage: "Not authorized to authenticate as user user@domain.com",
@@ -89,6 +90,6 @@ Deno.test("create-report: surfaces the not-enabled authorisation error", async (
   );
 });
 
-Deno.test("create-report: declares a non-idempotent perform", () => {
+test("create-report: declares a non-idempotent perform", () => {
   assertEquals([action.type, action.idempotent], ["perform", false]);
 });

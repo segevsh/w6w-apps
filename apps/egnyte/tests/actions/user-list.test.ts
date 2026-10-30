@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: builds an eq filter and paging", async () => {
+test("user-list: builds an eq filter and paging", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: { resources: [], totalResults: 0 } }, {
     body: {},
   }]);
@@ -16,7 +17,7 @@ Deno.test("user-list: builds an eq filter and paging", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("filter"), 'userName eq "jo\\"x"');
 });
 
-Deno.test("user-list: refuses two filters at once", async () => {
+test("user-list: refuses two filters at once", async () => {
   const { ctx, calls } = mockEgnyteCtx([]);
   await assertRejects(
     async () => await action.execute({ email: "a@x.com", userName: "jo" }, ctx),
@@ -26,7 +27,7 @@ Deno.test("user-list: refuses two filters at once", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-list: no filter, no query", async () => {
+test("user-list: no filter, no query", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: {} }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.egnyte.com/pubapi/v2/users");

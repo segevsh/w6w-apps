@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshdeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-get-many.ts";
 
-Deno.test("ticket-get-many: GETs /tickets and wraps the array as { tickets }", async () => {
+test("ticket-get-many: GETs /tickets and wraps the array as { tickets }", async () => {
   const { ctx, calls } = mockFreshdeskCtx([{ body: [{ id: 1 }, { id: 2 }] }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.freshdesk.com/api/v2/tickets");
   assertEquals(out, { tickets: [{ id: 1 }, { id: 2 }] });
 });
 
-Deno.test("ticket-get-many: passes filters and pagination through as query params", async () => {
+test("ticket-get-many: passes filters and pagination through as query params", async () => {
   const { ctx, calls } = mockFreshdeskCtx([{ body: [] }]);
   await action.execute(
     { requesterEmail: "jo@acme.test", companyId: 3, page: 2, perPage: 50 },

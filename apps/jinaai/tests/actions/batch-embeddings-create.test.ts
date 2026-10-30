@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import batchEmbeddingsCreate from "../../actions/batch-embeddings-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("batch-embeddings-create: posts with inputUrl", async () => {
+test("batch-embeddings-create: posts with inputUrl", async () => {
   const { ctx, calls } = mockCtx([{ body: { batch_id: "b1", status: "pending" } }]);
   await batchEmbeddingsCreate.execute(
     { model: "jina-embeddings-v3", inputUrl: "https://example.com/in.jsonl" },
@@ -16,7 +17,7 @@ Deno.test("batch-embeddings-create: posts with inputUrl", async () => {
   });
 });
 
-Deno.test("batch-embeddings-create: posts with inline input and optional fields", async () => {
+test("batch-embeddings-create: posts with inline input and optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { batch_id: "b1", status: "pending" } }]);
   await batchEmbeddingsCreate.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("batch-embeddings-create: posts with inline input and optional fields"
   });
 });
 
-Deno.test("batch-embeddings-create: rejects when neither inputUrl nor input is given", async () => {
+test("batch-embeddings-create: rejects when neither inputUrl nor input is given", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => {
     await batchEmbeddingsCreate.execute({ model: "jina-embeddings-v3" }, ctx);

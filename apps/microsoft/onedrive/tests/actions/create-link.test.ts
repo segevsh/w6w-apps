@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-link.ts";
 
-Deno.test("create-link: POSTs to the item's createLink action", async () => {
+test("create-link: POSTs to the item's createLink action", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "p1" } }]);
   await action.execute({ itemId: "01ABC", type: "view" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/drive/items/01ABC/createLink");
@@ -10,7 +11,7 @@ Deno.test("create-link: POSTs to the item's createLink action", async () => {
   assertEquals(JSON.parse(calls[0].body!), { type: "view" });
 });
 
-Deno.test("create-link: carries scope, password and expiry when given", async () => {
+test("create-link: carries scope, password and expiry when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     itemId: "i",
@@ -27,7 +28,7 @@ Deno.test("create-link: carries scope, password and expiry when given", async ()
   });
 });
 
-Deno.test("create-link: retainInheritedPermissions is sent only to turn it off", async () => {
+test("create-link: retainInheritedPermissions is sent only to turn it off", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute({ itemId: "i", type: "view", retainInheritedPermissions: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).retainInheritedPermissions, false);
@@ -36,12 +37,12 @@ Deno.test("create-link: retainInheritedPermissions is sent only to turn it off",
   assertEquals("retainInheritedPermissions" in JSON.parse(calls[1].body!), false);
 });
 
-Deno.test("create-link: the password field is a secret, so it is masked and encrypted", () => {
+test("create-link: the password field is a secret, so it is masked and encrypted", () => {
   const password = (action.params ?? []).find((p) => p.key === "password");
   assertEquals(password?.type, "secret");
 });
 
-Deno.test("create-link: returns the permission with its link facet", async () => {
+test("create-link: returns the permission with its link facet", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -54,6 +55,6 @@ Deno.test("create-link: returns the permission with its link facet", async () =>
   assertEquals((out.link as Record<string, string>).webUrl, "https://1drv.ms/x");
 });
 
-Deno.test("create-link: is idempotent — Graph returns the existing link on a repeat", () => {
+test("create-link: is idempotent — Graph returns the existing link on a repeat", () => {
   assertEquals(action.idempotent, true);
 });

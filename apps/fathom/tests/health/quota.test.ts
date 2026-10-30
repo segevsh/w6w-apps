@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, page } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -9,13 +10,13 @@ const withLimits = (headers: Record<string, string>, status = 200) => ({
   headers: { "content-type": "application/json", ...headers },
 });
 
-Deno.test("quota: is informational and declares no extra egress (it is signed)", () => {
+test("quota: is informational and declares no extra egress (it is signed)", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: probes GET /meetings with no include flags", async () => {
+test("quota: probes GET /meetings with no include flags", async () => {
   const { ctx, calls } = mockCtx([
     withLimits({ "RateLimit-Limit": "60", "RateLimit-Remaining": "42", "RateLimit-Reset": "17" }),
   ]);
@@ -35,14 +36,14 @@ Deno.test("quota: probes GET /meetings with no include flags", async () => {
   assert(new Date(report.quota![0].resetAt!).getTime() > Date.now());
 });
 
-Deno.test("quota: under 10% headroom degrades", async () => {
+test("quota: under 10% headroom degrades", async () => {
   const { ctx } = mockCtx([
     withLimits({ "RateLimit-Limit": "60", "RateLimit-Remaining": "5" }),
   ]);
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: a spent window reports down", async () => {
+test("quota: a spent window reports down", async () => {
   const { ctx } = mockCtx([
     withLimits({ "RateLimit-Limit": "60", "RateLimit-Remaining": "0" }),
   ]);
@@ -51,7 +52,7 @@ Deno.test("quota: a spent window reports down", async () => {
   assertEquals(report.quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: reports remaining without a limit when RateLimit-Limit is absent", async () => {
+test("quota: reports remaining without a limit when RateLimit-Limit is absent", async () => {
   const { ctx } = mockCtx([withLimits({ "RateLimit-Remaining": "12" })]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -59,14 +60,14 @@ Deno.test("quota: reports remaining without a limit when RateLimit-Limit is abse
   assertEquals(report.quota?.[0].remaining, 12);
 });
 
-Deno.test("quota: a response without the headers reports unknown, not a guess", async () => {
+test("quota: a response without the headers reports unknown, not a guess", async () => {
   const { ctx } = mockCtx([withLimits({})]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertEquals(report.message, "response carried no `RateLimit-Remaining` header");
 });
 
-Deno.test("quota: a 429 reports down and surfaces Retry-After", async () => {
+test("quota: a 429 reports down and surfaces Retry-After", async () => {
   const { ctx } = mockCtx([
     withLimits({ "RateLimit-Limit": "60", "Retry-After": "30" }, 429),
   ]);
@@ -77,14 +78,14 @@ Deno.test("quota: a 429 reports down and surfaces Retry-After", async () => {
   assert(report.quota?.[0].resetAt);
 });
 
-Deno.test("quota: a 429 without Retry-After still reports down", async () => {
+test("quota: a 429 without Retry-After still reports down", async () => {
   const { ctx } = mockCtx([withLimits({}, 429)]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "down");
   assertEquals(report.quota?.[0].resetAt, undefined);
 });
 
-Deno.test("quota: any other failure reports unknown", async () => {
+test("quota: any other failure reports unknown", async () => {
   const { ctx } = mockCtx([withLimits({}, 401)]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

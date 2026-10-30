@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getPaymentMethods from "../../actions/get-payment-methods.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT = {
   "allowedPaymentMethods": '["ideal"]',
 } as Parameters<typeof getPaymentMethods.execute>[0];
 
-Deno.test("get-payment-methods: sends POST to the documented path and returns the response", async () => {
+test("get-payment-methods: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "paymentMethods": [{ "type": "ideal" }] },
@@ -27,7 +28,7 @@ Deno.test("get-payment-methods: sends POST to the documented path and returns th
   assertEquals(out, { "paymentMethods": [{ "type": "ideal" }] });
 });
 
-Deno.test("get-payment-methods: targets the connection's base URL and carries no credential", async () => {
+test("get-payment-methods: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "paymentMethods": [{ "type": "ideal" }] },
@@ -42,7 +43,7 @@ Deno.test("get-payment-methods: targets the connection's base URL and carries no
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-payment-methods: surfaces Adyen's error code, type and message", async () => {
+test("get-payment-methods: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -60,7 +61,7 @@ Deno.test("get-payment-methods: surfaces Adyen's error code, type and message", 
   );
 });
 
-Deno.test("get-payment-methods: sends the invocation id as Idempotency-Key", async () => {
+test("get-payment-methods: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "paymentMethods": [{ "type": "ideal" }] },
@@ -70,11 +71,11 @@ Deno.test("get-payment-methods: sends the invocation id as Idempotency-Key", asy
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("get-payment-methods: is a read-only action", () => {
+test("get-payment-methods: is a read-only action", () => {
   assertEquals(getPaymentMethods.type, "read");
 });
 
-Deno.test("get-payment-methods: an explicit merchantAccount beats the connection's", async () => {
+test("get-payment-methods: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "paymentMethods": [{ "type": "ideal" }] },

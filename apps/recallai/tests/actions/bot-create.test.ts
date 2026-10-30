@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bot-create.ts";
 
-Deno.test("bot-create: POSTs meeting_url and the shortcut fields, with an idempotency key", async () => {
+test("bot-create: POSTs meeting_url and the shortcut fields, with an idempotency key", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "b1" } }]);
   const out = await action.execute!({
     meetingUrl: "https://meet.google.com/abc-defg-hij",
@@ -32,7 +33,7 @@ Deno.test("bot-create: POSTs meeting_url and the shortcut fields, with an idempo
   assertEquals(out, { id: "b1" });
 });
 
-Deno.test("bot-create: only meeting_url by default; recordingConfig overrides the shortcut", async () => {
+test("bot-create: only meeting_url by default; recordingConfig overrides the shortcut", async () => {
   const bare = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ meetingUrl: "https://zoom.us/j/1" }, bare.ctx);
   assertEquals(JSON.parse(bare.calls[0].body!), { meeting_url: "https://zoom.us/j/1" });
@@ -55,7 +56,7 @@ Deno.test("bot-create: only meeting_url by default; recordingConfig overrides th
   assertEquals(action.params!.filter((p) => p.required).map((p) => p.key), ["meetingUrl"]);
 });
 
-Deno.test("bot-create: a 507 and a 400 field map are reported", async () => {
+test("bot-create: a 507 and a 400 field map are reported", async () => {
   const full = mockCtx([{
     status: 507,
     headers: { "content-type": "application/json", "retry-after": "30" },

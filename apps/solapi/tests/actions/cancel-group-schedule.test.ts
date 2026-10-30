@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import cancelGroupSchedule from "../../actions/cancel-group-schedule.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => cancelGroupSchedule.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("cancel-group-schedule: declares a perform action with a description, params and output", () => {
+test("cancel-group-schedule: declares a perform action with a description, params and output", () => {
   assertEquals(cancelGroupSchedule.key, "cancel-group-schedule");
   assertEquals(cancelGroupSchedule.type, "perform");
   assert((cancelGroupSchedule.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("cancel-group-schedule: declares a perform action with a description, 
   assertEquals(cancelGroupSchedule.idempotent, false);
 });
 
-Deno.test("cancel-group-schedule: sends the documented request and returns the documented shape", async () => {
+test("cancel-group-schedule: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "groupId": "G4V1",
@@ -45,7 +46,7 @@ Deno.test("cancel-group-schedule: sends the documented request and returns the d
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("cancel-group-schedule: a SOLAPI error body is thrown with its code and message", async () => {
+test("cancel-group-schedule: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

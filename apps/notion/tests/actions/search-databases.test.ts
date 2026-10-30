@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-databases.ts";
 
-Deno.test("search-databases: forwards query, sort and cursor to /search", async () => {
+test("search-databases: forwards query, sort and cursor to /search", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", results: [], next_cursor: null, has_more: false },
   }]);

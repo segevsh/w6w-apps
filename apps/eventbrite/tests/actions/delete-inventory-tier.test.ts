@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-inventory-tier.ts";
 
-Deno.test("delete-inventory-tier: DELETEs the tier", async () => {
+test("delete-inventory-tier: DELETEs the tier", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted: true } }]);
   const result = await action.execute!({ eventId: "e1", inventoryTierId: "t1" }, ctx);
   const url = new URL(calls[0].url);

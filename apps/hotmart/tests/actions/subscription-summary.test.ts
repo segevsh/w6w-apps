@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionSummary from "../../actions/subscription-summary.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscription-summary - maps every filter to its wire name", async () => {
+test("subscription-summary - maps every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ subscriber_code: "A" }]) }]);
   await subscriptionSummary.execute({
     productId: 1,
@@ -24,7 +25,7 @@ Deno.test("subscription-summary - maps every filter to its wire name", async () 
   });
 });
 
-Deno.test("subscription-summary - surfaces product_not_found", async () => {
+test("subscription-summary - surfaces product_not_found", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("product_not_found", "Product not found"),

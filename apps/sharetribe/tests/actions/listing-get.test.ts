@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listingGet from "../../actions/listing-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("listing-get: GET /listings/show?id=", async () => {
+test("listing-get: GET /listings/show?id=", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { id: "l1", type: "listing", attributes: { title: "Bike" } } } },
   ]);

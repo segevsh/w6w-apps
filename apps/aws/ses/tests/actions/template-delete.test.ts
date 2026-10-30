@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-delete.ts";
 
-Deno.test("template-delete: DELETE /v2/email/templates/welcome and maps the response", async () => {
+test("template-delete: DELETE /v2/email/templates/welcome and maps the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ templateName: "welcome" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("template-delete: DELETE /v2/email/templates/welcome and maps the resp
   });
 });
 
-Deno.test("template-delete: uses the connection's region for the host", async () => {
+test("template-delete: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     mockConnection({ region: "eu-west-1" }),
@@ -25,7 +26,7 @@ Deno.test("template-delete: uses the connection's region for the host", async ()
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("template-delete: surfaces the vendor's error type and message", async () => {
+test("template-delete: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

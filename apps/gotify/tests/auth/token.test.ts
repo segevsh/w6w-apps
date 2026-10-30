@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import token from "../../auth/token.ts";
 
-Deno.test("token: sign() stamps X-Gotify-Key, not Authorization", () => {
+test("token: sign() stamps X-Gotify-Key, not Authorization", () => {
   const request = {
     url: "https://gotify.example.com/message",
     method: "POST",
@@ -13,7 +14,7 @@ Deno.test("token: sign() stamps X-Gotify-Key, not Authorization", () => {
   assertEquals((signed as typeof request).headers["authorization"], undefined);
 });
 
-Deno.test("token: test() succeeds against GET /current/user", async () => {
+test("token: test() succeeds against GET /current/user", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1, name: "admin", admin: true } }]);
   const result = await token.test(
     { credential: { token: "ctok.abc", baseUrl: "gotify.example.com" } },
@@ -24,7 +25,7 @@ Deno.test("token: test() succeeds against GET /current/user", async () => {
   assertEquals(calls[0].headers["x-gotify-key"], "ctok.abc");
 });
 
-Deno.test("token: test() names the client-vs-application-token trap on 401", async () => {
+test("token: test() names the client-vs-application-token trap on 401", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized", errorCode: 401, errorDescription: "invalid access token" },
@@ -37,7 +38,7 @@ Deno.test("token: test() names the client-vs-application-token trap on 401", asy
   assertEquals(result.message?.includes("CLIENT token"), true, result.message);
 });
 
-Deno.test("token: test() reports a bad instance URL as 404, not a generic failure", async () => {
+test("token: test() reports a bad instance URL as 404, not a generic failure", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await token.test(
     { credential: { token: "ctok.abc", baseUrl: "https://not-gotify.example.com" } },
@@ -47,7 +48,7 @@ Deno.test("token: test() reports a bad instance URL as 404, not a generic failur
   assertEquals(result.message?.includes("404"), true, result.message);
 });
 
-Deno.test("token: test() rejects a missing token or baseUrl before any fetch", async () => {
+test("token: test() rejects a missing token or baseUrl before any fetch", async () => {
   const { ctx, calls } = mockCtx([]);
   const noToken = await token.test({ credential: { baseUrl: "https://gotify.example.com" } }, ctx);
   assertEquals(noToken.ok, false);
@@ -56,7 +57,7 @@ Deno.test("token: test() rejects a missing token or baseUrl before any fetch", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: records the account name and instance, never the token", async () => {
+test("afterConnect: records the account name and instance, never the token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: 1, name: "admin", admin: true } }]);
   const display = await token.afterConnect!(
     { credential: { token: "ctok.abc", baseUrl: "gotify.example.com" } },

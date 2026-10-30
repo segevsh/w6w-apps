@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   accountContext,
   assertAllowedHost,
@@ -20,12 +21,12 @@ const conn = (display: Record<string, unknown> | undefined) =>
 
 // ------------------------------------------------- demo vs production hosts --
 
-Deno.test("AUTH_HOST separates production from the developer environment", () => {
+test("AUTH_HOST separates production from the developer environment", () => {
   assertEquals(AUTH_HOST.production, "account.docusign.com");
   assertEquals(AUTH_HOST.demo, "account-d.docusign.com");
 });
 
-Deno.test("userInfoUrl targets the right authentication host per environment", () => {
+test("userInfoUrl targets the right authentication host per environment", () => {
   assertEquals(userInfoUrl("production"), "https://account.docusign.com/oauth/userinfo");
   assertEquals(userInfoUrl("demo"), "https://account-d.docusign.com/oauth/userinfo");
 });
@@ -52,16 +53,16 @@ const INFO: UserInfo = {
   ],
 };
 
-Deno.test("selectAccount picks the default account when none is requested", () => {
+test("selectAccount picks the default account when none is requested", () => {
   assertEquals(selectAccount(INFO).account_id, "na-acct");
 });
 
-Deno.test("selectAccount honours an explicit account id, case-insensitively", () => {
+test("selectAccount honours an explicit account id, case-insensitively", () => {
   assertEquals(selectAccount(INFO, "EU-ACCT").base_uri, "https://eu.docusign.net");
   assertEquals(selectAccount(INFO, "  eu-acct  ").account_id, "eu-acct");
 });
 
-Deno.test("selectAccount falls back to the first account when Docusign flags no default", () => {
+test("selectAccount falls back to the first account when Docusign flags no default", () => {
   const noDefault: UserInfo = {
     accounts: [
       { account_id: "a", base_uri: "https://au.docusign.net" },
@@ -71,13 +72,13 @@ Deno.test("selectAccount falls back to the first account when Docusign flags no 
   assertEquals(selectAccount(noDefault).account_id, "a");
 });
 
-Deno.test("selectAccount rejects an unknown account id and lists what is reachable", () => {
+test("selectAccount rejects an unknown account id and lists what is reachable", () => {
   const err = assertThrows(() => selectAccount(INFO, "nope")) as Error;
   assertEquals(err.message.includes("nope"), true);
   assertEquals(err.message.includes("Example Corporation (na-acct)"), true);
 });
 
-Deno.test("selectAccount rejects a userinfo response with no usable accounts", () => {
+test("selectAccount rejects a userinfo response with no usable accounts", () => {
   assertThrows(() => selectAccount({ accounts: [] }));
   // An entry missing base_uri is unusable and does not count.
   assertThrows(() => selectAccount({ accounts: [{ account_id: "x" }] }));
@@ -85,13 +86,13 @@ Deno.test("selectAccount rejects a userinfo response with no usable accounts", (
 
 // -------------------------------------------------------- base URI handling --
 
-Deno.test("normalizeBaseUri strips trailing slashes so paths never double up", () => {
+test("normalizeBaseUri strips trailing slashes so paths never double up", () => {
   assertEquals(normalizeBaseUri("https://na4.docusign.net/"), "https://na4.docusign.net");
   assertEquals(normalizeBaseUri("https://na4.docusign.net///"), "https://na4.docusign.net");
   assertEquals(normalizeBaseUri("https://na4.docusign.net"), "https://na4.docusign.net");
 });
 
-Deno.test("assertAllowedHost accepts every regional host under the allowlisted apex", () => {
+test("assertAllowedHost accepts every regional host under the allowlisted apex", () => {
   for (
     const host of [
       "www.docusign.net",
@@ -109,7 +110,7 @@ Deno.test("assertAllowedHost accepts every regional host under the allowlisted a
   }
 });
 
-Deno.test("assertAllowedHost rejects a base_uri outside the egress allowlist", () => {
+test("assertAllowedHost rejects a base_uri outside the egress allowlist", () => {
   const err = assertThrows(() => assertAllowedHost("https://api.example.com")) as Error;
   assertEquals(err.message.includes("network.allow"), true);
   assertThrows(() => assertAllowedHost("not-a-url"));
@@ -117,14 +118,14 @@ Deno.test("assertAllowedHost rejects a base_uri outside the egress allowlist", (
 
 // ------------------------------------------------------- account  context --
 
-Deno.test("accountContext reads baseUri + accountId off the connection display", () => {
+test("accountContext reads baseUri + accountId off the connection display", () => {
   assertEquals(
     accountContext(conn({ baseUri: "https://eu.docusign.net/", accountId: "acc-9" })),
     { baseUri: "https://eu.docusign.net", accountId: "acc-9" },
   );
 });
 
-Deno.test("accountContext fails loudly when afterConnect never recorded the routing facts", () => {
+test("accountContext fails loudly when afterConnect never recorded the routing facts", () => {
   const err = assertThrows(() => accountContext(conn(undefined))) as Error;
   assertEquals(err.message.includes("reconnect"), true);
   assertThrows(() => accountContext(conn({ baseUri: "https://eu.docusign.net" })));
@@ -133,13 +134,13 @@ Deno.test("accountContext fails loudly when afterConnect never recorded the rout
 
 // --------------------------------------------------------------- the client --
 
-Deno.test("DocusignClient composes {base_uri}/restapi/v2.1/accounts/{accountId}", async () => {
+test("DocusignClient composes {base_uri}/restapi/v2.1/accounts/{accountId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new DocusignClient(ctx).request("/envelopes");
   assertEquals(calls[0].url, "https://na4.docusign.net/restapi/v2.1/accounts/acc-1/envelopes");
 });
 
-Deno.test("DocusignClient follows the connection to a different region", async () => {
+test("DocusignClient follows the connection to a different region", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], {
     display: { baseUri: "https://eu.docusign.net", accountId: "eu-1" },
   });
@@ -147,7 +148,7 @@ Deno.test("DocusignClient follows the connection to a different region", async (
   assertEquals(calls[0].url, "https://eu.docusign.net/restapi/v2.1/accounts/eu-1/templates");
 });
 
-Deno.test("DocusignClient routes a demo connection to demo.docusign.net", async () => {
+test("DocusignClient routes a demo connection to demo.docusign.net", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], {
     display: { environment: "demo", baseUri: "https://demo.docusign.net", accountId: "d-1" },
   });
@@ -157,12 +158,12 @@ Deno.test("DocusignClient routes a demo connection to demo.docusign.net", async 
   assertEquals(new URL(calls[0].url).hostname, "demo.docusign.net");
 });
 
-Deno.test("DocusignClient refuses to construct without a connected account", () => {
+test("DocusignClient refuses to construct without a connected account", () => {
   const { ctx } = mockCtx([], { display: null });
   assertThrows(() => new DocusignClient(ctx));
 });
 
-Deno.test("DocusignClient drops empty query values and JSON-encodes a body", async () => {
+test("DocusignClient drops empty query values and JSON-encodes a body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new DocusignClient(ctx).request("/envelopes", {
     method: "POST",
@@ -179,13 +180,13 @@ Deno.test("DocusignClient drops empty query values and JSON-encodes a body", asy
   assertEquals(calls[0].body, '{"status":"sent"}');
 });
 
-Deno.test("DocusignClient never sets an Authorization header — `sign` does that", async () => {
+test("DocusignClient never sets an Authorization header — `sign` does that", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new DocusignClient(ctx).request("/envelopes");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("DocusignClient surfaces errorCode + message from Docusign's error envelope", async () => {
+test("DocusignClient surfaces errorCode + message from Docusign's error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -201,20 +202,20 @@ Deno.test("DocusignClient surfaces errorCode + message from Docusign's error env
   assertEquals(err.message.includes("expired, revoked or malformed"), true);
 });
 
-Deno.test("DocusignClient falls back to the raw body when the error is not JSON", async () => {
+test("DocusignClient falls back to the raw body when the error is not JSON", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const err = await assertRejects(() => new DocusignClient(ctx).request("/envelopes")) as Error;
   assertEquals(err.message.includes("bad gateway"), true);
 });
 
-Deno.test("DocusignClient returns undefined for 204 and for an empty body", async () => {
+test("DocusignClient returns undefined for 204 and for an empty body", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new DocusignClient(ctx);
   assertEquals(await client.request("/envelopes/x"), undefined);
   assertEquals(await client.request("/envelopes/y"), undefined);
 });
 
-Deno.test("DocusignClient returns the raw Response when asked", async () => {
+test("DocusignClient returns the raw Response when asked", async () => {
   const { ctx } = mockCtx([{ body: "PDF", headers: { "content-type": "application/pdf" } }]);
   const res = await new DocusignClient(ctx).request<Response>("/x", { raw: true });
   assertEquals(res.headers.get("content-type"), "application/pdf");
@@ -223,7 +224,7 @@ Deno.test("DocusignClient returns the raw Response when asked", async () => {
 
 // --------------------------------------------------------------- JSON parsing --
 
-Deno.test("jsonObject accepts objects and rejects anything else", () => {
+test("jsonObject accepts objects and rejects anything else", () => {
   assertEquals(jsonObject('{"a":1}', "p"), { a: 1 });
   assertEquals(jsonObject({ a: 1 }, "p"), { a: 1 });
   assertEquals(jsonObject("", "p"), {});
@@ -232,14 +233,14 @@ Deno.test("jsonObject accepts objects and rejects anything else", () => {
   assertThrows(() => jsonObject("null", "p"));
 });
 
-Deno.test("jsonArray accepts arrays and rejects anything else", () => {
+test("jsonArray accepts arrays and rejects anything else", () => {
   assertEquals(jsonArray('[{"a":1}]', "p"), [{ a: 1 }]);
   assertEquals(jsonArray([1, 2], "p"), [1, 2]);
   assertEquals(jsonArray("", "p"), []);
   assertThrows(() => jsonArray('{"a":1}', "documents"), Error, "`documents` must be a JSON array.");
 });
 
-Deno.test("compact drops undefined, null and empty-string values", () => {
+test("compact drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,

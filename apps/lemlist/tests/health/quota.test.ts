@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { headroom, parseResetAt } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const CREDITS = { credits: 100, details: { remaining: { total: 100, paid: 10 } } };
 
-Deno.test("quota: signed connection-scoped check that declares no egress of its own", () => {
+test("quota: signed connection-scoped check that declares no egress of its own", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   // A signed check must stay on the app's own allowlist; declaring network.allow
@@ -12,13 +13,13 @@ Deno.test("quota: signed connection-scoped check that declares no egress of its 
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: probes GET /team/credits on the app's own host", async () => {
+test("quota: probes GET /team/credits on the app's own host", async () => {
   const { ctx, calls } = mockCtx([{ body: CREDITS }]);
   await quota.check!({} as never, ctx);
   assertEquals(calls[0].url, "https://api.lemlist.com/api/team/credits");
 });
 
-Deno.test("quota: reports credits and rate-limit headroom as two buckets from one call", async () => {
+test("quota: reports credits and rate-limit headroom as two buckets from one call", async () => {
   const { ctx, calls } = mockCtx([{
     body: CREDITS,
     headers: {
@@ -48,7 +49,7 @@ Deno.test("quota: reports credits and rate-limit headroom as two buckets from on
   assertEquals(requests?.resetAt, new Date("Tue Feb 16 2021 09:02:42 GMT+0100").toISOString());
 });
 
-Deno.test("quota: reports the rate-limit bucket unknown when the headers are absent", async () => {
+test("quota: reports the rate-limit bucket unknown when the headers are absent", async () => {
   // The headers are documented but were not confirmed on the wire, so their
   // absence must degrade gracefully rather than fabricate a number.
   const { ctx } = mockCtx([{ body: CREDITS }]);
@@ -60,13 +61,13 @@ Deno.test("quota: reports the rate-limit bucket unknown when the headers are abs
   assert(out.message?.includes("X-RateLimit-*"));
 });
 
-Deno.test("quota: falls back to the flat `credits` field when details.remaining is absent", async () => {
+test("quota: falls back to the flat `credits` field when details.remaining is absent", async () => {
   const { ctx } = mockCtx([{ body: { credits: 42 } }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.quota?.find((q) => q.id === "credits")?.remaining, 42);
 });
 
-Deno.test("quota: zero credits reports down for that bucket", async () => {
+test("quota: zero credits reports down for that bucket", async () => {
   const { ctx } = mockCtx([{
     body: { credits: 0, details: { remaining: { total: 0 } } },
     headers: {
@@ -80,21 +81,21 @@ Deno.test("quota: zero credits reports down for that bucket", async () => {
   assertEquals(out.quota?.find((q) => q.id === "credits")?.remaining, 0);
 });
 
-Deno.test("quota: a body with neither credits shape reports unknown and says so", async () => {
+test("quota: a body with neither credits shape reports unknown and says so", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message?.includes("credits"));
 });
 
-Deno.test("quota: a failing probe reports unknown, never down", async () => {
+test("quota: a failing probe reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message?.includes("500"));
 });
 
-Deno.test("headroom: unknown without a reading, down at zero, degraded under 10%", () => {
+test("headroom: unknown without a reading, down at zero, degraded under 10%", () => {
   assertEquals(headroom(undefined, 20), "unknown");
   assertEquals(headroom(0, 20), "down");
   assertEquals(headroom(1, 20), "degraded");
@@ -104,7 +105,7 @@ Deno.test("headroom: unknown without a reading, down at zero, degraded under 10%
   assertEquals(headroom(1), "ok");
 });
 
-Deno.test("parseResetAt: reads lemlist's DOCUMENTED date-string form", () => {
+test("parseResetAt: reads lemlist's DOCUMENTED date-string form", () => {
   // lemlist's own example value. Most APIs send seconds-from-now here, so
   // treating this as a delta would produce a nonsense timestamp.
   const raw = "Tue Feb 16 2021 09:02:42 GMT+0100 (Central European Standard Time)";
@@ -112,11 +113,11 @@ Deno.test("parseResetAt: reads lemlist's DOCUMENTED date-string form", () => {
   assert(parseResetAt(raw)!.startsWith("2021-02-16"));
 });
 
-Deno.test("parseResetAt: reads an ISO 8601 instant", () => {
+test("parseResetAt: reads an ISO 8601 instant", () => {
   assertEquals(parseResetAt("2026-05-11T00:00:00.000Z"), "2026-05-11T00:00:00.000Z");
 });
 
-Deno.test("parseResetAt: treats a large bare number as epoch seconds, a small one as a delta", () => {
+test("parseResetAt: treats a large bare number as epoch seconds, a small one as a delta", () => {
   assertEquals(parseResetAt("1715385600"), new Date(1715385600 * 1000).toISOString());
 
   const before = Date.now();
@@ -124,7 +125,7 @@ Deno.test("parseResetAt: treats a large bare number as epoch seconds, a small on
   assert(out >= before + 2000 && out <= Date.now() + 2000, "small values are seconds from now");
 });
 
-Deno.test("parseResetAt: returns undefined for absent or unusable values", () => {
+test("parseResetAt: returns undefined for absent or unusable values", () => {
   assertEquals(parseResetAt(null), undefined);
   assertEquals(parseResetAt(""), undefined);
   assertEquals(parseResetAt("not-a-date"), undefined);

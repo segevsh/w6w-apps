@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-create.ts";
 
-Deno.test("folder-create: POSTs to /files with folder mime + parent", async () => {
+test("folder-create: POSTs to /files with folder mime + parent", async () => {
   const body = { id: "fld-new", name: "Reports" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(

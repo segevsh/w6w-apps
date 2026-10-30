@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import highlightDelete from "../../actions/highlight-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlight-delete: DELETEs and reports the 204 status", async () => {
+test("highlight-delete: DELETEs and reports the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await highlightDelete.execute({ highlightId: "13" }, ctx) as { status: number };
 
@@ -11,6 +12,6 @@ Deno.test("highlight-delete: DELETEs and reports the 204 status", async () => {
   assertEquals(out.status, 204);
 });
 
-Deno.test("highlight-delete: is idempotent — the end state is the same either way", () => {
+test("highlight-delete: is idempotent — the end state is the same either way", () => {
   assertEquals(highlightDelete.idempotent, true);
 });

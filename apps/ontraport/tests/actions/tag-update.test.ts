@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagUpdate from "../../actions/tag-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-update: calls PUT /1/Tags, form-urlencoded", async () => {
+test("tag-update: calls PUT /1/Tags, form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ attrs: { tag_name: "updated_tag" } }) }]);
   await tagUpdate.execute({ id: "1", tagName: "updated_tag" }, ctx);
 

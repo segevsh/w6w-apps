@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pipelineList from "../../actions/pipeline-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("pipeline-list: GET /v1/deals/pipelines/", async () => {
+test("pipeline-list: GET /v1/deals/pipelines/", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -26,11 +27,11 @@ Deno.test("pipeline-list: GET /v1/deals/pipelines/", async () => {
   });
 });
 
-Deno.test("pipeline-list: declares type read", () => {
+test("pipeline-list: declares type read", () => {
   assertEquals(pipelineList.type, "read");
 });
 
-Deno.test("pipeline-list: surfaces the vendor error body", async () => {
+test("pipeline-list: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

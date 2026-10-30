@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskTypeList from "../../actions/task-type-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-type-list: GET /v1/tasks/types", async () => {
+test("task-type-list: GET /v1/tasks/types", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -26,11 +27,11 @@ Deno.test("task-type-list: GET /v1/tasks/types", async () => {
   });
 });
 
-Deno.test("task-type-list: declares type read", () => {
+test("task-type-list: declares type read", () => {
   assertEquals(taskTypeList.type, "read");
 });
 
-Deno.test("task-type-list: surfaces the vendor error body", async () => {
+test("task-type-list: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

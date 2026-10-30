@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listRemoveRecords from "../../actions/list-remove-records.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-remove-records: POSTs a JSON body and unwraps the `labels` envelope", async () => {
+test("list-remove-records: POSTs a JSON body and unwraps the `labels` envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: { labels: [{ id: "l1" }] } }]);
   const out = await listRemoveRecords.execute(
     { entity_ids: "c1", label_names: "VIP", modality: "contacts" },
@@ -18,6 +19,6 @@ Deno.test("list-remove-records: POSTs a JSON body and unwraps the `labels` envel
   assertEquals(out.lists.length, 1);
 });
 
-Deno.test("list-remove-records: idempotent", () => {
+test("list-remove-records: idempotent", () => {
   assertEquals(listRemoveRecords.idempotent, true);
 });

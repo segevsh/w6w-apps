@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs a trimmed body with a nested address", async () => {
+test("contact-create: POSTs a trimmed body with a nested address", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "cnt_new" }) }]);
   const out = await contactCreate.execute({
     funnelId: "f1",
@@ -24,13 +25,13 @@ Deno.test("contact-create: POSTs a trimmed body with a nested address", async ()
   assertEquals(out.data.id, "cnt_new");
 });
 
-Deno.test("contact-create: phone alone is enough; empty fields and empty address are omitted", async () => {
+test("contact-create: phone alone is enough; empty fields and empty address are omitted", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "c" }) }]);
   await contactCreate.execute({ funnelId: "f", phone: "+4915", email: "", city: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { phone: "+4915" });
 });
 
-Deno.test("contact-create: refuses a contact with neither email nor phone, offline", async () => {
+test("contact-create: refuses a contact with neither email nor phone, offline", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(contactCreate.execute({ funnelId: "f", firstName: "x" }, ctx)),
@@ -40,12 +41,12 @@ Deno.test("contact-create: refuses a contact with neither email nor phone, offli
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: is a non-idempotent perform and does not offer deprecated timezone", () => {
+test("contact-create: is a non-idempotent perform and does not offer deprecated timezone", () => {
   assertEquals(contactCreate.idempotent, false);
   assertEquals(contactCreate.params!.some((p) => p.key === "timezone"), false);
 });
 
-Deno.test("contact-create: a 400 validation error surfaces", async () => {
+test("contact-create: a 400 validation error surfaces", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "Invalid email format", status: 400 } }]);
   await assertRejects(
     () => Promise.resolve(contactCreate.execute({ funnelId: "f", email: "nope" }, ctx)),

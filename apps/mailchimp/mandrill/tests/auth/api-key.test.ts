@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares a body-located apiKey method named `key`", () => {
+test("api-key: declares a body-located apiKey method named `key`", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "body");
@@ -13,7 +14,7 @@ Deno.test("api-key: declares a body-located apiKey method named `key`", () => {
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign merges `key` into an empty JSON body", async () => {
+test("api-key: sign merges `key` into an empty JSON body", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://mandrillapp.com/api/1.0/users/ping.json",
@@ -26,7 +27,7 @@ Deno.test("api-key: sign merges `key` into an empty JSON body", async () => {
   assertEquals(out.headers["content-type"], "application/json");
 });
 
-Deno.test("api-key: sign merges `key` on top of an action's existing JSON body", async () => {
+test("api-key: sign merges `key` on top of an action's existing JSON body", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://mandrillapp.com/api/1.0/tags/info.json",
@@ -38,7 +39,7 @@ Deno.test("api-key: sign merges `key` on top of an action's existing JSON body",
   assertEquals(JSON.parse(out.body!), { tag: "welcome", key: "md-abc123" });
 });
 
-Deno.test("api-key: test with missing apiKey reports the failure without a network call", async () => {
+test("api-key: test with missing apiKey reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -46,7 +47,7 @@ Deno.test("api-key: test with missing apiKey reports the failure without a netwo
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test POSTs /users/ping.json with the key in the JSON body", async () => {
+test("api-key: test POSTs /users/ping.json with the key in the JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "PONG!" }]);
   const result = await auth.test({ credential: { apiKey: "md-abc123" } }, ctx);
   assertEquals(result.ok, true);
@@ -58,7 +59,7 @@ Deno.test("api-key: test POSTs /users/ping.json with the key in the JSON body", 
   assertEquals(JSON.parse(calls[0].body!), { key: "md-abc123" });
 });
 
-Deno.test("api-key: test surfaces the vendor's error message on a 500", async () => {
+test("api-key: test surfaces the vendor's error message on a 500", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: { status: "error", code: -1, name: "Invalid_Key", message: "Invalid API key" },

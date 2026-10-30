@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-order.ts";
 import { executeKwArgs, mockCtx, param } from "../_helpers.ts";
 
-Deno.test("create-order: is a non-idempotent perform over sale.order", () => {
+test("create-order: is a non-idempotent perform over sale.order", () => {
   assertEquals(action.key, "create-order");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "sale.order");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-order: passes x2many line commands through verbatim", async () => {
+test("create-order: passes x2many line commands through verbatim", async () => {
   // [0, 0, {...}] is Odoo's "create a new linked record" opcode. Translating a
   // friendlier shape would silently limit what a workflow can express.
   const lines = [[0, 0, { product_id: 61, product_uom_qty: 2 }]];
@@ -25,7 +26,7 @@ Deno.test("create-order: passes x2many line commands through verbatim", async ()
   assertEquals(out, { id: 70 });
 });
 
-Deno.test("create-order: accepts the line commands as a JSON string too", async () => {
+test("create-order: accepts the line commands as a JSON string too", async () => {
   const { ctx, calls } = mockCtx([{ result: 1 }]);
   await action.execute({ partnerId: 9, lines: '[[0,0,{"product_id":61}]]' }, ctx);
   assertEquals(executeKwArgs(calls[0]).args, [
@@ -33,13 +34,13 @@ Deno.test("create-order: accepts the line commands as a JSON string too", async 
   ]);
 });
 
-Deno.test("create-order: omits order_line entirely when no lines are given", async () => {
+test("create-order: omits order_line entirely when no lines are given", async () => {
   const { ctx, calls } = mockCtx([{ result: 1 }]);
   await action.execute({ partnerId: 9 }, ctx);
   assertEquals(executeKwArgs(calls[0]).args, [{ partner_id: 9 }]);
 });
 
-Deno.test("create-order: rejects malformed lines before calling out", async () => {
+test("create-order: rejects malformed lines before calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() =>
     action.execute({ partnerId: 9, lines: "{oops" }, ctx) as Promise<unknown>
@@ -50,6 +51,6 @@ Deno.test("create-order: rejects malformed lines before calling out", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-order: documents the x2many command format at the form", () => {
+test("create-order: documents the x2many command format at the form", () => {
   assert(/x2many/i.test(param(action, "lines").hint ?? ""));
 });

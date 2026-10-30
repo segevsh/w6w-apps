@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import funnelCreate from "../../actions/funnel-create.ts";
 import { mockCtx, writeResult } from "../_helpers.ts";
 
-Deno.test("funnel-create: metadata — not idempotent", () => {
+test("funnel-create: metadata — not idempotent", () => {
   assertEquals(funnelCreate.key, "funnel-create");
   assertEquals(funnelCreate.type, "perform");
   assertEquals(funnelCreate.idempotent, false);
 });
 
-Deno.test("funnel-create: POST /funnels with {name}", async () => {
+test("funnel-create: POST /funnels with {name}", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: writeResult("Created", "new-id") }]);
   const result = await funnelCreate.execute({ name: "New funnel" }, ctx);
   assertEquals(calls[0].method, "POST");

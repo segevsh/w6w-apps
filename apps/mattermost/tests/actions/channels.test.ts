@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import channelGetByName from "../../actions/channel-get-by-name.ts";
 import channelCreate from "../../actions/channel-create.ts";
 import channelDirectCreate from "../../actions/channel-direct-create.ts";
@@ -7,7 +8,7 @@ import channelMembersList from "../../actions/channel-members-list.ts";
 import channelsForUser from "../../actions/channels-for-user.ts";
 import { mockMattermostCtx } from "../_helpers.ts";
 
-Deno.test("channel-get-by-name: builds the team-name/channel-name path", async () => {
+test("channel-get-by-name: builds the team-name/channel-name path", async () => {
   const { ctx, calls } = mockMattermostCtx([{ body: { id: "c1", display_name: "Town Square" } }]);
   await channelGetByName.execute({ teamName: "acme", channelName: "town-square" }, ctx);
   assertEquals(
@@ -17,13 +18,13 @@ Deno.test("channel-get-by-name: builds the team-name/channel-name path", async (
 });
 
 /** Names come from a URL, so they may contain characters that need encoding. */
-Deno.test("channel-get-by-name: percent-encodes both names", async () => {
+test("channel-get-by-name: percent-encodes both names", async () => {
   const { ctx, calls } = mockMattermostCtx([{ body: { id: "c1" } }]);
   await channelGetByName.execute({ teamName: "a/b", channelName: "c d" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v4/teams/name/a%2Fb/channels/name/c%20d");
 });
 
-Deno.test("channel-create: posts the four required fields", async () => {
+test("channel-create: posts the four required fields", async () => {
   const { ctx, calls } = mockMattermostCtx([{ status: 201, body: { id: "c1" } }]);
   await channelCreate.execute({
     teamId: "t1",
@@ -41,7 +42,7 @@ Deno.test("channel-create: posts the four required fields", async () => {
   });
 });
 
-Deno.test("channel-create: offers only the two creatable types", () => {
+test("channel-create: offers only the two creatable types", () => {
   const type = channelCreate.params!.find((p) => p.key === "type")!;
   assertEquals((type.options as Array<{ value: string }>).map((o) => o.value), ["O", "P"]);
   assertEquals(channelCreate.idempotent, false);
@@ -51,7 +52,7 @@ Deno.test("channel-create: offers only the two creatable types", () => {
  * The load-bearing shape: this endpoint's body is a BARE ARRAY of exactly two
  * ids. Sending `{"user_ids": [...]}` is a 400.
  */
-Deno.test("channel-direct-create: sends a bare two-element array, not an object", async () => {
+test("channel-direct-create: sends a bare two-element array, not an object", async () => {
   const { ctx, calls } = mockMattermostCtx([{ status: 201, body: { id: "d1", type: "D" } }]);
   await channelDirectCreate.execute({ userIds: "u1, u2" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -59,7 +60,7 @@ Deno.test("channel-direct-create: sends a bare two-element array, not an object"
   assertEquals(JSON.parse(calls[0].body!), ["u1", "u2"]);
 });
 
-Deno.test("channel-direct-create: refuses anything but two ids, before sending", async () => {
+test("channel-direct-create: refuses anything but two ids, before sending", async () => {
   const { ctx, calls } = mockMattermostCtx([]);
   await assertRejects(
     async () => {
@@ -79,11 +80,11 @@ Deno.test("channel-direct-create: refuses anything but two ids, before sending",
 });
 
 /** A DM channel is a singleton, so calling this repeatedly is safe. */
-Deno.test("channel-direct-create: is idempotent, because the channel is a singleton", () => {
+test("channel-direct-create: is idempotent, because the channel is a singleton", () => {
   assertEquals(channelDirectCreate.idempotent, true);
 });
 
-Deno.test("channel-member-add: posts the user id to the members path", async () => {
+test("channel-member-add: posts the user id to the members path", async () => {
   const { ctx, calls } = mockMattermostCtx([{
     status: 201,
     body: { channel_id: "c1", user_id: "u2" },
@@ -94,7 +95,7 @@ Deno.test("channel-member-add: posts the user id to the members path", async () 
   assertEquals(JSON.parse(calls[0].body!), { user_id: "u2" });
 });
 
-Deno.test("channel-members-list: pages the members path", async () => {
+test("channel-members-list: pages the members path", async () => {
   const { ctx, calls } = mockMattermostCtx([{ body: [] }]);
   await channelMembersList.execute({ channelId: "c1", page: 1, perPage: 100 }, ctx);
   const url = new URL(calls[0].url);
@@ -107,7 +108,7 @@ Deno.test("channel-members-list: pages the members path", async () => {
  * `me` is Mattermost's alias for the authenticated user, and defaulting to it
  * saves a lookup for the question a workflow usually asks.
  */
-Deno.test("channels-for-user: defaults the user to `me`", async () => {
+test("channels-for-user: defaults the user to `me`", async () => {
   const { ctx, calls } = mockMattermostCtx([{ body: [] }, { body: [] }]);
   await channelsForUser.execute({ teamId: "t1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v4/users/me/teams/t1/channels");
@@ -115,13 +116,13 @@ Deno.test("channels-for-user: defaults the user to `me`", async () => {
   assertEquals(new URL(calls[1].url).pathname, "/api/v4/users/u9/teams/t1/channels");
 });
 
-Deno.test("channels-for-user: a blank user id still means me", async () => {
+test("channels-for-user: a blank user id still means me", async () => {
   const { ctx, calls } = mockMattermostCtx([{ body: [] }]);
   await channelsForUser.execute({ teamId: "t1", userId: "  " }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v4/users/me/teams/t1/channels");
 });
 
-Deno.test("channels: a missing channel surfaces Mattermost's store error id", async () => {
+test("channels: a missing channel surfaces Mattermost's store error id", async () => {
   const { ctx } = mockMattermostCtx([{
     status: 404,
     body: {

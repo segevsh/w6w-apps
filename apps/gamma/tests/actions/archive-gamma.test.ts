@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import archiveGamma from "../../actions/archive-gamma.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("archive-gamma: POSTs /gammas/{id}/archive", async () => {
+test("archive-gamma: POSTs /gammas/{id}/archive", async () => {
   const { ctx, calls } = mockCtx([{ body: { gammaId: "g_1", archived: true } }]);
   const out = await archiveGamma.execute({ gammaId: "g_1" }, ctx) as { archived: boolean };
 
@@ -11,6 +12,6 @@ Deno.test("archive-gamma: POSTs /gammas/{id}/archive", async () => {
   assertEquals(out.archived, true);
 });
 
-Deno.test("archive-gamma: is declared idempotent, matching the vendor's own guarantee", () => {
+test("archive-gamma: is declared idempotent, matching the vendor's own guarantee", () => {
   assertEquals(archiveGamma.idempotent, true);
 });

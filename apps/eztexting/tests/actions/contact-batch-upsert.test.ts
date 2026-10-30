@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactBatchUpsert from "../../actions/contact-batch-upsert.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-batch-upsert: calls POST /contacts/batch and returns the documented shape", async () => {
+test("contact-batch-upsert: calls POST /contacts/batch and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const result = await contactBatchUpsert.execute(
     {
@@ -21,7 +22,7 @@ Deno.test("contact-batch-upsert: calls POST /contacts/batch and returns the docu
   assertEquals(result, { "count": 1, "status": 200 });
 });
 
-Deno.test("contact-batch-upsert: carries no credential — auth is the sign hook's job", async () => {
+test("contact-batch-upsert: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   await contactBatchUpsert.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("contact-batch-upsert: carries no credential — auth is the sign hook
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("contact-batch-upsert: an empty batch is refused locally", async () => {
+test("contact-batch-upsert: an empty batch is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await contactBatchUpsert.execute({ contacts: [] }, ctx),

@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import clientCredentials from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: is a custom type with two required secret fields", () => {
+test("client-credentials: is a custom type with two required secret fields", () => {
   assertEquals(clientCredentials.type, "custom");
   assertEquals(clientCredentials.fields?.length, 2);
   assert(clientCredentials.fields!.every((f) => f.type === "secret" && f.required === true));
 });
 
-Deno.test("client-credentials.exchange: mints a token via the fixed token endpoint", async () => {
+test("client-credentials.exchange: mints a token via the fixed token endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-1", expires_in: 3600 } }]);
   const cred = await clientCredentials.exchange!(
     { fields: { clientId: "cid", clientSecret: "csecret" } } as never,
@@ -26,7 +27,7 @@ Deno.test("client-credentials.exchange: mints a token via the fixed token endpoi
   assert(cred.expiresAt);
 });
 
-Deno.test("client-credentials.exchange: throws when a field is missing", async () => {
+test("client-credentials.exchange: throws when a field is missing", async () => {
   let threw = false;
   try {
     await clientCredentials.exchange!({ fields: { clientId: "" } } as never, mockCtx([]).ctx);
@@ -36,7 +37,7 @@ Deno.test("client-credentials.exchange: throws when a field is missing", async (
   assert(threw);
 });
 
-Deno.test("client-credentials.exchange: throws with the vendor's error_description on rejection", async () => {
+test("client-credentials.exchange: throws with the vendor's error_description on rejection", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "invalid_client", error_description: "Client authentication failed" },
@@ -54,7 +55,7 @@ Deno.test("client-credentials.exchange: throws with the vendor's error_descripti
   assert(threw);
 });
 
-Deno.test("client-credentials.refresh: re-mints using the stored client id/secret", async () => {
+test("client-credentials.refresh: re-mints using the stored client id/secret", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-2", expires_in: 3600 } }]);
   const cred = await clientCredentials.refresh!(
     { credential: { clientId: "cid", clientSecret: "csecret" } } as never,
@@ -65,7 +66,7 @@ Deno.test("client-credentials.refresh: re-mints using the stored client id/secre
   assertEquals(body.get("client_id"), "cid");
 });
 
-Deno.test("client-credentials.sign: stamps Authorization with the minted access token", async () => {
+test("client-credentials.sign: stamps Authorization with the minted access token", async () => {
   const { ctx } = mockCtx([]);
   const request = { headers: {} as Record<string, string>, url: "x", method: "POST" };
   const signed = await clientCredentials.sign!(
@@ -75,7 +76,7 @@ Deno.test("client-credentials.sign: stamps Authorization with the minted access 
   assertEquals(signed.headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("client-credentials.test: succeeds when the minted token is accepted by `me`", async () => {
+test("client-credentials.test: succeeds when the minted token is accepted by `me`", async () => {
   const { ctx, calls } = mockCtx([
     { body: { access_token: "tok-1", expires_in: 3600 } },
     { body: { data: { me: { id: "u1" } } } },
@@ -88,12 +89,12 @@ Deno.test("client-credentials.test: succeeds when the minted token is accepted b
   assertEquals(calls[1].headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("client-credentials.test: fails without throwing when credential is missing fields", async () => {
+test("client-credentials.test: fails without throwing when credential is missing fields", async () => {
   const result = await clientCredentials.test!({ credential: {} } as never, mockCtx([]).ctx);
   assertEquals(result.ok, false);
 });
 
-Deno.test("client-credentials.test: a minted-but-unscoped token surfaces the GraphQL rejection", async () => {
+test("client-credentials.test: a minted-but-unscoped token surfaces the GraphQL rejection", async () => {
   const { ctx } = mockCtx([
     { body: { access_token: "tok-1", expires_in: 3600 } },
     {

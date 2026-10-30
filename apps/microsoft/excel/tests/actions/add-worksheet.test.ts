@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-worksheet.ts";
 
-Deno.test("add-worksheet: POSTs to the documented /worksheets/add path", async () => {
+test("add-worksheet: POSTs to the documented /worksheets/add path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "{S9}", name: "Q3" } }]);
   const out = await action.execute({ itemId: "ITEM1", name: "Q3" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("add-worksheet: POSTs to the documented /worksheets/add path", async (
   assertEquals(out.name, "Q3");
 });
 
-Deno.test("add-worksheet: omits the name entirely when none is given", async () => {
+test("add-worksheet: omits the name entirely when none is given", async () => {
   // Excel names the sheet itself; sending `{"name": null}` would be a different
   // request than sending `{}`.
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "{S9}", name: "Sheet2" } }]);
@@ -23,13 +24,13 @@ Deno.test("add-worksheet: omits the name entirely when none is given", async () 
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("add-worksheet: treats a whitespace-only name as absent", async () => {
+test("add-worksheet: treats a whitespace-only name as absent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ itemId: "ITEM1", name: "   " }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("add-worksheet: works under the path form and forwards the session", async () => {
+test("add-worksheet: works under the path form and forwards the session", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ itemPath: "Q3.xlsx", name: "New", sessionId: "s1" }, ctx);
   assertEquals(
@@ -39,6 +40,6 @@ Deno.test("add-worksheet: works under the path form and forwards the session", a
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("add-worksheet: is honestly non-idempotent", () => {
+test("add-worksheet: is honestly non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

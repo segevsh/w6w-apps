@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-create: sends the documented request and returns the answer", async () => {
+test("contact-create: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await contactCreate.execute({
     "number": "+15551234567",
@@ -21,12 +22,12 @@ Deno.test("contact-create: sends the documented request and returns the answer",
   assertEquals(result.id, 1);
 });
 
-Deno.test("contact-create: declares idempotent = false", () => {
+test("contact-create: declares idempotent = false", () => {
   assertEquals(contactCreate.idempotent, false);
   assertEquals(contactCreate.type, "perform");
 });
 
-Deno.test("contact-create: a refused token surfaces the vendor message", async () => {
+test("contact-create: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

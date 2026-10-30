@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import namedListsList from "../../actions/named-lists-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("named-lists-list: GETs /v1/company/named-lists, archived only on request", async () => {
+test("named-lists-list: GETs /v1/company/named-lists, archived only on request", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ name: "site", items: [] }] }, { body: [] }]);
   const out = await namedListsList.execute({}, ctx) as { count: number };
   assertEquals(pathOf(calls[0].url), "/v1/company/named-lists");

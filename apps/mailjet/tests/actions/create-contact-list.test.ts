@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createContactList from "../../actions/create-contact-list.ts";
 
@@ -6,7 +7,7 @@ const ENVELOPE = { body: { Count: 1, Data: [{ ID: 1, Name: "Newsletter" }], Tota
 
 // ---------------------------------------------------------- create-contact-list
 
-Deno.test("create-contact-list: POSTs Name", async () => {
+test("create-contact-list: POSTs Name", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await createContactList.execute!({ name: "Newsletter" }, ctx);
   assertEquals(calls[0].method, "POST");

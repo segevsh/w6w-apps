@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pipelineCreate from "../../actions/pipeline-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pipeline-create: PUTs a form-urlencoded body, not JSON", async () => {
+test("pipeline-create: PUTs a form-urlencoded body, not JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "New", key: "p9" } }]);
   await pipelineCreate.execute({ name: "New", teamKey: "t1" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,7 +12,7 @@ Deno.test("pipeline-create: PUTs a form-urlencoded body, not JSON", async () => 
   assertEquals(calls[0].body, "name=New&teamKey=t1");
 });
 
-Deno.test("pipeline-create: optional fields are omitted from the form when unset", async () => {
+test("pipeline-create: optional fields are omitted from the form when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await pipelineCreate.execute({ name: "New", teamKey: "t1", teamWide: true }, ctx);
   assertEquals(calls[0].body, "name=New&teamKey=t1&teamWide=true");

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/event-attendee-remove.ts";
 
@@ -8,7 +9,7 @@ import action from "../../actions/event-attendee-remove.ts";
  * from the query string. Transcribed from this endpoint's own definition, which
  * declares a `requestBody` and no `parameters` at all.
  */
-Deno.test("event-attendee-remove: DELETEs with a BODY, not query parameters", async () => {
+test("event-attendee-remove: DELETEs with a BODY, not query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute({ eventId: 2, memberEmail: "a@b.c" }, ctx);
   assertEquals(pathOf(calls[0]), "/api/admin/v2/event_attendees");
@@ -18,6 +19,6 @@ Deno.test("event-attendee-remove: DELETEs with a BODY, not query parameters", as
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("event-attendee-remove: is idempotent", () => {
+test("event-attendee-remove: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

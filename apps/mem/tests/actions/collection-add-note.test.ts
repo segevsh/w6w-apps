@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionAddNote from "../../actions/collection-add-note.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const INPUT = {
 };
 const RESPONSE = { "request_id": "r9" };
 
-Deno.test("collection-add-note: PUT /v2/collections/{collection_id}/notes/{note_id}", async () => {
+test("collection-add-note: PUT /v2/collections/{collection_id}/notes/{note_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionAddNote.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -24,13 +25,13 @@ Deno.test("collection-add-note: PUT /v2/collections/{collection_id}/notes/{note_
   assertEquals(out.ok, true);
 });
 
-Deno.test("collection-add-note: puts no credential on the request (sign owns that)", async () => {
+test("collection-add-note: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionAddNote.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-add-note: a vendor error surfaces its own message", async () => {
+test("collection-add-note: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreateCall from "../../actions/webhook-create-call.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create-call: POSTs /v1/webhooks/calls with the given events/url", async () => {
+test("webhook-create-call: POSTs /v1/webhooks/calls with the given events/url", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "WH1" } } }]);
   await webhookCreateCall.execute(
     { events: ["call.completed", "call.ringing"], url: "https://example.com/hook" },
@@ -14,7 +15,7 @@ Deno.test("webhook-create-call: POSTs /v1/webhooks/calls with the given events/u
   assertEquals(body.events, ["call.completed", "call.ringing"]);
 });
 
-Deno.test("webhook-create-call: events param offers the three legacy call event types", () => {
+test("webhook-create-call: events param offers the three legacy call event types", () => {
   const events = webhookCreateCall.params?.find((p) => p.key === "events");
   assertEquals(events?.options, [
     { value: "call.completed", label: "Call completed" },
@@ -23,7 +24,7 @@ Deno.test("webhook-create-call: events param offers the three legacy call event 
   ]);
 });
 
-Deno.test("webhook-create-call: is a non-idempotent perform action", () => {
+test("webhook-create-call: is a non-idempotent perform action", () => {
   assertEquals(webhookCreateCall.type, "perform");
   assertEquals(webhookCreateCall.idempotent, false);
 });

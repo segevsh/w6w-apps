@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import smsSend from "../../actions/sms-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const INPUT = {
   "foreign_id": "f1",
 } as Parameters<typeof smsSend.execute>[0];
 
-Deno.test("sms-send: POST /api/sms with the documented fields", async () => {
+test("sms-send: POST /api/sms with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": "100",
@@ -45,14 +46,14 @@ Deno.test("sms-send: POST /api/sms with the documented fields", async () => {
   assertEquals(out.success, "100");
 });
 
-Deno.test("sms-send: declares type perform and every required param", () => {
+test("sms-send: declares type perform and every required param", () => {
   const required = (smsSend.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["text", "to"]);
   assert(["read", "search", "perform"].includes(smsSend.type));
   assertEquals(smsSend.type, "perform");
 });
 
-Deno.test("sms-send: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("sms-send: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {
@@ -63,7 +64,7 @@ Deno.test("sms-send: a refused key (bare code 900 in an HTTP 200) is thrown, not
   assert(message.includes("900") && message.includes("authentication failed"), message);
 });
 
-Deno.test("sms-send: code 101 (partial failure) is returned with the per-recipient errors", async () => {
+test("sms-send: code 101 (partial failure) is returned with the per-recipient errors", async () => {
   const { ctx } = mockCtx([{
     body: {
       success: "101",
@@ -75,7 +76,7 @@ Deno.test("sms-send: code 101 (partial failure) is returned with the per-recipie
   assertEquals((out.messages as Array<{ success: boolean }>).map((m) => m.success), [true, false]);
 });
 
-Deno.test("sms-send: a failure code in a 200 body is thrown with its meaning", async () => {
+test("sms-send: a failure code in a 200 body is thrown with its meaning", async () => {
   for (
     const [code, text] of [["500", "too little credit"], ["202", "recipient number is invalid"]]
   ) {
@@ -90,7 +91,7 @@ Deno.test("sms-send: a failure code in a 200 body is thrown with its meaning", a
   }
 });
 
-Deno.test("sms-send: omits unset optional fields and never sends deprecated ones", async () => {
+test("sms-send: omits unset optional fields and never sends deprecated ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: "100" } }]);
   await smsSend.execute({ to: "4917612345678", text: "x" }, ctx);
   assertEquals(

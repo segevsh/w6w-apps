@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: GETs /v2/users/me/webhooks with filter[url] and pagination", async () => {
+test("webhook-list: GETs /v2/users/me/webhooks with filter[url] and pagination", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: 1, url: "https://example.com/hook" }], "/v2/webhooks"),

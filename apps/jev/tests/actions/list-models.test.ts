@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /v1/models and returns the response verbatim", async () => {
+test("list-models: GETs /v1/models and returns the response verbatim", async () => {
   const body = { models: [{ name: "system-one", release_date: "2026-01-01" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);

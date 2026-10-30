@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-campaign.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-campaign: GETs /campaigns/{id}", async () => {
+test("get-campaign: GETs /campaigns/{id}", async () => {
   const body = { id: "cmp1", status: "sent", content: { html: "<p>hi</p>" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute!({ campaignId: "cmp1" }, ctx);
@@ -10,7 +11,7 @@ Deno.test("get-campaign: GETs /campaigns/{id}", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("get-campaign: is a read action", () => {
+test("get-campaign: is a read action", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "campaign");
 });

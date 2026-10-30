@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, page } from "./_shared.ts";
 import action from "../../actions/document-list.ts";
 
 /** A report built by listing what exists misses the evidence nobody uploaded. */
-Deno.test("document-list: tallies the statuses so a caller does not have to", async () => {
+test("document-list: tallies the statuses so a caller does not have to", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: "d1", status: "COMPLETE" },
     { id: "d2", status: "MISSING" },
@@ -19,7 +20,7 @@ Deno.test("document-list: tallies the statuses so a caller does not have to", as
   assertEquals(result.statusCounts, { COMPLETE: 1, MISSING: 2 });
 });
 
-Deno.test("document-list: status and framework filters are repeated keys", async () => {
+test("document-list: status and framework filters are repeated keys", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ statuses: "MISSING, EXPIRED", frameworks: "soc2" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -27,6 +28,6 @@ Deno.test("document-list: status and framework filters are repeated keys", async
   assertEquals(q.getAll("frameworkMatchesAny"), ["soc2"]);
 });
 
-Deno.test("document-list: says a missing document is in the list, not absent from it", () => {
+test("document-list: says a missing document is in the list, not absent from it", () => {
   assert(/IN this list with a status/.test(action.description!), action.description);
 });

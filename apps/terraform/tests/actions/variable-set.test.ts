@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-set.ts";
 
@@ -15,7 +16,7 @@ const written = (attributes: Record<string, unknown>) => ({
 });
 
 /** Creating one that exists is a 422; updating one that does not needs an id. */
-Deno.test("variable-set: POSTs when the variable is absent", async () => {
+test("variable-set: POSTs when the variable is absent", async () => {
   const { ctx, calls } = mockCtx([empty, written({ key: "region", category: "terraform" })]);
   const result = await action.execute(
     { workspaceId: "ws-1", key: "region", value: "eu-west-1" },
@@ -27,7 +28,7 @@ Deno.test("variable-set: POSTs when the variable is absent", async () => {
   assertEquals(result.created, true);
 });
 
-Deno.test("variable-set: PATCHes the existing variable by its id", async () => {
+test("variable-set: PATCHes the existing variable by its id", async () => {
   const { ctx, calls } = mockCtx([
     existing({ key: "region", category: "terraform", sensitive: false }),
     written({ key: "region", category: "terraform" }),
@@ -42,7 +43,7 @@ Deno.test("variable-set: PATCHes the existing variable by its id", async () => {
 });
 
 /** The same name can exist once as `terraform` and once as `env`. */
-Deno.test("variable-set: matches on key AND category, so the categories do not collide", async () => {
+test("variable-set: matches on key AND category, so the categories do not collide", async () => {
   const { ctx, calls } = mockCtx([
     existing({ key: "region", category: "terraform" }),
     written({ key: "region", category: "env" }),
@@ -59,7 +60,7 @@ Deno.test("variable-set: matches on key AND category, so the categories do not c
  * Writing back the null a read returned silently empties a credential the
  * runs depend on.
  */
-Deno.test("variable-set: refuses to update a sensitive variable without a value", async () => {
+test("variable-set: refuses to update a sensitive variable without a value", async () => {
   const { ctx, calls } = mockCtx([
     existing({ key: "AWS_SECRET_ACCESS_KEY", category: "env", sensitive: true }),
   ]);
@@ -77,7 +78,7 @@ Deno.test("variable-set: refuses to update a sensitive variable without a value"
   assertEquals(calls.length, 1, "nothing was written");
 });
 
-Deno.test("variable-set: a value is required to create", async () => {
+test("variable-set: a value is required to create", async () => {
   const { ctx, calls } = mockCtx([empty]);
   let message = "";
   try {
@@ -89,7 +90,7 @@ Deno.test("variable-set: a value is required to create", async () => {
   assertEquals(calls.length, 1);
 });
 
-Deno.test("variable-set: sensitive and hcl are always sent, false included", async () => {
+test("variable-set: sensitive and hcl are always sent, false included", async () => {
   const { ctx, calls } = mockCtx([empty, written({ key: "x" })]);
   await action.execute({ workspaceId: "ws-1", key: "x", value: "1" }, ctx);
   const attributes = JSON.parse(calls[1].body!).data.attributes;
@@ -99,7 +100,7 @@ Deno.test("variable-set: sensitive and hcl are always sent, false included", asy
 });
 
 /** Without hcl, `["a","b"]` is a string and the type error appears in the plan. */
-Deno.test("variable-set: hcl is passed through when asked for", async () => {
+test("variable-set: hcl is passed through when asked for", async () => {
   const { ctx, calls } = mockCtx([empty, written({ key: "zones" })]);
   await action.execute(
     { workspaceId: "ws-1", key: "zones", value: '["a","b"]', hcl: true },
@@ -109,7 +110,7 @@ Deno.test("variable-set: hcl is passed through when asked for", async () => {
 });
 
 /** Marking one sensitive is one-way. */
-Deno.test("variable-set: logs the key and flags, never the value", async () => {
+test("variable-set: logs the key and flags, never the value", async () => {
   const { ctx, logs } = mockCtx([
     empty,
     written({ key: "AWS_SECRET_ACCESS_KEY", sensitive: true }),
@@ -131,7 +132,7 @@ Deno.test("variable-set: logs the key and flags, never the value", async () => {
   });
 });
 
-Deno.test("variable-set: a key is required", async () => {
+test("variable-set: a key is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -144,7 +145,7 @@ Deno.test("variable-set: a key is required", async () => {
 });
 
 /** A provider credential set as `terraform` is ignored, and the run fails. */
-Deno.test("variable-set: the category hint says which one credentials go in", () => {
+test("variable-set: the category hint says which one credentials go in", () => {
   const category = action.params!.find((p) => p.key === "category")!;
   assert(/IGNORED silently/.test(category.hint!), category.hint);
   assert(/Provider credentials must be `env`/.test(category.hint!), category.hint);

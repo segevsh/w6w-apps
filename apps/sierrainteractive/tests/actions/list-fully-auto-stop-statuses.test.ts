@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-fully-auto-stop-statuses.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-fully-auto-stop-statuses: GET /zapier/getFullyAutoActionPlanStopStatus returns the body under data", async () => {
+test("list-fully-auto-stop-statuses: GET /zapier/getFullyAutoActionPlanStopStatus returns the body under data", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "x" }] }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("list-fully-auto-stop-statuses: GET /zapier/getFullyAutoActionPlanStop
   assertEquals(out, { data: [{ id: 1, name: "x" }] });
 });
 
-Deno.test("list-fully-auto-stop-statuses: a rejected key surfaces Sierra's errorMessage", async () => {
+test("list-fully-auto-stop-statuses: a rejected key surfaces Sierra's errorMessage", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("Unauthorized request") }]);
   await assertRejects(
     () => Promise.resolve(action.execute({}, ctx)),

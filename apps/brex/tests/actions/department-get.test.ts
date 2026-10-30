@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import departmentGet from "../../actions/department-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const DEPARTMENT = { id: "dp_1", name: "Engineering", description: "Product engineering" };
 
-Deno.test("department-get: GETs one department by id", async () => {
+test("department-get: GETs one department by id", async () => {
   const { ctx, calls } = mockCtx([{ body: DEPARTMENT }]);
   const result = await departmentGet.execute({ id: "dp_1" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("department-get: GETs one department by id", async () => {
   assertEquals(result, DEPARTMENT);
 });
 
-Deno.test("department-get: the id is required and escaped", async () => {
+test("department-get: the id is required and escaped", async () => {
   assertEquals(departmentGet.params?.find((p) => p.key === "id")?.required, true);
 
   const { ctx, calls } = mockCtx([{ body: DEPARTMENT }]);

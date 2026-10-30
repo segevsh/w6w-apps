@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, compact, OAUTH_TOKEN_URL, unset, ZoomClient } from "../../lib/client.ts";
 
-Deno.test("client: targets the v2 API and sets no Authorization header", async () => {
+test("client: targets the v2 API and sets no Authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await new ZoomClient(ctx).request("/users/me");
   assertEquals(calls[0].url, "https://api.zoom.us/v2/users/me");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: the OAuth host is separate from the API host", () => {
+test("client: the OAuth host is separate from the API host", () => {
   // Both have to be on the egress allowlist: the implicit OAuth allowance only
   // covers endpoints declared in an `oauth2` block, and server-to-server mints
   // its token by hand.
@@ -17,7 +18,7 @@ Deno.test("client: the OAuth host is separate from the API host", () => {
   assertEquals(new URL(OAUTH_TOKEN_URL).hostname, "zoom.us");
 });
 
-Deno.test("client: returns undefined for Zoom's 204 responses", async () => {
+test("client: returns undefined for Zoom's 204 responses", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new ZoomClient(ctx).request("/meetings/1", { method: "PATCH", body: { topic: "x" } }),
@@ -25,7 +26,7 @@ Deno.test("client: returns undefined for Zoom's 204 responses", async () => {
   );
 });
 
-Deno.test("client: surfaces Zoom's error body", async () => {
+test("client: surfaces Zoom's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     statusText: "Not Found",
@@ -38,7 +39,7 @@ Deno.test("client: surfaces Zoom's error body", async () => {
   );
 });
 
-Deno.test("compact/unset behave as the other apps' helpers do", () => {
+test("compact/unset behave as the other apps' helpers do", () => {
   assertEquals(compact({ a: 0, b: false, c: undefined, d: null }), { a: 0, b: false });
   assertEquals(unset(""), undefined);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-get.ts";
 
-Deno.test("batch-get: GETs /openai/v1/batches/{id}", async () => {
+test("batch-get: GETs /openai/v1/batches/{id}", async () => {
   const body = { id: "batch_1", status: "completed" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ batchId: "batch_1" }, ctx);

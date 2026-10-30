@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/chart-validate.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("chart-validate: a good config reports valid with normalized params and warnings", async () => {
+test("chart-validate: a good config reports valid with normalized params and warnings", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       success: true,
@@ -19,7 +20,7 @@ Deno.test("chart-validate: a good config reports valid with normalized params an
   assertEquals(out.renderCheck, { contentType: "image/png", bytes: 100 });
 });
 
-Deno.test("chart-validate: a 400 is returned as data, not thrown", async () => {
+test("chart-validate: a 400 is returned as data, not thrown", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { success: false, errors: ["Chart error: Invalid input"], warnings: [], normalized: {} },
@@ -29,7 +30,7 @@ Deno.test("chart-validate: a 400 is returned as data, not thrown", async () => {
   assertEquals(out.errors, ["Chart error: Invalid input"]);
 });
 
-Deno.test("chart-validate: 429 still throws", async () => {
+test("chart-validate: 429 still throws", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "slow" }]);
   await assertRejects(() => exec(action, { chart: "{}" }, ctx), Error, "429");
 });

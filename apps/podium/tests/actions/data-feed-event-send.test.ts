@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import dataFeedEventSend from "../../actions/data-feed-event-send.ts";
 
-Deno.test("data-feed-event-send: sends every documented field in its documented place", async () => {
+test("data-feed-event-send: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("data-feed-event-send: sends every documented field in its documented 
   assertEquals(result, { accepted: true });
 });
 
-Deno.test("data-feed-event-send: declares its params and kind", () => {
+test("data-feed-event-send: declares its params and kind", () => {
   assertEquals((dataFeedEventSend.params ?? []).map((p) => p.key), ["uid", "event"]);
   assertEquals((dataFeedEventSend.params ?? []).filter((p) => p.required).map((p) => p.key), [
     "uid",

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: probes the Statuspage summary on its own allowlist", async () => {
+test("service: probes the Statuspage summary on its own allowlist", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: { indicator: "none" }, components: [] } }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.wix.com/api/v2/summary.json");
@@ -11,7 +12,7 @@ Deno.test("service: probes the Statuspage summary on its own allowlist", async (
   assertEquals(service.network, { allow: ["status.wix.com"] });
 });
 
-Deno.test("service: maps the rollup indicator to a health state", async () => {
+test("service: maps the rollup indicator to a health state", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -26,7 +27,7 @@ Deno.test("service: maps the rollup indicator to a health state", async () => {
   }
 });
 
-Deno.test("service: keys components by group so Wix's duplicate leaf names never collide", async () => {
+test("service: keys components by group so Wix's duplicate leaf names never collide", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "none" },
@@ -46,7 +47,7 @@ Deno.test("service: keys components by group so Wix's duplicate leaf names never
   });
 });
 
-Deno.test("service: suffixes rather than drops a genuine duplicate within one group", async () => {
+test("service: suffixes rather than drops a genuine duplicate within one group", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "none" },
@@ -63,7 +64,7 @@ Deno.test("service: suffixes rather than drops a genuine duplicate within one gr
   assertEquals(out.components!["group-api-2"], { state: "degraded" });
 });
 
-Deno.test("service: does not report group headers as components", async () => {
+test("service: does not report group headers as components", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "none" },
@@ -77,7 +78,7 @@ Deno.test("service: does not report group headers as components", async () => {
   assertEquals(Object.keys(out.components!), ["site-loading-storefront"]);
 });
 
-Deno.test("service: maps each Statuspage component status", async () => {
+test("service: maps each Statuspage component status", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor" },
@@ -102,14 +103,14 @@ Deno.test("service: maps each Statuspage component status", async () => {
   });
 });
 
-Deno.test("service: a broken status page is `unknown`, never `down`", async () => {
+test("service: a broken status page is `unknown`, never `down`", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message!.includes("503"));
 });
 
-Deno.test("service: unparseable JSON degrades to unknown instead of throwing", async () => {
+test("service: unparseable JSON degrades to unknown instead of throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>not json</html>" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

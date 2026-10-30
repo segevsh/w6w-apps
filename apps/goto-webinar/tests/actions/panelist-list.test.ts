@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import panelistList from "../../actions/panelist-list.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("panelist-list: the response is a bare array", async () => {
+test("panelist-list: the response is a bare array", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ body: [{ panelistId: 1 }] }],
     "org-1",

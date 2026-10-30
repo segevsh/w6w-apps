@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import boardList from "../../actions/board-list.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("board-list: posts to /v1/boards/list with no body params", async () => {
+test("board-list: posts to /v1/boards/list with no body params", async () => {
   const { ctx, calls } = mockCtx([{ body: { boards: [{ id: "b1" }] } }]);
   const out = await boardList.execute({}, ctx) as { boards: unknown[] };
 

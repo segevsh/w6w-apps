@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-place-action-link.ts";
 
-Deno.test("delete-place-action-link: DELETEs /v1/{name}", async () => {
+test("delete-place-action-link: DELETEs /v1/{name}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const result = await action.execute(
     { name: "locations/1/placeActionLinks/2" },

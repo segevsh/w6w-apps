@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-metadata-set.ts";
 
@@ -10,7 +11,7 @@ const existing = (names: string[]) => ({
 });
 const written = { status: 200, body: "", headers: { etag: '"0x8E"' } };
 
-Deno.test("blob-metadata-set: PUTs comp=metadata with x-ms-meta headers", async () => {
+test("blob-metadata-set: PUTs comp=metadata with x-ms-meta headers", async () => {
   const { ctx, calls } = mockCtx([existing([]), written], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", metadata: '{"owner":"jane"}' },
@@ -22,7 +23,7 @@ Deno.test("blob-metadata-set: PUTs comp=metadata with x-ms-meta headers", async 
 });
 
 /** There is no merge; what disappears is worth reporting. */
-Deno.test("blob-metadata-set: reports the names it removed", async () => {
+test("blob-metadata-set: reports the names it removed", async () => {
   const { ctx, logs } = mockCtx([existing(["owner", "team"]), written], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", metadata: '{"owner":"jane"}' },
@@ -33,7 +34,7 @@ Deno.test("blob-metadata-set: reports the names it removed", async () => {
   assert(/removed names that were set before/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("blob-metadata-set: replacing like for like removes nothing", async () => {
+test("blob-metadata-set: replacing like for like removes nothing", async () => {
   const { ctx, logs } = mockCtx([existing(["owner"]), written], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", metadata: '{"owner":"someone-else"}' },
@@ -44,7 +45,7 @@ Deno.test("blob-metadata-set: replacing like for like removes nothing", async ()
 });
 
 /** Azure lowercases the names, so the comparison has to. */
-Deno.test("blob-metadata-set: a case difference is not a removal", async () => {
+test("blob-metadata-set: a case difference is not a removal", async () => {
   const { ctx } = mockCtx([existing(["uploadedby"]), written], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", metadata: '{"uploadedBy":"jane"}' },
@@ -54,7 +55,7 @@ Deno.test("blob-metadata-set: a case difference is not a removal", async () => {
 });
 
 /** An empty object is how the whole set is cleared. */
-Deno.test("blob-metadata-set: an empty object clears everything and says so", async () => {
+test("blob-metadata-set: an empty object clears everything and says so", async () => {
   const { ctx, calls } = mockCtx([existing(["owner", "team"]), written], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", metadata: "{}" },
@@ -68,7 +69,7 @@ Deno.test("blob-metadata-set: an empty object clears everything and says so", as
   );
 });
 
-Deno.test("blob-metadata-set: a hyphenated name is refused before sending", async () => {
+test("blob-metadata-set: a hyphenated name is refused before sending", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -84,7 +85,7 @@ Deno.test("blob-metadata-set: a hyphenated name is refused before sending", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("blob-metadata-set: metadata must be an object", async () => {
+test("blob-metadata-set: metadata must be an object", async () => {
   for (const bad of [undefined, "", '["a"]']) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -99,7 +100,7 @@ Deno.test("blob-metadata-set: metadata must be an object", async () => {
 });
 
 /** Visible to anyone who can read the blob's properties. */
-Deno.test("blob-metadata-set: says metadata is not a place for secrets", () => {
+test("blob-metadata-set: says metadata is not a place for secrets", () => {
   const param = action.params!.find((p) => p.key === "metadata")!;
   assert(/Not a place for secrets/.test(param.hint!), param.hint);
 });

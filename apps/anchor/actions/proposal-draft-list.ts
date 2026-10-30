@@ -24,7 +24,12 @@ const proposalDraftList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "active", label: "active" }, {
+        value: "scheduled",
+        label: "scheduled",
+      }, { value: "archived", label: "archived" }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: active, scheduled, archived. Anchor defaults to active,scheduled.",
     },
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationGet from "../../actions/reservation-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("reservation-get: GET /getReservation by reservationID", async () => {
+test("reservation-get: GET /getReservation by reservationID", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ reservationID: "res1", status: "confirmed" }),
   }]);
@@ -12,7 +13,7 @@ Deno.test("reservation-get: GET /getReservation by reservationID", async () => {
   assertEquals(result.data, { reservationID: "res1", status: "confirmed" });
 });
 
-Deno.test("reservation-get: reservationID is declared required", () => {
+test("reservation-get: reservationID is declared required", () => {
   const param = reservationGet.params!.find((p) => p.key === "reservationID");
   assertEquals(param?.required, true);
 });

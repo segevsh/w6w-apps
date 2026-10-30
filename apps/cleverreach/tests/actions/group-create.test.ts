@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/group-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-create: POSTs the group", async () => {
+test("group-create: POSTs the group", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, name: "News" } }]);
   const out = await action.execute({
     name: "News",
@@ -22,7 +23,7 @@ Deno.test("group-create: POSTs the group", async () => {
   assertEquals(out.item.id, 7);
 });
 
-Deno.test("group-create: omits unset optional fields and requires a name", async () => {
+test("group-create: omits unset optional fields and requires a name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ name: "Only" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Only" });

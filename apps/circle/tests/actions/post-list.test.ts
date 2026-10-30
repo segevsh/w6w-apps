@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/post-list.ts";
 
-Deno.test("post-list: GETs /posts unfiltered when nothing is set", async () => {
+test("post-list: GETs /posts unfiltered when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, `${API}/posts`);
 });
 
-Deno.test("post-list: forwards every filter under Circle's own parameter names", async () => {
+test("post-list: forwards every filter under Circle's own parameter names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("post-list: forwards every filter under Circle's own parameter names",
   });
 });
 
-Deno.test("post-list: the status filter enum includes `all`, which the write enum does not", () => {
+test("post-list: the status filter enum includes `all`, which the write enum does not", () => {
   const values = (action.params!.find((p) => p.key === "status")!.options as Array<
     { value: string }
   >).map((o) => o.value);

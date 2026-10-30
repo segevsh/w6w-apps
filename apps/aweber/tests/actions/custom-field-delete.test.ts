@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldDelete from "../../actions/custom-field-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-delete: deletes by id and reports the status", async () => {
+test("custom-field-delete: deletes by id and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await customFieldDelete.execute(
     { accountId: "1", listId: "2", customFieldId: "3" },

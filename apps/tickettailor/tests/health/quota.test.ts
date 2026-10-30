@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { parseRateLimitHeaders, WARN_FRACTION } from "../../health/quota.ts";
 import { OVERVIEW_URL } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("parseRateLimitHeaders: reads the three X-Rate-Limit-* headers", () => {
+test("parseRateLimitHeaders: reads the three X-Rate-Limit-* headers", () => {
   const headers = new Headers({
     "x-rate-limit-limit": "10000",
     "x-rate-limit-remaining": "9995",
@@ -16,7 +17,7 @@ Deno.test("parseRateLimitHeaders: reads the three X-Rate-Limit-* headers", () =>
   });
 });
 
-Deno.test("parseRateLimitHeaders: undefined when headers are absent", () => {
+test("parseRateLimitHeaders: undefined when headers are absent", () => {
   assertEquals(parseRateLimitHeaders(new Headers()), {
     limit: undefined,
     remaining: undefined,
@@ -24,7 +25,7 @@ Deno.test("parseRateLimitHeaders: undefined when headers are absent", () => {
   });
 });
 
-Deno.test("check: ok with plenty of headroom", async () => {
+test("check: ok with plenty of headroom", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -44,7 +45,7 @@ Deno.test("check: ok with plenty of headroom", async () => {
   assertEquals(report.quota?.[0].remaining, 9995);
 });
 
-Deno.test(`check: degraded at or above the ${WARN_FRACTION * 100}% warn threshold`, async () => {
+test(`check: degraded at or above the ${WARN_FRACTION * 100}% warn threshold`, async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -61,7 +62,7 @@ Deno.test(`check: degraded at or above the ${WARN_FRACTION * 100}% warn threshol
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("check: unknown, not fabricated, when the headers are absent", async () => {
+test("check: unknown, not fabricated, when the headers are absent", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -72,7 +73,7 @@ Deno.test("check: unknown, not fabricated, when the headers are absent", async (
   assertEquals(report.quota, undefined);
 });
 
-Deno.test("check: unknown on a non-ok response — credential liveness is a separate check", async () => {
+test("check: unknown on a non-ok response — credential liveness is a separate check", async () => {
   const { ctx } = mockCtx([{ status: 403, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

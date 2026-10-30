@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-calendar-schedule.ts";
 
-Deno.test("booking-calendar-schedule: POSTs the booking form merged with custom fields", async () => {
+test("booking-calendar-schedule: POSTs the booking form merged with custom fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "BKNG-1" } }]);
   await action.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("booking-calendar-schedule: POSTs the booking form merged with custom 
   assertEquals(body.location, undefined);
 });
 
-Deno.test("booking-calendar-schedule: wraps a location override with type + value", async () => {
+test("booking-calendar-schedule: wraps a location override with type + value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     {

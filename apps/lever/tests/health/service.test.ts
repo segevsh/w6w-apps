@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -25,7 +26,7 @@ const summary = (globalApi: string, euApi: string, extra: Record<string, string>
 
 const run = (ctx: Parameters<NonNullable<typeof check.check>>[1]) => check.check!({}, ctx);
 
-Deno.test("service: reads the API component for the connection's data centre", async () => {
+test("service: reads the API component for the connection's data centre", async () => {
   const { ctx, calls } = mockCtx([summary("operational", "major_outage")], GLOBAL);
   const result = await run(ctx);
   assertEquals(calls[0].url, "https://status.lever.co/api/v2/summary.json");
@@ -34,7 +35,7 @@ Deno.test("service: reads the API component for the connection's data centre", a
 });
 
 /** The whole point: a name match alone would report the wrong region. */
-Deno.test("service: the EU connection sees the EU row", async () => {
+test("service: the EU connection sees the EU row", async () => {
   const { ctx } = mockCtx([summary("operational", "major_outage")], EU);
   const result = await run(ctx);
   assertEquals(result.state, "down");
@@ -42,7 +43,7 @@ Deno.test("service: the EU connection sees the EU row", async () => {
 });
 
 /** The API and the product fail separately. */
-Deno.test("service: a Hire outage is degraded and named as the product", async () => {
+test("service: a Hire outage is degraded and named as the product", async () => {
   const { ctx } = mockCtx([
     summary("operational", "operational", { globalHire: "partial_outage" }),
   ], GLOBAL);
@@ -52,12 +53,12 @@ Deno.test("service: a Hire outage is degraded and named as the product", async (
 });
 
 /** Third-party components are somebody else's software. */
-Deno.test("service: a partner outage does not change the verdict", async () => {
+test("service: a partner outage does not change the verdict", async () => {
   const { ctx } = mockCtx([summary("operational", "operational")], GLOBAL);
   assertEquals((await run(ctx)).state, "ok");
 });
 
-Deno.test("service: a renamed group is unknown rather than an outage", async () => {
+test("service: a renamed group is unknown rather than an outage", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { components: [{ id: "x", name: "Data Center", group: true }] },
@@ -67,7 +68,7 @@ Deno.test("service: a renamed group is unknown rather than an outage", async () 
   assert(/renamed or restructured/.test(result.message!), result.message);
 });
 
-Deno.test("service: a missing API component under a real group is unknown too", async () => {
+test("service: a missing API component under a real group is unknown too", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -80,7 +81,7 @@ Deno.test("service: a missing API component under a real group is unknown too", 
   assertEquals((await run(ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreachable or non-JSON status page is unknown", async () => {
+test("service: an unreachable or non-JSON status page is unknown", async () => {
   const down = mockCtx([{ status: 503, body: "" }], GLOBAL);
   assertEquals((await run(down.ctx)).state, "unknown");
   const html = mockCtx([{ status: 200, body: "<html>" }], GLOBAL);
@@ -88,7 +89,7 @@ Deno.test("service: an unreachable or non-JSON status page is unknown", async ()
 });
 
 /** Lever publishes no rate-limit header at all. */
-Deno.test("quota: is a declared absence naming the cursor as the real constraint", () => {
+test("quota: is a declared absence naming the cursor as the real constraint", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assert(/no rate-limit headers/.test(quota.unavailable!.reason), quota.unavailable!.reason);

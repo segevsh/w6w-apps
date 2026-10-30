@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const KEY = "unitTestFixtureNotARealKey0000";
 
-Deno.test("api-key: sign stamps the api_key header and leaves the URL alone", () => {
+test("api-key: sign stamps the api_key header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.docparser.com/v1/parsers",
@@ -19,26 +20,26 @@ Deno.test("api-key: sign stamps the api_key header and leaves the URL alone", ()
   assertEquals(authHeaders({ apiKey: KEY }), { api_key: KEY });
 });
 
-Deno.test("api-key: declared as an apiKey header method probing /v1/ping", () => {
+test("api-key: declared as an apiKey header method probing /v1/ping", () => {
   assertEquals(PROBE_PATH, "/v1/ping");
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.key, "api-key");
 });
 
-Deno.test("api-key: test passes on {msg: pong}", async () => {
+test("api-key: test passes on {msg: pong}", async () => {
   const { ctx, calls } = mockCtx([{ body: { msg: "pong" } }]);
   assertEquals(await apiKey.test({ credential: { apiKey: KEY } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/v1/ping");
   assertEquals(calls[0].headers.api_key, KEY);
 });
 
-Deno.test("api-key: test fails without a key, with no request", async () => {
+test("api-key: test fails without a key, with no request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiKey.test({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: classifies from the body, not the status", async () => {
+test("api-key: classifies from the body, not the status", async () => {
   // Real invalid-key answer: 403 {"error":"api key not valid"}.
   const bad = mockCtx([{ status: 403, body: { error: "api key not valid" } }]);
   const r1 = await apiKey.test({ credential: { apiKey: KEY } }, bad.ctx);

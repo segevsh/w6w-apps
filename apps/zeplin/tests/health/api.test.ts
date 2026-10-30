@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api health: the application's own JSON invalid_token refusal is a pass, sent unsigned", async () => {
+test("api health: the application's own JSON invalid_token refusal is a pass, sent unsigned", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: { message: "invalid_token", detail: "Authorization header is missing" },
@@ -12,7 +13,7 @@ Deno.test("api health: the application's own JSON invalid_token refusal is a pas
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api health: 5xx is down; an HTML 401 or an unrelated JSON is unknown, not ok", async () => {
+test("api health: 5xx is down; an HTML 401 or an unrelated JSON is unknown, not ok", async () => {
   assertEquals(
     (await api.check!({}, mockCtx([{ status: 502, body: "bad gateway" }]).ctx)).state,
     "down",
@@ -29,7 +30,7 @@ Deno.test("api health: 5xx is down; an HTML 401 or an unrelated JSON is unknown,
   assertEquals((await api.check!({}, ok200.ctx)).state, "unknown");
 });
 
-Deno.test("api health: the check is unauthenticated and connection-scoped", () => {
+test("api health: the check is unauthenticated and connection-scoped", () => {
   assertEquals(api.credential, "none");
   assertEquals(api.scope, "connection");
   assertEquals(api.kind, "dependency");

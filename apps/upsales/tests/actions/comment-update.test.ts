@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentUpdate from "../../actions/comment-update.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-update: PUTs /comments/{id} with the mapped body", async () => {
+test("comment-update: PUTs /comments/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await commentUpdate.execute({
     "id": 7,
@@ -25,7 +26,7 @@ Deno.test("comment-update: PUTs /comments/{id} with the mapped body", async () =
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("comment-update: the free-form fields object is merged and typed params win", async () => {
+test("comment-update: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await commentUpdate.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("comment-update: the free-form fields object is merged and typed param
   assertEquals(sent["description"], "Renewal conversation started.");
 });
 
-Deno.test("comment-update: fields may be a JSON string", async () => {
+test("comment-update: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await commentUpdate.execute(
     {
@@ -53,7 +54,7 @@ Deno.test("comment-update: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("comment-update: invalid fields JSON is refused before any request", async () => {
+test("comment-update: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await commentUpdate.execute({ "id": 7, "fields": "{nope" } as never, ctx),
@@ -63,7 +64,7 @@ Deno.test("comment-update: invalid fields JSON is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("comment-update: an update with nothing to change is refused", async () => {
+test("comment-update: an update with nothing to change is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await commentUpdate.execute({ id: 7 }, ctx),
@@ -73,7 +74,7 @@ Deno.test("comment-update: an update with nothing to change is refused", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("comment-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("comment-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -93,7 +94,7 @@ Deno.test("comment-update: a rejected key surfaces Upsales' plain-text Unauthori
   );
 });
 
-Deno.test("comment-update: a JSON error envelope surfaces the vendor key", async () => {
+test("comment-update: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

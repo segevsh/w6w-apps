@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -26,7 +27,7 @@ function summary(overrides: Partial<{
   };
 }
 
-Deno.test("mapComponentStatus / mapIndicator: Statuspage vocabulary", () => {
+test("mapComponentStatus / mapIndicator: Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -39,20 +40,20 @@ Deno.test("mapComponentStatus / mapIndicator: Statuspage vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a name slug", () => {
+test("componentKey: prefers the vendor id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({ name: "Integration API" }, 2), "integration-api-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service.check: all-operational page -> ok, names every covered component", async () => {
+test("service.check: all-operational page -> ok, names every covered component", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary() }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "ok");
   assertEquals(result.components?.c2, { state: "ok", message: "Integration API" });
 });
 
-Deno.test("service.check: a degraded, uncovered component does not sink covered ones, but is reported", async () => {
+test("service.check: a degraded, uncovered component does not sink covered ones, but is reported", async () => {
   const body = summary({
     indicator: "minor",
     components: [
@@ -69,13 +70,13 @@ Deno.test("service.check: a degraded, uncovered component does not sink covered 
   assertEquals(result.components?.c1.message, "Marketplace API");
 });
 
-Deno.test("service.check: a non-2xx status page response is unknown, never down", async () => {
+test("service.check: a non-2xx status page response is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service.check: a page that stops self-identifying as Sharetribe's is unknown", async () => {
+test("service.check: a page that stops self-identifying as Sharetribe's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary({ pageUrl: "https://status.example.com" }),
@@ -84,7 +85,7 @@ Deno.test("service.check: a page that stops self-identifying as Sharetribe's is 
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: status.sharetribe.com is allowlisted for this hook only, and needs no credential", () => {
+test("service: status.sharetribe.com is allowlisted for this hook only, and needs no credential", () => {
   assertEquals(service.network?.allow, ["status.sharetribe.com"]);
   assertEquals(service.credential, "none");
 });

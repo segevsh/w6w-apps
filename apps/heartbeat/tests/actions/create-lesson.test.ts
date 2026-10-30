@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createLesson from "../../actions/create-lesson.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * though both may be empty/null. This is the assertion that they are always
  * sent, satisfying the requirement without this app inventing either shape.
  */
-Deno.test("create-lesson: always sends hero: null and communityEmbedCards: []", async () => {
+test("create-lesson: always sends hero: null and communityEmbedCards: []", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1" } }]);
   await createLesson.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("create-lesson: always sends hero: null and communityEmbedCards: []", 
   assertEquals(body.publishStatus, { type: "DRAFT" });
 });
 
-Deno.test("create-lesson: DRIP publish status carries numDays", async () => {
+test("create-lesson: DRIP publish status carries numDays", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1" } }]);
   await createLesson.execute(
     {
@@ -46,6 +47,6 @@ Deno.test("create-lesson: DRIP publish status carries numDays", async () => {
   assertEquals(body.publishStatus, { type: "DRIP", numDays: 5 });
 });
 
-Deno.test("create-lesson: is not idempotent", () => {
+test("create-lesson: is not idempotent", () => {
   assertEquals(createLesson.idempotent, false);
 });

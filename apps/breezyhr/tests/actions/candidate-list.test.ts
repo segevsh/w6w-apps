@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 type Rec = Record<string, unknown>;
 
-Deno.test("candidate-list: filters by stage", async () => {
+test("candidate-list: filters by stage", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ _id: "k1" }] }]);
   const out = await action.execute!({ companyId: "c1", positionId: "p1", stageId: "applied" }, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("candidate-list: filters by stage", async () => {
   assertEquals(out, { candidates: [{ _id: "k1" }] });
 });
 
-Deno.test("candidate-list: paged mode sends page_size/page/sort and reports nextPage", async () => {
+test("candidate-list: paged mode sends page_size/page/sort and reports nextPage", async () => {
   const { ctx, calls } = mockCtx([{ body: [{}, {}] }]);
   const out = await action.execute!(
     { companyId: "c1", positionId: "p1", pageSize: 2, page: 1, sort: "updated" },

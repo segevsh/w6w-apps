@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/table-record-get-many.ts";
 
-Deno.test("table-record-get-many: GETs /table/{table} with query and pagination", async () => {
+test("table-record-get-many: GETs /table/{table} with query and pagination", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: [] } }]);
   await action.execute({ table: "problem", query: "active=true", limit: 10, offset: 0 }, ctx);
   assertEquals(calls[0].method, "GET");

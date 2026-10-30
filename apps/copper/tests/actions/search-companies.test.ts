@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param, run } from "../_helpers.ts";
 import action from "../../actions/search-companies.ts";
 
-Deno.test("search-companies: POSTs to /companies/search", async () => {
+test("search-companies: POSTs to /companies/search", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(calls[0].url, "https://api.copper.com/developer_api/v1/companies/search");
 });
 
-Deno.test("search-companies: maps every filter onto Copper's body keys", async () => {
+test("search-companies: maps every filter onto Copper's body keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({
     name: "Acme",
@@ -41,7 +42,7 @@ Deno.test("search-companies: maps every filter onto Copper's body keys", async (
   });
 });
 
-Deno.test("search-companies: returns records and the header total", async () => {
+test("search-companies: returns records and the header total", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{ id: 2 }],
@@ -52,7 +53,7 @@ Deno.test("search-companies: returns records and the header total", async () => 
   assertEquals(out.total, 3);
 });
 
-Deno.test("search-companies: is a search on the company resource", () => {
+test("search-companies: is a search on the company resource", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "company");
   assertEquals(param(action, "country").validation?.maxLength, 2);

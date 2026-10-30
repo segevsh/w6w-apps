@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-delete.ts";
 
@@ -14,7 +15,7 @@ const key = {
 };
 const ok = { status: 200, body: { id: 2 } };
 
-Deno.test("key-delete: revokes by numeric id", async () => {
+test("key-delete: revokes by numeric id", async () => {
   const { ctx, calls } = mockCtx([key, ok], D);
   const result = await action.execute({ keyId: 2 }, ctx) as Record<string, unknown>;
   assertEquals(calls[1].method, "DELETE");
@@ -25,7 +26,7 @@ Deno.test("key-delete: revokes by numeric id", async () => {
 });
 
 /** Immediate, with no grace period. */
-Deno.test("key-delete: warns that revocation is instant", async () => {
+test("key-delete: warns that revocation is instant", async () => {
   const { ctx, logs } = mockCtx([key, ok], D);
   await action.execute({ keyId: 2 }, ctx);
   assert(
@@ -34,7 +35,7 @@ Deno.test("key-delete: warns that revocation is instant", async () => {
   );
 });
 
-Deno.test("key-delete: reports when the revoked key was unrestricted", async () => {
+test("key-delete: reports when the revoked key was unrestricted", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { id: 1, actions: ["*"], collections: ["*"] } },
     ok,
@@ -43,7 +44,7 @@ Deno.test("key-delete: reports when the revoked key was unrestricted", async () 
   assertEquals(result.wasUnrestricted, true);
 });
 
-Deno.test("key-delete: requires a numeric id", async () => {
+test("key-delete: requires a numeric id", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({ keyId: 0 }, ctx), Error, "numeric id");
   await assertRejects(async () => await action.execute({}, ctx), Error, "numeric id");
@@ -51,6 +52,6 @@ Deno.test("key-delete: requires a numeric id", async () => {
 });
 
 /** The server's --api-key is configuration, not a record. */
-Deno.test("key-delete: says the bootstrap key cannot be revoked here", () => {
+test("key-delete: says the bootstrap key cannot be revoked here", () => {
   assert(/cannot be revoked here at all/.test(action.description!), action.description);
 });

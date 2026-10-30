@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
+test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +12,7 @@ Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () =>
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
+test("api-key: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
   assertEquals(out.headers["authorization"], "Bearer sk-or-v1-abc");
 });
 
-Deno.test("api-key: test hits GET /key and reports ok on 200", async () => {
+test("api-key: test hits GET /key and reports ok on 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { label: "sk-or-v1-a...b" } } }]);
   const result = await auth.test({ credential: { apiKey: "sk-or-v1-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -32,7 +33,7 @@ Deno.test("api-key: test hits GET /key and reports ok on 200", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer sk-or-v1-abc");
 });
 
-Deno.test("api-key: test reports failure with the vendor's error message on rejection", async () => {
+test("api-key: test reports failure with the vendor's error message on rejection", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { error: { code: 401, message: "No auth credentials found" } } },
   ]);
@@ -42,7 +43,7 @@ Deno.test("api-key: test reports failure with the vendor's error message on reje
   assert(result.message?.includes("No auth credentials found"), result.message);
 });
 
-Deno.test("api-key: test reports failure when the credential is missing, without a request", async () => {
+test("api-key: test reports failure when the credential is missing, without a request", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -53,7 +54,7 @@ Deno.test("api-key: test reports failure when the credential is missing, without
  * The probe's own response never carries the raw key — only a vendor-masked
  * label — so `test` cannot be the thing that leaks a credential it validates.
  */
-Deno.test("api-key: the test probe never sends the credential anywhere but the Authorization header", async () => {
+test("api-key: the test probe never sends the credential anywhere but the Authorization header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }]);
   await auth.test({ credential: { apiKey: "sk-or-v1-abc" } }, ctx);
   assertEquals(calls[0].body, null);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs the required fields", async () => {
+test("contact-create: POSTs the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { jnid: "new1" } }]);
   const out = await contactCreate.execute({
     first_name: "Sammy G",
@@ -22,13 +23,13 @@ Deno.test("contact-create: POSTs the required fields", async () => {
   assertEquals(out, { jnid: "new1" });
 });
 
-Deno.test("contact-create: drops unset optional fields rather than sending them empty", async () => {
+test("contact-create: drops unset optional fields rather than sending them empty", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await contactCreate.execute({ record_type_name: "Customer", status_name: "Lead" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { record_type_name: "Customer", status_name: "Lead" });
 });
 
-Deno.test("contact-create: extra merges into the body and can override modeled fields", async () => {
+test("contact-create: extra merges into the body and can override modeled fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await contactCreate.execute({
     record_type_name: "Customer",
@@ -41,7 +42,7 @@ Deno.test("contact-create: extra merges into the body and can override modeled f
   assertEquals(body.cf_string_1, "note");
 });
 
-Deno.test("contact-create: actor goes on the query string, never in the body", async () => {
+test("contact-create: actor goes on the query string, never in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await contactCreate.execute({
     record_type_name: "Customer",
@@ -52,6 +53,6 @@ Deno.test("contact-create: actor goes on the query string, never in the body", a
   assertEquals("actor" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("contact-create: is not marked idempotent — each call creates a new record", () => {
+test("contact-create: is not marked idempotent — each call creates a new record", () => {
   assertEquals(contactCreate.idempotent, false);
 });

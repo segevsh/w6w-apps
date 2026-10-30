@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-create.ts";
 
 const REPO = { owner: "acme", repository: "api" };
 
-Deno.test("issue-create: POSTs /repos/{owner}/{repo}/issues", async () => {
+test("issue-create: POSTs /repos/{owner}/{repo}/issues", async () => {
   const { ctx, calls } = mockCtx([{ body: { number: 1 } }]);
   await action.execute({ ...REPO, title: "Bug" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("issue-create: POSTs /repos/{owner}/{repo}/issues", async () => {
   assertEquals(JSON.parse(calls[0].body!), { title: "Bug" });
 });
 
-Deno.test("issue-create: splits the comma-separated assignees and labels into arrays", async () => {
+test("issue-create: splits the comma-separated assignees and labels into arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...REPO, title: "Bug", assignees: "a, b", labels: "p1,bug" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -20,6 +21,6 @@ Deno.test("issue-create: splits the comma-separated assignees and labels into ar
   assertEquals(body.labels, ["p1", "bug"]);
 });
 
-Deno.test("issue-create: is not idempotent — a retry files a duplicate", () => {
+test("issue-create: is not idempotent — a retry files a duplicate", () => {
   assertEquals(action.idempotent, false);
 });

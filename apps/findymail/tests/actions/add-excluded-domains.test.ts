@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/add-excluded-domains.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("add-excluded-domains: splits the comma list into an array", async () => {
+test("add-excluded-domains: splits the comma list into an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "success": true, "total": 2 } }]);
   const out = await action.execute!({ "domains": "a.com, b.io ,", "list_id": 1 } as never, ctx);
   const url = new URL(calls[0].url);
@@ -19,7 +20,7 @@ Deno.test("add-excluded-domains: splits the comma list into an array", async () 
   assertEquals(out, { "success": true, "total": 2 });
 });
 
-Deno.test("add-excluded-domains: rejects an empty domain list before any request", async () => {
+test("add-excluded-domains: rejects an empty domain list before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await action.execute!({ "domains": " , " } as never, ctx)

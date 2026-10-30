@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-record.ts";
 
-Deno.test("delete-record: DELETEs {baseId}/{table}/{recordId}", async () => {
+test("delete-record: DELETEs {baseId}/{table}/{recordId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec1", deleted: true } }]);
   const result = await action.execute!(
     { baseId: "appABC", table: "Users", recordId: "rec1" },

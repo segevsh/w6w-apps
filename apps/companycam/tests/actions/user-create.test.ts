@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 /** Create nests under `user`; update does not. Getting it wrong changes nothing. */
-Deno.test("user-create: nests the fields under user and snake_cases them", async () => {
+test("user-create: nests the fields under user and snake_cases them", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "9" } }]);
   await userCreate.execute({
     firstName: "Shawn",
@@ -25,7 +26,7 @@ Deno.test("user-create: nests the fields under user and snake_cases them", async
   });
 });
 
-Deno.test("user-create: refuses an empty body rather than creating an empty user", async () => {
+test("user-create: refuses an empty body rather than creating an empty user", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await userCreate.execute({}, ctx),
@@ -35,7 +36,7 @@ Deno.test("user-create: refuses an empty body rather than creating an empty user
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-create: the password is a secret param and the role is create-only", () => {
+test("user-create: the password is a secret param and the role is create-only", () => {
   const password = userCreate.params!.find((p) => p.key === "password")!;
   assertEquals(password.type, "secret");
   const role = userCreate.params!.find((p) => p.key === "userRole")!;

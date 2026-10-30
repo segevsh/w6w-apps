@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import verifyVerificationCreate from "../../actions/verify-verification-create.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("verify-verification-create: POSTs to /api/v2/verify/services/{sid}/verifications", async () => {
+test("verify-verification-create: POSTs to /api/v2/verify/services/{sid}/verifications", async () => {
   const { ctx, calls } = mockCtx([{
     body: { sid: "VR1", status: "pending", delivery_target: { code: "123456" } },
   }]);

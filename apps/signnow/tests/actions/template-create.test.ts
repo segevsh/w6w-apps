@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: POSTs document_id and document_name to /template", async () => {
+test("template-create: POSTs document_id and document_name to /template", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "tpl-1" } }]);
   const out = await templateCreate.execute(
     { documentId: "doc-1", documentName: "My Template" },

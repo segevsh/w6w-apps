@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-get: GETs /v1/users/{userId}", async () => {
+test("user-get: GETs /v1/users/{userId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "US1" } } }]);
   await userGet.execute({ userId: "US1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/users/US1");
 });
 
-Deno.test("user-get: is a read action", () => {
+test("user-get: is a read action", () => {
   assertEquals(userGet.type, "read");
 });

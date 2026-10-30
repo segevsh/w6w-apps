@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-get: GETs /v2/users/me and maps snake_case fields", async () => {
+test("user-get: GETs /v2/users/me and maps snake_case fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -26,6 +27,6 @@ Deno.test("user-get: GETs /v2/users/me and maps snake_case fields", async () => 
   assertEquals(out.maxUploadSize, 26214400);
 });
 
-Deno.test("user-get: takes no params — safe to invoke with {}", () => {
+test("user-get: takes no params — safe to invoke with {}", () => {
   assertEquals(userGet.params, []);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberUpdateByEmail from "../../actions/subscriber-update-by-email.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-update-by-email: addresses the collection with subscriber_email", async () => {
+test("subscriber-update-by-email: addresses the collection with subscriber_email", async () => {
   const { ctx, calls } = mockCtx([{ status: 209, body: { id: 789, email: "a@b.com" } }]);
   await subscriberUpdateByEmail.execute(
     { accountId: "1", listId: "2", email: "a@b.com", name: "New Name" },

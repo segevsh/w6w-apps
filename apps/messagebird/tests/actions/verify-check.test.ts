@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/verify-check.ts";
 
-Deno.test("verify-check: GETs /verify/{id} with the token as a query param", async () => {
+test("verify-check: GETs /verify/{id} with the token as a query param", async () => {
   const body = { id: "4e213b01155d1e35a9d9571v00162985", status: "verified" };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -17,6 +18,6 @@ Deno.test("verify-check: GETs /verify/{id} with the token as a query param", asy
   assertEquals(result, body);
 });
 
-Deno.test("verify-check: idempotent is explicitly false — a token can only be checked once", () => {
+test("verify-check: idempotent is explicitly false — a token can only be checked once", () => {
   assertEquals(action.idempotent, false);
 });

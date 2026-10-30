@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolTriggerAsync from "../../actions/tool-trigger-async.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-trigger-async: POSTs to trigger_async and returns the job receipt", async () => {
+test("tool-trigger-async: POSTs to trigger_async and returns the job receipt", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     { body: { job_id: "j1", project: "proj-1", studio_id: "s1" } },
   ]);
@@ -18,7 +19,7 @@ Deno.test("tool-trigger-async: POSTs to trigger_async and returns the job receip
   assertEquals(out, { job_id: "j1", project: "proj-1", studio_id: "s1" });
 });
 
-Deno.test("tool-trigger-async: shares its input surface with the synchronous sibling", () => {
+test("tool-trigger-async: shares its input surface with the synchronous sibling", () => {
   assertEquals(toolTriggerAsync.type, "perform");
   assertEquals(toolTriggerAsync.idempotent, false);
   assertEquals(toolTriggerAsync.params?.map((p) => p.key), [

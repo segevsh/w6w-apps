@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/documents-batch-write.ts";
 
-Deno.test("documents-batch-write: POSTs the Write array and returns per-write status", async () => {
+test("documents-batch-write: POSTs the Write array and returns per-write status", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { writeResults: [{ updateTime: "t" }], status: [{}] },
@@ -25,13 +26,13 @@ Deno.test("documents-batch-write: POSTs the Write array and returns per-write st
   assertEquals(result.status?.length, 1);
 });
 
-Deno.test("documents-batch-write: labels are optional", async () => {
+test("documents-batch-write: labels are optional", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: DISPLAY });
   await action.execute({ writes: [{ op: "delete", path: "users/bob" }] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).labels, undefined);
 });
 
-Deno.test("documents-batch-write: a bad entry fails before the request", async () => {
+test("documents-batch-write: a bad entry fails before the request", async () => {
   const { ctx, calls } = mockCtx([], { display: DISPLAY });
   await assertRejects(
     async () =>

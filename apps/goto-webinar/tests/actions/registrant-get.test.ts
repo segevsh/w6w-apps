@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import registrantGet from "../../actions/registrant-get.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("registrant-get: reads a single registrant by key", async () => {
+test("registrant-get: reads a single registrant by key", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ body: { registrantKey: 5, email: "a@b.com" } }],
     "org-1",

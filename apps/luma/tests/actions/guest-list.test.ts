@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestList from "../../actions/guest-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("guest-list: filters and pages by cursor", async () => {
+test("guest-list: filters and pages by cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody([{ id: "gst-1" }], { next_cursor: "c2" }) }]);
   const out = await guestList.execute(
     { eventId: "evt-1", approvalStatus: "approved", paginationLimit: 50 },

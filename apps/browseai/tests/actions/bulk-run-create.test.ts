@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bulkRunCreate from "../../actions/bulk-run-create.ts";
 import { mockCtx, pathOf, resultEnvelope } from "../_helpers.ts";
 
 const BULK_RUN = { id: "b1", status: "in-progress", tasksCount: 2, createdAt: 1 };
 
-Deno.test("bulk-run-create: POSTs an array of input-parameter sets", async () => {
+test("bulk-run-create: POSTs an array of input-parameter sets", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope({ bulkRun: BULK_RUN }) }]);
   const inputParameters = [{ originUrl: "https://a.example" }, { originUrl: "https://b.example" }];
   const out = await bulkRunCreate.execute(
@@ -18,7 +19,7 @@ Deno.test("bulk-run-create: POSTs an array of input-parameter sets", async () =>
   assertEquals(out.tasksCount, 2);
 });
 
-Deno.test("bulk-run-create: missing inputParameters fails before any request is made", async () => {
+test("bulk-run-create: missing inputParameters fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await bulkRunCreate.execute({ robotId: "r1", inputParameters: undefined }, ctx),
@@ -28,6 +29,6 @@ Deno.test("bulk-run-create: missing inputParameters fails before any request is 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bulk-run-create: is declared non-idempotent — each call starts new tasks", () => {
+test("bulk-run-create: is declared non-idempotent — each call starts new tasks", () => {
   assertEquals(bulkRunCreate.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-operation-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const RESPONSE: unknown = {
 };
 const run = (ctx: Parameters<typeof action.execute>[1]) => action.execute(INPUT as never, ctx);
 
-Deno.test("bulk-operation-list: GET /bulk-operations", async () => {
+test("bulk-operation-list: GET /bulk-operations", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await run(ctx);
   assertEquals(calls.length, 1);
@@ -26,14 +27,14 @@ Deno.test("bulk-operation-list: GET /bulk-operations", async () => {
   });
 });
 
-Deno.test("bulk-operation-list: puts no credential on the request (sign owns that)", async () => {
+test("bulk-operation-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await run(ctx);
   assertEquals(calls[0].headers["x-authorization"], undefined);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("bulk-operation-list: an HTTP error surfaces Loop's own message", async () => {
+test("bulk-operation-list: an HTTP error surfaces Loop's own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "401", http_code: "GEN-UNAUTHORIZED", message: "Unauthorized." } },

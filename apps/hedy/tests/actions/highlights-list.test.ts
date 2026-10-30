@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import highlightsList from "../../actions/highlights-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("highlights-list: calls GET /highlights and unwraps items + pagination", async () => {
+test("highlights-list: calls GET /highlights and unwraps items + pagination", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: listEnvelope(
@@ -26,13 +27,13 @@ Deno.test("highlights-list: calls GET /highlights and unwraps items + pagination
   assertEquals(out.total, 75);
 });
 
-Deno.test("highlights-list: omitting limit sends no limit query param", async () => {
+test("highlights-list: omitting limit sends no limit query param", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await highlightsList.execute({}, ctx);
   assert(!("limit" in queryOf(calls[0].url)));
 });
 
-Deno.test("highlights-list: a rate-limited response throws mentioning the vendor's code", async () => {
+test("highlights-list: a rate-limited response throws mentioning the vendor's code", async () => {
   const { ctx } = mockCtx([
     {
       status: 429,

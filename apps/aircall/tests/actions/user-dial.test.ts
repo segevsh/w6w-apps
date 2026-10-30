@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCallStart from "../../actions/user-call-start.ts";
 import userDial from "../../actions/user-dial.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-dial: POSTs /v1/users/{id}/dial with only the number", async () => {
+test("user-dial: POSTs /v1/users/{id}/dial with only the number", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await userDial.execute({ userId: "456", to: "+18001231234" }, ctx) as {
     status: number;
@@ -22,7 +23,7 @@ Deno.test("user-dial: POSTs /v1/users/{id}/dial with only the number", async () 
  * text field, the other rings a phone and bills a minute. The retry policy has
  * to tell them apart or a dropped response places a second real call.
  */
-Deno.test("user-dial is retryable and user-call-start is not", () => {
+test("user-dial is retryable and user-call-start is not", () => {
   assertEquals(userDial.idempotent, true);
   assertEquals(userCallStart.idempotent, false);
 });

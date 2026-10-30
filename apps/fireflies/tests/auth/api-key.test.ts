@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { AUTH_FAILED_500, mockCtx, sent } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 import { API_URL } from "../../lib/client.ts";
 
-Deno.test("api-key: sign stamps a Bearer header and returns the request", () => {
+test("api-key: sign stamps a Bearer header and returns the request", () => {
   const request = { url: API_URL, method: "POST", headers: {} as Record<string, string> };
   // deno-lint-ignore no-explicit-any
   const out = auth.sign!({ request, credential: { apiKey: "ff_secret" } } as any, null as any);
   assertEquals((out as typeof request).headers["authorization"], "Bearer ff_secret");
 });
 
-Deno.test("api-key: test accepts a live key", async () => {
+test("api-key: test accepts a live key", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { user: { user_id: "u1", name: "A" } } } }]);
   // deno-lint-ignore no-explicit-any
   const res = await auth.test({ credential: { apiKey: "k" } } as any, ctx);
@@ -19,7 +20,7 @@ Deno.test("api-key: test accepts a live key", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer k");
 });
 
-Deno.test("api-key: the probe asks for account metadata only, never a key-bearing field", async () => {
+test("api-key: the probe asks for account metadata only, never a key-bearing field", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { user: { user_id: "u1" } } } }]);
   // deno-lint-ignore no-explicit-any
   await auth.test({ credential: { apiKey: "k" } } as any, ctx);
@@ -32,7 +33,7 @@ Deno.test("api-key: the probe asks for account metadata only, never a key-bearin
   }
 });
 
-Deno.test("api-key: test rejects a bad key as a credential problem, not an outage", async () => {
+test("api-key: test rejects a bad key as a credential problem, not an outage", async () => {
   // The live behaviour: HTTP 500 + auth_failed. `res.ok` would say "down".
   const { ctx } = mockCtx([AUTH_FAILED_500]);
   // deno-lint-ignore no-explicit-any
@@ -41,7 +42,7 @@ Deno.test("api-key: test rejects a bad key as a credential problem, not an outag
   assert(res.message!.includes("auth_failed"));
 });
 
-Deno.test("api-key: test does not call the API when no credential was supplied", async () => {
+test("api-key: test does not call the API when no credential was supplied", async () => {
   const { ctx, calls } = mockCtx([]);
   // deno-lint-ignore no-explicit-any
   const res = await auth.test({ credential: {} } as any, ctx);
@@ -49,14 +50,14 @@ Deno.test("api-key: test does not call the API when no credential was supplied",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test refuses a 200 that carries no user", async () => {
+test("api-key: test refuses a 200 that carries no user", async () => {
   const { ctx } = mockCtx([{ body: { data: { user: null } } }]);
   // deno-lint-ignore no-explicit-any
   const res = await auth.test({ credential: { apiKey: "k" } } as any, ctx);
   assertEquals(res.ok, false);
 });
 
-Deno.test("api-key: afterConnect returns the label variables and sends no credential itself", async () => {
+test("api-key: afterConnect returns the label variables and sends no credential itself", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { user: { user_id: "u1", name: "Ada", email: "ada@example.com" } } },
   }]);
@@ -68,7 +69,7 @@ Deno.test("api-key: afterConnect returns the label variables and sends no creden
   assertEquals(auth.connectionLabel, "{{user.name}} ({{user.email}})");
 });
 
-Deno.test("api-key: afterConnect degrades to no label rather than throwing", async () => {
+test("api-key: afterConnect degrades to no label rather than throwing", async () => {
   const { ctx } = mockCtx([AUTH_FAILED_500]);
   // deno-lint-ignore no-explicit-any
   assertEquals(await auth.afterConnect!({} as any, ctx), {});

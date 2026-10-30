@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/calendar-events.ts";
@@ -20,7 +21,7 @@ const events = ok([
  * An all-day event has `start.date` and no `start.dateTime`, so code reading
  * `dateTime` silently drops every one of them.
  */
-Deno.test("calendar-events: normalises both shapes and flags which is which", async () => {
+test("calendar-events: normalises both shapes and flags which is which", async () => {
   const { ctx, calls } = mockCtx([events], { display });
   const result = await action.execute!({
     entityId: "calendar.family",
@@ -41,7 +42,7 @@ Deno.test("calendar-events: normalises both shapes and flags which is which", as
 });
 
 /** The originals are kept, because the normalised strings lose the distinction. */
-Deno.test("calendar-events: the raw start and end objects survive", async () => {
+test("calendar-events: the raw start and end objects survive", async () => {
   const { ctx } = mockCtx([events], { display });
   const result = await action.execute!({
     entityId: "calendar.family",
@@ -51,7 +52,7 @@ Deno.test("calendar-events: the raw start and end objects survive", async () => 
   assertEquals(result.events[1].rawStart, { date: "2026-08-22" });
 });
 
-Deno.test("calendar-events: both bounds are required — the window is the query", async () => {
+test("calendar-events: both bounds are required — the window is the query", async () => {
   const noEnd = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -62,7 +63,7 @@ Deno.test("calendar-events: both bounds are required — the window is the query
   assertEquals(noEnd.calls.length, 0);
 });
 
-Deno.test("calendar-events: a friendly name is refused", async () => {
+test("calendar-events: a friendly name is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Family", start: "a", end: "b" }, ctx),
@@ -71,7 +72,7 @@ Deno.test("calendar-events: a friendly name is refused", async () => {
   );
 });
 
-Deno.test("calendar-events: an empty window is a count of zero", async () => {
+test("calendar-events: an empty window is a count of zero", async () => {
   const { ctx } = mockCtx([ok([])], { display });
   const result = await action.execute!({
     entityId: "calendar.family",
@@ -81,13 +82,13 @@ Deno.test("calendar-events: an empty window is a count of zero", async () => {
   assertEquals(result.count, 0);
 });
 
-Deno.test("calendar-events: logs counts, never the summaries", async () => {
+test("calendar-events: logs counts, never the summaries", async () => {
   const { ctx, logs } = mockCtx([events], { display });
   await action.execute!({ entityId: "calendar.family", start: "a", end: "b" }, ctx);
   assert(!JSON.stringify(logs).includes("Dentist"), JSON.stringify(logs));
   assertEquals(logs[0].data, { count: 2, allDay: 1 });
 });
 
-Deno.test("calendar-events: says the two shapes never both appear", () => {
+test("calendar-events: says the two shapes never both appear", () => {
   assert(/never both/.test(action.description!), action.description);
 });

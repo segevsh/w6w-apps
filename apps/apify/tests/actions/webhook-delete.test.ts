@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete: DELETEs and reports the 204 with no body to parse", async () => {
+test("webhook-delete: DELETEs and reports the 204 with no body to parse", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await webhookDelete.execute({ webhookId: "w1" }, ctx) as {
     webhookId: string;
@@ -18,7 +19,7 @@ Deno.test("webhook-delete: DELETEs and reports the 204 with no body to parse", a
  * A repeat delete answers 404. It surfaces rather than being swallowed, because
  * a 404 here usually means the id was wrong, not that the work was already done.
  */
-Deno.test("webhook-delete: a 404 on an unknown id surfaces as an error", async () => {
+test("webhook-delete: a 404 on an unknown id surfaces as an error", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("record-not-found", "Webhook was not found.") },
   ]);
@@ -29,6 +30,6 @@ Deno.test("webhook-delete: a 404 on an unknown id surfaces as an error", async (
   assertEquals(err.message.includes("record-not-found"), true, err.message);
 });
 
-Deno.test("webhook-delete: is declared idempotent", () => {
+test("webhook-delete: is declared idempotent", () => {
   assertEquals(webhookDelete.idempotent, true);
 });

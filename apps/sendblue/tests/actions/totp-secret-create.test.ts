@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import totpSecretCreate from "../../actions/totp-secret-create.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("totp-secret-create: POSTs to /api/v2/totp/secrets", async () => {
+test("totp-secret-create: POSTs to /api/v2/totp/secrets", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", totp_secret: { id: "s1" } } }]);
   await totpSecretCreate.execute({ label: "GitHub", issuer: "GitHub" }, ctx);
 

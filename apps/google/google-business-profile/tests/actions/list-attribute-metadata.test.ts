@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-attribute-metadata.ts";
 
-Deno.test("list-attribute-metadata: GETs /v1/attributes scoped by parent (location)", async () => {
+test("list-attribute-metadata: GETs /v1/attributes scoped by parent (location)", async () => {
   const body = { attributeMetadata: [{ displayName: "Wi-Fi" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ parent: "locations/1" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-attribute-metadata: GETs /v1/attributes scoped by parent (locati
   assertEquals(result, body);
 });
 
-Deno.test("list-attribute-metadata: scoped by category + region + language", async () => {
+test("list-attribute-metadata: scoped by category + region + language", async () => {
   const { ctx, calls } = mockCtx([{ body: { attributeMetadata: [] } }]);
   await action.execute!({
     categoryName: "categories/gcid:restaurant",
@@ -27,7 +28,7 @@ Deno.test("list-attribute-metadata: scoped by category + region + language", asy
   assert(!params.has("parent"));
 });
 
-Deno.test("list-attribute-metadata: showAll scope", async () => {
+test("list-attribute-metadata: showAll scope", async () => {
   const { ctx, calls } = mockCtx([{ body: { attributeMetadata: [] } }]);
   await action.execute!({ showAll: true, regionCode: "US", languageCode: "en" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("showAll"), "true");

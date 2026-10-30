@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/entity-tag-add.ts";
 
 const applied = ok({ taggingAddTagsToEntity: { errors: [] } });
 
-Deno.test("entity-tag-add: sends the key with its list of values", async () => {
+test("entity-tag-add: sends the key with its list of values", async () => {
   const { ctx, calls } = mockCtx([applied], { display });
   const result = await action.execute!({
     guid: "g1",
@@ -22,7 +23,7 @@ Deno.test("entity-tag-add: sends the key with its list of values", async () => {
  * The third error level: HTTP 200, no GraphQL errors, and the mutation still
  * failed — reported inside `data`.
  */
-Deno.test("entity-tag-add: a mutation-payload error throws, and says where it came from", async () => {
+test("entity-tag-add: a mutation-payload error throws, and says where it came from", async () => {
   const { ctx } = mockCtx([
     ok({ taggingAddTagsToEntity: { errors: [{ message: "no such entity", type: "NOT_FOUND" }] } }),
   ], { display });
@@ -34,7 +35,7 @@ Deno.test("entity-tag-add: a mutation-payload error throws, and says where it ca
   assert(/HTTP 200 with no GraphQL errors/.test(error.message), error.message);
 });
 
-Deno.test("entity-tag-add: needs a guid, a key and values", async () => {
+test("entity-tag-add: needs a guid, a key and values", async () => {
   for (
     const input of [{ key: "t", values: "v" }, { guid: "g", values: "v" }, { guid: "g", key: "t" }]
   ) {
@@ -44,7 +45,7 @@ Deno.test("entity-tag-add: needs a guid, a key and values", async () => {
   }
 });
 
-Deno.test("entity-tag-add: logs the key and how many values, never the values", async () => {
+test("entity-tag-add: logs the key and how many values, never the values", async () => {
   const { ctx, logs } = mockCtx([applied], { display });
   await action.execute!({ guid: "g1", key: "owner", values: "ada@example.com" }, ctx);
   assert(!JSON.stringify(logs).includes("ada@"), JSON.stringify(logs));
@@ -52,7 +53,7 @@ Deno.test("entity-tag-add: logs the key and how many values, never the values", 
 });
 
 /** Adding appends; replacing is a different mutation, deliberately not wrapped. */
-Deno.test("entity-tag-add: says adding appends rather than replaces", () => {
+test("entity-tag-add: says adding appends rather than replaces", () => {
   assert(/APPENDS rather than replacing/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

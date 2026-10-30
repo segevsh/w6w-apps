@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowPageQuery from "../../actions/window-page-query.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-page-query: posts the prompt and an outputSchema STRING under configuration", async () => {
+test("window-page-query: posts the prompt and an outputSchema STRING under configuration", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope("This page is an example.") }]);
   const schema = '{"type":"object","properties":{"answer":{"type":"string"}}}';
   const out = await windowPageQuery.execute(
@@ -19,7 +20,7 @@ Deno.test("window-page-query: posts the prompt and an outputSchema STRING under 
   assertEquals((out as { modelResponse: string }).modelResponse, "This page is an example.");
 });
 
-Deno.test("window-page-query: omits configuration entirely when outputSchema is empty", async () => {
+test("window-page-query: omits configuration entirely when outputSchema is empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope("An answer.") }]);
   await windowPageQuery.execute({ sessionId: "s1", windowId: "w1", prompt: "What is this?" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { prompt: "What is this?" });

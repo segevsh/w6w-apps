@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceUserRemove from "../../actions/workspace-user-remove.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-user-remove: POST /api/v4/workspace_users/remove with every documented parameter", async () => {
+test("workspace-user-remove: POST /api/v4/workspace_users/remove with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await workspaceUserRemove.execute({
     "workspaceId": 100,
@@ -18,7 +19,7 @@ Deno.test("workspace-user-remove: POST /api/v4/workspace_users/remove with every
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("workspace-user-remove: sends a form body, never a query string", async () => {
+test("workspace-user-remove: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceUserRemove.execute(
     { "workspaceId": 100, "email": "sample email", "userId": 102 },
@@ -29,18 +30,18 @@ Deno.test("workspace-user-remove: sends a form body, never a query string", asyn
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("workspace-user-remove: omits optional parameters that are not set", async () => {
+test("workspace-user-remove: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceUserRemove.execute({ "workspaceId": 100, "email": "sample email" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "id": "100", "email": "sample email" });
 });
 
-Deno.test("workspace-user-remove: is declared idempotent", () => {
+test("workspace-user-remove: is declared idempotent", () => {
   assertEquals(workspaceUserRemove.idempotent, true);
 });
 
-Deno.test("workspace-user-remove: sends no credential of its own", async () => {
+test("workspace-user-remove: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceUserRemove.execute(
     { "workspaceId": 100, "email": "sample email", "userId": 102 },
@@ -50,7 +51,7 @@ Deno.test("workspace-user-remove: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("workspace-user-remove: surfaces Twist's error body", async () => {
+test("workspace-user-remove: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

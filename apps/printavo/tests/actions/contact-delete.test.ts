@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-delete.ts";
 
-Deno.test("contact-delete: sends the contactDelete(id operation and returns the result", async () => {
+test("contact-delete: sends the contactDelete(id operation and returns the result", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { contactDelete: { id: "42" } } } }]);
   const out = await action.execute({ id: "42" }, ctx);
   assertEquals(out, { id: "42" });
@@ -15,7 +16,7 @@ Deno.test("contact-delete: sends the contactDelete(id operation and returns the 
   assertEquals(sent.variables, { id: "42" });
 });
 
-Deno.test("contact-delete: surfaces a GraphQL error returned with HTTP 200", async () => {
+test("contact-delete: surfaces a GraphQL error returned with HTTP 200", async () => {
   const { ctx } = mockCtx([{ body: { errors: [{ message: "Unauthorized" }], data: null } }]);
   let message = "";
   try {

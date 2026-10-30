@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: GETs /Contacts/{id} and unwraps the single record", async () => {
+test("contact-get: GETs /Contacts/{id} and unwraps the single record", async () => {
   const { ctx, calls } = mockZohoCtx([{ body: { data: [{ id: "1", Last_Name: "Jones" }] } }]);
   const out = await action.execute({ recordId: "1", fields: "id,Last_Name" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/crm/v6/Contacts/1");

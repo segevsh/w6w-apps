@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-timezones.ts";
 import { API_ROOT, mockCtx, urlOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const zones = [
   },
 ];
 
-Deno.test("list-timezones: reads /timezones with no parameters", async () => {
+test("list-timezones: reads /timezones with no parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: zones }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -25,14 +26,14 @@ Deno.test("list-timezones: reads /timezones with no parameters", async () => {
   assertEquals(result, zones);
 });
 
-Deno.test("list-timezones: the bare array is returned verbatim", () => {
+test("list-timezones: the bare array is returned verbatim", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params, []);
   assertEquals((action.output as Array<{ key: string }>)[0].key, "[]");
   assertEquals((action.output as Array<{ key: string; type: string }>)[0].type, "array");
 });
 
-Deno.test("list-timezones: the `name` field's contract is documented, not assumed", () => {
+test("list-timezones: the `name` field's contract is documented, not assumed", () => {
   assertEquals(/name/.test(action.description!), true, action.description);
   assertEquals(/timeZone/.test(action.description!), true, action.description);
 });

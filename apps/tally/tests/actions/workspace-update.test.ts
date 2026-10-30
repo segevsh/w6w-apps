@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-update.ts";
 
-Deno.test("workspace-update: PATCHes the new name", async () => {
+test("workspace-update: PATCHes the new name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1", name: "Renamed" } }]);
   const result = await action.execute({ workspaceId: "w1", name: "Renamed" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("workspace-update: PATCHes the new name", async () => {
   assertEquals(result.name, "Renamed");
 });
 
-Deno.test("workspace-update: is idempotent", () => {
+test("workspace-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

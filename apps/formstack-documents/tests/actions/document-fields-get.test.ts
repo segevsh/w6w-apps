@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-fields-get.ts";
 
-Deno.test("document-fields-get: GETs fields with attributes=1", async () => {
+test("document-fields-get: GETs fields with attributes=1", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ key: "a", name: "FirstName" }] }]);
   const out = await action.execute({ id: "436346", attributes: true } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("document-fields-get: GETs fields with attributes=1", async () => {
   assert(out !== null);
 });
 
-Deno.test("document-fields-get: omits attributes when unset", async () => {
+test("document-fields-get: omits attributes when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await action.execute({ id: "436346" } as never, ctx) as Record<string, unknown>;
   const call = calls[0];
@@ -31,7 +32,7 @@ Deno.test("document-fields-get: omits attributes when unset", async () => {
   assert(out !== null);
 });
 
-Deno.test("document-fields-get: declares key, type and a description", () => {
+test("document-fields-get: declares key, type and a description", () => {
   assertEquals(action.key, "document-fields-get");
   assertEquals(action.type, "read");
   assert(action.description!.length > 10);

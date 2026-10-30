@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventGet from "../../actions/event-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("event-get: sends every input as query", async () => {
+test("event-get: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await eventGet.execute({ "id": 7, "linkPrefix": "x-linkPrefix" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("event-get: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("event-get: omits every unset optional", async () => {
+test("event-get: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await eventGet.execute({} as never, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("event-get: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("event-get: declares a read-only shape", () => {
+test("event-get: declares a read-only shape", () => {
   assertEquals(eventGet.type, "read");
   assertEquals(eventGet.idempotent, undefined);
   assertEquals(eventGet.params!.filter((p) => p.required).map((p) => p.key), []);

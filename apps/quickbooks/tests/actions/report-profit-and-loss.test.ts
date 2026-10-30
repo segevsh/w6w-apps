@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/report-profit-and-loss.ts";
 
-Deno.test("report-profit-and-loss: GETs /reports/ProfitAndLoss with no params when omitted", async () => {
+test("report-profit-and-loss: GETs /reports/ProfitAndLoss with no params when omitted", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { Header: {}, Rows: {} } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("report-profit-and-loss: GETs /reports/ProfitAndLoss with no params wh
   assertEquals(url.searchParams.has("start_date"), false);
 });
 
-Deno.test("report-profit-and-loss: forwards date range, accounting method and summarize_column_by", async () => {
+test("report-profit-and-loss: forwards date range, accounting method and summarize_column_by", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: {} }]);
   await action.execute({
     startDate: "2026-01-01",

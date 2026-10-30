@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import getRatesCalendar from "../../actions/get-rates-calendar.ts";
 
-Deno.test("get-rates-calendar: sends houseId, roomTypeId, startDate, endDate", async () => {
+test("get-rates-calendar: sends houseId, roomTypeId, startDate, endDate", async () => {
   const { ctx, calls } = mockCtx([{ body: { calendar_items: [], rate_settings: {} } }]);
   await getRatesCalendar.execute({
     propertyId: 5,
@@ -19,7 +20,7 @@ Deno.test("get-rates-calendar: sends houseId, roomTypeId, startDate, endDate", a
   });
 });
 
-Deno.test("get-rates-calendar: every documented-required parameter is required", async () => {
+test("get-rates-calendar: every documented-required parameter is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(getRatesCalendar.execute({ propertyId: 1, roomTypeId: 2 }, ctx)),

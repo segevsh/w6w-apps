@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectNotepadUpdate from "../../actions/project-notepad-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-notepad-update: replaces the notepad with a flat body", async () => {
+test("project-notepad-update: replaces the notepad with a flat body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { notepad: "Roof measured" } }]);
   const result = await projectNotepadUpdate.execute(
     { projectId: "1", notepad: "Roof measured" },
@@ -14,7 +15,7 @@ Deno.test("project-notepad-update: replaces the notepad with a flat body", async
   assertEquals(result.notepad, "Roof measured");
 });
 
-Deno.test("project-notepad-update: warns that it overwrites rather than appends", () => {
+test("project-notepad-update: warns that it overwrites rather than appends", () => {
   const notepad = projectNotepadUpdate.params!.find((p) => p.key === "notepad")!;
   assertEquals(/Replaces the entire notepad/.test(notepad.hint!), true);
 });

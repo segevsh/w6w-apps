@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-list.ts";
 
@@ -21,7 +22,7 @@ const hooks = {
 };
 
 /** The single most common way a bulk import becomes an incident. */
-Deno.test("webhook-list: says what a bulk insert would fire, and warns", async () => {
+test("webhook-list: says what a bulk insert would fire, and warns", async () => {
   const { ctx, calls, logs } = mockCtx([hooks], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/meta/tables/mtbl1/hooks");
@@ -34,7 +35,7 @@ Deno.test("webhook-list: says what a bulk insert would fire, and warns", async (
 });
 
 /** A disabled hook is still listed. */
-Deno.test("webhook-list: counts the active hooks apart from the defined ones", async () => {
+test("webhook-list: counts the active hooks apart from the defined ones", async () => {
   const { ctx } = mockCtx([hooks], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 3);
@@ -42,21 +43,21 @@ Deno.test("webhook-list: counts the active hooks apart from the defined ones", a
 });
 
 /** The operation is sometimes a string and sometimes a list. */
-Deno.test("webhook-list: handles both shapes of the operation field", async () => {
+test("webhook-list: handles both shapes of the operation field", async () => {
   const { ctx } = mockCtx([hooks], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.onUpdate, ["Sync CRM"]);
   assertEquals(result.onDelete, ["Sync CRM"]);
 });
 
-Deno.test("webhook-list: a table with no hooks says nothing", async () => {
+test("webhook-list: a table with no hooks says nothing", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { list: [] } }], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
   assertEquals(logs.length, 0);
 });
 
-Deno.test("webhook-list: requires a table id", async () => {
+test("webhook-list: requires a table id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`tableId` is required");
 });

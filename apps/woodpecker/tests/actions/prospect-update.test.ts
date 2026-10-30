@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectUpdate from "../../actions/prospect-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-update: POSTs the documented body", async () => {
+test("prospect-update: POSTs the documented body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -28,7 +29,7 @@ Deno.test("prospect-update: POSTs the documented body", async () => {
   assertEquals((out.prospects as Array<{ id: number }>)[0].id, 1091123457);
 });
 
-Deno.test("prospect-update: a body-level ERROR status is a failure", async () => {
+test("prospect-update: a body-level ERROR status is a failure", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -56,7 +57,7 @@ Deno.test("prospect-update: a body-level ERROR status is a failure", async () =>
   assertEquals(jsonBody(calls[0]), { "update": true, "prospects": [{ "email": "bad" }] });
 });
 
-Deno.test("prospect-update: an empty prospects array is refused without a request", async () => {
+test("prospect-update: an empty prospects array is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await prospectUpdate.execute({ "prospects": [] } as never, ctx),

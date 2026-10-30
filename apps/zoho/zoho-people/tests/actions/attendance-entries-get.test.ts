@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/attendance-entries-get.ts";
 
-Deno.test("attendance-entries-get: passes identifiers and maps the bare response object", async () => {
+test("attendance-entries-get: passes identifiers and maps the bare response object", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: {
       status: "Present",
@@ -26,7 +27,7 @@ Deno.test("attendance-entries-get: passes identifiers and maps the bare response
   assertEquals((out.entries as unknown[]).length, 1);
 });
 
-Deno.test("attendance-entries-get: with no identifier it sends none (connected user)", async () => {
+test("attendance-entries-get: with no identifier it sends none (connected user)", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: { status: "Absent", entries: [] } }]);
   const out = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).search, "");

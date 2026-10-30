@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { APP_ID, mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/create-record.ts";
 
-Deno.test("create-record: POSTs fields to /v0/apps/{appId}/collections/{id}", async () => {
+test("create-record: POSTs fields to /v0/apps/{appId}/collections/{id}", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: "1" } }]);
   const result = await action.execute!(
     { collectionId: "c1", fields: { Name: "Ada", Score: 10 } },
@@ -15,7 +16,7 @@ Deno.test("create-record: POSTs fields to /v0/apps/{appId}/collections/{id}", as
   assertEquals(result, { id: "1" });
 });
 
-Deno.test("create-record: never sets an authorization header itself", async () => {
+test("create-record: never sets an authorization header itself", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: "1" } }]);
   await action.execute!({ collectionId: "c1", fields: { Name: "Ada" } }, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/enrich-company.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-company: GETs /v5/company/enrich and keeps the flat profile", async () => {
+test("enrich-company: GETs /v5/company/enrich and keeps the flat profile", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: 200, likelihood: 6, name: "google", id: "g1" },
   }]);
@@ -21,7 +22,7 @@ Deno.test("enrich-company: GETs /v5/company/enrich and keeps the flat profile", 
   assertEquals(out, { found: true, status: 200, likelihood: 6, name: "google", id: "g1" });
 });
 
-Deno.test("enrich-company: 404 is found: false", async () => {
+test("enrich-company: 404 is found: false", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, error: { type: ["not_found"] } } }]);
   const out = await action.execute!({ name: "zzz" } as never, ctx) as Record<string, unknown>;
   assertEquals(out.found, false);

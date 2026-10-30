@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getMandate from "../../actions/get-mandate.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-mandate: GET /mandates/{id} and the unwrapped mandate", async () => {
+test("get-mandate: GET /mandates/{id} and the unwrapped mandate", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope("mandates", {
       id: "MD0000",

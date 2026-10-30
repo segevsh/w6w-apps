@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ import { envelope, mockCtx, pathOf } from "../_helpers.ts";
  * and previews, so returning it would copy a working credential into durable
  * storage on every call. This is the assertion that keeps it out.
  */
-Deno.test("account-get: the Apify Proxy password never reaches the caller", async () => {
+test("account-get: the Apify Proxy password never reaches the caller", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -39,12 +40,12 @@ Deno.test("account-get: the Apify Proxy password never reaches the caller", asyn
   assertEquals(out.isPaying, true);
 });
 
-Deno.test("account-get: a response without a proxy block is passed through unchanged", async () => {
+test("account-get: a response without a proxy block is passed through unchanged", async () => {
   const { ctx } = mockCtx([{ body: envelope({ id: "u1", username: "acme" }) }]);
   const out = await accountGet.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out, { id: "u1", username: "acme" });
 });
 
-Deno.test("account-get: takes no parameters", () => {
+test("account-get: takes no parameters", () => {
   assertEquals(accountGet.params?.length, 0);
 });

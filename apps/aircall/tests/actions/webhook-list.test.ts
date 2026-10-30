@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { listBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { listBody, mockCtx, pathOf } from "../_helpers.ts";
  * every webhook's `token` — the shared secret a receiver authenticates Aircall's
  * deliveries with — for up to 100 webhooks in one response.
  */
-Deno.test("webhook-list: strips the token from EVERY row", async () => {
+test("webhook-list: strips the token from EVERY row", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody("webhooks", [
@@ -31,7 +32,7 @@ Deno.test("webhook-list: strips the token from EVERY row", async () => {
   assertEquals(out.items[2].url, "https://c.example.com");
 });
 
-Deno.test("webhook-list: reads GET /v1/webhooks", async () => {
+test("webhook-list: reads GET /v1/webhooks", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("webhooks", []) }]);
   await webhookList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/webhooks");

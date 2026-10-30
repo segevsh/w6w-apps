@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderList from "../../actions/order-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("order-list: hits GET /orders with the type filter", async () => {
+test("order-list: hits GET /orders with the type filter", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("orders", [{ id: 1 }]) }]);
   const out = await orderList.execute({ type: "recurring" }, ctx) as { items: unknown[] };
   assertEquals(pathOf(calls[0].url), "/orders");

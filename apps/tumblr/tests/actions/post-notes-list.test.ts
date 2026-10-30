@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postNotesList from "../../actions/post-notes-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("post-notes-list: calls GET /v2/blog/{id}/notes with id and mode", async () => {
+test("post-notes-list: calls GET /v2/blog/{id}/notes with id and mode", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ notes: [{ type: "like" }], total_notes: 1 }) },
   ]);

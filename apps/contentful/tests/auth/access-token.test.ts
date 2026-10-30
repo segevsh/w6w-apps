@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: is a bearer method with apiKey/spaceId/environmentId fields", () => {
+test("access-token: is a bearer method with apiKey/spaceId/environmentId fields", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "bearer");
   const apiKey = auth.fields?.find((f) => f.key === "apiKey");
@@ -19,7 +20,7 @@ Deno.test("access-token: is a bearer method with apiKey/spaceId/environmentId fi
   assertEquals(env.default, "master");
 });
 
-Deno.test("access-token: sign appends Bearer using credential.apiKey", async () => {
+test("access-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://cdn.contentful.com/spaces/x",
@@ -33,7 +34,7 @@ Deno.test("access-token: sign appends Bearer using credential.apiKey", async () 
   assertEquals(out.headers["authorization"], "Bearer cda-token");
 });
 
-Deno.test("access-token: test GETs /spaces/{spaceId} on CDN and reports ok", async () => {
+test("access-token: test GETs /spaces/{spaceId} on CDN and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sys: { id: "sp1" } } }]);
   const result = await auth.test(
     { credential: { apiKey: "cda-token", spaceId: "sp1" } },
@@ -46,14 +47,14 @@ Deno.test("access-token: test GETs /spaces/{spaceId} on CDN and reports ok", asy
   assertEquals(calls[0].headers["authorization"], "Bearer cda-token");
 });
 
-Deno.test("access-token: test surfaces non-2xx as not-ok with the status code", async () => {
+test("access-token: test surfaces non-2xx as not-ok with the status code", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { sys: { id: "AccessTokenInvalid" } } }]);
   const result = await auth.test({ credential: { apiKey: "bad", spaceId: "sp1" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("401"));
 });
 
-Deno.test("access-token: test rejects missing apiKey/spaceId without hitting the network", async () => {
+test("access-token: test rejects missing apiKey/spaceId without hitting the network", async () => {
   const { ctx, calls } = mockCtx();
   const noKey = await auth.test({ credential: { spaceId: "x" } }, ctx);
   assertEquals(noKey.ok, false);
@@ -62,7 +63,7 @@ Deno.test("access-token: test rejects missing apiKey/spaceId without hitting the
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: afterConnect populates space + environment on display", async () => {
+test("access-token: afterConnect populates space + environment on display", async () => {
   const { ctx } = mockCtx([{ body: { sys: { id: "sp1" }, name: "My Space" } }]);
   const out = await auth.afterConnect!(
     { credential: { apiKey: "k", spaceId: "sp1", environmentId: "staging" } },
@@ -74,7 +75,7 @@ Deno.test("access-token: afterConnect populates space + environment on display",
   });
 });
 
-Deno.test("access-token: afterConnect defaults env to master when omitted", async () => {
+test("access-token: afterConnect defaults env to master when omitted", async () => {
   const { ctx } = mockCtx([{ body: { sys: { id: "sp1" }, name: "S" } }]);
   const out = await auth.afterConnect!(
     { credential: { apiKey: "k", spaceId: "sp1" } },

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import licenseDecrementUsesCount from "../../actions/license-decrement-uses-count.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "productId": "productId-1==", "licenseKey": "licenseKey-1" };
 
-Deno.test("license-decrement-uses-count: sends PUT /v2/licenses/decrement_uses_count with the mapped parameters", async () => {
+test("license-decrement-uses-count: sends PUT /v2/licenses/decrement_uses_count with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "uses": 3, "purchase": { "id": "p1" } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("license-decrement-uses-count: sends PUT /v2/licenses/decrement_uses_c
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("license-decrement-uses-count: returns the documented result shape", async () => {
+test("license-decrement-uses-count: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: { "success": true, "uses": 3, "purchase": { "id": "p1" } } }]);
   assertEquals(await licenseDecrementUsesCount.execute(INPUT, ctx), {
     "uses": 3,
@@ -28,7 +29,7 @@ Deno.test("license-decrement-uses-count: returns the documented result shape", a
   });
 });
 
-Deno.test("license-decrement-uses-count: a 404 surfaces Gumroad's own message", async () => {
+test("license-decrement-uses-count: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -40,7 +41,7 @@ Deno.test("license-decrement-uses-count: a 404 surfaces Gumroad's own message", 
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("license-decrement-uses-count: a 200 carrying success:false is still a failure", async () => {
+test("license-decrement-uses-count: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(
     () => Promise.resolve(licenseDecrementUsesCount.execute(INPUT, ctx)),

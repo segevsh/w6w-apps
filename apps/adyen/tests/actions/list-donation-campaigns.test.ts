@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listDonationCampaigns from "../../actions/list-donation-campaigns.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "currency": "EUR", "locale": "nl-NL" } as Parameters<
   typeof listDonationCampaigns.execute
 >[0];
 
-Deno.test("list-donation-campaigns: sends POST to the documented path and returns the response", async () => {
+test("list-donation-campaigns: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "donationCampaigns": [] } }]);
   const out = await listDonationCampaigns.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("list-donation-campaigns: sends POST to the documented path and return
   assertEquals(out, { "donationCampaigns": [] });
 });
 
-Deno.test("list-donation-campaigns: targets the connection's base URL and carries no credential", async () => {
+test("list-donation-campaigns: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx(
     [{ status: 200, body: { "donationCampaigns": [] } }],
     "live",
@@ -35,7 +36,7 @@ Deno.test("list-donation-campaigns: targets the connection's base URL and carrie
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("list-donation-campaigns: surfaces Adyen's error code, type and message", async () => {
+test("list-donation-campaigns: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -53,18 +54,18 @@ Deno.test("list-donation-campaigns: surfaces Adyen's error code, type and messag
   );
 });
 
-Deno.test("list-donation-campaigns: sends the invocation id as Idempotency-Key", async () => {
+test("list-donation-campaigns: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "donationCampaigns": [] } }]);
   ctx.invocation = { invocationId: "inv-123" } as typeof ctx.invocation;
   await listDonationCampaigns.execute(INPUT, ctx);
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("list-donation-campaigns: is a read-only action", () => {
+test("list-donation-campaigns: is a read-only action", () => {
   assertEquals(listDonationCampaigns.type, "read");
 });
 
-Deno.test("list-donation-campaigns: an explicit merchantAccount beats the connection's", async () => {
+test("list-donation-campaigns: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "donationCampaigns": [] } }]);
   await listDonationCampaigns.execute({ ...INPUT, merchantAccount: "OtherMerchant" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "null").merchantAccount, "OtherMerchant");

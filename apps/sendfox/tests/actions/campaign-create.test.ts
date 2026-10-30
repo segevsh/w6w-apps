@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const required = {
   fromEmail: "news@acme.example",
 };
 
-Deno.test("campaign-create: POSTs the required five fields to /campaigns", async () => {
+test("campaign-create: POSTs the required five fields to /campaigns", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 8, ...required, sent_at: null } }]);
   const out = await campaignCreate.execute(required, ctx) as { id: number };
 
@@ -26,7 +27,7 @@ Deno.test("campaign-create: POSTs the required five fields to /campaigns", async
   assertEquals(out.id, 8);
 });
 
-Deno.test("campaign-create: audience and schedule fields are mapped", async () => {
+test("campaign-create: audience and schedule fields are mapped", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 8 } }]);
   await campaignCreate.execute(
     {
@@ -50,13 +51,13 @@ Deno.test("campaign-create: audience and schedule fields are mapped", async () =
   assertEquals(body.excluded_contact_tags, [8]);
 });
 
-Deno.test("campaign-create: exactly the document's five fields are required", () => {
+test("campaign-create: exactly the document's five fields are required", () => {
   const requiredKeys = (campaignCreate.params ?? [])
     .filter((p) => p.required)
     .map((p) => p.key);
   assertEquals(requiredKeys, ["title", "subject", "html", "fromName", "fromEmail"]);
 });
 
-Deno.test("campaign-create: is not marked idempotent — every call makes a draft", () => {
+test("campaign-create: is not marked idempotent — every call makes a draft", () => {
   assertEquals(campaignCreate.idempotent, false);
 });

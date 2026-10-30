@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-list.ts";
 
-Deno.test("webhook-list: GETs /webhooks with pagination", async () => {
+test("webhook-list: GETs /webhooks with pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   await action.execute({ limit: 20 }, ctx);
   const url = new URL(calls[0].url);

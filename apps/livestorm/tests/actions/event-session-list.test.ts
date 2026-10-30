@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSessionList from "../../actions/event-session-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("event-session-list: lists sessions for an event with filters", async () => {
+test("event-session-list: lists sessions for an event with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("sessions", "s1")]) }]);
   await eventSessionList.execute({ id: "e1", status: "live", pageSize: 5 }, ctx);
 

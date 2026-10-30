@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-voices.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-voices: sends the documented request and maps the answer", async () => {
+test("list-voices: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "data": [{ "id": "a" }], "hasMore": true, "nextCursor": "c2" },
   }]);
@@ -19,7 +20,7 @@ Deno.test("list-voices: sends the documented request and maps the answer", async
   });
 });
 
-Deno.test("list-voices: a 401 surfaces Runway's error text", async () => {
+test("list-voices: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

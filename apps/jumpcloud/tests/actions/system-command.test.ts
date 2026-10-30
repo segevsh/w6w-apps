@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/system-command.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("system-command: POSTs the chosen builtin", async () => {
+test("system-command: POSTs the chosen builtin", async () => {
   for (const command of ["lock", "restart", "shutdown"]) {
     const { ctx, calls } = mockCtx([{ status: 200 }], display);
     const result = await action.execute!({ systemId: "s1", command }, ctx);
@@ -15,7 +16,7 @@ Deno.test("system-command: POSTs the chosen builtin", async () => {
 });
 
 /** One wrong dropdown value must not be able to wipe a laptop. */
-Deno.test("system-command: erase is not reachable from here", async () => {
+test("system-command: erase is not reachable from here", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(
     async () => await action.execute!({ systemId: "s1", command: "erase" }, ctx),
@@ -26,13 +27,13 @@ Deno.test("system-command: erase is not reachable from here", async () => {
 });
 
 /** Success means accepted; an offline device runs it whenever it returns. */
-Deno.test("system-command: the output says queued, not done", () => {
+test("system-command: the output says queued, not done", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "queued")!.label.includes("later if not"));
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("system-command: a blank id fails before any request", async () => {
+test("system-command: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`systemId`");
   assertEquals(calls.length, 0);

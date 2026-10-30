@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityList from "../../actions/activity-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("activity-list: calls GET /activities.json with cursor ordering", async () => {
+test("activity-list: calls GET /activities.json with cursor ordering", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   await activityList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v4/activities.json");
   assertEquals(queryOf(calls[0].url).order, "id(asc)");
 });
 
-Deno.test("activity-list: forwards type, matter and date-range filters", async () => {
+test("activity-list: forwards type, matter and date-range filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await activityList.execute(
     { type: "TimeEntry", matterId: 4, startDate: "2026-08-01", endDate: "2026-08-31" },

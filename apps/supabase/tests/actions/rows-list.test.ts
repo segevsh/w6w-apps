@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSupabaseCtx } from "../_helpers.ts";
 import action from "../../actions/rows-list.ts";
 
-Deno.test("rows-list: builds select/order/limit/offset and appends raw filters", async () => {
+test("rows-list: builds select/order/limit/offset and appends raw filters", async () => {
   const { ctx, calls } = mockSupabaseCtx([{ body: [{ id: 1 }] }]);
   const out = await action.execute({
     table: "todos",
@@ -27,7 +28,7 @@ Deno.test("rows-list: builds select/order/limit/offset and appends raw filters",
   assertEquals(out, { rows: [{ id: 1 }] });
 });
 
-Deno.test("rows-list: defaults select to `*` and omits unset paging params", async () => {
+test("rows-list: defaults select to `*` and omits unset paging params", async () => {
   const { ctx, calls } = mockSupabaseCtx([{ body: [] }]);
   await action.execute({ table: "todos" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -37,7 +38,7 @@ Deno.test("rows-list: defaults select to `*` and omits unset paging params", asy
   assertEquals(q.has("offset"), false);
 });
 
-Deno.test("rows-list: never sets Authorization — sign injects it", async () => {
+test("rows-list: never sets Authorization — sign injects it", async () => {
   const { ctx, calls } = mockSupabaseCtx([{ body: [] }]);
   await action.execute({ table: "todos" }, ctx);
   assertEquals("authorization" in calls[0].headers, false);

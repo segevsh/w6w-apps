@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-field-set.ts";
 
-Deno.test("form-field-set: is functionally idempotent (re-set never duplicates)", () => {
+test("form-field-set: is functionally idempotent (re-set never duplicates)", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("form-field-set: POSTs the fields array verbatim", async () => {
+test("form-field-set: POSTs the fields array verbatim", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       fields: [{
@@ -32,7 +33,7 @@ Deno.test("form-field-set: POSTs the fields array verbatim", async () => {
   assertEquals(out.fields?.length, 1);
 });
 
-Deno.test("form-field-set: supports the multi-value `values` shape", async () => {
+test("form-field-set: supports the multi-value `values` shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { fields: [] } }]);
   await action.execute(
     { workflowRunId: "run1", fields: [{ id: "f2", values: ["a", "b"] }] },

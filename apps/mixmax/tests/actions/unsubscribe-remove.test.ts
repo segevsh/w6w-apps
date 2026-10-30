@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/unsubscribe-remove.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("unsubscribe-remove: DELETE /unsubscribes", async () => {
+test("unsubscribe-remove: DELETE /unsubscribes", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ email: "a@x.com" } as never, ctx);
   assertEquals(calls[0].method, "DELETE");

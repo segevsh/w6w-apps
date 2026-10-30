@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordCreate from "../../actions/record-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-create: POST /records with typed properties", async () => {
+test("record-create: POST /records with typed properties", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r2", name: "NDA" } }]);
   const properties = { counterpartyName: { type: "string", value: "Acme" } };
   const out = await recordCreate.execute(
@@ -20,7 +21,7 @@ Deno.test("record-create: POST /records with typed properties", async () => {
   assertEquals(out.id, "r2");
 });
 
-Deno.test("record-create: properties and parent may be JSON strings", async () => {
+test("record-create: properties and parent may be JSON strings", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await recordCreate.execute(
     { type: "contract", name: "A", properties: "{}", parent: '{"recordId":"r0"}' },
@@ -31,7 +32,7 @@ Deno.test("record-create: properties and parent may be JSON strings", async () =
   assertEquals(sent.parent, { recordId: "r0" });
 });
 
-Deno.test("record-create: missing properties fails before any request", async () => {
+test("record-create: missing properties fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await recordCreate.execute({ type: "contract", name: "A", properties: "" }, ctx)

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_PATH,
   compact,
@@ -18,13 +19,13 @@ const conn = {
   display: { instance: "commercial", projectKey: "default", environmentKey: "production" },
 };
 
-Deno.test("the two hosts are what the spec's servers block lists", () => {
+test("the two hosts are what the spec's servers block lists", () => {
   assertEquals(HOSTS.commercial, "https://app.launchdarkly.com");
   assertEquals(HOSTS.federal, "https://app.launchdarkly.us");
   assertEquals(API_PATH, "/api/v2");
 });
 
-Deno.test("resolveHost defaults to commercial and honours the federal instance", () => {
+test("resolveHost defaults to commercial and honours the federal instance", () => {
   assertEquals(resolveHost(undefined), HOSTS.commercial);
   assertEquals(resolveHost({ display: {} } as never), HOSTS.commercial);
   assertEquals(resolveHost({ display: { instance: "federal" } } as never), HOSTS.federal);
@@ -36,14 +37,14 @@ Deno.test("resolveHost defaults to commercial and honours the federal instance",
  * The content type is the whole difference between an instruction body and a
  * JSON Patch, so it is pinned.
  */
-Deno.test("the semantic patch content type carries the domain-model parameter", () => {
+test("the semantic patch content type carries the domain-model parameter", () => {
   assertEquals(
     SEMANTIC_PATCH_CONTENT_TYPE,
     "application/json; domain-model=launchdarkly.semanticpatch",
   );
 });
 
-Deno.test("resolveProject and resolveEnvironment prefer the override, then explain", () => {
+test("resolveProject and resolveEnvironment prefer the override, then explain", () => {
   assertEquals(resolveProject(conn as never, "other"), "other");
   assertEquals(resolveProject(conn as never, ""), "default");
   assertThrows(() => resolveProject({ display: {} } as never), Error, "no project");
@@ -53,7 +54,7 @@ Deno.test("resolveProject and resolveEnvironment prefer the override, then expla
   assertThrows(() => resolveEnvironment({ display: {} } as never), Error, "no environment");
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: [], f: false }), {
     a: 1,
     f: false,
@@ -63,7 +64,7 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
 });
 
 /** Only the global pair says anything about the account. */
-Deno.test("readRateLimit separates the global pair from the route pair", () => {
+test("readRateLimit separates the global pair from the route pair", () => {
   const headers = new Headers({
     "x-ratelimit-global-limit": "1000",
     "x-ratelimit-global-remaining": "912",
@@ -80,19 +81,19 @@ Deno.test("readRateLimit separates the global pair from the route pair", () => {
   });
 });
 
-Deno.test("readRateLimit reports nothing rather than zero when the headers are absent", () => {
+test("readRateLimit reports nothing rather than zero when the headers are absent", () => {
   const empty = readRateLimit(new Headers());
   assertEquals(empty.globalRemaining, undefined);
   assertEquals(empty.resetAt, undefined);
 });
 
-Deno.test("client: builds paths on the connection's instance under /api/v2", async () => {
+test("client: builds paths on the connection's instance under /api/v2", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [] } }], conn);
   await new LaunchDarklyClient(ctx).request("/flags/default", { query: { limit: 5 } });
   assertEquals(calls[0].url, "https://app.launchdarkly.com/api/v2/flags/default?limit=5");
 });
 
-Deno.test("client: the federal instance changes the host", async () => {
+test("client: the federal instance changes the host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     display: { instance: "federal" },
   });
@@ -100,14 +101,14 @@ Deno.test("client: the federal instance changes the host", async () => {
   assertEquals(new URL(calls[0].url).host, "app.launchdarkly.us");
 });
 
-Deno.test("client: never sends Authorization — signing is the host's job", async () => {
+test("client: never sends Authorization — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await new LaunchDarklyClient(ctx).request("/projects");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
 /** An array query value is comma-joined, not repeated. */
-Deno.test("client: array query values are comma-joined", async () => {
+test("client: array query values are comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await new LaunchDarklyClient(ctx).request("/flags/default", {
     query: { env: ["production", "staging"] },
@@ -115,7 +116,7 @@ Deno.test("client: array query values are comma-joined", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("env"), "production,staging");
 });
 
-Deno.test("client: a failure surfaces the status and LaunchDarkly's envelope", async () => {
+test("client: a failure surfaces the status and LaunchDarkly's envelope", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -130,7 +131,7 @@ Deno.test("client: a failure surfaces the status and LaunchDarkly's envelope", a
 });
 
 /** Without the content-type parameter this body would be read as a JSON Patch. */
-Deno.test("semanticPatch sends the domain-model content type and the instructions body", async () => {
+test("semanticPatch sends the domain-model content type and the instructions body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { key: "f" } }], conn);
   await new LaunchDarklyClient(ctx).semanticPatch("/flags/default/f", [{ kind: "turnFlagOn" }], {
     environmentKey: "production",
@@ -145,7 +146,7 @@ Deno.test("semanticPatch sends the domain-model content type and the instruction
   });
 });
 
-Deno.test("semanticPatch refuses an empty instruction list", async () => {
+test("semanticPatch refuses an empty instruction list", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await new LaunchDarklyClient(ctx).semanticPatch("/x", []),
@@ -156,7 +157,7 @@ Deno.test("semanticPatch refuses an empty instruction list", async () => {
 });
 
 /** The list endpoints answer `{items}`, not a bare array. */
-Deno.test("requestAll collects `items` and walks the offset", async () => {
+test("requestAll collects `items` and walks the offset", async () => {
   const full = Array.from({ length: 100 }, (_, i) => ({ key: `f${i}` }));
   const { ctx, calls } = mockCtx([
     { status: 200, body: { items: full, totalCount: 101 } },
@@ -168,7 +169,7 @@ Deno.test("requestAll collects `items` and walks the offset", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("offset"), "100");
 });
 
-Deno.test("requestAll asks for no more than it wants, capped at 100", async () => {
+test("requestAll asks for no more than it wants, capped at 100", async () => {
   const small = mockCtx([{ status: 200, body: { items: [] } }], conn);
   await new LaunchDarklyClient(small.ctx).requestAll("/projects", {}, 5);
   assertEquals(new URL(small.calls[0].url).searchParams.get("limit"), "5");

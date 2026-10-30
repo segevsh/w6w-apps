@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/access-report-run.ts";
 
 const display = { propertyId: "123" };
 
 /** The one report that lives on the Admin API rather than the Data API. */
-Deno.test("access-report-run: goes to the Admin host, not the Data host", async () => {
+test("access-report-run: goes to the Admin host, not the Data host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rows: [] } }], { display });
   await action.execute!({}, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("access-report-run: goes to the Admin host, not the Data host", async 
   );
 });
 
-Deno.test("access-report-run: defaults to the access vocabulary, not the reporting one", async () => {
+test("access-report-run: defaults to the access vocabulary, not the reporting one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({}, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("access-report-run: defaults to the access vocabulary, not the reporti
   assertEquals(body.dateRanges, [{ startDate: "7daysAgo", endDate: "yesterday" }]);
 });
 
-Deno.test("access-report-run: the audit flags are only sent when set", async () => {
+test("access-report-run: the audit flags are only sent when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ includeAllUsers: true, expandGroups: true, limit: 10 }, ctx);
   const body = JSON.parse(calls[0].body!);

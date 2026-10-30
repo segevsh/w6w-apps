@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSupabaseCtx } from "../_helpers.ts";
 import action from "../../actions/rows-update.ts";
 
-Deno.test("rows-update: PATCHes with the filter in the query string and the set body", async () => {
+test("rows-update: PATCHes with the filter in the query string and the set body", async () => {
   const { ctx, calls } = mockSupabaseCtx([{ body: [{ id: 5, status: "done" }] }]);
   const out = await action.execute({
     table: "todos",
@@ -16,7 +17,7 @@ Deno.test("rows-update: PATCHes with the filter in the query string and the set 
   assertEquals(out, { rows: [{ id: 5, status: "done" }] });
 });
 
-Deno.test("rows-update: refuses a blank filter without making a request", async () => {
+test("rows-update: refuses a blank filter without making a request", async () => {
   const { ctx, calls } = mockSupabaseCtx([]);
   await assertRejects(
     async () =>

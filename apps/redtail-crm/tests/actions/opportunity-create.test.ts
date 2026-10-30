@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityCreate from "../../actions/opportunity-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("opportunity-create: POSTs /opportunities and links a contact via linked_contacts", async () => {
+test("opportunity-create: POSTs /opportunities and links a contact via linked_contacts", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { success: true, id: 7 } }]);
   const out = await opportunityCreate.execute({
     name: "401k rollover",
@@ -18,6 +19,6 @@ Deno.test("opportunity-create: POSTs /opportunities and links a contact via link
   assertEquals(out, { success: true, id: 7 });
 });
 
-Deno.test("opportunity-create: is not idempotent — a retry creates a second opportunity", () => {
+test("opportunity-create: is not idempotent — a retry creates a second opportunity", () => {
   assertEquals(opportunityCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timesheetList from "../../actions/timesheet-list.ts";
 import { hostOf, mockCtx, odataList, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timesheet-list: mixes plain date/period keys with $-prefixed OData keys", async () => {
+test("timesheet-list: mixes plain date/period keys with $-prefixed OData keys", async () => {
   const { ctx, calls } = mockCtx([{ body: odataList([{ personId: "p1" }], 4) }]);
   const out = await timesheetList.execute({
     date: "2021-09-13",
@@ -24,7 +25,7 @@ Deno.test("timesheet-list: mixes plain date/period keys with $-prefixed OData ke
   assertEquals(out.count, 4);
 });
 
-Deno.test("timesheet-list: requires date", async () => {
+test("timesheet-list: requires date", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(timesheetList.execute({ date: "", period: "Day" }, ctx)),

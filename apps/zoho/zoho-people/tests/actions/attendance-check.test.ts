@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/attendance-check.ts";
 
-Deno.test("attendance-check: POSTs times, default date format and employee key", async () => {
+test("attendance-check: POSTs times, default date format and employee key", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: { response: { result: "ok", status: 0 } } }]);
   await action.execute({
     checkIn: "09/09/2026 09:30:45",
@@ -21,7 +22,7 @@ Deno.test("attendance-check: POSTs times, default date format and employee key",
   assertEquals(form.get("latitude"), "28.6");
 });
 
-Deno.test("attendance-check: a plain-text vendor answer is returned, not a parse error", async () => {
+test("attendance-check: a plain-text vendor answer is returned, not a parse error", async () => {
   const { ctx } = mockPeopleCtx([{ body: "Success", headers: { "content-type": "text/plain" } }]);
   const out = await action.execute(
     { checkOut: "09/09/2026 18:00:00", emailId: "a@b.com" },
@@ -30,7 +31,7 @@ Deno.test("attendance-check: a plain-text vendor answer is returned, not a parse
   assertEquals(out.result, "Success");
 });
 
-Deno.test("attendance-check: needs an employee key and a time, before any request", async () => {
+test("attendance-check: needs an employee key and a time, before any request", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ checkIn: "x" }, ctx) as Promise<unknown>,
@@ -45,4 +46,4 @@ Deno.test("attendance-check: needs an employee key and a time, before any reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("attendance-check: not idempotent", () => assertEquals(action.idempotent, false));
+test("attendance-check: not idempotent", () => assertEquals(action.idempotent, false));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-draft.ts";
 
-Deno.test("send-draft: POSTs to the draft's /send with no request body", async () => {
+test("send-draft: POSTs to the draft's /send with no request body", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await action.execute({ messageId: "d1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("send-draft: POSTs to the draft's /send with no request body", async (
   assertEquals(out, { status: 202 });
 });
 
-Deno.test("send-draft: encodes the draft id", async () => {
+test("send-draft: encodes the draft id", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ messageId: "AAMk/AAA=" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/messages/AAMk%2FAAA%3D/send");

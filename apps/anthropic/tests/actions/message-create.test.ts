@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-create.ts";
 
-Deno.test("message-create: POSTs /v1/messages with model + messages + max_tokens + version", async () => {
+test("message-create: POSTs /v1/messages with model + messages + max_tokens + version", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "msg_1", role: "assistant" } }]);
   const result = await action.execute!(
     {
@@ -24,7 +25,7 @@ Deno.test("message-create: POSTs /v1/messages with model + messages + max_tokens
   assertEquals((result as { id: string }).id, "msg_1");
 });
 
-Deno.test("message-create: forwards optional params using snake_case names", async () => {
+test("message-create: forwards optional params using snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -53,7 +54,7 @@ Deno.test("message-create: forwards optional params using snake_case names", asy
   assertEquals(body.metadata, { user_id: "u1" });
 });
 
-Deno.test("message-create: forwards the thinking block", async () => {
+test("message-create: forwards the thinking block", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -68,12 +69,12 @@ Deno.test("message-create: forwards the thinking block", async () => {
   assertEquals(body.thinking, { type: "enabled", budget_tokens: 2048 });
 });
 
-Deno.test("message-create: the thinking param documents the top_p/top_k/temperature conflict", () => {
+test("message-create: the thinking param documents the top_p/top_k/temperature conflict", () => {
   const hint = action.params?.find((p) => p.key === "thinking")?.hint ?? "";
   assertEquals(/top_p/.test(hint) && /top_k/.test(hint) && /temperature/.test(hint), true);
 });
 
-Deno.test("message-create: omits optional params when undefined", async () => {
+test("message-create: omits optional params when undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -92,7 +93,7 @@ Deno.test("message-create: omits optional params when undefined", async () => {
   assertEquals(Object.keys(body).sort(), ["max_tokens", "messages", "model"]);
 });
 
-Deno.test("message-create: rejects stream: true", () => {
+test("message-create: rejects stream: true", () => {
   const { ctx } = mockCtx();
   // Thrown synchronously: the guard runs before any request, and `execute` is
   // not `async` because nothing before it awaits. `ActionExecuteHook` returns

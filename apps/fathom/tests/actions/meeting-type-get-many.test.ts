@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, page } from "../_helpers.ts";
 import action from "../../actions/meeting-type-get-many.ts";
 
-Deno.test("meeting-type-get-many: GETs /meeting_types with the cursor", async () => {
+test("meeting-type-get-many: GETs /meeting_types with the cursor", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ name: "Quarterly Business Review", status: "active" }], null, 10) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("meeting-type-get-many: GETs /meeting_types with the cursor", async ()
   assertEquals(result.nextCursor, null);
 });
 
-Deno.test("meeting-type-get-many: omits an unset cursor", async () => {
+test("meeting-type-get-many: omits an unset cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

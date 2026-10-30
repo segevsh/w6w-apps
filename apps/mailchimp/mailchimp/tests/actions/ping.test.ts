@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/ping.ts";
 
-Deno.test("ping: GETs /ping and returns the raw health status", async () => {
+test("ping: GETs /ping and returns the raw health status", async () => {
   const { ctx, calls } = mockCtx([{ body: { health_status: "Everything's Chimpy!" } }]);
   const result = await action.execute!({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,6 +11,6 @@ Deno.test("ping: GETs /ping and returns the raw health status", async () => {
   assertEquals(result, { health_status: "Everything's Chimpy!" });
 });
 
-Deno.test("ping: is tagged into the health surface as a fatal, connection-scoped credential check", () => {
+test("ping: is tagged into the health surface as a fatal, connection-scoped credential check", () => {
   assertEquals(action.healthCheck?.kind, "credential");
 });

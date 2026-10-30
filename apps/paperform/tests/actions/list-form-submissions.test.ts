@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFormSubmissions from "../../actions/list-form-submissions.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-form-submissions: GETs /v1/forms/{slugOrId}/submissions with pagination query", async () => {
+test("list-form-submissions: GETs /v1/forms/{slugOrId}/submissions with pagination query", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope({ submissions: [{ id: "s1" }] }, { total: 1 }),

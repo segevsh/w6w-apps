@@ -1,8 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import uploadRequest from "../../actions/upload-request.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("upload-request: POSTs to /v2/upload-request and maps the response", async () => {
+test("upload-request: POSTs to /v2/upload-request and maps the response", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -25,14 +27,14 @@ Deno.test("upload-request: POSTs to /v2/upload-request and maps the response", a
   assertEquals(out.fileUrl, "https://dl.pushbulletusercontent.com/x/cat.jpg");
 });
 
-Deno.test("upload-request: this action only requests the URL — it never uploads bytes itself", async () => {
-  const src = await Deno.readTextFile(new URL("../../actions/upload-request.ts", import.meta.url));
+test("upload-request: this action only requests the URL — it never uploads bytes itself", async () => {
+  const src = await denoReadTextFile(new URL("../../actions/upload-request.ts", import.meta.url));
   // No second host is ever called from this action — a dynamic upload host is
   // deliberately left to the workflow's own HTTP step.
   const codeOnly = src.replace(/\/\*[\s\S]*?\*\//g, "");
   assertEquals(/ctx\.fetch/.test(codeOnly), false, "action calls ctx.fetch directly");
 });
 
-Deno.test("upload-request: is declared non-idempotent", () => {
+test("upload-request: is declared non-idempotent", () => {
   assertEquals(uploadRequest.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignDelete from "../../actions/campaign-delete.ts";
 import { mockCtx, noContentResponse, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-delete: defaults to the soft path — PARTIAL_UPDATE status PENDING_DELETION", async () => {
+test("campaign-delete: defaults to the soft path — PARTIAL_UPDATE status PENDING_DELETION", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await campaignDelete.execute({ accountId: "1", campaignId: "2" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("campaign-delete: defaults to the soft path — PARTIAL_UPDATE status 
   assertEquals(result, { ok: true });
 });
 
-Deno.test("campaign-delete: hardDelete sends HTTP DELETE with no body", async () => {
+test("campaign-delete: hardDelete sends HTTP DELETE with no body", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   await campaignDelete.execute({ accountId: "1", campaignId: "2", hardDelete: true }, ctx);
 
@@ -21,6 +22,6 @@ Deno.test("campaign-delete: hardDelete sends HTTP DELETE with no body", async ()
   assertEquals(pathOf(calls[0].url), "/rest/adAccounts/1/adCampaigns/2");
 });
 
-Deno.test("campaign-delete: is idempotent", () => {
+test("campaign-delete: is idempotent", () => {
   assertEquals(campaignDelete.idempotent, true);
 });

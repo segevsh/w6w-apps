@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventCreate from "../../actions/event-create.ts";
 import { errorBody, mockCtx, pathOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("event-create: POSTs the mapped body and returns the created event", async () => {
+test("event-create: POSTs the mapped body and returns the created event", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -42,7 +43,7 @@ Deno.test("event-create: POSTs the mapped body and returns the created event", a
   assertEquals(out.link_long, "https://www.addevent.com/event/abc123");
 });
 
-Deno.test("event-create: a 400 validation error surfaces the field-level reasons", async () => {
+test("event-create: a 400 validation error surfaces the field-level reasons", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -57,7 +58,7 @@ Deno.test("event-create: a 400 validation error surfaces the field-level reasons
   assertEquals(err.message.includes("title: Cannot have blank value"), true, err.message);
 });
 
-Deno.test("event-create: a 403 reports the plan/permission reason, not a bare status", async () => {
+test("event-create: a 403 reports the plan/permission reason, not a bare status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("", 910) }]);
   const err = await assertRejects(
     () => Promise.resolve(eventCreate.execute({ title: "x", datetimeStart: "2026-06-01" }, ctx)),
@@ -66,7 +67,7 @@ Deno.test("event-create: a 403 reports the plan/permission reason, not a bare st
   assertEquals(err.message.includes("permission"), true, err.message);
 });
 
-Deno.test("event-create: is declared perform, not idempotent", () => {
+test("event-create: is declared perform, not idempotent", () => {
   assertEquals(eventCreate.type, "perform");
   assertEquals(eventCreate.idempotent, false);
 });

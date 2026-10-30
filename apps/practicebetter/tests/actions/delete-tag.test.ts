@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/delete-tag.ts";
 import { API_ROOT, mockCtx, urlOf } from "../_helpers.ts";
 
-Deno.test("delete-tag: DELETEs /tags/{tagId}", async () => {
+test("delete-tag: DELETEs /tags/{tagId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await action.execute({ tagId: "tag-1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("delete-tag: DELETEs /tags/{tagId}", async () => {
   assertEquals(result, { status: 200 });
 });
 
-Deno.test("delete-tag: an error status is surfaced rather than swallowed", async () => {
+test("delete-tag: an error status is surfaced rather than swallowed", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   let message = "";
   try {
@@ -21,7 +22,7 @@ Deno.test("delete-tag: an error status is surfaced rather than swallowed", async
   assertEquals(message.includes("HTTP 404"), true, message);
 });
 
-Deno.test("delete-tag: declared idempotent", () => {
+test("delete-tag: declared idempotent", () => {
   assertEquals(action.idempotent, true);
   assertEquals(action.resource, "tag");
 });

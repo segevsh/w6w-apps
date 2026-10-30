@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGifById from "../../actions/get-gif-by-id.ts";
 import { envelope, gif, giphyError, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-gif-by-id: calls GET /v1/gifs/{id} and returns the GIF with meta", async () => {
+test("get-gif-by-id: calls GET /v1/gifs/{id} and returns the GIF with meta", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   const out = await getGifById.execute({ gifId: "abc123" }, ctx) as {
     data: { id: string };
@@ -14,7 +15,7 @@ Deno.test("get-gif-by-id: calls GET /v1/gifs/{id} and returns the GIF with meta"
   assertEquals(out.meta.status, 200);
 });
 
-Deno.test("get-gif-by-id: rating is forwarded, and the id is path-escaped", async () => {
+test("get-gif-by-id: rating is forwarded, and the id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   await getGifById.execute({ gifId: "a/b?c", rating: "r" }, ctx);
 
@@ -27,7 +28,7 @@ Deno.test("get-gif-by-id: rating is forwarded, and the id is path-escaped", asyn
  * `data`. That is an answer to "does this id exist?", so it must resolve rather
  * than throw.
  */
-Deno.test("get-gif-by-id: an unknown id resolves with GIPHY's own status", async () => {
+test("get-gif-by-id: an unknown id resolves with GIPHY's own status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: giphyError(404, "Not Found") }]);
   const out = await getGifById.execute({ gifId: "nope" }, ctx) as {
     data: unknown;
@@ -40,7 +41,7 @@ Deno.test("get-gif-by-id: an unknown id resolves with GIPHY's own status", async
 });
 
 /** Only 404 is an answer here — every other non-200 code is still a failure. */
-Deno.test("get-gif-by-id: a 401 still throws rather than looking like a missing id", async () => {
+test("get-gif-by-id: a 401 still throws rather than looking like a missing id", async () => {
   const { ctx } = mockCtx([{ status: 401, body: giphyError(401, "Unauthorized") }]);
   let threw = false;
   try {
@@ -51,6 +52,6 @@ Deno.test("get-gif-by-id: a 401 still throws rather than looking like a missing 
   assertEquals(threw, true);
 });
 
-Deno.test("get-gif-by-id: the id is required", () => {
+test("get-gif-by-id: the id is required", () => {
   assertEquals(getGifById.params?.find((p) => p.key === "gifId")?.required, true);
 });

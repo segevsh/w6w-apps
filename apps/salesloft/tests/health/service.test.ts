@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: unsigned app-scoped check, widening egress to the status host only", () => {
+test("service: unsigned app-scoped check, widening egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.salesloft.com"]);
   assert(!service.network?.allow?.includes("api.salesloft.com"));
 });
 
-Deno.test("service: reports ok when Salesloft's own core components are operational", async () => {
+test("service: reports ok when Salesloft's own core components are operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "minor", description: "Partially Degraded Service" },
@@ -26,7 +27,7 @@ Deno.test("service: reports ok when Salesloft's own core components are operatio
   assertEquals(out.components?.["salesforce"], { state: "down" });
 });
 
-Deno.test("service: a core component outage decides the state even when the page indicator is minor", async () => {
+test("service: a core component outage decides the state even when the page indicator is minor", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor" },
@@ -40,7 +41,7 @@ Deno.test("service: a core component outage decides the state even when the page
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: a third-party integration outage never worsens the state on its own", async () => {
+test("service: a third-party integration outage never worsens the state on its own", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "critical" },
@@ -57,7 +58,7 @@ Deno.test("service: a third-party integration outage never worsens the state on 
   assertEquals(out.components?.["zoom"], { state: "down" });
 });
 
-Deno.test("service: skips group headers", async () => {
+test("service: skips group headers", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "none" },
@@ -71,14 +72,14 @@ Deno.test("service: skips group headers", async () => {
   assertEquals(Object.keys(out.components ?? {}), ["salesloft-web-application"]);
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message?.includes("503"));
 });
 
-Deno.test("service: no core component present reports unknown", async () => {
+test("service: no core component present reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: { status: { indicator: "none" }, components: [{ name: "Zoom", status: "operational" }] },
   }]);

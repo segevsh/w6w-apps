@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/heartbeats-bulk-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("heartbeats-bulk-create: POSTs the documented path", async () => {
+test("heartbeats-bulk-create: POSTs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { responses: [] } }]);
   const out = await action.execute!({
     heartbeats: '[{"entity":"/a.ts","type":"file","time":1790000000}]',
@@ -13,7 +14,7 @@ Deno.test("heartbeats-bulk-create: POSTs the documented path", async () => {
   assertEquals(out, { responses: [] });
 });
 
-Deno.test("heartbeats-bulk-create: a vendor error reports status and message", async () => {
+test("heartbeats-bulk-create: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () =>
@@ -26,7 +27,7 @@ Deno.test("heartbeats-bulk-create: a vendor error reports status and message", a
   );
 });
 
-Deno.test("heartbeats-bulk-create: rejects more than 25 and non-arrays before any call", async () => {
+test("heartbeats-bulk-create: rejects more than 25 and non-arrays before any call", async () => {
   const { ctx, calls } = mockCtx([]);
   const many = JSON.stringify(Array.from({ length: 26 }, () => ({ entity: "a", type: "file" })));
   await assertRejects(

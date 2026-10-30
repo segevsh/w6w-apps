@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listSubscriptions from "../../actions/list-subscriptions.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const page = listEnvelope("subscriptions", [{ id: "SB1", status: "active" }]);
 
-Deno.test("list-subscriptions: GET /subscriptions", async () => {
+test("list-subscriptions: GET /subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await listSubscriptions.execute!({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("list-subscriptions: GET /subscriptions", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("list-subscriptions: mandate, customer, status and created_at filters", async () => {
+test("list-subscriptions: mandate, customer, status and created_at filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await listSubscriptions.execute!({
     limit: 5,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventCreate from "../../actions/event-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-create: posts only the required fields when nothing else is set", async () => {
+test("event-create: posts only the required fields when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "evt-1" } }]);
   const out = await eventCreate.execute(
     { name: "Launch Party", startAt: "2026-10-01T18:00:00.000Z", timezone: "America/New_York" },
@@ -18,7 +19,7 @@ Deno.test("event-create: posts only the required fields when nothing else is set
   assertEquals(out.id, "evt-1");
 });
 
-Deno.test("event-create: latitude/longitude are combined into one coordinate object", async () => {
+test("event-create: latitude/longitude are combined into one coordinate object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "evt-2" } }]);
   await eventCreate.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("event-create: latitude/longitude are combined into one coordinate obj
   assertEquals(body.coordinate, { latitude: 40.7128, longitude: -74.006 });
 });
 
-Deno.test("event-create: ticketTypes/registrationQuestions/feedbackEmail pass through as JSON", async () => {
+test("event-create: ticketTypes/registrationQuestions/feedbackEmail pass through as JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "evt-3" } }]);
   const ticketTypes = [{ name: "General", type: "free" }];
   await eventCreate.execute(

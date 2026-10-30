@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listsFinalize from "../../actions/lists-finalize.ts";
 import { mockCtx, pathOf, withCredits } from "../_helpers.ts";
 
-Deno.test("lists-finalize: POSTs { spendCredits } to /v2/lists/{id}, no trailing slash", async () => {
+test("lists-finalize: POSTs { spendCredits } to /v2/lists/{id}, no trailing slash", async () => {
   const { ctx, calls } = mockCtx([
     withCredits(
       { id: "lst_abcdef", status: "Complete", url: "https://lists.wappalyzer.com/x.zip" },
@@ -27,7 +28,7 @@ Deno.test("lists-finalize: POSTs { spendCredits } to /v2/lists/{id}, no trailing
   assertEquals(out.creditsRemaining, 99000);
 });
 
-Deno.test("lists-finalize: spendCredits and id are both required", () => {
+test("lists-finalize: spendCredits and id are both required", () => {
   const spend = listsFinalize.params?.find((p) => p.key === "spendCredits");
   const id = listsFinalize.params?.find((p) => p.key === "id");
   assertEquals(spend?.required, true);
@@ -38,6 +39,6 @@ Deno.test("lists-finalize: spendCredits and id are both required", () => {
  * Retrying a purchase against a list that may already be `Complete` is a
  * billing operation, not a safe-to-repeat read — this must stay explicit.
  */
-Deno.test("lists-finalize: is marked not idempotent", () => {
+test("lists-finalize: is marked not idempotent", () => {
   assertEquals(listsFinalize.idempotent, false);
 });

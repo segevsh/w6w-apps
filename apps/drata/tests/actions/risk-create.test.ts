@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import riskCreate from "../../actions/risk-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("risk-create: POST /risk-registers/{id}/risks wraps comma-separated ids as {id} objects", async () => {
+test("risk-create: POST /risk-registers/{id}/risks wraps comma-separated ids as {id} objects", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 3, riskId: "RISK-003" } }]);
   const out = await riskCreate.execute({
     riskRegisterId: 2,
@@ -27,7 +28,7 @@ Deno.test("risk-create: POST /risk-registers/{id}/risks wraps comma-separated id
   assertEquals(out.riskId, "RISK-003");
 });
 
-Deno.test("risk-create: a non-numeric id is refused before any request", async () => {
+test("risk-create: a non-numeric id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -43,9 +44,9 @@ Deno.test("risk-create: a non-numeric id is refused before any request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("risk-create: is non-idempotent", () => assertEquals(riskCreate.idempotent, false));
+test("risk-create: is non-idempotent", () => assertEquals(riskCreate.idempotent, false));
 
-Deno.test("risk-create: a 400 surfaces Drata's message", async () => {
+test("risk-create: a 400 surfaces Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody(400, "impact must not exceed 10", 2) }]);
   const err = await assertRejects(
     () =>

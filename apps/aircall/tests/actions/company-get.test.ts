@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyGet from "../../actions/company-get.ts";
 import { entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("company-get: reads GET /v1/company and unwraps the envelope", async () => {
+test("company-get: reads GET /v1/company and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: entityBody("company", { name: "Acme Inc.", users_count: 146, numbers_count: 28 }) },
   ]);
@@ -14,6 +15,6 @@ Deno.test("company-get: reads GET /v1/company and unwraps the envelope", async (
 });
 
 /** A host invokes a no-param read with `{}`; it must not need anything else. */
-Deno.test("company-get: takes no parameters", () => {
+test("company-get: takes no parameters", () => {
   assertEquals(companyGet.params, []);
 });

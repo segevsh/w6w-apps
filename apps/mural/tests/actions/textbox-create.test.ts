@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import textboxCreate from "../../actions/textbox-create.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "style": '{"backgroundColor": "#FFE08AFF"}',
 };
 
-Deno.test("textbox-create: POST /murals/{muralId}/widgets/textbox", async () => {
+test("textbox-create: POST /murals/{muralId}/widgets/textbox", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": [{ "id": "w9", "type": "sticky note" }] },
@@ -31,7 +32,7 @@ Deno.test("textbox-create: POST /murals/{muralId}/widgets/textbox", async () => 
   assertEquals(out.id, "w9");
 });
 
-Deno.test("textbox-create: puts no credential on the request (sign owns that)", async () => {
+test("textbox-create: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": [{ "id": "w9", "type": "sticky note" }] },
@@ -40,7 +41,7 @@ Deno.test("textbox-create: puts no credential on the request (sign owns that)", 
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("textbox-create: a vendor error surfaces its own code and message", async () => {
+test("textbox-create: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -51,7 +52,7 @@ Deno.test("textbox-create: a vendor error surfaces its own code and message", as
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("textbox-create: an empty muralId is refused before any request", async () => {
+test("textbox-create: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await textboxCreate.execute({ ...INPUT, muralId: "  " as never }, ctx)

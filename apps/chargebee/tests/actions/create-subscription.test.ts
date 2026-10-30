@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, formObject, formPairs, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-subscription.ts";
 
 const ok = { status: 200, body: { subscription: { id: "sub_1" } } };
 const items = [{ item_price_id: "basic-USD", quantity: 1 }];
 
-Deno.test("create-subscription: is a non-idempotent perform action", () => {
+test("create-subscription: is a non-idempotent perform action", () => {
   assertEquals(action.key, "create-subscription");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "subscription");
@@ -13,7 +14,7 @@ Deno.test("create-subscription: is a non-idempotent perform action", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-subscription: POSTs to /customers/{id}/subscription_for_items", async () => {
+test("create-subscription: POSTs to /customers/{id}/subscription_for_items", async () => {
   // The Product Catalog 2.0 route. `POST /subscriptions` is the PC 1.0 route
   // and does not exist here; nor does `/subscriptions/create_for_items`.
   const { ctx, calls } = mockCtx([ok]);
@@ -26,7 +27,7 @@ Deno.test("create-subscription: POSTs to /customers/{id}/subscription_for_items"
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("create-subscription: reproduces Chargebee's own multi-item wire sample", async () => {
+test("create-subscription: reproduces Chargebee's own multi-item wire sample", async () => {
   // -d "subscription_items[item_price_id][0]"="basic-USD"
   // -d "subscription_items[billing_cycles][0]"=2
   // -d "subscription_items[quantity][0]"=1
@@ -50,7 +51,7 @@ Deno.test("create-subscription: reproduces Chargebee's own multi-item wire sampl
   ]);
 });
 
-Deno.test("create-subscription: a hole in one column does not re-pair the others", async () => {
+test("create-subscription: a hole in one column does not re-pair the others", async () => {
   // The single most dangerous encoding bug available here: re-indexing would
   // charge row 1's unit price against row 0's item price.
   const { ctx, calls } = mockCtx([ok]);
@@ -67,7 +68,7 @@ Deno.test("create-subscription: a hole in one column does not re-pair the others
   assertEquals(body["subscription_items[unit_price][0]"], undefined);
 });
 
-Deno.test("create-subscription: accepts the item list as a JSON string or a single object", async () => {
+test("create-subscription: accepts the item list as a JSON string or a single object", async () => {
   for (
     const value of [
       '[{"item_price_id":"basic-USD"}]',
@@ -83,7 +84,7 @@ Deno.test("create-subscription: accepts the item list as a JSON string or a sing
   }
 });
 
-Deno.test("create-subscription: refuses to create a subscription with no item prices", async () => {
+test("create-subscription: refuses to create a subscription with no item prices", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -95,7 +96,7 @@ Deno.test("create-subscription: refuses to create a subscription with no item pr
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-subscription: rejects a malformed item list rather than sending an empty one", async () => {
+test("create-subscription: rejects a malformed item list rather than sending an empty one", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -114,7 +115,7 @@ Deno.test("create-subscription: rejects a malformed item list rather than sendin
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-subscription: coupon ids go out indexed", async () => {
+test("create-subscription: coupon ids go out indexed", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     customerId: "c",
@@ -126,7 +127,7 @@ Deno.test("create-subscription: coupon ids go out indexed", async () => {
   assertEquals(body["coupon_ids[1]"], "LOYALTY");
 });
 
-Deno.test("create-subscription: coupon ids also accept a comma-separated string", async () => {
+test("create-subscription: coupon ids also accept a comma-separated string", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     customerId: "c",
@@ -138,7 +139,7 @@ Deno.test("create-subscription: coupon ids also accept a comma-separated string"
   assertEquals(body["coupon_ids[1]"], "LOYALTY");
 });
 
-Deno.test("create-subscription: maps the scalar options onto their snake_case names", async () => {
+test("create-subscription: maps the scalar options onto their snake_case names", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     customerId: "c",
@@ -164,7 +165,7 @@ Deno.test("create-subscription: maps the scalar options onto their snake_case na
   assertEquals(body.invoice_notes, "hello");
 });
 
-Deno.test("create-subscription: trial_end 0 survives — it means `skip the trial`", async () => {
+test("create-subscription: trial_end 0 survives — it means `skip the trial`", async () => {
   // Dropping a falsy value here would silently grant a trial the caller
   // explicitly waived.
   const { ctx, calls } = mockCtx([ok]);
@@ -175,7 +176,7 @@ Deno.test("create-subscription: trial_end 0 survives — it means `skip the tria
   assertEquals(formObject(calls[0].body).trial_end, "0");
 });
 
-Deno.test("create-subscription: the hint states that prices are in the smallest currency unit", () => {
+test("create-subscription: the hint states that prices are in the smallest currency unit", () => {
   const p = (action.params ?? []).find((p) => p.key === "subscriptionItems")!;
   assert(/smallest unit/i.test(p.hint ?? ""), "the money convention must be stated");
   assertEquals(p.required, true);

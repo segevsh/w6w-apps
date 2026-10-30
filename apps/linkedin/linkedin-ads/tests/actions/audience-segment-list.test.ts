@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import audienceSegmentList from "../../actions/audience-segment-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("audience-segment-list: q=account with the account URN, index-paginated (start/count)", async () => {
+test("audience-segment-list: q=account with the account URN, index-paginated (start/count)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { elements: [], paging: { start: 0, count: 10, total: 0 } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("audience-segment-list: q=account with the account URN, index-paginate
   assertEquals(q.count, "10");
 });
 
-Deno.test("audience-segment-list: sourcePlatform/sourceSegmentId narrow the query when set", async () => {
+test("audience-segment-list: sourcePlatform/sourceSegmentId narrow the query when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await audienceSegmentList.execute(
     { accountId: "1", sourcePlatform: "PARTNER_API", sourceSegmentId: "ext-42" },
@@ -27,7 +28,7 @@ Deno.test("audience-segment-list: sourcePlatform/sourceSegmentId narrow the quer
   assertEquals(q.sourceSegmentId, "ext-42");
 });
 
-Deno.test("audience-segment-list: returns the elements/paging body verbatim", async () => {
+test("audience-segment-list: returns the elements/paging body verbatim", async () => {
   const body = {
     elements: [{ id: 10804, name: "Test DMP Segment 1" }],
     paging: { start: 0, count: 10, total: 1 },

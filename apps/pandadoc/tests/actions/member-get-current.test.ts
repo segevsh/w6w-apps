@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/member-get-current.ts";
 
-Deno.test("member-get-current: GETs /members/current", async () => {
+test("member-get-current: GETs /members/current", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       user_id: "u1",
@@ -24,7 +25,7 @@ Deno.test("member-get-current: GETs /members/current", async () => {
   assertEquals(out.membership_id, "m1");
 });
 
-Deno.test("member-get-current: a rejected key surfaces PandaDoc's envelope", async () => {
+test("member-get-current: a rejected key surfaces PandaDoc's envelope", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { type: "authentication_error", detail: "Invalid key." } },
   ]);
@@ -37,7 +38,7 @@ Deno.test("member-get-current: a rejected key surfaces PandaDoc's envelope", asy
   );
 });
 
-Deno.test("member-get-current: takes no params and is a read", () => {
+test("member-get-current: takes no params and is a read", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
   assertEquals(action.resource, "member");

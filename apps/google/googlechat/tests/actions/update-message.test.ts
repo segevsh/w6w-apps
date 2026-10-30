@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-message.ts";
 
-Deno.test("update-message: PATCHes the message with updateMask pinned to text", async () => {
+test("update-message: PATCHes the message with updateMask pinned to text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", message: "B1.B1", text: "edited" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -14,13 +15,13 @@ Deno.test("update-message: PATCHes the message with updateMask pinned to text", 
   assertEquals(JSON.parse(calls[0].body!), { text: "edited" });
 });
 
-Deno.test("update-message: a full message resource name overrides the space field", async () => {
+test("update-message: a full message resource name overrides the space field", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "IGNORED", message: "spaces/A9/messages/B9", text: "t" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/A9/messages/B9");
 });
 
-Deno.test("update-message: allowMissing is sent only when set", async () => {
+test("update-message: allowMissing is sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute!({ space: "A1", message: "client-x", text: "t", allowMissing: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("allowMissing"), "true");

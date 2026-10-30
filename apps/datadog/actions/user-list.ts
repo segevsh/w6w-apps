@@ -49,7 +49,12 @@ const userList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "Active", label: "Active" }, {
+        value: "Pending",
+        label: "Pending",
+      }, { value: "Disabled", label: "Disabled" }],
+      config: { valueFormat: "csv" },
       placeholder: "Active",
       hint: "Comma-separated, from `Active`, `Pending`, `Disabled`. Without it the list includes " +
         "deactivated and unverified users.",

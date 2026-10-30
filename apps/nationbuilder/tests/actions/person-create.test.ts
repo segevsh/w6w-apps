@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/person-create.ts";
 
-Deno.test("person-create: POSTs the JSON:API envelope to /signups", async () => {
+test("person-create: POSTs the JSON:API envelope to /signups", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "42", type: "signups", attributes: { first_name: "Kim" } } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("person-create: POSTs the JSON:API envelope to /signups", async () => 
   assertEquals(out, { id: "42", type: "signups", first_name: "Kim" });
 });
 
-Deno.test("person-create: merges custom_values and free-form attributes", async () => {
+test("person-create: merges custom_values and free-form attributes", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{ body: { data: {} } }]);
   await action.execute({
     firstName: "Kim",
@@ -33,6 +34,6 @@ Deno.test("person-create: merges custom_values and free-form attributes", async 
   assertEquals(body.data.attributes.church, "St. Mark's");
 });
 
-Deno.test("person-create: is not idempotent — NationBuilder does not dedupe on create", () => {
+test("person-create: is not idempotent — NationBuilder does not dedupe on create", () => {
   assertEquals(action.idempotent, false);
 });

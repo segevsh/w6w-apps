@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import personalAccessToken, {
   authHeaders,
   looksLikeUser,
@@ -9,7 +10,7 @@ import { accountRestrictedBody, errorBody, mockCtx, pathOf, queryOf, user } from
 
 const TOKEN = "sendfox_unit_test_fixture_not_a_real_token";
 
-Deno.test("personal-access-token: sign stamps the bearer header and nothing else", () => {
+test("personal-access-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.sendfox.com/me",
@@ -27,15 +28,15 @@ Deno.test("personal-access-token: sign stamps the bearer header and nothing else
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("personal-access-token: authHeaders is the single source of the wire format", () => {
+test("personal-access-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ token: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("personal-access-token: the probe is GET /me", () => {
+test("personal-access-token: the probe is GET /me", () => {
   assertEquals(PROBE_PATH, "/me");
 });
 
-Deno.test("personal-access-token: test passes when /me answers a User", async () => {
+test("personal-access-token: test passes when /me answers a User", async () => {
   const { ctx, calls } = mockCtx([{ body: user() }]);
   const result = await personalAccessToken.test({ credential: { token: TOKEN } }, ctx);
 
@@ -49,7 +50,7 @@ Deno.test("personal-access-token: test passes when /me answers a User", async ()
  * Success is classified from the BODY, not the status code: a `200` that is not
  * a User is not accepted as proof that this is SendFox's API answering.
  */
-Deno.test("personal-access-token: a 200 that is not a User is refused", async () => {
+test("personal-access-token: a 200 that is not a User is refused", async () => {
   const { ctx } = mockCtx([{ body: { hello: "world" } }]);
   const result = await personalAccessToken.test({ credential: { token: TOKEN } }, ctx);
 
@@ -57,7 +58,7 @@ Deno.test("personal-access-token: a 200 that is not a User is refused", async ()
   assert(/not a User object/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("personal-access-token: test fails with no token, without making a request", async () => {
+test("personal-access-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await personalAccessToken.test({ credential: {} }, ctx);
 
@@ -69,7 +70,7 @@ Deno.test("personal-access-token: test fails with no token, without making a req
  * Live measurement 2026-09-22: a missing header and a fake bearer answer the
  * SAME body, so `test` names both possibilities rather than distinguishing them.
  */
-Deno.test("personal-access-token: a 401 mentions both the missing and the bad token", async () => {
+test("personal-access-token: a 401 mentions both the missing and the bad token", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { message: UNAUTHENTICATED_BODY } },
   ]);
@@ -80,7 +81,7 @@ Deno.test("personal-access-token: a 401 mentions both the missing and the bad to
   assert(/Lifetime or Empire plan/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("personal-access-token: a restricted account reports its status URL", async () => {
+test("personal-access-token: a restricted account reports its status URL", async () => {
   const { ctx } = mockCtx([{ status: 403, body: accountRestrictedBody() }]);
   const result = await personalAccessToken.test({ credential: { token: TOKEN } }, ctx);
 
@@ -89,7 +90,7 @@ Deno.test("personal-access-token: a restricted account reports its status URL", 
   assert(/https:\/\/sendfox.com\/account\/status/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("personal-access-token: a plain 403 names the plan requirement", async () => {
+test("personal-access-token: a plain 403 names the plan requirement", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("Forbidden") }]);
   const result = await personalAccessToken.test({ credential: { token: TOKEN } }, ctx);
 
@@ -97,7 +98,7 @@ Deno.test("personal-access-token: a plain 403 names the plan requirement", async
   assert(/Lifetime or Empire plan/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("personal-access-token: a 500 is an HTTP failure, not a bad token", async () => {
+test("personal-access-token: a 500 is an HTTP failure, not a bad token", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await personalAccessToken.test({ credential: { token: TOKEN } }, ctx);
 
@@ -105,7 +106,7 @@ Deno.test("personal-access-token: a 500 is an HTTP failure, not a bad token", as
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("personal-access-token: afterConnect publishes only name and email", async () => {
+test("personal-access-token: afterConnect publishes only name and email", async () => {
   const { ctx, calls } = mockCtx([{ body: user() }]);
   const display = await personalAccessToken.afterConnect!({ credential: { token: TOKEN } }, ctx);
 
@@ -114,17 +115,17 @@ Deno.test("personal-access-token: afterConnect publishes only name and email", a
   assert(!JSON.stringify(display).includes("contact_limit"));
 });
 
-Deno.test("personal-access-token: afterConnect stays silent when /me fails", async () => {
+test("personal-access-token: afterConnect stays silent when /me fails", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("Forbidden") }]);
   assertEquals(await personalAccessToken.afterConnect!({ credential: { token: TOKEN } }, ctx), {});
 });
 
-Deno.test("personal-access-token: afterConnect stays silent with no name", async () => {
+test("personal-access-token: afterConnect stays silent with no name", async () => {
   const { ctx } = mockCtx([{ body: { id: 1 } }]);
   assertEquals(await personalAccessToken.afterConnect!({ credential: { token: TOKEN } }, ctx), {});
 });
 
-Deno.test("personal-access-token: looksLikeUser requires a non-empty email", () => {
+test("personal-access-token: looksLikeUser requires a non-empty email", () => {
   assertEquals(looksLikeUser({ email: "a@b.c" }), true);
   assertEquals(looksLikeUser({ email: "" }), false);
   assertEquals(looksLikeUser({ id: 1 }), false);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import oauth2, { AUTHORIZATION_URL } from "../../auth/oauth2.ts";
 import { TOKEN_URL } from "../../auth/app-auth.ts";
@@ -6,7 +7,7 @@ import { BAD_TOKEN_401, mockCtx, NO_CREDENTIAL_401, pathOf } from "../_helpers.t
 
 const CRED = { accessToken: "user-access-token", refreshToken: "user-refresh-token" };
 
-Deno.test("oauth2: declares the authorize and token endpoints Podio actually serves", () => {
+test("oauth2: declares the authorize and token endpoints Podio actually serves", () => {
   assertEquals(oauth2.key, "oauth2");
   assertEquals(oauth2.type, "oauth2");
   assertEquals(oauth2.oauth2!.authorizationUrl, AUTHORIZATION_URL);
@@ -22,7 +23,7 @@ Deno.test("oauth2: declares the authorize and token endpoints Podio actually ser
  * `400 invalid_value: "Invalid value null (null): must be object"` to a form —
  * an error that reads like a bad request rather than a wrong content type.
  */
-Deno.test("oauth2: the token URL is the form-encoded endpoint, not the JSON-only /v2", () => {
+test("oauth2: the token URL is the form-encoded endpoint, not the JSON-only /v2", () => {
   assertEquals(oauth2.oauth2!.tokenUrl, "https://api.podio.com/oauth/token");
   assertEquals(oauth2.oauth2!.refreshUrl, "https://api.podio.com/oauth/token");
   assert(!oauth2.oauth2!.tokenUrl.endsWith("/v2"));
@@ -39,7 +40,7 @@ Deno.test("oauth2: the token URL is the form-encoded endpoint, not the JSON-only
  * code_challenge support to negotiate, so the spec default of true has to be
  * turned off rather than left to be silently ignored.
  */
-Deno.test("oauth2: PKCE is explicitly off, because Podio implements OAuth2 draft-10", () => {
+test("oauth2: PKCE is explicitly off, because Podio implements OAuth2 draft-10", () => {
   assertEquals(oauth2.oauth2!.pkce, false);
 });
 
@@ -48,15 +49,15 @@ Deno.test("oauth2: PKCE is explicitly off, because Podio implements OAuth2 draft
  * picks the specific orgs/spaces/apps on the consent screen regardless.
  * Narrowing here would break whole action groups to protect nothing.
  */
-Deno.test("oauth2: requests no scope, which Podio documents as global:all", () => {
+test("oauth2: requests no scope, which Podio documents as global:all", () => {
   assertEquals(oauth2.oauth2!.scopes, []);
 });
 
-Deno.test("oauth2: collects no fields — the credential comes from the browser flow", () => {
+test("oauth2: collects no fields — the credential comes from the browser flow", () => {
   assertEquals(oauth2.fields, undefined);
 });
 
-Deno.test("oauth2 sign: stamps the OAuth2 scheme, the same wire format as app auth", () => {
+test("oauth2 sign: stamps the OAuth2 scheme, the same wire format as app auth", () => {
   const request: SignableRequest = {
     url: "https://api.podio.com/item/1",
     method: "GET",
@@ -67,7 +68,7 @@ Deno.test("oauth2 sign: stamps the OAuth2 scheme, the same wire format as app au
   assertEquals(signed.url, "https://api.podio.com/item/1");
 });
 
-Deno.test("oauth2 sign: an absent token produces an empty scheme rather than 'undefined'", () => {
+test("oauth2 sign: an absent token produces an empty scheme rather than 'undefined'", () => {
   const request: SignableRequest = {
     url: "https://api.podio.com/item/1",
     method: "GET",
@@ -77,14 +78,14 @@ Deno.test("oauth2 sign: an absent token produces an empty scheme rather than 'un
   assertEquals(signed.headers.authorization, "OAuth2 ");
 });
 
-Deno.test("oauth2 test: shares the /oauth/scope probe with app auth", async () => {
+test("oauth2 test: shares the /oauth/scope probe with app auth", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ ref_type: null, permissions: ["all"] }] }]);
   assertEquals(await oauth2.test({ credential: CRED }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/oauth/scope");
   assertEquals(calls[0].headers.authorization, "OAuth2 user-access-token");
 });
 
-Deno.test("oauth2 test: separates the two 401s the same way, with an OAuth-specific hint", async () => {
+test("oauth2 test: separates the two 401s the same way, with an OAuth-specific hint", async () => {
   const missing = mockCtx([{ status: 401, body: NO_CREDENTIAL_401 }]);
   const a = await oauth2.test({ credential: CRED }, missing.ctx);
   assertEquals(a.ok, false);
@@ -102,7 +103,7 @@ Deno.test("oauth2 test: separates the two 401s the same way, with an OAuth-speci
  * account's iCal feed URL. `GET /user` does not. A display label must not put
  * a bearer secret into the health and connection surfaces.
  */
-Deno.test("oauth2 afterConnect: reads /user, not /user/status, and keeps only two fields", async () => {
+test("oauth2 afterConnect: reads /user, not /user/status, and keeps only two fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       user_id: 2050398,
@@ -122,7 +123,7 @@ Deno.test("oauth2 afterConnect: reads /user, not /user/status, and keeps only tw
   );
 });
 
-Deno.test("oauth2 afterConnect: a failure, a throw or a bodyless user is silent", async () => {
+test("oauth2 afterConnect: a failure, a throw or a bodyless user is silent", async () => {
   const failing = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await oauth2.afterConnect!({ credential: CRED }, failing.ctx), {});
 

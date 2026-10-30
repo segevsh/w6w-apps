@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-document-sync.ts";
 
-Deno.test("create-document-sync: POSTs /documents/sync and always sends status: pending", async () => {
+test("create-document-sync: POSTs /documents/sync and always sends status: pending", async () => {
   const card = { id: "doc-1", status: "success", download_url: "https://x/y.pdf" };
   const { ctx, calls } = mockCtx([{ body: { document_card: card } }]);
   const result = await action.execute!(
@@ -19,7 +20,7 @@ Deno.test("create-document-sync: POSTs /documents/sync and always sends status: 
   assertEquals(result, card);
 });
 
-Deno.test("create-document-sync: unwraps document_card, not document", async () => {
+test("create-document-sync: unwraps document_card, not document", async () => {
   const { ctx } = mockCtx([{ body: { document_card: { id: "doc-1" } } }]);
   const result = await action.execute!({ documentTemplateId: "tpl-1" }, ctx);
   assertEquals(result, { id: "doc-1" });

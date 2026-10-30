@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getWebsiteProfile from "../../actions/get-website-profile.ts";
 import { API_ROOT, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const PROFILE = {
   siteId: "6a1b2c3d4e5f60718293a4b5",
 };
 
-Deno.test("get-website-profile: GET /1.0/authorization/website", async () => {
+test("get-website-profile: GET /1.0/authorization/website", async () => {
   const { ctx, calls } = mockCtx([{ body: PROFILE }]);
   const out = await getWebsiteProfile.execute!({}, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("get-website-profile: GET /1.0/authorization/website", async () => {
   assertEquals(out.location, { country: "US", region: "NY" });
 });
 
-Deno.test("get-website-profile: sends the required User-Agent and no credential", async () => {
+test("get-website-profile: sends the required User-Agent and no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: PROFILE }]);
   await getWebsiteProfile.execute!({}, ctx);
 
@@ -35,7 +36,7 @@ Deno.test("get-website-profile: sends the required User-Agent and no credential"
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("get-website-profile: surfaces the vendor error envelope verbatim", async () => {
+test("get-website-profile: surfaces the vendor error envelope verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("AUTHORIZATION_ERROR", {
@@ -56,7 +57,7 @@ Deno.test("get-website-profile: surfaces the vendor error envelope verbatim", as
   assertEquals(message.includes("contextId 01JCONTEXT"), true);
 });
 
-Deno.test("get-website-profile: a 404 with a subtype names both codes", async () => {
+test("get-website-profile: a 404 with a subtype names both codes", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("INVALID_REQUEST_ERROR", {

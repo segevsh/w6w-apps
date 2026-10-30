@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/note-update.ts";
 
-Deno.test("note-update: PUTs /Notes/{id} with only the fields given", async () => {
+test("note-update: PUTs /Notes/{id} with only the fields given", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "n1" } }] } },
   ]);
@@ -12,6 +13,6 @@ Deno.test("note-update: PUTs /Notes/{id} with only the fields given", async () =
   assertEquals(JSON.parse(calls[0].body!), { data: [{ Note_Content: "Screening done." }] });
 });
 
-Deno.test("note-update: idempotent — retrying converges on the same fields", () => {
+test("note-update: idempotent — retrying converges on the same fields", () => {
   assertEquals(action.idempotent, true);
 });

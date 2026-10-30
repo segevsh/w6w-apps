@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionGet from "../../actions/submission-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("submission-get: calls GET /v1/api/forms/{id}/submissions/{sid}", async () => {
+test("submission-get: calls GET /v1/api/forms/{id}/submissions/{sid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { submission: { submissionId: "s1", submissionTime: "2026-08-01T10:00:00.000Z" } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("submission-get: calls GET /v1/api/forms/{id}/submissions/{sid}", asyn
   assertEquals(out.submission.submissionId, "s1");
 });
 
-Deno.test("submission-get: includeEditLink is only sent when true", async () => {
+test("submission-get: includeEditLink is only sent when true", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await submissionGet.execute({ formId: "aB1", submissionId: "s1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -28,7 +29,7 @@ Deno.test("submission-get: includeEditLink is only sent when true", async () => 
   assertEquals(queryOf(calls[1].url), { includeEditLink: "true" });
 });
 
-Deno.test("submission-get: both ids are path-escaped independently", async () => {
+test("submission-get: both ids are path-escaped independently", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await submissionGet.execute({ formId: "a/b", submissionId: "c?d" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/api/forms/a%2Fb/submissions/c%3Fd");

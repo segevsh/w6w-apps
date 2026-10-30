@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-ticket-buyer-settings.ts";
 
-Deno.test("update-ticket-buyer-settings: POST /events/e1/ticket_buyer_settings/", async () => {
+test("update-ticket-buyer-settings: POST /events/e1/ticket_buyer_settings/", async () => {
   const resp = { "event_id": "e1" };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({
@@ -26,7 +27,7 @@ Deno.test("update-ticket-buyer-settings: POST /events/e1/ticket_buyer_settings/"
   assertEquals(result, resp);
 });
 
-Deno.test("update-ticket-buyer-settings: sends only supplied fields and deep-merges extra", async () => {
+test("update-ticket-buyer-settings: sends only supplied fields and deep-merges extra", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ "eventId": "e1", "extra": { "zzz": { "a": 1 } } }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "ticket_buyer_settings": { "zzz": { "a": 1 } } });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-credits.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-credits: maps total, the three plan buckets and the threshold", async () => {
+test("get-credits: maps total, the three plan buckets and the threshold", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -24,7 +25,7 @@ Deno.test("get-credits: maps total, the three plan buckets and the threshold", a
   });
 });
 
-Deno.test("get-credits: a 401 token rejection throws", async () => {
+test("get-credits: a 401 token rejection throws", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { status: "failed", error: { code: 1000, message: "Invalid API Token" } },

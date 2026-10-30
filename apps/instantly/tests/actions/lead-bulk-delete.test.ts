@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadBulkDelete from "../../actions/lead-bulk-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-bulk-delete: DELETEs /leads with the filter body", async () => {
+test("lead-bulk-delete: DELETEs /leads with the filter body", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 3 } }]);
   const out = await leadBulkDelete.execute(
     { campaign_id: "c1", status: 3, limit: 100 },
@@ -17,12 +18,12 @@ Deno.test("lead-bulk-delete: DELETEs /leads with the filter body", async () => {
   assertEquals(out.count, 3);
 });
 
-Deno.test("lead-bulk-delete: ids accepts a comma string", async () => {
+test("lead-bulk-delete: ids accepts a comma string", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 0 } }]);
   await leadBulkDelete.execute({ list_id: "list1", ids: "a,b" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).ids, ["a", "b"]);
 });
 
-Deno.test("lead-bulk-delete: is declared idempotent — the end state is the same either way", () => {
+test("lead-bulk-delete: is declared idempotent — the end state is the same either way", () => {
   assertEquals(leadBulkDelete.idempotent, true);
 });

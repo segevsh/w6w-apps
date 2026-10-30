@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupSendMessage from "../../actions/group-send-message.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-send-message: POSTs to /api/send-group-message with a normalised numbers list", async () => {
+test("group-send-message: POSTs to /api/send-group-message with a normalised numbers list", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "QUEUED" } }]);
   await groupSendMessage.execute({
     fromNumber: "+1",

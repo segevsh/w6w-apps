@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-opportunity.ts";
 
-Deno.test("update-opportunity: requires opportunityId plus the full create-set of fields", () => {
+test("update-opportunity: requires opportunityId plus the full create-set of fields", () => {
   // Wealthbox's docs mark name/target_close/probability/stage/amounts required
   // on update too — moving stage means resending all of them, not just stage.
   assertEquals(action.type, "perform");
@@ -13,7 +14,7 @@ Deno.test("update-opportunity: requires opportunityId plus the full create-set o
   }
 });
 
-Deno.test("update-opportunity: PUTs /opportunities/{id} with the mapped body", async () => {
+test("update-opportunity: PUTs /opportunities/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   const amounts = [{ amount: 100, currency: "$", kind: "Fee" }];
   await action.execute({

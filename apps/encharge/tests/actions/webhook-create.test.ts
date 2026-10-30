@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { errBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof webhookCreate.execute>[1], input: Record<string, unknown>) =>
   webhookCreate.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("webhook-create: declares a non-idempotent perform action", () => {
+test("webhook-create: declares a non-idempotent perform action", () => {
   assertEquals(webhookCreate.key, "webhook-create");
   assertEquals(webhookCreate.type, "perform");
   assertEquals(webhookCreate.idempotent, false);
@@ -13,7 +14,7 @@ Deno.test("webhook-create: declares a non-idempotent perform action", () => {
   assert(Array.isArray(webhookCreate.output) && webhookCreate.output.length > 0);
 });
 
-Deno.test("webhook-create: POSTs eventType and targetUrl and returns the subscription", async () => {
+test("webhook-create: POSTs eventType and targetUrl and returns the subscription", async () => {
   const reply = { subscription: { id: 77 } };
   const { ctx, calls } = mockCtx([{ status: 201, body: reply }]);
   const out = await run(ctx, {
@@ -29,7 +30,7 @@ Deno.test("webhook-create: POSTs eventType and targetUrl and returns the subscri
   });
 });
 
-Deno.test("webhook-create: requires both fields; failures are thrown", async () => {
+test("webhook-create: requires both fields; failures are thrown", async () => {
   const none = mockCtx([]);
   await assertRejects(() => run(none.ctx, { targetUrl: "https://x.test" }), Error, "eventType");
   await assertRejects(() => run(none.ctx, { eventType: "newUser" }), Error, "targetUrl");

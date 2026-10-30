@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import reactionAdd from "../../actions/reaction-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reaction-add: POST /api/v3/reactions/add with every documented parameter", async () => {
+test("reaction-add: POST /api/v3/reactions/add with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await reactionAdd.execute({
     "reaction": "sample reaction",
@@ -24,7 +25,7 @@ Deno.test("reaction-add: POST /api/v3/reactions/add with every documented parame
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("reaction-add: sends a form body, never a query string", async () => {
+test("reaction-add: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionAdd.execute({
     "reaction": "sample reaction",
@@ -37,18 +38,18 @@ Deno.test("reaction-add: sends a form body, never a query string", async () => {
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("reaction-add: omits optional parameters that are not set", async () => {
+test("reaction-add: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionAdd.execute({ "reaction": "sample reaction" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "reaction": "sample reaction" });
 });
 
-Deno.test("reaction-add: is declared idempotent", () => {
+test("reaction-add: is declared idempotent", () => {
   assertEquals(reactionAdd.idempotent, true);
 });
 
-Deno.test("reaction-add: sends no credential of its own", async () => {
+test("reaction-add: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionAdd.execute({
     "reaction": "sample reaction",
@@ -60,7 +61,7 @@ Deno.test("reaction-add: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("reaction-add: surfaces Twist's error body", async () => {
+test("reaction-add: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

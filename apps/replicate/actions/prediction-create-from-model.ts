@@ -50,7 +50,12 @@ const action: ActionDefinition = {
     {
       key: "webhookEventsFilter",
       label: "Webhook Events",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "start", label: "start" }, { value: "output", label: "output" }, {
+        value: "logs",
+        label: "logs",
+      }, { value: "completed", label: "completed" }],
+      config: { valueFormat: "csv" },
       default: "",
       hint: "Comma-separated: start, output, logs, completed.",
     },

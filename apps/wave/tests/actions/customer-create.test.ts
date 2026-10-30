@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import customerCreate from "../../actions/customer-create.ts";
 
-Deno.test("customer-create: creates and returns the customer", async () => {
+test("customer-create: creates and returns the customer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -24,7 +25,7 @@ Deno.test("customer-create: creates and returns the customer", async () => {
   assertEquals(body.variables.input.address.city, "North Pole");
 });
 
-Deno.test("customer-create: a rejected create throws with the field-level detail", async () => {
+test("customer-create: a rejected create throws with the field-level detail", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -50,7 +51,7 @@ Deno.test("customer-create: a rejected create throws with the field-level detail
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("customer-create: type/resource/idempotency metadata", () => {
+test("customer-create: type/resource/idempotency metadata", () => {
   assertEquals(customerCreate.type, "perform");
   assertEquals(customerCreate.resource, "customer");
   assertEquals(customerCreate.idempotent, false);

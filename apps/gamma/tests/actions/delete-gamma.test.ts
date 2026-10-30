@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deleteGamma from "../../actions/delete-gamma.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-gamma: DELETEs /gammas/{id}", async () => {
+test("delete-gamma: DELETEs /gammas/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "deleted", gammaId: "g_1", message: "Gamma deleted." } },
   ]);

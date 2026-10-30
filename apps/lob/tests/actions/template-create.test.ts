@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: POSTs html and the snake_case options", async () => {
+test("template-create: POSTs html and the snake_case options", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "tmpl_1", versions: [] } }]);
   const out = await templateCreate.execute({
     html: "<p>{{name}}</p>",
@@ -21,11 +22,11 @@ Deno.test("template-create: POSTs html and the snake_case options", async () => 
   assertEquals(out.id, "tmpl_1");
 });
 
-Deno.test("template-create: is declared non-idempotent", () => {
+test("template-create: is declared non-idempotent", () => {
   assertEquals(templateCreate.idempotent, false);
 });
 
-Deno.test("template-create: invalid required-vars JSON is rejected before any request", async () => {
+test("template-create: invalid required-vars JSON is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await templateCreate.execute({ html: "x", requiredVars: "[" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("template-create: invalid required-vars JSON is rejected before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("template-create: Lob's error is surfaced", async () => {
+test("template-create: Lob's error is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "html is required", 422) }]);
   await assertRejects(
     async () => await templateCreate.execute({ html: "" }, ctx),

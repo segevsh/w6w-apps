@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import storyCreate from "../../actions/story-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("story-create: posts only name when nothing else is set", async () => {
+test("story-create: posts only name when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await storyCreate.execute({ name: "Fix the checkout bug" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("story-create: posts only name when nothing else is set", async () => 
   assertEquals(JSON.parse(calls[0].body!), { name: "Fix the checkout bug" });
 });
 
-Deno.test("story-create: maps camelCase inputs to Shortcut's snake_case fields", async () => {
+test("story-create: maps camelCase inputs to Shortcut's snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await storyCreate.execute(
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PUTs the full parsed replacement map to /api/account/webhooks", async () => {
+test("webhook-update: PUTs the full parsed replacement map to /api/account/webhooks", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", webhooks: {} } }]);
   await webhookUpdate.execute({ webhooks: '{"receive":["https://example.com"]}' }, ctx);
 

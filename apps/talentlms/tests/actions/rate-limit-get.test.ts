@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/rate-limit-get.ts";
 
-Deno.test("rate-limit-get: GET ratelimit and returns the vendor payload", async () => {
+test("rate-limit-get: GET ratelimit and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls.length, 1);

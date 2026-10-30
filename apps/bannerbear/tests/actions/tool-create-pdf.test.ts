@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolCreatePdf from "../../actions/tool-create-pdf.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-create-pdf: POST /tools/create_pdf, splits newline/comma URLs and preserves order", async () => {
+test("tool-create-pdf: POST /tools/create_pdf, splits newline/comma URLs and preserves order", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "create_pdf" } }]);
   await toolCreatePdf.execute({ urls: "https://x/1.jpg\nhttps://x/2.jpg" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("tool-create-pdf: POST /tools/create_pdf, splits newline/comma URLs an
   });
 });
 
-Deno.test("tool-create-pdf: requires at least one URL", async () => {
+test("tool-create-pdf: requires at least one URL", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolCreatePdf.execute({ urls: "" }, ctx));
 });

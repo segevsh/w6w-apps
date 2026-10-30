@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs the mandatory fields; numbers omitted when unset", async () => {
+test("contact-update: PUTs the mandatory fields; numbers omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { firstname: "Ada" } }]);
   await action.execute!({
     contactId: 5,
@@ -22,7 +23,7 @@ Deno.test("contact-update: PUTs the mandatory fields; numbers omitted when unset
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("contact-update: numbers are coerced to integers", async () => {
+test("contact-update: numbers are coerced to integers", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     contactId: 5,

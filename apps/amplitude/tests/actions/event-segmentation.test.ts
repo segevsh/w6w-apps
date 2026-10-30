@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/event-segmentation.ts";
@@ -12,7 +13,7 @@ const chart = ok({
 });
 
 /** `e` is a JSON object serialised into a query parameter. */
-Deno.test("event-segmentation: serialises the event object into the `e` parameter", async () => {
+test("event-segmentation: serialises the event object into the `e` parameter", async () => {
   const { ctx, calls } = mockCtx([chart], { display });
   await action.execute!({
     event: '{"event_type":"Checkout Completed"}',
@@ -29,7 +30,7 @@ Deno.test("event-segmentation: serialises the event object into the `e` paramete
  * The response is parallel arrays — the nth number belongs to the nth date, and
  * the series has no labels inside it.
  */
-Deno.test("event-segmentation: zips the parallel arrays into labelled points", async () => {
+test("event-segmentation: zips the parallel arrays into labelled points", async () => {
   const { ctx } = mockCtx([chart], { display });
   const result = await action.execute!({
     event: '{"event_type":"a"}',
@@ -42,7 +43,7 @@ Deno.test("event-segmentation: zips the parallel arrays into labelled points", a
   assertEquals(result.total, 60, "the first series summed");
 });
 
-Deno.test("event-segmentation: the raw arrays come back untouched too", async () => {
+test("event-segmentation: the raw arrays come back untouched too", async () => {
   const { ctx } = mockCtx([chart], { display });
   const result = await action.execute!({
     event: '{"event_type":"a"}',
@@ -53,7 +54,7 @@ Deno.test("event-segmentation: the raw arrays come back untouched too", async ()
   assertEquals(result.xValues.length, 3);
 });
 
-Deno.test("event-segmentation: metric, interval and group-by reach the wire", async () => {
+test("event-segmentation: metric, interval and group-by reach the wire", async () => {
   const { ctx, calls } = mockCtx([chart], { display });
   await action.execute!({
     event: '{"event_type":"a"}',
@@ -69,7 +70,7 @@ Deno.test("event-segmentation: metric, interval and group-by reach the wire", as
   assertEquals(url.searchParams.get("g"), "country");
 });
 
-Deno.test("event-segmentation: a segment is serialised into `s`", async () => {
+test("event-segmentation: a segment is serialised into `s`", async () => {
   const { ctx, calls } = mockCtx([chart], { display });
   await action.execute!({
     event: '{"event_type":"a"}',
@@ -80,7 +81,7 @@ Deno.test("event-segmentation: a segment is serialised into `s`", async () => {
   assert(new URL(calls[0].url).searchParams.get("s")!.includes("country"));
 });
 
-Deno.test("event-segmentation: needs an event and both dates", async () => {
+test("event-segmentation: needs an event and both dates", async () => {
   const noEvent = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ start: "20260801", end: "20260803" }, noEvent.ctx),
@@ -95,7 +96,7 @@ Deno.test("event-segmentation: needs an event and both dates", async () => {
   );
 });
 
-Deno.test("event-segmentation: logs shapes, never the query or the numbers", async () => {
+test("event-segmentation: logs shapes, never the query or the numbers", async () => {
   const { ctx, logs } = mockCtx([chart], { display });
   await action.execute!({
     event: '{"event_type":"Secret Event"}',
@@ -106,6 +107,6 @@ Deno.test("event-segmentation: logs shapes, never the query or the numbers", asy
   assertEquals(logs[0].data, { series: 2, points: 6 });
 });
 
-Deno.test("event-segmentation: says the response is parallel arrays", () => {
+test("event-segmentation: says the response is parallel arrays", () => {
   assert(/PARALLEL ARRAYS/.test(action.description!), action.description);
 });

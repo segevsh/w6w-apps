@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-search.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("contact-search: POSTs a single `=` expression with the page cursor in the query", async () => {
+test("contact-search: POSTs a single `=` expression with the page cursor in the query", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "results": [{ "id": "c_1" }], "pagination": { "next_cursor": null } },
   }]);
@@ -41,7 +42,7 @@ Deno.test("contact-search: POSTs a single `=` expression with the page cursor in
   });
 });
 
-Deno.test("contact-search: custom-attribute search uses `identifier`", async () => {
+test("contact-search: custom-attribute search uses `identifier`", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "results": [], "pagination": { "next_cursor": "n" } },
   }]);
@@ -82,7 +83,7 @@ Deno.test("contact-search: custom-attribute search uses `identifier`", async () 
   assertEquals(result, { "results": [], "pagination": { "next_cursor": "n" }, "nextCursor": "n" });
 });
 
-Deno.test("contact-search: custom-attribute search without an attribute id throws", async () => {
+test("contact-search: custom-attribute search without an attribute id throws", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "field": "custom_attribute", "value": "x" } as never, ctx),

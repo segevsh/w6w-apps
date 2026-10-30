@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-rejects.ts";
 
-Deno.test("list-rejects: POSTs /rejects/list.json with defaults", async () => {
+test("list-rejects: POSTs /rejects/list.json with defaults", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-rejects: POSTs /rejects/list.json with defaults", async () => {
   assertEquals(JSON.parse(calls[0].body!), { include_expired: false });
 });
 
-Deno.test("list-rejects: forwards email filter and includeExpired", async () => {
+test("list-rejects: forwards email filter and includeExpired", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!({ email: "a@x.com", includeExpired: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@x.com", include_expired: true });

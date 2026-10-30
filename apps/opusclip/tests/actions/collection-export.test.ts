@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionExport from "../../actions/collection-export.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-export: POSTs an empty body to the export path", async () => {
+test("collection-export: POSTs an empty body to the export path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: envelope({ contentList: [{ contentId: "P1.C1", uriForExport: "u" }] }) },
   ]);
@@ -16,6 +17,6 @@ Deno.test("collection-export: POSTs an empty body to the export path", async () 
   assertEquals(out.contentList.length, 1);
 });
 
-Deno.test("collection-export: is declared a read action despite being a POST", () => {
+test("collection-export: is declared a read action despite being a POST", () => {
   assertEquals(collectionExport.type, "read");
 });

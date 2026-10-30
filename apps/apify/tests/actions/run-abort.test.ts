@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import runAbort from "../../actions/run-abort.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("run-abort: POSTs to /v2/actor-runs/{id}/abort", async () => {
+test("run-abort: POSTs to /v2/actor-runs/{id}/abort", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "r1", status: "ABORTED" }) }]);
   const out = await runAbort.execute({ runId: "r1" }, ctx) as { status: string };
 
@@ -12,7 +13,7 @@ Deno.test("run-abort: POSTs to /v2/actor-runs/{id}/abort", async () => {
   assertEquals(out.status, "ABORTED");
 });
 
-Deno.test("run-abort: gracefully is sent only when set", async () => {
+test("run-abort: gracefully is sent only when set", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "r1" }) },
     { body: envelope({ id: "r1" }) },
@@ -25,6 +26,6 @@ Deno.test("run-abort: gracefully is sent only when set", async () => {
 });
 
 /** Apify: aborting an already-finished run "does nothing" — safe to retry. */
-Deno.test("run-abort: is declared idempotent", () => {
+test("run-abort: is declared idempotent", () => {
   assertEquals(runAbort.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/synthetics-monitor-list.ts";
@@ -19,7 +20,7 @@ const monitors = ok({
   },
 });
 
-Deno.test("synthetics-monitor-list: searches entities scoped to monitors", async () => {
+test("synthetics-monitor-list: searches entities scoped to monitors", async () => {
   const { ctx, calls } = mockCtx([monitors], { display });
   const result = await action.execute!({}, ctx) as { count: number; total: number };
   const query = JSON.parse(calls[0].body!).variables.query;
@@ -33,7 +34,7 @@ Deno.test("synthetics-monitor-list: searches entities scoped to monitors", async
  * A monitor can be failing (the site is down) or simply not running (disabled,
  * or no locations) — and the second one is silent.
  */
-Deno.test("synthetics-monitor-list: failing and not-running are counted separately", async () => {
+test("synthetics-monitor-list: failing and not-running are counted separately", async () => {
   const { ctx } = mockCtx([monitors], { display });
   const result = await action.execute!({}, ctx) as {
     failing: number;
@@ -43,13 +44,13 @@ Deno.test("synthetics-monitor-list: failing and not-running are counted separate
   assertEquals(result.notReporting, 1);
 });
 
-Deno.test("synthetics-monitor-list: a name filter is added to the clause", async () => {
+test("synthetics-monitor-list: a name filter is added to the clause", async () => {
   const { ctx, calls } = mockCtx([monitors], { display });
   await action.execute!({ name: "Check" }, ctx);
   assert(JSON.parse(calls[0].body!).variables.query.includes("name LIKE 'Check'"));
 });
 
-Deno.test("synthetics-monitor-list: an account with no monitors is a count of zero", async () => {
+test("synthetics-monitor-list: an account with no monitors is a count of zero", async () => {
   const { ctx } = mockCtx([
     ok({ actor: { entitySearch: { count: 0, results: { entities: [] } } } }),
   ], { display });
@@ -58,7 +59,7 @@ Deno.test("synthetics-monitor-list: an account with no monitors is a count of ze
 });
 
 /** No alerts and nothing running produce the same silence. */
-Deno.test("synthetics-monitor-list: says the two silences look identical", () => {
+test("synthetics-monitor-list: says the two silences look identical", () => {
   assert(
     /'no\s+alerts' and 'nothing running' look identical/.test(action.description!),
     action.description,

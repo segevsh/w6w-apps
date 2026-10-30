@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import getAvailability from "../../actions/get-availability.ts";
 
-Deno.test("get-availability: picks the path from the ids given", async () => {
+test("get-availability: picks the path from the ids given", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }, { body: [] }, { body: [] }]);
   await getAvailability.execute({ start: "2026-06-01", end: "2026-06-30" }, ctx);
   await getAvailability.execute({ propertyId: 5, includeDetails: true }, ctx);
@@ -16,7 +17,7 @@ Deno.test("get-availability: picks the path from the ids given", async () => {
   assertEquals(queryOf(calls[1].url), { includeDetails: "true" });
 });
 
-Deno.test("get-availability: refuses a room type without its property", async () => {
+test("get-availability: refuses a room type without its property", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(getAvailability.execute({ roomTypeId: 6 }, ctx)),

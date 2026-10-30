@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateUser from "../../actions/update-user.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("update-user: PATCHes properties and deltas separately", async () => {
+test("update-user: PATCHes properties and deltas separately", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ status: 202, body: { properties: {} } }]);
   await updateUser.execute({
     aliasId: "user_123",

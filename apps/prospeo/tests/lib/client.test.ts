@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { bulkRecords, compact, enrichFlags, ProspeoClient } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: a 400 error_code body throws with the code, never the status alone", async () => {
+test("client: a 400 error_code body throws with the code, never the status alone", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: true, error_code: "INVALID_API_KEY" } }]);
   await assertRejects(
     () => new ProspeoClient(ctx).call("/enrich-person", { body: {} }),
@@ -11,7 +12,7 @@ Deno.test("client: a 400 error_code body throws with the code, never the status 
   );
 });
 
-Deno.test("client: filter_error rides along and a 429 names the reset", async () => {
+test("client: filter_error rides along and a 429 names the reset", async () => {
   const a = mockCtx([{
     status: 400,
     body: { error: true, error_code: "INVALID_FILTERS", filter_error: "bad industry" },
@@ -29,7 +30,7 @@ Deno.test("client: filter_error rides along and a 429 names the reset", async ()
   );
 });
 
-Deno.test("client: soft codes return the body; HTTP 200 with error:true still throws otherwise", async () => {
+test("client: soft codes return the body; HTTP 200 with error:true still throws otherwise", async () => {
   const a = mockCtx([{ status: 400, body: { error: true, error_code: "NO_MATCH" } }]);
   const r = await new ProspeoClient(a.ctx).call("/x", { soft: ["NO_MATCH"] });
   assertEquals(r, { error: true, error_code: "NO_MATCH" });
@@ -37,7 +38,7 @@ Deno.test("client: soft codes return the body; HTTP 200 with error:true still th
   await assertRejects(() => new ProspeoClient(b.ctx).call("/x", { soft: ["NO_MATCH"] }));
 });
 
-Deno.test("client: POST sends JSON, GET sends none, and no credential header is set", async () => {
+test("client: POST sends JSON, GET sends none, and no credential header is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false } }, { body: { error: false } }]);
   const c = new ProspeoClient(ctx);
   await c.call("/a", { body: { k: 1 } });
@@ -49,7 +50,7 @@ Deno.test("client: POST sends JSON, GET sends none, and no credential header is 
   assertEquals(calls[0].headers["x-key"], undefined);
 });
 
-Deno.test("client: helpers compact, flags and bulk validation", () => {
+test("client: helpers compact, flags and bulk validation", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: false }), { a: 1, d: false });
   assertEquals(enrichFlags({ enrichMobile: true }), { enrich_mobile: true });
   assertEquals(bulkRecords('[{"identifier":"1","email":"a@b.co"}]').length, 1);

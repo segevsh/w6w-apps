@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   containerBase,
@@ -14,39 +15,39 @@ import {
 
 // ---------------------------------------------------------------- addressing --
 
-Deno.test("onenoteBase: defaults to /me/onenote", () => {
+test("onenoteBase: defaults to /me/onenote", () => {
   assertEquals(onenoteBase(), "/me/onenote");
   assertEquals(onenoteBase({}), "/me/onenote");
 });
 
-Deno.test("onenoteBase: user / group / site each need a Location ID", () => {
+test("onenoteBase: user / group / site each need a Location ID", () => {
   assertEquals(onenoteBase({ location: "user", locationId: "u1" }), "/users/u1/onenote");
   assertEquals(onenoteBase({ location: "group", locationId: "g1" }), "/groups/g1/onenote");
   assertEquals(onenoteBase({ location: "site", locationId: "s1" }), "/sites/s1/onenote");
 });
 
-Deno.test("onenoteBase: a non-me location with no Location ID throws", () => {
+test("onenoteBase: a non-me location with no Location ID throws", () => {
   assertThrows(() => onenoteBase({ location: "user" }), Error, "Location ID");
   assertThrows(() => onenoteBase({ location: "group" }), Error, "Location ID");
   assertThrows(() => onenoteBase({ location: "site" }), Error, "Location ID");
 });
 
-Deno.test("notebooksPath / notebookPath", () => {
+test("notebooksPath / notebookPath", () => {
   assertEquals(notebooksPath(), "/me/onenote/notebooks");
   assertEquals(notebookPath({}, "n1"), "/me/onenote/notebooks/n1");
   assertEquals(notebookPath({}, "n1", "/sections"), "/me/onenote/notebooks/n1/sections");
 });
 
-Deno.test("notebookPath: empty id throws", () => {
+test("notebookPath: empty id throws", () => {
   assertThrows(() => notebookPath({}, ""), Error, "Notebook ID");
 });
 
-Deno.test("containerBase: flat when neither container id is given", () => {
+test("containerBase: flat when neither container id is given", () => {
   assertEquals(containerBase({}, "sections"), "/me/onenote/sections");
   assertEquals(containerBase({}, "sectionGroups"), "/me/onenote/sectionGroups");
 });
 
-Deno.test("containerBase: under a notebook or a section group", () => {
+test("containerBase: under a notebook or a section group", () => {
   assertEquals(
     containerBase({ notebookId: "n1" }, "sections"),
     "/me/onenote/notebooks/n1/sections",
@@ -57,7 +58,7 @@ Deno.test("containerBase: under a notebook or a section group", () => {
   );
 });
 
-Deno.test("containerBase: both container ids at once is rejected", () => {
+test("containerBase: both container ids at once is rejected", () => {
   assertThrows(
     () => containerBase({ notebookId: "n1", sectionGroupId: "sg1" }, "sections"),
     Error,
@@ -65,19 +66,19 @@ Deno.test("containerBase: both container ids at once is rejected", () => {
   );
 });
 
-Deno.test("sectionPath / sectionGroupPath require an id", () => {
+test("sectionPath / sectionGroupPath require an id", () => {
   assertEquals(sectionPath({}, "sec1"), "/me/onenote/sections/sec1");
   assertEquals(sectionGroupPath({}, "sg1"), "/me/onenote/sectionGroups/sg1");
   assertThrows(() => sectionPath({}, ""), Error, "Section ID");
   assertThrows(() => sectionGroupPath({}, ""), Error, "Section group ID");
 });
 
-Deno.test("pagesPath: flat by default, scoped to a section otherwise", () => {
+test("pagesPath: flat by default, scoped to a section otherwise", () => {
   assertEquals(pagesPath(), "/me/onenote/pages");
   assertEquals(pagesPath({ sectionId: "sec1" }), "/me/onenote/sections/sec1/pages");
 });
 
-Deno.test("pagePath requires an id and accepts a suffix", () => {
+test("pagePath requires an id and accepts a suffix", () => {
   assertEquals(pagePath({}, "p1"), "/me/onenote/pages/p1");
   assertEquals(pagePath({}, "p1", "/content"), "/me/onenote/pages/p1/content");
   assertThrows(() => pagePath({}, ""), Error, "Page ID");
@@ -85,14 +86,14 @@ Deno.test("pagePath requires an id and accepts a suffix", () => {
 
 // -------------------------------------------------------------------- client --
 
-Deno.test("GraphClient.request: 204 decodes to undefined rather than throwing", async () => {
+test("GraphClient.request: 204 decodes to undefined rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const client = new GraphClient(ctx);
   const out = await client.request("/me/onenote/pages/p1/content");
   assertEquals(out, undefined);
 });
 
-Deno.test("GraphClient: a failed request surfaces the vendor's error code and message", async () => {
+test("GraphClient: a failed request surfaces the vendor's error code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "20166", message: "The request is not properly authenticated." } },
@@ -101,14 +102,14 @@ Deno.test("GraphClient: a failed request surfaces the vendor's error code and me
   await assertRejects(() => client.request("/me/onenote/notebooks"), Error, "20166");
 });
 
-Deno.test("GraphClient.html: returns raw text, never parses JSON", async () => {
+test("GraphClient.html: returns raw text, never parses JSON", async () => {
   const { ctx } = mockCtx([{ body: "<html><body>hi</body></html>" }]);
   const client = new GraphClient(ctx);
   const out = await client.html("/me/onenote/pages/p1/content");
   assertEquals(out, "<html><body>hi</body></html>");
 });
 
-Deno.test("GraphClient.postHtml: sends the string body verbatim with the given content type", async () => {
+test("GraphClient.postHtml: sends the string body verbatim with the given content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "p1" } }]);
   const client = new GraphClient(ctx);
   const out = await client.postHtml<{ id: string }>(
@@ -121,14 +122,14 @@ Deno.test("GraphClient.postHtml: sends the string body verbatim with the given c
   assertEquals(out.id, "p1");
 });
 
-Deno.test("GraphClient.status: reports the HTTP status without decoding a body", async () => {
+test("GraphClient.status: reports the HTTP status without decoding a body", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const client = new GraphClient(ctx);
   const out = await client.status("/me/onenote/pages/p1", { method: "DELETE" });
   assertEquals(out.status, 204);
 });
 
-Deno.test("GraphClient.page vs collect: collect walks nextLink, page does not", async () => {
+test("GraphClient.page vs collect: collect walks nextLink, page does not", async () => {
   const { ctx: ctxSingle } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": "https://graph.microsoft.com/v1.0/x?p=2" } },
   ]);
@@ -146,7 +147,7 @@ Deno.test("GraphClient.page vs collect: collect walks nextLink, page does not", 
   assertEquals(all.nextLink, undefined);
 });
 
-Deno.test("GraphClient.collect: stops at maxPages and returns the surviving nextLink", async () => {
+test("GraphClient.collect: stops at maxPages and returns the surviving nextLink", async () => {
   const { ctx } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": "https://graph.microsoft.com/v1.0/x?p=2" } },
     { body: { value: [{ id: "b" }], "@odata.nextLink": "https://graph.microsoft.com/v1.0/x?p=3" } },

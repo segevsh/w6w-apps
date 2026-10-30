@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesOrderCreate from "../../actions/sales-order-create.ts";
 import { BASE, created, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("sales-order-create: nests the lines under item.items with reference fields", async () => {
+test("sales-order-create: nests the lines under item.items with reference fields", async () => {
   const { ctx, calls } = mockCtx([created("salesOrder", "300")]);
   const out = await run(salesOrderCreate, {
     customer: "107",
@@ -21,7 +22,7 @@ Deno.test("sales-order-create: nests the lines under item.items with reference f
   assertEquals(out.id, "300");
 });
 
-Deno.test("sales-order-create: lines may be a typed JSON string; additionalFields merge in", async () => {
+test("sales-order-create: lines may be a typed JSON string; additionalFields merge in", async () => {
   const { ctx, calls } = mockCtx([created("salesOrder", "1")]);
   await run(salesOrderCreate, {
     customer: "5",
@@ -37,7 +38,7 @@ Deno.test("sales-order-create: lines may be a typed JSON string; additionalField
   });
 });
 
-Deno.test("sales-order-create: empty or non-array lines are refused before any request", async () => {
+test("sales-order-create: empty or non-array lines are refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await run(salesOrderCreate, { customer: "5", lines: [] }, ctx),

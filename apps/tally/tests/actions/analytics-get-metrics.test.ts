@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/analytics-get-metrics.ts";
 
-Deno.test("analytics-get-metrics: GETs the metrics for a period", async () => {
+test("analytics-get-metrics: GETs the metrics for a period", async () => {
   const metrics = {
     visits: 100,
     submissions: 40,
@@ -23,7 +24,7 @@ Deno.test("analytics-get-metrics: GETs the metrics for a period", async () => {
   assertEquals(result.metrics, metrics);
 });
 
-Deno.test("analytics-get-metrics: period is required and offers Tally's nine windows", () => {
+test("analytics-get-metrics: period is required and offers Tally's nine windows", () => {
   const period = action.params?.find((p) => p.key === "period");
   assertEquals(period?.required, true);
   assertEquals(

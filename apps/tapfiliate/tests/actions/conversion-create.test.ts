@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionCreate from "../../actions/conversion-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-create: posts snake_case fields and the override flag as a query param", async () => {
+test("conversion-create: posts snake_case fields and the override flag as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2, amount: 100 } }]);
   const out = await conversionCreate.execute(
     {

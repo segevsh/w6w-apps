@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete: DELETE /hooks/{hookId} with the documented query and body", async () => {
+test("webhook-delete: DELETE /hooks/{hookId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await webhookDelete.execute({ "hookId": 280382 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("webhook-delete: DELETE /hooks/{hookId} with the documented query and 
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("webhook-delete: an Everhour error surfaces its message and status", async () => {
+test("webhook-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(webhookDelete.execute({ "hookId": 280382 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("webhook-delete: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("webhook-delete: declares perform and idempotent=true", () => {
+test("webhook-delete: declares perform and idempotent=true", () => {
   assertEquals(webhookDelete.type, "perform");
   assertEquals(webhookDelete.idempotent, true);
 });

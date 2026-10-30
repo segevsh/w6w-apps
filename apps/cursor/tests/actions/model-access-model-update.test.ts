@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelAccessModelUpdate from "../../actions/model-access-model-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("model-access-model-update: PUTs enabled + parameters to the model path", async () => {
+test("model-access-model-update: PUTs enabled + parameters to the model path", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "claude-opus-4-6", enabled: true, provider: "anthropic", parameters: [] } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("model-access-model-update: PUTs enabled + parameters to the model pat
   );
 });
 
-Deno.test("model-access-model-update: omits parameters entirely when not given", async () => {
+test("model-access-model-update: omits parameters entirely when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "gpt-5.4", enabled: true } }]);
   await modelAccessModelUpdate.execute(
     { provider: "openai", model: "gpt-5.4", enabled: true },
@@ -32,7 +33,7 @@ Deno.test("model-access-model-update: omits parameters entirely when not given",
   assertEquals(JSON.parse(calls[0].body!), { enabled: true });
 });
 
-Deno.test("model-access-model-update: passes null through to clear a restriction", async () => {
+test("model-access-model-update: passes null through to clear a restriction", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "gpt-5.4", enabled: true } }]);
   await modelAccessModelUpdate.execute({
     provider: "openai",
@@ -46,7 +47,7 @@ Deno.test("model-access-model-update: passes null through to clear a restriction
   );
 });
 
-Deno.test("model-access-model-update: accepts parameters as a JSON string", async () => {
+test("model-access-model-update: accepts parameters as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "gpt-5.4", enabled: true } }]);
   await modelAccessModelUpdate.execute({
     provider: "openai",

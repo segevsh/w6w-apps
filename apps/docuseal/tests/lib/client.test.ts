@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { RedactedConnection } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import {
@@ -14,7 +15,7 @@ import {
   regionOf,
 } from "../../lib/client.ts";
 
-Deno.test("regionOf: normalises to the two real regions, defaulting to global", () => {
+test("regionOf: normalises to the two real regions, defaulting to global", () => {
   assertEquals(regionOf("eu"), "eu");
   assertEquals(regionOf("EU"), "eu");
   assertEquals(regionOf("global"), "global");
@@ -22,7 +23,7 @@ Deno.test("regionOf: normalises to the two real regions, defaulting to global", 
   assertEquals(regionOf("nonsense"), "global");
 });
 
-Deno.test("baseUrlFor: resolves to the two documented hosts", () => {
+test("baseUrlFor: resolves to the two documented hosts", () => {
   assertEquals(baseUrlFor("global"), `https://${HOSTS.global}`);
   assertEquals(baseUrlFor("eu"), `https://${HOSTS.eu}`);
   assertEquals(HOSTS.global, "api.docuseal.com");
@@ -32,20 +33,20 @@ Deno.test("baseUrlFor: resolves to the two documented hosts", () => {
 const withRegion = (region: string | undefined) =>
   ({ display: { region } }) as unknown as RedactedConnection;
 
-Deno.test("regionFromConnection / baseUrlFromConnection: read the region afterConnect recorded", () => {
+test("regionFromConnection / baseUrlFromConnection: read the region afterConnect recorded", () => {
   assertEquals(regionFromConnection(withRegion("eu")), "eu");
   assertEquals(regionFromConnection(undefined), "global");
   assertEquals(baseUrlFromConnection(withRegion("eu")), "https://api.docuseal.eu");
 });
 
-Deno.test("compact: drops undefined/null/empty string, keeps false and 0", () => {
+test("compact: drops undefined/null/empty string, keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("asJson: parses a JSON string, passes through a live value, rejects garbage", () => {
+test("asJson: parses a JSON string, passes through a live value, rejects garbage", () => {
   assertEquals(asJson('{"a":1}', "field"), { a: 1 });
   assertEquals(asJson([1, 2], "field"), [1, 2]);
   assertEquals(asJson({ a: 1 }, "field"), { a: 1 });
@@ -66,13 +67,13 @@ Deno.test("asJson: parses a JSON string, passes through a live value, rejects ga
   assert(threwRequired);
 });
 
-Deno.test("asJsonOptional: an unset value is simply omitted, not an error", () => {
+test("asJsonOptional: an unset value is simply omitted, not an error", () => {
   assertEquals(asJsonOptional(undefined, "field"), undefined);
   assertEquals(asJsonOptional("", "field"), undefined);
   assertEquals(asJsonOptional('{"a":1}', "field"), { a: 1 });
 });
 
-Deno.test("formatDocuSealError: reads the vendor's own error body, never just the status", () => {
+test("formatDocuSealError: reads the vendor's own error body, never just the status", () => {
   const msg = formatDocuSealError(
     401,
     "GET",
@@ -82,12 +83,12 @@ Deno.test("formatDocuSealError: reads the vendor's own error body, never just th
   assertEquals(msg, "DocuSeal 401 for GET /templates: Not authenticated");
 });
 
-Deno.test("formatDocuSealError: falls back to the raw body when it isn't the documented shape", () => {
+test("formatDocuSealError: falls back to the raw body when it isn't the documented shape", () => {
   const msg = formatDocuSealError(500, "GET", "/templates", "internal error");
   assertEquals(msg, "DocuSeal 500 for GET /templates: internal error");
 });
 
-Deno.test("DocuSealClient: resolves the base URL from the connection's region, and never signs itself", async () => {
+test("DocuSealClient: resolves the base URL from the connection's region, and never signs itself", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], {
     display: { region: "eu" },
   });
@@ -98,7 +99,7 @@ Deno.test("DocuSealClient: resolves the base URL from the connection's region, a
   assert(!("x-auth-token" in calls[0].headers), "the client must never set the auth header itself");
 });
 
-Deno.test("DocuSealClient.request: a non-ok response throws with the vendor's own error message", async () => {
+test("DocuSealClient.request: a non-ok response throws with the vendor's own error message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Not authenticated" } }]);
   await assertRejects(
     () => new DocuSealClient(ctx).request("/templates"),
@@ -107,7 +108,7 @@ Deno.test("DocuSealClient.request: a non-ok response throws with the vendor's ow
   );
 });
 
-Deno.test("DocuSealClient.requestAll: follows the `after` cursor until `pagination.next` is null", async () => {
+test("DocuSealClient.requestAll: follows the `after` cursor until `pagination.next` is null", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -121,7 +122,7 @@ Deno.test("DocuSealClient.requestAll: follows the `after` cursor until `paginati
   assertEquals(new URL(calls[1].url).searchParams.get("after"), "2");
 });
 
-Deno.test("DocuSealClient.requestAll: stops at wantTotal without an extra request", async () => {
+test("DocuSealClient.requestAll: stops at wantTotal without an extra request", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PATCH /webhook/{id} sends only the given fields", async () => {
+test("webhook-update: PATCH /webhook/{id} sends only the given fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ webhookId: 188, secret: "password1", messages: ["computer state"] }],
   }]);
@@ -17,7 +18,7 @@ Deno.test("webhook-update: PATCH /webhook/{id} sends only the given fields", asy
   assertEquals(JSON.stringify(out).includes("password1"), false);
 });
 
-Deno.test("webhook-update: an empty update is refused before any request", async () => {
+test("webhook-update: an empty update is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await webhookUpdate.execute({ webhookId: 1 }, ctx),
@@ -27,7 +28,7 @@ Deno.test("webhook-update: an empty update is refused before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("webhook-update: id must be a positive integer", async () => {
+test("webhook-update: id must be a positive integer", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await webhookUpdate.execute({ webhookId: 0, url: "u" }, ctx),

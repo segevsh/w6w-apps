@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-customer.ts";
 
-Deno.test("update-customer: builds one replace op per field actually set", async () => {
+test("update-customer: builds one replace op per field actually set", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ customerId: 100, firstName: "Karl" }, ctx);
   assertEquals(out, { success: true });
@@ -11,7 +12,7 @@ Deno.test("update-customer: builds one replace op per field actually set", async
   assertEquals(JSON.parse(calls[0].body!), [{ op: "replace", path: "/firstName", value: "Karl" }]);
 });
 
-Deno.test("update-customer: several fields become several ops in one call", async () => {
+test("update-customer: several fields become several ops in one call", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ customerId: 100, firstName: "Vernon", lastName: "Bear" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), [
@@ -20,7 +21,7 @@ Deno.test("update-customer: several fields become several ops in one call", asyn
   ]);
 });
 
-Deno.test("update-customer: refuses a call that changes nothing", async () => {
+test("update-customer: refuses a call that changes nothing", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute({ customerId: 100 }, ctx),

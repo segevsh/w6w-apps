@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audience-list.ts";
 
 /** /audiences answers { object, data } with no has_more, so there is no paging. */
-Deno.test("audience-list: returns the response as-is and makes exactly one call", async () => {
+test("audience-list: returns the response as-is and makes exactly one call", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { object: "list", data: [{ id: "a_1" }] } }],
     {

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
 const credential = { apiKey: "key-1" };
 
 /** `OAuth`, not `Bearer` — Statuspage's own convention. */
-Deno.test("api-key: signs with the OAuth scheme word", async () => {
+test("api-key: signs with the OAuth scheme word", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.statuspage.io/v1/pages",
@@ -16,7 +17,7 @@ Deno.test("api-key: signs with the OAuth scheme word", async () => {
   assertEquals(out.headers["authorization"], "OAuth key-1");
 });
 
-Deno.test("api-key: test lists the pages the key reaches", async () => {
+test("api-key: test lists the pages the key reaches", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "pg1", name: "Acme Status" }] }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, true);
@@ -24,7 +25,7 @@ Deno.test("api-key: test lists the pages the key reaches", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/v1/pages");
 });
 
-Deno.test("api-key: a bad key is named as such", async () => {
+test("api-key: a bad key is named as such", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Could not authenticate" } }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, false);
@@ -32,7 +33,7 @@ Deno.test("api-key: a bad key is named as such", async () => {
 });
 
 /** One request per second means the test itself can be rate limited. */
-Deno.test("api-key: a rate-limited test says so rather than blaming the key", async () => {
+test("api-key: a rate-limited test says so rather than blaming the key", async () => {
   for (const status of [420, 429]) {
     const { ctx } = mockCtx([{ status, body: "" }]);
     const out = await auth.test!({ credential }, ctx);
@@ -41,7 +42,7 @@ Deno.test("api-key: a rate-limited test says so rather than blaming the key", as
   }
 });
 
-Deno.test("api-key: afterConnect resolves the only page automatically", async () => {
+test("api-key: afterConnect resolves the only page automatically", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{ id: "pg1", name: "Acme Status", subdomain: "acme" }],
@@ -52,7 +53,7 @@ Deno.test("api-key: afterConnect resolves the only page automatically", async ()
   assertEquals(display.subdomain, "acme");
 });
 
-Deno.test("api-key: with several pages an explicit id wins", async () => {
+test("api-key: with several pages an explicit id wins", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{ id: "pg1", name: "Public" }, { id: "pg2", name: "Internal" }],
@@ -65,6 +66,6 @@ Deno.test("api-key: with several pages an explicit id wins", async () => {
   assertEquals(display.pageName, "Internal");
 });
 
-Deno.test("api-key: the key field is declared secret", () => {
+test("api-key: the key field is declared secret", () => {
   assertEquals(auth.fields!.find((f) => f.key === "apiKey")!.type, "secret");
 });

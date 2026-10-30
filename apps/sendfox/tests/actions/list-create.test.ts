@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCreate from "../../actions/list-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-create: POSTs the name to /lists", async () => {
+test("list-create: POSTs the name to /lists", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2, name: "Newsletter" } }]);
   const out = await listCreate.execute({ name: "Newsletter" }, ctx) as { id: number };
 
@@ -12,6 +13,6 @@ Deno.test("list-create: POSTs the name to /lists", async () => {
   assertEquals(out.id, 2);
 });
 
-Deno.test("list-create: is not marked idempotent — a retry makes a second list", () => {
+test("list-create: is not marked idempotent — a retry makes a second list", () => {
   assertEquals(listCreate.idempotent, false);
 });

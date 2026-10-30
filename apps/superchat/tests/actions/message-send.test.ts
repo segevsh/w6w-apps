@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("message-send: sends a text message", async () => {
+test("message-send: sends a text message", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "id": "m_1", "conversation_id": "cv_1", "status": "processed" },
   }]);
@@ -40,7 +41,7 @@ Deno.test("message-send: sends a text message", async () => {
   assertEquals(result, { "id": "m_1", "conversation_id": "cv_1", "status": "processed" });
 });
 
-Deno.test("message-send: sends a WhatsApp template with variables, a header file and a reply target", async () => {
+test("message-send: sends a WhatsApp template with variables, a header file and a reply target", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "m_2" } }]);
   const result = await action.execute!(
     {
@@ -89,7 +90,7 @@ Deno.test("message-send: sends a WhatsApp template with variables, a header file
   assertEquals(result, { "id": "m_2" });
 });
 
-Deno.test("message-send: sends an email with attachments, omitting unset fields", async () => {
+test("message-send: sends an email with attachments, omitting unset fields", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "m_3" } }]);
   const result = await action.execute!(
     {
@@ -135,7 +136,7 @@ Deno.test("message-send: sends an email with attachments, omitting unset fields"
   assertEquals(result, { "id": "m_3" });
 });
 
-Deno.test("message-send: sends media and generic-template content", async () => {
+test("message-send: sends media and generic-template content", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "m_4" } }]);
   const result = await action.execute!(
     { "channelId": "mc_1", "to": "ct_1", "contentType": "media", "fileId": "f_2" } as never,
@@ -169,7 +170,7 @@ Deno.test("message-send: sends media and generic-template content", async () => 
   assertEquals(result, { "id": "m_4" });
 });
 
-Deno.test("message-send: passes custom content through untouched", async () => {
+test("message-send: passes custom content through untouched", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "m_5" } }]);
   const result = await action.execute!(
     {
@@ -212,7 +213,7 @@ Deno.test("message-send: passes custom content through untouched", async () => {
   assertEquals(result, { "id": "m_5" });
 });
 
-Deno.test("message-send: refuses custom without content, and unknown types", async () => {
+test("message-send: refuses custom without content, and unknown types", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>
@@ -226,7 +227,7 @@ Deno.test("message-send: refuses custom without content, and unknown types", asy
   assertEquals(calls.length, 0, "must fail before any request");
 });
 
-Deno.test("message-send: unknown content type throws", async () => {
+test("message-send: unknown content type throws", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>

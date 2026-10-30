@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-message.ts";
 
-Deno.test("create-message: calls POST /v1/messages on api.x.ai and returns the body", async () => {
+test("create-message: calls POST /v1/messages on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({ model: "grok-x", maxTokens: 64, prompt: "hi" }, ctx);
@@ -17,7 +18,7 @@ Deno.test("create-message: calls POST /v1/messages on api.x.ai and returns the b
   assertEquals(result, reply);
 });
 
-Deno.test("create-message: surfaces the vendor error code on failure", async () => {
+test("create-message: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {

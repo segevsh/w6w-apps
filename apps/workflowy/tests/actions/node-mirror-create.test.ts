@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import nodeMirrorCreate from "../../actions/node-mirror-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("node-mirror-create: maps item_id/origin_id", async () => {
+test("node-mirror-create: maps item_id/origin_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { item_id: "m1", origin_id: "o1" } }]);
   const out = await nodeMirrorCreate.execute({ id: "o1", parent_id: "p1" }, ctx);
   assertEquals(out, { id: "m1", origin_id: "o1" });

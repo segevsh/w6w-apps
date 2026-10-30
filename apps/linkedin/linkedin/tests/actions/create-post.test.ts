@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-post.ts";
 
-Deno.test("create-post: text post as a person, POSTs /rest/posts with the expected body", async () => {
+test("create-post: text post as a person, POSTs /rest/posts with the expected body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, headers: { "x-restli-id": "urn:li:share:111" } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("create-post: text post as a person, POSTs /rest/posts with the expect
   assertEquals((out as { id: string }).id, "urn:li:share:111");
 });
 
-Deno.test("create-post: escapes little-text reserved characters in commentary", async () => {
+test("create-post: escapes little-text reserved characters in commentary", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "x-restli-id": "urn:li:share:1" } }]);
   await action.execute!(
     { authorType: "person", authorId: "abc123", commentary: "50% off! #sale" },
@@ -33,7 +34,7 @@ Deno.test("create-post: escapes little-text reserved characters in commentary", 
   assertEquals(body.commentary, "50% off! \\#sale");
 });
 
-Deno.test("create-post: organization author builds an organization URN", async () => {
+test("create-post: organization author builds an organization URN", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "x-restli-id": "urn:li:share:2" } }]);
   await action.execute!(
     { authorType: "organization", authorId: "5515715", commentary: "Org post" },
@@ -43,7 +44,7 @@ Deno.test("create-post: organization author builds an organization URN", async (
   assertEquals(body.author, "urn:li:organization:5515715");
 });
 
-Deno.test("create-post: article content type sends content.article", async () => {
+test("create-post: article content type sends content.article", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "x-restli-id": "urn:li:share:3" } }]);
   await action.execute!(
     {
@@ -61,7 +62,7 @@ Deno.test("create-post: article content type sends content.article", async () =>
   assertEquals(body.content.article.title, "Example");
 });
 
-Deno.test("create-post: article content type without articleUrl throws", async () => {
+test("create-post: article content type without articleUrl throws", async () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {

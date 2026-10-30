@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   name: string;
   w6w: {
@@ -16,7 +18,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 26 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 26 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 26);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -35,14 +37,14 @@ Deno.test("index: exports 26 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Creating a record twice makes two records; repeating a PUT does not. */
-Deno.test("index: only the creates are marked non-idempotent", () => {
+test("index: only the creates are marked non-idempotent", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, [
     "create-client-record",
@@ -53,7 +55,7 @@ Deno.test("index: only the creates are marked non-idempotent", () => {
   ]);
 });
 
-Deno.test("index: every list action declares the shared four pagination controls and envelope", () => {
+test("index: every list action declares the shared four pagination controls and envelope", () => {
   const lists = app.actions.filter((a) => a.type === "search");
   assertEquals(lists.length, 9);
   for (const a of lists) {
@@ -69,7 +71,7 @@ Deno.test("index: every list action declares the shared four pagination controls
   }
 });
 
-Deno.test("index: the two bare-array reads declare the bare-array output key", () => {
+test("index: the two bare-array reads declare the bare-array output key", () => {
   for (const key of ["list-timezones", "list-webhook-event-types"]) {
     const action = app.actions.find((a) => a.key === key)!;
     assertEquals(action.type, "read", key);
@@ -78,29 +80,29 @@ Deno.test("index: the two bare-array reads declare the bare-array output key", (
   }
 });
 
-Deno.test("index: exports the one auth method and both health checks", () => {
+test("index: exports the one auth method and both health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["client-credentials"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "quota"]);
   assertEquals(app.healthChecks!.map((h) => h.kind), ["service", "quota"]);
 });
 
-Deno.test("index: the service check is pinned to the `Practice Better API` component", async () => {
+test("index: the service check is pinned to the `Practice Better API` component", async () => {
   const service = app.healthChecks!.find((h) => h.kind === "service")!;
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.practicebetter.io"]);
-  const src = await Deno.readTextFile(new URL("../health/service.ts", import.meta.url));
+  const src = await denoReadTextFile(new URL("../health/service.ts", import.meta.url));
   assert(/API_COMPONENT_ID = "hg7zsrq27t7g"/.test(src), "component id is not pinned");
   assert(/Practice Better API/.test(src), "component name is not pinned");
 });
 
-Deno.test("index: the quota check is a declared absence at informational severity", () => {
+test("index: the quota check is a declared absence at informational severity", () => {
   const quota = app.healthChecks!.find((h) => h.kind === "quota")!;
   assertEquals(quota.severity, "informational");
   assertEquals(quota.unavailable !== undefined, true);
   assertEquals(quota.check, undefined);
 });
 
-Deno.test("index: the manifest names only the two hosts the app calls", () => {
+test("index: the manifest names only the two hosts the app calls", () => {
   assertEquals(manifest.w6w.network.allow, ["api.practicebetter.io", "status.practicebetter.io"]);
   assert(
     !manifest.w6w.network.allow.some((h) => h.includes("api-docs")),
@@ -113,12 +115,12 @@ Deno.test("index: the manifest names only the two hosts the app calls", () => {
 });
 
 /** The real vendor mark, in ImageObject's vector slot. */
-Deno.test("index: the icon is the prepared vendor mark under `svg`", async () => {
+test("index: the icon is the prepared vendor mark under `svg`", async () => {
   const icon = manifest.w6w.appearance.icon;
   assertEquals(icon.svg, "./assets/icon.svg");
   assertEquals(icon.url, undefined);
   assertEquals(icon.alt, "Practice Better");
-  const stat = await Deno.stat(new URL("../assets/icon.svg", import.meta.url));
+  const stat = await denoStat(new URL("../assets/icon.svg", import.meta.url));
   assert(stat.isFile, "assets/icon.svg is missing");
 });
 
@@ -133,15 +135,15 @@ const code = (src: string) =>
 
 const actionFiles = async (): Promise<Array<[string, string]>> => {
   const out: Array<[string, string]> = [];
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     out.push([entry.name, src]);
   }
   return out;
 };
 
-Deno.test("index: no action reaches the network except through ctx.fetch", async () => {
+test("index: no action reaches the network except through ctx.fetch", async () => {
   for (const [name, src] of await actionFiles()) {
     const stripped = code(src);
     assert(
@@ -154,7 +156,7 @@ Deno.test("index: no action reaches the network except through ctx.fetch", async
 });
 
 /** Actions go through the client, so no action may name a host. */
-Deno.test("index: no action hardcodes a host", async () => {
+test("index: no action hardcodes a host", async () => {
   for (const [name, src] of await actionFiles()) {
     assert(!/https?:\/\//.test(code(src)), `${name} contains a URL`);
   }
@@ -164,7 +166,7 @@ Deno.test("index: no action hardcodes a host", async () => {
  * The credential lives in exactly one hook. An action that grew an
  * `Authorization` header would take it out of the one place allowed to hold it.
  */
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
   for (const [name, src] of await actionFiles()) {
     const stripped = code(src);
     assert(!/authorization/i.test(stripped), `${name} sets an authorization header`);
@@ -172,21 +174,21 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
   }
 });
 
-Deno.test("index: no action reaches the documentation host", async () => {
+test("index: no action reaches the documentation host", async () => {
   for (const [name, src] of await actionFiles()) {
     assert(!/api-docs\.practicebetter\.io/.test(src), `${name} names the documentation host`);
   }
 });
 
-Deno.test("index: every declared action has its own test file", async () => {
+test("index: every declared action has its own test file", async () => {
   for (const a of app.actions) {
     const url = new URL(`./actions/${a.key}.test.ts`, import.meta.url);
-    const stat = await Deno.stat(url).catch(() => null);
+    const stat = await denoStat(url).catch(() => null);
     assert(stat?.isFile, `tests/actions/${a.key}.test.ts is missing`);
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

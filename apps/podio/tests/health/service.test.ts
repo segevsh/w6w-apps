@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -33,7 +34,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: is declared unsigned and widens egress only to the status host", () => {
+test("service: is declared unsigned and widens egress only to the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
@@ -41,11 +42,11 @@ Deno.test("service: is declared unsigned and widens egress only to the status ho
   assertEquals(STATUS_URL, "https://status.podio.com/api/v2/summary.json");
 });
 
-Deno.test("service: reads summary.json, which carries components status.json does not", () => {
+test("service: reads summary.json, which carries components status.json does not", () => {
   assert(STATUS_URL.endsWith("/summary.json"));
 });
 
-Deno.test("service: all-operational reports ok with every component named", async () => {
+test("service: all-operational reports ok with every component named", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -61,7 +62,7 @@ Deno.test("service: all-operational reports ok with every component named", asyn
  * from the component list would let the failover queue — an internal detail of
  * a feature this app never touches — report Podio as down.
  */
-Deno.test("service: the page indicator is the verdict, components are the detail", async () => {
+test("service: the page indicator is the verdict, components are the detail", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "none", description: "All Systems Operational" },
@@ -77,7 +78,7 @@ Deno.test("service: the page indicator is the verdict, components are the detail
   assert(report.message!.includes("AWA Failover Queue (major_outage)"));
 });
 
-Deno.test("service: with no indicator at all it falls back to the worst component", async () => {
+test("service: with no indicator at all it falls back to the worst component", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: undefined,
@@ -90,7 +91,7 @@ Deno.test("service: with no indicator at all it falls back to the worst componen
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failing = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await service.check!({}, failing.ctx), {
     state: "unknown",
@@ -108,7 +109,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
  * The failure mode this guards is a healthy, claimed status page that belongs
  * to a different product after a rebrand or a redirect.
  */
-Deno.test("service: a page that stops self-identifying as Podio's reports unknown", async () => {
+test("service: a page that stops self-identifying as Podio's reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Somebody Else", url: "https://status.example.com" } }),
   }]);
@@ -117,7 +118,7 @@ Deno.test("service: a page that stops self-identifying as Podio's reports unknow
   assert(report.message!.includes("no longer self-identifies"));
 });
 
-Deno.test("service: group container rows are excluded so nothing is double-counted", async () => {
+test("service: group container rows are excluded so nothing is double-counted", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -130,7 +131,7 @@ Deno.test("service: group container rows are excluded so nothing is double-count
   assertEquals(Object.keys(report.components ?? {}), ["kid"]);
 });
 
-Deno.test("service: open incidents and maintenance windows are counted into the message", async () => {
+test("service: open incidents and maintenance windows are counted into the message", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "minor", description: "Partially Degraded Service" },
@@ -144,7 +145,7 @@ Deno.test("service: open incidents and maintenance windows are counted into the 
   assert(report.message!.includes("2 scheduled maintenance window(s)"));
 });
 
-Deno.test("mapComponentStatus: Statuspage's documented vocabulary, with unknown for the rest", () => {
+test("mapComponentStatus: Statuspage's documented vocabulary, with unknown for the rest", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -154,7 +155,7 @@ Deno.test("mapComponentStatus: Statuspage's documented vocabulary, with unknown 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: none/minor/major/critical/maintenance, with unknown for the rest", () => {
+test("mapIndicator: none/minor/major/critical/maintenance, with unknown for the rest", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -163,7 +164,7 @@ Deno.test("mapIndicator: none/minor/major/critical/maintenance, with unknown for
   assertEquals(mapIndicator("what"), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, slugs the name, then falls back to the index", () => {
+test("componentKey: prefers the vendor id, slugs the name, then falls back to the index", () => {
   assertEquals(componentKey({ id: "abc", name: "API" }, 0), "abc");
   assertEquals(
     componentKey({ name: "Advanced Workflow Automation" }, 3),

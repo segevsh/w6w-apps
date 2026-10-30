@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-create.ts";
 
-Deno.test("document-create: POSTs /documents with snake_case body and drops unset fields", async () => {
+test("document-create: POSTs /documents with snake_case body and drops unset fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "9", key: "k", fields: [] } }]);
   const out = await action.execute(
     {
@@ -33,11 +34,11 @@ Deno.test("document-create: POSTs /documents with snake_case body and drops unse
   assert(out !== null);
 });
 
-Deno.test("document-create: idempotent flag is false", () => {
+test("document-create: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-create: declares key, type and a description", () => {
+test("document-create: declares key, type and a description", () => {
   assertEquals(action.key, "document-create");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

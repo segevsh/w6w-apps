@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-enrollments-list.ts";
 
 const conn = { display: { schoolDomain: "https://yourschool.learnworlds.com" } };
 
-Deno.test("user-enrollments-list: GETs /v2/users/{id}/courses", async () => {
+test("user-enrollments-list: GETs /v2/users/{id}/courses", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: {} } }], conn);
   await action.execute!({ id: "1", page: 2 }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-list.ts";
 
-Deno.test("request-list: GET /requests with page_context carried as a data= query param", async () => {
+test("request-list: GET /requests with page_context carried as a data= query param", async () => {
   const { ctx, calls } = mockSignCtx([
     {
       body: {

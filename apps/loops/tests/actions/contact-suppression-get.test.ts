@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-suppression-get.ts";
 
 /** Suppression outranks subscription — it is why a "subscribed" contact gets nothing. */
-Deno.test("contact-suppression-get: queries by email", async () => {
+test("contact-suppression-get: queries by email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { suppressed: true, reason: "bounce" } }]);
   const result = await action.execute!({ email: "ada@example.com" }, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("contact-suppression-get: queries by email", async () => {
   assertEquals(result.suppressed, true);
 });
 
-Deno.test("contact-suppression-get: an email is required, before any request", async () => {
+test("contact-suppression-get: an email is required, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`email` is required");
   assertEquals(calls.length, 0);

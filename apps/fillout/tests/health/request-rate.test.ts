@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import requestRate, {
   DOCUMENTED_LIMIT,
   intHeader,
@@ -20,7 +21,7 @@ const LIVE_HEADERS = {
 
 const NOW = Date.parse("2026-08-11T07:17:04.000Z");
 
-Deno.test("request-rate: reads the un-prefixed IETF header names Fillout actually sends", () => {
+test("request-rate: reads the un-prefixed IETF header names Fillout actually sends", () => {
   const rate = readRateHeaders(new Headers(LIVE_HEADERS));
   assertEquals(rate, {
     limit: 5,
@@ -35,7 +36,7 @@ Deno.test("request-rate: reads the un-prefixed IETF header names Fillout actuall
   assertEquals(intHeader(new Headers(LIVE_HEADERS), "x-ratelimit-limit"), undefined);
 });
 
-Deno.test("request-rate: a normal reading is ok and publishes the 5/second ceiling", () => {
+test("request-rate: a normal reading is ok and publishes the 5/second ceiling", () => {
   const report = reportFromHeaders(readRateHeaders(new Headers(LIVE_HEADERS)), 200, NOW);
   assertEquals(report.state, "ok");
   assertEquals(report.quota, [{
@@ -52,7 +53,7 @@ Deno.test("request-rate: a normal reading is ok and publishes the 5/second ceili
  * The burst measured on 2026-08-11 walked `ratelimit-remaining` 4→3→2→1→0 and
  * then answered 429. Only the last two readings are actionable.
  */
-Deno.test("request-rate: only an exhausted window degrades", () => {
+test("request-rate: only an exhausted window degrades", () => {
   for (const remaining of [4, 3, 2, 1]) {
     const headers = new Headers({ ...LIVE_HEADERS, "ratelimit-remaining": String(remaining) });
     assertEquals(reportFromHeaders(readRateHeaders(headers), 200, NOW).state, "ok", `${remaining}`);
@@ -63,7 +64,7 @@ Deno.test("request-rate: only an exhausted window degrades", () => {
   assert(/throttling this API key/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("request-rate: a 429 degrades and prefers retry-after for the reset", () => {
+test("request-rate: a 429 degrades and prefers retry-after for the reset", () => {
   const headers = new Headers({
     ...LIVE_HEADERS,
     "ratelimit-remaining": "0",
@@ -79,14 +80,14 @@ Deno.test("request-rate: a 429 degrades and prefers retry-after for the reset", 
  * having zero headroom. The documented ceiling is restated so the report still
  * carries the fact that matters.
  */
-Deno.test("request-rate: missing headers are unknown, not exhausted", () => {
+test("request-rate: missing headers are unknown, not exhausted", () => {
   const report = reportFromHeaders(readRateHeaders(new Headers()), 200, NOW);
   assertEquals(report.state, "unknown");
   assertEquals(report.quota, undefined);
   assert(report.message?.includes(`${DOCUMENTED_LIMIT} requests/second`), report.message);
 });
 
-Deno.test("request-rate: an unparseable header is treated as absent", () => {
+test("request-rate: an unparseable header is treated as absent", () => {
   assertEquals(intHeader(new Headers({ "ratelimit-limit": "many" }), "ratelimit-limit"), undefined);
   const report = reportFromHeaders(
     readRateHeaders(new Headers({ "ratelimit-remaining": "3" })),
@@ -99,7 +100,7 @@ Deno.test("request-rate: an unparseable header is treated as absent", () => {
 
 // --- the live probe ---------------------------------------------------------
 
-Deno.test("request-rate: probes /forms on the connection's own host, signed", async () => {
+test("request-rate: probes /forms on the connection's own host, signed", async () => {
   const us = mockCtx([{ headers: LIVE_HEADERS, body: [] }]);
   assertEquals((await requestRate.check!({}, us.ctx)).state, "ok");
   assertEquals(us.calls[0].url, `${US_ROOT}/forms`);
@@ -119,7 +120,7 @@ Deno.test("request-rate: probes /forms on the connection's own host, signed", as
  * number about the wrong thing — and whether the key is any good is the derived
  * `auth:api-key` check's job.
  */
-Deno.test("request-rate: a credential failure is unknown, not a headroom reading", async () => {
+test("request-rate: a credential failure is unknown, not a headroom reading", async () => {
   const mock = mockCtx([{
     status: 400,
     headers: LIVE_HEADERS,
@@ -131,7 +132,7 @@ Deno.test("request-rate: a credential failure is unknown, not a headroom reading
   assert(/auth:api-key/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("request-rate: a 429 still yields a reading rather than being discarded", async () => {
+test("request-rate: a 429 still yields a reading rather than being discarded", async () => {
   const mock = mockCtx([{
     status: 429,
     headers: { ...LIVE_HEADERS, "ratelimit-remaining": "0", "retry-after": "1" },
@@ -142,7 +143,7 @@ Deno.test("request-rate: a 429 still yields a reading rather than being discarde
   assertEquals(report.quota?.[0].remaining, 0);
 });
 
-Deno.test("request-rate: an unrelated failure is unknown and names the status", async () => {
+test("request-rate: an unrelated failure is unknown and names the status", async () => {
   const mock = mockCtx([{
     status: 503,
     body: errorBody(503, "Service Unavailable", "upstream unavailable"),
@@ -160,7 +161,7 @@ Deno.test("request-rate: an unrelated failure is unknown and names the status", 
  * them would let a healthy rate reading imply monthly headroom Fillout never
  * reported.
  */
-Deno.test("plan: the monthly allowance is a declared absence, informational, with no hook", () => {
+test("plan: the monthly allowance is a declared absence, informational, with no hook", () => {
   assertEquals(plan.kind, "quota");
   assertEquals(plan.severity, "informational");
   assertEquals(plan.check, undefined);

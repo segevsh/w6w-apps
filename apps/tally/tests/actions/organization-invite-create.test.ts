@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-invite-create.ts";
 
-Deno.test("organization-invite-create: POSTs emails as a string and workspaceIds as an array", async () => {
+test("organization-invite-create: POSTs emails as a string and workspaceIds as an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({
     organizationId: "org1",
@@ -20,6 +21,6 @@ Deno.test("organization-invite-create: POSTs emails as a string and workspaceIds
   assertEquals(result, { emails: "a@b.com,c@d.com", invited: true });
 });
 
-Deno.test("organization-invite-create: is not idempotent", () => {
+test("organization-invite-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

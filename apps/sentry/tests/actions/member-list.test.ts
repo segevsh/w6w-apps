@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-list.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("member-list: lists the org's members", async () => {
+test("member-list: lists the org's members", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "1", email: "a@b.com" }] }], {
     display,
   });
@@ -13,7 +14,7 @@ Deno.test("member-list: lists the org's members", async () => {
   assertEquals(result, [{ id: "1", email: "a@b.com" }]);
 });
 
-Deno.test("member-list: returnAll collects every page", async () => {
+test("member-list: returnAll collects every page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

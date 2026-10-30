@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { buildCompanyBody } from "../../lib/company.ts";
 
-Deno.test("buildCompanyBody: drops unset fields", () => {
+test("buildCompanyBody: drops unset fields", () => {
   assertEquals(buildCompanyBody({ name: "Acme" }), { name: "Acme" });
 });
 
-Deno.test("buildCompanyBody: passes arrays through untouched", () => {
+test("buildCompanyBody: passes arrays through untouched", () => {
   const body = buildCompanyBody({ name: "Acme", urls: ["https://acme.example"] });
   assertEquals(body, { name: "Acme", urls: ["https://acme.example"] });
 });

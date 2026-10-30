@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 import action from "../../actions/recording-list.ts";
 
-Deno.test("recording-list: POSTs /v2/recordings assembling filter and include objects", async () => {
+test("recording-list: POSTs /v2/recordings assembling filter and include objects", async () => {
   const { ctx, calls } = mockCtx([{ body: { cursor: "next-cur", recordings: [{ id: "r1" }] } }]);
   const result = await action.execute({
     cursor: "cur1",
@@ -35,14 +36,14 @@ Deno.test("recording-list: POSTs /v2/recordings assembling filter and include ob
   assertEquals(result, { cursor: "next-cur", recordings: [{ id: "r1" }] });
 });
 
-Deno.test("recording-list: sends no filter/include/cursor at all when nothing is set", async () => {
+test("recording-list: sends no filter/include/cursor at all when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { cursor: null, recordings: [] } }]);
   await action.execute({}, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body, {});
 });
 
-Deno.test("recording-list: assembles ai_template_sections only when its include flag is on", async () => {
+test("recording-list: assembles ai_template_sections only when its include flag is on", async () => {
   const { ctx, calls } = mockCtx([{ body: { cursor: null, recordings: [] } }]);
   await action.execute({
     includeAiTemplateSections: true,
@@ -55,13 +56,13 @@ Deno.test("recording-list: assembles ai_template_sections only when its include 
   });
 });
 
-Deno.test("recording-list: defaults cursor to null and recordings to [] on a bodyless page", async () => {
+test("recording-list: defaults cursor to null and recordings to [] on a bodyless page", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({}, ctx);
   assertEquals(result, { cursor: null, recordings: [] });
 });
 
-Deno.test("recording-list: is a search action", () => {
+test("recording-list: is a search action", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "recording");
   assertEquals(outputKeys(action), ["cursor", "recordings"]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asAddress,
   asOptionalAddress,
@@ -16,7 +17,7 @@ import { idempotencyKeyFor, mailBody } from "../../lib/mail.ts";
 import { pageQuery, sortBy, toArray } from "../../lib/params.ts";
 import { bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("compact: drops unset values but keeps false and 0", () => {
+test("compact: drops unset values but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -24,7 +25,7 @@ Deno.test("compact: drops unset values but keeps false and 0", () => {
   });
 });
 
-Deno.test("buildQuery: bracket form for objects and arrays", () => {
+test("buildQuery: bracket form for objects and arrays", () => {
   const q = buildQuery({
     limit: 5,
     include: ["total_count"],
@@ -42,14 +43,14 @@ Deno.test("buildQuery: bracket form for objects and arrays", () => {
   assertEquals(q.has("skip"), false);
 });
 
-Deno.test("cursorFromUrl: extracts after/before and tolerates junk", () => {
+test("cursorFromUrl: extracts after/before and tolerates junk", () => {
   assertEquals(cursorFromUrl("https://api.lob.com/v1/x?limit=2&after=ABC", "after"), "ABC");
   assertEquals(cursorFromUrl("https://api.lob.com/v1/x?before=Z", "before"), "Z");
   assertEquals(cursorFromUrl(null, "after"), null);
   assertEquals(cursorFromUrl("not a url", "after"), null);
 });
 
-Deno.test("asAddress: ids pass through, JSON strings parse, objects pass, empty throws", () => {
+test("asAddress: ids pass through, JSON strings parse, objects pass, empty throws", () => {
   assertEquals(asAddress(" adr_1 ", "To"), "adr_1");
   assertEquals(asAddress('{"name":"A"}', "To"), { name: "A" });
   assertEquals(asAddress({ name: "A" }, "To"), { name: "A" });
@@ -58,18 +59,18 @@ Deno.test("asAddress: ids pass through, JSON strings parse, objects pass, empty 
   assertEquals(asOptionalAddress(undefined, "From"), undefined);
 });
 
-Deno.test("asOptionalJson: parses strings and passes values through", () => {
+test("asOptionalJson: parses strings and passes values through", () => {
   assertEquals(asOptionalJson("[1]", "x"), [1]);
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson("", "x"), undefined);
 });
 
-Deno.test("encodeId / truncate", () => {
+test("encodeId / truncate", () => {
   assertEquals(encodeId(" adr_1/../x "), "adr_1%2F..%2Fx");
   assertEquals(truncate("a".repeat(700)).length < 700, true);
 });
 
-Deno.test("formatLobError: keeps the machine code, adds rate-limit guidance, handles non-JSON", () => {
+test("formatLobError: keeps the machine code, adds rate-limit guidance, handles non-JSON", () => {
   const msg = formatLobError(
     401,
     "GET",
@@ -89,7 +90,7 @@ Deno.test("formatLobError: keeps the machine code, adds rate-limit guidance, han
   assert(formatLobError(502, "GET", "/v1/x", "<html>").includes("502"));
 });
 
-Deno.test("stripBankSecrets: removes account_number only, tolerates non-objects", () => {
+test("stripBankSecrets: removes account_number only, tolerates non-objects", () => {
   assertEquals(
     stripBankSecrets<Record<string, unknown>>({
       id: "b",
@@ -105,7 +106,7 @@ Deno.test("stripBankSecrets: removes account_number only, tolerates non-objects"
   assertEquals(stripBankSecrets([1]), [1]);
 });
 
-Deno.test("LobClient.json: appends the path to /v1, sends JSON, and omits the key from the URL", async () => {
+test("LobClient.json: appends the path to /v1, sends JSON, and omits the key from the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x" } }]);
   await new LobClient(ctx).json("/addresses", {
     method: "POST",
@@ -119,14 +120,14 @@ Deno.test("LobClient.json: appends the path to /v1, sends JSON, and omits the ke
   assertEquals("authorization" in calls[0].headers, false, "credentials belong to sign only");
 });
 
-Deno.test("LobClient.json: an empty 200 body yields undefined; a failure throws with the code", async () => {
+test("LobClient.json: an empty 200 body yields undefined; a failure throws with the code", async () => {
   const empty = mockCtx([{ body: undefined }]);
   assertEquals(await new LobClient(empty.ctx).json("/x"), undefined);
   const failed = mockCtx([{ status: 404, body: errorBody("not_found", "gone", 404) }]);
   await assertRejects(() => new LobClient(failed.ctx).json("/x"), Error, "not_found");
 });
 
-Deno.test("LobClient.list: flattens the page and only adds include[] when asked", async () => {
+test("LobClient.list: flattens the page and only adds include[] when asked", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: 1 }, { id: 2 }],
@@ -150,7 +151,7 @@ Deno.test("LobClient.list: flattens the page and only adds include[] when asked"
   assert(!calls[1].url.includes("include"));
 });
 
-Deno.test("pageQuery / sortBy / toArray", () => {
+test("pageQuery / sortBy / toArray", () => {
   assertEquals(pageQuery({ limit: 3, after: "a" }), { limit: 3, after: "a" });
   assertThrows(() => pageQuery({ after: "a", before: "b" }), Error, "only one");
   assertEquals(sortBy("send_date:asc"), { send_date: "asc" });
@@ -159,7 +160,7 @@ Deno.test("pageQuery / sortBy / toArray", () => {
   assertEquals(toArray([]), undefined);
 });
 
-Deno.test("mailBody / idempotencyKeyFor: use type is mandatory; the key falls back to the invocation id", () => {
+test("mailBody / idempotencyKeyFor: use type is mandatory; the key falls back to the invocation id", () => {
   assertThrows(() => mailBody({ to: "adr_1" }), Error, "Use type is required");
   assertEquals(mailBody({ to: "adr_1", useType: "marketing", sendDate: "2026-12-01" }), {
     to: "adr_1",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reactionSend from "../../actions/reaction-send.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reaction-send: POSTs the raw reaction value verbatim, including a - removal prefix", async () => {
+test("reaction-send: POSTs the raw reaction value verbatim, including a - removal prefix", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", reaction: "-🔥" } }]);
   await reactionSend.execute({
     fromNumber: "+1",

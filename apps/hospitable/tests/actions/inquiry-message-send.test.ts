@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inquiryMessageSend from "../../actions/inquiry-message-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inquiry-message-send: POST .../messages with body and sender", async () => {
+test("inquiry-message-send: POST .../messages with body and sender", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { sent_reference_id: "r2" } } }]);
   await inquiryMessageSend.execute({ uuid: "c1", body: "Hello", sender_id: "t1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("inquiry-message-send: POST .../messages with body and sender", async 
   assertEquals(inquiryMessageSend.idempotent, false);
 });
 
-Deno.test("messaging: a rate-limit refusal is reported with its status", async () => {
+test("messaging: a rate-limit refusal is reported with its status", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { message: "Too Many Attempts." } }]);
   let message = "";
   try {

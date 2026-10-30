@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/convert-currency.ts";
 
-Deno.test("convert-currency: GETs /exchange_rate with to_currency required", async () => {
+test("convert-currency: GETs /exchange_rate with to_currency required", async () => {
   const body = {
     from_currency: "USD",
     from_value: 1,
@@ -21,7 +22,7 @@ Deno.test("convert-currency: GETs /exchange_rate with to_currency required", asy
   assertEquals(result, body);
 });
 
-Deno.test("convert-currency: forwards fromCurrency/fromValue when provided", async () => {
+test("convert-currency: forwards fromCurrency/fromValue when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { to_value: 1 } }]);
   await action.execute!({ toCurrency: "GBP", fromCurrency: "EUR", fromValue: 235 }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares an apiKey method sending a Bearer Authorization header", () => {
+test("api-key: declares an apiKey method sending a Bearer Authorization header", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -10,14 +11,14 @@ Deno.test("api-key: declares an apiKey method sending a Bearer Authorization hea
   assertEquals(auth.apiKey?.prefix, "Bearer ");
 });
 
-Deno.test("api-key: the token field is a required secret", () => {
+test("api-key: the token field is a required secret", () => {
   const field = auth.fields?.find((f) => f.key === "apiKey");
   assert(field, "must declare an `apiKey` field");
   assertEquals(field.type, "secret");
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign injects `Authorization: Bearer <token>`", async () => {
+test("api-key: sign injects `Authorization: Bearer <token>`", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://connect.mailerlite.com/api/subscribers",
@@ -28,7 +29,7 @@ Deno.test("api-key: sign injects `Authorization: Bearer <token>`", async () => {
   assertEquals(out.headers["authorization"], "Bearer ml-token-abc");
 });
 
-Deno.test("api-key: sign does NOT use the Classic API's X-MailerLite-ApiKey header", async () => {
+test("api-key: sign does NOT use the Classic API's X-MailerLite-ApiKey header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://connect.mailerlite.com/api/subscribers",
@@ -40,7 +41,7 @@ Deno.test("api-key: sign does NOT use the Classic API's X-MailerLite-ApiKey head
   assertEquals(out.headers["X-MailerLite-ApiKey"], undefined);
 });
 
-Deno.test("api-key: test with a missing token reports the failure without a network call", async () => {
+test("api-key: test with a missing token reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -48,7 +49,7 @@ Deno.test("api-key: test with a missing token reports the failure without a netw
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes the subscriber count endpoint with the bearer token", async () => {
+test("api-key: test probes the subscriber count endpoint with the bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { total: 100 } }]);
   const result = await auth.test({ credential: { apiKey: "ml-token-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -60,13 +61,13 @@ Deno.test("api-key: test probes the subscriber count endpoint with the bearer to
   assertEquals(calls[0].headers["authorization"], "Bearer ml-token-abc");
 });
 
-Deno.test("api-key: test surfaces the upstream status on a 401", async () => {
+test("api-key: test surfaces the upstream status on a 401", async () => {
   const { ctx } = mockCtx([{ status: 401, body: '{"message":"Unauthenticated."}' }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: declares no afterConnect — MailerLite publishes no account endpoint", () => {
+test("api-key: declares no afterConnect — MailerLite publishes no account endpoint", () => {
   assertEquals(auth.afterConnect, undefined);
 });

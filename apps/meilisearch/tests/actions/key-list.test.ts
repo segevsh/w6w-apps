@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-list.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com" } };
 
 /** How a 403 on a working key is diagnosed: the key is scoped. */
-Deno.test("key-list: reads the keys and their scopes", async () => {
+test("key-list: reads the keys and their scopes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { results: [{ name: "search", actions: ["search"], indexes: ["movies"] }] },

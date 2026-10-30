@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/translate-text.ts";
 import { bodyOf, exec, failure, mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const reply = {
   metadata: { credits_used: 1, target_language: "es_ES" },
 };
 
-Deno.test("translate-text: POSTs one entry per non-empty line", async () => {
+test("translate-text: POSTs one entry per non-empty line", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await exec(action, { targetLanguage: " es_ES ", texts: "Hello\n\nWorld" }, ctx);
   assertEquals(calls[0].url, "https://api.murf.ai/v1/text/translate");
@@ -15,7 +16,7 @@ Deno.test("translate-text: POSTs one entry per non-empty line", async () => {
   assertEquals(out, reply);
 });
 
-Deno.test("translate-text: accepts a JSON array string or a real array", async () => {
+test("translate-text: accepts a JSON array string or a real array", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }, { body: reply }]);
   await exec(action, { targetLanguage: "fr_FR", texts: '["a, b","c"]' }, ctx);
   await exec(action, { targetLanguage: "fr_FR", texts: ["x"] }, ctx);
@@ -23,7 +24,7 @@ Deno.test("translate-text: accepts a JSON array string or a real array", async (
   assertEquals(bodyOf(calls[1]).texts, ["x"]);
 });
 
-Deno.test("translate-text: validates input; a 402 fails with the vendor message", async () => {
+test("translate-text: validates input; a 402 fails with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { error_message: "Out of credits", error_code: 402 },

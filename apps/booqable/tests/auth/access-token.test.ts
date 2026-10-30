@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: collects the company slug alongside the credential", () => {
+test("access-token: collects the company slug alongside the credential", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "bearer");
   const keys = auth.fields?.map((f) => f.key);
@@ -13,7 +14,7 @@ Deno.test("access-token: collects the company slug alongside the credential", ()
   assertEquals(auth.fields?.find((f) => f.key === "companySlug")?.type, "string");
 });
 
-Deno.test("access-token: sign uses a plain Bearer header", async () => {
+test("access-token: sign uses a plain Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.booqable.com/api/4/customers",
@@ -24,7 +25,7 @@ Deno.test("access-token: sign uses a plain Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("access-token: test refuses a half-filled credential without a request", async () => {
+test("access-token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.test({ credential: { companySlug: "acme" } }, ctx),
@@ -33,7 +34,7 @@ Deno.test("access-token: test refuses a half-filled credential without a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test probes companies/current, signed itself", async () => {
+test("access-token: test probes companies/current, signed itself", async () => {
   const ok = mockCtx([{ body: { data: { attributes: { name: "Acme Rentals" } } } }]);
   assertEquals(
     await auth.test({ credential: { companySlug: "acme", accessToken: "tok" } }, ok.ctx),
@@ -43,7 +44,7 @@ Deno.test("access-token: test probes companies/current, signed itself", async ()
   assertEquals(ok.calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("access-token: test reads Booqable's own error message rather than guessing from the status code", async () => {
+test("access-token: test reads Booqable's own error message rather than guessing from the status code", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { errors: [{ title: "Access denied", detail: "You need to be logged in." }] },
@@ -54,7 +55,7 @@ Deno.test("access-token: test reads Booqable's own error message rather than gue
   );
 });
 
-Deno.test("access-token: afterConnect records the slug and the company for the client to use", async () => {
+test("access-token: afterConnect records the slug and the company for the client to use", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { attributes: { name: "Acme Rentals" } } } }]);
   const out = await auth.afterConnect!(
     { credential: { companySlug: "acme", accessToken: "tok" } },
@@ -64,7 +65,7 @@ Deno.test("access-token: afterConnect records the slug and the company for the c
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("access-token: afterConnect still records the slug if the probe fails", async () => {
+test("access-token: afterConnect still records the slug if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { companySlug: "acme", accessToken: "tok" } },

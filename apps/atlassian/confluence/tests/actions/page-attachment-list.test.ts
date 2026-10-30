@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-attachment-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("page-attachment-list: filters on media type and filename", async () => {
+test("page-attachment-list: filters on media type and filename", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { results: [{ id: "att1" }], _links: {} } }],
     {
@@ -23,7 +24,7 @@ Deno.test("page-attachment-list: filters on media type and filename", async () =
   assertEquals(result, [{ id: "att1" }]);
 });
 
-Deno.test("page-attachment-list: a blank id fails before any request", async () => {
+test("page-attachment-list: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`pageId` is required");
   assertEquals(calls.length, 0);

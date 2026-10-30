@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoicePdfGet from "../../actions/invoice-pdf-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const PDF = "%PDF-1.7\ninvoice bytes\n";
 
-Deno.test("invoice-pdf-get: base64-encodes the invoice PDF", async () => {
+test("invoice-pdf-get: base64-encodes the invoice PDF", async () => {
   const { ctx, calls } = mockCtx([
     { body: PDF, headers: { "content-type": "application/pdf" } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("invoice-pdf-get: base64-encodes the invoice PDF", async () => {
 });
 
 /** When the vendor omits the content type, the action still reports something true. */
-Deno.test("invoice-pdf-get: a missing content type falls back to application/pdf", async () => {
+test("invoice-pdf-get: a missing content type falls back to application/pdf", async () => {
   const { ctx } = mockCtx([{ body: PDF, headers: { "content-type": "" } }]);
   const result = await invoicePdfGet.execute({ invoiceId: 3456 }, ctx) as Record<string, unknown>;
   assertEquals(result.contentType, "application/pdf");

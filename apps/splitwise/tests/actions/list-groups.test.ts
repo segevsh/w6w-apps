@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listGroups from "../../actions/list-groups.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * the only handle on those expenses — but a workflow iterating groups must skip
  * it.
  */
-Deno.test("list-groups: passes through the synthetic group 0", async () => {
+test("list-groups: passes through the synthetic group 0", async () => {
   const { ctx, calls } = mockCtx([{
     body: { groups: [{ id: 0, name: "Non-group expenses" }, { id: 321, name: "Housemates" }] },
   }]);
@@ -19,11 +20,11 @@ Deno.test("list-groups: passes through the synthetic group 0", async () => {
   assert(out.groups.some((g) => g.id === 0), "group 0 was filtered out");
 });
 
-Deno.test("list-groups: takes no params — the endpoint has no pagination", () => {
+test("list-groups: takes no params — the endpoint has no pagination", () => {
   assertEquals(listGroups.params?.length, 0);
 });
 
-Deno.test("list-groups: a missing key yields an empty list", async () => {
+test("list-groups: a missing key yields an empty list", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await listGroups.execute({}, ctx), { groups: [] });
 });

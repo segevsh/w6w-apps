@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentGetByUrl from "../../actions/document-get-by-url.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("document-get-by-url: sends url and the two flags", async () => {
+test("document-get-by-url: sends url and the two flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "a1", title: "Start" }) }]);
   const out = await documentGetByUrl.execute({ url: "/start", isPublished: false }, ctx) as {
     title: string;
@@ -16,7 +17,7 @@ Deno.test("document-get-by-url: sends url and the two flags", async () => {
   assertEquals(out.title, "Start");
 });
 
-Deno.test("document-get-by-url: a vendor error surfaces its code and message", async () => {
+test("document-get-by-url: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

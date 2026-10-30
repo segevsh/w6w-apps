@@ -21,7 +21,16 @@ const subscriptionGet: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "subscription_premium_tiers", label: "Subscription premium tiers" },
+        { value: "referrals", label: "Referrals" },
+        { value: "stats", label: "Stats" },
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "tags", label: "Tags" },
+        { value: "newsletter_lists", label: "Newsletter lists" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: `subscription_premium_tiers`, `referrals`, `stats`, " +
         "`custom_fields`, `tags`, `newsletter_lists`.",
     },

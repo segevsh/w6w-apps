@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionDelete from "../../actions/submission-delete.ts";
 import { mockCtx, pathOf, problem } from "../_helpers.ts";
 
-Deno.test("submission-delete: DELETE /submissions/{id}", async () => {
+test("submission-delete: DELETE /submissions/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await submissionDelete.execute({ submissionId: "sub_1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("submission-delete: DELETE /submissions/{id}", async () => {
   assertEquals(out, { deleted: true, id: "sub_1" });
 });
 
-Deno.test("submission-delete: a quarantined-spam 409 surfaces as its code", async () => {
+test("submission-delete: a quarantined-spam 409 surfaces as its code", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: problem(409, "conflict", "Submission is quarantined spam"),

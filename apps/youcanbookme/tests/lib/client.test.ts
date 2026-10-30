@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { YouCanBookMeClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new YouCanBookMeClient(ctx);
   const result = await client.request("/acc-1/profiles/prof-1/bookings/book-1", {
@@ -11,7 +12,7 @@ Deno.test("client: 204 returns undefined without parsing a body", async () => {
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"message":"Resource not found"}' },
   ]);
@@ -24,7 +25,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/acc-1/profiles/prof-1/bookings/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new YouCanBookMeClient(ctx);
   await client.request("/acc-1/bookings", {
@@ -36,7 +37,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("blank"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   const client = new YouCanBookMeClient(ctx);
   await client.request("/acc-1/profiles/prof-1/bookings", {
@@ -50,13 +51,13 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: never sets Authorization (sign does)", async () => {
+test("client: never sets Authorization (sign does)", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new YouCanBookMeClient(ctx).request("/acc-1/profiles");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: builds requests against the documented base URL", async () => {
+test("client: builds requests against the documented base URL", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new YouCanBookMeClient(ctx).request("/acc-1/profiles");
   const url = new URL(calls[0].url);

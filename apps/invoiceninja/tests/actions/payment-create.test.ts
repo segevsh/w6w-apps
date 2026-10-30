@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/payment-create.ts";
 
-Deno.test("payment-create: POSTs /payments with client_id, amount and applied invoices", async () => {
+test("payment-create: POSTs /payments with client_id, amount and applied invoices", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "p1" } }]);
   await action.execute(
     { clientId: "cl1", amount: 100, invoices: '[{"invoice_id":"inv1","amount":"100"}]' },
@@ -15,7 +16,7 @@ Deno.test("payment-create: POSTs /payments with client_id, amount and applied in
   assertEquals(body.invoices, [{ invoice_id: "inv1", amount: "100" }]);
 });
 
-Deno.test("payment-create: an unapplied payment omits invoices", async () => {
+test("payment-create: an unapplied payment omits invoices", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "p1" } }]);
   await action.execute({ clientId: "cl1", amount: 50 }, ctx);
   assertEquals("invoices" in JSON.parse(calls[0].body!), false);

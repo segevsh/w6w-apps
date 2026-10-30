@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldCreate from "../../actions/custom-field-create.ts";
 import { created, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { created, mockCtx, pathOf } from "../_helpers.ts";
  * header, and the required (undocumented-if-you-only-read-the-field-list)
  * `ws.op: "create"` body field.
  */
-Deno.test("custom-field-create: sends ws.op=create and reads the id off Location", async () => {
+test("custom-field-create: sends ws.op=create and reads the id off Location", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/2/custom_fields/42"),
   ]);

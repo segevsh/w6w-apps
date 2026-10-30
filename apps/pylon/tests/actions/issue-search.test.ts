@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/issue-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("issue-search: POSTs a parsed filter, text and cursor", async () => {
+test("issue-search: POSTs a parsed filter, text and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "i1" }], pagination: { cursor: "n", has_next_page: true } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("issue-search: POSTs a parsed filter, text and cursor", async () => {
   assertEquals(out, { issues: [{ id: "i1" }], hasNextPage: true, nextCursor: "n" });
 });
 
-Deno.test("issue-search: no input sends an empty body", async () => {
+test("issue-search: no input sends an empty body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

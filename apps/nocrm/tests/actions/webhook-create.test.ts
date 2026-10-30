@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-create.ts";
 
-Deno.test("webhook-create: POSTs the three required fields", async () => {
+test("webhook-create: POSTs the three required fields", async () => {
   const { ctx, calls } = mockNocrmCtx([{ status: 201, body: { id: 63 } }]);
   await action.execute(
     { event: "lead.creation", targetType: "url", target: "https://my/process" },
@@ -17,7 +18,7 @@ Deno.test("webhook-create: POSTs the three required fields", async () => {
   });
 });
 
-Deno.test("webhook-create: maps the optional name", async () => {
+test("webhook-create: maps the optional name", async () => {
   const { ctx, calls } = mockNocrmCtx([{ status: 201, body: {} }]);
   await action.execute({
     event: "lead.creation",
@@ -33,7 +34,7 @@ Deno.test("webhook-create: maps the optional name", async () => {
   });
 });
 
-Deno.test("webhook-create: the documented 409 duplicate is surfaced", async () => {
+test("webhook-create: the documented 409 duplicate is surfaced", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 409,
     body: { error: 409, message: "Webhook already exists", type: "already_exist" },

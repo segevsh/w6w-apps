@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-security-scan-findings.ts";
 import { mockConnectedCtx, mockCtx, pathOf, WORKSPACE_ID } from "../_helpers.ts";
 
@@ -21,7 +22,7 @@ const RUN = {
   static_code_findings: [],
 };
 
-Deno.test("get-security-scan-findings: maps the run, defaulting missing arrays to empty", async () => {
+test("get-security-scan-findings: maps the run, defaulting missing arrays to empty", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: RUN }]);
   const result = await action.execute!({ runId: "run1" }, ctx) as {
     runId: string;
@@ -37,7 +38,7 @@ Deno.test("get-security-scan-findings: maps the run, defaulting missing arrays t
   assertEquals(result.rlsRecommendations, []);
 });
 
-Deno.test("get-security-scan-findings: tolerates a response with no finding arrays at all", async () => {
+test("get-security-scan-findings: tolerates a response with no finding arrays at all", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 200,
     body: {
@@ -55,13 +56,13 @@ Deno.test("get-security-scan-findings: tolerates a response with no finding arra
   assertEquals(result.dependencyVulnerabilities, []);
 });
 
-Deno.test("get-security-scan-findings: requires runId without making a request", async () => {
+test("get-security-scan-findings: requires runId without making a request", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "runId is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-security-scan-findings: fails without a connected workspace", async () => {
+test("get-security-scan-findings: fails without a connected workspace", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ runId: "run1" }, ctx),

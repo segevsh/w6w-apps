@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/message-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("message-list: GETs /issues/{id}/messages with cursor and limit", async () => {
+test("message-list: GETs /issues/{id}/messages with cursor and limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "m1" }], pagination: { cursor: "c2", has_next_page: true } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("message-list: GETs /issues/{id}/messages with cursor and limit", asyn
   assertEquals(out, { messages: [{ id: "m1" }], hasNextPage: true, nextCursor: "c2" });
 });
 
-Deno.test("message-list: with no cursor and no limit nothing is sent, so every message returns", async () => {
+test("message-list: with no cursor and no limit nothing is sent, so every message returns", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "m1" }, { id: "m2" }] } }]);
   const out = await action.execute!({ id: "i1" }, ctx);
   assertEquals(calls[0].url, "https://api.usepylon.com/issues/i1/messages");

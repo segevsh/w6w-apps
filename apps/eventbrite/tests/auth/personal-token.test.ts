@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/personal-token.ts";
 
-Deno.test("personal-token: is a bearer method exposing a `token` secret field", () => {
+test("personal-token: is a bearer method exposing a `token` secret field", () => {
   assertEquals(auth.key, "personal-token");
   assertEquals(auth.type, "bearer");
   const tokenField = auth.fields?.find((f) => f.key === "token");
@@ -11,7 +12,7 @@ Deno.test("personal-token: is a bearer method exposing a `token` secret field", 
   assertEquals(tokenField.required, true);
 });
 
-Deno.test("personal-token: sign appends Bearer using credential.token", async () => {
+test("personal-token: sign appends Bearer using credential.token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("personal-token: sign appends Bearer using credential.token", async ()
   assertEquals(out.headers["authorization"], "Bearer priv-xyz");
 });
 
-Deno.test("personal-token: test hits /users/me/ and reports ok", async () => {
+test("personal-token: test hits /users/me/ and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "u1" } }]);
   const result = await auth.test({ credential: { token: "priv-xyz" } }, ctx);
   assertEquals(result.ok, true);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import threadGet from "../../actions/thread-get.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("thread-get: GET /v1/threads/th1 with the documented parameters", async () => {
+test("thread-get: GET /v1/threads/th1 with the documented parameters", async () => {
   const response = {
     threadId: "th1",
     status: "completed",
@@ -19,7 +20,7 @@ Deno.test("thread-get: GET /v1/threads/th1 with the documented parameters", asyn
   assertEquals(out, response);
 });
 
-Deno.test("thread-get: a vendor error surfaces its own message and id", async () => {
+test("thread-get: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -31,7 +32,7 @@ Deno.test("thread-get: a vendor error surfaces its own message and id", async ()
   );
 });
 
-Deno.test("thread-get: a 202 processing thread is returned as is, so the workflow can branch on status", async () => {
+test("thread-get: a 202 processing thread is returned as is, so the workflow can branch on status", async () => {
   const body = { threadId: "th1", status: "processing", rounds: [], retryAfterSeconds: 4 };
   const { ctx } = mockCtx([{ status: 202, body }]);
   assertEquals(await threadGet.execute({ threadId: "th1" }, ctx), body);

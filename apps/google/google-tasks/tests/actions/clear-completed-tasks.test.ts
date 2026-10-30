@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/clear-completed-tasks.ts";
 
-Deno.test("clear-completed-tasks: POSTs to /clear with an empty body", async () => {
+test("clear-completed-tasks: POSTs to /clear with an empty body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ taskList: "L1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/tasks/v1/lists/L1/clear");
@@ -11,6 +12,6 @@ Deno.test("clear-completed-tasks: POSTs to /clear with an empty body", async () 
   assertEquals(out, { success: true });
 });
 
-Deno.test("clear-completed-tasks: is idempotent", () => {
+test("clear-completed-tasks: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

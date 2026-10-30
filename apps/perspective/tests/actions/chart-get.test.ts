@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import chartGet from "../../actions/chart-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const base = {
   to: "2025-01-31T00:00:00.000Z",
 };
 
-Deno.test("chart-get: GET /metrics/charts/{subtype}", async () => {
+test("chart-get: GET /metrics/charts/{subtype}", async () => {
   const pts = [{ key: "mobile", value: 10 }];
   const { ctx, calls } = mockCtx([{ body: envelope(pts) }]);
   const out = await chartGet.execute(base, ctx) as { data: unknown };
@@ -18,7 +19,7 @@ Deno.test("chart-get: GET /metrics/charts/{subtype}", async () => {
   assertEquals(out.data, pts);
 });
 
-Deno.test("chart-get: abTest is forwarded for page-to-page conversion", async () => {
+test("chart-get: abTest is forwarded for page-to-page conversion", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await chartGet.execute({
     ...base,
@@ -28,7 +29,7 @@ Deno.test("chart-get: abTest is forwarded for page-to-page conversion", async ()
   assertEquals(queryOf(calls[0].url).abTest, "variant");
 });
 
-Deno.test("chart-get: abTest on any other subtype is refused offline", async () => {
+test("chart-get: abTest on any other subtype is refused offline", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(chartGet.execute({ ...base, abTest: "all" }, ctx)),
@@ -38,7 +39,7 @@ Deno.test("chart-get: abTest on any other subtype is refused offline", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("chart-get: an invalid abTest value is refused", async () => {
+test("chart-get: an invalid abTest value is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>
@@ -53,7 +54,7 @@ Deno.test("chart-get: an invalid abTest value is refused", async () => {
   );
 });
 
-Deno.test("chart-get: from must be before to", async () => {
+test("chart-get: from must be before to", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(chartGet.execute({ ...base, to: base.from }, ctx)),
@@ -62,6 +63,6 @@ Deno.test("chart-get: from must be before to", async () => {
   );
 });
 
-Deno.test("chart-get: offers the seven documented charts", () => {
+test("chart-get: offers the seven documented charts", () => {
   assertEquals((chartGet.params!.find((p) => p.key === "subtype")!.options as unknown[]).length, 7);
 });

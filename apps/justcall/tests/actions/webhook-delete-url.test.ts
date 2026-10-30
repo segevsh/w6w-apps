@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookDeleteUrl from "../../actions/webhook-delete-url.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete-url: DELETEs /v2.1/webhooks/url/{url_id}", async () => {
+test("webhook-delete-url: DELETEs /v2.1/webhooks/url/{url_id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ type: "call.completed", url_count: 0, webhook_urls: [] }) },
   ]);
@@ -12,6 +13,6 @@ Deno.test("webhook-delete-url: DELETEs /v2.1/webhooks/url/{url_id}", async () =>
   assertEquals(calls[0].method, "DELETE");
 });
 
-Deno.test("webhook-delete-url: is idempotent — the end state is the same either way", () => {
+test("webhook-delete-url: is idempotent — the end state is the same either way", () => {
   assertEquals(webhookDeleteUrl.idempotent, true);
 });

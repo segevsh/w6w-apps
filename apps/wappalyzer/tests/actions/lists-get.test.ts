@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listsGet from "../../actions/lists-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lists-get: reads /v2/lists/{id} with NO trailing slash", async () => {
+test("lists-get: reads /v2/lists/{id} with NO trailing slash", async () => {
   const detail = { id: "lst_abcdef", createdAt: 1620687647, status: "Ready" };
   const { ctx, calls } = mockCtx([{ body: detail }]);
   const out = await listsGet.execute({ id: "lst_abcdef" }, ctx) as { list: unknown };
@@ -12,7 +13,7 @@ Deno.test("lists-get: reads /v2/lists/{id} with NO trailing slash", async () => 
   assertEquals(out.list, detail);
 });
 
-Deno.test("lists-get: id is required and path-escaped", async () => {
+test("lists-get: id is required and path-escaped", async () => {
   const idParam = listsGet.params?.find((p) => p.key === "id");
   assertEquals(idParam?.required, true);
 

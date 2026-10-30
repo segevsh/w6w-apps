@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import clientBudgetDelete from "../../actions/client-budget-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client-budget-delete: DELETE /clients/{clientId}/budget with the documented query and body", async () => {
+test("client-budget-delete: DELETE /clients/{clientId}/budget with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await clientBudgetDelete.execute({ "clientId": 107 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("client-budget-delete: DELETE /clients/{clientId}/budget with the docu
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("client-budget-delete: an Everhour error surfaces its message and status", async () => {
+test("client-budget-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(clientBudgetDelete.execute({ "clientId": 107 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("client-budget-delete: an Everhour error surfaces its message and stat
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("client-budget-delete: declares perform and idempotent=true", () => {
+test("client-budget-delete: declares perform and idempotent=true", () => {
   assertEquals(clientBudgetDelete.type, "perform");
   assertEquals(clientBudgetDelete.idempotent, true);
 });

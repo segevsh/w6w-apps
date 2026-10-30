@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import emailTopicList from "../../actions/email-topic-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-topic-list: sends GET /email_topics and reads pagination from headers", async () => {
+test("email-topic-list: sends GET /email_topics and reads pagination from headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ "id": 12, "title": "News" }],
     headers: {
@@ -28,7 +29,7 @@ Deno.test("email-topic-list: sends GET /email_topics and reads pagination from h
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("email-topic-list: last page has no next link", async () => {
+test("email-topic-list: last page has no next link", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: { "content-type": "application/json", "total-count": "0" },

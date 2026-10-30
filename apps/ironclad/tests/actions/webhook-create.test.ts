@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /webhooks, 201 body returned", async () => {
+test("webhook-create: POST /webhooks, 201 body returned", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "h1", events: ["workflow_completed"], targetURL: "https://x.test/h" },
@@ -21,7 +22,7 @@ Deno.test("webhook-create: POST /webhooks, 201 body returned", async () => {
   assertEquals(out.id, "h1");
 });
 
-Deno.test("webhook-create: a plain-HTTP target is refused before any request", async () => {
+test("webhook-create: a plain-HTTP target is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await webhookCreate.execute(
@@ -32,7 +33,7 @@ Deno.test("webhook-create: a plain-HTTP target is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("webhook-create: no events is refused before any request", async () => {
+test("webhook-create: no events is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await webhookCreate.execute({ events: [], targetURL: "https://x.test/h" }, ctx)

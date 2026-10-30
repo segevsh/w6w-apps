@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-delete.ts";
 
 const input = { "customer_id": 123 } as never;
 
-Deno.test("customer-delete: DELETE /customers/{customer_id}", async () => {
+test("customer-delete: DELETE /customers/{customer_id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -20,7 +21,7 @@ Deno.test("customer-delete: DELETE /customers/{customer_id}", async () => {
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("customer-delete: a Salla error envelope throws with its message", async () => {
+test("customer-delete: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentList from "../../actions/comment-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-list: GET /comments with every filter, sort, include and page serialised", async () => {
+test("comment-list: GET /comments with every filter, sort, include and page serialised", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -46,7 +47,7 @@ Deno.test("comment-list: GET /comments with every filter, sort, include and page
   assertEquals((out.items as Record<string, unknown>[])[0].name, "x");
 });
 
-Deno.test("comment-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
+test("comment-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -68,13 +69,13 @@ Deno.test("comment-list: a next link becomes nextCursor, and the cursor is sent 
   assertEquals(queryOf(calls[1].url), { "page[after]": "abc123" });
 });
 
-Deno.test("comment-list: a raw filter object is merged with the typed filters", async () => {
+test("comment-list: a raw filter object is merged with the typed filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await commentList.execute({ filter: '{"name": {"contains": "x"}, "id": [1, 2]}' }, ctx);
   assertEquals(queryOf(calls[0].url), { "filter[name][contains]": "x", "filter[id]": "1,2" });
 });
 
-Deno.test("comment-list: a vendor error surfaces its status, title and detail", async () => {
+test("comment-list: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -87,7 +88,7 @@ Deno.test("comment-list: a vendor error surfaces its status, title and detail", 
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("comment-list: declares search", () => {
+test("comment-list: declares search", () => {
   assertEquals(commentList.type, "search");
   assertEquals(commentList.idempotent, undefined);
   assertEquals(commentList.key, "comment-list");

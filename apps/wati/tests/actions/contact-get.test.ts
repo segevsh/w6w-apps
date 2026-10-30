@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("contact-get: GETs /contacts/{target}, URL-encoding the target", async () => {
+test("contact-get: GETs /contacts/{target}, URL-encoding the target", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "1", name: "John Doe" } }], conn);
   const out = await action.execute({ target: "123456789:1415552671" }, ctx);
   assertEquals(calls[0].method, "GET");

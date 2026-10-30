@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listTimeOffRequests from "../../actions/list-time-off-requests.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 
 const WINDOW = { start: "2026-09-01", end: "2026-09-30" };
 
-Deno.test("list-time-off-requests: searches /time_off/requests over a window", async () => {
+test("list-time-off-requests: searches /time_off/requests over a window", async () => {
   assertEquals(listTimeOffRequests.type, "search");
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listTimeOffRequests.execute({ ...WINDOW }, ctx);
@@ -15,26 +16,26 @@ Deno.test("list-time-off-requests: searches /time_off/requests over a window", a
   assertEquals(url.searchParams.get("end"), "2026-09-30");
 });
 
-Deno.test("list-time-off-requests: start and end are the only required params", () => {
+test("list-time-off-requests: start and end are the only required params", () => {
   // The only list endpoint in this app with a mandatory window — the filter is
   // an overlap test and has no meaning without both sides.
   const required = (listTimeOffRequests.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["end", "start"]);
 });
 
-Deno.test("list-time-off-requests: the window hints explain the OVERLAP semantics", () => {
+test("list-time-off-requests: the window hints explain the OVERLAP semantics", () => {
   // `start` matches on the request's END date and vice versa. Getting this
   // backwards silently returns the wrong set.
   assert(/end date/i.test(param(listTimeOffRequests, "start").hint ?? ""));
   assert(/start date/i.test(param(listTimeOffRequests, "end").hint ?? ""));
 });
 
-Deno.test("list-time-off-requests: the perspective options are the documented three", () => {
+test("list-time-off-requests: the perspective options are the documented three", () => {
   assertEquals(optionValues(listTimeOffRequests, "action"), ["view", "approve", "myRequests"]);
   assertEquals(param(listTimeOffRequests, "action").default, "view");
 });
 
-Deno.test("list-time-off-requests: optional filters pass through when set", async () => {
+test("list-time-off-requests: optional filters pass through when set", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listTimeOffRequests.execute({
     ...WINDOW,
@@ -53,7 +54,7 @@ Deno.test("list-time-off-requests: optional filters pass through when set", asyn
   assertEquals(q.get("status"), "requested");
 });
 
-Deno.test("list-time-off-requests: excludeNote is sent only when true", async () => {
+test("list-time-off-requests: excludeNote is sent only when true", async () => {
   // Documented as "when set to ANY truthy value" — so a literal `false` would
   // also read as truthy and must never be sent.
   const { ctx, calls } = mockCtx([{ body: [] }, { body: [] }]);

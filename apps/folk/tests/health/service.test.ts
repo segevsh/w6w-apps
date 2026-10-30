@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: OPERATIONAL 'folk rest API' component reports ok", async () => {
+test("service: OPERATIONAL 'folk rest API' component reports ok", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       components: [
@@ -16,7 +17,7 @@ Deno.test("service: OPERATIONAL 'folk rest API' component reports ok", async () 
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: finds the component nested under a group's children", async () => {
+test("service: finds the component nested under a group's children", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -34,7 +35,7 @@ Deno.test("service: finds the component nested under a group's children", async 
   assertEquals(out.components?.api.state, "down");
 });
 
-Deno.test("service: a PARTIALOUTAGE component reports degraded", async () => {
+test("service: a PARTIALOUTAGE component reports degraded", async () => {
   const { ctx } = mockCtx([{
     body: { components: [{ id: "2", name: "folk rest API", status: "PARTIALOUTAGE" }] },
   }]);
@@ -42,13 +43,13 @@ Deno.test("service: a PARTIALOUTAGE component reports degraded", async () => {
   assertEquals(out.state, "degraded");
 });
 
-Deno.test("service: missing component reports unknown, not down", async () => {
+test("service: missing component reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ body: { components: [] } }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: a failed status API call reports unknown, never down", async () => {
+test("service: a failed status API call reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

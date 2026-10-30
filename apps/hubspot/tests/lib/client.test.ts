@@ -1,16 +1,17 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { HubSpotClient, toProperties } from "../../lib/client.ts";
 import { coerceProperties, normalizeCsv } from "../../lib/crm.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new HubSpotClient(ctx);
   const result = await client.request("/crm/v3/objects/contacts/1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"status":"error"}' },
   ]);
@@ -23,7 +24,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/crm/v3/objects/contacts/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new HubSpotClient(ctx);
   await client.request("/x", {
@@ -36,7 +37,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: repeats array query params (HubSpot idiom)", async () => {
+test("client: repeats array query params (HubSpot idiom)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new HubSpotClient(ctx);
   await client.request("/crm/v3/objects/contacts", {
@@ -46,7 +47,7 @@ Deno.test("client: repeats array query params (HubSpot idiom)", async () => {
   assertEquals(url.searchParams.getAll("properties"), ["email", "firstname", "lastname"]);
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new HubSpotClient(ctx);
   await client.request("https://api.hsforms.com/submissions/v3/integration/submit/1/2", {
@@ -57,12 +58,12 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.origin, "https://api.hsforms.com");
 });
 
-Deno.test("toProperties: drops empty/nullish values", () => {
+test("toProperties: drops empty/nullish values", () => {
   const out = toProperties({ a: "x", b: null, c: undefined, d: "", e: 5 });
   assertEquals(out, { a: "x", e: "5" });
 });
 
-Deno.test("coerceProperties: stringifies numbers/booleans/dates", () => {
+test("coerceProperties: stringifies numbers/booleans/dates", () => {
   const now = new Date(1_700_000_000_000);
   const out = coerceProperties({ n: 42, b: true, when: now, name: "hi", nope: null });
   assertEquals(out.n, "42");
@@ -72,7 +73,7 @@ Deno.test("coerceProperties: stringifies numbers/booleans/dates", () => {
   assertEquals("nope" in out, false);
 });
 
-Deno.test("normalizeCsv: returns array from CSV string, passes arrays through", () => {
+test("normalizeCsv: returns array from CSV string, passes arrays through", () => {
   assertEquals(normalizeCsv("a,b,c"), ["a", "b", "c"]);
   assertEquals(normalizeCsv(["a", "b"]), ["a", "b"]);
   assertEquals(normalizeCsv(""), undefined);

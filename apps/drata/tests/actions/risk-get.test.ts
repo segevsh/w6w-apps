@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import riskGet from "../../actions/risk-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "riskRegisterId": 2, "riskId": "RISK-001" };
 
-Deno.test("risk-get: GET /risk-registers/2/risks/RISK-001 returns the bare object", async () => {
+test("risk-get: GET /risk-registers/2/risks/RISK-001 returns the bare object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "x" } }]);
   const out = await riskGet.execute({ ...INPUT }, ctx) as { id: number };
 
@@ -14,7 +15,7 @@ Deno.test("risk-get: GET /risk-registers/2/risks/RISK-001 returns the bare objec
   assertEquals(out.id, 1);
 });
 
-Deno.test("risk-get: expand goes out as repeated expand[] parameters", async () => {
+test("risk-get: expand goes out as repeated expand[] parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await riskGet.execute({ ...INPUT, ...{ "expand": ["owners"] } }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("risk-get: expand goes out as repeated expand[] parameters", async () 
   assertEquals(queryOf(calls[0].url).getAll("expand[]"), wire.map(([, v]) => v));
 });
 
-Deno.test("risk-get: a 404 surfaces Drata's own message", async () => {
+test("risk-get: a 404 surfaces Drata's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found", 3) }]);
   const err = await assertRejects(() => Promise.resolve(riskGet.execute({ ...INPUT }, ctx)), Error);
   assert(err.message.includes("HTTP 404"), err.message);

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-list.ts";
 
@@ -11,7 +12,7 @@ const SAMPLE_XML = `<?xml version="1.0" encoding="UTF-8"?>
   </Buckets>
 </ListAllMyBucketsResult>`;
 
-Deno.test("bucket-list: GETs the region host root and parses buckets", async () => {
+test("bucket-list: GETs the region host root and parses buckets", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: SAMPLE_XML,
@@ -33,7 +34,7 @@ Deno.test("bucket-list: GETs the region host root and parses buckets", async () 
   });
 });
 
-Deno.test("bucket-list: propagates an S3 error as a descriptive Error", async () => {
+test("bucket-list: propagates an S3 error as a descriptive Error", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

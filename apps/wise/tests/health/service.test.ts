@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -23,13 +24,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: fetches the documented status URL", async () => {
+test("service: fetches the documented status URL", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: all-operational + indicator none reports ok, keyed by component id", async () => {
+test("service: all-operational + indicator none reports ok, keyed by component id", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -37,7 +38,7 @@ Deno.test("service: all-operational + indicator none reports ok, keyed by compon
   assertEquals(report.components?.["bmfb24t34ymm"], { state: "ok", message: "🔗 API" });
 });
 
-Deno.test("service: the page-level indicator is the verdict, not the worst component", async () => {
+test("service: the page-level indicator is the verdict, not the worst component", async () => {
   // Mirrors the real incident observed live 2026-09-05: an open incident whose
   // affected_components had already both stepped back to operational, while
   // the page-level indicator (the field this check trusts) reads "none".
@@ -53,7 +54,7 @@ Deno.test("service: the page-level indicator is the verdict, not the worst compo
   assert(report.message?.includes("1 open incident"), report.message);
 });
 
-Deno.test("service: a degraded component maps through mapComponentStatus and mapIndicator", () => {
+test("service: a degraded component maps through mapComponentStatus and mapIndicator", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -69,19 +70,19 @@ Deno.test("service: a degraded component maps through mapComponentStatus and map
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: an indicator of major reports degraded even if every component looks fine", async () => {
+test("service: an indicator of major reports degraded even if every component looks fine", async () => {
   const { ctx } = mockCtx([{ body: summary({ status: { indicator: "major" } }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a non-2xx status page answers unknown, never down", async () => {
+test("service: a non-2xx status page answers unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Wise's is unknown", async () => {
+test("service: a page that no longer self-identifies as Wise's is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { ...PAGE, url: "https://status.example.com" } }) },
   ]);
@@ -89,7 +90,7 @@ Deno.test("service: a page that no longer self-identifies as Wise's is unknown",
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: group container rows are excluded from the component report", async () => {
+test("service: group container rows are excluded from the component report", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -104,13 +105,13 @@ Deno.test("service: group container rows are excluded from the component report"
   assertEquals(Object.keys(report.components ?? {}), ["bmfb24t34ymm"]);
 });
 
-Deno.test("componentKey: falls back to a slug of the name, then a positional key", () => {
+test("componentKey: falls back to a slug of the name, then a positional key", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({ name: "🔗 API" }, 3), "api-3");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: declares kind service, scope app, credential none, and its own network allow", () => {
+test("service: declares kind service, scope app, credential none, and its own network allow", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

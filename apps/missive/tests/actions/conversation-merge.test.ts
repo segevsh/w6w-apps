@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/conversation-merge.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-merge: posts to /:id/merge with the target, unwraps the array", async () => {
+test("conversation-merge: posts to /:id/merge with the target, unwraps the array", async () => {
   const { ctx, calls } = mockCtx([{ body: { conversations: [{ id: "survivor" }] } }]);
   const out = await action.execute({ id: "src", target: "dst", subject: "Merged" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/conversations/src/merge");
@@ -12,7 +13,7 @@ Deno.test("conversation-merge: posts to /:id/merge with the target, unwraps the 
   assertEquals(out, { id: "survivor" });
 });
 
-Deno.test("conversation-merge: requires id and target", async () => {
+test("conversation-merge: requires id and target", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ id: "", target: "dst" }, ctx));
   await assertActionRejects(() => action.execute({ id: "src", target: "" }, ctx));

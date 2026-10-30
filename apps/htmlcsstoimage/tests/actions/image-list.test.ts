@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageList from "../../actions/image-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const page = {
   has_next_page: true,
 };
 
-Deno.test("image-list: sends count and page_token, returns the page as is", async () => {
+test("image-list: sends count and page_token, returns the page as is", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await imageList.execute({ count: 20, page_token: "prev" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/images");
@@ -16,7 +17,7 @@ Deno.test("image-list: sends count and page_token, returns the page as is", asyn
   assertEquals(out, page);
 });
 
-Deno.test("image-list: no params means no query string", async () => {
+test("image-list: no params means no query string", async () => {
   const { ctx, calls } = mockCtx([{
     body: { images: [], next_page_token: "", has_next_page: false },
   }]);
@@ -24,7 +25,7 @@ Deno.test("image-list: no params means no query string", async () => {
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("image-list: declares the vendor's 1-50 page size", () => {
+test("image-list: declares the vendor's 1-50 page size", () => {
   const count = imageList.params!.find((p) => p.key === "count")!;
   assertEquals(count.validation, { min: 1, max: 50, integer: true });
 });

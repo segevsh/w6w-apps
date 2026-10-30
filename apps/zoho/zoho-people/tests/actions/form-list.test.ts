@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/form-list.ts";
 
-Deno.test("form-list: GETs /people/api/forms and returns result + message", async () => {
+test("form-list: GETs /people/api/forms and returns result + message", async () => {
   const { ctx, calls } = mockPeopleCtx([
     {
       body: {
@@ -17,7 +18,7 @@ Deno.test("form-list: GETs /people/api/forms and returns result + message", asyn
   assertEquals(out.message, "Data fetched");
 });
 
-Deno.test("form-list: surfaces the vendor error code", async () => {
+test("form-list: surfaces the vendor error code", async () => {
   const { ctx } = mockPeopleCtx([
     { status: 401, body: { response: { errors: { code: 7213, message: "invalid" }, status: 1 } } },
   ]);

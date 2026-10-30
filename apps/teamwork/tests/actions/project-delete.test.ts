@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/project-delete.ts";
 
-Deno.test("project-delete: DELETEs the V1 /projects/{id}.json endpoint", async () => {
+test("project-delete: DELETEs the V1 /projects/{id}.json endpoint", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ body: { STATUS: "OK" } }]);
   const out = await action.execute({ projectId: 42 }, ctx);
   assertEquals(calls[0].url, "https://acme.teamwork.com/projects/42.json");

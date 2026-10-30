@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import ticketNoteList from "../../actions/ticket-note-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("ticket-note-list: GETs the ticket's Notes child collection", async () => {
+test("ticket-note-list: GETs the ticket's Notes child collection", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [{ id: 1 }, { id: 2 }] } }], display);
   const out = await run(ticketNoteList, { ticketID: 55 }, ctx);
   assertEquals(calls[0].url, `${BASE}/Tickets/55/Notes`);

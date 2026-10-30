@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import smsList from "../../actions/sms-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sms-list: maps filters to the documented query names", async () => {
+test("sms-list: maps filters to the documented query names", async () => {
   const { ctx, calls } = mockCtx([{ body: { smses: [{ id: "1" }], total_records: "1" } }]);
   const out = await smsList.execute({
     limit: 10,
@@ -27,7 +28,7 @@ Deno.test("sms-list: maps filters to the documented query names", async () => {
   assertEquals(out.smses.length, 1);
 });
 
-Deno.test("sms-list: no filters sends only format=JSON", async () => {
+test("sms-list: no filters sends only format=JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { smses: [] } }]);
   await smsList.execute({}, ctx);
   assertEquals([...queryOf(calls[0].url).keys()], ["format"]);

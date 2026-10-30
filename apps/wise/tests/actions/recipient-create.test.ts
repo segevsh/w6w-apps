@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recipientCreate from "../../actions/recipient-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-create: POSTs currency/type/accountHolderName and a parsed details object", async () => {
+test("recipient-create: POSTs currency/type/accountHolderName and a parsed details object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5, currency: "GBP" } }]);
   const out = await recipientCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("recipient-create: POSTs currency/type/accountHolderName and a parsed 
   assertEquals(out.id, 5);
 });
 
-Deno.test("recipient-create: accepts details as the JSON string a user types", async () => {
+test("recipient-create: accepts details as the JSON string a user types", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5 } }]);
   await recipientCreate.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("recipient-create: accepts details as the JSON string a user types", a
   assertEquals(JSON.parse(calls[0].body!).details, { sortCode: "040075" });
 });
 
-Deno.test("recipient-create: malformed details JSON fails before any request is made", async () => {
+test("recipient-create: malformed details JSON fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -53,6 +54,6 @@ Deno.test("recipient-create: malformed details JSON fails before any request is 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("recipient-create: is not declared idempotent", () => {
+test("recipient-create: is not declared idempotent", () => {
   assertEquals(recipientCreate.idempotent, false);
 });

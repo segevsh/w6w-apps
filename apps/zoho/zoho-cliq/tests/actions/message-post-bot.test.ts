@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-post-bot.ts";
 
-Deno.test("message-post-bot: sends userids as a comma string", async () => {
+test("message-post-bot: sends userids as a comma string", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "user_ids": ["55743307"], "message_details": {} },
@@ -34,7 +35,7 @@ Deno.test("message-post-bot: sends userids as a comma string", async () => {
   });
 });
 
-Deno.test("message-post-bot: idempotent is declared as false", () => {
+test("message-post-bot: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

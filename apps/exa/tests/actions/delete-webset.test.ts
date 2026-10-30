@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-webset.ts";
 
-Deno.test("delete-webset: DELETEs /v0/websets/{id}", async () => {
+test("delete-webset: DELETEs /v0/websets/{id}", async () => {
   const body = { id: "ws_1", status: "idle" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ id: "ws_1" }, ctx);
@@ -13,6 +14,6 @@ Deno.test("delete-webset: DELETEs /v0/websets/{id}", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("delete-webset: is declared idempotent (safe to retry)", () => {
+test("delete-webset: is declared idempotent (safe to retry)", () => {
   assertEquals(action.idempotent, true);
 });

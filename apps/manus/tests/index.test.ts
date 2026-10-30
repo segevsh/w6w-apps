@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 32;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -44,7 +46,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * call with no documented uniqueness constraint. `task-confirm-action`
  * resumes agent processing with no documented dedupe guarantee.
  */
-Deno.test("index: no task-creating, message-sending or resource-creating action is marked idempotent", () => {
+test("index: no task-creating, message-sending or resource-creating action is marked idempotent", () => {
   for (
     const key of [
       "task-create",
@@ -63,7 +65,7 @@ Deno.test("index: no task-creating, message-sending or resource-creating action 
  * Stop/update/delete/publish move a resource toward one target state — the
  * end state after one call and after five is the same, so a retry is safe.
  */
-Deno.test("index: state-convergent actions are marked idempotent", () => {
+test("index: state-convergent actions are marked idempotent", () => {
   for (
     const key of [
       "task-update",
@@ -80,25 +82,25 @@ Deno.test("index: state-convergent actions are marked idempotent", () => {
   }
 });
 
-Deno.test("index: the App declares exactly one Auth method — API key", () => {
+test("index: the App declares exactly one Auth method — API key", () => {
   assertEquals(app.auth.map((a) => a.key), ["api-key"]);
   assertEquals(app.auth[0].apiKey, { in: "header", name: "x-manus-api-key" });
 });
 
-Deno.test("index: the App's egress allowlist is exactly api.manus.ai", async () => {
+test("index: the App's egress allowlist is exactly api.manus.ai", async () => {
   // The health `service` check's own status.manus.im host is declared on
   // that check's own `network.allow`, never on the App's — see health/service.ts.
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["api.manus.ai"]);
 });
 
-Deno.test("index: the service health check does not widen the App's own allowlist", () => {
+test("index: the service health check does not widen the App's own allowlist", () => {
   const service = app.healthChecks.find((c) => c.key === "service")!;
   assertEquals(service.network?.allow, ["status.manus.im"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("index: the quota health check requires a signed, connection-scoped credential", () => {
+test("index: the quota health check requires a signed, connection-scoped credential", () => {
   const quota = app.healthChecks.find((c) => c.key === "quota")!;
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");

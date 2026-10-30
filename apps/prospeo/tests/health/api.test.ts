@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import check from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api: unsigned, and the INVALID_API_KEY error body is a pass", async () => {
+test("api: unsigned, and the INVALID_API_KEY error body is a pass", async () => {
   assertEquals(check.credential, "none");
   const { ctx, calls } = mockCtx([{
     status: 400,
@@ -13,7 +14,7 @@ Deno.test("api: unsigned, and the INVALID_API_KEY error body is a pass", async (
   assertEquals(calls[0].headers["x-key"], undefined);
 });
 
-Deno.test("api: 5xx is down; an HTML 400 or a 200 is degraded, not ok", async () => {
+test("api: 5xx is down; an HTML 400 or a 200 is degraded, not ok", async () => {
   assertEquals((await check.check!({}, mockCtx([{ status: 502, body: "bad" }]).ctx)).state, "down");
   assertEquals(
     (await check.check!({}, mockCtx([{ status: 400, body: "<html>" }]).ctx)).state,
@@ -25,7 +26,7 @@ Deno.test("api: 5xx is down; an HTML 400 or a 200 is degraded, not ok", async ()
   );
 });
 
-Deno.test("api: a network failure is down", async () => {
+test("api: a network failure is down", async () => {
   const ctx = { fetch: () => Promise.reject(new Error("dns")), log: () => {} };
   assertEquals((await check.check!({}, ctx as never)).state, "down");
 });

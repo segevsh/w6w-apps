@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteList from "../../actions/note-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -22,7 +23,7 @@ const RESPONSE = {
   "next_page": "cursor2",
 };
 
-Deno.test("note-list: GET /v2/notes", async () => {
+test("note-list: GET /v2/notes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await noteList.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -42,13 +43,13 @@ Deno.test("note-list: GET /v2/notes", async () => {
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("note-list: puts no credential on the request (sign owns that)", async () => {
+test("note-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await noteList.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("note-list: a vendor error surfaces its own message", async () => {
+test("note-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

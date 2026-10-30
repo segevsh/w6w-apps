@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignGet from "../../actions/campaign-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-get: GETs /campaigns/{id}", async () => {
+test("campaign-get: GETs /campaigns/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", name: "My Campaign" } }]);
   const out = await campaignGet.execute({ id: "c1" }, ctx) as { id: string };
 
@@ -11,7 +12,7 @@ Deno.test("campaign-get: GETs /campaigns/{id}", async () => {
   assertEquals(out.id, "c1");
 });
 
-Deno.test("campaign-get: URL-encodes the id", async () => {
+test("campaign-get: URL-encodes the id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await campaignGet.execute({ id: "has space" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v2/campaigns/has%20space");

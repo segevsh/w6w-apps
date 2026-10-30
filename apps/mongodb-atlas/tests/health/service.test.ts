@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   API_COMPONENT,
@@ -23,7 +24,7 @@ const healthy = page([
 ]);
 
 /** Here summary.json is complete — both routes return the same 9 components. */
-Deno.test("service: reads the summary route, which is not truncated on this page", async () => {
+test("service: reads the summary route, which is not truncated on this page", async () => {
   const { ctx, calls } = mockCtx([healthy]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -32,7 +33,7 @@ Deno.test("service: reads the summary route, which is not truncated on this page
 });
 
 /** An outage here stops changes, not queries. */
-Deno.test("service: a control-plane outage says what still works", async () => {
+test("service: a control-plane outage says what still works", async () => {
   const { ctx } = mockCtx([page([["MongoDB Cloud", "major_outage"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "down");
@@ -41,7 +42,7 @@ Deno.test("service: a control-plane outage says what still works", async () => {
 });
 
 /** Atlas Search is a cluster feature with its own outages. */
-Deno.test("service: reports search separately from the control plane", async () => {
+test("service: reports search separately from the control plane", async () => {
   const { ctx } = mockCtx([page([
     ["MongoDB Cloud", "operational"],
     ["MongoDB Atlas Search", "partial_outage"],
@@ -53,7 +54,7 @@ Deno.test("service: reports search separately from the control plane", async () 
 });
 
 /** Charts, App Services and the rest are separate products, not this API. */
-Deno.test("service: another product being out is not this app's outage", async () => {
+test("service: another product being out is not this app's outage", async () => {
   const { ctx } = mockCtx([page([
     ["MongoDB Cloud", "operational"],
     ["MongoDB Atlas Search", "operational"],
@@ -63,14 +64,14 @@ Deno.test("service: another product being out is not this app's outage", async (
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a board without the component is unknown, not ok", async () => {
+test("service: a board without the component is unknown, not ok", async () => {
   const { ctx } = mockCtx([page([["MongoDB Charts", "operational"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/is not on the status page/.test(result.message!), result.message);
 });
 
-Deno.test("service: an empty, broken or unreachable page is unknown", async () => {
+test("service: an empty, broken or unreachable page is unknown", async () => {
   const empty = mockCtx([page([])]);
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 
@@ -87,7 +88,7 @@ Deno.test("service: an empty, broken or unreachable page is unknown", async () =
   assertEquals((await service.check!({}, offline)).state, "unknown");
 });
 
-Deno.test("service: maps Statuspage's vocabulary", () => {
+test("service: maps Statuspage's vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
@@ -95,7 +96,7 @@ Deno.test("service: maps Statuspage's vocabulary", () => {
 });
 
 /** A driver reaches a cluster directly; this page does not cover that path. */
-Deno.test("service: disclaims cluster reachability, and is informational", () => {
+test("service: disclaims cluster reachability, and is informational", () => {
   assertEquals(API_COMPONENT, "MongoDB Cloud");
   assertEquals(SEARCH_COMPONENT, "MongoDB Atlas Search");
   assert(

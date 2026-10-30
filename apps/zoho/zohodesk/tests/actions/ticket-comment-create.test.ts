@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-comment-create.ts";
 
-Deno.test("ticket-comment-create: POSTs /tickets/{id}/comments with content and isPublic", async () => {
+test("ticket-comment-create: POSTs /tickets/{id}/comments with content and isPublic", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { id: "1" } }]);
   const out = await action.execute(
     { ticketId: "42", content: "Working on it", isPublic: false },
@@ -14,6 +15,6 @@ Deno.test("ticket-comment-create: POSTs /tickets/{id}/comments with content and 
   assertEquals(out, { id: "1" });
 });
 
-Deno.test("ticket-comment-create: is not idempotent", () => {
+test("ticket-comment-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

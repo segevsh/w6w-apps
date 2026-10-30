@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import userUpdate from "../../actions/user-update.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-update: POST /api/v3/users/update with every documented parameter", async () => {
+test("user-update: POST /api/v3/users/update with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 7, "name": "Ada", "email": "ada@example.com", "token": "SECRET-TOKEN" },
   }]);
@@ -38,7 +39,7 @@ Deno.test("user-update: POST /api/v3/users/update with every documented paramete
   assertEquals(out, { "id": 7, "name": "Ada", "email": "ada@example.com" });
 });
 
-Deno.test("user-update: sends a form body, never a query string", async () => {
+test("user-update: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 7, "name": "Ada", "email": "ada@example.com", "token": "SECRET-TOKEN" },
   }]);
@@ -59,7 +60,7 @@ Deno.test("user-update: sends a form body, never a query string", async () => {
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("user-update: omits optional parameters that are not set", async () => {
+test("user-update: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 7, "name": "Ada", "email": "ada@example.com", "token": "SECRET-TOKEN" },
   }]);
@@ -68,11 +69,11 @@ Deno.test("user-update: omits optional parameters that are not set", async () =>
   assertEquals(formOf(calls[0].body), {});
 });
 
-Deno.test("user-update: is declared idempotent", () => {
+test("user-update: is declared idempotent", () => {
   assertEquals(userUpdate.idempotent, true);
 });
 
-Deno.test("user-update: sends no credential of its own", async () => {
+test("user-update: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 7, "name": "Ada", "email": "ada@example.com", "token": "SECRET-TOKEN" },
   }]);
@@ -92,7 +93,7 @@ Deno.test("user-update: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("user-update: surfaces Twist's error body", async () => {
+test("user-update: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },
@@ -106,7 +107,7 @@ Deno.test("user-update: surfaces Twist's error body", async () => {
   assertEquals(message, "Twist error 110: Resource not found (HTTP 404)");
 });
 
-Deno.test("user-update: never returns the user's API token", async () => {
+test("user-update: never returns the user's API token", async () => {
   const { ctx } = mockCtx([{
     body: { "id": 7, "name": "Ada", "email": "ada@example.com", "token": "SECRET-TOKEN" },
   }]);

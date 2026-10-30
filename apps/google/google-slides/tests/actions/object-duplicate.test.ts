@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-duplicate.ts";
 
-Deno.test("object-duplicate: sends only the objectId when no map is supplied", async () => {
+test("object-duplicate: sends only the objectId when no map is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ duplicateObject: { objectId: "c" } }] } }]);
   await action.execute({ presentationId: "p1", objectId: "slide1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("object-duplicate: sends only the objectId when no map is supplied", a
   });
 });
 
-Deno.test("object-duplicate: forwards the original→copy ID map", async () => {
+test("object-duplicate: forwards the original→copy ID map", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -25,7 +26,7 @@ Deno.test("object-duplicate: forwards the original→copy ID map", async () => {
   });
 });
 
-Deno.test("object-duplicate: an empty map is omitted rather than sent as {}", async () => {
+test("object-duplicate: an empty map is omitted rather than sent as {}", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ presentationId: "p1", objectId: "s1", objectIds: {} }, ctx);
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: GETs /search with the query and defaults", async () => {
+test("search: GETs /search with the query and defaults", async () => {
   const resp = { entries: [], total_count: 0 };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({ query: "invoice" }, ctx);
@@ -17,7 +18,7 @@ Deno.test("search: GETs /search with the query and defaults", async () => {
   assertEquals(result, resp);
 });
 
-Deno.test("search: forwards type, file extensions and ancestor folder ids", async () => {
+test("search: forwards type, file extensions and ancestor folder ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [] } }]);
   await action.execute!(
     {

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/inbox-get.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("inbox-get: GETs the single resource", async () => {
+test("inbox-get: GETs the single resource", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "x_1" } }]);
   const result = await action.execute!({ "inboxId": "x_1" } as never, ctx);
   const expected: Array<

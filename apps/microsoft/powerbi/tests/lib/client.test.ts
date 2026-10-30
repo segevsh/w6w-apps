@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { compact, encodeBase64, groupPath, PowerBIClient } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
 // ------------------------------------------------------------- groupPath --
 
-Deno.test("groupPath: no Workspace ID means My workspace — an empty path segment", () => {
+test("groupPath: no Workspace ID means My workspace — an empty path segment", () => {
   assertEquals(groupPath({}), "");
   assertEquals(groupPath(), "");
 });
 
-Deno.test("groupPath: a Workspace ID becomes /groups/{id}, percent-encoded", () => {
+test("groupPath: a Workspace ID becomes /groups/{id}, percent-encoded", () => {
   assertEquals(
     groupPath({ groupId: "f089354e-8366-4e18-aea3-4cb4a3a50b48" }),
     "/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48",
@@ -19,13 +20,13 @@ Deno.test("groupPath: a Workspace ID becomes /groups/{id}, percent-encoded", () 
 
 // ------------------------------------------------------------------ compact --
 
-Deno.test("compact: drops only undefined entries", () => {
+test("compact: drops only undefined entries", () => {
   assertEquals(compact({ a: 1, b: undefined, c: 0, d: null }), { a: 1, c: 0, d: null });
 });
 
 // ------------------------------------------------------------ encodeBase64 --
 
-Deno.test("encodeBase64: round-trips through atob", () => {
+test("encodeBase64: round-trips through atob", () => {
   const bytes = new TextEncoder().encode("hello power bi");
   const encoded = encodeBase64(bytes);
   const decoded = atob(encoded);
@@ -34,28 +35,28 @@ Deno.test("encodeBase64: round-trips through atob", () => {
 
 // -------------------------------------------------------------- PowerBIClient --
 
-Deno.test("PowerBIClient.request: hits api.powerbi.com/v1.0/myorg", async () => {
+test("PowerBIClient.request: hits api.powerbi.com/v1.0/myorg", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   const client = new PowerBIClient(ctx);
   await client.request("/groups");
   assertEquals(calls[0].url, "https://api.powerbi.com/v1.0/myorg/groups");
 });
 
-Deno.test("PowerBIClient.list: unwraps `{ value: [...] }`", async () => {
+test("PowerBIClient.list: unwraps `{ value: [...] }`", async () => {
   const { ctx } = mockCtx([{ body: { value: [{ id: "1" }, { id: "2" }] } }]);
   const client = new PowerBIClient(ctx);
   const value = await client.list("/reports");
   assertEquals(value.length, 2);
 });
 
-Deno.test("PowerBIClient.status: reports the HTTP status without decoding a body", async () => {
+test("PowerBIClient.status: reports the HTTP status without decoding a body", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   const client = new PowerBIClient(ctx);
   const out = await client.status("/groups/x", { method: "DELETE" });
   assertEquals(out.status, 200);
 });
 
-Deno.test("PowerBIClient.accepted: surfaces x-ms-request-id and Location on a 202", async () => {
+test("PowerBIClient.accepted: surfaces x-ms-request-id and Location on a 202", async () => {
   const { ctx } = mockCtx([{
     status: 202,
     headers: {
@@ -70,7 +71,7 @@ Deno.test("PowerBIClient.accepted: surfaces x-ms-request-id and Location on a 20
   assertEquals(out.location, "https://api.powerbi.com/v1.0/myorg/datasets/d1/refreshes/1");
 });
 
-Deno.test("PowerBIClient.binary: returns raw bytes and content-type, never JSON-decoded", async () => {
+test("PowerBIClient.binary: returns raw bytes and content-type, never JSON-decoded", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "%PDF-1.4 fake bytes",
@@ -84,7 +85,7 @@ Deno.test("PowerBIClient.binary: returns raw bytes and content-type, never JSON-
 
 // -------------------------------------------------- error classification --
 
-Deno.test("PowerBIClient: an auth failure with no body still surfaces the x-powerbi-error-info header", async () => {
+test("PowerBIClient: an auth failure with no body still surfaces the x-powerbi-error-info header", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     statusText: "Forbidden",
@@ -101,7 +102,7 @@ Deno.test("PowerBIClient: an auth failure with no body still surfaces the x-powe
   }
 });
 
-Deno.test("PowerBIClient: a validation failure with a JSON body surfaces the vendor's error code/message", async () => {
+test("PowerBIClient: a validation failure with a JSON body surfaces the vendor's error code/message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     statusText: "Bad Request",

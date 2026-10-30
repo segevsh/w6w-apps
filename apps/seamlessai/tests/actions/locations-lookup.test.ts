@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/locations-lookup.ts";
 
 const RESPONSE = { "data": [{ "location": "Austin, Texas, United States" }] };
 
-Deno.test("locations-lookup: calls GET /api/client/v2/search/locations and returns the vendor body", async () => {
+test("locations-lookup: calls GET /api/client/v2/search/locations and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!(
     { "q": "Aust", "limit": 5, "types": ["city-state-country", "postcode"] },
@@ -25,7 +26,7 @@ Deno.test("locations-lookup: calls GET /api/client/v2/search/locations and retur
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("locations-lookup: sends nothing for fields left unset", async () => {
+test("locations-lookup: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "q": "Aust" }, ctx);
   const url = new URL(calls[0].url);
@@ -33,13 +34,13 @@ Deno.test("locations-lookup: sends nothing for fields left unset", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("locations-lookup: refuses a missing q before any request", async () => {
+test("locations-lookup: refuses a missing q before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("locations-lookup: surfaces the vendor's error body", async () => {
+test("locations-lookup: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

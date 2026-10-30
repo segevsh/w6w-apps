@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/verify-email.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("verify-email: posts the email and returns the verdict", async () => {
+test("verify-email: posts the email and returns the verdict", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "email": "john@example.com", "verified": true, "provider": "Google" },
@@ -21,7 +22,7 @@ Deno.test("verify-email: posts the email and returns the verdict", async () => {
   assertEquals(out, { "email": "john@example.com", "verified": true, "provider": "Google" });
 });
 
-Deno.test("verify-email: surfaces a 402 not-enough-credits error", async () => {
+test("verify-email: surfaces a 402 not-enough-credits error", async () => {
   const { ctx } = mockCtx([{ status: 402, body: { "error": "Not enough credits" } }]);
   const err = await assertRejects(async () =>
     await action.execute!({ "email": "a@b.com" } as never, ctx)

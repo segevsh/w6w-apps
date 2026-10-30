@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-update.ts";
 
-Deno.test("folder-update: PATCHes the folder's name", async () => {
+test("folder-update: PATCHes the folder's name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "f1", name: "Renamed" } }]);
   const result = await action.execute({ workspaceId: "w1", folderId: "f1", name: "Renamed" }, ctx);
 

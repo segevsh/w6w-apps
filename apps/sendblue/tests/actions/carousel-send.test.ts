@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import carouselSend from "../../actions/carousel-send.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("carousel-send: POSTs to /api/send-carousel with a normalised media_urls array", async () => {
+test("carousel-send: POSTs to /api/send-carousel with a normalised media_urls array", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "QUEUED", message_type: "carousel" } }]);
   await carouselSend.execute({
     fromNumber: "+1",

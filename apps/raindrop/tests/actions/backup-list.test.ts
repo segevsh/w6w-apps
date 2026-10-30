@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import backupList from "../../actions/backup-list.ts";
 import { items, mockCtx, pathOf } from "../_helpers.ts";
 
 /** PLURAL. `/backup` is the generate route, and it has a side effect. */
-Deno.test("backup-list: reads the plural path", async () => {
+test("backup-list: reads the plural path", async () => {
   const { ctx, calls } = mockCtx([
     { body: items([{ _id: "659d42a35ffbb2eb5ae1cb86", created: "2024-01-09T12:57:07.630Z" }]) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("backup-list: reads the plural path", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("backup-list: an account with no backups returns an empty array", async () => {
+test("backup-list: an account with no backups returns an empty array", async () => {
   const { ctx } = mockCtx([{ body: items([]) }]);
   assertEquals(await backupList.execute({}, ctx), { items: [] });
 });

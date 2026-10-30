@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes, assertThrows } from "../_assert.ts";
 import {
   asJsonObject,
   compact,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("cursorFromLink: lifts the cursor out of next_link and decodes it", () => {
+test("cursorFromLink: lifts the cursor out of next_link and decodes it", () => {
   assertEquals(
     cursorFromLink("https://rest.ripplingapis.com/users?cursor=cD01ODNmZDg5MDA1ZWQy%3D&limit=25"),
     "cD01ODNmZDg5MDA1ZWQy=",
@@ -22,7 +23,7 @@ Deno.test("cursorFromLink: lifts the cursor out of next_link and decodes it", ()
   assertEquals(cursorFromLink("https://rest.ripplingapis.com/users?limit=2"), null);
 });
 
-Deno.test("normalizeCursor: bare token passes through, a URL is reduced, blank is dropped", () => {
+test("normalizeCursor: bare token passes through, a URL is reduced, blank is dropped", () => {
   assertEquals(normalizeCursor("abc="), "abc=");
   assertEquals(normalizeCursor("  abc  "), "abc");
   assertEquals(normalizeCursor("https://evil.example/x?cursor=zzz"), "zzz");
@@ -31,7 +32,7 @@ Deno.test("normalizeCursor: bare token passes through, a URL is reduced, blank i
   assertEquals(normalizeCursor(undefined), undefined);
 });
 
-Deno.test("toCsv / compact / encodeId / truncate", () => {
+test("toCsv / compact / encodeId / truncate", () => {
   assertEquals(toCsv(["user", " manager "]), "user,manager");
   assertEquals(toCsv("user, manager,,"), "user,manager");
   assertEquals(toCsv(""), undefined);
@@ -46,7 +47,7 @@ Deno.test("toCsv / compact / encodeId / truncate", () => {
   assertStringIncludes(truncate("x".repeat(30), 10), "30 bytes truncated");
 });
 
-Deno.test("asJsonObject: object, JSON string, and the three refusals", () => {
+test("asJsonObject: object, JSON string, and the three refusals", () => {
   assertEquals(asJsonObject({ a: 1 }, "f"), { a: 1 });
   assertEquals(asJsonObject('{"a":1}', "f"), { a: 1 });
   assertThrows(() => asJsonObject("", "f"), Error, "f is required");
@@ -55,7 +56,7 @@ Deno.test("asJsonObject: object, JSON string, and the three refusals", () => {
   assertThrows(() => asJsonObject(null, "f"), Error, "f must be a JSON object");
 });
 
-Deno.test("formatRipplingError: reads the {ok,error} body, adds the request id and status hints", () => {
+test("formatRipplingError: reads the {ok,error} body, adds the request id and status hints", () => {
   const e401 = formatRipplingError(
     401,
     "GET",
@@ -75,7 +76,7 @@ Deno.test("formatRipplingError: reads the {ok,error} body, adds the request id a
   );
 });
 
-Deno.test("RipplingClient: sends accept, sets content-type only with a body, skips empty query values", async () => {
+test("RipplingClient: sends accept, sets content-type only with a body, skips empty query values", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ok: 1 } }, { status: 200, body: {} }]);
   const client = new RipplingClient(ctx);
   await client.json("/workers/", {
@@ -91,7 +92,7 @@ Deno.test("RipplingClient: sends accept, sets content-type only with a body, ski
   assertEquals(calls[1].body, '{"name":"x"}');
 });
 
-Deno.test("RipplingClient: 204 and empty bodies resolve to undefined; non-2xx throws", async () => {
+test("RipplingClient: 204 and empty bodies resolve to undefined; non-2xx throws", async () => {
   const { ctx } = mockCtx([
     { status: 204 },
     { status: 200, body: "" },

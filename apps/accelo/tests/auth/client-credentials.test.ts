@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import auth from "../../auth/client-credentials.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const cred = {
 // deno-lint-ignore no-explicit-any
 const a = auth as any;
 
-Deno.test("exchange: Basic-authenticated client_credentials POST to the deployment's token endpoint", async () => {
+test("exchange: Basic-authenticated client_credentials POST to the deployment's token endpoint", async () => {
   const { ctx, calls } = mockCtx([{
     body: { access_token: "T", token_type: "bearer", expires_in: "2592000", deployment: "acme" },
   }]);
@@ -42,7 +43,7 @@ Deno.test("exchange: Basic-authenticated client_credentials POST to the deployme
   assert(ms > 2_591_000_000 && ms <= 2_592_000_000, String(ms));
 });
 
-Deno.test("exchange: a narrower scope is sent verbatim", async () => {
+test("exchange: a narrower scope is sent verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "T", expires_in: 3600 } }]);
   await a.exchange({
     fields: { deployment: "acme", clientId: "i", clientSecret: "s", scope: "read(all)" },
@@ -50,7 +51,7 @@ Deno.test("exchange: a narrower scope is sent verbatim", async () => {
   assertEquals(new URLSearchParams(calls[0].body ?? "").get("scope"), "read(all)");
 });
 
-Deno.test("exchange: surfaces the RFC 6749 error body, not the envelope", async () => {
+test("exchange: surfaces the RFC 6749 error body, not the envelope", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "invalid_client", error_description: "client id and secret were not found" },
@@ -62,7 +63,7 @@ Deno.test("exchange: surfaces the RFC 6749 error body, not the envelope", async 
   );
 });
 
-Deno.test("exchange: requires both secrets and a clean deployment, with no request", async () => {
+test("exchange: requires both secrets and a clean deployment, with no request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve().then(() => a.exchange({ fields: { deployment: "acme" } }, ctx)),
@@ -80,14 +81,14 @@ Deno.test("exchange: requires both secrets and a clean deployment, with no reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("refresh: mints again from the stored client id and secret", async () => {
+test("refresh: mints again from the stored client id and secret", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "T2", expires_in: "100" } }]);
   const out = await a.refresh({ credential: cred }, ctx);
   assertEquals(out.accessToken, "T2");
   assertEquals(calls[0].url, "https://acme.api.accelo.com/oauth2/v0/token");
 });
 
-Deno.test("refresh: refuses a credential missing its client secret", async () => {
+test("refresh: refuses a credential missing its client secret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve().then(() => a.refresh({ credential: { deployment: "acme" } }, ctx)),
@@ -96,12 +97,12 @@ Deno.test("refresh: refuses a credential missing its client secret", async () =>
   );
 });
 
-Deno.test("sign: stamps the bearer token", () => {
+test("sign: stamps the bearer token", () => {
   const out = a.sign({ request: { headers: {} }, credential: cred });
   assertEquals(out.headers.authorization, "Bearer tok");
 });
 
-Deno.test("test: tokeninfo 200 passes", async () => {
+test("test: tokeninfo 200 passes", async () => {
   const { ctx, calls } = mockCtx([{
     body: { meta: { status: "ok" }, response: { email: "a@b" } },
   }]);
@@ -110,7 +111,7 @@ Deno.test("test: tokeninfo 200 passes", async () => {
   assertEquals(calls[0].headers.authorization, "Bearer tok");
 });
 
-Deno.test("test: classifies from the body — 401 invalid_client is a rejected token", async () => {
+test("test: classifies from the body — 401 invalid_client is a rejected token", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { meta: { status: "invalid_client", message: "Could not authorize your access" } },
@@ -120,7 +121,7 @@ Deno.test("test: classifies from the body — 401 invalid_client is a rejected t
   assert(out.message.includes("rejected the token"));
 });
 
-Deno.test("test: 400 means the deployment is wrong", async () => {
+test("test: 400 means the deployment is wrong", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { meta: { status: "invalid_request", message: "Deployment 'acme' was not found." } },
@@ -130,12 +131,12 @@ Deno.test("test: 400 means the deployment is wrong", async () => {
   assert(out.message.includes("check the subdomain"));
 });
 
-Deno.test("test: a 200 carrying a non-ok meta.status still fails", async () => {
+test("test: a 200 carrying a non-ok meta.status still fails", async () => {
   const { ctx } = mockCtx([{ body: { meta: { status: "server_error", message: "boom" } } }]);
   assertEquals((await a.test({ credential: cred }, ctx)).ok, false);
 });
 
-Deno.test("test: missing token or deployment fails without a request", async () => {
+test("test: missing token or deployment fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await a.test({ credential: { deployment: "acme" } }, ctx)).ok, false);
   assertEquals(
@@ -145,7 +146,7 @@ Deno.test("test: missing token or deployment fails without a request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: records deployment and the token owner, never the token", async () => {
+test("afterConnect: records deployment and the token owner, never the token", async () => {
   const { ctx } = mockCtx([{
     body: {
       meta: { status: "ok" },
@@ -162,12 +163,12 @@ Deno.test("afterConnect: records deployment and the token owner, never the token
   assert(!JSON.stringify(out).includes("tok"));
 });
 
-Deno.test("afterConnect: falls back to just the deployment on failure", async () => {
+test("afterConnect: falls back to just the deployment on failure", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   assertEquals(await a.afterConnect({ credential: cred }, ctx), { deployment: "acme" });
 });
 
-Deno.test("revoke: POSTs the token with Basic app credentials; a failure only logs", async () => {
+test("revoke: POSTs the token with Basic app credentials; a failure only logs", async () => {
   const ok = mockCtx([{ body: {} }]);
   await a.revoke({ credential: cred }, ok.ctx);
   assertEquals(ok.calls[0].url, "https://acme.api.accelo.com/oauth2/v0/revoke");

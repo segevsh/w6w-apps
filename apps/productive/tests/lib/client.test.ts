@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   compact,
   encodeId,
@@ -17,13 +18,13 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("encodeId: escapes slashes and refuses an empty id", () => {
+test("encodeId: escapes slashes and refuses an empty id", () => {
   assertEquals(encodeId(" 4/5 "), "4%2F5");
   assertEquals(encodeId(12), "12");
   assertThrows(() => encodeId("  "), Error, "id is required");
 });
 
-Deno.test("compact and queryString: false and 0 survive, empties go", () => {
+test("compact and queryString: false and 0 survive, empties go", () => {
   assertEquals(compact({ a: 0, b: false, c: "", d: null, e: undefined, f: "x" }), {
     a: 0,
     b: false,
@@ -33,7 +34,7 @@ Deno.test("compact and queryString: false and 0 survive, empties go", () => {
   assertEquals(queryString({}), "");
 });
 
-Deno.test("toObject: accepts an object or JSON text, rejects the rest", () => {
+test("toObject: accepts an object or JSON text, rejects the rest", () => {
   assertEquals(toObject('{"a":1}', "x"), { a: 1 });
   assertEquals(toObject({ a: 1 }, "x"), { a: 1 });
   assertEquals(toObject("", "x"), undefined);
@@ -41,7 +42,7 @@ Deno.test("toObject: accepts an object or JSON text, rejects the rest", () => {
   assertThrows(() => toObject("[1]", "x"), Error, "must be a JSON object");
 });
 
-Deno.test("jsonApiBody and requireAny", () => {
+test("jsonApiBody and requireAny", () => {
   assertEquals(jsonApiBody("tasks", { title: "t", note: "", n: 0 }), {
     data: { type: "tasks", attributes: { title: "t", n: 0 } },
   });
@@ -49,14 +50,14 @@ Deno.test("jsonApiBody and requireAny", () => {
   requireAny({ a: false }, "task");
 });
 
-Deno.test("serializeFilter: operators, lists and nested logical groups", () => {
+test("serializeFilter: operators, lists and nested logical groups", () => {
   assertEquals(
     serializeFilter({ name: { contains: "x" }, id: [1, 2], $op: "or", "0": { a: 1 }, skip: null }),
     { "filter[name][contains]": "x", "filter[id]": "1,2", "filter[$op]": "or", "filter[0][a]": 1 },
   );
 });
 
-Deno.test("listQuery: typed filters win over the raw filter; cursor beats page number", () => {
+test("listQuery: typed filters win over the raw filter; cursor beats page number", () => {
   assertEquals(
     listQuery({ filter: { project_id: 1 }, pageNumber: 3, pageSize: 10 }, { project_id: 2 }),
     { "filter[project_id]": 2, "page[size]": 10, "page[number]": 3 },
@@ -65,7 +66,7 @@ Deno.test("listQuery: typed filters win over the raw filter; cursor beats page n
   assertEquals(listQuery({ cursorPaging: true }), { "page[after]": "" });
 });
 
-Deno.test("flattenResource: attributes plus id, type and relationship ids", () => {
+test("flattenResource: attributes plus id, type and relationship ids", () => {
   assertEquals(
     flattenResource({
       id: "1",
@@ -83,7 +84,7 @@ Deno.test("flattenResource: attributes plus id, type and relationship ids", () =
   assertEquals(flattenResource({ id: "1", type: "t" }), { id: "1", type: "t" });
 });
 
-Deno.test("error helpers read the JSON:API envelope", () => {
+test("error helpers read the JSON:API envelope", () => {
   const body = {
     errors: [{
       status: "422",
@@ -102,11 +103,11 @@ Deno.test("error helpers read the JSON:API envelope", () => {
   assertEquals(errorCode({}), undefined);
 });
 
-Deno.test("omitKeys: removes only the named keys", () => {
+test("omitKeys: removes only the named keys", () => {
   assertEquals(omitKeys({ a: 1, b: 2 }, ["b", "zz"]), { a: 1 });
 });
 
-Deno.test("client.one: an empty 2xx body is { ok: true }; a collection is refused", async () => {
+test("client.one: an empty 2xx body is { ok: true }; a collection is refused", async () => {
   const a = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await new ProductiveClient(a.ctx).one("/x"), { ok: true });
   const b = mockCtx([{ status: 200, body: { data: [] } }]);
@@ -119,7 +120,7 @@ Deno.test("client.one: an empty 2xx body is { ok: true }; a collection is refuse
   assertEquals(msg.includes("expected a single resource"), true);
 });
 
-Deno.test("client.one: side-loaded resources come back flattened under included", async () => {
+test("client.one: side-loaded resources come back flattened under included", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -131,7 +132,7 @@ Deno.test("client.one: side-loaded resources come back flattened under included"
   assertEquals(out.included, [{ name: "P", id: "9", type: "projects" }]);
 });
 
-Deno.test("client.many: page metadata, cursor and included", async () => {
+test("client.many: page metadata, cursor and included", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -148,7 +149,7 @@ Deno.test("client.many: page metadata, cursor and included", async () => {
   assertEquals((out.included as unknown[]).length, 1);
 });
 
-Deno.test("client.many: a non-collection answer is refused", async () => {
+test("client.many: a non-collection answer is refused", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: {} } }]);
   let msg = "";
   try {
@@ -159,7 +160,7 @@ Deno.test("client.many: a non-collection answer is refused", async () => {
   assertEquals(msg.includes("expected a JSON:API collection"), true);
 });
 
-Deno.test("client: every request sends the JSON:API content type and no credential", async () => {
+test("client: every request sends the JSON:API content type and no credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await new ProductiveClient(ctx).remove("/tasks/1", 1);
   assertEquals(calls[0].headers["content-type"], "application/vnd.api+json");
@@ -168,7 +169,7 @@ Deno.test("client: every request sends the JSON:API content type and no credenti
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("client: a 429 names the rate-limit window; a non-JSON error shows the text", async () => {
+test("client: a 429 names the rate-limit window; a non-JSON error shows the text", async () => {
   const a = mockCtx([{
     status: 429,
     body: errorBody("429", "rate_limit", "Too Many Requests"),
@@ -191,7 +192,7 @@ Deno.test("client: a 429 names the rate-limit window; a non-JSON error shows the
   assertEquals(msg, "Productive 502: Bad gateway");
 });
 
-Deno.test("client: a 2xx that is not JSON is an error", async () => {
+test("client: a 2xx that is not JSON is an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>" }]);
   let msg = "";
   try {

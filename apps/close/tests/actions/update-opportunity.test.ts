@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-opportunity.ts";
 
-Deno.test("update-opportunity: PUTs /opportunity/{id}/ with only what changed", async () => {
+test("update-opportunity: PUTs /opportunity/{id}/ with only what changed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "oppo_1" } }]);
   await action.execute({ opportunityId: "oppo_1", statusId: "stat_won" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("update-opportunity: PUTs /opportunity/{id}/ with only what changed", 
   assertEquals(JSON.parse(calls[0].body!), { status_id: "stat_won" });
 });
 
-Deno.test("update-opportunity: can backfill date_won for a historical close", async () => {
+test("update-opportunity: can backfill date_won for a historical close", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     { opportunityId: "oppo_1", statusId: "stat_won", dateWon: "2026-01-15" },
@@ -19,6 +20,6 @@ Deno.test("update-opportunity: can backfill date_won for a historical close", as
   assertEquals(JSON.parse(calls[0].body!).date_won, "2026-01-15");
 });
 
-Deno.test("update-opportunity: is idempotent", () => {
+test("update-opportunity: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

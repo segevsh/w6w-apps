@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import start from "../../actions/ocr-multipage-start.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ocr-multipage-start: starts an async OCR job and returns the job id", async () => {
+test("ocr-multipage-start: starts an async OCR job and returns the job id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: {

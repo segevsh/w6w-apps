@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import loopInDisable from "../../actions/loop-in-disable.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("loop-in-disable: POST /api/v3/loop_in/disable with every documented parameter", async () => {
+test("loop-in-disable: POST /api/v3/loop_in/disable with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await loopInDisable.execute({ "objType": "CHANNEL", "objId": 101 }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("loop-in-disable: POST /api/v3/loop_in/disable with every documented p
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("loop-in-disable: sends a form body, never a query string", async () => {
+test("loop-in-disable: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await loopInDisable.execute({ "objType": "CHANNEL", "objId": 101 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("loop-in-disable: sends a form body, never a query string", async () =
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("loop-in-disable: is declared idempotent", () => {
+test("loop-in-disable: is declared idempotent", () => {
   assertEquals(loopInDisable.idempotent, true);
 });
 
-Deno.test("loop-in-disable: sends no credential of its own", async () => {
+test("loop-in-disable: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await loopInDisable.execute({ "objType": "CHANNEL", "objId": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("loop-in-disable: surfaces Twist's error body", async () => {
+test("loop-in-disable: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

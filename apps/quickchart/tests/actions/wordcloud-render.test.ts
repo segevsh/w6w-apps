@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/wordcloud-render.ts";
 import { exec, mockCtx, SVG } from "../_helpers.ts";
 
-Deno.test("wordcloud-render: defaults to svg and splits the colours list", async () => {
+test("wordcloud-render: defaults to svg and splits the colours list", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "image/svg+xml" }, body: SVG }]);
   const out = await exec(action, {
     text: "a b b",
@@ -21,7 +22,7 @@ Deno.test("wordcloud-render: defaults to svg and splits the colours list", async
   assertEquals(out.svg, SVG);
 });
 
-Deno.test("wordcloud-render: no colours means no colors field", async () => {
+test("wordcloud-render: no colours means no colors field", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "image/svg+xml" }, body: SVG }]);
   await exec(action, { text: "x", format: "png" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { text: "x", format: "png" });

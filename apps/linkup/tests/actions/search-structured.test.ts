@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import searchStructured from "../../actions/search-structured.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("search-structured: pins structured, requires the schema", async () => {
+test("search-structured: pins structured, requires the schema", async () => {
   const s = mockCtx([{ body: { k: 1 } }]);
   const out = await searchStructured.execute({
     q: "q",

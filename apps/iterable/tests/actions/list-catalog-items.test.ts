@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-catalog-items.ts";
 
-Deno.test("list-catalog-items: metadata", () => {
+test("list-catalog-items: metadata", () => {
   assertEquals(action.key, "list-catalog-items");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("list-catalog-items: metadata", () => {
   ]);
 });
 
-Deno.test("list-catalog-items: calls GET /catalogs/my-cat/items on the US host", async () => {
+test("list-catalog-items: calls GET /catalogs/my-cat/items on the US host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "catalogItemsWithProperties": [{ "itemId": "i1" }], "totalItemsCount": 1 },
   }]);
@@ -36,7 +37,7 @@ Deno.test("list-catalog-items: calls GET /catalogs/my-cat/items on the US host",
   assertEquals(out, { "catalogItemsWithProperties": [{ "itemId": "i1" }], "totalItemsCount": 1 });
 });
 
-Deno.test("list-catalog-items: uses the EU host when the connection region is eu", async () => {
+test("list-catalog-items: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "catalogItemsWithProperties": [{ "itemId": "i1" }], "totalItemsCount": 1 },
   }], { connection: { display: { region: "eu" } } });
@@ -53,7 +54,7 @@ Deno.test("list-catalog-items: uses the EU host when the connection region is eu
   );
 });
 
-Deno.test("list-catalog-items: rejects a missing `catalogName` without calling Iterable", async () => {
+test("list-catalog-items: rejects a missing `catalogName` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -68,7 +69,7 @@ Deno.test("list-catalog-items: rejects a missing `catalogName` without calling I
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-catalog-items: surfaces an HTTP error with Iterable's own code", async () => {
+test("list-catalog-items: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -85,7 +86,7 @@ Deno.test("list-catalog-items: surfaces an HTTP error with Iterable's own code",
   );
 });
 
-Deno.test("list-catalog-items: treats a 200 carrying a non-Success code as a failure", async () => {
+test("list-catalog-items: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

@@ -1,16 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockKnackCtx } from "../_helpers.ts";
 
 const OBJECT_KEY = "object_1";
 
-Deno.test("quota: reports unknown when the connection records no test Object key", async () => {
+test("quota: reports unknown when the connection records no test Object key", async () => {
   const { ctx } = mockKnackCtx([], {});
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("quota: reports unknown when the response carries none of the documented headers", async () => {
+test("quota: reports unknown when the response carries none of the documented headers", async () => {
   const { ctx, calls } = mockKnackCtx(
     [{ body: { total_pages: 1, current_page: 1, total_records: 0, records: [] } }],
     { testObject: OBJECT_KEY },
@@ -23,7 +25,7 @@ Deno.test("quota: reports unknown when the response carries none of the document
   );
 });
 
-Deno.test("quota: reads both header pairs when present and reports ok with headroom", async () => {
+test("quota: reads both header pairs when present and reports ok with headroom", async () => {
   const { ctx } = mockKnackCtx(
     [{
       body: { total_pages: 1, current_page: 1, total_records: 0, records: [] },
@@ -50,7 +52,7 @@ Deno.test("quota: reads both header pairs when present and reports ok with headr
   assertEquals(rate?.resetAt, new Date(1534205053 * 1000).toISOString());
 });
 
-Deno.test("quota: a daily plan limit at or over 90% reports degraded", async () => {
+test("quota: a daily plan limit at or over 90% reports degraded", async () => {
   const { ctx } = mockKnackCtx(
     [{
       body: {},
@@ -66,7 +68,7 @@ Deno.test("quota: a daily plan limit at or over 90% reports degraded", async () 
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("quota: a fully exhausted daily plan limit reports down", async () => {
+test("quota: a fully exhausted daily plan limit reports down", async () => {
   const { ctx } = mockKnackCtx(
     [{
       body: {},
@@ -82,7 +84,7 @@ Deno.test("quota: a fully exhausted daily plan limit reports down", async () => 
   assertEquals(result.state, "down");
 });
 
-Deno.test("quota: an exhausted per-second rate limit never outranks degraded", async () => {
+test("quota: an exhausted per-second rate limit never outranks degraded", async () => {
   const { ctx } = mockKnackCtx(
     [{
       body: {},
@@ -98,8 +100,8 @@ Deno.test("quota: an exhausted per-second rate limit never outranks degraded", a
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("quota: never reads the credential — the request is signed by the host, not this hook", async () => {
-  const src = await Deno.readTextFile(new URL("../../health/quota.ts", import.meta.url));
+test("quota: never reads the credential — the request is signed by the host, not this hook", async () => {
+  const src = await denoReadTextFile(new URL("../../health/quota.ts", import.meta.url));
   const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
   // `credential: "signed"` is the declarative HealthCheck posture field, not a
   // read of an actual credential value — the `check` hook's input type carries

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import imageTemplateList from "../../actions/image-template-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("image-template-list: calls GET /api/v2/image-templates/ and shapes the output", async () => {
+test("image-template-list: calls GET /api/v2/image-templates/ and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await imageTemplateList.execute(
     { "itemsPerPage": 10, "type": "postcard" } as never,
@@ -19,7 +20,7 @@ Deno.test("image-template-list: calls GET /api/v2/image-templates/ and shapes th
   assert((out.imageTemplates as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("image-template-list: a vendor error surfaces the HTTP status and message", async () => {
+test("image-template-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { "message": "Unauthorized" } }]);
   const err = await assertRejects(
     () =>

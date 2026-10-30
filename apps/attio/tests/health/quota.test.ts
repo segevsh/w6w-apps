@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: is declared unavailable rather than omitted or faked", () => {
+test("quota: is declared unavailable rather than omitted or faked", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assert(quota.unavailable !== undefined);
@@ -11,7 +12,7 @@ Deno.test("quota: is declared unavailable rather than omitted or faked", () => {
  * An `unavailable` entry reports `unknown`. At the default `degraded` severity
  * that would pin the whole app at `unknown` forever, so this is not optional.
  */
-Deno.test("quota: is informational, so it cannot pin the app at unknown", () => {
+test("quota: is informational, so it cannot pin the app at unknown", () => {
   assertEquals(quota.severity, "informational");
 });
 
@@ -20,7 +21,7 @@ Deno.test("quota: is informational, so it cannot pin the app at unknown", () => 
  * look. It names all three verifications: no header on the wire, nothing in the
  * spec, no endpoint to poll — plus the near-miss that is not one.
  */
-Deno.test("quota: the reason names every check that was actually run", () => {
+test("quota: the reason names every check that was actually run", () => {
   const reason = quota.unavailable!.reason;
   assert(/RateLimit-\*/.test(reason), reason);
   assert(/Retry-After/.test(reason), reason);
@@ -33,13 +34,13 @@ Deno.test("quota: the reason names every check that was actually run", () => {
   assert(/PLAN ceiling/i.test(reason), reason);
 });
 
-Deno.test("quota: records the published fixed limits, which are constants and not a reading", () => {
+test("quota: records the published fixed limits, which are constants and not a reading", () => {
   const reason = quota.unavailable!.reason;
   assert(/100 read/.test(reason), reason);
   assert(/25 write/.test(reason), reason);
 });
 
 /** An unavailable check has no hook, so it cannot widen egress either. */
-Deno.test("quota: declares no network allowlist", () => {
+test("quota: declares no network allowlist", () => {
   assertEquals(quota.network, undefined);
 });

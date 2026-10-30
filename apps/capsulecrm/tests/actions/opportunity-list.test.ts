@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-list.ts";
 
-Deno.test("opportunity-list: GETs /opportunities with paging and since", async () => {
+test("opportunity-list: GETs /opportunities with paging and since", async () => {
   const { ctx, calls } = mockCtx([{ body: { opportunities: [{ id: 12 }] } }]);
   const out = await action.execute({ page: 2, since: "2020-01-01T00:00:00Z" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("opportunity-list: GETs /opportunities with paging and since", async (
   assertEquals(out, { opportunities: [{ id: 12 }], nextPage: undefined });
 });
 
-Deno.test("opportunity-list: embed is comma-joined", async () => {
+test("opportunity-list: embed is comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: { opportunities: [] } }]);
   await action.execute({ embed: ["party", "milestone"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("embed"), "party,milestone");

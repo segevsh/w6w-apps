@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/team-list.ts";
 
-Deno.test("team-list: lists joined teams", async () => {
+test("team-list: lists joined teams", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "teams": [{ "team_id": 1 }] } }]);
   const out = await action.execute({ "joined": true } as never, ctx);
   assertEquals(calls.length, 1);
@@ -16,6 +17,6 @@ Deno.test("team-list: lists joined teams", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "teams": [{ "team_id": 1 }] });
 });
 
-Deno.test("team-list: is a read action", () => {
+test("team-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

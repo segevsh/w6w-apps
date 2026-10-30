@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import meGet from "../../actions/me-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("me-get: GET /api/v1/me on the workspace host", async () => {
+test("me-get: GET /api/v1/me on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -21,7 +22,7 @@ Deno.test("me-get: GET /api/v1/me on the workspace host", async () => {
   assertEquals((out as { user: { id: string } }).user.id, "u1");
 });
 
-Deno.test("me-get: a Fellow error surfaces its detail and status", async () => {
+test("me-get: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(meGet.execute({ onBehalfOf: "boss@acme.com" }, ctx)),
@@ -31,7 +32,7 @@ Deno.test("me-get: a Fellow error surfaces its detail and status", async () => {
   assertEquals(err.message.includes("Forbidden for this key"), true, err.message);
 });
 
-Deno.test("me-get: X-On-Behalf-Of is sent only when asked for", async () => {
+test("me-get: X-On-Behalf-Of is sent only when asked for", async () => {
   const a = mockCtx([{ body: { user: {}, workspace: {} } }, { body: { user: {}, workspace: {} } }]);
   await meGet.execute({ onBehalfOf: "boss@acme.com" }, a.ctx);
   await meGet.execute({}, a.ctx);

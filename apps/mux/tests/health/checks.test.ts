@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -12,7 +13,7 @@ const page = (over: Record<string, string> = {}) => ({
   ].map((name) => ({ name, status: over[name] ?? "operational", group: false })),
 });
 
-Deno.test("service: all green reports ok", async () => {
+test("service: all green reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page() }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
   assertEquals(new URL(calls[0].url).host, "status.mux.com");
@@ -22,17 +23,17 @@ Deno.test("service: all green reports ok", async () => {
  * The API and delivery fail independently, and a workflow that only ingests is
  * unaffected by a playback incident.
  */
-Deno.test("service: an API-only outage is degraded", async () => {
+test("service: an API-only outage is degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ API: "major_outage" }) }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a delivery-only outage is degraded", async () => {
+test("service: a delivery-only outage is degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ "Video Delivery": "major_outage" }) }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: both halves out is down", async () => {
+test("service: both halves out is down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({ API: "major_outage", "Video Delivery": "major_outage" }),
@@ -40,19 +41,19 @@ Deno.test("service: both halves out is down", async () => {
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: unrelated components are ignored", async () => {
+test("service: unrelated components are ignored", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ "Something Else": "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
   assertEquals(out.components!["something-else"], undefined);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: reads whatever rate-limit headers arrive", async () => {
+test("quota: reads whatever rate-limit headers arrive", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [] },
@@ -68,7 +69,7 @@ Deno.test("quota: reads whatever rate-limit headers arrive", async () => {
   assertEquals(out.quota![0].remaining, 900);
 });
 
-Deno.test("quota: a nearly-empty allowance is degraded", async () => {
+test("quota: a nearly-empty allowance is degraded", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [] },
@@ -82,14 +83,14 @@ Deno.test("quota: a nearly-empty allowance is degraded", async () => {
 });
 
 /** No headers is an answer, not a fault. */
-Deno.test("quota: no headers reports unknown", async () => {
+test("quota: no headers reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] } }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "unknown");
   assert(/no rate-limit headers/.test(out.message!), out.message);
 });
 
-Deno.test("quota: headroom is informational", () => {
+test("quota: headroom is informational", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
 });

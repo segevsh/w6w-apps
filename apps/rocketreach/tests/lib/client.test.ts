@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   compact,
   errorCode,
@@ -13,7 +14,7 @@ import { bulkBody, lookupQuery, parseIds, profileOutput, statusOutput } from "..
 import { normalizeSearch, PERSON_FILTERS, searchBody } from "../../lib/search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: errorText reads detail, message, error or the raw text", () => {
+test("client: errorText reads detail, message, error or the raw text", () => {
   assertEquals(
     errorText('{"detail":"Invalid API key","error_code":"authentication_failed"}'),
     "Invalid API key",
@@ -24,13 +25,13 @@ Deno.test("client: errorText reads detail, message, error or the raw text", () =
   assertEquals(errorText("  "), "");
 });
 
-Deno.test("client: errorCode reads a string or numeric error_code", () => {
+test("client: errorCode reads a string or numeric error_code", () => {
   assertEquals(errorCode('{"error_code":"authentication_failed"}'), "authentication_failed");
   assertEquals(errorCode('{"error_code":202}'), "202");
   assertEquals(errorCode("<html>"), undefined);
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: false }), { a: 1, e: false });
   assertEquals(truncate("x".repeat(10), 5).startsWith("xxxxx…"), true);
   assertEquals(toList(" a, b\nc ,,"), ["a", "b", "c"]);
@@ -42,7 +43,7 @@ Deno.test("client: helpers", () => {
   assertThrows(() => parseJsonParam("{", "Queries"), Error, "Queries must be valid JSON");
 });
 
-Deno.test("client: formatError carries credit_type, the 429 Retry-After and a hint", () => {
+test("client: formatError carries credit_type, the 429 Retry-After and a hint", () => {
   const e402 = formatError(
     402,
     "POST",
@@ -57,7 +58,7 @@ Deno.test("client: formatError carries credit_type, the 429 Retry-After and a hi
   );
 });
 
-Deno.test("client: sends no credential header, repeats array params and skips empties", async () => {
+test("client: sends no credential header, repeats array params and skips empties", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new RocketReachClient(ctx).request("/person/checkStatus", {
     query: { ids: [1, 2], skip: undefined, blank: "" },
@@ -67,7 +68,7 @@ Deno.test("client: sends no credential header, repeats array params and skips em
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("client: a 429 surfaces the vendor message and Retry-After; a 2xx text body is kept", async () => {
+test("client: a 429 surfaces the vendor message and Retry-After; a 2xx text body is kept", async () => {
   const busy = mockCtx([{
     status: 429,
     headers: { "retry-after": "12" },
@@ -84,7 +85,7 @@ Deno.test("client: a 429 surfaces the vendor message and Retry-After; a 2xx text
   assertEquals((await new RocketReachClient(empty.ctx).request("/x")).body, undefined);
 });
 
-Deno.test("search: searchBody splits lists, merges the raw query over them, requires a filter", () => {
+test("search: searchBody splits lists, merges the raw query over them, requires a filter", () => {
   const body = searchBody({
     current_title: "VP of Sales, Director",
     company_domain: "acme.com",
@@ -107,7 +108,7 @@ Deno.test("search: searchBody splits lists, merges the raw query over them, requ
   assertThrows(() => searchBody({ query: "[1]" }, PERSON_FILTERS), Error, "JSON object");
 });
 
-Deno.test("search: normalizeSearch reads a bare array and the profiles+pagination shape", () => {
+test("search: normalizeSearch reads a bare array and the profiles+pagination shape", () => {
   const bare = normalizeSearch([{ id: 1 }, { id: 2 }], 1, 2);
   assertEquals([bare.count, bare.nextStart, bare.total], [2, 3, undefined]);
   const wrapped = normalizeSearch(
@@ -127,7 +128,7 @@ Deno.test("search: normalizeSearch reads a bare array and the profiles+paginatio
   assertEquals(normalizeSearch(Array(100).fill({ id: 1 }), 9951, 100).nextStart, undefined);
 });
 
-Deno.test("profile: lookupQuery needs an identifying combination", () => {
+test("profile: lookupQuery needs an identifying combination", () => {
   assertThrows(() => lookupQuery({ name: "A B" }), Error, "Identify the person");
   assertEquals(
     lookupQuery({ name: "A B", current_employer: "Acme", return_cached_emails: false }),
@@ -143,7 +144,7 @@ Deno.test("profile: lookupQuery needs an identifying combination", () => {
   );
 });
 
-Deno.test("profile: profileOutput maps fields, complete flag and tolerates a bare body", () => {
+test("profile: profileOutput maps fields, complete flag and tolerates a bare body", () => {
   const out = profileOutput({
     id: 5,
     status: "complete",
@@ -155,7 +156,7 @@ Deno.test("profile: profileOutput maps fields, complete flag and tolerates a bar
   assertEquals(profileOutput(undefined).emails, []);
 });
 
-Deno.test("profile: parseIds, statusOutput and bulkBody validate their input", () => {
+test("profile: parseIds, statusOutput and bulkBody validate their input", () => {
   assertEquals(parseIds("5, 6", toList), [5, 6]);
   assertThrows(() => parseIds("", toList), Error, "at least one");
   assertThrows(() => parseIds("a", toList), Error, "positive integers");

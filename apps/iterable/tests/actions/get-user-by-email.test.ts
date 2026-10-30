@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-user-by-email.ts";
 
-Deno.test("get-user-by-email: metadata", () => {
+test("get-user-by-email: metadata", () => {
   assertEquals(action.key, "get-user-by-email");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["email"]);
 });
 
-Deno.test("get-user-by-email: calls GET /users/getByEmail on the US host", async () => {
+test("get-user-by-email: calls GET /users/getByEmail on the US host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "user": { "email": "a@b.co", "userId": "u1", "dataFields": { "plan": "pro" } } },
   }]);
@@ -23,7 +24,7 @@ Deno.test("get-user-by-email: calls GET /users/getByEmail on the US host", async
   });
 });
 
-Deno.test("get-user-by-email: uses the EU host when the connection region is eu", async () => {
+test("get-user-by-email: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "user": { "email": "a@b.co", "userId": "u1", "dataFields": { "plan": "pro" } } },
   }], { connection: { display: { region: "eu" } } });
@@ -31,7 +32,7 @@ Deno.test("get-user-by-email: uses the EU host when the connection region is eu"
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/getByEmail?email=abc");
 });
 
-Deno.test("get-user-by-email: rejects a missing `email` without calling Iterable", async () => {
+test("get-user-by-email: rejects a missing `email` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -43,7 +44,7 @@ Deno.test("get-user-by-email: rejects a missing `email` without calling Iterable
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-user-by-email: surfaces an HTTP error with Iterable's own code", async () => {
+test("get-user-by-email: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -54,7 +55,7 @@ Deno.test("get-user-by-email: surfaces an HTTP error with Iterable's own code", 
   );
 });
 
-Deno.test("get-user-by-email: treats a 200 carrying a non-Success code as a failure", async () => {
+test("get-user-by-email: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

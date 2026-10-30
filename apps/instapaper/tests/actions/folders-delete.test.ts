@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import foldersDelete from "../../actions/folders-delete.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("folders-delete: posts folder_id and returns it on the documented empty-array success", async () => {
+test("folders-delete: posts folder_id and returns it on the documented empty-array success", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   const result = await foldersDelete.execute({ folderId: 3 }, ctx);
 

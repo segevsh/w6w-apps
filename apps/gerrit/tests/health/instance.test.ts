@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/instance.ts";
 import service from "../../health/service.ts";
@@ -8,7 +9,7 @@ const PREFIX = ")]}'\n";
 const run = (ctx: Parameters<NonNullable<typeof check.check>>[1]) => check.check!({}, ctx);
 
 /** The one place this app deliberately skips /a/. */
-Deno.test("instance: probes the bare path, unauthenticated", async () => {
+test("instance: probes the bare path, unauthenticated", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: PREFIX + '"3.14.2"' }], D);
   const result = await run(ctx);
   assertEquals(calls[0].url, "https://gerrit.example.com/config/server/version");
@@ -19,14 +20,14 @@ Deno.test("instance: probes the bare path, unauthenticated", async () => {
 });
 
 /** The absence of the prefix is a more precise signal than a status code. */
-Deno.test("instance: no magic prefix means something else answered", async () => {
+test("instance: no magic prefix means something else answered", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>SSO login</html>" }], D);
   const result = await run(ctx);
   assertEquals(result.state, "degraded");
   assert(/proxy or an SSO login page/.test(result.message!), result.message);
 });
 
-Deno.test("instance: a 5xx is down and a 4xx is degraded", async () => {
+test("instance: a 5xx is down and a 4xx is degraded", async () => {
   const server = mockCtx([{ status: 502, body: "" }], D);
   assertEquals((await run(server.ctx)).state, "down");
 
@@ -36,7 +37,7 @@ Deno.test("instance: a 5xx is down and a 4xx is degraded", async () => {
   assert(/behind an SSO gateway/.test(result.message!), result.message);
 });
 
-Deno.test("instance: an unreachable host is down and a missing host is unknown", async () => {
+test("instance: an unreachable host is down and a missing host is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -50,7 +51,7 @@ Deno.test("instance: an unreachable host is down and a missing host is unknown",
 });
 
 /** A prefix with an unexpected body shape is still a live Gerrit. */
-Deno.test("instance: a prefixed body that will not parse is still ok", async () => {
+test("instance: a prefixed body that will not parse is still ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: PREFIX + "not json" }], D);
   const result = await run(ctx);
   assertEquals(result.state, "ok");
@@ -58,7 +59,7 @@ Deno.test("instance: a prefixed body that will not parse is still ok", async () 
 });
 
 /** Gerrit is software people run, not a service. */
-Deno.test("service: is a declared absence with no vendor to point at", () => {
+test("service: is a declared absence with no vendor to point at", () => {
   assertEquals(service.check, undefined);
   assertEquals(service.severity, "informational");
   assert(

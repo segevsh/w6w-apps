@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs to the flat /v1/api/webhook/create route", async () => {
+test("webhook-create: POSTs to the flat /v1/api/webhook/create route", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 4211 } }]);
   await webhookCreate.execute(
     { formId: "aB1", url: "https://example.com/hooks/fillout" },
@@ -24,7 +25,7 @@ Deno.test("webhook-create: POSTs to the flat /v1/api/webhook/create route", asyn
  * the obvious move and the one the delete schema rejects, so this action
  * returns both forms and the string one is what Remove Webhook expects.
  */
-Deno.test("webhook-create: returns the integer id AND the string form delete needs", async () => {
+test("webhook-create: returns the integer id AND the string form delete needs", async () => {
   const { ctx } = mockCtx([{ body: { id: 4211 } }]);
   const out = await webhookCreate.execute({ formId: "aB1", url: "https://x.example.com" }, ctx);
   assertEquals(out.id, 4211);
@@ -32,12 +33,12 @@ Deno.test("webhook-create: returns the integer id AND the string form delete nee
   assertEquals(typeof out.webhookId, "string");
 });
 
-Deno.test("webhook-create: a missing id yields undefined rather than the string 'undefined'", async () => {
+test("webhook-create: a missing id yields undefined rather than the string 'undefined'", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await webhookCreate.execute({ formId: "aB1", url: "https://x.example.com" }, ctx);
   assertEquals(out.webhookId, undefined);
 });
 
-Deno.test("webhook-create: is not idempotent — a retry means every submission twice", () => {
+test("webhook-create: is not idempotent — a retry means every submission twice", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

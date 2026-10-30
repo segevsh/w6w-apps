@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-sms.ts";
 
-Deno.test("send-sms: metadata", () => {
+test("send-sms: metadata", () => {
   assertEquals(action.key, "send-sms");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -16,7 +17,7 @@ Deno.test("send-sms: metadata", () => {
   ]);
 });
 
-Deno.test("send-sms: calls POST /sms/target on the US host", async () => {
+test("send-sms: calls POST /sms/target on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "campaignId": 7,
@@ -41,7 +42,7 @@ Deno.test("send-sms: calls POST /sms/target on the US host", async () => {
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("send-sms: uses the EU host when the connection region is eu", async () => {
+test("send-sms: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -56,7 +57,7 @@ Deno.test("send-sms: uses the EU host when the connection region is eu", async (
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/sms/target");
 });
 
-Deno.test("send-sms: rejects a missing `campaignId` without calling Iterable", async () => {
+test("send-sms: rejects a missing `campaignId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -74,7 +75,7 @@ Deno.test("send-sms: rejects a missing `campaignId` without calling Iterable", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-sms: surfaces an HTTP error with Iterable's own code", async () => {
+test("send-sms: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -92,7 +93,7 @@ Deno.test("send-sms: surfaces an HTTP error with Iterable's own code", async () 
   );
 });
 
-Deno.test("send-sms: treats a 200 carrying a non-Success code as a failure", async () => {
+test("send-sms: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

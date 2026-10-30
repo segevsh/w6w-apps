@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { extractError, OpenRouterClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new OpenRouterClient(ctx);
   const result = await client.request("/embeddings");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error carrying the vendor's error message", async () => {
+test("client: throws a descriptive Error carrying the vendor's error message", async () => {
   const { ctx } = mockCtx([
     {
       status: 429,
@@ -34,7 +35,7 @@ Deno.test("client: throws a descriptive Error carrying the vendor's error messag
   assertEquals(err.message.includes("rate_limit_exceeded"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new OpenRouterClient(ctx);
   await client.request("/x", {
@@ -47,7 +48,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "gen-1" } }]);
   const client = new OpenRouterClient(ctx);
   await client.request("/chat/completions", {
@@ -61,7 +62,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new OpenRouterClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -70,7 +71,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: defaults to GET with no body", async () => {
+test("client: defaults to GET with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const client = new OpenRouterClient(ctx);
   await client.request("/models");
@@ -80,7 +81,7 @@ Deno.test("client: defaults to GET with no body", async () => {
 
 // --- extractError -----------------------------------------------------------
 
-Deno.test("extractError: reads the vendor's error.message and error.metadata.error_type", async () => {
+test("extractError: reads the vendor's error.message and error.metadata.error_type", async () => {
   const res = new Response(
     JSON.stringify({
       error: { code: 401, message: "Invalid credentials", metadata: { error_type: "auth_error" } },
@@ -90,7 +91,7 @@ Deno.test("extractError: reads the vendor's error.message and error.metadata.err
   assertEquals(await extractError(res), "Invalid credentials (auth_error)");
 });
 
-Deno.test("extractError: reads error.message alone when there is no metadata", async () => {
+test("extractError: reads error.message alone when there is no metadata", async () => {
   const res = new Response(
     JSON.stringify({ error: { code: 400, message: "Bad Request" } }),
     { status: 400 },
@@ -98,7 +99,7 @@ Deno.test("extractError: reads error.message alone when there is no metadata", a
   assertEquals(await extractError(res), "Bad Request");
 });
 
-Deno.test("extractError: falls back to raw text when the body isn't the expected shape", async () => {
+test("extractError: falls back to raw text when the body isn't the expected shape", async () => {
   const res = new Response("<html>gateway error</html>", { status: 502 });
   assertEquals(await extractError(res), "<html>gateway error</html>");
 });

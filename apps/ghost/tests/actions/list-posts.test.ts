@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-posts.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("list-posts: GETs /posts/ with default paging and no include", async () => {
+test("list-posts: GETs /posts/ with default paging and no include", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [{ id: "1" }], meta: {} } }], { display });
   const result = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("list-posts: GETs /posts/ with default paging and no include", async (
   assertEquals(result.items, [{ id: "1" }]);
 });
 
-Deno.test("list-posts: forwards filter/order/paging and builds include from booleans", async () => {
+test("list-posts: forwards filter/order/paging and builds include from booleans", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [] } }], { display });
   await action.execute({
     filter: "status:draft",

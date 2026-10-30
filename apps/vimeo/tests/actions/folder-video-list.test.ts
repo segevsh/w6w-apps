@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderVideoList from "../../actions/folder-video-list.ts";
 import { collection, mockCtx, q, url, video } from "../_helpers.ts";
 
-Deno.test("folder-video-list: hits /me/projects/{id}/videos", async () => {
+test("folder-video-list: hits /me/projects/{id}/videos", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([video(1)]) }]);
   await folderVideoList.execute({ folderId: "12345" }, ctx);
   assertEquals(url(calls[0]).pathname, "/me/projects/12345/videos");
 });
 
 /** Off by default, so a folder whose videos live one level down looks empty. */
-Deno.test("folder-video-list: include_subfolders is only sent when set", async () => {
+test("folder-video-list: include_subfolders is only sent when set", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }, { body: collection([]) }]);
   await folderVideoList.execute({ folderId: "1" }, ctx);
   assertEquals(q(calls[0], "include_subfolders"), null);
@@ -18,7 +19,7 @@ Deno.test("folder-video-list: include_subfolders is only sent when set", async (
   assertEquals(q(calls[1], "include_subfolders"), "true");
 });
 
-Deno.test("folder-video-list: forwards the search and tag filters", async () => {
+test("folder-video-list: forwards the search and tag filters", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await folderVideoList.execute({
     folderId: "1",
@@ -41,6 +42,6 @@ Deno.test("folder-video-list: forwards the search and tag filters", async () => 
   assertEquals(q(calls[0], "fields"), "uri");
 });
 
-Deno.test("folder-video-list: is a search action", () => {
+test("folder-video-list: is a search action", () => {
   assertEquals(folderVideoList.type, "search");
 });

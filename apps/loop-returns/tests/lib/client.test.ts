@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   cursorOf,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("errorText: reads every error envelope Loop uses", () => {
+test("errorText: reads every error envelope Loop uses", () => {
   assertEquals(
     errorText({ error: { code: "401", http_code: "GEN-UNAUTHORIZED", message: "Unauthorized." } }),
     "GEN-UNAUTHORIZED: Unauthorized.",
@@ -35,7 +36,7 @@ Deno.test("errorText: reads every error envelope Loop uses", () => {
   );
 });
 
-Deno.test("errorText: success shapes are not errors", () => {
+test("errorText: success shapes are not errors", () => {
   assertEquals(errorText(true), null);
   assertEquals(errorText([{ id: 1 }]), null);
   assertEquals(errorText({ returns: [], nextPageUrl: null }), null);
@@ -43,7 +44,7 @@ Deno.test("errorText: success shapes are not errors", () => {
   assertEquals(errorText(null), null);
 });
 
-Deno.test("request: builds the URL, drops empty query values, sends JSON", async () => {
+test("request: builds the URL, drops empty query values, sends JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   const out = await new LoopClient(ctx).request("POST", "/x", {
     query: { a: "1", b: undefined, c: "", d: false },
@@ -55,7 +56,7 @@ Deno.test("request: builds the URL, drops empty query values, sends JSON", async
   assertEquals(calls[0].body, '{"z":1}');
 });
 
-Deno.test("request: a non-JSON 200 is a failure, a 204 is null", async () => {
+test("request: a non-JSON 200 is a failure, a 204 is null", async () => {
   const a = mockCtx([{ body: "<html>shell</html>" }]);
   const err = await assertRejects(() => new LoopClient(a.ctx).get("/x")) as LoopError;
   assert(err.message.includes("non-JSON"));
@@ -63,14 +64,14 @@ Deno.test("request: a non-JSON 200 is a failure, a 204 is null", async () => {
   assertEquals(await new LoopClient(b.ctx).delete("/x"), null);
 });
 
-Deno.test("request: a non-2xx keeps status and parsed body on the error", async () => {
+test("request: a non-2xx keeps status and parsed body on the error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: false }]);
   const err = await assertRejects(() => new LoopClient(ctx).get("/x")) as LoopError;
   assertEquals(err.status, 422);
   assertEquals(err.body, false);
 });
 
-Deno.test("helpers: cursorOf, encodeId, compact, splitList, jsonObject", () => {
+test("helpers: cursorOf, encodeId, compact, splitList, jsonObject", () => {
   assertEquals(cursorOf("https://api.loopreturns.com/api/v1/x?cursor=abc&n=1"), "abc");
   assertEquals(cursorOf(null), null);
   assertEquals(cursorOf("not a url"), null);
@@ -90,7 +91,7 @@ Deno.test("helpers: cursorOf, encodeId, compact, splitList, jsonObject", () => {
   }
 });
 
-Deno.test("request: a 2xx {message} acknowledgement is not an error; a 4xx one is", async () => {
+test("request: a 2xx {message} acknowledgement is not an error; a 4xx one is", async () => {
   const ok = mockCtx([{ status: 202, body: { message: "Label requested", returnId: 1 } }]);
   assertEquals(await new LoopClient(ok.ctx).post("/x"), {
     message: "Label requested",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: strips _subaccount.api_key before returning", async () => {
+test("account-get: strips _subaccount.api_key before returning", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -39,7 +40,7 @@ Deno.test("account-get: strips _subaccount.api_key before returning", async () =
   assertEquals(result.balance, "1117.461060");
 });
 
-Deno.test("account-get: tolerates a null _subaccount (e.g. on the top-level user)", async () => {
+test("account-get: tolerates a null _subaccount (e.g. on the top-level user)", async () => {
   const { ctx } = mockCtx([
     {
       body: {

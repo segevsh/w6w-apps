@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateChannelCategory from "../../actions/update-channel-category.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-channel-category: POST /channelCategories/{id}", async () => {
+test("update-channel-category: POST /channelCategories/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await updateChannelCategory.execute({ channelCategoryID: "c1", name: "Cohort 2" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,6 +11,6 @@ Deno.test("update-channel-category: POST /channelCategories/{id}", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Cohort 2" });
 });
 
-Deno.test("update-channel-category: is idempotent", () => {
+test("update-channel-category: is idempotent", () => {
   assertEquals(updateChannelCategory.idempotent, true);
 });

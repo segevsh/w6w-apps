@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/get-table.ts";
 
-Deno.test("get-table: sends both the table path segment and the appId query", async () => {
+test("get-table: sends both the table path segment and the appId query", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { id: "bck1", name: "Customers" } }]);
   const out = await action.execute({ tableId: "bck1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("get-table: sends both the table path segment and the appId query", as
   assertEquals(out.name, "Customers");
 });
 
-Deno.test("get-table: encodes an awkward table id", async () => {
+test("get-table: encodes an awkward table id", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "a b/c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/tables/a%20b%2Fc");

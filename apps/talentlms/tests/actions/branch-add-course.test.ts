@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/branch-add-course.ts";
 
-Deno.test("branch-add-course: GET addcoursetobranch and returns the vendor payload", async () => {
+test("branch-add-course: GET addcoursetobranch and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({ "courseId": 4, "branchId": 2 }, ctx);
   assertEquals(calls.length, 1);
@@ -15,6 +16,6 @@ Deno.test("branch-add-course: GET addcoursetobranch and returns the vendor paylo
   assertEquals(out, { ok: "yes" });
 });
 
-Deno.test("branch-add-course: declares idempotent honestly", () => {
+test("branch-add-course: declares idempotent honestly", () => {
   assertEquals(action.idempotent, true);
 });

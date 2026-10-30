@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs to /tasks, wrapped and unwrapped under `task`", async () => {
+test("task-create: POSTs to /tasks, wrapped and unwrapped under `task`", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { task: { id: 1, title: "Follow up" } } }]);
   const out = await action.execute({ title: "Follow up" }, ctx);
   assertEquals(calls[0].url, "https://acme.myfreshworks.com/crm/sales/api/tasks");
@@ -11,7 +12,7 @@ Deno.test("task-create: POSTs to /tasks, wrapped and unwrapped under `task`", as
   assertEquals(out, { id: 1, title: "Follow up" });
 });
 
-Deno.test("task-create: optionally attaches to a targetable record", async () => {
+test("task-create: optionally attaches to a targetable record", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { task: {} } }]);
   await action.execute(
     { title: "Follow up", targetableType: "Deal", targetableId: 2, ownerId: 1 },

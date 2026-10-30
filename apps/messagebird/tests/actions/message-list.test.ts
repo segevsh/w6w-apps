@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/message-list.ts";
 
-Deno.test("message-list: GETs /messages with no query params when unfiltered", async () => {
+test("message-list: GETs /messages with no query params when unfiltered", async () => {
   const body = { offset: 0, limit: 20, count: 0, totalCount: 0, items: [] };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -14,7 +15,7 @@ Deno.test("message-list: GETs /messages with no query params when unfiltered", a
   assertEquals(result, body);
 });
 
-Deno.test("message-list: passes the documented filters through as query params", async () => {
+test("message-list: passes the documented filters through as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/field-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("field-get: sends GET /metadata/records/{n}/fields/{name} and returns data", async () => {
+test("field-get: sends GET /metadata/records/{n}/fields/{name} and returns data", async () => {
   const f = { label: "Account Name", fieldName: "accountname" };
   const { ctx, calls } = mockCtx([{ body: { success: true, data: f } }]);
   const out = await action.execute!({ objectNumber: 1, fieldName: "accountname" }, ctx);
@@ -11,19 +12,19 @@ Deno.test("field-get: sends GET /metadata/records/{n}/fields/{name} and returns 
   assertEquals(out, { field: f });
 });
 
-Deno.test("field-get: percent-encodes the field name", async () => {
+test("field-get: percent-encodes the field name", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {} } }]);
   await action.execute!({ objectNumber: 1, fieldName: "a b" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/metadata/records/1/fields/a%20b");
 });
 
-Deno.test("field-get: sends no tokenid header of its own", async () => {
+test("field-get: sends no tokenid header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {} } }]);
   await action.execute!({ objectNumber: 1, fieldName: "x" }, ctx);
   assert(!("tokenid" in calls[0].headers));
 });
 
-Deno.test("field-get: surfaces vendor errors", async () => {
+test("field-get: surfaces vendor errors", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { Message: "Invalid Record Name" } }]);
   await assertRejects(
     async () => await action.execute!({ objectNumber: 1, fieldName: "x" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("field-get: surfaces vendor errors", async () => {
   );
 });
 
-Deno.test("field-get: declares type and output", () => {
+test("field-get: declares type and output", () => {
   assertEquals(action.type, "read");
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

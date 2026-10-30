@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/answer.ts";
 
-Deno.test("answer: POSTs /answer with the query and stream forced false", async () => {
+test("answer: POSTs /answer with the query and stream forced false", async () => {
   const body = { requestId: "r1", answer: "$350 billion.", citations: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ query: "What is SpaceX worth?" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("answer: POSTs /answer with the query and stream forced false", async 
   assertEquals(result, body);
 });
 
-Deno.test("answer: forwards model, systemPrompt, userLocation and outputSchema", async () => {
+test("answer: forwards model, systemPrompt, userLocation and outputSchema", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: "r1", answer: "x", citations: [] } }]);
   await action.execute!(
     {

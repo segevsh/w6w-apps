@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: posts a single-element contacts array and returns the created contact", async () => {
+test("contact-create: posts a single-element contacts array and returns the created contact", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [{ id: "c1", first_name: "Phil" }] } }]);
   const out = await action.execute(
     { contactBook: "book-1", firstName: "Phil", infos: '[{"kind":"email","value":"a@b.com"}]' },
@@ -17,12 +18,12 @@ Deno.test("contact-create: posts a single-element contacts array and returns the
   assertEquals(out, { id: "c1", first_name: "Phil" });
 });
 
-Deno.test("contact-create: requires contactBook", async () => {
+test("contact-create: requires contactBook", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ contactBook: "" }, ctx));
 });
 
-Deno.test("contact-create: rejects invalid JSON in infos", async () => {
+test("contact-create: rejects invalid JSON in infos", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ contactBook: "b1", infos: "{not json" }, ctx));
 });

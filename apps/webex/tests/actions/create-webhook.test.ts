@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-webhook.ts";
 
-Deno.test("create-webhook: POSTs /webhooks and strips the echoed secret from the result", async () => {
+test("create-webhook: POSTs /webhooks and strips the echoed secret from the result", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "w1", secret: "shh", resource: "messages", event: "created" } },
   ]);
@@ -29,7 +30,7 @@ Deno.test("create-webhook: POSTs /webhooks and strips the echoed secret from the
   assertEquals(result, { id: "w1", resource: "messages", event: "created" });
 });
 
-Deno.test("create-webhook: ownedByOrg maps to ownedBy=org in the body", async () => {
+test("create-webhook: ownedByOrg maps to ownedBy=org in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { name: "n", targetUrl: "https://x", resource: "rooms", event: "created", ownedByOrg: true },
@@ -38,6 +39,6 @@ Deno.test("create-webhook: ownedByOrg maps to ownedBy=org in the body", async ()
   assertEquals(JSON.parse(calls[0].body!).ownedBy, "org");
 });
 
-Deno.test("create-webhook: is not idempotent", () => {
+test("create-webhook: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-attachment-create.ts";
 
-Deno.test("ticket-attachment-create: POSTs multipart form data to /tickets/{id}/attachments", async () => {
+test("ticket-attachment-create: POSTs multipart form data to /tickets/{id}/attachments", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { id: "1", name: "issues.txt" } }]);
   const base64 = btoa("hello world");
   const out = await action.execute(
@@ -18,6 +19,6 @@ Deno.test("ticket-attachment-create: POSTs multipart form data to /tickets/{id}/
   assertEquals(out, { id: "1", name: "issues.txt" });
 });
 
-Deno.test("ticket-attachment-create: is not idempotent", () => {
+test("ticket-attachment-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

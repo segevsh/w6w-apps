@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clockIn from "../../actions/clock-in.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("clock-in: POSTs to the time clock's clock-in path with a compacted body", async () => {
+test("clock-in: POSTs to the time clock's clock-in path with a compacted body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shift: { id: "sh_1", userId: 7 } }) }]);
   const out = await clockIn.execute({ timeClockId: 99, userId: 7 }, ctx);
   assertEquals(pathOf(calls[0].url), "/time-clock/v1/time-clocks/99/clock-in");
@@ -11,7 +12,7 @@ Deno.test("clock-in: POSTs to the time clock's clock-in path with a compacted bo
   assertEquals(out, { shift: { id: "sh_1", userId: 7 } });
 });
 
-Deno.test("clock-in: passes through jobId, timezone, schedulerShiftId and timestamp when set", async () => {
+test("clock-in: passes through jobId, timezone, schedulerShiftId and timestamp when set", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shift: {} }) }]);
   await clockIn.execute(
     {
@@ -33,6 +34,6 @@ Deno.test("clock-in: passes through jobId, timezone, schedulerShiftId and timest
   });
 });
 
-Deno.test("clock-in: not idempotent — a retry opens a second shift", () => {
+test("clock-in: not idempotent — a retry opens a second shift", () => {
   assertEquals(clockIn.idempotent, false);
 });

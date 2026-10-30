@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/timesheets-list.ts";
 
-Deno.test("timesheets-list: GETs gettimesheet with filters", async () => {
+test("timesheets-list: GETs gettimesheet with filters", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ recordId: "3", timesheetName: "Week 15" }], status: 0 } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("timesheets-list: GETs gettimesheet with filters", async () => {
   assertEquals(out.result.length, 1);
 });
 
-Deno.test("timesheets-list: requires user", async () => {
+test("timesheets-list: requires user", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(() => action.execute({ user: "" }, ctx) as Promise<unknown>, Error, "user");
   assert(calls.length === 0);

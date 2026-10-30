@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-get: GETs emailmarketing/getcontact.json with the documented parameters", async () => {
+test("contact-get: GETs emailmarketing/getcontact.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "contact": { "id": "3", "email": "jim@tester.com" } }),
   }]);
@@ -16,7 +17,7 @@ Deno.test("contact-get: GETs emailmarketing/getcontact.json with the documented 
   assertEquals(out, { "contact": { "id": "3", "email": "jim@tester.com" } });
 });
 
-Deno.test("contact-get: is a read with no request body", async () => {
+test("contact-get: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "contact": { "id": "3", "email": "jim@tester.com" } }),
   }]);
@@ -25,7 +26,7 @@ Deno.test("contact-get: is a read with no request body", async () => {
   assertEquals(contactGet.type, "read");
 });
 
-Deno.test("contact-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("contact-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

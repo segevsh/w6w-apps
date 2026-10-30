@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import channelInfoGet from "../../actions/channel-info-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("channel-info-get: GETs /v2/channel-info with tag and no_recent_pushes", async () => {
+test("channel-info-get: GETs /v2/channel-info with tag and no_recent_pushes", async () => {
   const { ctx, calls } = mockCtx([
     { body: { iden: "ch1", name: "Elon Musk News", subscriber_count: 9382239 } },
   ]);
@@ -17,6 +18,6 @@ Deno.test("channel-info-get: GETs /v2/channel-info with tag and no_recent_pushes
   assertEquals(out.subscriberCount, 9382239);
 });
 
-Deno.test("channel-info-get: does not require a Connection — the vendor's own example is unauthenticated", () => {
+test("channel-info-get: does not require a Connection — the vendor's own example is unauthenticated", () => {
   assertEquals(channelInfoGet.requiresAuth, false);
 });

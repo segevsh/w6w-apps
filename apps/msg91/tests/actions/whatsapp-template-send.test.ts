@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/whatsapp-template-send.ts";
 import { jsonBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const BASE = {
   languageCode: "en_US",
 };
 
-Deno.test("whatsapp-template-send: POST the bulk endpoint with one to/components entry", async () => {
+test("whatsapp-template-send: POST the bulk endpoint with one to/components entry", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: "Your request is in process",
@@ -43,7 +44,7 @@ Deno.test("whatsapp-template-send: POST the bulk endpoint with one to/components
   assertEquals(out, { requestId: "e03d9f", message: "Your request is in process" });
 });
 
-Deno.test("whatsapp-template-send: per-recipient components override To", async () => {
+test("whatsapp-template-send: per-recipient components override To", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", hasError: false, request_id: "r" },
   }]);
@@ -56,11 +57,11 @@ Deno.test("whatsapp-template-send: per-recipient components override To", async 
   assertEquals(body.payload.template.to_and_components, tac);
 });
 
-Deno.test("whatsapp-template-send: needs a recipient", async () => {
+test("whatsapp-template-send: needs a recipient", async () => {
   await assertRejects(async () => await action.execute({ ...BASE }, mockCtx([]).ctx));
 });
 
-Deno.test("whatsapp-template-send: puts no credential on the request (sign owns that)", async () => {
+test("whatsapp-template-send: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", hasError: false, request_id: "r" },
   }]);
@@ -75,7 +76,7 @@ Deno.test("whatsapp-template-send: puts no credential on the request (sign owns 
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("whatsapp-template-send: a vendor error surfaces its own message", async () => {
+test("whatsapp-template-send: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({

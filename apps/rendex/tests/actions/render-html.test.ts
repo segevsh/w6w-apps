@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import renderHtml from "../../actions/render-html.ts";
 import { bodyOf, envelope, mockCtx } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const shot = {
   format: "png",
 };
 
-Deno.test("render-html: sends html and parsed Mustache data", async () => {
+test("render-html: sends html and parsed Mustache data", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(shot) }]);
   await renderHtml.execute({ source: "<h1>{{t}}</h1>", data: '{"t":"Hi"}', width: 1200 }, ctx);
   assertEquals(bodyOf(calls[0]), { html: "<h1>{{t}}</h1>", data: { t: "Hi" }, width: 1200 });

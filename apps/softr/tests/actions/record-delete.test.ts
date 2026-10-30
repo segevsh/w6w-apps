@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordDelete from "../../actions/record-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-delete: DELETEs .../records/{recordId} and reports deleted on a 204", async () => {
+test("record-delete: DELETEs .../records/{recordId} and reports deleted on a 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await recordDelete.execute(
     { databaseId: "db1", tableId: "tbl1", recordId: "rec1" },
@@ -14,6 +15,6 @@ Deno.test("record-delete: DELETEs .../records/{recordId} and reports deleted on 
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("record-delete: is marked idempotent — deleting twice is safe", () => {
+test("record-delete: is marked idempotent — deleting twice is safe", () => {
   assertEquals(recordDelete.idempotent, true);
 });

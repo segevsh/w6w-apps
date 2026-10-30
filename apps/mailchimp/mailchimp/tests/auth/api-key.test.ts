@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares a basic-type auth with a required secret field", () => {
+test("api-key: declares a basic-type auth with a required secret field", () => {
   assertEquals(auth.key, "api-key");
   // `basic`, not `apiKey`: `sign` sends HTTP Basic rather than dropping the
   // key verbatim into a header/query slot (which is what `apiKey` describes).
@@ -13,7 +14,7 @@ Deno.test("api-key: declares a basic-type auth with a required secret field", ()
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign injects HTTP Basic with the key as password", async () => {
+test("api-key: sign injects HTTP Basic with the key as password", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://us14.api.mailchimp.com/3.0/lists",
@@ -28,7 +29,7 @@ Deno.test("api-key: sign injects HTTP Basic with the key as password", async () 
   assertEquals(out.headers["authorization"], `Basic ${encoded}`);
 });
 
-Deno.test("api-key: sign rewrites the request host to the key's real datacenter", async () => {
+test("api-key: sign rewrites the request host to the key's real datacenter", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://unresolved.api.mailchimp.com/3.0/lists",
@@ -44,7 +45,7 @@ Deno.test("api-key: sign rewrites the request host to the key's real datacenter"
   assertEquals(url.pathname, "/3.0/lists");
 });
 
-Deno.test("api-key: sign leaves the URL untouched when the key has no datacenter suffix", async () => {
+test("api-key: sign leaves the URL untouched when the key has no datacenter suffix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://unresolved.api.mailchimp.com/3.0/lists",
@@ -58,7 +59,7 @@ Deno.test("api-key: sign leaves the URL untouched when the key has no datacenter
   assertEquals(out.url, request.url);
 });
 
-Deno.test("api-key: test hits the account's datacenter /ping and reports ok", async () => {
+test("api-key: test hits the account's datacenter /ping and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { health_status: "Ok" } }]);
   const result = await auth.test({ credential: { apiKey: "abcdef-us14" } }, ctx);
   assertEquals(result.ok, true);
@@ -68,7 +69,7 @@ Deno.test("api-key: test hits the account's datacenter /ping and reports ok", as
   assert(calls[0].headers["authorization"]?.startsWith("Basic "));
 });
 
-Deno.test("api-key: test with missing credential reports the failure without a network call", async () => {
+test("api-key: test with missing credential reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -76,7 +77,7 @@ Deno.test("api-key: test with missing credential reports the failure without a n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test with malformed key (no datacenter) reports the failure", async () => {
+test("api-key: test with malformed key (no datacenter) reports the failure", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { apiKey: "no-datacenter-" } }, ctx);
   assertEquals(result.ok, false);
@@ -84,14 +85,14 @@ Deno.test("api-key: test with malformed key (no datacenter) reports the failure"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test surfaces the upstream status on non-2xx", async () => {
+test("api-key: test surfaces the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { apiKey: "bad-us14" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: afterConnect returns the datacenter and account fields", async () => {
+test("api-key: afterConnect returns the datacenter and account fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -112,7 +113,7 @@ Deno.test("api-key: afterConnect returns the datacenter and account fields", asy
   assertEquals(new URL(calls[0].url).origin, "https://us14.api.mailchimp.com");
 });
 
-Deno.test("api-key: afterConnect still returns the datacenter when the account lookup fails", async () => {
+test("api-key: afterConnect still returns the datacenter when the account lookup fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const result = await auth.afterConnect!(
     { credential: { apiKey: "abcdef-us14" } },

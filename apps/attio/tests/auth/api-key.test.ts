@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import apiKey, { authHeaders, parseScopes } from "../../auth/api-key.ts";
 
@@ -22,7 +23,7 @@ const ACTIVE = {
   workspace_logo_url: null,
 };
 
-Deno.test("auth: declares a bearer method with a single secret field", () => {
+test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "bearer");
   assertEquals(apiKey.fields?.length, 1);
@@ -31,11 +32,11 @@ Deno.test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(apiKey.fields?.[0].required, true);
 });
 
-Deno.test("authHeaders: builds exactly `Bearer <token>`", () => {
+test("authHeaders: builds exactly `Bearer <token>`", () => {
   assertEquals(authHeaders(CRED), { authorization: `Bearer ${"a".repeat(64)}` });
 });
 
-Deno.test("sign: stamps the bearer header onto the request and returns it", () => {
+test("sign: stamps the bearer header onto the request and returns it", () => {
   const request = {
     url: "https://api.attio.com/v2/objects",
     headers: {} as Record<string, string>,
@@ -48,7 +49,7 @@ Deno.test("sign: stamps the bearer header onto the request and returns it", () =
 });
 
 /** `sign` is the only hook handed the credential, and it must not do network I/O. */
-Deno.test("sign: makes no network call", () => {
+test("sign: makes no network call", () => {
   const { ctx, calls } = mockCtx([]);
   apiKey.sign!(
     {
@@ -64,7 +65,7 @@ Deno.test("sign: makes no network call", () => {
  * ── test: the 200-that-means-failure ─────────────────────────────────────────
  */
 
-Deno.test("test: probes GET /v2/self with the bearer header", async () => {
+test("test: probes GET /v2/self with the bearer header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ACTIVE }]);
   const result = await apiKey.test({ credential: CRED }, ctx);
   assertEquals(result, { ok: true });
@@ -77,7 +78,7 @@ Deno.test("test: probes GET /v2/self with the bearer header", async () => {
  * but unknown 64-character token gets `HTTP 200 {"active":false}` — never a 401.
  * A `res.ok` check would pass here.
  */
-Deno.test("test: FAILS on the HTTP 200 `{active:false}` body", async () => {
+test("test: FAILS on the HTTP 200 `{active:false}` body", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { active: false } }]);
   const result = await apiKey.test({ credential: CRED }, ctx);
   assertEquals(result.ok, false);
@@ -90,7 +91,7 @@ Deno.test("test: FAILS on the HTTP 200 `{active:false}` body", async () => {
  * `{"code":"missing_value","message":"Token was not recognised…"}`. It deserves
  * a different sentence — "your key is truncated" rather than "your key is dead".
  */
-Deno.test("test: explains the 400 that a malformed token gets", async () => {
+test("test: explains the 400 that a malformed token gets", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -109,27 +110,27 @@ Deno.test("test: explains the 400 that a malformed token gets", async () => {
  * A live token with no scopes returns `active: true` and then 403s on every
  * call. Reporting it green would send someone hunting the wrong problem.
  */
-Deno.test("test: fails an active token that was granted no scopes", async () => {
+test("test: fails an active token that was granted no scopes", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { ...ACTIVE, scope: "" } }]);
   const result = await apiKey.test({ credential: CRED }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("no scopes"), result.message);
 });
 
-Deno.test("test: fails without a network call when the credential is empty", async () => {
+test("test: fails without a network call when the credential is empty", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
   assertEquals(result, { ok: false, message: "credential missing accessToken" });
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: surfaces the vendor message on any other non-2xx", async () => {
+test("test: surfaces the vendor message on any other non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { message: "Internal error" } }]);
   const result = await apiKey.test({ credential: CRED }, ctx);
   assertEquals(result, { ok: false, message: "Internal error" });
 });
 
-Deno.test("test: an unreadable body is reported as such, not as success", async () => {
+test("test: an unreadable body is reported as such, not as success", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -143,7 +144,7 @@ Deno.test("test: an unreadable body is reported as such, not as success", async 
  * ── afterConnect ─────────────────────────────────────────────────────────────
  */
 
-Deno.test("afterConnect: labels the connection with the workspace and records the scopes", async () => {
+test("afterConnect: labels the connection with the workspace and records the scopes", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ACTIVE }]);
   const display = await apiKey.afterConnect!({ credential: CRED } as never, ctx) as {
     workspace: { id: string; name: string; slug: string };
@@ -160,12 +161,12 @@ Deno.test("afterConnect: labels the connection with the workspace and records th
   assertEquals(apiKey.connectionLabel, "{{workspace.name}}");
 });
 
-Deno.test("afterConnect: returns nothing rather than half a label on an inactive token", async () => {
+test("afterConnect: returns nothing rather than half a label on an inactive token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { active: false } }]);
   assertEquals(await apiKey.afterConnect!({ credential: CRED } as never, ctx), {});
 });
 
-Deno.test("afterConnect: returns nothing on a transport failure", async () => {
+test("afterConnect: returns nothing on a transport failure", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   assertEquals(await apiKey.afterConnect!({ credential: CRED } as never, ctx), {});
 });
@@ -175,7 +176,7 @@ Deno.test("afterConnect: returns nothing on a transport failure", async () => {
  * token. This pins the fact that none of them ends up in stored display data —
  * the failure mode being a live credential rendered in a Connection UI.
  */
-Deno.test("afterConnect: stores nothing that could be a credential", async () => {
+test("afterConnect: stores nothing that could be a credential", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ACTIVE }]);
   const display = await apiKey.afterConnect!({ credential: CRED } as never, ctx);
   const serialised = JSON.stringify(display);
@@ -187,13 +188,13 @@ Deno.test("afterConnect: stores nothing that could be a credential", async () =>
  * ── scopes ───────────────────────────────────────────────────────────────────
  */
 
-Deno.test("parseScopes: splits on whitespace and drops empties", () => {
+test("parseScopes: splits on whitespace and drops empties", () => {
   assertEquals(parseScopes("a b  c"), ["a", "b", "c"]);
   assertEquals(parseScopes(""), []);
   assertEquals(parseScopes(undefined), []);
 });
 
-Deno.test("auth: the field hint names the scopes this app's actions need", () => {
+test("auth: the field hint names the scopes this app's actions need", () => {
   const hint = apiKey.fields![0].hint!;
   for (
     const scope of [

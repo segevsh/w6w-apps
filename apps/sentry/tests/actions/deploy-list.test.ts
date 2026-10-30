@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deploy-list.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("deploy-list: lists a release's deploys", async () => {
+test("deploy-list: lists a release's deploys", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: [{ id: "1", environment: "production" }] }],
     {
@@ -19,7 +20,7 @@ Deno.test("deploy-list: lists a release's deploys", async () => {
   assertEquals(result, [{ id: "1", environment: "production" }]);
 });
 
-Deno.test("deploy-list: a blank version fails before any request", async () => {
+test("deploy-list: a blank version fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`version` is required");
   assertEquals(calls.length, 0);

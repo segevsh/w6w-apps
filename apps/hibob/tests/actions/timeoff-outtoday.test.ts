@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import outtoday from "../../actions/timeoff-outtoday.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timeoff-outtoday: no params sends no query; filters pass through", async () => {
+test("timeoff-outtoday: no params sends no query; filters pass through", async () => {
   const { ctx, calls } = mockCtx([{ body: { outs: [] } }, { body: { outs: [] } }]);
   await outtoday.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/timeoff/outtoday");

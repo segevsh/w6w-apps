@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/object-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("object-get: sends GET /metadata/records/{n} and returns data", async () => {
+test("object-get: sends GET /metadata/records/{n} and returns data", async () => {
   const obj = { name: "Account", systemName: "account", objectType: "1" };
   const { ctx, calls } = mockCtx([{ body: { success: true, data: obj } }]);
   const out = await action.execute!({ objectNumber: 1 }, ctx);
@@ -11,13 +12,13 @@ Deno.test("object-get: sends GET /metadata/records/{n} and returns data", async 
   assertEquals(out, { object: obj });
 });
 
-Deno.test("object-get: sends no tokenid header of its own", async () => {
+test("object-get: sends no tokenid header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {} } }]);
   await action.execute!({ objectNumber: 1 }, ctx);
   assert(!("tokenid" in calls[0].headers));
 });
 
-Deno.test("object-get: surfaces 'Invalid Record Name'", async () => {
+test("object-get: surfaces 'Invalid Record Name'", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { Message: "Invalid Record Name" } }]);
   await assertRejects(
     async () => await action.execute!({ objectNumber: 99999 }, ctx),
@@ -26,7 +27,7 @@ Deno.test("object-get: surfaces 'Invalid Record Name'", async () => {
   );
 });
 
-Deno.test("object-get: declares type and output", () => {
+test("object-get: declares type and output", () => {
   assertEquals(action.type, "read");
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

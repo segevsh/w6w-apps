@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tag-list.ts";
 
-Deno.test("tag-list: offset-paginated", async () => {
+test("tag-list: offset-paginated", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "t1" }], total: 1 } }], {
     display: {},
   });

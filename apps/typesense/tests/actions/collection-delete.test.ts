@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-delete.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "https://search.internal:8108" } };
 const noAliases = { status: 200, body: { aliases: [] } };
 const dropped = { status: 200, body: { name: "products_v1", num_documents: 12000 } };
 
-Deno.test("collection-delete: drops the collection after confirmation", async () => {
+test("collection-delete: drops the collection after confirmation", async () => {
   const { ctx, calls } = mockCtx([noAliases, dropped], D);
   const result = await action.execute({ collection: "products_v1", confirm: true }, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("collection-delete: drops the collection after confirmation", async ()
 });
 
 /** An alias outlives the collection and 404s on every search. */
-Deno.test("collection-delete: names the aliases about to break, and warns", async () => {
+test("collection-delete: names the aliases about to break, and warns", async () => {
   const { ctx, logs } = mockCtx([
     { status: 200, body: { aliases: [{ name: "products", collection_name: "products_v1" }] } },
     dropped,
@@ -36,7 +37,7 @@ Deno.test("collection-delete: names the aliases about to break, and warns", asyn
 });
 
 /** A search-only key cannot list aliases; that is not a reason to refuse. */
-Deno.test("collection-delete: a key that cannot list aliases still deletes", async () => {
+test("collection-delete: a key that cannot list aliases still deletes", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: { message: "Forbidden" } }, dropped], D);
   const result = await action.execute({ collection: "products_v1", confirm: true }, ctx) as Record<
     string,
@@ -46,7 +47,7 @@ Deno.test("collection-delete: a key that cannot list aliases still deletes", asy
   assertEquals(calls.length, 2);
 });
 
-Deno.test("collection-delete: refuses without confirmation, before any request", async () => {
+test("collection-delete: refuses without confirmation, before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ collection: "products_v1" }, ctx),
@@ -56,6 +57,6 @@ Deno.test("collection-delete: refuses without confirmation, before any request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("collection-delete: is not idempotent", () => {
+test("collection-delete: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

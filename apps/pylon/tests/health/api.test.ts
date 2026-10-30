@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,20 +10,20 @@ const run = (ctx: any, region?: string) =>
 
 const authErr = { errors: ["Token must follow Bearer"], code: "invalid_authorization_header" };
 
-Deno.test("api: the documented 401 authentication error is healthy, sent unsigned", async () => {
+test("api: the documented 401 authentication error is healthy, sent unsigned", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: authErr }]);
   assertEquals((await run(ctx)).state, "ok");
   assertEquals(calls[0].url, "https://api.usepylon.com/me");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("api: probes the connection's region host", async () => {
+test("api: probes the connection's region host", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: authErr }]);
   await run(ctx, "eu");
   assertEquals(calls[0].url, "https://api.eu.usepylon.com/me");
 });
 
-Deno.test("api: 5xx is down, an HTML 200 is degraded, other errors are degraded", async () => {
+test("api: 5xx is down, an HTML 200 is degraded, other errors are degraded", async () => {
   assertEquals((await run(mockCtx([{ status: 502, body: "bad gateway" }]).ctx)).state, "down");
   assertEquals(
     (await run(mockCtx([{ status: 200, body: "<html></html>" }]).ctx)).state,
@@ -32,6 +33,6 @@ Deno.test("api: 5xx is down, an HTML 200 is degraded, other errors are degraded"
   assertEquals((await run(nf.ctx)).state, "degraded");
 });
 
-Deno.test("api: an unreachable host is down", async () => {
+test("api: an unreachable host is down", async () => {
   assertEquals((await run(mockCtx([]).ctx)).state, "down");
 });

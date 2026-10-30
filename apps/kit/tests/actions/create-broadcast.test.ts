@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-broadcast.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-broadcast: a bare call saves a draft via an explicit send_at: null", async () => {
+test("create-broadcast: a bare call saves a draft via an explicit send_at: null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { broadcast: { id: 9 } } }]);
   await action.execute!({ subject: "Hi", content: "<p>Hi</p>" }, ctx);
   assertEquals(calls[0].url, "https://api.kit.com/v4/broadcasts");
@@ -14,7 +15,7 @@ Deno.test("create-broadcast: a bare call saves a draft via an explicit send_at: 
   });
 });
 
-Deno.test("create-broadcast: a sendAt schedules rather than drafts", async () => {
+test("create-broadcast: a sendAt schedules rather than drafts", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { broadcast: {} } }]);
   await action.execute!(
     { subject: "Hi", content: "<p>Hi</p>", sendAt: "2026-09-01T10:00:00Z" },
@@ -23,7 +24,7 @@ Deno.test("create-broadcast: a sendAt schedules rather than drafts", async () =>
   assertEquals(JSON.parse(calls[0].body!).send_at, "2026-09-01T10:00:00Z");
 });
 
-Deno.test("create-broadcast: maps every optional field onto Kit's snake_case names", async () => {
+test("create-broadcast: maps every optional field onto Kit's snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { broadcast: {} } }]);
   await action.execute!({
     subject: "Hi",
@@ -54,7 +55,7 @@ Deno.test("create-broadcast: maps every optional field onto Kit's snake_case nam
   });
 });
 
-Deno.test("create-broadcast: is not idempotent — each call makes another broadcast", () => {
+test("create-broadcast: is not idempotent — each call makes another broadcast", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

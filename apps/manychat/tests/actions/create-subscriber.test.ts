@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createSubscriber from "../../actions/create-subscriber.ts";
 
 const OK = { body: { status: "success", data: { id: "1" } } };
 
-Deno.test("create-subscriber: POSTs to createSubscriber with snake_case fields", async () => {
+test("create-subscriber: POSTs to createSubscriber with snake_case fields", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await createSubscriber.execute!({
     firstName: "Ada",
@@ -21,13 +22,13 @@ Deno.test("create-subscriber: POSTs to createSubscriber with snake_case fields",
   });
 });
 
-Deno.test("create-subscriber: whatsapp_phone alone is a valid identity", async () => {
+test("create-subscriber: whatsapp_phone alone is a valid identity", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await createSubscriber.execute!({ whatsappPhone: "+15551234567" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { whatsapp_phone: "+15551234567" });
 });
 
-Deno.test("create-subscriber: refuses a body with no identity at all", async () => {
+test("create-subscriber: refuses a body with no identity at all", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => {
@@ -39,13 +40,13 @@ Deno.test("create-subscriber: refuses a body with no identity at all", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-subscriber: `false` opt-in survives compact — it is a claim, not an absence", async () => {
+test("create-subscriber: `false` opt-in survives compact — it is a claim, not an absence", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await createSubscriber.execute!({ phone: "+1555", hasOptInSms: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).has_opt_in_sms, false);
 });
 
-Deno.test("create-subscriber: does not enforce the consent rules — Manychat owns those", async () => {
+test("create-subscriber: does not enforce the consent rules — Manychat owns those", async () => {
   // has_opt_in_sms=true without a consent_phrase is Manychat's to reject; a
   // client-side check that waved compliance through would be worse.
   const { ctx, calls } = mockCtx([OK]);
@@ -54,6 +55,6 @@ Deno.test("create-subscriber: does not enforce the consent rules — Manychat ow
   assert(!("consent_phrase" in JSON.parse(calls[0].body!)));
 });
 
-Deno.test("create-subscriber: is not idempotent", () => {
+test("create-subscriber: is not idempotent", () => {
   assertEquals(createSubscriber.idempotent, false);
 });

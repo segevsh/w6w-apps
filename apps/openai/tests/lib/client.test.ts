@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { base64ToBytes, OpenAIClient } from "../../lib/client.ts";
 
-Deno.test("client: JSON body sets content-type and stringifies", async () => {
+test("client: JSON body sets content-type and stringifies", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new OpenAIClient(ctx);
   await client.request("/chat/completions", { method: "POST", body: { model: "x" } });
@@ -11,7 +12,7 @@ Deno.test("client: JSON body sets content-type and stringifies", async () => {
   assertEquals(calls[0].body, JSON.stringify({ model: "x" }));
 });
 
-Deno.test("client: FormData body is passed through without content-type override", async () => {
+test("client: FormData body is passed through without content-type override", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new OpenAIClient(ctx);
   const form = new FormData();
@@ -23,14 +24,14 @@ Deno.test("client: FormData body is passed through without content-type override
   assertEquals(calls[0].rawBody instanceof FormData, true);
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new OpenAIClient(ctx);
   const result = await client.request("/files/file-1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 400, statusText: "Bad Request", body: '{"error":"invalid"}' },
   ]);
@@ -43,7 +44,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v1/chat/completions"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new OpenAIClient(ctx);
   await client.request("/files", {
@@ -56,12 +57,12 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("base64ToBytes: decodes plain base64", () => {
+test("base64ToBytes: decodes plain base64", () => {
   const buf = base64ToBytes("aGVsbG8=");
   assertEquals(new TextDecoder().decode(new Uint8Array(buf)), "hello");
 });
 
-Deno.test("base64ToBytes: strips a data URL prefix", () => {
+test("base64ToBytes: strips a data URL prefix", () => {
   const buf = base64ToBytes("data:image/png;base64,aGVsbG8=");
   assertEquals(new TextDecoder().decode(new Uint8Array(buf)), "hello");
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pageEnvelope } from "../_helpers.ts";
 import action from "../../actions/providers-list.ts";
 
 const sample = pageEnvelope([{ id: 1, object: "provider", name: "Downtown" }], 1);
 
-Deno.test("providers-list: reads /providers and passes its filters through", async () => {
+test("providers-list: reads /providers and passes its filters through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ page: 1, page_size: 100 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("providers-list: reads /providers and passes its filters through", asy
   assertEquals(result.results.length, 1);
 });
 
-Deno.test("providers-list: unset filters are not sent", async () => {
+test("providers-list: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -23,7 +24,7 @@ Deno.test("providers-list: unset filters are not sent", async () => {
 });
 
 /** This list is how a caller discovers the ids the other actions accept. */
-Deno.test("providers-list: offers the providerId control every action sends as a header", () => {
+test("providers-list: offers the providerId control every action sends as a header", () => {
   const providerId = action.params!.find((p) => p.key === "providerId")!;
   assertEquals(providerId.type, "number");
   assertEquals(providerId.advanced, true);

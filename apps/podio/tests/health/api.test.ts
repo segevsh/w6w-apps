@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api, { isPodioErrorEnvelope, PROBE_PATH, PROBE_URL } from "../../health/api.ts";
 import { errorBody, mockCtx, NO_CREDENTIAL_401 } from "../_helpers.ts";
 
-Deno.test("api: is an unsigned dependency check that adds no egress host", () => {
+test("api: is an unsigned dependency check that adds no egress host", () => {
   assertEquals(api.kind, "dependency");
   assertEquals(api.scope, "app");
   assertEquals(api.credential, "none");
@@ -17,7 +18,7 @@ Deno.test("api: is an unsigned dependency check that adds no egress host", () =>
  * a schema-correct auth error has proved reachability, so it is a PASS. Calling
  * it an outage is how "Podio is down" gets misreported as "your token expired".
  */
-Deno.test("api: a schema-correct 401 is a PASS", async () => {
+test("api: a schema-correct 401 is a PASS", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: NO_CREDENTIAL_401 }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -30,7 +31,7 @@ Deno.test("api: a schema-correct 401 is a PASS", async () => {
  * The condition that does the real work. Anything can serve a 401 with a JSON
  * body; only Podio's own error handler echoes back the path that was asked for.
  */
-Deno.test("api: a 401 that is not Podio's envelope is unknown, not ok and not down", async () => {
+test("api: a 401 that is not Podio's envelope is unknown, not ok and not down", async () => {
   for (
     const body of [
       { error: "unauthorized" }, // no `request`
@@ -51,14 +52,14 @@ Deno.test("api: a 401 that is not Podio's envelope is unknown, not ok and not do
  * `/user/status` requires a credential. An unauthenticated 200 means something
  * that is not Podio answered — a captive portal, a proxy, a parked domain.
  */
-Deno.test("api: an unauthenticated 200 is a failure, not a pass", async () => {
+test("api: an unauthenticated 200 is a failure, not a pass", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { user: { user_id: 1 } } }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("should never do"));
 });
 
-Deno.test("api: a 5xx is down, and an odd 4xx is unknown", async () => {
+test("api: a 5xx is down, and an odd 4xx is unknown", async () => {
   const server = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await api.check!({}, server.ctx)).state, "down");
 
@@ -68,7 +69,7 @@ Deno.test("api: a 5xx is down, and an odd 4xx is unknown", async () => {
   assert(report.message!.includes("418"));
 });
 
-Deno.test("api: a transport failure is down, with the cause in the message", async () => {
+test("api: a transport failure is down, with the cause in the message", async () => {
   // mockCtx throws when no response is queued, which is exactly a transport
   // failure from the hook's point of view.
   const { ctx } = mockCtx([]);
@@ -77,7 +78,7 @@ Deno.test("api: a transport failure is down, with the cause in the message", asy
   assert(report.message!.includes("unreachable"));
 });
 
-Deno.test("isPodioErrorEnvelope: requires a non-empty error AND the echoed path", () => {
+test("isPodioErrorEnvelope: requires a non-empty error AND the echoed path", () => {
   assert(isPodioErrorEnvelope(NO_CREDENTIAL_401, PROBE_PATH));
   assert(isPodioErrorEnvelope(errorBody("unauthorized", "expired_token"), PROBE_PATH));
   assert(!isPodioErrorEnvelope({ error: "", request: { url: PROBE_PATH } }, PROBE_PATH));
@@ -92,7 +93,7 @@ Deno.test("isPodioErrorEnvelope: requires a non-empty error AND the echoed path"
  * The path is echoed with the query string appended, so the check matches on a
  * prefix rather than on equality.
  */
-Deno.test("isPodioErrorEnvelope: tolerates the query string Podio appends to the echoed path", () => {
+test("isPodioErrorEnvelope: tolerates the query string Podio appends to the echoed path", () => {
   const body = errorBody("unauthorized", "expired_token", `${PROBE_PATH}?x=1`);
   assert(isPodioErrorEnvelope(body, PROBE_PATH));
 });

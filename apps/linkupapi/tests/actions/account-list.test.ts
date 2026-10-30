@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import accountList from "../../actions/account-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("account-list: sends every input, unwraps data and credits", async () => {
+test("account-list: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("account-list: sends every input, unwraps data and credits", async () 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("account-list: omits optional inputs that were not given", async () => {
+test("account-list: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -23,7 +24,7 @@ Deno.test("account-list: omits optional inputs that were not given", async () =>
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("account-list: an error envelope is thrown with the vendor code", async () => {
+test("account-list: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

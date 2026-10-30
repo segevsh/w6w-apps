@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs to /contacts/normalized", async () => {
+test("contact-create: POSTs to /contacts/normalized", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: 27074, href: "/api/v2/contacts/27074" },
@@ -15,7 +16,7 @@ Deno.test("contact-create: POSTs to /contacts/normalized", async () => {
   assertEquals(out, { id: 27074, href: "/api/v2/contacts/27074" });
 });
 
-Deno.test("contact-create: requires both phone and lists", () => {
+test("contact-create: requires both phone and lists", () => {
   const params = contactCreate.params ?? [];
   const required = params.filter((p) => p.required).map((p) => p.key);
   assert(required.includes("phone"));

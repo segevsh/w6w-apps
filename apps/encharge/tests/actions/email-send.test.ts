@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailSend from "../../actions/email-send.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof emailSend.execute>[1], input: Record<string, unknown>) =>
   emailSend.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("email-send: declares a non-idempotent perform action", () => {
+test("email-send: declares a non-idempotent perform action", () => {
   assertEquals(emailSend.key, "email-send");
   assertEquals(emailSend.type, "perform");
   assertEquals(emailSend.idempotent, false);
@@ -13,7 +14,7 @@ Deno.test("email-send: declares a non-idempotent perform action", () => {
   assert(Array.isArray(emailSend.output) && emailSend.output.length > 0);
 });
 
-Deno.test("email-send: a template send posts the documented body and returns ok on 202", async () => {
+test("email-send: a template send posts the documented body and returns ok on 202", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   const out = await run(ctx, {
     to: "r@x.com",
@@ -40,7 +41,7 @@ Deno.test("email-send: a template send posts the documented body and returns ok 
   assertEquals(calls[0].headers["x-encharge-token"], undefined);
 });
 
-Deno.test("email-send: a numeric template is sent as a number; sender and reply names become objects", async () => {
+test("email-send: a numeric template is sent as a number; sender and reply names become objects", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   await run(ctx, {
     toUserId: "42",
@@ -58,7 +59,7 @@ Deno.test("email-send: a numeric template is sent as a number; sender and reply 
   });
 });
 
-Deno.test("email-send: html and text bodies carry the subject; plain strings stay strings", async () => {
+test("email-send: html and text bodies carry the subject; plain strings stay strings", async () => {
   const html = mockCtx([{ status: 202 }]);
   await run(html.ctx, { to: "r@x.com", from: "s@x.com", subject: "Hi", html: "<b>x</b>" });
   assertEquals(JSON.parse(html.calls[0].body!), {
@@ -72,7 +73,7 @@ Deno.test("email-send: html and text bodies carry the subject; plain strings sta
   assertEquals(JSON.parse(text.calls[0].body!).text, "x");
 });
 
-Deno.test("email-send: needs exactly one body source and a recipient, before any request", async () => {
+test("email-send: needs exactly one body source and a recipient, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => run(ctx, { to: "r@x.com" }), Error, "exactly one");
   await assertRejects(
@@ -84,7 +85,7 @@ Deno.test("email-send: needs exactly one body source and a recipient, before any
   assertEquals(calls.length, 0);
 });
 
-Deno.test("email-send: an Encharge failure is thrown with its message", async () => {
+test("email-send: an Encharge failure is thrown with its message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errBody("Missing email content. Please pass `template`, `html` or `text`"),

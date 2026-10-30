@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadsMarkAllRead from "../../actions/threads-mark-all-read.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("threads-mark-all-read: POST /api/v3/threads/mark_all_read with every documented parameter", async () => {
+test("threads-mark-all-read: POST /api/v3/threads/mark_all_read with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadsMarkAllRead.execute(
     { "workspaceId": 100, "channelId": 101 },
@@ -17,7 +18,7 @@ Deno.test("threads-mark-all-read: POST /api/v3/threads/mark_all_read with every 
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("threads-mark-all-read: sends a form body, never a query string", async () => {
+test("threads-mark-all-read: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadsMarkAllRead.execute({ "workspaceId": 100, "channelId": 101 }, ctx);
 
@@ -25,25 +26,25 @@ Deno.test("threads-mark-all-read: sends a form body, never a query string", asyn
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("threads-mark-all-read: omits optional parameters that are not set", async () => {
+test("threads-mark-all-read: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadsMarkAllRead.execute({}, ctx);
 
   assertEquals(formOf(calls[0].body), {});
 });
 
-Deno.test("threads-mark-all-read: is declared idempotent", () => {
+test("threads-mark-all-read: is declared idempotent", () => {
   assertEquals(threadsMarkAllRead.idempotent, true);
 });
 
-Deno.test("threads-mark-all-read: sends no credential of its own", async () => {
+test("threads-mark-all-read: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadsMarkAllRead.execute({ "workspaceId": 100, "channelId": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("threads-mark-all-read: surfaces Twist's error body", async () => {
+test("threads-mark-all-read: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

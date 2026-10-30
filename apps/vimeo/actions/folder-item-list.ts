@@ -56,7 +56,14 @@ const folderItemList: ActionDefinition<Input, VimeoCollection> = {
     {
       key: "clipPrivacyFilters",
       label: "Video privacy types",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "private", label: "private" },
+        { value: "public", label: "public" },
+        { value: "password", label: "password" },
+        { value: "hide_from_vimeo", label: "hide_from_vimeo" },
+      ],
+      config: { valueFormat: "csv" },
       placeholder: "private,unlisted,hide_from_vimeo",
       hint: "Comma-separated. Vimeo documents `private`, `public`, `password` and " +
         "`hide_from_vimeo`.",

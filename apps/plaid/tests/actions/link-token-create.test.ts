@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/link-token-create.ts";
 
@@ -8,7 +9,7 @@ const ok = {
   body: { link_token: "link-sandbox-1", expiration: "2026-08-18T16:00:00Z" },
 };
 
-Deno.test("link-token-create: sends the user, products and countries", async () => {
+test("link-token-create: sends the user, products and countries", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({
     clientUserId: "user-1",
@@ -24,7 +25,7 @@ Deno.test("link-token-create: sends the user, products and countries", async () 
 });
 
 /** Update mode repairs an Item rather than creating another. */
-Deno.test("link-token-create: an access token switches to update mode and drops products", async () => {
+test("link-token-create: an access token switches to update mode and drops products", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({
     clientUserId: "user-1",
@@ -37,7 +38,7 @@ Deno.test("link-token-create: an access token switches to update mode and drops 
   assertEquals("products" in sent, false);
 });
 
-Deno.test("link-token-create: the user id and app name are required", async () => {
+test("link-token-create: the user id and app name are required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ clientName: "Acme" }, ctx),
@@ -48,6 +49,6 @@ Deno.test("link-token-create: the user id and app name are required", async () =
 });
 
 /** A browser is required, and the app says so rather than pretending. */
-Deno.test("link-token-create: explains what it is for", () => {
+test("link-token-create: explains what it is for", () => {
   assert(/browser/.test(action.description!), action.description);
 });

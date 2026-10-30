@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/usage-fields-list.ts";
 
 const display = { projectId: "proj_1" };
 
-Deno.test("usage-fields-list: reads the dimensions a report can group by", async () => {
+test("usage-fields-list: reads the dimensions a report can group by", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { tags: ["support"], models: [], features: [] } }],
     { display },
@@ -17,7 +18,7 @@ Deno.test("usage-fields-list: reads the dimensions a report can group by", async
   assertEquals(result.tags, ["support"]);
 });
 
-Deno.test("usage-fields-list: dates are narrowed to what Deepgram accepts", async () => {
+test("usage-fields-list: dates are narrowed to what Deepgram accepts", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ start: "2026-08-01T09:30:00Z", end: "2026-08-18" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -26,6 +27,6 @@ Deno.test("usage-fields-list: dates are narrowed to what Deepgram accepts", asyn
 });
 
 /** A tag exists because a request carried it — nothing configures them. */
-Deno.test("usage-fields-list: says why tags cannot simply be looked up", () => {
+test("usage-fields-list: says why tags cannot simply be looked up", () => {
   assert(/not configured anywhere/.test(action.description!), action.description);
 });

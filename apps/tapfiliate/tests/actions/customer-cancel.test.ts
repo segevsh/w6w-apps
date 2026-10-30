@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerCancel from "../../actions/customer-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-cancel: DELETEs the status sub-resource", async () => {
+test("customer-cancel: DELETEs the status sub-resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cu_eXampl3Pay1ng", status: "canceled" } }]);
   const out = await customerCancel.execute({ id: "cu_eXampl3Pay1ng" }, ctx) as Record<
     string,

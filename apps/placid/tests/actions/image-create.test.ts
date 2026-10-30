@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageCreate from "../../actions/image-create.ts";
 import { assertRejects, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const queued = (url: string) => ({
   body: { id: 7, status: "queued", [url]: null, polling_url: "https://api.placid.app/x" },
 });
 
-Deno.test("image-create: POSTs template, layers and folds options into modifications", async () => {
+test("image-create: POSTs template, layers and folds options into modifications", async () => {
   const { ctx, calls } = mockCtx([queued("image_url")]);
   const out = await imageCreate.execute({
     template_uuid: " tpl1 ",
@@ -35,7 +36,7 @@ Deno.test("image-create: POSTs template, layers and folds options into modificat
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("image-create: no modifications key when none set; template is required; 422 surfaces", async () => {
+test("image-create: no modifications key when none set; template is required; 422 surfaces", async () => {
   const { ctx, calls } = mockCtx([queued("image_url")]);
   await imageCreate.execute({ template_uuid: "t" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { template_uuid: "t" });

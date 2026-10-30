@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobLineItemCreate from "../../actions/job-line-item-create.ts";
 import { bodyOf, mockCtx, optionValues, pathOf } from "../_helpers.ts";
 
-Deno.test("job-line-item-create: POSTs to the job's line items collection", async () => {
+test("job-line-item-create: POSTs to the job's line items collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "li1", amount: 9900 } }]);
   await jobLineItemCreate.execute({
     jobId: "j1",
@@ -23,7 +24,7 @@ Deno.test("job-line-item-create: POSTs to the job's line items collection", asyn
   });
 });
 
-Deno.test("job-line-item-create: the kind enum excludes tax, removed 2025-10-20", () => {
+test("job-line-item-create: the kind enum excludes tax, removed 2025-10-20", () => {
   const values = optionValues(jobLineItemCreate.params?.find((p) => p.key === "kind"));
   assertEquals(values, [
     "materials",
@@ -35,6 +36,6 @@ Deno.test("job-line-item-create: the kind enum excludes tax, removed 2025-10-20"
   assertEquals(values.includes("tax"), false);
 });
 
-Deno.test("job-line-item-create: warns in its description that this endpoint is rate limited", () => {
+test("job-line-item-create: warns in its description that this endpoint is rate limited", () => {
   assertEquals(jobLineItemCreate.description?.includes("rate-limits"), true);
 });

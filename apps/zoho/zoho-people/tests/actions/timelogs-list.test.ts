@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/timelogs-list.ts";
 
-Deno.test("timelogs-list: GETs gettimelogs with the date range and filters", async () => {
+test("timelogs-list: GETs gettimelogs with the date range and filters", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ timelogId: "7", workDate: "04-04-2019" }], status: 0 } },
   }]);
@@ -25,7 +26,7 @@ Deno.test("timelogs-list: GETs gettimelogs with the date range and filters", asy
   assertEquals(out.result.length, 1);
 });
 
-Deno.test("timelogs-list: the one-month-window error (9007) is surfaced", async () => {
+test("timelogs-list: the one-month-window error (9007) is surfaced", async () => {
   const { ctx } = mockPeopleCtx([{
     status: 400,
     body: {

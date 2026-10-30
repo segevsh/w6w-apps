@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   mapComponentStatus,
@@ -23,20 +24,20 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the final Statuspage host, unsigned", () => {
+test("service: probes the final Statuspage host, unsigned", () => {
   assertEquals(STATUS_URL, "https://www.raiselystatus.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["www.raiselystatus.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an operational API component reports ok", async () => {
+test("service: an operational API component reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an Admin Panel outage does not affect the verdict, only the API does", async () => {
+test("service: an Admin Panel outage does not affect the verdict, only the API does", async () => {
   const body = summary();
   (body.components[3] as { status: string }).status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -45,7 +46,7 @@ Deno.test("service: an Admin Panel outage does not affect the verdict, only the 
   assertEquals(Object.keys(report.components ?? {}), [API_COMPONENT_ID]);
 });
 
-Deno.test("service: an API outage reports down, partial reports degraded", async () => {
+test("service: an API outage reports down, partial reports degraded", async () => {
   for (const [status, state] of [["major_outage", "down"], ["partial_outage", "degraded"]]) {
     const body = summary();
     body.components.find((c) => c.id === API_COMPONENT_ID)!.status = status;
@@ -56,19 +57,19 @@ Deno.test("service: an API outage reports down, partial reports degraded", async
   }
 });
 
-Deno.test("service: open incidents are noted in the message", async () => {
+test("service: open incidents are noted in the message", async () => {
   const { ctx } = mockCtx([{ body: summary({ incidents: [{ name: "x" }] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
   assert(/1 open incident/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page that does not self-identify as Raisely is unknown", async () => {
+test("service: a page that does not self-identify as Raisely is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { id: "other", name: "Someone Else" } }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a missing API component, a bad status or a bad body is unknown, never down", async () => {
+test("service: a missing API component, a bad status or a bad body is unknown, never down", async () => {
   const noApi = summary({ components: [] });
   assertEquals((await service.check!({}, mockCtx([{ body: noApi }]).ctx)).state, "unknown");
   assertEquals(
@@ -78,7 +79,7 @@ Deno.test("service: a missing API component, a bad status or a bad body is unkno
   assertEquals((await service.check!({}, mockCtx([{ body: "<html>" }]).ctx)).state, "unknown");
 });
 
-Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");

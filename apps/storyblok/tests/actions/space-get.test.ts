@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/space-get.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { credentialKind: "delivery", region: "eu" } };
 const M = { display: { credentialKind: "management", region: "eu", spaceId: "1" } };
 
 /** The space's `version` is the cache version under another name. */
-Deno.test("space-get: returns the space's version as the cache version", async () => {
+test("space-get: returns the space's version as the cache version", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -25,18 +26,18 @@ Deno.test("space-get: returns the space's version as the cache version", async (
   assertEquals(result.languageCodes, ["de", "fr"]);
 });
 
-Deno.test("space-get: refuses a management connection", async () => {
+test("space-get: refuses a management connection", async () => {
   const { ctx, calls } = mockCtx([], M);
   await assertRejects(async () => await action.execute({}, ctx), Error, "CONTENT DELIVERY API");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("space-get: an empty response is an error rather than an empty result", async () => {
+test("space-get: an empty response is an error rather than an empty result", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "no space");
 });
 
-Deno.test("space-get: says this is the first call of a run", () => {
+test("space-get: says this is the first call of a run", () => {
   assert(/first call of a run/.test(action.description!), action.description);
   assertEquals(action.params, []);
 });

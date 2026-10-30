@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 
 import listAllCustomFields from "../../actions/list-all-custom-fields.ts";
 import listCustomFields from "../../actions/list-custom-fields.ts";
 
-Deno.test("list-all-custom-fields: GET /v1/custom-fields/all, a bare array", async () => {
+test("list-all-custom-fields: GET /v1/custom-fields/all, a bare array", async () => {
   const fields = [{ key: "fav", label: "Favorite color" }, { key: "tier", label: "Tier" }];
   const { ctx, calls } = mockCtx([{ body: fields }]);
   const out = await listAllCustomFields.execute({}, ctx);
@@ -16,7 +17,7 @@ Deno.test("list-all-custom-fields: GET /v1/custom-fields/all, a bare array", asy
   assert(!outputKeys(listAllCustomFields).includes("meta"));
 });
 
-Deno.test("list-all-custom-fields: is a `read`, the paginated form a `search`", () => {
+test("list-all-custom-fields: is a `read`, the paginated form a `search`", () => {
   assertEquals(listAllCustomFields.type, "read");
   assertEquals(listCustomFields.type, "search");
 });

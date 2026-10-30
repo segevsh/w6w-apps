@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-mms.ts";
 
@@ -9,7 +10,7 @@ const okEnvelope = (data: unknown) => ({
   data,
 });
 
-Deno.test("send-mms: sends media_file at the TOP LEVEL, not inside the message", async () => {
+test("send-mms: sends media_file at the TOP LEVEL, not inside the message", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: okEnvelope({
@@ -37,7 +38,7 @@ Deno.test("send-mms: sends media_file at the TOP LEVEL, not inside the message",
   assertEquals(sent.messages[0].subject, "Hi");
 });
 
-Deno.test("send-mms: requires either `to` or `listId`", async () => {
+test("send-mms: requires either `to` or `listId`", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

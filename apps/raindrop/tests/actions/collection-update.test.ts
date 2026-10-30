@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionUpdate from "../../actions/collection-update.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-update: PUTs the singular path", async () => {
+test("collection-update: PUTs the singular path", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 8492393, title: "Renamed" }) }]);
   const out = await collectionUpdate.execute({ id: 8492393, title: "Renamed" }, ctx) as {
     item: unknown;
@@ -15,7 +16,7 @@ Deno.test("collection-update: PUTs the singular path", async () => {
 });
 
 /** Partial: an unset field must not reach the wire as `null` or `""`. */
-Deno.test("collection-update: omitted fields are absent from the body", async () => {
+test("collection-update: omitted fields are absent from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1 }) }]);
   await collectionUpdate.execute({ id: 1, view: "grid" }, ctx);
 
@@ -27,14 +28,14 @@ Deno.test("collection-update: omitted fields are absent from the body", async ()
  * are exactly what the action is for, and a falsy-drop would turn either into a
  * no-op that reports success.
  */
-Deno.test("collection-update: public:false and expanded:false are sent", async () => {
+test("collection-update: public:false and expanded:false are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1 }) }]);
   await collectionUpdate.execute({ id: 1, public: false, expanded: false }, ctx);
 
   assertEquals(bodyOf(calls[0]), { public: false, expanded: false });
 });
 
-Deno.test("collection-update: parentId becomes parent.$id", async () => {
+test("collection-update: parentId becomes parent.$id", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1 }) }]);
   await collectionUpdate.execute({ id: 1, parentId: 42 }, ctx);
 
@@ -42,6 +43,6 @@ Deno.test("collection-update: parentId becomes parent.$id", async () => {
 });
 
 /** A partial update replayed produces the same end state. */
-Deno.test("collection-update: is idempotent", () => {
+test("collection-update: is idempotent", () => {
   assertEquals(collectionUpdate.idempotent, true);
 });

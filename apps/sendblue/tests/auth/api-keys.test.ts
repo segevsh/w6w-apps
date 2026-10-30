@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKeys, { authHeaders, PROBE_PATH } from "../../auth/api-keys.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const CRED = { apiKeyId: "key-123", apiSecretKey: "secret-456" };
 
-Deno.test("api-keys: sign stamps both headers and nothing else", () => {
+test("api-keys: sign stamps both headers and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.sendblue.co/api/v2/messages",
@@ -22,18 +23,18 @@ Deno.test("api-keys: sign stamps both headers and nothing else", () => {
   assert(!signed.url.includes("key-123"));
 });
 
-Deno.test("api-keys: authHeaders is the single source of the wire format", () => {
+test("api-keys: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders(CRED), {
     "sb-api-key-id": "key-123",
     "sb-api-secret-key": "secret-456",
   });
 });
 
-Deno.test("api-keys: the probe is the low-scope contacts/count endpoint", () => {
+test("api-keys: the probe is the low-scope contacts/count endpoint", () => {
   assertEquals(PROBE_PATH, "/api/v2/contacts/count");
 });
 
-Deno.test("api-keys: test passes when the probe answers 200", async () => {
+test("api-keys: test passes when the probe answers 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 0 } }]);
   const result = await apiKeys.test({ credential: CRED }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("api-keys: test passes when the probe answers 200", async () => {
   assertEquals(calls[0].headers["sb-api-secret-key"], "secret-456");
 });
 
-Deno.test("api-keys: test fails locally with no credential, without making a request", async () => {
+test("api-keys: test fails locally with no credential, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKeys.test({ credential: {} }, ctx);
 
@@ -58,7 +59,7 @@ Deno.test("api-keys: test fails locally with no credential, without making a req
  * field at all, while a wrong-but-present pair 401s with the ordinary
  * `{"status":"ERROR",...}` shape.
  */
-Deno.test("api-keys: a missing-headers 403 is reported as never having reached the request", async () => {
+test("api-keys: a missing-headers 403 is reported as never having reached the request", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: { message: "Did not get inputs for authorization" } },
   ]);
@@ -68,7 +69,7 @@ Deno.test("api-keys: a missing-headers 403 is reported as never having reached t
   assert(/no credential headers/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-keys: a wrong-but-present pair is reported as rejected credentials", async () => {
+test("api-keys: a wrong-but-present pair is reported as rejected credentials", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { status: "ERROR", message: "Invalid Credentials" } },
   ]);
@@ -78,7 +79,7 @@ Deno.test("api-keys: a wrong-but-present pair is reported as rejected credential
   assert(/rejected the api key/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-keys: an unrelated failure is reported as an HTTP status, not a credential guess", async () => {
+test("api-keys: an unrelated failure is reported as an HTTP status, not a credential guess", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKeys.test({ credential: CRED }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, GoogleMeetClient } from "../../lib/client.ts";
 
-Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
+test("client: prefixes API_URL and returns parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   const client = new GoogleMeetClient(ctx);
   const result = await client.request<{ name: string }>("/spaces/abc");
@@ -12,7 +13,7 @@ Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
   assertEquals(API_URL, "https://meet.googleapis.com/v2");
 });
 
-Deno.test("client: keeps slashes in a resource name and the custom-method colon", async () => {
+test("client: keeps slashes in a resource name and the custom-method colon", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new GoogleMeetClient(ctx);
   await client.request("/conferenceRecords/cr1/transcripts/t1/entries/e1");
@@ -24,7 +25,7 @@ Deno.test("client: keeps slashes in a resource name and the custom-method colon"
   assertEquals(new URL(calls[1].url).pathname, "/v2/spaces/abc:endActiveConference");
 });
 
-Deno.test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
+test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const client = new GoogleMeetClient(ctx);
   await client.request("/x", {
@@ -46,7 +47,7 @@ Deno.test("client: skips undefined/null/empty query params, keeps zeros and fals
   assertEquals(params.get("f"), "keep");
 });
 
-Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
+test("client: JSON-encodes bodies and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   const client = new GoogleMeetClient(ctx);
   await client.request("/spaces", { method: "POST", body: { config: { accessType: "OPEN" } } });
@@ -55,7 +56,7 @@ Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
   assertEquals(calls[0].body, `{"config":{"accessType":"OPEN"}}`);
 });
 
-Deno.test("client: throws with status + detail on non-2xx", async () => {
+test("client: throws with status + detail on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: "not here" }]);
   const client = new GoogleMeetClient(ctx);
   await assertRejects(
@@ -65,7 +66,7 @@ Deno.test("client: throws with status + detail on non-2xx", async () => {
   );
 });
 
-Deno.test("client: returns undefined for 204 No Content", async () => {
+test("client: returns undefined for 204 No Content", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const client = new GoogleMeetClient(ctx);
   const result = await client.request<void>("/x", { method: "DELETE" });

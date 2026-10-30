@@ -1,13 +1,14 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import accessKey, { authHeaders } from "../../auth/access-key.ts";
 import { faultBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("access-key: the wire format is the same bearer header as OAuth", () => {
+test("access-key: the wire format is the same bearer header as OAuth", () => {
   assertEquals(accessKey.type, "bearer");
   assertEquals(authHeaders({ accessKey: "KeapKey123" }), { authorization: "Bearer KeapKey123" });
 });
 
-Deno.test("access-key: the credential field is declared secret", () => {
+test("access-key: the credential field is declared secret", () => {
   const fields = accessKey.fields ?? [];
   assertEquals(fields.length, 1);
   assertEquals(fields[0].key, "accessKey");
@@ -15,7 +16,7 @@ Deno.test("access-key: the credential field is declared secret", () => {
   assertEquals(fields[0].required, true);
 });
 
-Deno.test("access-key: sign uses the same builder test does", () => {
+test("access-key: sign uses the same builder test does", () => {
   const request = {
     url: "https://api.infusionsoft.com/crm/rest/v2/tags",
     method: "GET",
@@ -27,7 +28,7 @@ Deno.test("access-key: sign uses the same builder test does", () => {
   assertEquals(signed.headers, authHeaders({ accessKey: "k" }));
 });
 
-Deno.test("access-key: test refuses an empty key before making a request", async () => {
+test("access-key: test refuses an empty key before making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await accessKey.test({ credential: { accessKey: "   " } }, ctx);
   assertEquals(out.ok, false);
@@ -41,7 +42,7 @@ Deno.test("access-key: test refuses an empty key before making a request", async
  * editing permissions", so a restricted user's live key would fail a contact
  * read. The identity endpoint is what no permission can withhold.
  */
-Deno.test("access-key: test probes the identity endpoint, not a contact or tag read", async () => {
+test("access-key: test probes the identity endpoint, not a contact or tag read", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com" } }]);
   assertEquals(await accessKey.test({ credential: { accessKey: "k" } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/crm/rest/v2/oauth/connect/userinfo");
@@ -49,7 +50,7 @@ Deno.test("access-key: test probes the identity endpoint, not a contact or tag r
   assert(!calls[0].url.includes("/tags"));
 });
 
-Deno.test("access-key: test reports a missing credential differently from a rejected one", async () => {
+test("access-key: test reports a missing credential differently from a rejected one", async () => {
   const { ctx: missing } = mockCtx([{
     status: 401,
     body: faultBody("oauth.v2.InvalidAccessToken", "Invalid access token"),
@@ -65,7 +66,7 @@ Deno.test("access-key: test reports a missing credential differently from a reje
   assert(a.message !== b.message);
 });
 
-Deno.test("access-key: afterConnect publishes identity, never the key", async () => {
+test("access-key: afterConnect publishes identity, never the key", async () => {
   const { ctx } = mockCtx([{
     body: { email: "a@b.com", given_name: "A", family_name: "B", tenant_id: "t9" },
   }]);
@@ -74,7 +75,7 @@ Deno.test("access-key: afterConnect publishes identity, never the key", async ()
   assert(!JSON.stringify(display).includes("super-secret"));
 });
 
-Deno.test("access-key: the description states the tighter quota, which is the reason to choose it or not", () => {
+test("access-key: the description states the tighter quota, which is the reason to choose it or not", () => {
   assertStringIncludes(accessKey.description!, "240/minute");
   assertStringIncludes(accessKey.description!, "30,000/day");
 });
@@ -84,7 +85,7 @@ Deno.test("access-key: the description states the tighter quota, which is the re
  * are being deactivated. Offering them as a supported option would be building
  * in a future outage.
  */
-Deno.test("access-key: legacy XML-RPC keys are not offered as an option", () => {
+test("access-key: legacy XML-RPC keys are not offered as an option", () => {
   const surface = JSON.stringify({ fields: accessKey.fields, description: accessKey.description });
   assert(!/legacy/i.test(surface), "a legacy key option leaked into the connect form");
 });

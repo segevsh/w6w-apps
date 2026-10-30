@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailboxCopy from "../../actions/mailbox-copy.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailbox-copy: POSTs /parser/{id}/copy", async () => {
+test("mailbox-copy: POSTs /parser/{id}/copy", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 100 } }]);
   const out = await mailboxCopy.execute({ mailboxId: "5" }, ctx) as { result: { id: number } };
 
@@ -11,12 +12,12 @@ Deno.test("mailbox-copy: POSTs /parser/{id}/copy", async () => {
   assertEquals(out.result.id, 100);
 });
 
-Deno.test("mailbox-copy: tolerates an undocumented/empty response body", async () => {
+test("mailbox-copy: tolerates an undocumented/empty response body", async () => {
   const { ctx } = mockCtx([{ status: 201, body: undefined }]);
   const out = await mailboxCopy.execute({ mailboxId: "5" }, ctx) as { result: unknown };
   assertEquals(out.result, undefined);
 });
 
-Deno.test("mailbox-copy: is not idempotent", () => {
+test("mailbox-copy: is not idempotent", () => {
   assertEquals(mailboxCopy.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupUsersRemove from "../../actions/group-users-remove.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-users-remove: POST /api/v3/groups/remove_users with every documented parameter", async () => {
+test("group-users-remove: POST /api/v3/groups/remove_users with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await groupUsersRemove.execute({ "groupId": 100, "userIds": "1, 2" }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("group-users-remove: POST /api/v3/groups/remove_users with every docum
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("group-users-remove: sends a form body, never a query string", async () => {
+test("group-users-remove: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await groupUsersRemove.execute({ "groupId": 100, "userIds": "1, 2" }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("group-users-remove: sends a form body, never a query string", async (
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("group-users-remove: is declared idempotent", () => {
+test("group-users-remove: is declared idempotent", () => {
   assertEquals(groupUsersRemove.idempotent, true);
 });
 
-Deno.test("group-users-remove: sends no credential of its own", async () => {
+test("group-users-remove: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await groupUsersRemove.execute({ "groupId": 100, "userIds": "1, 2" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("group-users-remove: surfaces Twist's error body", async () => {
+test("group-users-remove: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

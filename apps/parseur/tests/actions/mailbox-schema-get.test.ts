@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailboxSchemaGet from "../../actions/mailbox-schema-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailbox-schema-get: GETs /parser/{id}/schema", async () => {
+test("mailbox-schema-get: GETs /parser/{id}/schema", async () => {
   const { ctx, calls } = mockCtx([
     { body: { type: "object", properties: { CustomerName: { type: "string" } } } },
   ]);

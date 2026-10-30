@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapResourceStatus, PAGE_ID, RESOURCE_NAME } from "../../health/service.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
@@ -9,7 +10,7 @@ const page = (status: string, id = PAGE_ID, company = "FullEnrich", name = RESOU
   included: [{ type: "status_page_resource", attributes: { public_name: name, status } }],
 });
 
-Deno.test("service: operational web app is ok; downtime is capped at degraded", async () => {
+test("service: operational web app is ok; downtime is capped at degraded", async () => {
   const ok = mockCtx([{ body: page("operational") }]);
   assertEquals((await service.check!({}, ok.ctx)).state, "ok");
   assertEquals(ok.calls[0].url, "https://status.fullenrich.com/index.json");
@@ -19,7 +20,7 @@ Deno.test("service: operational web app is ok; downtime is capped at degraded", 
   );
 });
 
-Deno.test("service: wrong page, missing resource, 5xx and HTML are unknown", async () => {
+test("service: wrong page, missing resource, 5xx and HTML are unknown", async () => {
   for (
     const r of [
       { body: page("operational", "1") },
@@ -31,14 +32,14 @@ Deno.test("service: wrong page, missing resource, 5xx and HTML are unknown", asy
   ) assertEquals((await service.check!({}, mockCtx([r]).ctx)).state, "unknown");
 });
 
-Deno.test("service: declares its own host, informational severity, and a status mapping", () => {
+test("service: declares its own host, informational severity, and a status mapping", () => {
   assertEquals(service.network?.allow, ["status.fullenrich.com"]);
   assertEquals(service.severity, "informational");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
   assertEquals(mapResourceStatus("???"), "unknown");
 });
 
-Deno.test("api: a schema-correct 401 is ok; HTML, 200 and 5xx are not", async () => {
+test("api: a schema-correct 401 is ok; HTML, 200 and 5xx are not", async () => {
   const body = { code: "error.authorization.not_set", message: "Authorization headers not set" };
   const ok = mockCtx([{ status: 401, body }]);
   assertEquals((await api.check!({}, ok.ctx)).state, "ok");
@@ -51,12 +52,12 @@ Deno.test("api: a schema-correct 401 is ok; HTML, 200 and 5xx are not", async ()
   assertEquals((await api.check!({}, mockCtx([{ status: 503, body: "x" }]).ctx)).state, "down");
 });
 
-Deno.test("api: a network failure is down", async () => {
+test("api: a network failure is down", async () => {
   const { ctx } = mockCtx([]);
   assertEquals((await api.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: reports the credit balance", async () => {
+test("quota: reports the credit balance", async () => {
   const ok = mockCtx([{ body: { balance: 120 } }]);
   const r = await quota.check!({}, ok.ctx);
   assertEquals(r.state, "ok");

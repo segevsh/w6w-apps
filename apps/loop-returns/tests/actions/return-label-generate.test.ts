@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/return-label-generate.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "returnId": 42 } as Record<string, unknown>;
 const RESPONSE: unknown = { "message": "Label requested", "returnId": 42 };
 const run = (ctx: Parameters<typeof action.execute>[1]) => action.execute(INPUT as never, ctx);
 
-Deno.test("return-label-generate: POST /returns/42/labels", async () => {
+test("return-label-generate: POST /returns/42/labels", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: RESPONSE }]);
   const out = await run(ctx);
   assertEquals(calls.length, 1);
@@ -18,14 +19,14 @@ Deno.test("return-label-generate: POST /returns/42/labels", async () => {
   assertEquals(out, { "message": "Label requested", "returnId": 42 });
 });
 
-Deno.test("return-label-generate: puts no credential on the request (sign owns that)", async () => {
+test("return-label-generate: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: RESPONSE }]);
   await run(ctx);
   assertEquals(calls[0].headers["x-authorization"], undefined);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("return-label-generate: an HTTP error surfaces Loop's own message", async () => {
+test("return-label-generate: an HTTP error surfaces Loop's own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "401", http_code: "GEN-UNAUTHORIZED", message: "Unauthorized." } },

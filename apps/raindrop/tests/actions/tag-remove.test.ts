@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import tagRemove from "../../actions/tag-remove.ts";
 import { bodyOf, mockCtx, okBody, pathOf } from "../_helpers.ts";
 
 /** The tag list goes in the BODY of a DELETE, not the query string. */
-Deno.test("tag-remove: DELETEs /tags with the tags in the body", async () => {
+test("tag-remove: DELETEs /tags with the tags in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   const out = await tagRemove.execute({ tags: "obsolete, draft" }, ctx) as { result: boolean };
 
@@ -14,7 +15,7 @@ Deno.test("tag-remove: DELETEs /tags with the tags in the body", async () => {
   assertEquals(out.result, true);
 });
 
-Deno.test("tag-remove: a collection scopes the removal", async () => {
+test("tag-remove: a collection scopes the removal", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await tagRemove.execute({ tags: "draft", collectionId: 8492393 }, ctx);
 
@@ -26,12 +27,12 @@ Deno.test("tag-remove: a collection scopes the removal", async () => {
  * elsewhere keep it. Stated in the hint because the opposite is the natural
  * assumption.
  */
-Deno.test("tag-remove: the collection hint says the tag survives elsewhere", () => {
+test("tag-remove: the collection hint says the tag survives elsewhere", () => {
   const hint = tagRemove.params?.find((p) => p.key === "collectionId")?.hint ?? "";
   assert(/survives elsewhere/i.test(hint), hint);
 });
 
-Deno.test("tag-remove: refuses an empty tag list without making a request", async () => {
+test("tag-remove: refuses an empty tag list without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => Promise.resolve(tagRemove.execute({ tags: "" }, ctx)), Error);
   assertEquals(calls.length, 0);

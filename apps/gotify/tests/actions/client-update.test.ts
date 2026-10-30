@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-update.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("client-update: PUTs /client/{id} with name", async () => {
+test("client-update: PUTs /client/{id} with name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 4, name: "Phone 2" } }], conn);
   await action.execute!({ id: 4, name: "Phone 2" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/client/4");
@@ -12,7 +13,7 @@ Deno.test("client-update: PUTs /client/{id} with name", async () => {
   assertEquals(body, { name: "Phone 2" });
 });
 
-Deno.test(
+test(
   "client-update: leaving expiresAfterInactivitySeconds blank does not reset it — Gotify only " +
     "applies the field when present",
   async () => {
@@ -23,7 +24,7 @@ Deno.test(
   },
 );
 
-Deno.test("client-update: sends expiresAfterInactivitySeconds when provided, including 0", async () => {
+test("client-update: sends expiresAfterInactivitySeconds when provided, including 0", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 4, name: "Phone" } }], conn);
   await action.execute!({ id: 4, name: "Phone", expiresAfterInactivitySeconds: 0 }, ctx);
   const body = JSON.parse(calls[0].body!);

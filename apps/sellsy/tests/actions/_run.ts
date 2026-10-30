@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "@std/assert";
+import { assert, assertEquals } from "../_assert.ts";
 import type { ActionDefinition } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import { cases } from "./cases.ts";

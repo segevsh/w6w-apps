@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENTS, mapComponentStatus, PAGE_ID } from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -20,13 +21,13 @@ function summary(overrides: Record<string, string> = {}, pageId = PAGE_ID) {
   };
 }
 
-Deno.test("service: informational, unsigned, declares its status host", () => {
+test("service: informational, unsigned, declares its status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.fareharbor.com"] });
 });
 
-Deno.test("service: all operational is ok, groups are not reported", async () => {
+test("service: all operational is ok, groups are not reported", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await run(ctx);
   assertEquals(r.state, "ok");
@@ -35,7 +36,7 @@ Deno.test("service: all operational is ok, groups are not reported", async () =>
   assertEquals(Object.keys(r.components ?? {}).length, 5);
 });
 
-Deno.test("service: a deciding component's outage drives the verdict", async () => {
+test("service: a deciding component's outage drives the verdict", async () => {
   const major = mockCtx([{ body: summary({ y76b7n56fwt0: "major_outage" }) }]);
   const r = await run(major.ctx);
   assertEquals(r.state, "down");
@@ -44,14 +45,14 @@ Deno.test("service: a deciding component's outage drives the verdict", async () 
   assertEquals((await run(partial.ctx)).state, "degraded");
 });
 
-Deno.test("service: a non-deciding component is reported but cannot make the app down", async () => {
+test("service: a non-deciding component is reported but cannot make the app down", async () => {
   const { ctx } = mockCtx([{ body: summary({ "x-payments": "major_outage" }) }]);
   const r = await run(ctx);
   assertEquals(r.state, "ok");
   assertEquals(r.components?.["x-payments"].state, "down");
 });
 
-Deno.test("service: a failed, unreadable or foreign page is unknown, never down", async () => {
+test("service: a failed, unreadable or foreign page is unknown, never down", async () => {
   assertEquals((await run(mockCtx([{ status: 500, body: "x" }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ body: "not json" }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ body: summary({}, "other") }]).ctx)).state, "unknown");
@@ -66,14 +67,14 @@ Deno.test("service: a failed, unreadable or foreign page is unknown, never down"
   );
 });
 
-Deno.test("service: component vocabulary maps onto four states", () => {
+test("service: component vocabulary maps onto four states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("quota: is a declared absence at informational severity with no hook", () => {
+test("quota: is a declared absence at informational severity with no hook", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assert((quota.unavailable?.reason ?? "").length > 20);

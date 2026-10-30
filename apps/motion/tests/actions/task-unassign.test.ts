@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUnassign from "../../actions/task-unassign.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-unassign: DELETEs /v1/tasks/{id}/assignee", async () => {
+test("task-unassign: DELETEs /v1/tasks/{id}/assignee", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await taskUnassign.execute({ id: "t1" }, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("task-unassign: DELETEs /v1/tasks/{id}/assignee", async () => {
  * rather than sending a null, so there is no way to clear an assignee through
  * an update.
  */
-Deno.test("task-unassign: update cannot express an empty assignee, which is why this exists", () => {
+test("task-unassign: update cannot express an empty assignee, which is why this exists", () => {
   const assignee = taskUpdate.params?.find((p) => p.key === "assigneeId");
   assertEquals(assignee?.type, "string");
   assertEquals(taskUnassign.idempotent, true);

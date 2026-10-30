@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamList from "../../actions/team-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-list: GETs /teams/", async () => {
+test("team-list: GETs /teams/", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { count: 1, results: [{ name: "Acme" }] },

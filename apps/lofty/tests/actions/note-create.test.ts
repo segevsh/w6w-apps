@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-create.ts";
 
-Deno.test("note-create: posts content, lead and pin state", async () => {
+test("note-create: posts content, lead and pin state", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { noteId: 563172647619608 } }]);
   const result = await action.execute!({
     content: "Discussed Austin inventory",
@@ -21,12 +22,12 @@ Deno.test("note-create: posts content, lead and pin state", async () => {
   assertEquals(result.noteId, 563172647619608);
 });
 
-Deno.test("note-create: warns that content is silently truncated", () => {
+test("note-create: warns that content is silently truncated", () => {
   const content = action.params!.find((p) => p.key === "content")!;
   assert(/2000/.test(content.hint!), content.hint);
   assert(/silent/.test(content.hint!), content.hint);
 });
 
-Deno.test("note-create: is not idempotent — a retry logs a second note", () => {
+test("note-create: is not idempotent — a retry logs a second note", () => {
   assertEquals(action.idempotent, false);
 });

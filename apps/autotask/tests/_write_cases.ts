@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import { mockCtx } from "./_helpers.ts";
 
 const BASE = "https://webservices2.autotask.net/atservicesrest/V1.0";
@@ -17,7 +18,7 @@ export type Case = {
 };
 
 export function writeTests(action: Act, c: Case): void {
-  Deno.test(`${c.name}: ${c.method} ${c.path} with exactly the typed body`, async () => {
+  test(`${c.name}: ${c.method} ${c.path} with exactly the typed body`, async () => {
     const { ctx, calls } = mockCtx([{ body: { itemId: 321 } }], display);
     const out = await run(action, c.input, ctx);
     assertEquals(calls.length, 1);
@@ -29,7 +30,7 @@ export function writeTests(action: Act, c: Case): void {
     assertEquals(out.id, 321);
   });
 
-  Deno.test(`${c.name}: declares exactly the vendor-required params as required`, () => {
+  test(`${c.name}: declares exactly the vendor-required params as required`, () => {
     const required = action.params!.filter((p) => p.required).map((p) => p.key).sort();
     assertEquals(required, [...c.required].sort());
   });

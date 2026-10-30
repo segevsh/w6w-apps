@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs /tasks with description, dueOn and a linked party", async () => {
+test("task-create: POSTs /tasks with description, dueOn and a linked party", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { task: { id: 530 } } }]);
   const out = await action.execute(
     { description: "Email product details", dueOn: "2014-05-20", partyId: 11587 },
@@ -16,7 +17,7 @@ Deno.test("task-create: POSTs /tasks with description, dueOn and a linked party"
   assertEquals(out, { task: { id: 530 } });
 });
 
-Deno.test("task-create: description and dueOn are marked required", () => {
+test("task-create: description and dueOn are marked required", () => {
   const required = action.params!.filter((p) => p.required).map((p) => p.key);
   assertEquals(required.includes("description"), true);
   assertEquals(required.includes("dueOn"), true);

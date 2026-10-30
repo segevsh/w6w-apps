@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/supplier-update.ts";
 
-Deno.test("supplier-update: PUT /3/suppliers/{supplierNumber} with a wrapped body", async () => {
+test("supplier-update: PUT /3/suppliers/{supplierNumber} with a wrapped body", async () => {
   const reply = { "Supplier": { "Id": 1 } };
   const { ctx, calls } = mockCtx([{ status: 200, body: reply }]);
   const result = await action.execute!({
@@ -63,7 +64,7 @@ Deno.test("supplier-update: PUT /3/suppliers/{supplierNumber} with a wrapped bod
   assertEquals(Object.fromEntries(new URL(bare.calls[0].url).searchParams), {});
 });
 
-Deno.test("supplier-update: rejects an additionalFields that is not a JSON object", async () => {
+test("supplier-update: rejects an additionalFields that is not a JSON object", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

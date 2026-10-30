@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -22,7 +23,7 @@ const usage = (hourly: [number, number], monthly: [number, number]) => ({
   },
 });
 
-Deno.test("quota: ok with headroom, reporting the two outbound entries only", async () => {
+test("quota: ok with headroom, reporting the two outbound entries only", async () => {
   const { ctx, calls } = mockCtx([{ body: usage([1000, 42], [100000, 5000]) }]);
   const res = await quota.check!({}, ctx);
   assertEquals(res.state, "ok");
@@ -31,7 +32,7 @@ Deno.test("quota: ok with headroom, reporting the two outbound entries only", as
   assertEquals(res.quota?.[1].remaining, 95000);
 });
 
-Deno.test("quota: degraded at 90% used, down when a limit is exhausted, unlimited is ok", async () => {
+test("quota: degraded at 90% used, down when a limit is exhausted, unlimited is ok", async () => {
   const warn = mockCtx([{ body: usage([1000, 950], [100000, 5000]) }]);
   assertEquals((await quota.check!({}, warn.ctx)).state, "degraded");
   const out = mockCtx([{ body: usage([1000, 1], [100000, 100000]) }]);
@@ -42,7 +43,7 @@ Deno.test("quota: degraded at 90% used, down when a limit is exhausted, unlimite
   assertEquals(res.quota?.length, 0);
 });
 
-Deno.test("quota: a 403 (no account.read), other failures and missing usage are unknown", async () => {
+test("quota: a 403 (no account.read), other failures and missing usage are unknown", async () => {
   const noScope = mockCtx([{ status: 403, body: { error: { message: "scope" } } }]);
   assertEquals((await quota.check!({}, noScope.ctx)).state, "unknown");
   const bad = mockCtx([{ status: 500, body: "x" }]);

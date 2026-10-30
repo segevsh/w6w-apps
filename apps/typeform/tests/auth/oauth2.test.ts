@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Typeform's authorize and token endpoints", () => {
+test("oauth2: declares Typeform's authorize and token endpoints", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://api.typeform.com/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://api.typeform.com/oauth/token");
@@ -11,7 +12,7 @@ Deno.test("oauth2: declares Typeform's authorize and token endpoints", () => {
   assert(auth.oauth2?.scopes?.includes("responses:read"));
 });
 
-Deno.test("oauth2: sign uses the Bearer scheme", async () => {
+test("oauth2: sign uses the Bearer scheme", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.typeform.com/forms",
@@ -22,14 +23,14 @@ Deno.test("oauth2: sign uses the Bearer scheme", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test hits /me and reports ok", async () => {
+test("oauth2: test hits /me and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { alias: "me" } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result.ok, true);
   assertEquals(new URL(calls[0].url).pathname, "/me");
 });
 
-Deno.test("oauth2: afterConnect returns the account profile", async () => {
+test("oauth2: afterConnect returns the account profile", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { email: "a@b.co", alias: "me" } }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(out, { account: { email: "a@b.co", alias: "me" } });

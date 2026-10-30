@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-products.ts";
 
 const PAGE = { items: [{ id: 1, label: "Product 1" }], has_more: false, next_cursor: null };
 
-Deno.test("list-products: GETs /products", async () => {
+test("list-products: GETs /products", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("list-products: GETs /products", async () => {
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-products: sends sort and a JSON filter", async () => {
+test("list-products: sends sort and a JSON filter", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     sort: "id",

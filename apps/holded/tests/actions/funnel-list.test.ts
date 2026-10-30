@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import funnelList from "../../actions/funnel-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("funnel-list: metadata", () => {
+test("funnel-list: metadata", () => {
   assertEquals(funnelList.key, "funnel-list");
   assertEquals(funnelList.type, "read");
   assertEquals(funnelList.params?.length, 0);
 });
 
-Deno.test("funnel-list: GET /funnels, no query params, wraps the bare array", async () => {
+test("funnel-list: GET /funnels, no query params, wraps the bare array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "f1", name: "Marketing" }] }]);
   const result = await funnelList.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -17,7 +18,7 @@ Deno.test("funnel-list: GET /funnels, no query params, wraps the bare array", as
   assertEquals(result, { funnels: [{ id: "f1", name: "Marketing" }] });
 });
 
-Deno.test("funnel-list: empty account -> empty array, not an error", async () => {
+test("funnel-list: empty account -> empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }]);
   const result = await funnelList.execute({}, ctx);
   assertEquals(result, { funnels: [] });

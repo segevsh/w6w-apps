@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { envelope, mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-get: GETs /account and returns it verbatim — no secret field to strip", async () => {
+test("account-get: GETs /account and returns it verbatim — no secret field to strip", async () => {
   const { ctx, calls } = mockWrikeCtx([
     {
       status: 200,

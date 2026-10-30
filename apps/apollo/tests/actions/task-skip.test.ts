@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskSkip from "../../actions/task-skip.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-skip: POSTs to /tasks/{id}/skip", async () => {
+test("task-skip: POSTs to /tasks/{id}/skip", async () => {
   const { ctx, calls } = mockCtx([{ body: { task: { id: "t1", status: "skipped" } } }]);
   const out = await taskSkip.execute({ id: "t1", note: "No longer a fit" }, ctx) as {
     task: { status: string };
@@ -12,6 +13,6 @@ Deno.test("task-skip: POSTs to /tasks/{id}/skip", async () => {
   assertEquals(out.task.status, "skipped");
 });
 
-Deno.test("task-skip: idempotent", () => {
+test("task-skip: idempotent", () => {
   assertEquals(taskSkip.idempotent, true);
 });

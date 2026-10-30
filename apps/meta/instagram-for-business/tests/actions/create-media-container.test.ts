@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-media-container.ts";
 
@@ -10,7 +11,7 @@ async function params(input: Record<string, unknown>) {
   return Object.fromEntries(new URL(calls[0].url).searchParams);
 }
 
-Deno.test("create-media-container: photo sends image_url and no media_type", async () => {
+test("create-media-container: photo sends image_url and no media_type", async () => {
   assertEquals(await params({ imageUrl: "https://x/a.jpg", caption: "c", altText: "alt" }), {
     image_url: "https://x/a.jpg",
     caption: "c",
@@ -18,7 +19,7 @@ Deno.test("create-media-container: photo sends image_url and no media_type", asy
   });
 });
 
-Deno.test("create-media-container: reel sends REELS, video_url, share_to_feed, trial_params", async () => {
+test("create-media-container: reel sends REELS, video_url, share_to_feed, trial_params", async () => {
   assertEquals(
     await params({
       mediaType: "REELS",
@@ -35,7 +36,7 @@ Deno.test("create-media-container: reel sends REELS, video_url, share_to_feed, t
   );
 });
 
-Deno.test("create-media-container: user tags JSON-encoded and collaborators as array", async () => {
+test("create-media-container: user tags JSON-encoded and collaborators as array", async () => {
   const p = await params({
     imageUrl: "https://x/a.jpg",
     userTags: [{ username: "u", x: 0.5, y: 0.5 }],
@@ -47,14 +48,14 @@ Deno.test("create-media-container: user tags JSON-encoded and collaborators as a
   assertEquals(p.is_carousel_item, "true");
 });
 
-Deno.test("create-media-container: story takes one of image or video", async () => {
+test("create-media-container: story takes one of image or video", async () => {
   assertEquals(await params({ mediaType: "STORIES", videoUrl: "https://x/v.mp4" }), {
     media_type: "STORIES",
     video_url: "https://x/v.mp4",
   });
 });
 
-Deno.test("create-media-container: validates before any network call", async () => {
+test("create-media-container: validates before any network call", async () => {
   for (
     const input of [
       {},
@@ -72,4 +73,4 @@ Deno.test("create-media-container: validates before any network call", async () 
   }
 });
 
-Deno.test("create-media-container: not idempotent", () => assert(action.idempotent === false));
+test("create-media-container: not idempotent", () => assert(action.idempotent === false));

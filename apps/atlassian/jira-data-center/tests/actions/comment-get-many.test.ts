@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentGetMany from "../../actions/comment-get-many.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-get-many: GETs /issue/{key}/comment with pagination", async () => {
+test("comment-get-many: GETs /issue/{key}/comment with pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { comments: [], total: 0, startAt: 0 } }]);
   await commentGetMany.execute({ issueKey: "ENG-1", maxResults: 25, startAt: 5 }, ctx);
 

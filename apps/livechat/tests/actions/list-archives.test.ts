@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-archives.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-archives: maps every filter to the documented field", async () => {
+test("list-archives: maps every filter to the documented field", async () => {
   const { ctx, calls } = mockCtx([{
     body: { chats: [{ id: "C1" }], found_chats: 9, next_page_id: "N" },
   }]);
@@ -43,7 +44,7 @@ Deno.test("list-archives: maps every filter to the documented field", async () =
   });
 });
 
-Deno.test("list-archives: no input sends an empty body; page_id goes alone", async () => {
+test("list-archives: no input sends an empty body; page_id goes alone", async () => {
   const { ctx, calls } = mockCtx([{ body: { chats: [] } }, { body: { chats: [] } }]);
   await action.execute({}, ctx);
   await action.execute({ pageId: "P" }, ctx);
@@ -51,7 +52,7 @@ Deno.test("list-archives: no input sends an empty body; page_id goes alone", asy
   assertEquals(JSON.parse(calls[1].body!), { page_id: "P" });
 });
 
-Deno.test("list-archives: enforces the documented array caps and the page_id rule", async () => {
+test("list-archives: enforces the documented array caps and the page_id rule", async () => {
   const { ctx, calls } = mockCtx([]);
   const many = Array.from({ length: 1001 }, (_, i) => `c${i}`).join(",");
   await assertRejects(

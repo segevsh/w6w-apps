@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callroutersDelete from "../../actions/callrouters-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("callrouters-delete: DELETEs /callrouters/{id} and returns only the status", async () => {
+test("callrouters-delete: DELETEs /callrouters/{id} and returns only the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await callroutersDelete.execute({ callRouterId: "1" }, ctx) as { status: number };
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("callrouters-delete: DELETEs /callrouters/{id} and returns only the st
   assertEquals(out.status, 200);
 });
 
-Deno.test("callrouters-delete: declared idempotent", () => {
+test("callrouters-delete: declared idempotent", () => {
   assertEquals(callroutersDelete.idempotent, true);
 });

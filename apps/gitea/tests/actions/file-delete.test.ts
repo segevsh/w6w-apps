@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-delete.ts";
 
 const conn = { display: { baseUrl: "https://git.example.com", owner: "acme" } };
 
-Deno.test("file-delete: refuses to run without an explicit confirmation", async () => {
+test("file-delete: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web", path: "a.txt" }, ctx),
@@ -15,7 +16,7 @@ Deno.test("file-delete: refuses to run without an explicit confirmation", async 
 });
 
 /** The sha stops a stale workflow deleting a file somebody has since changed. */
-Deno.test("file-delete: reads the sha first, then DELETEs with it", async () => {
+test("file-delete: reads the sha first, then DELETEs with it", async () => {
   const { ctx, calls, logs } = mockCtx([
     { status: 200, body: { sha: "abc123" } },
     { status: 200, body: { commit: { sha: "def" } } },
@@ -33,7 +34,7 @@ Deno.test("file-delete: reads the sha first, then DELETEs with it", async () => 
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("file-delete: a directory has no sha, and says so", async () => {
+test("file-delete: a directory has no sha, and says so", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ path: "a.txt" }] }], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web", path: "src", confirm: true }, ctx),
@@ -42,7 +43,7 @@ Deno.test("file-delete: a directory has no sha, and says so", async () => {
   );
 });
 
-Deno.test("file-delete: a blank path fails before any request", async () => {
+test("file-delete: a blank path fails before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web", confirm: true }, ctx),

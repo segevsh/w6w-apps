@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,12 +13,12 @@ const page = (restStatus: string, indicator = "none", id = "834xxvq1gy9f") => ({
   ],
 });
 
-Deno.test("service: widened only for the status host", () => {
+test("service: widened only for the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.e-conomic.com"]);
 });
 
-Deno.test("service: the verdict is the REST API component, not the whole-page indicator", async () => {
+test("service: the verdict is the REST API component, not the whole-page indicator", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational", "major") }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.e-conomic.com/api/v2/summary.json");
@@ -27,14 +28,14 @@ Deno.test("service: the verdict is the REST API component, not the whole-page in
   assertEquals(r.components?.["api"], undefined);
 });
 
-Deno.test("service: REST API incidents map to degraded / down", async () => {
+test("service: REST API incidents map to degraded / down", async () => {
   const d = await service.check!({}, mockCtx([{ body: page("partial_outage") }]).ctx);
   assertEquals(d.state, "degraded");
   const o = await service.check!({}, mockCtx([{ body: page("major_outage") }]).ctx);
   assertEquals(o.state, "down");
 });
 
-Deno.test("service: a wrong page id, a missing component or a failing page is unknown", async () => {
+test("service: a wrong page id, a missing component or a failing page is unknown", async () => {
   const wrong = await service.check!(
     {},
     mockCtx([{ body: page("operational", "none", "other") }]).ctx,

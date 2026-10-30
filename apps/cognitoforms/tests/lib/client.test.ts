@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { cfError, mockCtx } from "../_helpers.ts";
 import { base64ToBytes, CognitoFormsApiError, CognitoFormsClient } from "../../lib/client.ts";
 
-Deno.test("client: GET builds the URL under /api and returns the bare JSON body", async () => {
+test("client: GET builds the URL under /api and returns the bare JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ Id: "1", Name: "My Form" }] }]);
   const result = await new CognitoFormsClient(ctx).request("/forms");
   assertEquals(new URL(calls[0].url).pathname, "/api/forms");
   assertEquals(result, [{ Id: "1", Name: "My Form" }]);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new CognitoFormsClient(ctx).request("/forms/1/schema", {
     query: { input: true, includeLinks: undefined, extra: "" },
@@ -20,7 +21,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("extra"), false);
 });
 
-Deno.test("client: a JSON body is sent as application/json", async () => {
+test("client: a JSON body is sent as application/json", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "e1" } }]);
   await new CognitoFormsClient(ctx).request("/forms/1/entries", {
     method: "POST",
@@ -31,7 +32,7 @@ Deno.test("client: a JSON body is sent as application/json", async () => {
   assertEquals(JSON.parse(calls[0].body!), { Entry: { Action: "Submit" } });
 });
 
-Deno.test("client: a FormData body is passed through without a content-type override", async () => {
+test("client: a FormData body is passed through without a content-type override", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "f1" } }]);
   const form = new FormData();
   form.append("File", new Blob(["hi"]), "hi.txt");
@@ -40,7 +41,7 @@ Deno.test("client: a FormData body is passed through without a content-type over
   assertEquals(calls[0].rawBody, form);
 });
 
-Deno.test("client: a 204 response resolves to undefined", async () => {
+test("client: a 204 response resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const result = await new CognitoFormsClient(ctx).request("/forms/1/entries/2", {
     method: "DELETE",
@@ -48,7 +49,7 @@ Deno.test("client: a 204 response resolves to undefined", async () => {
   assertEquals(result, undefined);
 });
 
-Deno.test("client: a non-2xx response throws a CognitoFormsApiError carrying Type/Data/SupportCode", async () => {
+test("client: a non-2xx response throws a CognitoFormsApiError carrying Type/Data/SupportCode", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: cfError("EntryNotFound", "Entry not found.") },
   ]);
@@ -63,7 +64,7 @@ Deno.test("client: a non-2xx response throws a CognitoFormsApiError carrying Typ
   assertEquals(err.message.includes("EntryNotFound"), true);
 });
 
-Deno.test("client: MissingScope carries its Data.MissingScope through to the error", async () => {
+test("client: MissingScope carries its Data.MissingScope through to the error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -77,7 +78,7 @@ Deno.test("client: MissingScope carries its Data.MissingScope through to the err
   assertEquals(err.data, { MissingScope: "Entry:Read" });
 });
 
-Deno.test("client: a non-JSON error body still produces a descriptive error", async () => {
+test("client: a non-JSON error body still produces a descriptive error", async () => {
   const { ctx } = mockCtx([
     { status: 502, statusText: "Bad Gateway", body: "<html>gateway</html>", headers: {} },
   ]);
@@ -88,18 +89,18 @@ Deno.test("client: a non-JSON error body still produces a descriptive error", as
   );
 });
 
-Deno.test("client: never sets an Authorization header itself", async () => {
+test("client: never sets an Authorization header itself", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new CognitoFormsClient(ctx).request("/forms");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("base64ToBytes: decodes a bare base64 string", () => {
+test("base64ToBytes: decodes a bare base64 string", () => {
   const bytes = new Uint8Array(base64ToBytes(btoa("hello")));
   assertEquals(new TextDecoder().decode(bytes), "hello");
 });
 
-Deno.test("base64ToBytes: strips a data: URL prefix before decoding", () => {
+test("base64ToBytes: strips a data: URL prefix before decoding", () => {
   const bytes = new Uint8Array(base64ToBytes(`data:text/plain;base64,${btoa("hi")}`));
   assertEquals(new TextDecoder().decode(bytes), "hi");
 });

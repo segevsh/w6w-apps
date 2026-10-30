@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dailyReviewGet from "../../actions/daily-review-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("daily-review-get: GETs /review/ with no parameters", async () => {
+test("daily-review-get: GETs /review/ with no parameters", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -24,6 +25,6 @@ Deno.test("daily-review-get: GETs /review/ with no parameters", async () => {
   assertEquals(out.review_completed, false);
 });
 
-Deno.test("daily-review-get: takes no parameters", () => {
+test("daily-review-get: takes no parameters", () => {
   assertEquals(dailyReviewGet.params?.length, 0);
 });

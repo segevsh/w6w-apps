@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-bin.ts";
 
-Deno.test("create-bin: POSTs /api/bin and derives the request URL from the returned binId", async () => {
+test("create-bin: POSTs /api/bin and derives the request URL from the returned binId", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { binId: "YS4il4gS", now: 1439113980530, expires: 1439115780530 } },
   ]);

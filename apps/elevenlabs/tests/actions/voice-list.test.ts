@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voiceList from "../../actions/voice-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -14,14 +15,14 @@ const PAGE = {
  * (102,976 bytes, measured 2026-08-11), so it can neither be this list nor the
  * health probe.
  */
-Deno.test("voice-list: reads /v2/voices, the credential-gated paged endpoint", async () => {
+test("voice-list: reads /v2/voices, the credential-gated paged endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await voiceList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/voices");
   assertEquals(out, PAGE);
 });
 
-Deno.test("voice-list: filters and paging reach the query", async () => {
+test("voice-list: filters and paging reach the query", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await voiceList.execute({
     search: "narrator",
@@ -46,7 +47,7 @@ Deno.test("voice-list: filters and paging reach the query", async () => {
 });
 
 /** `include_total_count` defaults to true server-side; only the opt-out travels. */
-Deno.test("voice-list: the total-count flag is only sent when turned off", async () => {
+test("voice-list: the total-count flag is only sent when turned off", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }, { body: PAGE }]);
   await voiceList.execute({ includeTotalCount: true }, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -55,13 +56,13 @@ Deno.test("voice-list: the total-count flag is only sent when turned off", async
 });
 
 /** The vendor caps page_size at 100 and its own default (10) is uselessly small. */
-Deno.test("voice-list: page size is capped at the documented 100", () => {
+test("voice-list: page size is capped at the documented 100", () => {
   const size = (voiceList.params ?? []).find((p) => p.key === "pageSize");
   assertEquals(size?.validation?.max, 100);
   assertEquals(size?.default, 30);
 });
 
-Deno.test("voice-list: the output names has_more and next_page_token, the paging contract", () => {
+test("voice-list: the output names has_more and next_page_token, the paging contract", () => {
   const keys = (voiceList.output as Array<{ key: string }>).map((o) => o.key);
   assertEquals(keys.includes("has_more"), true);
   assertEquals(keys.includes("next_page_token"), true);

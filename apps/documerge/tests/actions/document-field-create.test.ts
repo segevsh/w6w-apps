@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentFieldCreate from "../../actions/document-field-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-field-create: POST /api/documents/fields/{documentId}", async () => {
+test("document-field-create: POST /api/documents/fields/{documentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentFieldCreate.execute(
     { "documentId": 7, "name": "customer_name", "fieldMap": "Customer.Name" } as never,
@@ -18,7 +19,7 @@ Deno.test("document-field-create: POST /api/documents/fields/{documentId}", asyn
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-field-create: a vendor error surfaces its own message", async () => {
+test("document-field-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -34,5 +35,5 @@ Deno.test("document-field-create: a vendor error surfaces its own message", asyn
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-field-create: idempotency is declared as false", () =>
+test("document-field-create: idempotency is declared as false", () =>
   assertEquals(documentFieldCreate.idempotent, false));

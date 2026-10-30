@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-list: calls GET /call with filters", async () => {
+test("call-list: calls GET /call with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "c1" }] }]);
   const out = await callList.execute({ assistantId: "asst_1", limit: 10 }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("call-list: calls GET /call with filters", async () => {
   assertEquals(out, { items: [{ id: "c1" }] });
 });
 
-Deno.test("call-list: strips secrets out of any embedded transient assistant config", async () => {
+test("call-list: strips secrets out of any embedded transient assistant config", async () => {
   const { ctx } = mockCtx([
     { body: [{ id: "c1", assistant: { credentials: [{ apiKey: "sk-live" }] } }] },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import websiteStatus from "../../actions/website-status.ts";
 import { mockCtx, okBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("website-status: sends task_id as a query param", async () => {
+test("website-status: sends task_id as a query param", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({
       website_id: "w1",
@@ -16,7 +17,7 @@ Deno.test("website-status: sends task_id as a query param", async () => {
   assertEquals(out.publish_status, "published");
 });
 
-Deno.test("website-status: sends website_id as a query param", async () => {
+test("website-status: sends website_id as a query param", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({ website_id: "w1", publish_status: "unpublished", site_urls: [] }),
   }]);

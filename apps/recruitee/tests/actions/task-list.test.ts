@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-list: builds the query from every filter", async () => {
+test("task-list: builds the query from every filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { tasks: [], meta: {}, references: [] } }]);
   await taskList.execute({
     scope: "my",

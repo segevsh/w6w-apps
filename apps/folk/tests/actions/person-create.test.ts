@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-create.ts";
 import { NETWORK_PLACEHOLDER } from "../../lib/client.ts";
 
-Deno.test("person-create: POSTs to the group's person endpoint with the built body", async () => {
+test("person-create: POSTs to the group's person endpoint with the built body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "p1", networkId: "n1", groupId: "g1" },
@@ -25,7 +26,7 @@ Deno.test("person-create: POSTs to the group's person endpoint with the built bo
   assertEquals(out, { person: { id: "p1", networkId: "n1", groupId: "g1" } });
 });
 
-Deno.test("person-create: URL-encodes the group id", async () => {
+test("person-create: URL-encodes the group id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ groupId: "g/1" }, ctx);
   assertEquals(

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alert-rule-list.ts";
 
 const display = { endpoint: "https://example.grafana.net" };
 
-Deno.test("alert-rule-list: GETs /v1/provisioning/alert-rules", async () => {
+test("alert-rule-list: GETs /v1/provisioning/alert-rules", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "rule1" }] }], { display });
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");

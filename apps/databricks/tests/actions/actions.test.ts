@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import catalogCreate from "../../actions/catalog-create.ts";
 import catalogDelete from "../../actions/catalog-delete.ts";
 import catalogGet from "../../actions/catalog-get.ts";
@@ -20,7 +21,7 @@ const at = (path: string) => `${WORKSPACE_URL}${path}`;
  * case a handoff rather than a cancellation — the query keeps running and
  * `sql-statement-get` picks it up.
  */
-Deno.test("sql-statement-execute: POSTs with the documented max wait and CONTINUE", async () => {
+test("sql-statement-execute: POSTs with the documented max wait and CONTINUE", async () => {
   const { ctx, calls } = mockDatabricksCtx([{
     body: { statement_id: "01ef", status: { state: "SUCCEEDED" } },
   }]);
@@ -41,7 +42,7 @@ Deno.test("sql-statement-execute: POSTs with the documented max wait and CONTINU
 });
 
 /** Catalog and schema are optional context; omitted params must not be sent at all. */
-Deno.test("sql-statement-execute: sends catalog/schema only when given", async () => {
+test("sql-statement-execute: sends catalog/schema only when given", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: {} }, { body: {} }]);
 
   await sqlStatementExecute.execute(
@@ -61,7 +62,7 @@ Deno.test("sql-statement-execute: sends catalog/schema only when given", async (
  * whatever Databricks answered rather than polling, because one Action execution
  * has no good way to block for an unbounded time.
  */
-Deno.test("sql-statement-execute: returns a PENDING answer as-is", async () => {
+test("sql-statement-execute: returns a PENDING answer as-is", async () => {
   const { ctx } = mockDatabricksCtx([{
     body: { statement_id: "01ef", status: { state: "PENDING" } },
   }]);
@@ -73,12 +74,12 @@ Deno.test("sql-statement-execute: returns a PENDING answer as-is", async () => {
 });
 
 /** Running SQL is not repeatable, and the manifest has to say so. */
-Deno.test("sql-statement-execute: declares itself non-idempotent", () => {
+test("sql-statement-execute: declares itself non-idempotent", () => {
   assertEquals(sqlStatementExecute.type, "perform");
   assertEquals(sqlStatementExecute.idempotent, false);
 });
 
-Deno.test("sql-statement-get: GETs the statement by id", async () => {
+test("sql-statement-get: GETs the statement by id", async () => {
   const { ctx, calls } = mockDatabricksCtx([{
     body: { statement_id: "01ef", status: { state: "SUCCEEDED" } },
   }]);
@@ -90,7 +91,7 @@ Deno.test("sql-statement-get: GETs the statement by id", async () => {
 
 // ------------------------------------------------------------- unity catalog --
 
-Deno.test("catalog-list: GETs the Unity Catalog catalogs collection", async () => {
+test("catalog-list: GETs the Unity Catalog catalogs collection", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { catalogs: [{ name: "main" }] } }]);
   const result = await catalogList.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -98,13 +99,13 @@ Deno.test("catalog-list: GETs the Unity Catalog catalogs collection", async () =
   assertEquals(result, { catalogs: [{ name: "main" }] });
 });
 
-Deno.test("catalog-get: GETs one catalog by name", async () => {
+test("catalog-get: GETs one catalog by name", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { name: "main" } }]);
   await catalogGet.execute({ catalogName: "main" }, ctx);
   assertEquals(calls[0].url, at("/api/2.1/unity-catalog/catalogs/main"));
 });
 
-Deno.test("catalog-create: POSTs the name, and the comment only when given", async () => {
+test("catalog-create: POSTs the name, and the comment only when given", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { name: "new" } }, { body: { name: "new" } }]);
 
   await catalogCreate.execute({ name: "new", comment: "why it exists" }, ctx);
@@ -120,7 +121,7 @@ Deno.test("catalog-create: POSTs the name, and the comment only when given", asy
  * The delete endpoint answers with no body, so the action synthesises the one
  * fact worth returning rather than handing back `undefined`.
  */
-Deno.test("catalog-delete: DELETEs by name and reports the deletion", async () => {
+test("catalog-delete: DELETEs by name and reports the deletion", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ status: 204 }]);
   const result = await catalogDelete.execute({ catalogName: "old" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -128,7 +129,7 @@ Deno.test("catalog-delete: DELETEs by name and reports the deletion", async () =
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("table-list: passes catalog and schema as query params", async () => {
+test("table-list: passes catalog and schema as query params", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { tables: [] } }]);
   await tableList.execute({ catalogName: "main", schemaName: "default" }, ctx);
   const url = new URL(calls[0].url);
@@ -138,7 +139,7 @@ Deno.test("table-list: passes catalog and schema as query params", async () => {
 });
 
 /** Both narrowing params are optional; omitting them must not send empty values. */
-Deno.test("table-list: omits the params the caller left unset", async () => {
+test("table-list: omits the params the caller left unset", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { tables: [] } }]);
   await tableList.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -147,7 +148,7 @@ Deno.test("table-list: omits the params the caller left unset", async () => {
 });
 
 /** Unity Catalog addresses a table by its three-level name, not by an id. */
-Deno.test("table-get: GETs by the full catalog.schema.table name", async () => {
+test("table-get: GETs by the full catalog.schema.table name", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: { name: "my_table" } }]);
   await tableGet.execute({ fullName: "main.default.my_table" }, ctx);
   assertEquals(calls[0].url, at("/api/2.1/unity-catalog/tables/main.default.my_table"));
@@ -156,7 +157,7 @@ Deno.test("table-get: GETs by the full catalog.schema.table name", async () => {
 // ------------------------------------------------------------------ contract --
 
 /** A failure from the workspace has to surface, not be swallowed into a result. */
-Deno.test("actions: a vendor error propagates to the caller", async () => {
+test("actions: a vendor error propagates to the caller", async () => {
   const { ctx } = mockDatabricksCtx([{
     status: 404,
     statusText: "Not Found",
@@ -170,7 +171,7 @@ Deno.test("actions: a vendor error propagates to the caller", async () => {
 });
 
 /** Credentials are the `sign` hook's business; no action may add its own header. */
-Deno.test("actions: no action sends an Authorization header", async () => {
+test("actions: no action sends an Authorization header", async () => {
   const { ctx, calls } = mockDatabricksCtx([{ body: {} }, { body: {} }]);
   await catalogList.execute({}, ctx);
   await sqlStatementExecute.execute({ warehouseId: "wh1", statement: "SELECT 1" }, ctx);

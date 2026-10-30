@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deployment-cancel.ts";
 
-Deno.test("deployment-cancel: PATCHes the cancel endpoint, with no body", async () => {
+test("deployment-cancel: PATCHes the cancel endpoint, with no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { readyState: "CANCELED" } }], {
     display: {},
   });
@@ -13,7 +14,7 @@ Deno.test("deployment-cancel: PATCHes the cancel endpoint, with no body", async 
   assertEquals(result, { readyState: "CANCELED" });
 });
 
-Deno.test("deployment-cancel: a blank id fails before any request", async () => {
+test("deployment-cancel: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`deploymentId`");
   assertEquals(calls.length, 0);

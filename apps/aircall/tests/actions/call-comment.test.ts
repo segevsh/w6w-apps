@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import callComment from "../../actions/call-comment.ts";
 import { appErrorBody, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-comment: POSTs /v1/calls/{id}/comments with the content", async () => {
+test("call-comment: POSTs /v1/calls/{id}/comments with the content", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   const out = await callComment.execute({ callId: "812", content: "Call back" }, ctx) as {
     status: number;
@@ -15,7 +16,7 @@ Deno.test("call-comment: POSTs /v1/calls/{id}/comments with the content", async 
 });
 
 /** The five-comment ceiling arrives as a 400, and its reason must survive. */
-Deno.test("call-comment: the five-note ceiling surfaces its vendor message", async () => {
+test("call-comment: the five-note ceiling surfaces its vendor message", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -29,7 +30,7 @@ Deno.test("call-comment: the five-note ceiling surfaces its vendor message", asy
   assert(err.message.includes("Maximum of 5 notes"), err.message);
 });
 
-Deno.test("call-comment: the request carries a JSON content type", async () => {
+test("call-comment: the request carries a JSON content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await callComment.execute({ callId: "812", content: "hi" }, ctx);
   assertEquals(calls[0].headers["content-type"], "application/json");

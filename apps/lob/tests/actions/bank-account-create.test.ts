@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import bankAccountCreate from "../../actions/bank-account-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bank-account-create: POSTs the account and strips the number from the response", async () => {
+test("bank-account-create: POSTs the account and strips the number from the response", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "bank_1",
@@ -32,16 +33,16 @@ Deno.test("bank-account-create: POSTs the account and strips the number from the
   assert(!JSON.stringify(out).includes("123456789"));
 });
 
-Deno.test("bank-account-create: is declared non-idempotent", () => {
+test("bank-account-create: is declared non-idempotent", () => {
   assertEquals(bankAccountCreate.idempotent, false);
 });
 
-Deno.test("bank-account-create: the account number is a secret field", () => {
+test("bank-account-create: the account number is a secret field", () => {
   const field = bankAccountCreate.params!.find((p) => p.key === "accountNumber");
   assertEquals(field?.type, "secret");
 });
 
-Deno.test("bank-account-create: a bad routing number surfaces Lob's error", async () => {
+test("bank-account-create: a bad routing number surfaces Lob's error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid", "routing_number is invalid", 422),

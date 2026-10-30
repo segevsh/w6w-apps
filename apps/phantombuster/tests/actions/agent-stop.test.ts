@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentStop from "../../actions/agent-stop.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-stop: POSTs to /agents/stop with the id", async () => {
+test("agent-stop: POSTs to /agents/stop with the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
 
   const out = await agentStop.execute({ id: "42" }, ctx) as Record<string, unknown>;
@@ -13,7 +14,7 @@ Deno.test("agent-stop: POSTs to /agents/stop with the id", async () => {
   assertEquals(out.status, 200);
 });
 
-Deno.test("agent-stop: forwards the stop flags", async () => {
+test("agent-stop: forwards the stop flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
 
   await agentStop.execute({
@@ -33,6 +34,6 @@ Deno.test("agent-stop: forwards the stop flags", async () => {
   });
 });
 
-Deno.test("agent-stop: is marked idempotent — safe to retry", () => {
+test("agent-stop: is marked idempotent — safe to retry", () => {
   assertEquals(agentStop.idempotent, true);
 });

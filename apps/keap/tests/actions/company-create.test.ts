@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import companyCreate from "../../actions/company-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const CREATED = { id: "3", company_name: "Acme" };
  * `phone_number` and `fax_number` are single objects, not the arrays a contact
  * uses.
  */
-Deno.test("company-create: the email and phone are single objects, not arrays", async () => {
+test("company-create: the email and phone are single objects, not arrays", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await companyCreate.execute({ companyName: "Acme", email: "hi@acme.com", phone: "555" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -20,13 +21,13 @@ Deno.test("company-create: the email and phone are single objects, not arrays", 
 });
 
 /** Unlike a contact, a company has no documented minimum beyond its name. */
-Deno.test("company-create: a name alone is accepted", async () => {
+test("company-create: a name alone is accepted", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await companyCreate.execute({ companyName: "Acme" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { company_name: "Acme" });
 });
 
-Deno.test("company-create: extra person-shaped properties are merged in", async () => {
+test("company-create: extra person-shaped properties are merged in", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await companyCreate.execute(
     { companyName: "Acme", extra: '{"first_name":"Jo","job_title":"CEO"}' },
@@ -37,7 +38,7 @@ Deno.test("company-create: extra person-shaped properties are merged in", async 
   assertEquals(body.job_title, "CEO");
 });
 
-Deno.test("company-create: malformed address JSON fails before any request", async () => {
+test("company-create: malformed address JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await companyCreate.execute({ companyName: "Acme", address: "{oops" }, ctx),
@@ -47,6 +48,6 @@ Deno.test("company-create: malformed address JSON fails before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("company-create: is declared non-idempotent — Keap runs no duplicate check on companies", () => {
+test("company-create: is declared non-idempotent — Keap runs no duplicate check on companies", () => {
   assertEquals(companyCreate.idempotent, false);
 });

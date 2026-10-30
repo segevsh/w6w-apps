@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/job-search.ts";
 import { mockCtx, paginator, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-search: maps every filter onto the vendor's query names", async () => {
+test("job-search: maps every filter onto the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([{ slug: "9" }]) }]);
   await action.execute({
     name: "Engineer",
@@ -25,7 +26,7 @@ Deno.test("job-search: maps every filter onto the vendor's query names", async (
   });
 });
 
-Deno.test("job-search: no filters sends a bare search URL", async () => {
+test("job-search: no filters sends a bare search URL", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([]) }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://api.recruitcrm.io/v1/jobs/search");

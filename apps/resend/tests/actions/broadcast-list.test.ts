@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/broadcast-list.ts";
 
-Deno.test("broadcast-list: returns the flattened rows", async () => {
+test("broadcast-list: returns the flattened rows", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { object: "list", has_more: false, data: [{ id: "b_1", status: "draft" }] },

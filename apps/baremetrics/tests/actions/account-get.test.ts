@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-get: GET /v1/account with the documented query/body", async () => {
+test("account-get: GET /v1/account with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { account: {} } }]);
   const out = await accountGet.execute({}, ctx) as Record<string, unknown>;
 
@@ -13,13 +14,13 @@ Deno.test("account-get: GET /v1/account with the documented query/body", async (
   assert("account" in out);
 });
 
-Deno.test("account-get: declares type read and every required param", () => {
+test("account-get: declares type read and every required param", () => {
   assertEquals(accountGet.type, "read");
   const required = (accountGet.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, []);
 });
 
-Deno.test("account-get: surfaces a vendor error as a thrown message", async () => {
+test("account-get: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

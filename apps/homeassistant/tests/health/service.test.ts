@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { componentKey, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
@@ -26,7 +27,7 @@ const allGood = page([
   ["Home Assistant Cloud", "operational"],
 ]);
 
-Deno.test("service: reads the project's Statuspage summary", async () => {
+test("service: reads the project's Statuspage summary", async () => {
   const { ctx, calls } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -35,7 +36,7 @@ Deno.test("service: reads the project's Statuspage summary", async () => {
 });
 
 /** Groups are headings, not services. */
-Deno.test("service: group rows are not reported as components", async () => {
+test("service: group rows are not reported as components", async () => {
   const { ctx } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(Object.keys(result.components ?? {}).length, 4);
@@ -46,7 +47,7 @@ Deno.test("service: group rows are not reported as components", async () => {
  * The reason this check exists at all: Remote UI is how most people expose an
  * instance, and when it is down the instance is fine and unreachable.
  */
-Deno.test("service: a Remote UI outage is called out specifically", async () => {
+test("service: a Remote UI outage is called out specifically", async () => {
   const { ctx } = mockCtx([
     page([["Website", "operational"], ["Remote UI", "major_outage"]]),
   ]);
@@ -57,7 +58,7 @@ Deno.test("service: a Remote UI outage is called out specifically", async () => 
 });
 
 /** The forums being down says nothing about anybody's house. */
-Deno.test("service: a non-cloud outage says it does not affect a direct connection", async () => {
+test("service: a non-cloud outage says it does not affect a direct connection", async () => {
   const { ctx } = mockCtx([
     page([["Forums", "major_outage"], ["Remote UI", "operational"]]),
   ]);
@@ -70,21 +71,21 @@ Deno.test("service: a non-cloud outage says it does not affect a direct connecti
 });
 
 /** An app-scoped check cannot know whether a connection goes through Nabu Casa. */
-Deno.test("service: even a major outage is capped at degraded", async () => {
+test("service: even a major outage is capped at degraded", async () => {
   const { ctx } = mockCtx([page([["Home Assistant Cloud", "major_outage"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assertEquals(result.components!["home-assistant-cloud"].state, "down");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   for (const status of [404, 503]) {
     const { ctx } = mockCtx([{ status, body: "nope" }]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: a page that is not Home Assistant's is unknown", async () => {
+test("service: a page that is not Home Assistant's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { page: { name: "Somebody Else" }, components: [] },
@@ -94,7 +95,7 @@ Deno.test("service: a page that is not Home Assistant's is unknown", async () =>
   assert(/self-identifies/.test(result.message!), result.message);
 });
 
-Deno.test("service: an unreachable status host is unknown", async () => {
+test("service: an unreachable status host is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -102,7 +103,7 @@ Deno.test("service: an unreachable status host is unknown", async () => {
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: maps Atlassian's component vocabulary", () => {
+test("service: maps Atlassian's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -111,14 +112,14 @@ Deno.test("service: maps Atlassian's component vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: component keys are slugs with an id fallback", () => {
+test("service: component keys are slugs with an id fallback", () => {
   assertEquals(componentKey({ name: "Home Assistant Cloud" }, 0), "home-assistant-cloud");
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({}, 2), "component-2");
 });
 
 /** The page covers the project's infrastructure, not anybody's instance. */
-Deno.test("service: is informational, unsigned, and names only the status host", () => {
+test("service: is informational, unsigned, and names only the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");

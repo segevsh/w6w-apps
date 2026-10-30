@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/identify.ts";
 
-Deno.test("identify: PUTs attributes directly to /customers/:id (no wrapper key)", async () => {
+test("identify: PUTs attributes directly to /customers/:id (no wrapper key)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!(
     { personId: "u1", attributes: { email: "a@b.com", plan: "pro" } },
@@ -15,13 +16,13 @@ Deno.test("identify: PUTs attributes directly to /customers/:id (no wrapper key)
   assertEquals(result, { success: true });
 });
 
-Deno.test("identify: attributes default to an empty object", async () => {
+test("identify: attributes default to an empty object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ personId: "u1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("identify: rejects a blank personId", async () => {
+test("identify: rejects a blank personId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ personId: "  " }, ctx),
@@ -31,7 +32,7 @@ Deno.test("identify: rejects a blank personId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("identify: uses the eu host when the connection's region is eu", async () => {
+test("identify: uses the eu host when the connection's region is eu", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     connection: { display: { region: "eu" } },
   });
@@ -39,13 +40,13 @@ Deno.test("identify: uses the eu host when the connection's region is eu", async
   assertEquals(calls[0].url, "https://track-eu.customer.io/api/v1/customers/u1");
 });
 
-Deno.test("identify: URL-encodes the personId", async () => {
+test("identify: URL-encodes the personId", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ personId: "a b/c" }, ctx);
   assertEquals(calls[0].url, "https://track.customer.io/api/v1/customers/a%20b%2Fc");
 });
 
-Deno.test("identify: a non-2xx response propagates as an Error", async () => {
+test("identify: a non-2xx response propagates as an Error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { meta: { error: "invalid credentials" } } }]);
   const err = await assertRejects(
     async () => await action.execute!({ personId: "u1" }, ctx),

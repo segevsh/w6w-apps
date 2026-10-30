@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -10,7 +11,7 @@ const acct = (over: Record<string, unknown> = {}, q = {}) => ({
   },
 });
 
-Deno.test("quota: signed GetAccount on the connection's region; headroom is reported", async () => {
+test("quota: signed GetAccount on the connection's region; headroom is reported", async () => {
   const { ctx, calls } = mockCtx([acct()], mockConnection({ region: "eu-west-1" }));
   const r = await quota.check!({}, ctx);
   assertEquals(calls[0].url, "https://email.eu-west-1.amazonaws.com/v2/email/account");
@@ -23,7 +24,7 @@ Deno.test("quota: signed GetAccount on the connection's region; headroom is repo
   ]);
 });
 
-Deno.test("quota: 90% is degraded, 100% is down", async () => {
+test("quota: 90% is degraded, 100% is down", async () => {
   const warn = mockCtx([acct({}, { SentLast24Hours: 900 })]);
   const w = await quota.check!({}, warn.ctx);
   assertEquals(w.state, "degraded");
@@ -34,24 +35,24 @@ Deno.test("quota: 90% is degraded, 100% is down", async () => {
   assertEquals(f.quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: an over-quota count never reports a negative remaining", async () => {
+test("quota: an over-quota count never reports a negative remaining", async () => {
   const { ctx } = mockCtx([acct({}, { SentLast24Hours: 1200 })]);
   assertEquals((await quota.check!({}, ctx)).quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: a non-positive Max24HourSend means no cap, not exhausted", async () => {
+test("quota: a non-positive Max24HourSend means no cap, not exhausted", async () => {
   const { ctx } = mockCtx([acct({}, { Max24HourSend: -1, SentLast24Hours: 50 })]);
   assertEquals((await quota.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("quota: SendingEnabled=false is down and names the enforcement status", async () => {
+test("quota: SendingEnabled=false is down and names the enforcement status", async () => {
   const { ctx } = mockCtx([acct({ SendingEnabled: false, EnforcementStatus: "SHUTDOWN" })]);
   const r = await quota.check!({}, ctx);
   assertEquals(r.state, "down");
   assertEquals(r.message, "Sending is disabled for this account (enforcement: SHUTDOWN)");
 });
 
-Deno.test("quota: AccessDenied is unknown (says nothing about headroom); other failures too", async () => {
+test("quota: AccessDenied is unknown (says nothing about headroom); other failures too", async () => {
   const denied = mockCtx([{
     status: 403,
     body: { message: "not authorized" },

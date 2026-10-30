@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/suppression-delete.ts";
 
-Deno.test("suppression-delete: DELETE /v2/email/suppression/addresses/a%40x.com and maps the response", async () => {
+test("suppression-delete: DELETE /v2/email/suppression/addresses/a%40x.com and maps the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ emailAddress: "a@x.com" }, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("suppression-delete: DELETE /v2/email/suppression/addresses/a%40x.com 
   });
 });
 
-Deno.test("suppression-delete: uses the connection's region for the host", async () => {
+test("suppression-delete: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     mockConnection({ region: "eu-west-1" }),
@@ -28,7 +29,7 @@ Deno.test("suppression-delete: uses the connection's region for the host", async
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("suppression-delete: surfaces the vendor's error type and message", async () => {
+test("suppression-delete: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

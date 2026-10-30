@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import personGet from "../../actions/person-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("person-get - GETs /people/{id}", async () => {
+test("person-get - GETs /people/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { people_id: 1, name: "Sarah-Jane Smith" },
@@ -12,7 +13,7 @@ Deno.test("person-get - GETs /people/{id}", async () => {
   assertEquals(out, { people_id: 1, name: "Sarah-Jane Smith" });
 });
 
-Deno.test("person-get - expand param is forwarded", async () => {
+test("person-get - expand param is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await personGet.execute({ people_id: 1, expand: "contracts" }, ctx);
   assertEquals(queryOf(calls[0].url).expand, "contracts");

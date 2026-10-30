@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listPipelines from "../../actions/list-pipelines.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-pipelines: GET /pipelines unwraps data.pipelines", async () => {
+test("list-pipelines: GET /pipelines unwraps data.pipelines", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ pipelines: [{ pipeline: { id: "p1" } }], total_count: 1, page: 1 }),
   }]);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/link-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const page = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `link_${i + 1}` }));
 
-Deno.test("link-list: GETs /links with filters and the cursor, never the deprecated `page`", async () => {
+test("link-list: GETs /links with filters and the cursor, never the deprecated `page`", async () => {
   const { ctx, calls } = mockCtx([{ body: page(2) }]);
   await action.execute!({
     domain: "dub.sh",
@@ -29,19 +30,19 @@ Deno.test("link-list: GETs /links with filters and the cursor, never the depreca
   assert(!action.params!.some((p) => p.key === "page"), "deprecated param not exposed");
 });
 
-Deno.test("link-list: a full page returns the last ID as nextCursor", async () => {
+test("link-list: a full page returns the last ID as nextCursor", async () => {
   const { ctx } = mockCtx([{ body: page(3) }]);
   const out = await action.execute!({ pageSize: 3 }, ctx);
   assertEquals(out, { links: page(3), nextCursor: "link_3" });
 });
 
-Deno.test("link-list: a short page has no nextCursor", async () => {
+test("link-list: a short page has no nextCursor", async () => {
   const { ctx } = mockCtx([{ body: page(2) }]);
   const out = await action.execute!({ pageSize: 3 }, ctx);
   assertEquals(out, { links: page(2) });
 });
 
-Deno.test("link-list: sends no authorization header and surfaces errors", async () => {
+test("link-list: sends no authorization header and surfaces errors", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute!({}, ctx);
   assert(!("authorization" in calls[0].headers));

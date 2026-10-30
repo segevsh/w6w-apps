@@ -1,4 +1,5 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import service, { API_COMPONENT, PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -26,14 +27,14 @@ const run = async (body: unknown, status = 200) => {
   return { r, calls };
 };
 
-Deno.test("service: declared as an unsigned app-scope check against status.rippling.com only", () => {
+test("service: declared as an unsigned app-scope check against status.rippling.com only", () => {
   assertEquals(STATUS_URL, "https://status.rippling.com/api/v2/summary.json");
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.rippling.com"] });
 });
 
-Deno.test("service: all operational is ok and reports the three relevant components", async () => {
+test("service: all operational is ok and reports the three relevant components", async () => {
   const { r, calls } = await run(summary());
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals((r as { state: string }).state, "ok");
@@ -44,7 +45,7 @@ Deno.test("service: all operational is ok and reports the three relevant compone
   ]);
 });
 
-Deno.test("service: Platform API major outage is down; partial outage is degraded", async () => {
+test("service: Platform API major outage is down; partial outage is degraded", async () => {
   assertEquals(
     ((await run(summary({ [API_COMPONENT.id]: "major_outage" }))).r as { state: string }).state,
     "down",
@@ -57,17 +58,17 @@ Deno.test("service: Platform API major outage is down; partial outage is degrade
   assertStringIncludes(partial.components[API_COMPONENT.id].message!, "partial_outage");
 });
 
-Deno.test("service: the supporting components can only ever degrade, never down", async () => {
+test("service: the supporting components can only ever degrade, never down", async () => {
   const r = (await run(summary({ lq3c3hps2qqf: "major_outage" }))).r as { state: string };
   assertEquals(r.state, "degraded");
 });
 
-Deno.test("service: an unrelated component (Payroll) outage does not touch the verdict", async () => {
+test("service: an unrelated component (Payroll) outage does not touch the verdict", async () => {
   const r = (await run(summary({ "2467w9pctv6m": "major_outage" }))).r as { state: string };
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: falls back to the component name when the id changes", async () => {
+test("service: falls back to the component name when the id changes", async () => {
   const body = summary();
   body.components = body.components.map((c) =>
     c.name === "Platform API" ? { ...c, id: "renamed", status: "major_outage" } : c
@@ -75,7 +76,7 @@ Deno.test("service: falls back to the component name when the id changes", async
   assertEquals(((await run(body)).r as { state: string }).state, "down");
 });
 
-Deno.test("service: a foreign page id, a missing component, a bad status or a bad body is unknown, never down", async () => {
+test("service: a foreign page id, a missing component, a bad status or a bad body is unknown, never down", async () => {
   const foreign = { ...summary(), page: { id: "other", name: "Rippling" } };
   assertEquals(((await run(foreign)).r as { state: string }).state, "unknown");
 
@@ -87,7 +88,7 @@ Deno.test("service: a foreign page id, a missing component, a bad status or a ba
   assertEquals(((await run("<html>")).r as { state: string }).state, "unknown");
 });
 
-Deno.test("service: open incidents are noted in the message", async () => {
+test("service: open incidents are noted in the message", async () => {
   const body = { ...summary(), incidents: [{ name: "Elevated latency" }] };
   const r = (await run(body)).r as { message?: string };
   assertStringIncludes(r.message ?? "", "1 open incident");

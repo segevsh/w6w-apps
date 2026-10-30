@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectArchive from "../../actions/project-archive.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-archive: PATCH /projects/{projectId}/archive with the documented query and body", async () => {
+test("project-archive: PATCH /projects/{projectId}/archive with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await projectArchive.execute({ "projectId": "ev:1", "archived": true }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("project-archive: PATCH /projects/{projectId}/archive with the documen
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("project-archive: an Everhour error surfaces its message and status", async () => {
+test("project-archive: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(projectArchive.execute({ "projectId": "ev:1", "archived": true }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("project-archive: an Everhour error surfaces its message and status", 
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("project-archive: declares perform and idempotent=true", () => {
+test("project-archive: declares perform and idempotent=true", () => {
   assertEquals(projectArchive.type, "perform");
   assertEquals(projectArchive.idempotent, true);
 });

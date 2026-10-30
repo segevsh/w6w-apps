@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-update.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("order-update: PUTs /orders/{id} with only supplied fields", async () => {
+test("order-update: PUTs /orders/{id} with only supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }], { display });
   await action.execute!({ orderId: "7", status: "completed" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -12,7 +13,7 @@ Deno.test("order-update: PUTs /orders/{id} with only supplied fields", async () 
   assertEquals(JSON.parse(calls[0].body!), { status: "completed" });
 });
 
-Deno.test("order-update: maps camelCase fields and passes address objects", async () => {
+test("order-update: maps camelCase fields and passes address objects", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }], { display });
   await action.execute!(
     {

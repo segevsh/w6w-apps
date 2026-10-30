@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import bulkGetFile from "../../actions/bulk-get-file.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-get-file: GETs fileinfo and maps the counts, a file-level error is data", async () => {
+test("bulk-get-file: GETs fileinfo and maps the counts, a file-level error is data", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       file_id: 940,
@@ -30,7 +31,7 @@ Deno.test("bulk-get-file: GETs fileinfo and maps the counts, a file-level error 
   assertEquals(out.error, "bad file");
 });
 
-Deno.test("bulk-get-file: invalid_api_key and a missing id", async () => {
+test("bulk-get-file: invalid_api_key and a missing id", async () => {
   const { ctx } = mockCtx([{ body: { error: "invalid_api_key" } }]);
   const err = await assertRejects(() => run(bulkGetFile, { fileId: "1" }, ctx));
   assert((err as Error).message.includes("invalid_api_key"));

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { bodyOf, entityBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { bodyOf, entityBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * be registered to all events by default." So a PUT sent only to flip `active`
  * must NOT carry an empty events field — and must not carry one at all.
  */
-Deno.test("webhook-update: re-activating alone never sends an events field", async () => {
+test("webhook-update: re-activating alone never sends an events field", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("webhook", { webhook_id: "uuid-1" }) }]);
   await webhookUpdate.execute({ webhookId: "uuid-1", active: true }, ctx);
 
@@ -18,13 +19,13 @@ Deno.test("webhook-update: re-activating alone never sends an events field", asy
 });
 
 /** `active: false` must survive `compact`, which drops undefined but not false. */
-Deno.test("webhook-update: active false is sent, not dropped", async () => {
+test("webhook-update: active false is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("webhook", {}) }]);
   await webhookUpdate.execute({ webhookId: "uuid-1", active: false }, ctx);
   assertEquals(bodyOf(calls[0]), { active: false });
 });
 
-Deno.test("webhook-update: events_action rides along with an events list", async () => {
+test("webhook-update: events_action rides along with an events list", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("webhook", {}) }]);
   await webhookUpdate.execute(
     { webhookId: "uuid-1", events: ["call.created"], eventsAction: "add" },
@@ -34,7 +35,7 @@ Deno.test("webhook-update: events_action rides along with an events list", async
   assertEquals(bodyOf(calls[0]), { events: ["call.created"] });
 });
 
-Deno.test("webhook-update: events_action without events is dropped", async () => {
+test("webhook-update: events_action without events is dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("webhook", {}) }]);
   await webhookUpdate.execute({
     webhookId: "uuid-1",
@@ -44,7 +45,7 @@ Deno.test("webhook-update: events_action without events is dropped", async () =>
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("webhook-update: strips the token from the response", async () => {
+test("webhook-update: strips the token from the response", async () => {
   const { ctx } = mockCtx([
     { body: entityBody("webhook", { webhook_id: "uuid-1", token: "df76g76dpziygs567f0" }) },
   ]);
@@ -55,7 +56,7 @@ Deno.test("webhook-update: strips the token from the response", async () => {
   );
 });
 
-Deno.test("webhook-update: an empty change set is rejected before the request", async () => {
+test("webhook-update: an empty change set is rejected before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(webhookUpdate.execute({ webhookId: "uuid-1" }, ctx)),

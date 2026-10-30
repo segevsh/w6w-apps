@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/salesorder-create.ts";
 
-Deno.test("salesorder-create: POSTs /salesorders with nested line_items", async () => {
+test("salesorder-create: POSTs /salesorders with nested line_items", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", salesorder: { salesorder_id: "1" } } },
   ]);
@@ -30,7 +31,7 @@ Deno.test("salesorder-create: POSTs /salesorders with nested line_items", async 
   assertEquals(out, { salesorder_id: "1" });
 });
 
-Deno.test("salesorder-create: the line_items array survives JSON encoding intact", async () => {
+test("salesorder-create: the line_items array survives JSON encoding intact", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", salesorder: { salesorder_id: "1" } } },
   ]);

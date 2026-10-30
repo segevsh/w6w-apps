@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deal-create.ts";
 
-Deno.test("deal-create: POSTs /deals with mapped snake_case body", async () => {
+test("deal-create: POSTs /deals with mapped snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 1 } } }]);
   await action.execute!(
     { title: "Big deal", value: 500, currency: "USD", personId: 9, stageId: 3 },
@@ -18,7 +19,7 @@ Deno.test("deal-create: POSTs /deals with mapped snake_case body", async () => {
   assertEquals(body.stage_id, 3);
 });
 
-Deno.test("deal-create: omits unset optional fields", async () => {
+test("deal-create: omits unset optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 1 } } }]);
   await action.execute!({ title: "Minimal" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { title: "Minimal" });

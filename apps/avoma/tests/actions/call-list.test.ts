@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { mockCtx, pageBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-list: GET /v1/calls/ with window and direction", async () => {
+test("call-list: GET /v1/calls/ with window and direction", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([{ external_id: "e1" }]) }]);
   const out = await callList.execute({
     fromDate: "2026-10-01T00:00:00Z",
@@ -18,7 +19,7 @@ Deno.test("call-list: GET /v1/calls/ with window and direction", async () => {
   assertEquals(out.results.length, 1);
 });
 
-Deno.test("call-list: no window and no next is refused", async () => {
+test("call-list: no window and no next is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await callList.execute({}, ctx), Error, "fromDate");
   assertEquals(calls.length, 0);

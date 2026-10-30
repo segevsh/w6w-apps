@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/sound-effect.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("sound-effect: sends the documented request and maps the answer", async () => {
+test("sound-effect: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "11111111-1111-4111-8111-111111111111" } }]);
   const out = await run(action, {
     "model": "eleven_text_to_sound_v2",
@@ -25,7 +26,7 @@ Deno.test("sound-effect: sends the documented request and maps the answer", asyn
   });
 });
 
-Deno.test("sound-effect: a 401 surfaces Runway's error text", async () => {
+test("sound-effect: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

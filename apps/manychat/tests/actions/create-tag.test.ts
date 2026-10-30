@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createTag from "../../actions/create-tag.ts";
 
-Deno.test("create-tag: POSTs { name } to the page endpoint", async () => {
+test("create-tag: POSTs { name } to the page endpoint", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", data: { tag: { id: 9, name: "vip" } } } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("create-tag: POSTs { name } to the page endpoint", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "vip" });
 });
 
-Deno.test("create-tag: the result nests under data.tag, not data", async () => {
+test("create-tag: the result nests under data.tag, not data", async () => {
   const { ctx } = mockCtx([
     { body: { status: "success", data: { tag: { id: 9, name: "vip" } } } },
   ]);
@@ -20,6 +21,6 @@ Deno.test("create-tag: the result nests under data.tag, not data", async () => {
   assertEquals(out.data.tag.id, 9);
 });
 
-Deno.test("create-tag: is not idempotent — a duplicate name is undefined behaviour", () => {
+test("create-tag: is not idempotent — a duplicate name is undefined behaviour", () => {
   assertEquals(createTag.idempotent, false);
 });

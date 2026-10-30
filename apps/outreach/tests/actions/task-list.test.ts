@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { collection, errorsBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 type Out = { data: unknown[]; nextCursor?: string; meta: Record<string, unknown> };
 
-Deno.test("task-list: GET /tasks with JSON:API headers and cheap defaults", async () => {
+test("task-list: GET /tasks with JSON:API headers and cheap defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("task", [1, 2]) }]);
   const out = await taskList.execute({}, ctx) as Out;
 
@@ -17,7 +18,7 @@ Deno.test("task-list: GET /tasks with JSON:API headers and cheap defaults", asyn
   assertEquals(out.nextCursor, undefined);
 });
 
-Deno.test("task-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
+test("task-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("task", []) }]);
   await taskList.execute({
     filter: { id: "1..5", owner: { id: "7" }, name: ["a", "b"] },
@@ -42,20 +43,20 @@ Deno.test("task-list: filters, sort, include, sparse fields and cursor are sent 
   });
 });
 
-Deno.test("task-list: a JSON-string filter is accepted", async () => {
+test("task-list: a JSON-string filter is accepted", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("task", []) }]);
   await taskList.execute({ filter: '{"state":"incomplete"}' }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[state]"], "incomplete");
 });
 
-Deno.test("task-list: extracts the next page cursor from links.next", async () => {
+test("task-list: extracts the next page cursor from links.next", async () => {
   const next = "https://api.outreach.io/api/v2/tasks?page[size]=2&page[after]=eyJ4Ijox";
   const { ctx } = mockCtx([{ body: collection("task", [1, 2], next) }]);
   const out = await taskList.execute({ pageSize: 2 }, ctx) as Out;
   assertEquals(out.nextCursor, "eyJ4Ijox");
 });
 
-Deno.test("task-list: surfaces the vendor's error id and detail", async () => {
+test("task-list: surfaces the vendor's error id and detail", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorsBody("unauthorizedOauthScope", "Unauthorized OAuth Scope", "Missing scope"),

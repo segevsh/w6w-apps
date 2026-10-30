@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-recent-leads.ts";
 
-Deno.test("list-recent-leads: GETs /{formId}/leads with defaults (limit=25, full field set)", async () => {
+test("list-recent-leads: GETs /{formId}/leads with defaults (limit=25, full field set)", async () => {
   const body = {
     data: [{ id: "lead-1", created_time: "2026-06-01T00:00:00+0000", field_data: [] }],
     paging: {},
@@ -22,7 +23,7 @@ Deno.test("list-recent-leads: GETs /{formId}/leads with defaults (limit=25, full
   assertEquals(result, body);
 });
 
-Deno.test("list-recent-leads: forwards `since` and `limit` when provided", async () => {
+test("list-recent-leads: forwards `since` and `limit` when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ formId: "f", since: 1_700_000_000, limit: 50 }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -30,7 +31,7 @@ Deno.test("list-recent-leads: forwards `since` and `limit` when provided", async
   assertEquals(params.get("limit"), "50");
 });
 
-Deno.test("list-recent-leads: omits since/cursor when not supplied", async () => {
+test("list-recent-leads: omits since/cursor when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ formId: "f" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -38,7 +39,7 @@ Deno.test("list-recent-leads: omits since/cursor when not supplied", async () =>
   assert(!params.has("after"));
 });
 
-Deno.test("list-recent-leads: sets no authorization header (the sign hook injects it)", async () => {
+test("list-recent-leads: sets no authorization header (the sign hook injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ formId: "f" }, ctx);
   assert(!("authorization" in calls[0].headers), "auth must be injected by the sign hook, not us");

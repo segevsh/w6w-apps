@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listNotes from "../../actions/list-notes.ts";
 import { noteVisibilityFilterOptions, noteVisibilityWriteOptions } from "../../lib/params.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-notes: calls GET /v3/notes", async () => {
+test("list-notes: calls GET /v3/notes", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listNotes.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/notes");
@@ -14,7 +15,7 @@ Deno.test("list-notes: calls GET /v3/notes", async () => {
  * be hit by copying a value out of a list result into a create step. The two
  * lists must never share a member.
  */
-Deno.test("list-notes: the read and write visibility vocabularies are disjoint", () => {
+test("list-notes: the read and write visibility vocabularies are disjoint", () => {
   const read = noteVisibilityFilterOptions.map((o) => o.value);
   const write = noteVisibilityWriteOptions.map((o) => o.value);
   assertEquals(read, ["publicly_visible", "privately_visible", "admin_only_visible"]);
@@ -22,7 +23,7 @@ Deno.test("list-notes: the read and write visibility vocabularies are disjoint",
   assertEquals(read.filter((v) => write.includes(v)), []);
 });
 
-Deno.test("list-notes: maps its filters", async () => {
+test("list-notes: maps its filters", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listNotes.execute({
     candidateIds: "1",
@@ -41,12 +42,12 @@ Deno.test("list-notes: maps its filters", async () => {
   });
 });
 
-Deno.test("list-notes: the visibility hint points at the other spelling", () => {
+test("list-notes: the visibility hint points at the other spelling", () => {
   const param = (listNotes.params ?? []).find((p) => p.key === "visibility");
   assert(param?.hint?.includes("READ spellings"), param?.hint);
 });
 
-Deno.test("list-notes: a cursor rejects the type filter it already carries", () => {
+test("list-notes: a cursor rejects the type filter it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(() => listNotes.execute({ cursor: "N", type: "NOTE" }, ctx), Error);
   assert(err.message.includes("type"), err.message);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const USER = {
  * `xi_api_key` — "The API key of the user" — in full, and an action result is
  * persisted in the run record.
  */
-Deno.test("user-get: the caller's own API key never leaves the action", async () => {
+test("user-get: the caller's own API key never leaves the action", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   const out = await userGet.execute({}, ctx) as Record<string, unknown>;
   assertEquals(pathOf(calls[0].url), "/v1/user");
@@ -32,7 +33,7 @@ Deno.test("user-get: the caller's own API key never leaves the action", async ()
  * connection using?" without handing the key over. Dropping it would make the
  * redaction cost something it does not need to cost.
  */
-Deno.test("user-get: the vendor's masked preview and every other field survive", async () => {
+test("user-get: the vendor's masked preview and every other field survive", async () => {
   const { ctx } = mockCtx([{ body: USER }]);
   const out = await userGet.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out.xi_api_key_preview, "8so2…l920");
@@ -43,7 +44,7 @@ Deno.test("user-get: the vendor's masked preview and every other field survive",
   assertEquals(out.subscription, { tier: "trial", character_count: 17231 });
 });
 
-Deno.test("user-get: takes no parameters", () => {
+test("user-get: takes no parameters", () => {
   assertEquals(userGet.params, []);
   assertEquals(userGet.type, "read");
 });

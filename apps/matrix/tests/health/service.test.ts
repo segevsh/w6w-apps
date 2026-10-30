@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 /**
  * Matrix is a federated protocol — there is no single vendor platform behind a
  * Connection, so there is nothing one status page could say about it.
  */
-Deno.test("service: is a declared absence, and explains why the question does not apply", () => {
+test("service: is a declared absence, and explains why the question does not apply", () => {
   assertEquals(service.check, undefined);
   assertEquals(service.kind, "service");
   assertEquals(service.severity, "informational");

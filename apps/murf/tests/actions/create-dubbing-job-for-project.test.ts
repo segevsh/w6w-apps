@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/create-dubbing-job-for-project.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-dubbing-job-for-project: multipart with project_id and file_url", async () => {
+test("create-dubbing-job-for-project: multipart with project_id and file_url", async () => {
   const reply = {
     job_id: "j",
     dubbing_type: "QA",
@@ -32,7 +33,7 @@ Deno.test("create-dubbing-job-for-project: multipart with project_id and file_ur
   assertEquals(out, reply);
 });
 
-Deno.test("create-dubbing-job-for-project: requires projectId and fileUrl", async () => {
+test("create-dubbing-job-for-project: requires projectId and fileUrl", async () => {
   const { ctx, calls } = mockCtx();
   assert((await failure(action, { projectId: "", fileUrl: "u" }, ctx)).includes("projectId"));
   assert((await failure(action, { projectId: "p", fileUrl: "" }, ctx)).includes("fileUrl"));

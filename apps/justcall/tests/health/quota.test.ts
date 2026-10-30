@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { QUOTA_URL, readWindow, WARN_FRACTION } from "../../health/quota.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -15,12 +16,12 @@ function headers(overrides: Record<string, string> = {}): Record<string, string>
   };
 }
 
-Deno.test("quota: reuses the auth probe's own endpoint", () => {
+test("quota: reuses the auth probe's own endpoint", () => {
   assertEquals(QUOTA_URL, "https://api.justcall.io/v2.1/users?per_page=1");
   assertEquals(quota.credential, "signed");
 });
 
-Deno.test("quota: a healthy account with plenty of headroom reports ok", async () => {
+test("quota: a healthy account with plenty of headroom reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 1 }]), headers: headers() }]);
   const report = await quota.check!({}, ctx);
 
@@ -30,7 +31,7 @@ Deno.test("quota: a healthy account with plenty of headroom reports ok", async (
   assertEquals(report.quota?.length, 2);
 });
 
-Deno.test("quota: neither header pair present reports unknown, not zero headroom", async () => {
+test("quota: neither header pair present reports unknown, not zero headroom", async () => {
   const { ctx } = mockCtx([{
     body: envelope([{ id: 1 }]),
     headers: { "content-type": "application/json" },
@@ -41,20 +42,20 @@ Deno.test("quota: neither header pair present reports unknown, not zero headroom
   assert(/did not return/i.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: a non-2xx response says nothing about headroom", async () => {
+test("quota: a non-2xx response says nothing about headroom", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: "failed", message: "Unauthorized" } }]);
   const report = await quota.check!({}, ctx);
 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: an exhausted hourly window is down, not degraded", () => {
+test("quota: an exhausted hourly window is down, not degraded", () => {
   const reading = readWindow("hourly-requests", { limit: 1800, remaining: 0, reset: 0 }, true);
   assertEquals(reading.state, "down");
 });
 
 /** The burst window recovers within a minute on its own — it is a queue, not an outage. */
-Deno.test("quota: an exhausted burst window is degraded, not down", () => {
+test("quota: an exhausted burst window is degraded, not down", () => {
   const reading = readWindow(
     "burst-requests-per-minute",
     { limit: 30, remaining: 0, reset: 0 },
@@ -63,19 +64,19 @@ Deno.test("quota: an exhausted burst window is degraded, not down", () => {
   assertEquals(reading.state, "degraded");
 });
 
-Deno.test("quota: low but nonzero remaining crosses the warn fraction into degraded", () => {
+test("quota: low but nonzero remaining crosses the warn fraction into degraded", () => {
   const limit = 1800;
   const remaining = Math.floor(limit * (WARN_FRACTION - 0.01));
   const reading = readWindow("hourly-requests", { limit, remaining, reset: 0 }, true);
   assertEquals(reading.state, "degraded");
 });
 
-Deno.test("quota: comfortable remaining reports ok", () => {
+test("quota: comfortable remaining reports ok", () => {
   const reading = readWindow("hourly-requests", { limit: 1800, remaining: 1000, reset: 0 }, true);
   assertEquals(reading.state, "ok");
 });
 
-Deno.test("quota: resetAt is derived from the epoch-seconds reset header", () => {
+test("quota: resetAt is derived from the epoch-seconds reset header", () => {
   const reading = readWindow(
     "hourly-requests",
     { limit: 1800, remaining: 900, reset: 1893456000 },

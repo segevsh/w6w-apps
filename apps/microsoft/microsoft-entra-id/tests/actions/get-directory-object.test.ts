@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-directory-object.ts";
 
-Deno.test("get-directory-object: GETs /directoryObjects/{id} and returns the typed object", async () => {
+test("get-directory-object: GETs /directoryObjects/{id} and returns the typed object", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "@odata.type": "#microsoft.graph.group", id: "g1", displayName: "Sales" },
   }]);
@@ -11,7 +12,7 @@ Deno.test("get-directory-object: GETs /directoryObjects/{id} and returns the typ
   assertEquals(out["@odata.type"], "#microsoft.graph.group");
 });
 
-Deno.test("get-directory-object: sends no query parameters", async () => {
+test("get-directory-object: sends no query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ objectId: "x" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/entities-extract.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("entities-extract: calls text/named_entity_recognition with the nested input and shapes the output", async () => {
+test("entities-extract: calls text/named_entity_recognition with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("entities-extract: calls text/named_entity_recognition with the nested
   assertEquals(out.output, { items: [{ entity: "Paris" }] });
 });
 
-Deno.test("entities-extract: a provider failure inside a 200 is thrown", async () => {
+test("entities-extract: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "amazon", error: { message: "provider down" } },
   }]);
@@ -39,7 +40,7 @@ Deno.test("entities-extract: a provider failure inside a 200 is thrown", async (
   );
 });
 
-Deno.test("entities-extract: fallbacks and a provider model reach the request", async () => {
+test("entities-extract: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ text: "Paris is nice", provider: "amazon" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import iterationUpdate from "../../actions/iteration-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("iteration-update: PUTs only the fields provided", async () => {
+test("iteration-update: PUTs only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3 } }]);
   await iterationUpdate.execute({ iterationId: 3, name: "Sprint 1 (renamed)" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/folder-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("folder-delete: sends DELETE /folders/f1 with the mapped input", async () => {
+test("folder-delete: sends DELETE /folders/f1 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "f1" } }]);
   const out = await action.execute!({ "folderId": "f1" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("folder-delete: sends DELETE /folders/f1 with the mapped input", async
   assertEquals(out, { "id": "f1" });
 });
 
-Deno.test("folder-delete: sends no authorization header of its own", async () => {
+test("folder-delete: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "f1" } }]);
   await action.execute!({ "folderId": "f1" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("folder-delete: surfaces Dub's error envelope as a thrown error", async () => {
+test("folder-delete: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -32,7 +33,7 @@ Deno.test("folder-delete: surfaces Dub's error envelope as a thrown error", asyn
   );
 });
 
-Deno.test("folder-delete: declares type, idempotency and output", () => {
+test("folder-delete: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

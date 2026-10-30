@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rate-get.ts";
 
@@ -14,7 +15,7 @@ const quoted = (rates: unknown[], invalid: unknown[] = []) => ({
   },
 });
 
-Deno.test("rate-get: posts rate_options.carrier_ids and the shipment object", async () => {
+test("rate-get: posts rate_options.carrier_ids and the shipment object", async () => {
   const { ctx, calls } = mockCtx([quoted([])]);
   await action.execute!(
     { carrierIds: "se-1, se-2", shipTo, shipFrom: shipTo, packages },
@@ -27,7 +28,7 @@ Deno.test("rate-get: posts rate_options.carrier_ids and the shipment object", as
 });
 
 /** Rates come back under `rate_response.rates`, not top-level — the documented shape. */
-Deno.test("rate-get: reads rates from rate_response, sorted cheapest first", async () => {
+test("rate-get: reads rates from rate_response, sorted cheapest first", async () => {
   const { ctx } = mockCtx([quoted([
     { rate_id: "r1", shipping_amount: { amount: 10.05 } },
     { rate_id: "r2", shipping_amount: { amount: 9.99 } },
@@ -40,7 +41,7 @@ Deno.test("rate-get: reads rates from rate_response, sorted cheapest first", asy
   assertEquals(result.cheapestRate.rate_id, "r2");
 });
 
-Deno.test("rate-get: surfaces the shipment_id created as a side effect", async () => {
+test("rate-get: surfaces the shipment_id created as a side effect", async () => {
   const { ctx } = mockCtx([quoted([])]);
   const result = await action.execute!(
     { carrierIds: "se-1", shipTo, shipFrom: shipTo, packages },
@@ -49,7 +50,7 @@ Deno.test("rate-get: surfaces the shipment_id created as a side effect", async (
   assertEquals(result.shipmentId, "se-9");
 });
 
-Deno.test("rate-get: surfaces invalid_rates", async () => {
+test("rate-get: surfaces invalid_rates", async () => {
   const { ctx } = mockCtx([quoted([], [{ carrier_id: "se-2", error_message: "no service" }])]);
   const result = await action.execute!(
     { carrierIds: "se-1,se-2", shipTo, shipFrom: shipTo, packages },
@@ -58,7 +59,7 @@ Deno.test("rate-get: surfaces invalid_rates", async () => {
   assertEquals(result.invalidRates.length, 1);
 });
 
-Deno.test("rate-get: requires carrierIds", async () => {
+test("rate-get: requires carrierIds", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ shipTo, shipFrom: shipTo, packages }, ctx),
@@ -68,7 +69,7 @@ Deno.test("rate-get: requires carrierIds", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("rate-get: requires shipFrom or warehouseId", async () => {
+test("rate-get: requires shipFrom or warehouseId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ carrierIds: "se-1", shipTo, packages }, ctx),
@@ -78,6 +79,6 @@ Deno.test("rate-get: requires shipFrom or warehouseId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("rate-get: idempotent is false (it creates a shipment as a side effect)", () => {
+test("rate-get: idempotent is false (it creates a shipment as a side effect)", () => {
   assert(action.idempotent === false, String(action.idempotent));
 });

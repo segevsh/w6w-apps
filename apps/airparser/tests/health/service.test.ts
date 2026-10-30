@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapAggregateState,
   mapResourceStatus,
@@ -7,11 +8,11 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: STATUS_URL is Better Stack's own JSON document, not a Statuspage guess", () => {
+test("service: STATUS_URL is Better Stack's own JSON document, not a Statuspage guess", () => {
   assertEquals(STATUS_URL, "https://status.airparser.com/index.json");
 });
 
-Deno.test("mapResourceStatus: maps Better Stack's vocabulary", () => {
+test("mapResourceStatus: maps Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("resolved"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
@@ -22,14 +23,14 @@ Deno.test("mapResourceStatus: maps Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("something-new"), "unknown");
 });
 
-Deno.test("mapAggregateState: maps the page-level roll-up", () => {
+test("mapAggregateState: maps the page-level roll-up", () => {
   assertEquals(mapAggregateState("operational"), "ok");
   assertEquals(mapAggregateState("degraded"), "degraded");
   assertEquals(mapAggregateState("downtime"), "down");
   assertEquals(mapAggregateState(undefined), "unknown");
 });
 
-Deno.test("resourceKey: slugifies the public name, falls back to id", () => {
+test("resourceKey: slugifies the public name, falls back to id", () => {
   assertEquals(resourceKey({ attributes: { public_name: "Airparser API" } }, 0), "airparser-api");
   assertEquals(resourceKey({ id: "6394856" }, 0), "6394856");
   assertEquals(resourceKey({}, 3), "resource-3");
@@ -54,7 +55,7 @@ function page(aggregate: string, resources: Array<{ name: string; status: string
   };
 }
 
-Deno.test("service.check: all-operational reports ok with per-component detail", async () => {
+test("service.check: all-operational reports ok with per-component detail", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page("operational", [
@@ -67,7 +68,7 @@ Deno.test("service.check: all-operational reports ok with per-component detail",
   assertEquals(report.components?.["airparser-api"].state, "ok");
 });
 
-Deno.test("service.check: a degraded component surfaces in the message", async () => {
+test("service.check: a degraded component surfaces in the message", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page("degraded", [{ name: "Airparser API", status: "degraded" }]),
@@ -77,13 +78,13 @@ Deno.test("service.check: a degraded component surfaces in the message", async (
   assertEquals(report.message?.includes("Airparser API (degraded)"), true);
 });
 
-Deno.test("service.check: a non-ok status page response is unknown, never down", async () => {
+test("service.check: a non-ok status page response is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service.check: an unparseable body is unknown", async () => {
+test("service.check: an unparseable body is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -93,7 +94,7 @@ Deno.test("service.check: an unparseable body is unknown", async () => {
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service.check: a page that no longer self-identifies as Airparser is unknown", async () => {
+test("service.check: a page that no longer self-identifies as Airparser is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -114,7 +115,7 @@ Deno.test("service.check: a page that no longer self-identifies as Airparser is 
   assertEquals(report.message?.includes("no longer self-identifies"), true);
 });
 
-Deno.test("service: credential none, covers *, and its own status-host allowlist", () => {
+test("service: credential none, covers *, and its own status-host allowlist", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.covers, ["*"]);
   assertEquals(service.network?.allow, ["status.airparser.com"]);

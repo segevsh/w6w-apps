@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Pipedrive's authorize/token endpoints", () => {
+test("oauth2: declares Pipedrive's authorize/token endpoints", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://oauth.pipedrive.com/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://oauth.pipedrive.com/oauth/token");
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign uses the Bearer scheme, unlike the API token", async () => {
+test("oauth2: sign uses the Bearer scheme, unlike the API token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.pipedrive.com/v1/deals",
@@ -22,7 +23,7 @@ Deno.test("oauth2: sign uses the Bearer scheme, unlike the API token", async () 
   assertEquals(new URL(out.url).searchParams.has("api_token"), false);
 });
 
-Deno.test("oauth2: test hits /users/me with the bearer token and passes on 200", async () => {
+test("oauth2: test hits /users/me with the bearer token and passes on 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 1 } } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/users/me");
@@ -30,7 +31,7 @@ Deno.test("oauth2: test hits /users/me with the bearer token and passes on 200",
   assertEquals(result.ok, true);
 });
 
-Deno.test("oauth2: test fails when the credential has no access token", async () => {
+test("oauth2: test fails when the credential has no access token", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

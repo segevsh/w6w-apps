@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactUpdateValue from "../../actions/contact-update-value.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update-value: PUTs {fieldName, value} to /values", async () => {
+test("contact-update-value: PUTs {fieldName, value} to /values", async () => {
   const row = {
     id: "val_1",
     fieldName: "firstName",
@@ -20,7 +21,7 @@ Deno.test("contact-update-value: PUTs {fieldName, value} to /values", async () =
   assertEquals(out.data, row);
 });
 
-Deno.test("contact-update-value: value is sent as a string and skipAutomationTrigger forwarded", async () => {
+test("contact-update-value: value is sent as a string and skipAutomationTrigger forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await contactUpdateValue.execute({
     funnelId: "f",
@@ -36,7 +37,7 @@ Deno.test("contact-update-value: value is sent as a string and skipAutomationTri
   });
 });
 
-Deno.test("contact-update-value: requires fieldName and value", async () => {
+test("contact-update-value: requires fieldName and value", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() =>
     Promise.resolve(
@@ -54,7 +55,7 @@ Deno.test("contact-update-value: requires fieldName and value", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-update-value: a reserved-field 400 surfaces", async () => {
+test("contact-update-value: a reserved-field 400 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "reserved field", status: 400 } }]);
   await assertRejects(
     () =>

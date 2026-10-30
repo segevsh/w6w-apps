@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse, PDF_BYTES } from "../_helpers.ts";
 import action from "../../actions/file-combine.ts";
 
-Deno.test("file-combine: POSTs output and files and returns the PDF base64-encoded", async () => {
+test("file-combine: POSTs output and files and returns the PDF base64-encoded", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "application/pdf" },
     body: PDF_BYTES,
@@ -26,11 +27,11 @@ Deno.test("file-combine: POSTs output and files and returns the PDF base64-encod
   assertEquals(atob(file.contentBase64), new TextDecoder().decode(PDF_BYTES));
 });
 
-Deno.test("file-combine: idempotent flag is true", () => {
+test("file-combine: idempotent flag is true", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("file-combine: declares key, type and a description", () => {
+test("file-combine: declares key, type and a description", () => {
   assertEquals(action.key, "file-combine");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

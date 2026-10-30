@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pathwayDelete from "../../actions/pathway-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pathway-delete: sends DELETE to /v1/pathway/{id}", async () => {
+test("pathway-delete: sends DELETE to /v1/pathway/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "success", message: "Pathway deleted successfully" },
@@ -13,6 +14,6 @@ Deno.test("pathway-delete: sends DELETE to /v1/pathway/{id}", async () => {
   assertEquals(out.message, "Pathway deleted successfully");
 });
 
-Deno.test("pathway-delete: is declared idempotent", () => {
+test("pathway-delete: is declared idempotent", () => {
   assertEquals(pathwayDelete.idempotent, true);
 });

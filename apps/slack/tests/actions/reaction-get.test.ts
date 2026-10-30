@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reaction-get.ts";
 
-Deno.test("reaction-get: GETs /reactions.get with channel + timestamp in query", async () => {
+test("reaction-get: GETs /reactions.get with channel + timestamp in query", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, message: {} } }]);
   await action.execute!({ channel: "C1", timestamp: "1.1" }, ctx);
   const url = new URL(calls[0].url);

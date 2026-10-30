@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-checklist-item.ts";
 
-Deno.test("update-checklist-item: PATCHes the encoded three-segment path", async () => {
+test("update-checklist-item: PATCHes the encoded three-segment path", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c=1" } }]);
   await action.execute!({
     taskList: "L=1",
@@ -18,13 +19,13 @@ Deno.test("update-checklist-item: PATCHes the encoded three-segment path", async
   assertEquals(JSON.parse(calls[0].body!), { isChecked: true });
 });
 
-Deno.test("update-checklist-item: unticking sends false rather than nothing", async () => {
+test("update-checklist-item: unticking sends false rather than nothing", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ taskList: "L1", task: "T1", checklistItem: "c1", isChecked: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { isChecked: false });
 });
 
-Deno.test("update-checklist-item: renaming alone touches nothing else", async () => {
+test("update-checklist-item: renaming alone touches nothing else", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     taskList: "L1",

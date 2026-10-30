@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-messages.ts";
 
-Deno.test("list-messages: GETs spaces/{space}/messages", async () => {
+test("list-messages: GETs spaces/{space}/messages", async () => {
   const { ctx, calls } = mockCtx([{ body: { messages: [] } }]);
   await action.execute!({ space: "A1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("list-messages: GETs spaces/{space}/messages", async () => {
   assertEquals([...new URL(calls[0].url).searchParams.keys()], []);
 });
 
-Deno.test("list-messages: passes every documented query parameter through", async () => {
+test("list-messages: passes every documented query parameter through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "spaces/A1",
@@ -30,7 +31,7 @@ Deno.test("list-messages: passes every documented query parameter through", asyn
   assertEquals(p.get("pageToken"), "tok");
 });
 
-Deno.test("list-messages: showDeleted=false is sent, not dropped as falsy", async () => {
+test("list-messages: showDeleted=false is sent, not dropped as falsy", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", showDeleted: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("showDeleted"), "false");

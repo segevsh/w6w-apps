@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import classicEmailSend from "../../actions/classic-email-send.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const BASE = {
   consentToTrack: "Yes",
 };
 
-Deno.test("classic-email-send: POSTs to /transactional/classicEmail/send, no extension", async () => {
+test("classic-email-send: POSTs to /transactional/classicEmail/send, no extension", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: ACCEPTED }]);
   const out = await classicEmailSend.execute({ ...BASE }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -22,7 +23,7 @@ Deno.test("classic-email-send: POSTs to /transactional/classicEmail/send, no ext
   assertEquals(out, ACCEPTED);
 });
 
-Deno.test("classic-email-send: sends clientID in the query when supplied, and omits it otherwise", async () => {
+test("classic-email-send: sends clientID in the query when supplied, and omits it otherwise", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: ACCEPTED }, {
     status: 202,
     body: ACCEPTED,
@@ -35,7 +36,7 @@ Deno.test("classic-email-send: sends clientID in the query when supplied, and om
 });
 
 /** All three default to true at the vendor, so they are sent explicitly. */
-Deno.test("classic-email-send: tracking and inline-CSS flags default to true", async () => {
+test("classic-email-send: tracking and inline-CSS flags default to true", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: ACCEPTED }]);
   await classicEmailSend.execute({ ...BASE }, ctx);
   const body = bodyOf(calls[0]);
@@ -44,7 +45,7 @@ Deno.test("classic-email-send: tracking and inline-CSS flags default to true", a
   assertEquals(body.InlineCSS, true);
 });
 
-Deno.test("classic-email-send: an explicit false tracking flag is preserved", async () => {
+test("classic-email-send: an explicit false tracking flag is preserved", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: ACCEPTED }]);
   await classicEmailSend.execute({ ...BASE, trackOpens: false, trackClicks: false }, ctx);
   const body = bodyOf(calls[0]);
@@ -52,7 +53,7 @@ Deno.test("classic-email-send: an explicit false tracking flag is preserved", as
   assertEquals(body.TrackClicks, false);
 });
 
-Deno.test("classic-email-send: refuses a message with neither HTML nor text (code 960)", async () => {
+test("classic-email-send: refuses a message with neither HTML nor text (code 960)", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -66,7 +67,7 @@ Deno.test("classic-email-send: refuses a message with neither HTML nor text (cod
   assertEquals(calls.length, 0);
 });
 
-Deno.test("classic-email-send: refuses a send with no recipient (code 952)", async () => {
+test("classic-email-send: refuses a send with no recipient (code 952)", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await classicEmailSend.execute({ ...BASE, to: undefined }, ctx),
@@ -76,6 +77,6 @@ Deno.test("classic-email-send: refuses a send with no recipient (code 952)", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("classic-email-send: is declared NOT idempotent", () => {
+test("classic-email-send: is declared NOT idempotent", () => {
   assertEquals(classicEmailSend.idempotent, false);
 });

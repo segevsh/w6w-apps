@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import createCustomField from "../../actions/create-custom-field.ts";
 
-Deno.test("create-custom-field: POSTs only `label` — the sole documented property", async () => {
+test("create-custom-field: POSTs only `label` — the sole documented property", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { key: "favorite_color" } }]);
   await createCustomField.execute({ label: "Favorite color" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("create-custom-field: POSTs only `label` — the sole documented prope
   assertEquals(createCustomField.params!.length, 1);
 });
 
-Deno.test("create-custom-field: is NOT idempotent, and there is no update or delete", () => {
+test("create-custom-field: is NOT idempotent, and there is no update or delete", () => {
   assertEquals(createCustomField.idempotent, false);
   assert(
     /no way to update or delete/i.test(createCustomField.description!),

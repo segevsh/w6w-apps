@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockXeroCtx } from "../_helpers.ts";
 import action from "../../actions/bank-transaction-list.ts";
 
-Deno.test("bank-transaction-list: GETs /BankTransactions with page defaulted to 1", async () => {
+test("bank-transaction-list: GETs /BankTransactions with page defaulted to 1", async () => {
   const { ctx, calls } = mockXeroCtx([{ body: { BankTransactions: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

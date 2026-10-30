@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectArchive from "../../actions/project-archive.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-archive: PATCH /projects/{id}/archive sends no body and flattens the answer", async () => {
+test("project-archive: PATCH /projects/{id}/archive sends no body and flattens the answer", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "projects", "attributes": { "name": "x" } } },
@@ -17,7 +18,7 @@ Deno.test("project-archive: PATCH /projects/{id}/archive sends no body and flatt
   assertEquals(out.id, "42");
 });
 
-Deno.test("project-archive: a vendor error surfaces its status, title and detail", async () => {
+test("project-archive: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -30,7 +31,7 @@ Deno.test("project-archive: a vendor error surfaces its status, title and detail
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("project-archive: declares perform and idempotent=true", () => {
+test("project-archive: declares perform and idempotent=true", () => {
   assertEquals(projectArchive.type, "perform");
   assertEquals(projectArchive.idempotent, true);
   assertEquals(projectArchive.key, "project-archive");

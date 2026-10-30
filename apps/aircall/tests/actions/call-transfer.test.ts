@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import callTransfer from "../../actions/call-transfer.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-transfer: POSTs /v1/calls/{id}/transfers with a user destination", async () => {
+test("call-transfer: POSTs /v1/calls/{id}/transfers with a user destination", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await callTransfer.execute({ callId: "812", userId: "456" }, ctx) as {
     status: number;
@@ -18,7 +19,7 @@ Deno.test("call-transfer: POSTs /v1/calls/{id}/transfers with a user destination
  * "Only one of user_id, team_id or number parameters are allowed for each
  * request" — a documented 400. Caught here so the failure names the mistake.
  */
-Deno.test("call-transfer: two destinations are rejected before the request", async () => {
+test("call-transfer: two destinations are rejected before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -29,7 +30,7 @@ Deno.test("call-transfer: two destinations are rejected before the request", asy
   assertEquals(calls.length, 0, "no request should have been made");
 });
 
-Deno.test("call-transfer: zero destinations are rejected before the request", async () => {
+test("call-transfer: zero destinations are rejected before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(callTransfer.execute({ callId: "812" }, ctx)),
@@ -42,7 +43,7 @@ Deno.test("call-transfer: zero destinations are rejected before the request", as
  * `dispatching_strategy` is Team-only; pairing it with a user or an external
  * number is its own documented 400.
  */
-Deno.test("call-transfer: dispatching strategy is sent for a team", async () => {
+test("call-transfer: dispatching strategy is sent for a team", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await callTransfer.execute(
     { callId: "812", teamId: "678", dispatchingStrategy: "longest_idle" },
@@ -51,7 +52,7 @@ Deno.test("call-transfer: dispatching strategy is sent for a team", async () => 
   assertEquals(bodyOf(calls[0]), { team_id: "678", dispatching_strategy: "longest_idle" });
 });
 
-Deno.test("call-transfer: dispatching strategy is dropped for a user destination", async () => {
+test("call-transfer: dispatching strategy is dropped for a user destination", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await callTransfer.execute(
     { callId: "812", userId: "456", dispatchingStrategy: "random" },
@@ -60,7 +61,7 @@ Deno.test("call-transfer: dispatching strategy is dropped for a user destination
   assertEquals(bodyOf(calls[0]), { user_id: "456" });
 });
 
-Deno.test("call-transfer: dispatching strategy is dropped for an external number", async () => {
+test("call-transfer: dispatching strategy is dropped for an external number", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await callTransfer.execute(
     { callId: "812", number: "+18001231234", dispatchingStrategy: "random" },

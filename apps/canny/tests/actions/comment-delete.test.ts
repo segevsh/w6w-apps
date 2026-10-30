@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentDelete from "../../actions/comment-delete.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("comment-delete: posts commentID, unwraps the confirmation", async () => {
+test("comment-delete: posts commentID, unwraps the confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: '"success"' }]);
   const out = await commentDelete.execute({ commentID: "cm1" }, ctx) as { message: string };
 

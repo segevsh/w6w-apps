@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-file.ts";
 
-Deno.test("get-file: GETs /v1/files/{key}", async () => {
+test("get-file: GETs /v1/files/{key}", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "My File" } }]);
   await action.execute({ fileKey: "abc123" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/files/abc123");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("get-file: forwards optional query params using Figma's snake_case names", async () => {
+test("get-file: forwards optional query params using Figma's snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     fileKey: "abc123",

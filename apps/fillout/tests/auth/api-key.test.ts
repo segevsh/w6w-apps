@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import apiKeyAuth, { authHeaders, normalizeRegion, PROBE_PATH } from "../../auth/api-key.ts";
 import { errorBody, EU_ROOT, mockCtx, US_ROOT } from "../_helpers.ts";
@@ -13,7 +14,7 @@ function runTest(responses: Parameters<typeof mockCtx>[0], credential: unknown) 
   };
 }
 
-Deno.test("api-key: sign stamps the bearer header and nothing else", async () => {
+test("api-key: sign stamps the bearer header and nothing else", async () => {
   const request = { method: "GET", url: "/forms", headers: {} as Record<string, string> };
   const signed = await apiKeyAuth.sign!(
     { request, credential: { apiKey: KEY } },
@@ -22,11 +23,11 @@ Deno.test("api-key: sign stamps the bearer header and nothing else", async () =>
   assertEquals(signed.headers, { authorization: `Bearer ${KEY}` });
 });
 
-Deno.test("api-key: the header builder is the single source of the wire format", () => {
+test("api-key: the header builder is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { authorization: `Bearer ${KEY}` });
 });
 
-Deno.test("api-key: test probes GET /forms on the connection's region", async () => {
+test("api-key: test probes GET /forms on the connection's region", async () => {
   const us = runTest([{ body: [] }], { apiKey: KEY, region: "us" });
   assertEquals(await us.result, { ok: true });
   assertEquals(us.calls[0].url, `${US_ROOT}${PROBE_PATH}`);
@@ -37,7 +38,7 @@ Deno.test("api-key: test probes GET /forms on the connection's region", async ()
   assertEquals(eu.calls[0].url, `${EU_ROOT}${PROBE_PATH}`);
 });
 
-Deno.test("api-key: an absent credential fails without a request", async () => {
+test("api-key: an absent credential fails without a request", async () => {
   const mock = mockCtx([]);
   assertEquals(await apiKeyAuth.test({ credential: {} }, mock.ctx), {
     ok: false,
@@ -81,7 +82,7 @@ const MEASURED_400s: Array<{ sent: string; message: string; expect: RegExp }> = 
 ];
 
 for (const row of MEASURED_400s) {
-  Deno.test(`api-key: test classifies "${row.message}" from the body, not the 400`, async () => {
+  test(`api-key: test classifies "${row.message}" from the body, not the 400`, async () => {
     const { result } = runTest(
       [{ status: 400, body: errorBody(400, "Bad Request", row.message) }],
       { apiKey: KEY },
@@ -96,7 +97,7 @@ for (const row of MEASURED_400s) {
  * The four verdicts must be four *different* sentences. If they collapsed into
  * one, the classifier would be decoration and the test above would still pass.
  */
-Deno.test("api-key: the four measured 400s produce four distinct explanations", async () => {
+test("api-key: the four measured 400s produce four distinct explanations", async () => {
   const messages = new Set<string>();
   for (const row of MEASURED_400s) {
     const { result } = runTest(
@@ -110,7 +111,7 @@ Deno.test("api-key: the four measured 400s produce four distinct explanations", 
   assertEquals(messages.size, 3, [...messages].join(" | "));
 });
 
-Deno.test("api-key: a 429 is a failure that names the rate limit, not a bad key", async () => {
+test("api-key: a 429 is a failure that names the rate limit, not a bad key", async () => {
   const { result } = runTest(
     [{
       status: 429,
@@ -124,7 +125,7 @@ Deno.test("api-key: a 429 is a failure that names the rate limit, not a bad key"
   assert(!/revoked|underscore/i.test(verdict.message ?? ""), verdict.message);
 });
 
-Deno.test("api-key: an unrecognised failure keeps the vendor's own words", async () => {
+test("api-key: an unrecognised failure keeps the vendor's own words", async () => {
   const { result } = runTest(
     [{ status: 503, body: errorBody(503, "Service Unavailable", "upstream unavailable") }],
     { apiKey: KEY },
@@ -136,7 +137,7 @@ Deno.test("api-key: an unrecognised failure keeps the vendor's own words", async
 });
 
 /** No probe may ever echo the key back to the caller. */
-Deno.test("api-key: no verdict message contains the credential", async () => {
+test("api-key: no verdict message contains the credential", async () => {
   for (const row of [...MEASURED_400s.map((r) => r.message), "anything else"]) {
     const { result } = runTest(
       [{ status: 400, body: errorBody(400, "Bad Request", row) }],
@@ -146,7 +147,7 @@ Deno.test("api-key: no verdict message contains the credential", async () => {
   }
 });
 
-Deno.test("api-key: afterConnect publishes only the region", async () => {
+test("api-key: afterConnect publishes only the region", async () => {
   assertEquals(
     await apiKeyAuth.afterConnect!(
       { credential: { apiKey: KEY, region: "eu" } },
@@ -160,7 +161,7 @@ Deno.test("api-key: afterConnect publishes only the region", async () => {
   );
 });
 
-Deno.test("api-key: an unknown region falls back to US rather than building a bad host", () => {
+test("api-key: an unknown region falls back to US rather than building a bad host", () => {
   assertEquals(normalizeRegion("apac"), "us");
   assertEquals(normalizeRegion(undefined), "us");
   assertEquals(normalizeRegion("eu"), "eu");

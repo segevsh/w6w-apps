@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 23;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 1);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -42,7 +44,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * than an implicit "whatever I just created" cursor, so retrying with the
  * same input really does reach the same end state.
  */
-Deno.test("index: every declared-idempotent perform action is genuinely retry-safe", () => {
+test("index: every declared-idempotent perform action is genuinely retry-safe", () => {
   for (
     const key of [
       "post-delete",
@@ -60,12 +62,12 @@ Deno.test("index: every declared-idempotent perform action is genuinely retry-sa
   assertEquals(app.actions.find((a) => a.key === "post-create")?.idempotent, false);
 });
 
-Deno.test("index: only blog-avatar-get opts out of requiring a Connection", () => {
+test("index: only blog-avatar-get opts out of requiring a Connection", () => {
   const optedOut = app.actions.filter((a) => a.requiresAuth === false);
   assertEquals(optedOut.map((a) => a.key), ["blog-avatar-get"]);
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -80,9 +82,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -91,7 +93,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -105,7 +107,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * `redirect: "manual"` and never goes through `TumblrClient` — see that
  * file's docstring. Every other action must go through the shared client.
  */
-Deno.test("index: no action other than blog-avatar-get hard-codes the API host", async () => {
+test("index: no action other than blog-avatar-get hard-codes the API host", async () => {
   for (const a of app.actions) {
     if (a.key === "blog-avatar-get") continue;
     const src = await actionSource(a.key);
@@ -113,7 +115,7 @@ Deno.test("index: no action other than blog-avatar-get hard-codes the API host",
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -124,7 +126,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 
 // --- auth --------------------------------------------------------------
 
-Deno.test("index: the credential field is declared secret, and only OAuth2 is implemented", () => {
+test("index: the credential field is declared secret, and only OAuth2 is implemented", () => {
   const [method] = app.auth;
   assertEquals(method.key, "oauth2");
   assertEquals(method.type, "oauth2");
@@ -138,12 +140,12 @@ Deno.test("index: the credential field is declared secret, and only OAuth2 is im
   assertEquals(typeof method.sign, "function");
 });
 
-Deno.test("index: no source file implements OAuth 1.0a signing", async () => {
+test("index: no source file implements OAuth 1.0a signing", async () => {
   for (const dir of ["actions", "auth", "lib", "health"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
       const src = code(
-        await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url)),
+        await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url)),
       );
       assert(
         !/oauth_signature|oauth_nonce|HMAC-SHA1/.test(src),
@@ -155,7 +157,7 @@ Deno.test("index: no source file implements OAuth 1.0a signing", async () => {
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: the health check is either probing or declared unavailable", () => {
+test("index: the health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -165,7 +167,7 @@ Deno.test("index: the health check is either probing or declared unavailable", (
 });
 
 /** A check that reads a feed must be unsigned — a status host never sees the token. */
-Deno.test("index: the feed-backed health check is unsigned", () => {
+test("index: the feed-backed health check is unsigned", () => {
   const feedBacked = app.healthChecks.filter((h) => h.feed);
   assert(feedBacked.length > 0, "no check declares a feed — this test would pass vacuously");
   for (const h of feedBacked) {
@@ -178,19 +180,19 @@ Deno.test("index: the feed-backed health check is unsigned", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows only the API host, and the icon is on disk", async () => {
+test("index: the manifest allows only the API host, and the icon is on disk", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] }; appearance: { icon: { svg: string } } } };
   assertEquals(manifest.w6w.id, "io.w6w.tumblr");
   assertEquals(manifest.w6w.network.allow, ["api.tumblr.com"]);
   // The status feed host belongs to the health check's own (implicit) allowlist, not the app's.
   assert(!manifest.w6w.network.allow.includes("automatticstatus.com"));
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
-  await Deno.stat(new URL("../assets/icon.svg", import.meta.url));
+  await denoStat(new URL("../assets/icon.svg", import.meta.url));
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

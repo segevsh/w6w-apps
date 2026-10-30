@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import check, { headroom } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const H = (h: Record<string, string>) => ({ "content-type": "application/json", ...h });
 
-Deno.test("quota: signed, connection-scoped, informational, no egress widening", () => {
+test("quota: signed, connection-scoped, informational, no egress widening", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.scope, "connection");
   assertEquals(check.credential, "signed");
@@ -12,7 +13,7 @@ Deno.test("quota: signed, connection-scoped, informational, no egress widening",
   assertEquals(check.network, undefined);
 });
 
-Deno.test("quota: reads daily and per-minute buckets from headers", async () => {
+test("quota: reads daily and per-minute buckets from headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [] },
     headers: H({
@@ -31,7 +32,7 @@ Deno.test("quota: reads daily and per-minute buckets from headers", async () => 
   ]);
 });
 
-Deno.test("quota: headroom thresholds", async () => {
+test("quota: headroom thresholds", async () => {
   assertEquals(headroom(0), "down");
   assertEquals(headroom(10), "degraded");
   assertEquals(headroom(11), "ok");
@@ -39,7 +40,7 @@ Deno.test("quota: headroom thresholds", async () => {
   assertEquals((await check.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: missing header is unknown; 429 is down; other errors are unknown", async () => {
+test("quota: missing header is unknown; 429 is down; other errors are unknown", async () => {
   assertEquals((await check.check!({}, mockCtx([{ body: { data: [] } }]).ctx)).state, "unknown");
   const r = await check.check!(
     {},

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/candidate-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("candidate-delete: sends DELETE /candidates/{id} and tolerates an empty body", async () => {
+test("candidate-delete: sends DELETE /candidates/{id} and tolerates an empty body", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   const out = await action.execute({ candidateId: "12" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("candidate-delete: sends DELETE /candidates/{id} and tolerates an empt
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("candidate-delete: a 404 is an error, not a silent success", async () => {
+test("candidate-delete: a 404 is an error, not a silent success", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: true, errorMessage: "gone" } }]);
   await assertRejects(
     async () => await (action.execute({ candidateId: "1" }, ctx)),

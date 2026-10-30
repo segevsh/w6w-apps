@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import memberArchive from "../../actions/member-archive.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("member-archive: PATCHes status Removed", async () => {
+test("member-archive: PATCHes status Removed", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await memberArchive.execute({ personId: "p1" }, ctx) as { ok: boolean };
   assertEquals(pathOf(calls[0].url), "/v1/People(p1)");

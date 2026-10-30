@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import addSubscriberToWorkflow from "../../actions/add-subscriber-to-workflow.ts";
 
-Deno.test("add-subscriber-to-workflow: subscriber goes in the BODY, workflow in the path", async () => {
+test("add-subscriber-to-workflow: subscriber goes in the BODY, workflow in the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await addSubscriberToWorkflow.execute(
     { workflowId: "wf1", email: "ada@example.com" },
@@ -16,13 +17,13 @@ Deno.test("add-subscriber-to-workflow: subscriber goes in the BODY, workflow in 
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("add-subscriber-to-workflow: accepts an id instead of an email", async () => {
+test("add-subscriber-to-workflow: accepts an id instead of an email", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await addSubscriberToWorkflow.execute({ workflowId: "wf1", id: "61b2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: "61b2" });
 });
 
-Deno.test("add-subscriber-to-workflow: rejects a call identifying nobody", async () => {
+test("add-subscriber-to-workflow: rejects a call identifying nobody", async () => {
   const { ctx, calls } = mockCtx([]);
   // `execute` is async here, but the guard runs before the first await, so this
   // is asserted as a rejection rather than a synchronous throw.
@@ -33,12 +34,12 @@ Deno.test("add-subscriber-to-workflow: rejects a call identifying nobody", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-subscriber-to-workflow: is deliberately NOT idempotent", () => {
+test("add-subscriber-to-workflow: is deliberately NOT idempotent", () => {
   // Entering a workflow is an event, not a state: a retry can resend the sequence.
   assertEquals(addSubscriberToWorkflow.idempotent, false);
 });
 
-Deno.test("add-subscriber-to-workflow: raises a useful error on a 404", async () => {
+test("add-subscriber-to-workflow: raises a useful error on a 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "not_found" } }]);
   const err = await assertRejects(
     () => addSubscriberToWorkflow.execute({ workflowId: "nope", id: "x" }, ctx) as Promise<unknown>,

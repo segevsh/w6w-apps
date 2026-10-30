@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bot-leave-call.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("bot-leave-call: POSTs /leave_call/ with no body and returns the bot", async () => {
+test("bot-leave-call: POSTs /leave_call/ with no body and returns the bot", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1", status_changes: [] } }]);
   const out = await action.execute!({ id: "b1" }, ctx);
   assertEquals(calls[0].url, "https://us-west-2.recall.ai/api/v1/bot/b1/leave_call/");
@@ -12,7 +13,7 @@ Deno.test("bot-leave-call: POSTs /leave_call/ with no body and returns the bot",
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("bot-leave-call: a refusal is reported by Recall's code", async () => {
+test("bot-leave-call: a refusal is reported by Recall's code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { code: "cannot_command_completed_bot", detail: "Cannot send a command" },

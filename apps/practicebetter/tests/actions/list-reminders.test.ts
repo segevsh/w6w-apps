@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/list-reminders.ts";
 import { API_ROOT, mockCtx, page, queryAllOf, queryOf, urlOf } from "../_helpers.ts";
 
 const sample = page([{ id: "rem-1" }], { count: 1 });
 
-Deno.test("list-reminders: reads /consultant/reminders", async () => {
+test("list-reminders: reads /consultant/reminders", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("list-reminders: reads /consultant/reminders", async () => {
   assertEquals(result, sample);
 });
 
-Deno.test("list-reminders: the documented filters are passed through", async () => {
+test("list-reminders: the documented filters are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({
     completed: false,
@@ -30,7 +31,7 @@ Deno.test("list-reminders: the documented filters are passed through", async () 
   assertEquals(all.type, ["follow_up", "intake"]);
 });
 
-Deno.test("list-reminders: the read-only reminder resource stands as the document names it", () => {
+test("list-reminders: the read-only reminder resource stands as the document names it", () => {
   assert(/List Tasks/.test(action.description!), action.description);
   assertEquals(action.type, "search");
   assertEquals(action.resource, "reminder");

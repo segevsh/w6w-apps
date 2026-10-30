@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import automationGoalAchieve from "../../actions/automation-goal-achieve.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const OK = { results: [{ success: true, message: "Goal achieved", automation_id:
  * `required` list, so a request naming neither pair passes schema validation
  * and fails at runtime.
  */
-Deno.test("automation-goal-achieve: the integration/call-name pair is sent alone", async () => {
+test("automation-goal-achieve: the integration/call-name pair is sent alone", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await automationGoalAchieve.execute(
     { contactId: "789", integration: "my_integration", callName: "goal_achieved" },
@@ -25,7 +26,7 @@ Deno.test("automation-goal-achieve: the integration/call-name pair is sent alone
   });
 });
 
-Deno.test("automation-goal-achieve: the automation/goal id pair is sent alone", async () => {
+test("automation-goal-achieve: the automation/goal id pair is sent alone", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await automationGoalAchieve.execute({ contactId: "789", automationId: "1", goalId: "2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { contact_id: 789, automation_id: 1, goal_id: 2 });
@@ -35,7 +36,7 @@ Deno.test("automation-goal-achieve: the automation/goal id pair is sent alone", 
  * These three ids are declared `type: integer` on this endpoint and
  * `type: string` on every other v2 endpoint in this app.
  */
-Deno.test("automation-goal-achieve: the ids go on the wire as numbers, uniquely on this endpoint", async () => {
+test("automation-goal-achieve: the ids go on the wire as numbers, uniquely on this endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await automationGoalAchieve.execute({ contactId: "789", automationId: "1", goalId: "2" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -44,7 +45,7 @@ Deno.test("automation-goal-achieve: the ids go on the wire as numbers, uniquely 
   assertEquals(typeof body.goal_id, "number");
 });
 
-Deno.test("automation-goal-achieve: neither pair is refused before any request", async () => {
+test("automation-goal-achieve: neither pair is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await automationGoalAchieve.execute({ contactId: "789" }, ctx),
@@ -54,7 +55,7 @@ Deno.test("automation-goal-achieve: neither pair is refused before any request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("automation-goal-achieve: both pairs together is refused", async () => {
+test("automation-goal-achieve: both pairs together is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -68,7 +69,7 @@ Deno.test("automation-goal-achieve: both pairs together is refused", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("automation-goal-achieve: half a pair is not a pair", async () => {
+test("automation-goal-achieve: half a pair is not a pair", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await automationGoalAchieve.execute({ contactId: "789", integration: "i" }, ctx),
@@ -83,7 +84,7 @@ Deno.test("automation-goal-achieve: half a pair is not a pair", async () => {
  * integration/call-name pair can appear in several campaigns. A 200 with every
  * entry unsuccessful is an ordinary response.
  */
-Deno.test("automation-goal-achieve: a 200 whose results all failed is counted, not treated as success", async () => {
+test("automation-goal-achieve: a 200 whose results all failed is counted, not treated as success", async () => {
   const { ctx } = mockCtx([{
     body: {
       results: [
@@ -100,6 +101,6 @@ Deno.test("automation-goal-achieve: a 200 whose results all failed is counted, n
   assertEquals(out.failed, 1);
 });
 
-Deno.test("automation-goal-achieve: is declared non-idempotent — firing twice re-enters the contact", () => {
+test("automation-goal-achieve: is declared non-idempotent — firing twice re-enters the contact", () => {
   assertEquals(automationGoalAchieve.idempotent, false);
 });

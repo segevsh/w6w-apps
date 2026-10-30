@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/activity-list.ts";
 
-Deno.test("activity-list: GETs the organization's activity blocks", async () => {
+test("activity-list: GETs the organization's activity blocks", async () => {
   const body = listEnvelope("activities", [{
     id: 1,
     tracked: 600,
@@ -16,7 +17,7 @@ Deno.test("activity-list: GETs the organization's activity blocks", async () => 
   assertEquals(result.pagination, { next_page_start_id: 2 });
 });
 
-Deno.test("activity-list: the time window, filters and time_zone all serialize", async () => {
+test("activity-list: the time window, filters and time_zone all serialize", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope("activities", []) }]);
   await action.execute!({
     organization_id: 13,
@@ -40,7 +41,7 @@ Deno.test("activity-list: the time window, filters and time_zone all serialize",
 });
 
 /** The stop bound is exclusive — the hint has to say so or the window double-counts. */
-Deno.test("activity-list: documents the exclusive stop bound", () => {
+test("activity-list: documents the exclusive stop bound", () => {
   const stop = action.params!.find((p) => p.key === "time_slot_stop")!;
   assertEquals(stop.hint!.includes("exclusive"), true);
 });

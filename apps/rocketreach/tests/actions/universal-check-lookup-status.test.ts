@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/universal-check-lookup-status.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("universal-check-lookup-status: sends repeated ids to /universal/person/check_status and summarises progress", async () => {
+test("universal-check-lookup-status: sends repeated ids to /universal/person/check_status and summarises progress", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: 1, status: "complete", name: "A" }, { id: 2, status: "searching" }],
   }]);
@@ -15,7 +16,7 @@ Deno.test("universal-check-lookup-status: sends repeated ids to /universal/perso
   assertEquals(out.profiles[0].name, "A");
 });
 
-Deno.test("universal-check-lookup-status: all complete; bad ids are refused before any request", async () => {
+test("universal-check-lookup-status: all complete; bad ids are refused before any request", async () => {
   const { ctx } = mockCtx([{ body: [{ id: 1, status: "complete" }] }]);
   assertEquals((await run(action, { ids: "1" }, ctx)).allComplete, true);
   const none = mockCtx();
@@ -24,7 +25,7 @@ Deno.test("universal-check-lookup-status: all complete; bad ids are refused befo
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("universal-check-lookup-status: a 401 throws the vendor detail", async () => {
+test("universal-check-lookup-status: a 401 throws the vendor detail", async () => {
   const bad = mockCtx([{ status: 401, body: { detail: "Invalid API key" } }]);
   await assertRejects(() => run(action, { ids: "1" }, bad.ctx), Error, "Invalid API key");
 });

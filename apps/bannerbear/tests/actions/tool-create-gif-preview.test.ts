@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolCreateGifPreview from "../../actions/tool-create-gif-preview.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-create-gif-preview: POST /tools/create_gif_preview", async () => {
+test("tool-create-gif-preview: POST /tools/create_gif_preview", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { uid: "j1", tool: "create_gif_preview" },
@@ -17,7 +18,7 @@ Deno.test("tool-create-gif-preview: POST /tools/create_gif_preview", async () =>
   });
 });
 
-Deno.test("tool-create-gif-preview: requires videoUrl", async () => {
+test("tool-create-gif-preview: requires videoUrl", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolCreateGifPreview.execute({ videoUrl: "" }, ctx));
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/trigger-campaign.ts";
 
-Deno.test("trigger-campaign: metadata", () => {
+test("trigger-campaign: metadata", () => {
   assertEquals(action.key, "trigger-campaign");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -15,7 +16,7 @@ Deno.test("trigger-campaign: metadata", () => {
   ]);
 });
 
-Deno.test("trigger-campaign: calls POST /campaigns/trigger on the US host", async () => {
+test("trigger-campaign: calls POST /campaigns/trigger on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "campaignId": 7,
@@ -38,7 +39,7 @@ Deno.test("trigger-campaign: calls POST /campaigns/trigger on the US host", asyn
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("trigger-campaign: uses the EU host when the connection region is eu", async () => {
+test("trigger-campaign: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -52,7 +53,7 @@ Deno.test("trigger-campaign: uses the EU host when the connection region is eu",
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/campaigns/trigger");
 });
 
-Deno.test("trigger-campaign: rejects a missing `campaignId` without calling Iterable", async () => {
+test("trigger-campaign: rejects a missing `campaignId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -69,7 +70,7 @@ Deno.test("trigger-campaign: rejects a missing `campaignId` without calling Iter
   assertEquals(calls.length, 0);
 });
 
-Deno.test("trigger-campaign: surfaces an HTTP error with Iterable's own code", async () => {
+test("trigger-campaign: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -86,7 +87,7 @@ Deno.test("trigger-campaign: surfaces an HTTP error with Iterable's own code", a
   );
 });
 
-Deno.test("trigger-campaign: treats a 200 carrying a non-Success code as a failure", async () => {
+test("trigger-campaign: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

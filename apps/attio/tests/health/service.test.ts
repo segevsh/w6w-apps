@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { API_COMPONENT, slug } from "../../health/service.ts";
 
@@ -19,7 +20,7 @@ const summary = (
   status = { indicator: "none", description: "All Systems Operational" },
 ) => ({ status, components });
 
-Deno.test("service: unsigned, app-scoped, and widens egress to the status host only", () => {
+test("service: unsigned, app-scoped, and widens egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.attio.com"]);
   // `credential` and `scope` are left at kind `service`'s defaults of
@@ -28,14 +29,14 @@ Deno.test("service: unsigned, app-scoped, and widens egress to the status host o
   assertEquals(service.scope, undefined);
 });
 
-Deno.test("service: probes summary.json, which carries the rollup AND the components", async () => {
+test("service: probes summary.json, which carries the rollup AND the components", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.attio.com/api/v2/summary.json");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service: all operational is ok, and every component is reported", async () => {
+test("service: all operational is ok, and every component is reported", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary() }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "ok");
@@ -54,7 +55,7 @@ Deno.test("service: all operational is ok, and every component is reported", asy
  * report every tenant's workflows as degraded over an incident that cannot
  * touch a single API call.
  */
-Deno.test("service: stays ok when only non-API components are down", async () => {
+test("service: stays ok when only non-API components are down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -73,7 +74,7 @@ Deno.test("service: stays ok when only non-API components are down", async () =>
   assert(result.message!.includes("Major Service Outage"), result.message);
 });
 
-Deno.test("service: reports down when the API component itself is out", async () => {
+test("service: reports down when the API component itself is out", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -86,7 +87,7 @@ Deno.test("service: reports down when the API component itself is out", async ()
   assert(result.message!.includes("Attio Cloud: major_outage"), result.message);
 });
 
-Deno.test("service: maps degraded_performance, partial_outage and maintenance to degraded", async () => {
+test("service: maps degraded_performance, partial_outage and maintenance to degraded", async () => {
   for (const status of ["degraded_performance", "partial_outage", "under_maintenance"]) {
     const { ctx } = mockCtx([{ status: 200, body: summary([{ name: "Attio Cloud", status }]) }]);
     assertEquals((await service.check!({}, ctx)).state, "degraded", status);
@@ -98,7 +99,7 @@ Deno.test("service: maps degraded_performance, partial_outage and maintenance to
  * differ by a suffix and picking the wrong one would report the files/enrichment
  * service as if it were the API.
  */
-Deno.test("service: keys on Attio Cloud and not on Attio Cloud Storage", async () => {
+test("service: keys on Attio Cloud and not on Attio Cloud Storage", async () => {
   assertEquals(API_COMPONENT, "attio-cloud");
   assertEquals(slug("Attio Cloud"), "attio-cloud");
   assertEquals(slug("Attio Cloud Storage"), "attio-cloud-storage");
@@ -117,7 +118,7 @@ Deno.test("service: keys on Attio Cloud and not on Attio Cloud Storage", async (
  * If Attio renames the component, the check must say so out loud rather than
  * report a confident `unknown` that is indistinguishable from a healthy API.
  */
-Deno.test("service: falls back to the rollup, loudly, if the API component vanishes", async () => {
+test("service: falls back to the rollup, loudly, if the API component vanishes", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -131,7 +132,7 @@ Deno.test("service: falls back to the rollup, loudly, if the API component vanis
   assert(result.message!.includes("Partially Degraded Service"), result.message);
 });
 
-Deno.test("service: group headers are skipped — they only restate their children", async () => {
+test("service: group headers are skipped — they only restate their children", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([
@@ -147,14 +148,14 @@ Deno.test("service: group headers are skipped — they only restate their childr
  * A status page that is itself broken says nothing about the vendor. Reporting
  * that as an outage would be a lie.
  */
-Deno.test("service: a failing status page is unknown, never down", async () => {
+test("service: a failing status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(result.message!.includes("503"), result.message);
 });
 
-Deno.test("service: an unparseable body is unknown, not a false ok", async () => {
+test("service: an unparseable body is unknown, not a false ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "<html>",
@@ -164,7 +165,7 @@ Deno.test("service: an unparseable body is unknown, not a false ok", async () =>
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: an unrecognised component status is unknown, not assumed ok", async () => {
+test("service: an unrecognised component status is unknown, not assumed ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([{ name: "Attio Cloud", status: "who_knows" }]),
@@ -178,7 +179,7 @@ Deno.test("service: an unrecognised component status is unknown, not assumed ok"
  * edition — so an Attio Cloud outage affects every Connection without
  * exception, which is exactly what the default severity is for.
  */
-Deno.test("service: keeps the default degraded severity", () => {
+test("service: keeps the default degraded severity", () => {
   assertEquals(service.severity, undefined);
   assertEquals(service.minIntervalSeconds, 60);
 });

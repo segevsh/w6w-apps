@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventRegister from "../../actions/event-register.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("event-register: PUT /event/register with the documented body keys", async () => {
+test("event-register: PUT /event/register with the documented body keys", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { hash: "h", join_link: "https://event.demio.com/join/x" },
@@ -31,7 +32,7 @@ Deno.test("event-register: PUT /event/register with the documented body keys", a
   });
 });
 
-Deno.test("event-register: a registration URL replaces the event id; a custom key cannot shadow email", async () => {
+test("event-register: a registration URL replaces the event id; a custom key cannot shadow email", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { join_link: "u" } }]);
   await eventRegister.execute({
     refUrl: "http://my.demio.com/ref/abc",
@@ -45,7 +46,7 @@ Deno.test("event-register: a registration URL replaces the event id; a custom ke
   assertEquals("id" in sent, false);
 });
 
-Deno.test("event-register: needs an event id or URL, and makes no request without one", async () => {
+test("event-register: needs an event id or URL, and makes no request without one", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await eventRegister.execute({ name: "Jo", email: "a@b.c" }, ctx),
@@ -55,7 +56,7 @@ Deno.test("event-register: needs an event id or URL, and makes no request withou
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-register: a 400 surfaces every validation message", async () => {
+test("event-register: a 400 surfaces every validation message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { messages: ["Name must be more than 2 symbols", "Wrong Email format"] },

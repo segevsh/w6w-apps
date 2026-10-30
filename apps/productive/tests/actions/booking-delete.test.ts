@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingDelete from "../../actions/booking-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("booking-delete: DELETE /bookings/{id} reports ok and the id", async () => {
+test("booking-delete: DELETE /bookings/{id} reports ok and the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await bookingDelete.execute({ id: "42" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("booking-delete: DELETE /bookings/{id} reports ok and the id", async (
   assertEquals(out, { ok: true, id: "42" });
 });
 
-Deno.test("booking-delete: a vendor error surfaces its status, title and detail", async () => {
+test("booking-delete: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -27,7 +28,7 @@ Deno.test("booking-delete: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("booking-delete: declares perform and idempotent=true", () => {
+test("booking-delete: declares perform and idempotent=true", () => {
   assertEquals(bookingDelete.type, "perform");
   assertEquals(bookingDelete.idempotent, true);
   assertEquals(bookingDelete.key, "booking-delete");

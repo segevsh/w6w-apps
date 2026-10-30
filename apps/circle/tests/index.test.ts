@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 33);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every param has a key and a label, and every action a resource", () => {
+test("index: every param has a key and a label, and every action a resource", () => {
   for (const a of app.actions) {
     assert(typeof a.resource === "string" && a.resource.length > 0, `${a.key}: no resource`);
     for (const p of a.params ?? []) {
@@ -57,9 +59,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -76,7 +78,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
  * would put the credential in the network-capable worker and let two actions on
  * one Connection disagree about which community they are talking to.
  */
-Deno.test("index: the token and the community are never action params", () => {
+test("index: the token and the community are never action params", () => {
   const banned = /^(api_?token|api_?key|token|auth|community_?id|host|base_?url)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -85,7 +87,7 @@ Deno.test("index: the token and the community are never action params", () => {
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -93,21 +95,21 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
   }
 });
 
-Deno.test("index: no action hard-codes a host — the base URL lives in lib/client.ts", async () => {
+test("index: no action hard-codes a host — the base URL lives in lib/client.ts", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/https?:\/\//.test(src), `${a.key}: contains an absolute URL literal`);
   }
 });
 
-Deno.test("index: every action goes through CircleClient, so every call is ctx.fetch", async () => {
+test("index: every action goes through CircleClient, so every call is ctx.fetch", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(src.includes("CircleClient"), `${a.key}: does not use the shared client`);
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// credential\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.
@@ -119,7 +121,7 @@ Deno.test("index: the comment stripper actually strips, so the guards above mean
 
 // ------------------------------------------------------------------ health --
 
-Deno.test("index: health checks cover the vendor and the quota question", () => {
+test("index: health checks cover the vendor and the quota question", () => {
   const byKey = Object.fromEntries(app.healthChecks.map((c) => [c.key, c]));
   assertEquals(byKey.service.kind, "service");
   assertEquals(byKey.quota.kind, "quota");
@@ -131,11 +133,11 @@ Deno.test("index: health checks cover the vendor and the quota question", () => 
  * there is nothing per-Connection to probe. A `dependency` check here would
  * have to invent a host.
  */
-Deno.test("index: there is deliberately no `dependency` check — one host serves every tenant", () => {
+test("index: there is deliberately no `dependency` check — one host serves every tenant", () => {
   assert(!app.healthChecks.some((c) => c.kind === "dependency"));
 });
 
-Deno.test("index: every `unavailable` check is informational, so it cannot pin the verdict", () => {
+test("index: every `unavailable` check is informational, so it cannot pin the verdict", () => {
   for (const c of app.healthChecks.filter((c) => c.unavailable)) {
     assertEquals(c.severity, "informational", `${c.key}: unavailable but not informational`);
     assertEquals(c.check, undefined, `${c.key}: declares both a probe and an absence`);
@@ -145,7 +147,7 @@ Deno.test("index: every `unavailable` check is informational, so it cannot pin t
   }
 });
 
-Deno.test("index: the service check widens egress only for itself, and stays unsigned", () => {
+test("index: the service check widens egress only for itself, and stays unsigned", () => {
   const service = app.healthChecks.find((c) => c.key === "service")!;
   assertEquals(service.network?.allow, ["status.circle.so"]);
   assert(service.credential === undefined || service.credential === "none");
@@ -168,7 +170,7 @@ Deno.test("index: the service check widens egress only for itself, and stays uns
  * indicator, so it only carries `degraded` weight for the component this App
  * actually calls.
  */
-Deno.test("index: the service check keeps default severity because Circle is fully hosted", () => {
+test("index: the service check keeps default severity because Circle is fully hosted", () => {
   const service = app.healthChecks.find((c) => c.key === "service")!;
   assertEquals(service.severity, undefined, "left at the `degraded` default, deliberately");
   assertEquals(service.scope, "app");

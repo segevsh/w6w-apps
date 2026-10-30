@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: collects the subdomain alongside the credential", () => {
+test("api-key: collects the subdomain alongside the credential", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "X-API-KEY" });
@@ -13,7 +14,7 @@ Deno.test("api-key: collects the subdomain alongside the credential", () => {
   assertEquals(auth.fields?.find((f) => f.key === "subdomain")?.required, true);
 });
 
-Deno.test("api-key: sign stamps X-API-KEY and nothing else", async () => {
+test("api-key: sign stamps X-API-KEY and nothing else", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.nocrm.io/api/v2/leads",
@@ -25,7 +26,7 @@ Deno.test("api-key: sign stamps X-API-KEY and nothing else", async () => {
   assertEquals("authorization" in out.headers, false);
 });
 
-Deno.test("api-key: test refuses a half-filled credential without a request", async () => {
+test("api-key: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.test({ credential: { subdomain: "acme" } }, ctx),
@@ -38,7 +39,7 @@ Deno.test("api-key: test refuses a half-filled credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes the account's own host, signed itself", async () => {
+test("api-key: test probes the account's own host, signed itself", async () => {
   const ok = mockCtx([{ body: { status: 200, message: "Your API key is correct." } }]);
   assertEquals(
     await auth.test({ credential: { subdomain: "acme", apiKey: "91Jy7Xxr" } }, ok.ctx),
@@ -48,7 +49,7 @@ Deno.test("api-key: test probes the account's own host, signed itself", async ()
   assertEquals(ok.calls[0].headers["x-api-key"], "91Jy7Xxr");
 });
 
-Deno.test("api-key: test classifies failure from the body's unauthorized_* type, not the status", async () => {
+test("api-key: test classifies failure from the body's unauthorized_* type, not the status", async () => {
   const bad = mockCtx([{
     status: 401,
     body: {
@@ -63,7 +64,7 @@ Deno.test("api-key: test classifies failure from the body's unauthorized_* type,
   );
 });
 
-Deno.test("api-key: test declines to read an unfamiliar body as success", async () => {
+test("api-key: test declines to read an unfamiliar body as success", async () => {
   // A 200 whose body is not the documented success shape, and a non-JSON body,
   // both stay failures rather than being taken on the status code alone.
   const odd = mockCtx([{ status: 200, body: { something: "else" } }]);
@@ -79,7 +80,7 @@ Deno.test("api-key: test declines to read an unfamiliar body as success", async 
   );
 });
 
-Deno.test("api-key: afterConnect records the subdomain for the client to use", async () => {
+test("api-key: afterConnect records the subdomain for the client to use", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.afterConnect!({ credential: { subdomain: "acme", apiKey: "k" } }, ctx),
@@ -89,7 +90,7 @@ Deno.test("api-key: afterConnect records the subdomain for the client to use", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect records nothing without a subdomain", async () => {
+test("api-key: afterConnect records nothing without a subdomain", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.afterConnect!({ credential: { apiKey: "k" } }, ctx), {});
 });

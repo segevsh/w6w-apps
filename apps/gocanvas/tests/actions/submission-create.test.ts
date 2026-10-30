@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/submission-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("submission-create: POST /api/v3/submissions with the documented shape", async () => {
+test("submission-create: POST /api/v3/submissions with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1 } }]);
   const out = await action.execute(
     {

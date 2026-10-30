@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { PROBE_PATH, probeRequest } from "../../auth/api-key.ts";
 import { envelope, giphyError, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 /** A syntactically plausible, entirely fake key. */
 const KEY = "giphy_unitTestFixtureNotARealKey000000";
 
-Deno.test("api-key: sign merges api_key into the query without disturbing existing params", () => {
+test("api-key: sign merges api_key into the query without disturbing existing params", () => {
   const signed = apiKey.sign!({
     request: {
       method: "GET",
@@ -27,7 +28,7 @@ Deno.test("api-key: sign merges api_key into the query without disturbing existi
   assertEquals("authorization" in signed.headers, false);
 });
 
-Deno.test("api-key: sign works on a URL that has no query string at all", () => {
+test("api-key: sign works on a URL that has no query string at all", () => {
   const signed = apiKey.sign!({
     request: { method: "GET", url: "https://api.giphy.com/v1/gifs/trending", headers: {} },
     credential: { apiKey: KEY },
@@ -36,7 +37,7 @@ Deno.test("api-key: sign works on a URL that has no query string at all", () => 
   assertEquals(queryOf(signed.url), { api_key: KEY });
 });
 
-Deno.test("api-key: sign overwrites an api_key already present rather than repeating it", () => {
+test("api-key: sign overwrites an api_key already present rather than repeating it", () => {
   const signed = apiKey.sign!({
     request: {
       method: "GET",
@@ -50,7 +51,7 @@ Deno.test("api-key: sign overwrites an api_key already present rather than repea
   assertEquals(params.getAll("api_key"), [KEY]);
 });
 
-Deno.test("api-key: the wire format declares api_key in the query", () => {
+test("api-key: the wire format declares api_key in the query", () => {
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.apiKey, { in: "query", name: "api_key" });
   assertEquals(apiKey.fields?.[0].type, "secret");
@@ -58,14 +59,14 @@ Deno.test("api-key: the wire format declares api_key in the query", () => {
 });
 
 /** The cheapest documented call, pinned here so a "shorter" probe cannot slip in. */
-Deno.test("api-key: the probe is GET /v1/gifs/trending?limit=1", () => {
+test("api-key: the probe is GET /v1/gifs/trending?limit=1", () => {
   assertEquals(PROBE_PATH, "/gifs/trending");
   const request = probeRequest();
   assertEquals(pathOf(request.url), "/v1/gifs/trending");
   assertEquals(queryOf(request.url), { limit: "1" });
 });
 
-Deno.test("api-key: test passes when GIPHY's body says meta.status 200", async () => {
+test("api-key: test passes when GIPHY's body says meta.status 200", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -81,7 +82,7 @@ Deno.test("api-key: test passes when GIPHY's body says meta.status 200", async (
  * The single most important property of this probe: GIPHY can answer HTTP 200
  * while its body says 401. Classifying on `res.ok` would call that key live.
  */
-Deno.test("api-key: a body that says 401 fails even when the HTTP status is 200", async () => {
+test("api-key: a body that says 401 fails even when the HTTP status is 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: giphyError(401, "Unauthorized") }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -90,7 +91,7 @@ Deno.test("api-key: a body that says 401 fails even when the HTTP status is 200"
   assert(result.message?.includes("Unauthorized"), result.message);
 });
 
-Deno.test("api-key: the message never echoes the credential", async () => {
+test("api-key: the message never echoes the credential", async () => {
   const { ctx } = mockCtx([{ status: 401, body: giphyError(401, "Unauthorized") }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -98,7 +99,7 @@ Deno.test("api-key: the message never echoes the credential", async () => {
   assertEquals((result.message ?? "").includes(KEY), false);
 });
 
-Deno.test("api-key: a 429 is reported as rate limiting, not as a bad key", async () => {
+test("api-key: a 429 is reported as rate limiting, not as a bad key", async () => {
   const { ctx } = mockCtx([{ status: 429, body: giphyError(429, "Too Many Requests") }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -106,7 +107,7 @@ Deno.test("api-key: a 429 is reported as rate limiting, not as a bad key", async
   assert(/rate-limited/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: an unreadable body is reported as an HTTP failure", async () => {
+test("api-key: an unreadable body is reported as an HTTP failure", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -114,7 +115,7 @@ Deno.test("api-key: an unreadable body is reported as an HTTP failure", async ()
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a missing credential fails without making a request", async () => {
+test("api-key: a missing credential fails without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 

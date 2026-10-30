@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-dispatch.ts";
 
-Deno.test("workflow-dispatch: POSTs the dispatches route with ref and inputs", async () => {
+test("workflow-dispatch: POSTs the dispatches route with ref and inputs", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute(
     {
@@ -24,6 +25,6 @@ Deno.test("workflow-dispatch: POSTs the dispatches route with ref and inputs", a
   });
 });
 
-Deno.test("workflow-dispatch: is not idempotent — each call queues another run", () => {
+test("workflow-dispatch: is not idempotent — each call queues another run", () => {
   assertEquals(action.idempotent, false);
 });

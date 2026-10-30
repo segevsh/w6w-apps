@@ -1,8 +1,9 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import action from "../../actions/group-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-delete: DELETEs the group", async () => {
+test("group-delete: DELETEs the group", async () => {
   const { ctx, calls } = mockCtx([{ body: true }]);
   const out = await action.execute({ groupId: "7" }, ctx) as { result: unknown };
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("group-delete: DELETEs the group", async () => {
   assertEquals(out.result, true);
 });
 
-Deno.test("group-delete: surfaces a vendor error", async () => {
+test("group-delete: surfaces a vendor error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { code: 400, message: "group is locked" } },

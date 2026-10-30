@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-get.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("member-get: GETs the member", async () => {
+test("member-get: GETs the member", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "3f2b8c1e-5a4d-4e6f-9a1b-7c8d9e0f1a2b",
@@ -27,7 +28,7 @@ Deno.test("member-get: GETs the member", async () => {
   assertEquals(result.statusName, "Invited");
 });
 
-Deno.test("member-get: rejects an id that is not a UUID before any request", async () => {
+test("member-get: rejects an id that is not a UUID before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({

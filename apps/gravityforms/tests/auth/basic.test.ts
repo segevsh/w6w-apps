@@ -1,5 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
@@ -10,7 +11,7 @@ const cred = {
 };
 const expected = `Basic ${encodeBase64("alice:app pass word")}`;
 
-Deno.test("basic: declares siteUrl / username / password, with the password secret", () => {
+test("basic: declares siteUrl / username / password, with the password secret", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -19,7 +20,7 @@ Deno.test("basic: declares siteUrl / username / password, with the password secr
   assertEquals(auth.fields?.find((f) => f.key === "password")?.type, "secret");
 });
 
-Deno.test("basic: sign stamps a Basic header and returns the request", async () => {
+test("basic: sign stamps a Basic header and returns the request", async () => {
   const request = {
     url: "https://x",
     method: "GET" as const,
@@ -29,7 +30,7 @@ Deno.test("basic: sign stamps a Basic header and returns the request", async () 
   assertEquals(out.headers["authorization"], expected);
 });
 
-Deno.test("basic: sign makes no network call", async () => {
+test("basic: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   await auth.sign!(
     { request: { url: "https://x", method: "GET", headers: {} }, credential: cred },
@@ -38,7 +39,7 @@ Deno.test("basic: sign makes no network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test probes <site>/wp-json/gf/v2/forms with the credential", async () => {
+test("basic: test probes <site>/wp-json/gf/v2/forms with the credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "1": { title: "Contact" } } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, true);
@@ -46,13 +47,13 @@ Deno.test("basic: test probes <site>/wp-json/gf/v2/forms with the credential", a
   assertEquals(calls[0].headers["authorization"], expected);
 });
 
-Deno.test("basic: test honours a subdirectory install", async () => {
+test("basic: test honours a subdirectory install", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await auth.test({ credential: { ...cred, siteUrl: "https://site.com/blog/" } }, ctx);
   assertEquals(calls[0].url, "https://site.com/blog/wp-json/gf/v2/forms");
 });
 
-Deno.test("basic: test fails without a network call when a field is missing", async () => {
+test("basic: test fails without a network call when a field is missing", async () => {
   for (const missing of ["siteUrl", "username", "password"]) {
     const credential: Record<string, string> = { ...cred };
     delete credential[missing];
@@ -63,14 +64,14 @@ Deno.test("basic: test fails without a network call when a field is missing", as
   }
 });
 
-Deno.test("basic: test explains a 404 as the REST API being switched off", async () => {
+test("basic: test explains a 404 as the REST API being switched off", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("Forms -> Settings -> REST API"));
 });
 
-Deno.test("basic: test surfaces the vendor's message on a 401", async () => {
+test("basic: test surfaces the vendor's message on a 401", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "rest_forbidden", message: "Sorry, you are not allowed to do that." },
@@ -80,14 +81,14 @@ Deno.test("basic: test surfaces the vendor's message on a 401", async () => {
   assertEquals(result.message, "Sorry, you are not allowed to do that.");
 });
 
-Deno.test("basic: test falls back to the status when the error body is not JSON", async () => {
+test("basic: test falls back to the status when the error body is not JSON", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>oops</html>" }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("500"));
 });
 
-Deno.test("afterConnect: publishes a normalised siteUrl, host and username — no credential", async () => {
+test("afterConnect: publishes a normalised siteUrl, host and username — no credential", async () => {
   const { ctx, calls } = mockCtx();
   const display = await auth.afterConnect!(
     { credential: { ...cred, siteUrl: "https://site.com/blog/wp-json/gf/v2/" } },
@@ -101,7 +102,7 @@ Deno.test("afterConnect: publishes a normalised siteUrl, host and username — n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: leaves the host blank rather than guessing at a bad URL", async () => {
+test("afterConnect: leaves the host blank rather than guessing at a bad URL", async () => {
   const { ctx } = mockCtx();
   const display = await auth.afterConnect!(
     { credential: { siteUrl: "not a url", username: "alice" } },

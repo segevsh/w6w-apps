@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import account from "../../health/account.ts";
 import quota from "../../health/quota.ts";
@@ -8,7 +9,7 @@ const user = (modes: string[], extra: Record<string, unknown> = {}) => ({
   body: { name: "Acme", api_keys: modes.map((mode) => ({ mode })), ...extra },
 });
 
-Deno.test("account: a production account is ok, with its balance", async () => {
+test("account: a production account is ok, with its balance", async () => {
   const { ctx, calls } = mockCtx([user(["production"], { balance: "42.10" })]);
   const result = await account.check!({}, ctx);
   assertEquals(calls[0].url, "https://api.easypost.com/v2/users");
@@ -20,7 +21,7 @@ Deno.test("account: a production account is ok, with its balance", async () => {
  * The failure this check exists for: a test key succeeds at everything and buys
  * nothing, which no credential check can see.
  */
-Deno.test("account: a test key is degraded, with the reason spelled out", async () => {
+test("account: a test key is degraded, with the reason spelled out", async () => {
   const { ctx } = mockCtx([user(["test"])]);
   const result = await account.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -28,7 +29,7 @@ Deno.test("account: a test key is degraded, with the reason spelled out", async 
   assert(/nothing is ever purchased/.test(result.message!), result.message);
 });
 
-Deno.test("account: an unstated mode is unknown rather than assumed", async () => {
+test("account: an unstated mode is unknown rather than assumed", async () => {
   const { ctx } = mockCtx([user(["test", "production"])]);
   const result = await account.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -36,14 +37,14 @@ Deno.test("account: an unstated mode is unknown rather than assumed", async () =
 });
 
 /** The derived auth check owns credential failures. */
-Deno.test("account: a 401 or 403 is unknown rather than down", async () => {
+test("account: a 401 or 403 is unknown rather than down", async () => {
   for (const status of [401, 403]) {
     const { ctx } = mockCtx([{ status, body: "" }]);
     assertEquals((await account.check!({}, ctx)).state, "unknown", String(status));
   }
 });
 
-Deno.test("account: any other failure is down", async () => {
+test("account: any other failure is down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await account.check!({}, ctx)).state, "down");
 });
@@ -52,7 +53,7 @@ Deno.test("account: any other failure is down", async () => {
  * A per-second burst limit has no headroom to report — asking "how much is
  * left" is not a question it answers.
  */
-Deno.test("quota: is a declared absence explaining why a burst limit cannot be polled", () => {
+test("quota: is a declared absence explaining why a burst limit cannot be polled", () => {
   assertEquals(quota.check, undefined);
   assert(quota.unavailable, "quota should declare its absence");
   const reason = quota.unavailable!.reason;
@@ -64,6 +65,6 @@ Deno.test("quota: is a declared absence explaining why a burst limit cannot be p
 });
 
 /** Balance does deplete, and is read by the account check rather than here. */
-Deno.test("quota: points at the account check for the thing that does run out", () => {
+test("quota: points at the account check for the thing that does run out", () => {
   assert(/`account` check/.test(quota.unavailable!.reason), quota.unavailable!.reason);
 });

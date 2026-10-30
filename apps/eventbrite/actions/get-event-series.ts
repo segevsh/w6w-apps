@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
 import { EVENT_OUTPUT } from "./create-event.ts";
 
 interface Input {
@@ -18,8 +19,10 @@ const getEventSeries: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
-      hint: "Comma-separated expansions, e.g. `series_dates`.",
+      type: "multiselect",
+      options: [...EVENT_EXPANSIONS, { value: "series_dates", label: "Series dates" }],
+      config: { valueFormat: "csv" },
+      hint: "Select one or more related resources to include.",
     },
   ],
   output: [...EVENT_OUTPUT, { key: "series_dates", type: "array", label: "Series dates" }],

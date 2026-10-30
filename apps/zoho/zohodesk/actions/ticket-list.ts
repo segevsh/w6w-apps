@@ -39,7 +39,16 @@ const ticketList: ActionDefinition<Input, DeskListEnvelope<Record<string, unknow
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "contacts", label: "Contacts" },
+        { value: "products", label: "Products" },
+        { value: "assignee", label: "Assignee" },
+        { value: "departments", label: "Departments" },
+        { value: "team", label: "Team" },
+        { value: "isRead", label: "Is Read" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: contacts, products, assignee, departments, team, isRead.",
     },
     ...pageParams,

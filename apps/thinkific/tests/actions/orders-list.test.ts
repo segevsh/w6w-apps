@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ordersList from "../../actions/orders-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("orders-list: fetches GET /orders with only page/limit — no other filters exist", async () => {
+test("orders-list: fetches GET /orders with only page/limit — no other filters exist", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([]) }]);
   await ordersList.execute({ page: 1, limit: 25 }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/public/v1/orders");

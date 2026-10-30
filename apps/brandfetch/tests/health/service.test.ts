@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -25,7 +26,7 @@ function page(statuses: Record<string, string> = {}, id = PAGE_ID, company = "Br
   };
 }
 
-Deno.test("service: all watched resources operational is ok, from the page's /index.json", async () => {
+test("service: all watched resources operational is ok, from the page's /index.json", async () => {
   const { ctx, calls } = mockCtx([{ body: page() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -33,21 +34,21 @@ Deno.test("service: all watched resources operational is ok, from the page's /in
   assertEquals(Object.keys(report.components!).includes("brand-api"), true);
 });
 
-Deno.test("service: the worst watched resource drives the verdict and is named", async () => {
+test("service: the worst watched resource drives the verdict and is named", async () => {
   const { ctx } = mockCtx([{ body: page({ "Search API": "downtime", "Brand API": "degraded" }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
   assertEquals(report.message, "Brand API (degraded); Search API (downtime)");
 });
 
-Deno.test("service: an unwatched resource down is capped at degraded and never drives it", async () => {
+test("service: an unwatched resource down is capped at degraded and never drives it", async () => {
   const { ctx } = mockCtx([{ body: page({ "Developer Dashboard": "downtime" }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
   assertEquals(report.components!["developer-dashboard"].state, "degraded");
 });
 
-Deno.test("service: a foreign page, a missing Brand API resource or HTTP error is unknown", async () => {
+test("service: a foreign page, a missing Brand API resource or HTTP error is unknown", async () => {
   const foreign = mockCtx([{ body: page({}, "999", "Other") }]);
   assertEquals((await service.check!({}, foreign.ctx)).state, "unknown");
   const missing = mockCtx([{

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/transcript-get.ts";
 
@@ -10,14 +11,14 @@ const TRANSCRIPT = {
   ],
 };
 
-Deno.test("transcript-get: hits GET /meetings/{meetingId}/transcript", async () => {
+test("transcript-get: hits GET /meetings/{meetingId}/transcript", async () => {
   const { ctx, calls } = mockCtx([{ body: TRANSCRIPT }]);
   const out = await action.execute({ meetingId: "m1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1alpha1/meetings/m1/transcript");
   assertEquals(out, TRANSCRIPT);
 });
 
-Deno.test("transcript-get: a 404 (still processing / missing) throws with the vendor's message", async () => {
+test("transcript-get: a 404 (still processing / missing) throws with the vendor's message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { name: "NotFoundError", message: "Meeting not found" },

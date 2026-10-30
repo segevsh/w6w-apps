@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-track.ts";
 
 const display = { display: { instance: "iad-01" } };
 
-Deno.test("user-track: posts attributes, events and purchases to /users/track", async () => {
+test("user-track: posts attributes, events and purchases to /users/track", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { message: "success" } }], display);
   const result = await action.execute!({
     attributes: [{ email: "a@b.com", string_attribute: "fruit" }],
@@ -19,7 +20,7 @@ Deno.test("user-track: posts attributes, events and purchases to /users/track", 
   assertEquals(result, { message: "success" });
 });
 
-Deno.test("user-track: uses the connection's instance host", async () => {
+test("user-track: uses the connection's instance host", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], { display: { instance: "fra-02" } });
   await action.execute!({ attributes: [{ email: "a@b.com" }] }, ctx);
   assertEquals(new URL(calls[0].url).host, "rest.fra-02.braze.eu");

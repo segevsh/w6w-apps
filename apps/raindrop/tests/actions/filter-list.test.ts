@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import filterList from "../../actions/filter-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const SAMPLE = {
  * `/filters/{id}`, NOT `/raindrops/{id}/filters` — the changelog's 1.0.4 entry
  * retired the second form, which is still what most third-party examples show.
  */
-Deno.test("filter-list: reads the current /filters route, not the retired one", async () => {
+test("filter-list: reads the current /filters route, not the retired one", async () => {
   const { ctx, calls } = mockCtx([{ body: SAMPLE }]);
   const out = await filterList.execute({ collectionId: 0 }, ctx) as { broken: unknown };
 
@@ -27,7 +28,7 @@ Deno.test("filter-list: reads the current /filters route, not the retired one", 
 });
 
 /** The counts arrive at the top level of the envelope, not under `item`. */
-Deno.test("filter-list: lifts every counter out of the envelope", async () => {
+test("filter-list: lifts every counter out of the envelope", async () => {
   const { ctx } = mockCtx([{ body: SAMPLE }]);
   assertEquals(await filterList.execute({ collectionId: 0 }, ctx), {
     broken: { count: 31 },
@@ -39,7 +40,7 @@ Deno.test("filter-list: lifts every counter out of the envelope", async () => {
   });
 });
 
-Deno.test("filter-list: search and tagsSort reach the query string", async () => {
+test("filter-list: search and tagsSort reach the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: SAMPLE }]);
   await filterList.execute({ collectionId: 8492393, search: "#work", tagsSort: "_id" }, ctx);
 
@@ -47,7 +48,7 @@ Deno.test("filter-list: search and tagsSort reach the query string", async () =>
   assertEquals(queryOf(calls[0].url), { search: "#work", tagsSort: "_id" });
 });
 
-Deno.test("filter-list: a sparse response yields zeroed counters, not undefined", async () => {
+test("filter-list: a sparse response yields zeroed counters, not undefined", async () => {
   const { ctx } = mockCtx([{ body: { result: true } }]);
   const out = await filterList.execute({ collectionId: 0 }, ctx) as Record<string, unknown>;
 

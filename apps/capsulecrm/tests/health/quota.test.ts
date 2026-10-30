@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: is a signed, informational, connection-scoped check", () => {
+test("quota: is a signed, informational, connection-scoped check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: reads X-RateLimit-* headers off /users/current", async () => {
+test("quota: reads X-RateLimit-* headers off /users/current", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { user: { id: 1 } },
@@ -29,7 +30,7 @@ Deno.test("quota: reads X-RateLimit-* headers off /users/current", async () => {
   });
 });
 
-Deno.test("quota: remaining below 10% of limit reports degraded", async () => {
+test("quota: remaining below 10% of limit reports degraded", async () => {
   const { ctx } = mockCtx([{
     body: { user: {} },
     headers: { "x-ratelimit-limit": "4000", "x-ratelimit-remaining": "50" },
@@ -37,7 +38,7 @@ Deno.test("quota: remaining below 10% of limit reports degraded", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: exhausted (0 remaining) reports down", async () => {
+test("quota: exhausted (0 remaining) reports down", async () => {
   const { ctx } = mockCtx([{
     body: { user: {} },
     headers: { "x-ratelimit-limit": "4000", "x-ratelimit-remaining": "0" },
@@ -45,13 +46,13 @@ Deno.test("quota: exhausted (0 remaining) reports down", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: no X-RateLimit-* headers reports unknown, not a guess", async () => {
+test("quota: no X-RateLimit-* headers reports unknown, not a guess", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { user: {} }, headers: {} }]);
   const r = await quota.check!({}, ctx);
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("quota: a failed probe reports unknown", async () => {
+test("quota: a failed probe reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });

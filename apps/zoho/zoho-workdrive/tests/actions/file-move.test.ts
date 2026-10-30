@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileMove from "../../actions/file-move.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("file-move: PATCH /workdrive/api/v1/files/f1", async () => {
+test("file-move: PATCH /workdrive/api/v1/files/f1", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: { "data": [{ "id": "r1", "type": "files" }] },
   }]);

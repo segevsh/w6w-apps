@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listStoredPaymentMethods from "../../actions/list-stored-payment-methods.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "shopperReference": "shopper-1" } as Parameters<
   typeof listStoredPaymentMethods.execute
 >[0];
 
-Deno.test("list-stored-payment-methods: sends GET to the documented path and returns the response", async () => {
+test("list-stored-payment-methods: sends GET to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "storedPaymentMethods": [{ "id": "tok1" }] },
@@ -23,7 +24,7 @@ Deno.test("list-stored-payment-methods: sends GET to the documented path and ret
   assertEquals(out, { "storedPaymentMethods": [{ "id": "tok1" }] });
 });
 
-Deno.test("list-stored-payment-methods: targets the connection's base URL and carries no credential", async () => {
+test("list-stored-payment-methods: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "storedPaymentMethods": [{ "id": "tok1" }] },
@@ -38,7 +39,7 @@ Deno.test("list-stored-payment-methods: targets the connection's base URL and ca
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("list-stored-payment-methods: surfaces Adyen's error code, type and message", async () => {
+test("list-stored-payment-methods: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -56,11 +57,11 @@ Deno.test("list-stored-payment-methods: surfaces Adyen's error code, type and me
   );
 });
 
-Deno.test("list-stored-payment-methods: is a read-only action", () => {
+test("list-stored-payment-methods: is a read-only action", () => {
   assertEquals(listStoredPaymentMethods.type, "read");
 });
 
-Deno.test("list-stored-payment-methods: an explicit merchantAccount beats the connection's", async () => {
+test("list-stored-payment-methods: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "storedPaymentMethods": [{ "id": "tok1" }] },

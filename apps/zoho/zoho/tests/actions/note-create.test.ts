@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/note-create.ts";
 
-Deno.test("note-create: POSTs to /{module}/{id}/Notes, nested under the parent record", async () => {
+test("note-create: POSTs to /{module}/{id}/Notes, nested under the parent record", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "n1" } }] } },
   ]);

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionUpdate from "../../actions/collection-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const RESPONSE = {
   "updated_at": "2026-01-31T09:00:00Z",
 };
 
-Deno.test("collection-update: PATCH /v2/collections/{collection_id}", async () => {
+test("collection-update: PATCH /v2/collections/{collection_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionUpdate.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -26,13 +27,13 @@ Deno.test("collection-update: PATCH /v2/collections/{collection_id}", async () =
   assertEquals(out.title, "Trips");
 });
 
-Deno.test("collection-update: puts no credential on the request (sign owns that)", async () => {
+test("collection-update: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionUpdate.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-update: a vendor error surfaces its own message", async () => {
+test("collection-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

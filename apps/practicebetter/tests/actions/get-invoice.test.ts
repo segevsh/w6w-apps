@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-invoice.ts";
 import { API_ROOT, mockCtx, queryOf, urlOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const invoice = {
   clientRecord: { id: "rec-1" },
 };
 
-Deno.test("get-invoice: reads /consultant/payments/invoices/{invoiceId}", async () => {
+test("get-invoice: reads /consultant/payments/invoices/{invoiceId}", async () => {
   const { ctx, calls } = mockCtx([{ body: invoice }]);
   const result = await action.execute({ invoiceId: "inv-1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -17,7 +18,7 @@ Deno.test("get-invoice: reads /consultant/payments/invoices/{invoiceId}", async 
   assertEquals(result, invoice);
 });
 
-Deno.test("get-invoice: the optional alt parameter is passed through verbatim", async () => {
+test("get-invoice: the optional alt parameter is passed through verbatim", async () => {
   const bare = mockCtx([{ body: invoice }]);
   await action.execute({ invoiceId: "inv-1" }, bare.ctx);
   assertEquals(new URL(bare.calls[0].url).search, "");
@@ -27,7 +28,7 @@ Deno.test("get-invoice: the optional alt parameter is passed through verbatim", 
   assertEquals(queryOf(withAlt.calls[0].url).alt, "summary");
 });
 
-Deno.test("get-invoice: the money fields are declared as Money objects, not numbers", () => {
+test("get-invoice: the money fields are declared as Money objects, not numbers", () => {
   const money = (action.output as Array<{ key: string; type: string }>).filter((o) =>
     o.key.startsWith("amount")
   );

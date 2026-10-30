@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import metricQuery from "../../actions/metric-query.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("metric-query: calls GET /api/v1/query with query, from and to", async () => {
+test("metric-query: calls GET /api/v1/query with query, from and to", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "ok", res_type: "time_series", series: [{ metric: "system.cpu.user" }] },
   }]);
@@ -27,7 +28,7 @@ Deno.test("metric-query: calls GET /api/v1/query with query, from and to", async
  * be evaluated. Both fields are surfaced verbatim so a workflow can branch on
  * "the call worked and the query did not".
  */
-Deno.test("metric-query: a 200 carrying an error is passed through, not flattened", async () => {
+test("metric-query: a 200 carrying an error is passed through, not flattened", async () => {
   const { ctx } = mockCtx([{
     body: { status: "error", error: "Invalid aggregation", series: [] },
   }]);
@@ -39,7 +40,7 @@ Deno.test("metric-query: a 200 carrying an error is passed through, not flattene
   assertEquals(out.error, "Invalid aggregation");
 });
 
-Deno.test("metric-query: an empty series is a valid answer, not a failure", async () => {
+test("metric-query: an empty series is a valid answer, not a failure", async () => {
   const { ctx } = mockCtx([{ body: { status: "ok", series: [] } }]);
   const out = await metricQuery.execute({ query: "avg:nope{*}", from: 1, to: 2 }, ctx) as {
     series: unknown[];
@@ -47,7 +48,7 @@ Deno.test("metric-query: an empty series is a valid answer, not a failure", asyn
   assertEquals(out.series, []);
 });
 
-Deno.test("metric-query: the time hints say seconds, which is what v1 takes", () => {
+test("metric-query: the time hints say seconds, which is what v1 takes", () => {
   for (const key of ["from", "to"]) {
     const hint = metricQuery.params?.find((p) => p.key === key)?.hint ?? "";
     assert(hint.includes("seconds"), `${key}: ${hint}`);

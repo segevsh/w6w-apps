@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("user-list: passes the search term", async () => {
+test("user-list: passes the search term", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "u1", email: "ann@example.com" }]),
@@ -25,7 +26,7 @@ Deno.test("user-list: passes the search term", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("user-list: a vendor error surfaces its code and message", async () => {
+test("user-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

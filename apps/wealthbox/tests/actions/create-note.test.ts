@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-note.ts";
 
-Deno.test("create-note: is a non-idempotent perform requiring content", () => {
+test("create-note: is a non-idempotent perform requiring content", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const p = (action.params ?? []).find((p) => p.key === "content")!;
   assertEquals(p.required, true);
 });
 
-Deno.test("create-note: POSTs /notes with the mapped body", async () => {
+test("create-note: POSTs /notes with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   const linkedTo = [{ id: 1, type: "Contact" }];
   await action.execute({
@@ -28,7 +29,7 @@ Deno.test("create-note: POSTs /notes with the mapped body", async () => {
   });
 });
 
-Deno.test("create-note: omits fields the caller did not supply", async () => {
+test("create-note: omits fields the caller did not supply", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ content: "Just a note" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { content: "Just a note" });

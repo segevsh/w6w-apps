@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/delete-exclusion-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-exclusion-list: DELETEs the list by id", async () => {
+test("delete-exclusion-list: DELETEs the list by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "success": true } }]);
   const out = await action.execute!({ "id": 3 } as never, ctx);
   const url = new URL(calls[0].url);

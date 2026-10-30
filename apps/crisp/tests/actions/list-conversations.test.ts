@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listConversations from "../../actions/list-conversations.ts";
 
-Deno.test("list-conversations: builds the paged URL and passes through filters", async () => {
+test("list-conversations: builds the paged URL and passes through filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: [] } }], "site_1");
   await listConversations.execute({
     pageNumber: 2,
@@ -21,7 +22,7 @@ Deno.test("list-conversations: builds the paged URL and passes through filters",
   assertEquals(url.searchParams.get("filter_resolved"), "0");
 });
 
-Deno.test("list-conversations: omits unset optional filters entirely", async () => {
+test("list-conversations: omits unset optional filters entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: [] } }], "site_1");
   await listConversations.execute({ pageNumber: 1 }, ctx);
   const url = new URL(calls[0].url);
@@ -29,7 +30,7 @@ Deno.test("list-conversations: omits unset optional filters entirely", async () 
   assertEquals(url.searchParams.has("search_query"), false);
 });
 
-Deno.test("list-conversations: is a search action, page number required and defaulted to 1", () => {
+test("list-conversations: is a search action, page number required and defaulted to 1", () => {
   assertEquals(listConversations.type, "search");
   const page = listConversations.params?.find((p) => p.key === "pageNumber");
   assertEquals(page?.required, true);

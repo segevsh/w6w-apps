@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/application-change-stage.ts";
 
 const ok = (results: unknown) => ({ status: 200, body: { success: true, results } });
 
-Deno.test("application-change-stage: advances an application", async () => {
+test("application-change-stage: advances an application", async () => {
   const { ctx, calls } = mockCtx([ok({ id: "a1", status: "Active" })]);
   await action.execute!({ applicationId: "a1", interviewStageId: "stage_2" }, ctx);
   assertEquals(calls[0].url, "https://api.ashbyhq.com/application.changeStage");
@@ -14,7 +15,7 @@ Deno.test("application-change-stage: advances an application", async () => {
   });
 });
 
-Deno.test("application-change-stage: an archive reason reaches the wire", async () => {
+test("application-change-stage: an archive reason reaches the wire", async () => {
   const { ctx, calls } = mockCtx([ok({ id: "a1", status: "Archived" })]);
   await action.execute!({
     applicationId: "a1",
@@ -28,7 +29,7 @@ Deno.test("application-change-stage: an archive reason reaches the wire", async 
  * Ashby's refusal is opaque; the cause is almost always the missing reason, so
  * the error says where to get one.
  */
-Deno.test("application-change-stage: an archive refusal is explained", async () => {
+test("application-change-stage: an archive refusal is explained", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -44,7 +45,7 @@ Deno.test("application-change-stage: an archive refusal is explained", async () 
 });
 
 /** A bulk rejection that accidentally emails everybody is not recoverable. */
-Deno.test("application-change-stage: a rejection email is warned about", async () => {
+test("application-change-stage: a rejection email is warned about", async () => {
   const { ctx, logs } = mockCtx([ok({ id: "a1" })]);
   await action.execute!({
     applicationId: "a1",
@@ -56,14 +57,14 @@ Deno.test("application-change-stage: a rejection email is warned about", async (
   assert(/rejection email/.test(warning!.message), warning!.message);
 });
 
-Deno.test("application-change-stage: no email is attached unless asked for", async () => {
+test("application-change-stage: no email is attached unless asked for", async () => {
   const { ctx, calls, logs } = mockCtx([ok({ id: "a1" })]);
   await action.execute!({ applicationId: "a1", interviewStageId: "s1", archiveEmail: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).archiveEmail, undefined);
   assertEquals(logs.filter((l) => l.level === "warn").length, 0);
 });
 
-Deno.test("application-change-stage: both ids are required", async () => {
+test("application-change-stage: both ids are required", async () => {
   const noApp = mockCtx();
   await assertRejects(
     async () => await action.execute!({ interviewStageId: "s1" }, noApp.ctx),
@@ -78,6 +79,6 @@ Deno.test("application-change-stage: both ids are required", async () => {
   );
 });
 
-Deno.test("application-change-stage: says that archiving is a rejection", () => {
+test("application-change-stage: says that archiving is a rejection", () => {
   assert(/IS a rejection/.test(action.description!), action.description);
 });

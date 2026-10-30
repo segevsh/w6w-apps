@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/database-user-list.ts";
 
@@ -13,7 +14,7 @@ const page = {
   },
 };
 
-Deno.test("database-user-list: reads the project's database users", async () => {
+test("database-user-list: reads the project's database users", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -28,7 +29,7 @@ Deno.test("database-user-list: reads the project's database users", async () => 
 });
 
 /** No scopes means every cluster in the project, including future ones. */
-Deno.test("database-user-list: counts the users that can reach every cluster", async () => {
+test("database-user-list: counts the users that can reach every cluster", async () => {
   const { ctx, logs } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -39,7 +40,7 @@ Deno.test("database-user-list: counts the users that can reach every cluster", a
   assert(/EVERY cluster in the project/.test(action.description!), action.description);
 });
 
-Deno.test("database-user-list: a user with no scopes field counts as unscoped", async () => {
+test("database-user-list: a user with no scopes field counts as unscoped", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [{ username: "x" }] } }]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -49,12 +50,12 @@ Deno.test("database-user-list: a user with no scopes field counts as unscoped", 
 });
 
 /** These are database credentials, not Atlas accounts. */
-Deno.test("database-user-list: says what these are not", () => {
+test("database-user-list: says what these are not", () => {
   assert(/not Atlas accounts/.test(action.description!), action.description);
   assertEquals(action.resource, "database-user");
 });
 
-Deno.test("database-user-list: a project with no users is not an error", async () => {
+test("database-user-list: a project with no users is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,

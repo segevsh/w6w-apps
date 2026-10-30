@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import newsletterCreate from "../../actions/newsletter-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("newsletter-create: POSTs a nested {content} object to /api/mailing/newsletters", async () => {
+test("newsletter-create: POSTs a nested {content} object to /api/mailing/newsletters", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await newsletterCreate.execute(
     { subject: "Hello", editorType: "classic", bodyHtml: "<p>Hi</p>" },
@@ -16,7 +17,7 @@ Deno.test("newsletter-create: POSTs a nested {content} object to /api/mailing/ne
   );
 });
 
-Deno.test("newsletter-create: content carries only fields actually provided", async () => {
+test("newsletter-create: content carries only fields actually provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await newsletterCreate.execute({ subject: "Hello" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { content: { subject: "Hello" } });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-database.ts";
 
-Deno.test("get-database: GETs /databases/{id}", async () => {
+test("get-database: GETs /databases/{id}", async () => {
   const body = { object: "database", id: "db-1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute({ databaseId: "db-1" }, ctx);

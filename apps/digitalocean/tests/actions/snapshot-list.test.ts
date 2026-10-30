@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/snapshot-list.ts";
 
@@ -34,7 +35,7 @@ const page = {
   },
 };
 
-Deno.test("snapshot-list: totals the size and counts by type", async () => {
+test("snapshot-list: totals the size and counts by type", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v2/snapshots");
@@ -43,7 +44,7 @@ Deno.test("snapshot-list: totals the size and counts by type", async () => {
 });
 
 /** The oldest are usually the orphans; nothing flags a missing source. */
-Deno.test("snapshot-list: names the oldest and how long it has been billing", async () => {
+test("snapshot-list: names the oldest and how long it has been billing", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals((result.oldest as Record<string, unknown>).name, "pre-deploy");
@@ -54,19 +55,19 @@ Deno.test("snapshot-list: names the oldest and how long it has been billing", as
   ));
 });
 
-Deno.test("snapshot-list: the type filter is passed through", async () => {
+test("snapshot-list: the type filter is passed through", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ resourceType: "volume" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("resource_type"), "volume");
 });
 
 /** Per gigabyte per month, with no expiry. */
-Deno.test("snapshot-list: says snapshots have no expiry", () => {
+test("snapshot-list: says snapshots have no expiry", () => {
   assert(/NO EXPIRY/.test(action.description!), action.description);
   assert(/nothing mentions them afterwards/.test(action.description!), action.description);
 });
 
-Deno.test("snapshot-list: no snapshots is not an error", async () => {
+test("snapshot-list: no snapshots is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { snapshots: [], meta: { total: 0 } } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POST /v1/contacts/", async () => {
+test("contact-create: POST /v1/contacts/", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 9, first_name: "Ada" } }]);
   const result = await contactCreate.execute({
     firstName: "Ada",
@@ -26,12 +27,12 @@ Deno.test("contact-create: POST /v1/contacts/", async () => {
   assertEquals(result, { id: 9, first_name: "Ada" });
 });
 
-Deno.test("contact-create: declares type perform", () => {
+test("contact-create: declares type perform", () => {
   assertEquals(contactCreate.type, "perform");
   assertEquals(contactCreate.idempotent, false);
 });
 
-Deno.test("contact-create: surfaces the vendor error body", async () => {
+test("contact-create: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

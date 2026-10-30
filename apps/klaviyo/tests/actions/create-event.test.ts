@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event.ts";
 
-Deno.test("create-event: POSTs /events/ with nested metric+profile envelopes", async () => {
+test("create-event: POSTs /events/ with nested metric+profile envelopes", async () => {
   // Klaviyo returns 202 Accepted with an empty body for the track event.
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   await action.execute!(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-delete.ts";
 
-Deno.test("group-delete: sends delete_group with board and group ids", async () => {
+test("group-delete: sends delete_group with board and group ids", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { delete_group: { id: "g1", deleted: true } } },
   }]);
@@ -12,6 +13,6 @@ Deno.test("group-delete: sends delete_group with board and group ids", async () 
   assertEquals(sent.variables, { boardId: "b1", groupId: "topics" });
 });
 
-Deno.test("group-delete: is idempotent", () => {
+test("group-delete: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

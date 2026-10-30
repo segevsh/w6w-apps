@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const ID = "whe_abcdefghij1234";
 
-Deno.test("webhook-update: PATCHes only the fields supplied", async () => {
+test("webhook-update: PATCHes only the fields supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: ID, enabled: false } }]);
   await webhookUpdate.execute({ webhookEndpointId: ID, enabled: false }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -12,7 +13,7 @@ Deno.test("webhook-update: PATCHes only the fields supplied", async () => {
   assertEquals(JSON.parse(calls[0].body!), { enabled: false });
 });
 
-Deno.test("webhook-update: replaces scopes, events and folders", async () => {
+test("webhook-update: replaces scopes, events and folders", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookUpdate.execute({
     webhookEndpointId: ID,
@@ -29,7 +30,7 @@ Deno.test("webhook-update: replaces scopes, events and folders", async () => {
   });
 });
 
-Deno.test("webhook-update: clearFolderFilter sends an empty folder_ids array", async () => {
+test("webhook-update: clearFolderFilter sends an empty folder_ids array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookUpdate.execute(
     { webhookEndpointId: ID, clearFolderFilter: true, folderIds: "fol_a" },
@@ -38,7 +39,7 @@ Deno.test("webhook-update: clearFolderFilter sends an empty folder_ids array", a
   assertEquals(JSON.parse(calls[0].body!), { folder_ids: [] });
 });
 
-Deno.test("webhook-update: 403 surfaces", async () => {
+test("webhook-update: 403 surfaces", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { code: "FORBIDDEN", message: "scope disabled" },

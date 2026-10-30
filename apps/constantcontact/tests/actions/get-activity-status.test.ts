@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-activity-status.ts";
 
-Deno.test("get-activity-status: GETs /v3/activities/{activity_id}", async () => {
+test("get-activity-status: GETs /v3/activities/{activity_id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { activity_id: "a1", state: "completed", percent_done: 100, activity_errors: [] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("get-activity-status: GETs /v3/activities/{activity_id}", async () => 
   assertEquals(out.percent_done, 100);
 });
 
-Deno.test("get-activity-status: surfaces per-row errors on a completed activity", async () => {
+test("get-activity-status: surfaces per-row errors on a completed activity", async () => {
   const { ctx } = mockCtx([{
     body: {
       activity_id: "a1",
@@ -26,7 +27,7 @@ Deno.test("get-activity-status: surfaces per-row errors on a completed activity"
   assertEquals(out.activity_errors, ["row 3: invalid email"]);
 });
 
-Deno.test("get-activity-status: url-encodes the activity id", async () => {
+test("get-activity-status: url-encodes the activity id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ activityId: "a/1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/activities/a%2F1");

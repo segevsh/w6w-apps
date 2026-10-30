@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-update.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("lead-update: sends only the provided fields with the id", async () => {
+test("lead-update: sends only the provided fields with the id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: true, time: {} } },
   ], { display });
@@ -17,7 +18,7 @@ Deno.test("lead-update: sends only the provided fields with the id", async () =>
   assertEquals(out, { id: 7, updated: true });
 });
 
-Deno.test("lead-update: rejects when no field to change is given", async () => {
+test("lead-update: rejects when no field to change is given", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: 7 }, ctx);
@@ -25,7 +26,7 @@ Deno.test("lead-update: rejects when no field to change is given", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lead-update: rejects a non-numeric id before any network call", async () => {
+test("lead-update: rejects a non-numeric id before any network call", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: NaN, title: "x" }, ctx);

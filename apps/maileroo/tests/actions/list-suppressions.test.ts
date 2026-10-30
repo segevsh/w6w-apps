@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-suppressions.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-suppressions: maps rows and paging", async () => {
+test("list-suppressions: maps rows and paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -20,7 +21,7 @@ Deno.test("list-suppressions: maps rows and paging", async () => {
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("list-suppressions: errors throw", async () => {
+test("list-suppressions: errors throw", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: { message: "revoked" } } }]);
   await assertRejects(() => run(action, {}, ctx), Error, "revoked");
 });

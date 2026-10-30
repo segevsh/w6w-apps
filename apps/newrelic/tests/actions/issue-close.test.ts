@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/issue-close.ts";
 
-Deno.test("issue-close: sends the account and issue id", async () => {
+test("issue-close: sends the account and issue id", async () => {
   const { ctx, calls } = mockCtx([
     ok({ aiIssuesResolveIssue: { result: { issueId: "a" } } }),
   ], { display });
@@ -12,7 +13,7 @@ Deno.test("issue-close: sends the account and issue id", async () => {
   assertEquals(result.closed, true);
 });
 
-Deno.test("issue-close: a payload error throws", async () => {
+test("issue-close: a payload error throws", async () => {
   const { ctx } = mockCtx([
     ok({ aiIssuesResolveIssue: { error: { message: "already closed" } } }),
   ], { display });
@@ -23,7 +24,7 @@ Deno.test("issue-close: a payload error throws", async () => {
   );
 });
 
-Deno.test("issue-close: needs an issue id", async () => {
+test("issue-close: needs an issue id", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`issueId` is required");
 });
@@ -32,7 +33,7 @@ Deno.test("issue-close: needs an issue id", async () => {
  * Closing something still breaching just opens a new issue, which looks like an
  * alerting fault rather than the unfixed problem it is.
  */
-Deno.test("issue-close: says New Relic will reopen it if still breaching", () => {
+test("issue-close: says New Relic will reopen it if still breaching", () => {
   assert(/opens a new issue on the next incident/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

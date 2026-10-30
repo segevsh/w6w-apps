@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-participant.ts";
 
-Deno.test("get-participant: GETs the participant by resource name", async () => {
+test("get-participant: GETs the participant by resource name", async () => {
   const { ctx, calls } = mockCtx([
     { body: { name: "conferenceRecords/cr1/participants/p1", signedinUser: { user: "users/1" } } },
   ]);

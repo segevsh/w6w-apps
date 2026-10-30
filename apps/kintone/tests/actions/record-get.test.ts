@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-get.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("record-get: GETs /k/v1/record.json and unwraps the `record` envelope", async () => {
+test("record-get: GETs /k/v1/record.json and unwraps the `record` envelope", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { record: { $id: { type: "__ID__", value: "100" } } } }],
     conn,

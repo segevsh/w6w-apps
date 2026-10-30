@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import screenshot from "../../actions/screenshot.ts";
 import { mockCtx, region } from "../_helpers.ts";
 
 const PNG = new Uint8Array([137, 80, 78, 71]);
 
-Deno.test("screenshot: posts to the connection's region and returns base64", async () => {
+test("screenshot: posts to the connection's region and returns base64", async () => {
   const { ctx, calls } = mockCtx(
     [{ headers: { "content-type": "image/png" }, body: PNG }],
     { connection: region("lon") },
@@ -24,7 +25,7 @@ Deno.test("screenshot: posts to the connection's region and returns base64", asy
   assert(!calls[0].url.includes("token"));
 });
 
-Deno.test("screenshot: query params and requestOverrides reach the wire", async () => {
+test("screenshot: query params and requestOverrides reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "image/jpeg" }, body: PNG }]);
   await screenshot.execute(
     {
@@ -47,7 +48,7 @@ Deno.test("screenshot: query params and requestOverrides reach the wire", async 
   assertEquals(body.options, { type: "jpeg", quality: 80 });
 });
 
-Deno.test("screenshot: rejects url+html, neither, and quality on png without calling", async () => {
+test("screenshot: rejects url+html, neither, and quality on png without calling", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await screenshot.execute({ url: "https://a.com", html: "<p/>" }, ctx),
@@ -63,7 +64,7 @@ Deno.test("screenshot: rejects url+html, neither, and quality on png without cal
   assertEquals(calls.length, 0);
 });
 
-Deno.test("screenshot: a 408 is a thrown error with the timeout hint", async () => {
+test("screenshot: a 408 is a thrown error with the timeout hint", async () => {
   const { ctx } = mockCtx([{ status: 408, body: "Request has timed out" }]);
   await assertRejects(
     async () => await screenshot.execute({ url: "https://a.com" }, ctx),

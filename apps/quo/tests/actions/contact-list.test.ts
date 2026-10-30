@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, pathOf, queryAllOf } from "../_helpers.ts";
 
-Deno.test("contact-list: GETs /v1/contacts, repeating externalIds/sources array filters", async () => {
+test("contact-list: GETs /v1/contacts, repeating externalIds/sources array filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [], totalItems: 0, nextPageToken: null },
@@ -13,6 +14,6 @@ Deno.test("contact-list: GETs /v1/contacts, repeating externalIds/sources array 
   assertEquals(queryAllOf(calls[0].url, "sources"), ["crm"]);
 });
 
-Deno.test("contact-list: is a search action", () => {
+test("contact-list: is a search action", () => {
   assertEquals(contactList.type, "search");
 });

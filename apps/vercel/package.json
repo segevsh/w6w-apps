@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vercel",
   "version": "0.1.0",
-  "description": "Ship and inspect Vercel deployments \u2014 projects, aliases, env vars, domains and logs.",
+  "description": "Ship and inspect Vercel deployments — projects, aliases, env vars, domains and logs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,5 +40,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
   }
 }

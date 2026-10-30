@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGetMe from "../../actions/user-get-me.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-get-me: calls GET /v1/users/me with no parameters", async () => {
+test("user-get-me: calls GET /v1/users/me with no parameters", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "u1", name: "Ada", email: "ada@example.com" } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("user-get-me: calls GET /v1/users/me with no parameters", async () => 
  * No `Authorization`, no `X-API-Key`: an action never sees the credential, and
  * the runtime routes the request through the auth `sign` hook instead.
  */
-Deno.test("user-get-me: the action sends no credential of its own", async () => {
+test("user-get-me: the action sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1" } }]);
   await userGetMe.execute({}, ctx);
   assertEquals(calls[0].headers["x-api-key"], undefined);

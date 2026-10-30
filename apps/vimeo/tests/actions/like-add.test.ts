@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import likeAdd from "../../actions/like-add.ts";
 import { mockCtx, url } from "../_helpers.ts";
 
 /** A PUT: liking is a set-membership assertion, so twice leaves exactly one like. */
-Deno.test("like-add: PUTs /me/likes/{id} with no body", async () => {
+test("like-add: PUTs /me/likes/{id} with no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await likeAdd.execute({ videoId: "/videos/258684937" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -12,7 +13,7 @@ Deno.test("like-add: PUTs /me/likes/{id} with no body", async () => {
   assertEquals(out, { liked: true, videoId: "258684937" });
 });
 
-Deno.test("like-add: is a convergent perform", () => {
+test("like-add: is a convergent perform", () => {
   assertEquals(likeAdd.type, "perform");
   assertEquals(likeAdd.idempotent, true);
 });

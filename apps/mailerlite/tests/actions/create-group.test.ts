@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-group.ts";
 
-Deno.test("create-group: POSTs /api/groups with the name", async () => {
+test("create-group: POSTs /api/groups with the name", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "1", name: "News" } } }]);
   const out = await action.execute!({ name: "News" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,11 +12,11 @@ Deno.test("create-group: POSTs /api/groups with the name", async () => {
   assertEquals(out, { data: { id: "1", name: "News" } });
 });
 
-Deno.test("create-group: is NOT idempotent — MailerLite does not dedupe on name", () => {
+test("create-group: is NOT idempotent — MailerLite does not dedupe on name", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-group: caps the name at MailerLite's 255-character limit", () => {
+test("create-group: caps the name at MailerLite's 255-character limit", () => {
   const name = action.params!.find((p) => p.key === "name")!;
   assertEquals(name.required, true);
   assertEquals(name.validation?.maxLength, 255);

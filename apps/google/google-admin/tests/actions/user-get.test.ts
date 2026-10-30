@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get.ts";
 
-Deno.test("user-get: GETs /users/{userKey} with basic projection by default", async () => {
+test("user-get: GETs /users/{userKey} with basic projection by default", async () => {
   const body = { id: "u-1", primaryEmail: "a@example.com" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ userKey: "a@example.com" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("user-get: GETs /users/{userKey} with basic projection by default", as
   assertEquals(result, body);
 });
 
-Deno.test("user-get: forwards a custom projection/viewType", async () => {
+test("user-get: forwards a custom projection/viewType", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ userKey: "u-1", projection: "full", viewType: "domain_public" }, ctx);
   const url = new URL(calls[0].url);

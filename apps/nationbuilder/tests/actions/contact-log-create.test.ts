@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/contact-log-create.ts";
 
-Deno.test("contact-log-create: POSTs /contacts, not /signups — this is a logged attempt, not a person", async () => {
+test("contact-log-create: POSTs /contacts, not /signups — this is a logged attempt, not a person", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "5", type: "contacts", attributes: { signup_id: "42" } } },
   }]);

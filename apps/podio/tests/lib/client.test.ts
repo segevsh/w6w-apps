@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asJson,
   asJsonObject,
@@ -18,14 +19,14 @@ import {
 } from "../../lib/client.ts";
 import { BAD_TOKEN_401, mockCtx, NO_CREDENTIAL_401, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty string but keeps false and 0", () => {
+test("compact: drops undefined, null and empty string but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("flag: renders both booleans, absence stays absent", () => {
+test("flag: renders both booleans, absence stays absent", () => {
   // `hook=false` differs from Podio's documented default of true, so `false`
   // must survive rather than being collapsed into absence.
   assertEquals(flag(true), "true");
@@ -33,7 +34,7 @@ Deno.test("flag: renders both booleans, absence stays absent", () => {
   assertEquals(flag(undefined), undefined);
 });
 
-Deno.test("asOptionalJson: accepts parsed values and typed strings alike", () => {
+test("asOptionalJson: accepts parsed values and typed strings alike", () => {
   assertEquals(asOptionalJson<number[]>("[1,2]", "x"), [1, 2]);
   assertEquals(asOptionalJson<number[]>([1, 2], "x"), [1, 2]);
   assertEquals(asOptionalJson("", "x"), undefined);
@@ -41,7 +42,7 @@ Deno.test("asOptionalJson: accepts parsed values and typed strings alike", () =>
   assertThrows(() => asOptionalJson("{not json", "Fields"), Error, "Fields is not valid JSON");
 });
 
-Deno.test("asJson: absence is an error", () => {
+test("asJson: absence is an error", () => {
   assertThrows(() => asJson(undefined, "Fields"), Error, "Fields is required");
 });
 
@@ -50,7 +51,7 @@ Deno.test("asJson: absence is an error", () => {
  * it cannot read as a keyed map, so an array would produce a 200 that writes
  * nothing — a success that did nothing is the worst failure mode available.
  */
-Deno.test("asJsonObject: rejects arrays and scalars, which Podio would silently ignore", () => {
+test("asJsonObject: rejects arrays and scalars, which Podio would silently ignore", () => {
   assertEquals(asJsonObject('{"title":"x"}', "Field values"), { title: "x" });
   assertThrows(
     () => asJsonObject("[1,2]", "Field values"),
@@ -64,21 +65,21 @@ Deno.test("asJsonObject: rejects arrays and scalars, which Podio would silently 
   assertThrows(() => asJsonObject(undefined, "Field values"), Error, "Field values is required");
 });
 
-Deno.test("toList: splits, trims and drops empties", () => {
+test("toList: splits, trims and drops empties", () => {
   assertEquals(toList("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(" , "), undefined);
 });
 
-Deno.test("truncate: reports how much it dropped", () => {
+test("truncate: reports how much it dropped", () => {
   assertEquals(truncate("abc", 10), "abc");
   const long = truncate("x".repeat(50), 10);
   assert(long.startsWith("xxxxxxxxxx…"));
   assert(long.includes("50 bytes truncated"));
 });
 
-Deno.test("encodeSegment: neutralises path-rewriting characters in an external id", () => {
+test("encodeSegment: neutralises path-rewriting characters in an external id", () => {
   assertEquals(encodeSegment("abc"), "abc");
   assertEquals(encodeSegment(" 123 "), "123");
   assertEquals(encodeSegment("a/b"), "a%2Fb");
@@ -88,11 +89,11 @@ Deno.test("encodeSegment: neutralises path-rewriting characters in an external i
 
 // --- the redaction that stops a read leaking a write credential -------------
 
-Deno.test("REDACTED_FIELDS names exactly the app token and the push signature", () => {
+test("REDACTED_FIELDS names exactly the app token and the push signature", () => {
   assertEquals([...REDACTED_FIELDS].sort(), ["push", "token"]);
 });
 
-Deno.test("stripSecrets: removes the app token and push channel, keeps everything else", () => {
+test("stripSecrets: removes the app token and push channel, keeps everything else", () => {
   const app = {
     app_id: 1,
     token: "the-app-token-that-mints-access-tokens",
@@ -115,7 +116,7 @@ Deno.test("stripSecrets: removes the app token and push channel, keeps everythin
  * *field* legitimately named `token` is ordinary customer data. Only the
  * top-level key is a credential.
  */
-Deno.test("stripSecrets: does not touch a user-defined field that happens to be named token", () => {
+test("stripSecrets: does not touch a user-defined field that happens to be named token", () => {
   const item = {
     item_id: 9,
     push: { signature: "s" },
@@ -126,13 +127,13 @@ Deno.test("stripSecrets: does not touch a user-defined field that happens to be 
   assertEquals(out.fields, [{ external_id: "token", values: [{ value: "customer's own value" }] }]);
 });
 
-Deno.test("stripSecrets: passes non-objects through unchanged", () => {
+test("stripSecrets: passes non-objects through unchanged", () => {
   assertEquals(stripSecrets(null), null);
   assertEquals(stripSecrets("x"), "x");
   assertEquals(stripSecrets([1, 2]), [1, 2]);
 });
 
-Deno.test("stripSecretsAll: strips every element, tolerating a non-array", () => {
+test("stripSecretsAll: strips every element, tolerating a non-array", () => {
   assertEquals(
     stripSecretsAll<Record<string, unknown>>([
       { app_id: 1, token: "t" },
@@ -145,7 +146,7 @@ Deno.test("stripSecretsAll: strips every element, tolerating a non-array", () =>
 
 // --- errors ------------------------------------------------------------------
 
-Deno.test("formatPodioError: surfaces BOTH machine codes, not just the status", () => {
+test("formatPodioError: surfaces BOTH machine codes, not just the status", () => {
   const message = formatPodioError(
     401,
     "GET",
@@ -158,13 +159,13 @@ Deno.test("formatPodioError: surfaces BOTH machine codes, not just the status", 
   assert(message.includes("GET /user/status"));
 });
 
-Deno.test("formatPodioError: falls back to the raw body when it is not JSON", () => {
+test("formatPodioError: falls back to the raw body when it is not JSON", () => {
   const message = formatPodioError(502, "GET", "/item/1", "<html>bad gateway</html>");
   assert(message.includes("502"));
   assert(message.includes("bad gateway"));
 });
 
-Deno.test("formatPodioError: explains a 409 as the revision conflict it is", () => {
+test("formatPodioError: explains a 409 as the revision conflict it is", () => {
   const body = JSON.stringify({ error: "conflict", error_description: "revision_conflict" });
   const message = formatPodioError(409, "PUT", "/item/1", body);
   assert(message.includes("the item changed since the revision you supplied"));
@@ -174,7 +175,7 @@ Deno.test("formatPodioError: explains a 409 as the revision conflict it is", () 
  * Podio throttles with 420, from its own client's status switch. A retry policy
  * watching for 429 never fires, so the message has to say it.
  */
-Deno.test("formatPodioError: names throttling on 420, the status Podio actually uses", () => {
+test("formatPodioError: names throttling on 420, the status Podio actually uses", () => {
   assertEquals(THROTTLED_STATUS, 420);
   const body = JSON.stringify({ error: "rate_limit", error_description: "slow down" });
   assert(formatPodioError(420, "GET", "/item/1", body).includes("throttling"));
@@ -188,7 +189,7 @@ Deno.test("formatPodioError: names throttling on 420, the status Podio actually 
  * rejected one, and the bodies differ in exactly one field. Deciding from the
  * status would conflate "reconnect" with "refresh".
  */
-Deno.test("classifyAuthFailure: separates the two 401s by body, not status", () => {
+test("classifyAuthFailure: separates the two 401s by body, not status", () => {
   assertEquals(classifyAuthFailure(401, NO_CREDENTIAL_401), "missing");
   assertEquals(classifyAuthFailure(401, BAD_TOKEN_401), "rejected");
   assertEquals(
@@ -198,7 +199,7 @@ Deno.test("classifyAuthFailure: separates the two 401s by body, not status", () 
   );
 });
 
-Deno.test("classifyAuthFailure: 403 is its own kind, and an unreadable body is not a 401", () => {
+test("classifyAuthFailure: 403 is its own kind, and an unreadable body is not a 401", () => {
   assertEquals(classifyAuthFailure(403, { error: "forbidden" }), "forbidden");
   // A 401 whose body could not be parsed is still a rejection — the credential
   // reached Podio and was refused.
@@ -207,7 +208,7 @@ Deno.test("classifyAuthFailure: 403 is its own kind, and an unreadable body is n
   assertEquals(classifyAuthFailure(404, null), "other");
 });
 
-Deno.test("classifyAuthFailure: the 400 empty-header case is not read as a missing credential", () => {
+test("classifyAuthFailure: the 400 empty-header case is not read as a missing credential", () => {
   // `Authorization: OAuth2 ` (empty token) answers 400 "Invalid authorization
   // header" — a malformed credential, not an absent one.
   const body = {
@@ -219,7 +220,7 @@ Deno.test("classifyAuthFailure: the 400 empty-header case is not read as a missi
 
 // --- the client --------------------------------------------------------------
 
-Deno.test("PodioClient: GET builds the documented URL and asks for JSON", async () => {
+test("PodioClient: GET builds the documented URL and asks for JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ org_id: 1 }] }]);
   const out = await new PodioClient(ctx).json<unknown[]>("/org/");
   assertEquals(out, [{ org_id: 1 }]);
@@ -229,7 +230,7 @@ Deno.test("PodioClient: GET builds the documented URL and asks for JSON", async 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("PodioClient: a body is sent as JSON with the matching content type", async () => {
+test("PodioClient: a body is sent as JSON with the matching content type", async () => {
   const { ctx, calls } = mockCtx([{ body: { item_id: 5 } }]);
   await new PodioClient(ctx).json("/item/app/1/", { method: "POST", body: { fields: { a: 1 } } });
   assertEquals(calls[0].method, "POST");
@@ -237,7 +238,7 @@ Deno.test("PodioClient: a body is sent as JSON with the matching content type", 
   assertEquals(calls[0].body, '{"fields":{"a":1}}');
 });
 
-Deno.test("PodioClient: array query values join with a semicolon, Podio's documented list form", async () => {
+test("PodioClient: array query values join with a semicolon, Podio's documented list form", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new PodioClient(ctx).json("/task/", {
     query: { reference: ["item:1", "item:2"], limit: 30, completed: "false", skipped: "" },
@@ -249,20 +250,20 @@ Deno.test("PodioClient: array query values join with a semicolon, Podio's docume
   assertEquals(query.skipped, undefined, "an empty query value must not be sent");
 });
 
-Deno.test("PodioClient: 204 and an empty body both yield undefined rather than a parse error", async () => {
+test("PodioClient: 204 and an empty body both yield undefined rather than a parse error", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new PodioClient(ctx);
   assertEquals(await client.json("/item/1"), undefined);
   assertEquals(await client.json("/item/2"), undefined);
 });
 
-Deno.test("PodioClient.status: reports the status of a bodyless response", async () => {
+test("PodioClient.status: reports the status of a bodyless response", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   assertEquals(await new PodioClient(ctx).status("/item/1", { method: "DELETE" }), 204);
   assertEquals(calls[0].method, "DELETE");
 });
 
-Deno.test("PodioClient: a non-2xx throws with both of Podio's codes in the message", async () => {
+test("PodioClient: a non-2xx throws with both of Podio's codes in the message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: "forbidden", error_description: "no_write" },
@@ -282,7 +283,7 @@ Deno.test("PodioClient: a non-2xx throws with both of Podio's codes in the messa
  * only hook handed the credential. If this ever changes, every action becomes a
  * place a credential can be read.
  */
-Deno.test("PodioClient: sends no auth header of its own", async () => {
+test("PodioClient: sends no auth header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new PodioClient(ctx).json("/oauth/scope");
   for (const name of Object.keys(calls[0].headers)) {

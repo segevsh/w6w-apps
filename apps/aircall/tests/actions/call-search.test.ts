@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import callSearch from "../../actions/call-search.ts";
 import { listBody, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("call-search: calls GET /v1/calls/search with its own filters", async () => {
+test("call-search: calls GET /v1/calls/search with its own filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", [{ id: 812 }]) }]);
   await callSearch.execute({
     direction: "inbound",
@@ -22,7 +23,7 @@ Deno.test("call-search: calls GET /v1/calls/search with its own filters", async 
  * comma-joined value. Comma-joining silently matches nothing, which reads as
  * "no calls have these tags" rather than as an error.
  */
-Deno.test("call-search: tags reach the wire as repeated tags[] keys", async () => {
+test("call-search: tags reach the wire as repeated tags[] keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callSearch.execute({ tags: ["545", "678"] }, ctx);
 
@@ -31,19 +32,19 @@ Deno.test("call-search: tags reach the wire as repeated tags[] keys", async () =
   assert(!("tags" in q), `a bare comma-joined tags key leaked: ${JSON.stringify(q)}`);
 });
 
-Deno.test("call-search: a comma string of tag IDs is accepted and split", async () => {
+test("call-search: a comma string of tag IDs is accepted and split", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callSearch.execute({ tags: "545, 678" }, ctx);
   assertEquals(queryAll(calls[0].url, "tags[]"), ["545", "678"]);
 });
 
-Deno.test("call-search: non-numeric tag entries are dropped rather than sent", async () => {
+test("call-search: non-numeric tag entries are dropped rather than sent", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callSearch.execute({ tags: ["545", "not-an-id"] }, ctx);
   assertEquals(queryAll(calls[0].url, "tags[]"), ["545"]);
 });
 
-Deno.test("call-search: an empty tag list sends no tags key at all", async () => {
+test("call-search: an empty tag list sends no tags key at all", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callSearch.execute({ tags: [] }, ctx);
   assertEquals(queryAll(calls[0].url, "tags[]"), []);

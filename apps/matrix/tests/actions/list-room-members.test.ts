@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listRoomMembers from "../../actions/list-room-members.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("list-room-members: GETs /rooms/{roomId}/joined_members and flattens the map", async () => {
+test("list-room-members: GETs /rooms/{roomId}/joined_members and flattens the map", async () => {
   const { ctx, calls } = mockMatrixCtx([
     {
       body: {

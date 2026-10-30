@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/publish-entry.ts";
 
-Deno.test("publish-entry: metadata", () => {
+test("publish-entry: metadata", () => {
   assertEquals(action.key, "publish-entry");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -17,7 +18,7 @@ Deno.test("publish-entry: metadata", () => {
   ]);
 });
 
-Deno.test("publish-entry: calls POST /content_types/blog/entries/blt9/publish on the NA host", async () => {
+test("publish-entry: calls POST /content_types/blog/entries/blt9/publish on the NA host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "The requested action has been performed." },
   }]);
@@ -45,7 +46,7 @@ Deno.test("publish-entry: calls POST /content_types/blog/entries/blt9/publish on
   assertEquals(out, { "notice": "The requested action has been performed." });
 });
 
-Deno.test("publish-entry: uses the connection's regional host", async () => {
+test("publish-entry: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "The requested action has been performed." },
   }], {
@@ -65,7 +66,7 @@ Deno.test("publish-entry: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("publish-entry: sends the branch header only when a branch is given", async () => {
+test("publish-entry: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "The requested action has been performed." },
   }, { body: { "notice": "The requested action has been performed." } }]);
@@ -90,7 +91,7 @@ Deno.test("publish-entry: sends the branch header only when a branch is given", 
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("publish-entry: rejects without `contentTypeUid` and makes no request", async () => {
+test("publish-entry: rejects without `contentTypeUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -108,7 +109,7 @@ Deno.test("publish-entry: rejects without `contentTypeUid` and makes no request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("publish-entry: surfaces Contentstack's own error body", async () => {
+test("publish-entry: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

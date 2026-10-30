@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import batch from "../../actions/youtube-batch-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("youtube-batch-get: GETs /youtube/batch/{jobId} with limit and offset 0", async () => {
+test("youtube-batch-get: GETs /youtube/batch/{jobId} with limit and offset 0", async () => {
   const body = {
     status: "completed",
     results: [{ videoId: "a" }],
@@ -13,7 +14,7 @@ Deno.test("youtube-batch-get: GETs /youtube/batch/{jobId} with limit and offset 
   assertEquals(calls[0].url, "https://api.supadata.ai/v1/youtube/batch/b1?limit=50&offset=0");
 });
 
-Deno.test("youtube-batch-get: an expired job is returned as data; a blank id makes no call", async () => {
+test("youtube-batch-get: an expired job is returned as data; a blank id makes no call", async () => {
   const body = {
     status: "failed",
     errorCode: "job-expired",

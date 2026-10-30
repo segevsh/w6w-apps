@@ -1,47 +1,48 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { resolveBaseUrl, WordPressClient } from "../../lib/client.ts";
 
-Deno.test("resolveBaseUrl: self-hosted siteUrl → /wp-json/wp/v2", () => {
+test("resolveBaseUrl: self-hosted siteUrl → /wp-json/wp/v2", () => {
   assertEquals(
     resolveBaseUrl({ siteUrl: "https://example.com" }),
     "https://example.com/wp-json/wp/v2",
   );
 });
 
-Deno.test("resolveBaseUrl: trims trailing slash from siteUrl", () => {
+test("resolveBaseUrl: trims trailing slash from siteUrl", () => {
   assertEquals(
     resolveBaseUrl({ siteUrl: "https://example.com/" }),
     "https://example.com/wp-json/wp/v2",
   );
 });
 
-Deno.test("resolveBaseUrl: WordPress.com hosted site → public-api sites URL", () => {
+test("resolveBaseUrl: WordPress.com hosted site → public-api sites URL", () => {
   assertEquals(
     resolveBaseUrl({ wordpressSite: "myblog.wordpress.com" }),
     "https://public-api.wordpress.com/wp/v2/sites/myblog.wordpress.com",
   );
 });
 
-Deno.test("resolveBaseUrl: WordPress.com site given as a URL → hostname only", () => {
+test("resolveBaseUrl: WordPress.com site given as a URL → hostname only", () => {
   assertEquals(
     resolveBaseUrl({ wordpressSite: "https://myblog.wordpress.com/some/path" }),
     "https://public-api.wordpress.com/wp/v2/sites/myblog.wordpress.com",
   );
 });
 
-Deno.test("resolveBaseUrl: throws when neither field is provided", () => {
+test("resolveBaseUrl: throws when neither field is provided", () => {
   assertThrows(() => resolveBaseUrl({}), Error, "missing siteUrl");
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new WordPressClient(ctx, "https://example.com/wp-json/wp/v2");
   const result = await client.request("/posts/1");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"code":"rest_post_invalid_id"}' },
   ]);
@@ -54,7 +55,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assert(err.message.includes("/wp-json/wp/v2/posts/999"));
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new WordPressClient(ctx, "https://example.com/wp-json/wp/v2");
   await client.request("/posts", {
@@ -67,7 +68,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: array query params join with commas", async () => {
+test("client: array query params join with commas", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new WordPressClient(ctx, "https://example.com/wp-json/wp/v2");
   await client.request("/posts", {
@@ -79,7 +80,7 @@ Deno.test("client: array query params join with commas", async () => {
   assertEquals(url.searchParams.has("tags"), false);
 });
 
-Deno.test("client: JSON bodies set content-type", async () => {
+test("client: JSON bodies set content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   const client = new WordPressClient(ctx, "https://example.com/wp-json/wp/v2");
   await client.request("/posts", { method: "POST", body: { title: "hi" } });
@@ -88,7 +89,7 @@ Deno.test("client: JSON bodies set content-type", async () => {
   assertEquals(calls[0].body, JSON.stringify({ title: "hi" }));
 });
 
-Deno.test("client: fromConnection reads display.siteUrl to build the base URL", async () => {
+test("client: fromConnection reads display.siteUrl to build the base URL", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], {
     display: { siteUrl: "https://example.com" },
   });
@@ -98,7 +99,7 @@ Deno.test("client: fromConnection reads display.siteUrl to build the base URL", 
   assertEquals(new URL(calls[0].url).pathname, "/wp-json/wp/v2/posts/1");
 });
 
-Deno.test("client: fromConnection reads display.wordpressSite for the OAuth path", async () => {
+test("client: fromConnection reads display.wordpressSite for the OAuth path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], {
     display: { wordpressSite: "myblog.wordpress.com" },
   });

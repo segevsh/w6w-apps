@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import profileUpdate from "../../actions/profile-update.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("profile-update posts the new name to the profile's own path", async () => {
+test("profile-update posts the new name to the profile's own path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { profile_id: 2548713 } }]);
   const out = await profileUpdate.execute(
     { accountId: 5411295, profileId: 2548713, profileName: "New Name" },

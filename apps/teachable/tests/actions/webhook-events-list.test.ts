@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookEventsList from "../../actions/webhook-events-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-events-list: paths by webhook ID and forwards status-range filters", async () => {
+test("webhook-events-list: paths by webhook ID and forwards status-range filters", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("events", []) }]);
   await webhookEventsList.execute(
     { webhookId: 3, responseHttpStatusGte: 500, responseHttpStatusLte: 599 },

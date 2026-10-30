@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/refund-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("refund-create: a full refund sends only the transaction", async () => {
+test("refund-create: a full refund sends only the transaction", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ id: 1, status: "pending" }) }]);
   assertEquals(await action.execute({ transaction: "ref1" }, ctx), { id: 1, status: "pending" });
   assertEquals(pathOf(calls[0].url), "/refund");
   assertEquals(JSON.parse(calls[0].body!), { transaction: "ref1" });
 });
 
-Deno.test("refund-create: a partial refund sends amount, currency and notes", async () => {
+test("refund-create: a partial refund sends amount, currency and notes", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ id: 2 }) }]);
   await action.execute({
     transaction: "ref1",
@@ -27,7 +28,7 @@ Deno.test("refund-create: a partial refund sends amount, currency and notes", as
   });
 });
 
-Deno.test("refund-create: rejects a non-integer amount and a missing transaction", async () => {
+test("refund-create: rejects a non-integer amount and a missing transaction", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ transaction: "r", amount: 1.5 }, ctx),

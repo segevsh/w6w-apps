@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -17,7 +18,7 @@ const page = (over: Record<string, string> = {}) => ({
 const us = { display: { projectId: "1", region: "us" } };
 const eu = { display: { projectId: "1", region: "eu" } };
 
-Deno.test("service: all green reports ok for this region", async () => {
+test("service: all green reports ok for this region", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page() }], us);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -26,7 +27,7 @@ Deno.test("service: all green reports ok for this region", async () => {
 });
 
 /** Querying and ingesting fail independently, so one out is degraded. */
-Deno.test("service: an ingestion outage alone is degraded, not down", async () => {
+test("service: an ingestion outage alone is degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({ "Ingestion API Availability (US)": "major_outage" }),
@@ -36,7 +37,7 @@ Deno.test("service: an ingestion outage alone is degraded, not down", async () =
   assertEquals(out.components!.query.state, "ok");
 });
 
-Deno.test("service: both regional components out is down", async () => {
+test("service: both regional components out is down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({
@@ -48,7 +49,7 @@ Deno.test("service: both regional components out is down", async () => {
 });
 
 /** Another region's outage is not this project's problem. */
-Deno.test("service: an EU outage leaves a US project green", async () => {
+test("service: an EU outage leaves a US project green", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({
@@ -59,7 +60,7 @@ Deno.test("service: an EU outage leaves a US project green", async () => {
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: the same outage IS the problem for an EU project", async () => {
+test("service: the same outage IS the problem for an EU project", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({
@@ -70,19 +71,19 @@ Deno.test("service: the same outage IS the problem for an EU project", async () 
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }], us);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: is connection-scoped and unsigned", () => {
+test("service: is connection-scoped and unsigned", () => {
   assertEquals(service.scope, "connection");
   assertEquals(service.credential, "context");
   assertEquals(service.network!.allow, ["www.mixpanelstatus.com"]);
 });
 
 /** Measuring headroom would cost one of the sixty. */
-Deno.test("quota: is a declared absence carrying the actual limits", () => {
+test("quota: is a declared absence carrying the actual limits", () => {
   assert(quota.unavailable, "quota should be declared unavailable");
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");

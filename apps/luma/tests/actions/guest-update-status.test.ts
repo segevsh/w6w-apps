@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestUpdateStatus from "../../actions/guest-update-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("guest-update-status: posts event_id, guest_id and status", async () => {
+test("guest-update-status: posts event_id, guest_id and status", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await guestUpdateStatus.execute(
     { eventId: "evt-1", guestId: "gst-1", status: "declined", shouldRefund: true },

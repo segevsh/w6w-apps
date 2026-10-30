@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-contacts.ts";
 
-Deno.test("search-contacts: POSTs /crm/v3/objects/contacts/search with filter groups", async () => {
+test("search-contacts: POSTs /crm/v3/objects/contacts/search with filter groups", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ id: "1" }] } }]);
   await action.execute!(
     {

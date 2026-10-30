@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
@@ -6,7 +7,7 @@ import action from "../../actions/organization-list.ts";
  * `GET /organizations` is the discovery call: it is the ONE endpoint that
  * must not carry `organization_id`.
  */
-Deno.test("organization-list: GETs /organizations with no organization_id query param", async () => {
+test("organization-list: GETs /organizations with no organization_id query param", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", organizations: [{ organization_id: "10234695" }] } },
   ]);
@@ -18,12 +19,12 @@ Deno.test("organization-list: GETs /organizations with no organization_id query 
   assertEquals(out, { organizations: [{ organization_id: "10234695" }] });
 });
 
-Deno.test("organization-list: a missing organizations key answers an empty list, not a throw", async () => {
+test("organization-list: a missing organizations key answers an empty list, not a throw", async () => {
   const { ctx } = mockInventoryCtx([{ body: { code: 0, message: "success" } }]);
   assertEquals(await action.execute({}, ctx), { organizations: [] });
 });
 
-Deno.test("organization-list: declares no params at all", () => {
+test("organization-list: declares no params at all", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
 });

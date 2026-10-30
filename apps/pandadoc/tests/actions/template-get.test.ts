@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/template-get.ts";
 
-Deno.test("template-get: GETs /templates/{id}/details", async () => {
+test("template-get: GETs /templates/{id}/details", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "t1",
@@ -21,13 +22,13 @@ Deno.test("template-get: GETs /templates/{id}/details", async () => {
   assertEquals(out.roles[0].name, "Client");
 });
 
-Deno.test("template-get: URL-encodes the template id", async () => {
+test("template-get: URL-encodes the template id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ templateId: "a/b" }, ctx);
   assertEquals(pathOf(calls[0]), "/public/v1/templates/a%2Fb/details");
 });
 
-Deno.test("template-get: is a read action on the template resource", () => {
+test("template-get: is a read action on the template resource", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "template");
 });

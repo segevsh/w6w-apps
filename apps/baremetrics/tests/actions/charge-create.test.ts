@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import chargeCreate from "../../actions/charge-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("charge-create: POST /v1/src1/charges with the documented query/body", async () => {
+test("charge-create: POST /v1/src1/charges with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { charge: {} } }]);
   const out = await chargeCreate.execute({
     source_id: "src1",
@@ -33,7 +34,7 @@ Deno.test("charge-create: POST /v1/src1/charges with the documented query/body",
   assert("charge" in out);
 });
 
-Deno.test("charge-create: omits unset optional body fields", async () => {
+test("charge-create: omits unset optional body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await chargeCreate.execute({
     source_id: "src1",
@@ -48,13 +49,13 @@ Deno.test("charge-create: omits unset optional body fields", async () => {
   );
 });
 
-Deno.test("charge-create: declares type perform and every required param", () => {
+test("charge-create: declares type perform and every required param", () => {
   assertEquals(chargeCreate.type, "perform");
   const required = (chargeCreate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["amount", "currency", "customer_oid", "oid", "source_id"]);
 });
 
-Deno.test("charge-create: surfaces a vendor error as a thrown message", async () => {
+test("charge-create: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

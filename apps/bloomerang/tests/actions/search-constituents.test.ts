@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-constituents.ts";
 
-Deno.test("search-constituents: is a search action", () => {
+test("search-constituents: is a search action", () => {
   assertEquals(action.type, "search");
 });
 
-Deno.test("search-constituents: GETs /constituents/search with search/type/skip/take", async () => {
+test("search-constituents: GETs /constituents/search with search/type/skip/take", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { Total: 1, TotalFiltered: 1, Start: 0, ResultCount: 1, Results: [] } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("search-constituents: GETs /constituents/search with search/type/skip/
   assertEquals(url.searchParams.get("take"), "10");
 });
 
-Deno.test("search-constituents: omits unset filters", async () => {
+test("search-constituents: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { Total: 0, TotalFiltered: 0, Start: 0, ResultCount: 0, Results: [] } },
   ]);

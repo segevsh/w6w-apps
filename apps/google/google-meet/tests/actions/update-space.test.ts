@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-space.ts";
 
-Deno.test("update-space: PATCHes with the updateMask and nested config", async () => {
+test("update-space: PATCHes with the updateMask and nested config", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   await action.execute!({
     name: "spaces/abc",
@@ -19,7 +20,7 @@ Deno.test("update-space: PATCHes with the updateMask and nested config", async (
   });
 });
 
-Deno.test("update-space: sends an empty JSON body when no config fields are supplied", async () => {
+test("update-space: sends an empty JSON body when no config fields are supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   await action.execute!({ name: "spaces/abc", updateMask: "*" }, ctx);
   assertEquals(calls[0].body, "{}");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-note.ts";
 
-Deno.test("add-note: POSTs /conversations/{id}/notes and reads the id off Resource-ID", async () => {
+test("add-note: POSTs /conversations/{id}/notes and reads the id off Resource-ID", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "resource-id": "567" } }]);
   const out = await action.execute({ conversationId: 123, text: "Buy more pens" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("add-note: POSTs /conversations/{id}/notes and reads the id off Resour
   assertEquals(out, { id: 567 });
 });
 
-Deno.test("add-note: userId/status are forwarded when set", async () => {
+test("add-note: userId/status are forwarded when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: {} }]);
   await action.execute({ conversationId: 1, text: "note", userId: 9, status: "pending" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { text: "note", user: 9, status: "pending" });

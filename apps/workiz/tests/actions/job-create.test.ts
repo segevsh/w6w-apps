@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobCreate from "../../actions/job-create.ts";
 import { bodyOf, mockCtx, pathOf, writeAck } from "../_helpers.ts";
 
-Deno.test("job-create: POSTs the body to /job/create/ with auth_secret", async () => {
+test("job-create: POSTs the body to /job/create/ with auth_secret", async () => {
   const { ctx, calls } = mockCtx([{ body: writeAck([{ UUID: "j1", ClientId: 42, link: "x" }]) }]);
   const out = await jobCreate.execute(
     { authSecret: "sec_xyz", FirstName: "Dana", JobDateTime: "2026-09-23T09:00:00Z" },
@@ -20,14 +21,14 @@ Deno.test("job-create: POSTs the body to /job/create/ with auth_secret", async (
 });
 
 /** The job body's schedule pair is JobDateTime/JobEndDateTime, not the lead's. */
-Deno.test("job-create: schedules with the job's own date-time fields", () => {
+test("job-create: schedules with the job's own date-time fields", () => {
   const keys = (jobCreate.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("JobDateTime"), true);
   assertEquals(keys.includes("JobEndDateTime"), true);
   assertEquals(keys.includes("LeadDateTime"), false);
 });
 
-Deno.test("job-create: creating is not idempotent", () => {
+test("job-create: creating is not idempotent", () => {
   assertEquals(jobCreate.idempotent, false);
   assertEquals(jobCreate.type, "perform");
 });

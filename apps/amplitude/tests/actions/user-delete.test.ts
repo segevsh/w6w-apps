@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/user-delete.ts";
 
 const queued = ok({ status: "queued" });
 
-Deno.test("user-delete: posts the ids and the requester", async () => {
+test("user-delete: posts the ids and the requester", async () => {
   const { ctx, calls } = mockCtx([queued], { display });
   const result = await action.execute!({
     userIds: "user-1071, user-1072",
@@ -22,7 +23,7 @@ Deno.test("user-delete: posts the ids and the requester", async () => {
 });
 
 /** There is no undo and no recovery, so it takes a deliberate second input. */
-Deno.test("user-delete: refuses without the acknowledgement, and says why", async () => {
+test("user-delete: refuses without the acknowledgement, and says why", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ userIds: "user-1071", requester: "dpo@example.com" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("user-delete: refuses without the acknowledgement, and says why", asyn
 });
 
 /** Amplitude records who asked, which is usually the point of the request. */
-Deno.test("user-delete: requires a requester", async () => {
+test("user-delete: requires a requester", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -45,7 +46,7 @@ Deno.test("user-delete: requires a requester", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-delete: Amplitude ids work instead of user ids", async () => {
+test("user-delete: Amplitude ids work instead of user ids", async () => {
   const { ctx, calls } = mockCtx([queued], { display });
   const result = await action.execute!({
     amplitudeIds: "111,222",
@@ -58,7 +59,7 @@ Deno.test("user-delete: Amplitude ids work instead of user ids", async () => {
   assertEquals(result.userCount, 2);
 });
 
-Deno.test("user-delete: needs some ids", async () => {
+test("user-delete: needs some ids", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -68,7 +69,7 @@ Deno.test("user-delete: needs some ids", async () => {
   );
 });
 
-Deno.test("user-delete: the unknown-id flag is opt-in", async () => {
+test("user-delete: the unknown-id flag is opt-in", async () => {
   const off = mockCtx([queued], { display });
   await action.execute!({
     userIds: "user-1071",
@@ -88,7 +89,7 @@ Deno.test("user-delete: the unknown-id flag is opt-in", async () => {
 });
 
 /** The ids identify people, and this is a regulatory action. */
-Deno.test("user-delete: warns loudly and logs only a count", async () => {
+test("user-delete: warns loudly and logs only a count", async () => {
   const { ctx, logs } = mockCtx([queued], { display });
   await action.execute!({
     userIds: "ada@example.com",
@@ -101,6 +102,6 @@ Deno.test("user-delete: warns loudly and logs only a count", async () => {
 });
 
 /** Queued is not done — Amplitude takes up to 30 days. */
-Deno.test("user-delete: says the deletion is asynchronous", () => {
+test("user-delete: says the deletion is asynchronous", () => {
   assert(/up to\s+30 days/.test(action.description!), action.description);
 });

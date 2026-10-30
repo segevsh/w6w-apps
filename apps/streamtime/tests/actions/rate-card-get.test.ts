@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rateCardGet from "../../actions/rate-card-get.ts";
-import { assertRejects } from "@std/assert";
+import { assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, unauthorisedResponse } from "../_helpers.ts";
 
-Deno.test("rate-card-get: reads GET /v2/rate_cards/{id}", async () => {
+test("rate-card-get: reads GET /v2/rate_cards/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 3, name: "Standard", currency: { id: "GBP", name: "Pound", symbol: "£" } } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("rate-card-get: reads GET /v2/rate_cards/{id}", async () => {
   assertEquals(result.id, 3);
 });
 
-Deno.test("rate-card-get: a rejection surfaces the vendor's own sentence", async () => {
+test("rate-card-get: a rejection surfaces the vendor's own sentence", async () => {
   const { ctx } = mockCtx([unauthorisedResponse()]);
   const error = await assertRejects(
     async () => {

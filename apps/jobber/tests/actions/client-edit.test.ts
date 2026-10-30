@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-edit.ts";
 
-Deno.test("client-edit: appends contacts through the *ToAdd lists, never a replacement array", async () => {
+test("client-edit: appends contacts through the *ToAdd lists, never a replacement array", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientEdit: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("client-edit: appends contacts through the *ToAdd lists, never a repla
   assertEquals(input.phones, undefined);
 });
 
-Deno.test("client-edit: an untouched field is absent, not null", async () => {
+test("client-edit: an untouched field is absent, not null", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientEdit: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -38,7 +39,7 @@ Deno.test("client-edit: an untouched field is absent, not null", async () => {
   });
 });
 
-Deno.test("client-edit: any billing field sends a billing address", async () => {
+test("client-edit: any billing field sends a billing address", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientEdit: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -46,7 +47,7 @@ Deno.test("client-edit: any billing field sends a billing address", async () => 
   assertEquals(JSON.parse(calls[0].body!).variables.input.billingAddress, { city: "Denver" });
 });
 
-Deno.test("client-edit: userErrors throws", async () => {
+test("client-edit: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: { clientEdit: { client: null, userErrors: [{ message: "Client is archived" }] } },

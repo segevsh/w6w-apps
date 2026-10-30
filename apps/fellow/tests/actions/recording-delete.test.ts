@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordingDelete from "../../actions/recording-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recording-delete: DELETE /api/v1/recording/r1 on the workspace host", async () => {
+test("recording-delete: DELETE /api/v1/recording/r1 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: "deleted" } }]);
   const out = await recordingDelete.execute({ recordingId: "r1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("recording-delete: DELETE /api/v1/recording/r1 on the workspace host",
   assertEquals((out as { message: string }).message, "deleted");
 });
 
-Deno.test("recording-delete: a Fellow error surfaces its detail and status", async () => {
+test("recording-delete: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(recordingDelete.execute({ recordingId: "r1" }, ctx)),

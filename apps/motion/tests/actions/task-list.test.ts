@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { API_ROOT, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-list: calls GET /v1/tasks and returns items plus the paging envelope", async () => {
+test("task-list: calls GET /v1/tasks and returns items plus the paging envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: page("tasks", [{ id: "t1" }], { nextCursor: "c2", pageSize: 1 }) },
   ]);
@@ -20,7 +21,7 @@ Deno.test("task-list: calls GET /v1/tasks and returns items plus the paging enve
  * no example request, and a naive handler reads the non-empty string "false" as
  * true. Off is the documented default, so absence is exactly right.
  */
-Deno.test("task-list: includeAllStatuses is sent only when true", async () => {
+test("task-list: includeAllStatuses is sent only when true", async () => {
   const on = mockCtx([{ body: page("tasks", []) }]);
   await taskList.execute({ includeAllStatuses: true }, on.ctx);
   assertEquals(queryOf(on.calls[0].url), { includeAllStatuses: "true" });
@@ -30,7 +31,7 @@ Deno.test("task-list: includeAllStatuses is sent only when true", async () => {
   assertEquals(queryOf(off.calls[0].url), {});
 });
 
-Deno.test("task-list: every documented filter reaches the query string", async () => {
+test("task-list: every documented filter reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: page("tasks", []) }]);
   await taskList.execute({
     workspaceId: "ws1",
@@ -56,13 +57,13 @@ Deno.test("task-list: every documented filter reaches the query string", async (
  * request, so its wire encoding is unspecified — guessing returns the wrong set
  * of tasks silently rather than erroring. It is deliberately not offered.
  */
-Deno.test("task-list: the undocumented-encoding status array is not exposed", () => {
+test("task-list: the undocumented-encoding status array is not exposed", () => {
   const keys = (taskList.params ?? []).map((p) => p.key);
   assert(!keys.includes("status"), "status filter exposed despite an unspecified encoding");
   assert(keys.includes("includeAllStatuses"));
 });
 
-Deno.test("task-list: a missing collection reads as an empty page, not undefined", async () => {
+test("task-list: a missing collection reads as an empty page, not undefined", async () => {
   const { ctx } = mockCtx([{ body: { meta: {} } }]);
   const out = await taskList.execute({}, ctx) as { items: unknown[] };
   assertEquals(out.items, []);

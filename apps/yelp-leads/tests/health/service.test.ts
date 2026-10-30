@@ -1,12 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: is a declared absence, informational severity", () => {
+test("service: is a declared absence, informational severity", () => {
   assertEquals(typeof service.check, "undefined");
   assert(service.unavailable?.reason.length ?? 0 > 0);
   assertEquals(service.severity, "informational");
 });
 
-Deno.test("service: covers the whole app", () => {
+test("service: covers the whole app", () => {
   assertEquals(service.covers, ["*"]);
 });

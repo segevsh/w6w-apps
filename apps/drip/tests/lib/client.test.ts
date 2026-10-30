@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockDripCtx } from "../_helpers.ts";
 import {
   accountIdFromConnection,
@@ -9,19 +10,19 @@ import {
   unset,
 } from "../../lib/client.ts";
 
-Deno.test("client: scopes requests under the connection's account id, not a param", async () => {
+test("client: scopes requests under the connection's account id, not a param", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { subscribers: [] } }], "1234567");
   await new DripClient(ctx).request("/subscribers");
   assertEquals(calls[0].url, "https://api.getdrip.com/v2/1234567/subscribers");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no account id", () => {
+test("client: fails loudly when the connection carries no account id", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new DripClient(ctx), Error, "no account id");
 });
 
-Deno.test("client: surfaces Drip's error body", async () => {
+test("client: surfaces Drip's error body", async () => {
   const { ctx } = mockDripCtx([{
     status: 422,
     statusText: "Unprocessable Entity",
@@ -35,7 +36,7 @@ Deno.test("client: surfaces Drip's error body", async () => {
   );
 });
 
-Deno.test("client: returns undefined for a 204", async () => {
+test("client: returns undefined for a 204", async () => {
   const { ctx } = mockDripCtx([{ status: 204 }]);
   assertEquals(
     await new DripClient(ctx).request("/subscribers/1/unsubscribe_all", { method: "POST" }),
@@ -43,7 +44,7 @@ Deno.test("client: returns undefined for a 204", async () => {
   );
 });
 
-Deno.test("client: drops undefined/null query params", async () => {
+test("client: drops undefined/null query params", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { tags: [] } }]);
   await new DripClient(ctx).request("/subscribers", {
     query: { status: "active", tags: undefined, page: null },
@@ -54,7 +55,7 @@ Deno.test("client: drops undefined/null query params", async () => {
   assertEquals(url.searchParams.has("page"), false);
 });
 
-Deno.test("accountIdFromConnection: reads the display data afterConnect records", () => {
+test("accountIdFromConnection: reads the display data afterConnect records", () => {
   assertEquals(
     accountIdFromConnection({ display: { accountId: "1234567" } } as never),
     "1234567",
@@ -62,27 +63,27 @@ Deno.test("accountIdFromConnection: reads the display data afterConnect records"
   assertThrows(() => accountIdFromConnection(undefined), Error, "no account id");
 });
 
-Deno.test("API_BASE: is Drip's documented v2 root", () => {
+test("API_BASE: is Drip's documented v2 root", () => {
   assertEquals(API_BASE, "https://api.getdrip.com/v2");
 });
 
-Deno.test("compact: drops undefined, null, and empty-string values only", () => {
+test("compact: drops undefined, null, and empty-string values only", () => {
   assertEquals(compact({ a: 0, b: undefined, c: null, d: "", e: false }), { a: 0, e: false });
 });
 
-Deno.test("unset: treats a blank string as absent", () => {
+test("unset: treats a blank string as absent", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("x"), "x");
 });
 
-Deno.test("jsonObject: accepts the flat map, as a string or object", () => {
+test("jsonObject: accepts the flat map, as a string or object", () => {
   assertEquals(jsonObject({ shirt_size: "Medium" }, "customFields"), { shirt_size: "Medium" });
   assertEquals(jsonObject('{"shirt_size":"Medium"}', "customFields"), { shirt_size: "Medium" });
   assertEquals(jsonObject("", "customFields"), undefined);
   assertEquals(jsonObject({}, "customFields"), undefined);
 });
 
-Deno.test("jsonObject: rejects a non-object rather than sending nonsense", () => {
+test("jsonObject: rejects a non-object rather than sending nonsense", () => {
   assertThrows(() => jsonObject('"nope"', "customFields"), Error, "must be a JSON object");
   assertThrows(() => jsonObject("[1,2]", "properties"), Error, "must be a JSON object");
 });

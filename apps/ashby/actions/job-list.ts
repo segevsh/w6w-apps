@@ -37,7 +37,12 @@ const action: ActionDefinition = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "Draft", label: "Draft" }, { value: "Open", label: "Open" }, {
+        value: "Closed",
+        label: "Closed",
+      }, { value: "Archived", label: "Archived" }],
+      config: { valueFormat: "csv" },
       default: "Open",
       hint: "`Draft`, `Open`, `Closed` or `Archived`, comma-separated.",
     },
@@ -47,7 +52,9 @@ const action: ActionDefinition = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "openings", label: "Openings" }, { value: "location", label: "Location" }],
+      config: { valueFormat: "csv" },
       default: "",
       advanced: true,
       hint: "`openings`, `location`.",

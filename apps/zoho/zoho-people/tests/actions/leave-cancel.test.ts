@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/leave-cancel.ts";
 
-Deno.test("leave-cancel: PATCHes the v2 cancel endpoint with the reason", async () => {
+test("leave-cancel: PATCHes the v2 cancel endpoint with the reason", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { message: "Leave Cancelled", status: "success" },
   }]);
@@ -17,7 +18,7 @@ Deno.test("leave-cancel: PATCHes the v2 cancel endpoint with the reason", async 
   assertEquals(out, { status: "success", message: "Leave Cancelled" });
 });
 
-Deno.test("leave-cancel: the v2 error shape (no response wrapper) is surfaced", async () => {
+test("leave-cancel: the v2 error shape (no response wrapper) is surfaced", async () => {
   const { ctx } = mockPeopleCtx([{
     status: 401,
     body: { error: { code: 7213, message: "The provided OAuth token is invalid." } },
@@ -29,7 +30,7 @@ Deno.test("leave-cancel: the v2 error shape (no response wrapper) is surfaced", 
   );
 });
 
-Deno.test("leave-cancel: rejects a non-numeric record id; idempotent", async () => {
+test("leave-cancel: rejects a non-numeric record id; idempotent", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ recordId: "1/../x" }, ctx) as Promise<unknown>,

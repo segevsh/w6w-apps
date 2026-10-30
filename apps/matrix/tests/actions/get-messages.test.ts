@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getMessages from "../../actions/get-messages.ts";
 import { mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("get-messages: GETs /rooms/{roomId}/messages with dir/limit/from as query params", async () => {
+test("get-messages: GETs /rooms/{roomId}/messages with dir/limit/from as query params", async () => {
   const { ctx, calls } = mockMatrixCtx([
     { body: { chunk: [{ event_id: "$e1:example.org" }], start: "t1", end: "t2" } },
   ]);
@@ -20,7 +21,7 @@ Deno.test("get-messages: GETs /rooms/{roomId}/messages with dir/limit/from as qu
   assertEquals(result.end, "t2");
 });
 
-Deno.test("get-messages: defaults to backwards direction and limit 10", async () => {
+test("get-messages: defaults to backwards direction and limit 10", async () => {
   const { ctx, calls } = mockMatrixCtx([{ body: { chunk: [], start: "t1" } }]);
   await getMessages.execute({ roomId: "!x:example.org" }, ctx);
   const url = new URL(calls[0].url);

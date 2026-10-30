@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inboxArchiveAll from "../../actions/inbox-archive-all.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inbox-archive-all: POST /api/v3/inbox/archive_all with every documented parameter", async () => {
+test("inbox-archive-all: POST /api/v3/inbox/archive_all with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await inboxArchiveAll.execute(
     { "workspaceId": 100, "olderThanTs": 101 },
@@ -17,7 +18,7 @@ Deno.test("inbox-archive-all: POST /api/v3/inbox/archive_all with every document
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("inbox-archive-all: sends a form body, never a query string", async () => {
+test("inbox-archive-all: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxArchiveAll.execute({ "workspaceId": 100, "olderThanTs": 101 }, ctx);
 
@@ -25,25 +26,25 @@ Deno.test("inbox-archive-all: sends a form body, never a query string", async ()
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("inbox-archive-all: omits optional parameters that are not set", async () => {
+test("inbox-archive-all: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxArchiveAll.execute({ "workspaceId": 100 }, ctx);
 
   assertEquals(formOf(calls[0].body), { "workspace_id": "100" });
 });
 
-Deno.test("inbox-archive-all: is declared idempotent", () => {
+test("inbox-archive-all: is declared idempotent", () => {
   assertEquals(inboxArchiveAll.idempotent, true);
 });
 
-Deno.test("inbox-archive-all: sends no credential of its own", async () => {
+test("inbox-archive-all: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxArchiveAll.execute({ "workspaceId": 100, "olderThanTs": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("inbox-archive-all: surfaces Twist's error body", async () => {
+test("inbox-archive-all: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cancelDocument from "../../actions/cancel-document.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("cancel-document: POSTs doctype and name (not the whole document)", async () => {
+test("cancel-document: POSTs doctype and name (not the whole document)", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { message: { name: "SAL-ORD-2026-00042", docstatus: 2 } } },
   ], conn);
@@ -22,6 +23,6 @@ Deno.test("cancel-document: POSTs doctype and name (not the whole document)", as
   assertEquals(result, { document: { name: "SAL-ORD-2026-00042", docstatus: 2 } });
 });
 
-Deno.test("cancel-document: an already-cancelled document cannot be cancelled again", () => {
+test("cancel-document: an already-cancelled document cannot be cancelled again", () => {
   assertEquals(cancelDocument.idempotent, false);
 });

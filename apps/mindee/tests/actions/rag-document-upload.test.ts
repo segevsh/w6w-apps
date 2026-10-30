@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import ragDocumentUpload from "../../actions/rag-document-upload.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const MODEL_ID = "018f1e2a-0000-7000-8000-0000000000aa";
 
-Deno.test("rag-document-upload: posts model_id and the base64-decoded file", async () => {
+test("rag-document-upload: posts model_id and the base64-decoded file", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -23,7 +24,7 @@ Deno.test("rag-document-upload: posts model_id and the base64-decoded file", asy
   assertEquals((result as { status: string }).status, "Processing");
 });
 
-Deno.test("rag-document-upload: exposes no url param (the vendor's form takes only file)", () => {
+test("rag-document-upload: exposes no url param (the vendor's form takes only file)", () => {
   const keys = ragDocumentUpload.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("url"), false);
 });

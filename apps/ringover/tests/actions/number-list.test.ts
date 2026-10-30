@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/number-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("number-list: sends only the set filters; a 204 is an empty list", async () => {
+test("number-list: sends only the set filters; a 204 is an empty list", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ isUser: true, isAvailable: false }, ctx);
   const url = new URL(calls[0].url);

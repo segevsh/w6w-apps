@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactAddTags from "../../actions/contact-add-tags.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-add-tags: POSTs a bare array body to /contact/{identifier}/tag", async () => {
+test("contact-add-tags: POSTs a bare array body to /contact/{identifier}/tag", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   await contactAddTags.execute({ identifier: "id:1", tags: ["vip", "premium"] }, ctx);
 
@@ -11,13 +12,13 @@ Deno.test("contact-add-tags: POSTs a bare array body to /contact/{identifier}/ta
   assertEquals(JSON.parse(calls[0].body!), ["vip", "premium"]);
 });
 
-Deno.test("contact-add-tags: a single string tag is wrapped into an array", async () => {
+test("contact-add-tags: a single string tag is wrapped into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   await contactAddTags.execute({ identifier: "id:1", tags: "vip" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), ["vip"]);
 });
 
-Deno.test("contact-add-tags: more than 10 tags is refused before any request", async () => {
+test("contact-add-tags: more than 10 tags is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const tags = Array.from({ length: 11 }, (_, i) => `tag-${i}`);
   await assertRejects(
@@ -28,6 +29,6 @@ Deno.test("contact-add-tags: more than 10 tags is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-add-tags: is declared idempotent — re-adding an existing tag is a no-op", () => {
+test("contact-add-tags: is declared idempotent — re-adding an existing tag is a no-op", () => {
   assertEquals(contactAddTags.idempotent, true);
 });

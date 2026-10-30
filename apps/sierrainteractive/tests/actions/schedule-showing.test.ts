@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import scheduleShowing from "../../actions/schedule-showing.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("schedule-showing: POST /zapier/scheduleShowing sends appointment preferences", async () => {
+test("schedule-showing: POST /zapier/scheduleShowing sends appointment preferences", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await scheduleShowing.execute({
     mlsNumber: "9",

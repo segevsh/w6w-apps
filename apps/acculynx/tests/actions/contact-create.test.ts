@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-create.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: sends POST /contacts and returns the vendor body", async () => {
+test("contact-create: sends POST /contacts and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "c9", _link: "https://api.acculynx.com/api/v2/contacts/c9" },
@@ -32,7 +33,7 @@ Deno.test("contact-create: sends POST /contacts and returns the vendor body", as
   assertEquals(out, { id: "c9", _link: "https://api.acculynx.com/api/v2/contacts/c9" });
 });
 
-Deno.test("contact-create: a vendor error surfaces its title and status", async () => {
+test("contact-create: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>
@@ -51,7 +52,7 @@ Deno.test("contact-create: a vendor error surfaces its title and status", async 
   );
 });
 
-Deno.test("contact-create: malformed JSON in a json param fails before any request", async () => {
+test("contact-create: malformed JSON in a json param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ emailAddresses: "[oops" } as never, ctx),

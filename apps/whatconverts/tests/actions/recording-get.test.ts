@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordingGet from "../../actions/recording-get.ts";
 import { API_ROOT, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("recording-get downloads bytes and returns them base64-encoded", async () => {
+test("recording-get downloads bytes and returns them base64-encoded", async () => {
   const bytes = new Uint8Array([0x49, 0x44, 0x33, 0x04]); // fake MP3-ish header
   const { ctx, calls } = mockCtx([{
     status: 200,

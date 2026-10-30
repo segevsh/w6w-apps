@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/agent-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("agent-get: calls GET /agents/{agentId}", async () => {
+test("agent-get: calls GET /agents/{agentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: { id: "x1" } } }]);
   const out = await action.execute!({ "agentId": "agentId-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("agent-get: calls GET /agents/{agentId}", async () => {
   assertEquals(out.item, { id: "x1" });
 });
 
-Deno.test("agent-get: a failure envelope is an error", async () => {
+test("agent-get: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

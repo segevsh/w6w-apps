@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoTranslationGet from "../../actions/video-translation-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("video-translation-get: fetches by id and returns the job unwrapped", async () => {
+test("video-translation-get: fetches by id and returns the job unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "vt1", status: "completed" }) }]);
   const out = await videoTranslationGet.execute({ videoTranslationId: "vt1" }, ctx);
 

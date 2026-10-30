@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-delete.ts";
 
-Deno.test("form-delete: DELETEs the form and handles the empty 204", async () => {
+test("form-delete: DELETEs the form and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ formId: "f1" }, ctx);
 

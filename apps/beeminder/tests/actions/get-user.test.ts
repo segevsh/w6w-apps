@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-user.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-user: defaults to me and maps the user", async () => {
+test("get-user: defaults to me and maps the user", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       username: "alice",
@@ -20,7 +21,7 @@ Deno.test("get-user: defaults to me and maps the user", async () => {
   assertEquals(out.urgencyLoad, 3);
 });
 
-Deno.test("get-user: passes diff_since / skinny / counts; a 401 throws", async () => {
+test("get-user: passes diff_since / skinny / counts; a 401 throws", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await run(action, { username: "bob", diffSince: 5, skinny: true, datapointsCount: 2 }, ctx);
   assertEquals(

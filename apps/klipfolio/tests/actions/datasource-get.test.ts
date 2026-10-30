@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/datasource-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const RESPONSE = {
   },
 };
 
-Deno.test("datasource-get: sends GET /datasources/datasource1 with the mapped input", async () => {
+test("datasource-get: sends GET /datasources/datasource1 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -31,20 +32,20 @@ Deno.test("datasource-get: sends GET /datasources/datasource1 with the mapped in
   assertEquals(JSON.parse(JSON.stringify(out)), { "id": "a1", "name": "One" });
 });
 
-Deno.test("datasource-get: sends no optional field when only required input is given", async () => {
+test("datasource-get: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "datasource_id": "datasource1" } as never, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.search, "");
 });
 
-Deno.test("datasource-get: sends no credential header of its own", async () => {
+test("datasource-get: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("datasource-get: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("datasource-get: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -58,7 +59,7 @@ Deno.test("datasource-get: surfaces Klipfolio's error envelope as a thrown error
   );
 });
 
-Deno.test("datasource-get: declares type, idempotency and output", () => {
+test("datasource-get: declares type, idempotency and output", () => {
   assertEquals(action.type, "read");
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

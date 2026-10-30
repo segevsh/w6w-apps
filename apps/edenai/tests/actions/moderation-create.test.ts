@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import moderationCreate from "../../actions/moderation-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const result = {
   provider: "openai",
 };
 
-Deno.test("moderation-create: defaults the model and flattens the first result", async () => {
+test("moderation-create: defaults the model and flattens the first result", async () => {
   const { ctx, calls } = mockCtx([{ body: result }]);
   const out = await moderationCreate.execute({ input: "bad text" }, ctx) as Record<string, unknown>;
 
@@ -21,7 +22,7 @@ Deno.test("moderation-create: defaults the model and flattens the first result",
   assertEquals(out.categoryScores, { violence: 0.9 });
 });
 
-Deno.test("moderation-create: an empty results list is not flagged", async () => {
+test("moderation-create: an empty results list is not flagged", async () => {
   const { ctx } = mockCtx([{ body: { id: "m", model: "x", results: [] } }]);
   const out = await moderationCreate.execute({ input: "t", model: "openai/x" }, ctx) as Record<
     string,

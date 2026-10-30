@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -11,13 +12,13 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: skips unset values and encodes the rest", () => {
+test("buildQuery: skips unset values and encodes the rest", () => {
   assertEquals(buildQuery({ surveyId: "a b", limit: 5 }), "?surveyId=a%20b&limit=5");
   assertEquals(buildQuery({ a: undefined, b: null, c: "" }), "");
   assertEquals(buildQuery({ flag: false }), "?flag=false");
 });
 
-Deno.test("seg / strList / jsonValue / objectValue / compact helpers", () => {
+test("seg / strList / jsonValue / objectValue / compact helpers", () => {
   assertEquals(seg("a/b"), "a%2Fb");
   assertEquals(strList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(strList([]), undefined);
@@ -30,7 +31,7 @@ Deno.test("seg / strList / jsonValue / objectValue / compact helpers", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null }), { a: 1, c: null });
 });
 
-Deno.test("errorText: reads code, message and details; hides HTML", () => {
+test("errorText: reads code, message and details; hides HTML", () => {
   assertEquals(
     errorText(
       { code: "bad_request", message: "Fields are missing", details: { key: "Required" } },
@@ -43,7 +44,7 @@ Deno.test("errorText: reads code, message and details; hides HTML", () => {
   assertEquals(errorText(undefined, "plain text"), "plain text");
 });
 
-Deno.test("client: sends JSON bodies with a content-type and no credential", async () => {
+test("client: sends JSON bodies with a content-type and no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await new FormbricksClient(ctx).request("POST", "/webhooks", { body: { url: "u" } });
   assertEquals(calls[0].url, "https://app.formbricks.com/api/v1/webhooks");
@@ -52,7 +53,7 @@ Deno.test("client: sends JSON bodies with a content-type and no credential", asy
   assert(!("x-api-key" in calls[0].headers));
 });
 
-Deno.test("client: a 401 names the problem and the status", async () => {
+test("client: a 401 names the problem and the status", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "not_authenticated", message: "Not authenticated", details: {} },
@@ -64,7 +65,7 @@ Deno.test("client: a 401 names the problem and the status", async () => {
   );
 });
 
-Deno.test("client: an empty success body yields an empty object", async () => {
+test("client: an empty success body yields an empty object", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   assertEquals(await new FormbricksClient(ctx).request("GET", "/x"), {});
 });

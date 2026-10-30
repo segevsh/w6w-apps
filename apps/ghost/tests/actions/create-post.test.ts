@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-post.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("create-post: POSTs /posts/ wrapping the body, with only the required title", async () => {
+test("create-post: POSTs /posts/ wrapping the body, with only the required title", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { posts: [{ id: "1" }] } }], { display });
   const result = await action.execute!({ title: "Hello" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("create-post: POSTs /posts/ wrapping the body, with only the required 
   assertEquals(result, { id: "1" });
 });
 
-Deno.test("create-post: maps optional fields, sets ?source=html only when html is present", async () => {
+test("create-post: maps optional fields, sets ?source=html only when html is present", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { posts: [{ id: "2" }] } }], { display });
   await action.execute!({
     title: "T",
@@ -41,7 +42,7 @@ Deno.test("create-post: maps optional fields, sets ?source=html only when html i
   });
 });
 
-Deno.test("create-post: omits ?source=html when no html is given", async () => {
+test("create-post: omits ?source=html when no html is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { posts: [{ id: "3" }] } }], { display });
   await action.execute!({ title: "No body" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("source"), false);

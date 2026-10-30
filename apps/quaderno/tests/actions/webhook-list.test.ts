@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuadernoCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-list.ts";
 
-Deno.test("webhook-list: calls the documented endpoint", async () => {
+test("webhook-list: calls the documented endpoint", async () => {
   const { ctx, calls } = mockQuadernoCtx([{
     body: [{ id: 1, url: "https://x.io/hook", events_types: ["invoice.created"] }],
   }]);

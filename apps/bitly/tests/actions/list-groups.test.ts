@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-groups.ts";
 
-Deno.test("list-groups: GETs /groups and unwraps the groups array", async () => {
+test("list-groups: GETs /groups and unwraps the groups array", async () => {
   const { ctx, calls } = mockCtx([{
     body: { groups: [{ guid: "Ba1bc23dE4F", name: "My Group", is_active: true }] },
   }]);
@@ -12,7 +13,7 @@ Deno.test("list-groups: GETs /groups and unwraps the groups array", async () => 
   assertEquals(out.items[0].guid, "Ba1bc23dE4F");
 });
 
-Deno.test("list-groups: passes organizationGuid as a query param when supplied", async () => {
+test("list-groups: passes organizationGuid as a query param when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { groups: [] } }]);
   await action.execute({ organizationGuid: "Oa1bc23dE4F" }, ctx);
   const url = new URL(calls[0].url);

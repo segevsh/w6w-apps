@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentLinkUpdate from "../../actions/payment-link-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-link-update: patches only the fields provided", async () => {
+test("payment-link-update: patches only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "plink_1", status: "created" } }]);
   await paymentLinkUpdate.execute({ id: "plink_1", expireBy: 2000000000 }, ctx);
 

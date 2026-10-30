@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import responseExportFileGet from "../../actions/response-export-file-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
 /** `btoa` over ASCII — the same bytes `encodeBase64` walks out of the response. */
 const zipBytes = "PK\u0003\u0004qualtrics-export";
 
-Deno.test("response-export-file-get: downloads the file and base64-encodes it", async () => {
+test("response-export-file-get: downloads the file and base64-encodes it", async () => {
   const { ctx, calls } = mockCtx([
     { body: zipBytes, headers: { "content-type": "application/zip" } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("response-export-file-get: downloads the file and base64-encodes it", 
   assertEquals(out.content, btoa(zipBytes));
 });
 
-Deno.test("response-export-file-get: falls back to a zip content type when none is served", async () => {
+test("response-export-file-get: falls back to a zip content type when none is served", async () => {
   // No body either: a string body makes the Fetch layer invent `text/plain`,
   // which is how a missing content type has to be expressed in a test.
   const { ctx } = mockCtx([{ body: undefined, headers: {} }]);

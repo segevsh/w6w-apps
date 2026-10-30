@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobPhaseUpdate from "../../actions/job-phase-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-phase-update: PUTs the new name", async () => {
+test("job-phase-update: PUTs the new name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, name: "Discovery" } }]);
   await jobPhaseUpdate.execute({ jobPhaseId: 3, name: "Discovery" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("job-phase-update: PUTs the new name", async () => {
   assertEquals(bodyOf(calls[0]), { name: "Discovery" });
 });
 
-Deno.test("job-phase-update: orderId is read-only", () => {
+test("job-phase-update: orderId is read-only", () => {
   assertEquals((jobPhaseUpdate.params ?? []).some((p) => p.key === "orderId"), false);
 });

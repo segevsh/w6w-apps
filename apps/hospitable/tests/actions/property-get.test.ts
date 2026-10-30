@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import propertyGet from "../../actions/property-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("property-get: GET /v2/properties/{uuid}, id is path-encoded", async () => {
+test("property-get: GET /v2/properties/{uuid}, id is path-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "p/1" } } }]);
   await propertyGet.execute({ uuid: "p/1", include: "listings" }, ctx);
   assertEquals(
@@ -15,7 +16,7 @@ Deno.test("property-get: GET /v2/properties/{uuid}, id is path-encoded", async (
   assertEquals(requiredOf(propertyGet), ["uuid"]);
 });
 
-Deno.test("account/property actions: a vendor error surfaces as a thrown message", async () => {
+test("account/property actions: a vendor error surfaces as a thrown message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "No query results for model" } }]);
   let message = "";
   try {

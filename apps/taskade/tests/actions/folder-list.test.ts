@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/folder-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("folder-list: calls GET /workspaces/{workspaceId}/folders", async () => {
+test("folder-list: calls GET /workspaces/{workspaceId}/folders", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }, { id: "x2" }] } }]);
   const out = await action.execute!({ "workspaceId": "workspaceId-1" }, ctx) as Record<
     string,
@@ -13,7 +14,7 @@ Deno.test("folder-list: calls GET /workspaces/{workspaceId}/folders", async () =
   assertEquals(out.count, 2);
 });
 
-Deno.test("folder-list: a failure envelope is an error", async () => {
+test("folder-list: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

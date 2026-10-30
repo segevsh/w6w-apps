@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-comment-threads.ts";
 
-Deno.test("list-comment-threads: hits /youtube/v3/commentThreads with part and videoId", async () => {
+test("list-comment-threads: hits /youtube/v3/commentThreads with part and videoId", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: ["snippet", "replies"], videoId: "v1" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-comment-threads: hits /youtube/v3/commentThreads with part and v
   assertEquals(url.searchParams.get("videoId"), "v1");
 });
 
-Deno.test("list-comment-threads: keeps channelId and allThreadsRelatedToChannelId distinct", async () => {
+test("list-comment-threads: keeps channelId and allThreadsRelatedToChannelId distinct", async () => {
   const { ctx: c1, calls: k1 } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "snippet", channelId: "UC1" }, c1);
   const p1 = new URL(k1[0].url).searchParams;
@@ -25,7 +26,7 @@ Deno.test("list-comment-threads: keeps channelId and allThreadsRelatedToChannelI
   assertEquals(p2.get("channelId"), null);
 });
 
-Deno.test("list-comment-threads: rejects zero or several filters", async () => {
+test("list-comment-threads: rejects zero or several filters", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -44,7 +45,7 @@ Deno.test("list-comment-threads: rejects zero or several filters", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-comment-threads: forwards ordering, search and moderation filters", async () => {
+test("list-comment-threads: forwards ordering, search and moderation filters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "snippet",
@@ -65,7 +66,7 @@ Deno.test("list-comment-threads: forwards ordering, search and moderation filter
   assertEquals(p.get("textFormat"), "plainText");
 });
 
-Deno.test("list-comment-threads: offers the replies part", () => {
+test("list-comment-threads: offers the replies part", () => {
   const part = action.params!.find((p) => p.key === "part");
   assertEquals((part!.options as Array<{ value: string }>).map((o) => o.value), [
     "id",

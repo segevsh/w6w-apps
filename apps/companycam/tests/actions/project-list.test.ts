@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-list: maps every filter onto the documented query names", async () => {
+test("project-list: maps every filter onto the documented query names", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "1" }] }]);
   const page = await projectList.execute({
     query: "Smith",
@@ -23,13 +24,13 @@ Deno.test("project-list: maps every filter onto the documented query names", asy
   assertEquals(page.count, 1);
 });
 
-Deno.test("project-list: sends no status filter when none is chosen", async () => {
+test("project-list: sends no status filter when none is chosen", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await projectList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("project-list: offers the two documented statuses and says the default returns all", () => {
+test("project-list: offers the two documented statuses and says the default returns all", () => {
   const status = projectList.params!.find((p) => p.key === "status")!;
   assertEquals(
     (status.options as Array<{ value: string }>).map((o) => o.value),

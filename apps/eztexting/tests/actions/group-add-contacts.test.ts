@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupAddContacts from "../../actions/group-add-contacts.ts";
 import { API_ROOT, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("group-add-contacts: calls POST /contact-groups/3/contacts and returns the documented shape", async () => {
+test("group-add-contacts: calls POST /contact-groups/3/contacts and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: ["2125551234", "2125559999"] }]);
   const result = await groupAddContacts.execute(
     { "id": "3", "phoneNumbers": ["2125551234", "2125559999"] } as never,
@@ -16,7 +17,7 @@ Deno.test("group-add-contacts: calls POST /contact-groups/3/contacts and returns
   assertEquals(result, { "result": ["2125551234", "2125559999"] });
 });
 
-Deno.test("group-add-contacts: carries no credential — auth is the sign hook's job", async () => {
+test("group-add-contacts: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: ["2125551234", "2125559999"] }]);
   await groupAddContacts.execute(
     { "id": "3", "phoneNumbers": ["2125551234", "2125559999"] } as never,
@@ -25,7 +26,7 @@ Deno.test("group-add-contacts: carries no credential — auth is the sign hook's
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("group-add-contacts: sends every number as its own phoneNumbers pair, with no body", async () => {
+test("group-add-contacts: sends every number as its own phoneNumbers pair, with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await groupAddContacts.execute({ id: "3", phoneNumbers: ["2125551234", "2125559999"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("phoneNumbers"), [

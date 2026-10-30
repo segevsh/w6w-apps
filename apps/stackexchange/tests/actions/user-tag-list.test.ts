@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-tag-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-tag-list: GETs /users/22656;7/tags and returns the wrapper", async () => {
+test("user-tag-list: GETs /users/22656;7/tags and returns the wrapper", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -31,7 +32,7 @@ Deno.test("user-tag-list: GETs /users/22656;7/tags and returns the wrapper", asy
   });
 });
 
-Deno.test("user-tag-list: optional paging, filter and a different site", async () => {
+test("user-tag-list: optional paging, filter and a different site", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await action.execute({
     ...{ "userIds": "22656,7" },
@@ -65,7 +66,7 @@ Deno.test("user-tag-list: optional paging, filter and a different site", async (
   assertEquals(u2.searchParams.get("min"), "5");
 });
 
-Deno.test("user-tag-list: surfaces the API error body", async () => {
+test("user-tag-list: surfaces the API error body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error_id: 400, error_name: "bad_parameter", error_message: "site" } },
   ]);

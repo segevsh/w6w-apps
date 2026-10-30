@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-supplier-invoices.ts";
 
 const PAGE = { items: [{ id: 5, invoice_number: "A-001" }], has_more: false, next_cursor: null };
 
-Deno.test("list-supplier-invoices: GETs /supplier_invoices with the shared params", async () => {
+test("list-supplier-invoices: GETs /supplier_invoices with the shared params", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({ limit: 100, sort: "-date" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("list-supplier-invoices: GETs /supplier_invoices with the shared param
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-supplier-invoices: sends a JSON filter on payment_status", async () => {
+test("list-supplier-invoices: sends a JSON filter on payment_status", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     filter: [{ field: "payment_status", operator: "not_eq", value: "paid" }],

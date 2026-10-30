@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastSubscribe from "../../actions/broadcast-subscribe.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("broadcast-subscribe: POSTs to /broadcasts/{id}/subscriptions with a translated body", async () => {
+test("broadcast-subscribe: POSTs to /broadcasts/{id}/subscriptions with a translated body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, watch_link: "https://x" } }]);
   const out = await broadcastSubscribe.execute({
     broadcastId: 12,
@@ -18,6 +19,6 @@ Deno.test("broadcast-subscribe: POSTs to /broadcasts/{id}/subscriptions with a t
   assertEquals(out, { id: 1, watch_link: "https://x" });
 });
 
-Deno.test("broadcast-subscribe: is declared non-idempotent (no documented silent-skip)", () => {
+test("broadcast-subscribe: is declared non-idempotent (no documented silent-skip)", () => {
   assertEquals(broadcastSubscribe.idempotent, false);
 });

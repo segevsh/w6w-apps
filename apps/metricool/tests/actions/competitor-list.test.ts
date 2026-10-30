@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import list from "../../actions/competitor-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const M = {
   subject: "competitors",
 };
 
-Deno.test("competitor-list: GET /v2/analytics/competitors/{network} with competitors[]", async () => {
+test("competitor-list: GET /v2/analytics/competitors/{network} with competitors[]", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 77, screenName: "rival" }]) }]);
   const out = await list.execute({
     blogId: "9",

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import transactionSend from "../../actions/transaction-send.ts";
 import { mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-send: POSTs /account/{id}/transactions with the required fields", async () => {
+test("transaction-send: POSTs /account/{id}/transactions with the required fields", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: { id: "tx_new", status: "pending" } }]);
   const out = await transactionSend.execute(
     { accountId: "acc_1", recipientId: "rec_1", amount: 100, paymentMethod: "ach" },
@@ -19,7 +20,7 @@ Deno.test("transaction-send: POSTs /account/{id}/transactions with the required 
   assertEquals((out.transaction as { id: string }).id, "tx_new");
 });
 
-Deno.test("transaction-send: reuses ctx.invocation.invocationId as the idempotency key", async () => {
+test("transaction-send: reuses ctx.invocation.invocationId as the idempotency key", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: {} }], "inv_fixed_123");
   await transactionSend.execute(
     { accountId: "acc_1", recipientId: "rec_1", amount: 1, paymentMethod: "ach" },
@@ -28,7 +29,7 @@ Deno.test("transaction-send: reuses ctx.invocation.invocationId as the idempoten
   assertEquals(JSON.parse(calls[0].body!).idempotencyKey, "inv_fixed_123");
 });
 
-Deno.test("transaction-send: builds the nested purpose.simple object only when a category is given", async () => {
+test("transaction-send: builds the nested purpose.simple object only when a category is given", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: {} }]);
   await transactionSend.execute(
     {
@@ -45,7 +46,7 @@ Deno.test("transaction-send: builds the nested purpose.simple object only when a
   assertEquals(body.purpose, { simple: { category: "vendor", additionalInfo: "Acme Corp" } });
 });
 
-Deno.test("transaction-send: omits purpose entirely when no category is given", async () => {
+test("transaction-send: omits purpose entirely when no category is given", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: {} }]);
   await transactionSend.execute(
     { accountId: "acc_1", recipientId: "rec_1", amount: 500, paymentMethod: "ach" },
@@ -55,6 +56,6 @@ Deno.test("transaction-send: omits purpose entirely when no category is given", 
   assertEquals("purpose" in body, false);
 });
 
-Deno.test("transaction-send: declares idempotent true, backed by the vendor's required idempotencyKey", () => {
+test("transaction-send: declares idempotent true, backed by the vendor's required idempotencyKey", () => {
   assertEquals(transactionSend.idempotent, true);
 });

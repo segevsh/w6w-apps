@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolRemoveBg from "../../actions/tool-remove-bg.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-remove-bg: POST /tools/remove_bg", async () => {
+test("tool-remove-bg: POST /tools/remove_bg", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: { uid: "j1", tool: "remove_bg", status: "pending" } },
   ]);
@@ -20,7 +21,7 @@ Deno.test("tool-remove-bg: POST /tools/remove_bg", async () => {
   assertEquals(out.tool, "remove_bg");
 });
 
-Deno.test("tool-remove-bg: requires imageUrl", async () => {
+test("tool-remove-bg: requires imageUrl", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolRemoveBg.execute({ imageUrl: "" }, ctx));
 });

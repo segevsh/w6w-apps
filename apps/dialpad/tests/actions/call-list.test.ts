@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-list: GETs /call with the filter params as query", async () => {
+test("call-list: GETs /call with the filter params as query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ call_id: "1" }], "next-cursor") }]);
   const out = await callList.execute(
     { targetId: "42", targetType: "user", startedAfter: 100 },
@@ -20,6 +21,6 @@ Deno.test("call-list: GETs /call with the filter params as query", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("call-list: declared as a search action", () => {
+test("call-list: declared as a search action", () => {
   assertEquals(callList.type, "search");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import pipeCreate from "../../actions/pipe-create.ts";
 
-Deno.test("pipe-create: creates a pipe and returns it", async () => {
+test("pipe-create: creates a pipe and returns it", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { createPipe: { pipe: { id: "1", name: "Sales" } } } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("pipe-create: creates a pipe and returns it", async () => {
   );
 });
 
-Deno.test("pipe-create: type/resource/idempotency metadata", () => {
+test("pipe-create: type/resource/idempotency metadata", () => {
   assertEquals(pipeCreate.type, "perform");
   assertEquals(pipeCreate.resource, "pipe");
   assertEquals(pipeCreate.idempotent, false);

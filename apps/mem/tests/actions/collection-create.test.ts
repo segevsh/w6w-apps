@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionCreate from "../../actions/collection-create.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const RESPONSE = {
   "updated_at": "2026-01-31T09:00:00Z",
 };
 
-Deno.test("collection-create: POST /v2/collections", async () => {
+test("collection-create: POST /v2/collections", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionCreate.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -27,13 +28,13 @@ Deno.test("collection-create: POST /v2/collections", async () => {
   assertEquals(out.title, "Travel");
 });
 
-Deno.test("collection-create: puts no credential on the request (sign owns that)", async () => {
+test("collection-create: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionCreate.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-create: a vendor error surfaces its own message", async () => {
+test("collection-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import accountList from "../../actions/account-list.ts";
 
-Deno.test("account-list: returns the accounts connection, filtered by type", async () => {
+test("account-list: returns the accounts connection, filtered by type", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -24,7 +25,7 @@ Deno.test("account-list: returns the accounts connection, filtered by type", asy
   assertEquals(body.variables.types, ["INCOME", "OTHER_INCOME"]);
 });
 
-Deno.test("account-list: type/resource metadata", () => {
+test("account-list: type/resource metadata", () => {
   assertEquals(accountList.type, "search");
   assertEquals(accountList.resource, "account");
 });

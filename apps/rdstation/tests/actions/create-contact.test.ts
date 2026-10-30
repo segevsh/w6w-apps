@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import createContact from "../../actions/create-contact.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-contact: POST /contacts with the documented {contact:{…}} body", async () => {
+test("create-contact: POST /contacts with the documented {contact:{…}} body", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "c1" } }]);
 
   await createContact.execute(
@@ -38,7 +39,7 @@ Deno.test("create-contact: POST /contacts with the documented {contact:{…}} bo
   });
 });
 
-Deno.test("create-contact: fields the caller left out are omitted, not sent empty", async () => {
+test("create-contact: fields the caller left out are omitted, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await createContact.execute({ name: "Ada" }, ctx);
@@ -46,7 +47,7 @@ Deno.test("create-contact: fields the caller left out are omitted, not sent empt
   assertEquals(bodyOf(calls[0]), { contact: { name: "Ada" } });
 });
 
-Deno.test("create-contact: a JSON emails/phones array wins over the scalar shortcut", async () => {
+test("create-contact: a JSON emails/phones array wins over the scalar shortcut", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await createContact.execute(
@@ -67,7 +68,7 @@ Deno.test("create-contact: a JSON emails/phones array wins over the scalar short
   });
 });
 
-Deno.test("create-contact: a single phone carries the type only when one was given", async () => {
+test("create-contact: a single phone carries the type only when one was given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
 
   await createContact.execute({ phone: "+5511999990000" }, ctx);
@@ -79,7 +80,7 @@ Deno.test("create-contact: a single phone carries the type only when one was giv
   });
 });
 
-Deno.test("create-contact: no params beyond the documented contact fields", () => {
+test("create-contact: no params beyond the documented contact fields", () => {
   const keys = (createContact.params ?? []).map((p) => p.key).sort();
   assertEquals(keys, [
     "email",

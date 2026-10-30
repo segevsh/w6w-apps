@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-phone-numbers.ts";
 
-Deno.test("search-phone-numbers: sends only the filters that were set, under the documented names", async () => {
+test("search-phone-numbers: sends only the filters that were set, under the documented names", async () => {
   const body = {
     api_id: "a",
     meta: { limit: 5, offset: 0, total_count: 0, next: null },
@@ -41,13 +42,13 @@ Deno.test("search-phone-numbers: sends only the filters that were set, under the
   assertEquals(out, body);
 });
 
-Deno.test("search-phone-numbers: only the required country means a one-parameter query", async () => {
+test("search-phone-numbers: only the required country means a one-parameter query", async () => {
   const { ctx, calls } = mockCtx([{ body: { objects: [] } }], CONN);
   await action.execute!({ countryIso: "US" }, ctx);
   assertEquals(calls[0].url, BASE + "PhoneNumber/?country_iso=US");
 });
 
-Deno.test("search-phone-numbers: a 401 plain-text body is thrown with its text", async () => {
+test("search-phone-numbers: a 401 plain-text body is thrown with its text", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Could not verify your access level" }], CONN);
   await assertRejects(
     async () => await action.execute!({ countryIso: "US" }, ctx),

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/data-stream-get.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("data-stream-get: returns the stream carrying the measurement ID", async () => {
+test("data-stream-get: returns the stream carrying the measurement ID", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "properties/123/dataStreams/1", webStreamData: { measurementId: "G-ABC123" } },
@@ -17,7 +18,7 @@ Deno.test("data-stream-get: returns the stream carrying the measurement ID", asy
   );
 });
 
-Deno.test("data-stream-get: a blank stream id fails before any request", async () => {
+test("data-stream-get: a blank stream id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`dataStreamId`");
   assertEquals(calls.length, 0);

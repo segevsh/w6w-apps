@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionGet from "../../actions/subscription-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-get: fetches GET /publications/:id/subscriptions/:id with expand", async () => {
+test("subscription-get: fetches GET /publications/:id/subscriptions/:id with expand", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "sub_1", email: "a@b.com", status: "active" } },
   }]);
@@ -19,12 +20,12 @@ Deno.test("subscription-get: fetches GET /publications/:id/subscriptions/:id wit
   assertEquals(out.id, "sub_1");
 });
 
-Deno.test("subscription-get: omits expand entirely when unset", async () => {
+test("subscription-get: omits expand entirely when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await subscriptionGet.execute({ publicationId: "pub_1", subscriptionId: "sub_1" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("subscription-get: is a read action", () => {
+test("subscription-get: is a read action", () => {
   assertEquals(subscriptionGet.type, "read");
 });

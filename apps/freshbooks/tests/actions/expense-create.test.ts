@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/expense-create.ts";
 
-Deno.test("expense-create: POSTs /expenses/expenses with the amount/category/date envelope", async () => {
+test("expense-create: POSTs /expenses/expenses with the amount/category/date envelope", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{
     body: { response: { result: { expense: { id: 1 } } } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("expense-create: POSTs /expenses/expenses with the amount/category/dat
   });
 });
 
-Deno.test("expense-create: honors currencyCode and merges optional fields", async () => {
+test("expense-create: honors currencyCode and merges optional fields", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: {} }]);
   await action.execute({
     amount: 10,

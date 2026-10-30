@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-email.ts";
 
-Deno.test("check-email: POSTs /v1/singleEmail:check with the email body and returns the result verbatim", async () => {
+test("check-email: POSTs /v1/singleEmail:check with the email body and returns the result verbatim", async () => {
   const body = {
     email: "a@example.com",
     trustRate: 92,
@@ -22,7 +23,7 @@ Deno.test("check-email: POSTs /v1/singleEmail:check with the email body and retu
   assertEquals(result, body);
 });
 
-Deno.test("check-email: is a read action scoped to the email resource", () => {
+test("check-email: is a read action scoped to the email resource", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "email");
   assertEquals(action.params?.find((p) => p.key === "email")?.required, true);

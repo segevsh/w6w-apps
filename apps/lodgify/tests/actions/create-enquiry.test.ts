@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import createEnquiry from "../../actions/create-enquiry.ts";
 
-Deno.test("create-enquiry: builds the body, adds the message as a Renter message, returns the id", async () => {
+test("create-enquiry: builds the body, adds the message as a Renter message, returns the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 77 }]);
   const out = await createEnquiry.execute({
     firstName: "Ada",

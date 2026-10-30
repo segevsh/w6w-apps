@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-subscription-create.ts";
 
-Deno.test("webhook-subscription-create: omits user for organization scope", async () => {
+test("webhook-subscription-create: omits user for organization scope", async () => {
   const { ctx, calls } = mockCtx([{ body: { resource: {} } }]);
   await action.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("webhook-subscription-create: omits user for organization scope", asyn
   });
 });
 
-Deno.test("webhook-subscription-create: includes user + signing_key for user scope", async () => {
+test("webhook-subscription-create: includes user + signing_key for user scope", async () => {
   const { ctx, calls } = mockCtx([{ body: { resource: {} } }]);
   await action.execute(
     {

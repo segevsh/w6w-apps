@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formSearch from "../../actions/form-search.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-search: GETs /search/forms with the search term and limit", async () => {
+test("form-search: GETs /search/forms with the search term and limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ id: "f1", title: "My VideoAsk" }], { count: 1 }),
   }]);

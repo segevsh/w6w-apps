@@ -1,4 +1,5 @@
-import { assertEquals, assertNotEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertNotEquals } from "../_assert.ts";
 import accessToken, {
   authHeaders,
   describeTokenProblem,
@@ -16,7 +17,7 @@ function signed(url: string, credential: Record<string, unknown>): Record<string
   >;
 }
 
-Deno.test("access-token: declares a bearer method with a secret token and an environment choice", () => {
+test("access-token: declares a bearer method with a secret token and an environment choice", () => {
   assertEquals(accessToken.key, "access-token");
   assertEquals(accessToken.type, "bearer");
   const fields = accessToken.fields!;
@@ -37,14 +38,14 @@ Deno.test("access-token: declares a bearer method with a secret token and an env
  * it answers `400 missing_version_header`. One builder, so a probe and a real
  * request cannot diverge.
  */
-Deno.test("access-token: authHeaders stamps the bearer token AND the API version", () => {
+test("access-token: authHeaders stamps the bearer token AND the API version", () => {
   assertEquals(authHeaders({ accessToken: TOKEN }), {
     authorization: `Bearer ${TOKEN}`,
     "gocardless-version": "2015-07-06",
   });
 });
 
-Deno.test("access-token: sign stamps both headers", () => {
+test("access-token: sign stamps both headers", () => {
   const request = signed("https://api.gocardless.com/customers", {
     accessToken: TOKEN,
     environment: "live",
@@ -55,7 +56,7 @@ Deno.test("access-token: sign stamps both headers", () => {
   });
 });
 
-Deno.test("access-token: sign leaves a live Connection on the live host", () => {
+test("access-token: sign leaves a live Connection on the live host", () => {
   const request = signed("https://api.gocardless.com/customers?limit=1", {
     accessToken: TOKEN,
     environment: "live",
@@ -68,7 +69,7 @@ Deno.test("access-token: sign leaves a live Connection on the live host", () => 
  * key-derived host: the environment is a field, so `sign` is what points the
  * request at the right one.
  */
-Deno.test("access-token: sign rewrites the hostname for a sandbox Connection", () => {
+test("access-token: sign rewrites the hostname for a sandbox Connection", () => {
   const request = signed("https://api.gocardless.com/payments/PM1", {
     accessToken: TOKEN,
     environment: "sandbox",
@@ -76,19 +77,19 @@ Deno.test("access-token: sign rewrites the hostname for a sandbox Connection", (
   assertEquals(request.url, "https://api-sandbox.gocardless.com/payments/PM1");
 });
 
-Deno.test("access-token: an absent environment defaults to live, not to `undefined`", () => {
+test("access-token: an absent environment defaults to live, not to `undefined`", () => {
   const request = signed("https://api.gocardless.com/customers", { accessToken: TOKEN });
   assertEquals(request.url, "https://api.gocardless.com/customers");
 });
 
-Deno.test("access-token: a malformed URL is left alone rather than redirected", () => {
+test("access-token: a malformed URL is left alone rather than redirected", () => {
   const request = signed("not a url", { accessToken: TOKEN, environment: "sandbox" });
   assertEquals(request.url, "not a url");
 });
 
 // --- test() -----------------------------------------------------------------
 
-Deno.test("access-token: the probe is GET /creditors?limit=1 with both headers", async () => {
+test("access-token: the probe is GET /creditors?limit=1 with both headers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { creditors: [] } }]);
   const out = await accessToken.test!(
     { credential: { accessToken: TOKEN, environment: "live" } },
@@ -104,7 +105,7 @@ Deno.test("access-token: the probe is GET /creditors?limit=1 with both headers",
   assertEquals(PROBE_PATH, "/creditors?limit=1");
 });
 
-Deno.test("access-token: a sandbox Connection probes the sandbox host", async () => {
+test("access-token: a sandbox Connection probes the sandbox host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { creditors: [] } }]);
   await accessToken.test!(
     { credential: { accessToken: TOKEN, environment: "sandbox" } },
@@ -113,7 +114,7 @@ Deno.test("access-token: a sandbox Connection probes the sandbox host", async ()
   assertEquals(calls[0].url.startsWith("https://api-sandbox.gocardless.com/"), true, calls[0].url);
 });
 
-Deno.test("access-token: a missing token never reaches the network", async () => {
+test("access-token: a missing token never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await accessToken.test!({ credential: {} }, ctx);
   assertEquals(out.ok, false);
@@ -121,7 +122,7 @@ Deno.test("access-token: a missing token never reaches the network", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: a pasted Authorization header is named, not sent", async () => {
+test("access-token: a pasted Authorization header is named, not sent", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await accessToken.test!(
     { credential: { accessToken: `Bearer ${TOKEN}` } },
@@ -132,7 +133,7 @@ Deno.test("access-token: a pasted Authorization header is named, not sent", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: whitespace inside a token is caught before the wire", () => {
+test("access-token: whitespace inside a token is caught before the wire", () => {
   assertEquals(describeTokenProblem(`${TOKEN}\n${TOKEN}`)?.includes("whitespace"), true);
   assertEquals(describeTokenProblem(TOKEN), undefined);
 });
@@ -142,7 +143,7 @@ Deno.test("access-token: whitespace inside a token is caught before the wire", (
  * by the status line. Every case below answers the same status where the vendor
  * documents the same status, and the messages differ.
  */
-Deno.test("access-token: `unauthorized` reads as a rejected token, and never echoes it", async () => {
+test("access-token: `unauthorized` reads as a rejected token, and never echoes it", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_usage", {
@@ -158,7 +159,7 @@ Deno.test("access-token: `unauthorized` reads as a rejected token, and never ech
   assertEquals(out.message?.includes(TOKEN), false);
 });
 
-Deno.test("access-token: every access_token_* 401 reason is treated as a rejected token", async () => {
+test("access-token: every access_token_* 401 reason is treated as a rejected token", async () => {
   for (
     const reason of ["access_token_not_found", "access_token_revoked", "access_token_not_active"]
   ) {
@@ -176,7 +177,7 @@ Deno.test("access-token: every access_token_* 401 reason is treated as a rejecte
   }
 });
 
-Deno.test("access-token: a missing header is a different message from a bad token", async () => {
+test("access-token: a missing header is a different message from a bad token", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_usage", {
@@ -191,7 +192,7 @@ Deno.test("access-token: a missing header is a different message from a bad toke
   assertNotEquals(out.message?.includes("rejected the access token"), true);
 });
 
-Deno.test("access-token: a malformed Authorization header says so", async () => {
+test("access-token: a malformed Authorization header says so", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_usage", {
@@ -203,7 +204,7 @@ Deno.test("access-token: a malformed Authorization header says so", async () => 
   assertEquals(out.message?.includes("could not parse"), true, out.message);
 });
 
-Deno.test("access-token: a version-header failure is reported as this app's fault", async () => {
+test("access-token: a version-header failure is reported as this app's fault", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("invalid_api_usage", {
@@ -222,7 +223,7 @@ Deno.test("access-token: a version-header failure is reported as this app's faul
  * state. Failing the Connection would send the user to re-paste a token that
  * works.
  */
-Deno.test("access-token: a 403 is reported as connected-but-not-permitted", async () => {
+test("access-token: a 403 is reported as connected-but-not-permitted", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("gocardless", {
@@ -236,7 +237,7 @@ Deno.test("access-token: a 403 is reported as connected-but-not-permitted", asyn
   assertEquals(out.message?.includes("403"), true, out.message);
 });
 
-Deno.test("access-token: a 429 does not fail the Connection either", async () => {
+test("access-token: a 429 does not fail the Connection either", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody("invalid_api_usage", {
@@ -250,21 +251,21 @@ Deno.test("access-token: a 429 does not fail the Connection either", async () =>
   assertEquals(out.message?.includes("rate-limited"), true, out.message);
 });
 
-Deno.test("access-token: an unreadable body is admitted, not guessed at", async () => {
+test("access-token: an unreadable body is admitted, not guessed at", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const out = await accessToken.test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(out.message?.includes("no readable error code"), true, out.message);
 });
 
-Deno.test("access-token: a body-less failure is admitted too", async () => {
+test("access-token: a body-less failure is admitted too", async () => {
   const { ctx } = mockCtx([{ status: 503 }]);
   const out = await accessToken.test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(out.message?.includes("503"), true, out.message);
 });
 
-Deno.test("access-token: any other vendor code is surfaced verbatim", async () => {
+test("access-token: any other vendor code is surfaced verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid_api_usage", {
@@ -277,7 +278,7 @@ Deno.test("access-token: any other vendor code is surfaced verbatim", async () =
   assertEquals(out.message?.includes("some_other_reason"), true, out.message);
 });
 
-Deno.test("access-token: afterConnect publishes the environment and host, and calls nothing", () => {
+test("access-token: afterConnect publishes the environment and host, and calls nothing", () => {
   assertEquals(
     accessToken.afterConnect!(
       { credential: { accessToken: TOKEN, environment: "sandbox" } },

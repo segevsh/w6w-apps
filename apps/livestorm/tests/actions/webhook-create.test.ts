@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import type { JsonApiResource } from "../../lib/client.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs a webhooks body", async () => {
+test("webhook-create: POSTs a webhooks body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("webhooks", "w1", { url: "https://x.test", event: "session.started" }),

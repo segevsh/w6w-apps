@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/saved-search-get.ts";
 
 const RESPONSE = { "success": true, "data": { "savedSearchId": "7" } };
 
-Deno.test("saved-search-get: calls GET /api/client/v2/saved-searches/{id} and returns the vendor body", async () => {
+test("saved-search-get: calls GET /api/client/v2/saved-searches/{id} and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "id": "7" }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("saved-search-get: calls GET /api/client/v2/saved-searches/{id} and re
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("saved-search-get: sends nothing for fields left unset", async () => {
+test("saved-search-get: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "7" }, ctx);
   const url = new URL(calls[0].url);
@@ -26,13 +27,13 @@ Deno.test("saved-search-get: sends nothing for fields left unset", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("saved-search-get: refuses a missing id before any request", async () => {
+test("saved-search-get: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("saved-search-get: surfaces the vendor's error body", async () => {
+test("saved-search-get: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

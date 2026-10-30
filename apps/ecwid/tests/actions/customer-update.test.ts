@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerUpdate from "../../actions/customer-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-update: PUTs a partial body and returns updateCount", async () => {
+test("customer-update: PUTs a partial body and returns updateCount", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   const out = await customerUpdate.execute(
     { customerId: "177737165", acceptMarketing: true, lang: "nl" },
@@ -15,7 +16,7 @@ Deno.test("customer-update: PUTs a partial body and returns updateCount", async 
   assertEquals(out.updateCount, 1);
 });
 
-Deno.test("customer-update: addresses and contacts replace, so they go out whole", async () => {
+test("customer-update: addresses and contacts replace, so they go out whole", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await customerUpdate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("customer-update: addresses and contacts replace, so they go out whole
   assertEquals(body.contacts, [{ type: "EMAIL", contact: "buyer@example.com" }]);
 });
 
-Deno.test("customer-update: b2b_b2c is create-only, so it is not declared here", () => {
+test("customer-update: b2b_b2c is create-only, so it is not declared here", () => {
   const keys = (customerUpdate.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("b2b_b2c"), false);
   assertEquals(keys.includes("customerId"), true);

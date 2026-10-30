@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete: DELETEs the conventional (no-colon) trigger path", async () => {
+test("webhook-delete: DELETEs the conventional (no-colon) trigger path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await webhookDelete.execute({ triggerId: "166e676a496:52:8c61af75" }, ctx);
 
@@ -13,6 +14,6 @@ Deno.test("webhook-delete: DELETEs the conventional (no-colon) trigger path", as
   );
 });
 
-Deno.test("webhook-delete: is idempotent", () => {
+test("webhook-delete: is idempotent", () => {
   assertEquals(webhookDelete.idempotent, true);
 });

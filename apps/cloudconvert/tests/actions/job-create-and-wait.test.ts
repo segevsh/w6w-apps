@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobCreateAndWait from "../../actions/job-create-and-wait.ts";
 import { envelope, hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const FINISHED_JOB = envelope({ id: "j1", status: "finished", tasks: [] });
 
-Deno.test("job-create-and-wait: POSTs to the SYNC host, not the async one", async () => {
+test("job-create-and-wait: POSTs to the SYNC host, not the async one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: FINISHED_JOB }]);
   const out = await jobCreateAndWait.execute(
     { tasks: { "import-1": { operation: "import/url", url: "https://example.com/a.pdf" } } },
@@ -17,11 +18,11 @@ Deno.test("job-create-and-wait: POSTs to the SYNC host, not the async one", asyn
   assertEquals(out.status, "finished");
 });
 
-Deno.test("job-create-and-wait: is declared non-idempotent", () => {
+test("job-create-and-wait: is declared non-idempotent", () => {
   assertEquals(jobCreateAndWait.idempotent, false);
 });
 
-Deno.test("job-create-and-wait: exposes no redirect param (undeclared storage.cloudconvert.com egress)", () => {
+test("job-create-and-wait: exposes no redirect param (undeclared storage.cloudconvert.com egress)", () => {
   const keys = jobCreateAndWait.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("redirect"), false);
 });

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-create.ts";
 
@@ -9,7 +10,7 @@ const CREATED = {
   updateTime: "2026-09-22T00:00:00Z",
 };
 
-Deno.test("document-create: POSTs to parent + collectionId with typed fields", async () => {
+test("document-create: POSTs to parent + collectionId with typed fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: CREATED }], { display: DISPLAY });
 
   await action.execute(
@@ -26,13 +27,13 @@ Deno.test("document-create: POSTs to parent + collectionId with typed fields", a
   assertEquals(JSON.parse(calls[0].body!), { fields: { name: { stringValue: "Ada" } } });
 });
 
-Deno.test("document-create: no documentId omits the query param, so Firestore assigns one", async () => {
+test("document-create: no documentId omits the query param, so Firestore assigns one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: CREATED }], { display: DISPLAY });
   await action.execute({ collectionPath: "users", data: { name: "Ada" } }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("documentId"), false);
 });
 
-Deno.test("document-create: a subcollection splits the parent document off", async () => {
+test("document-create: a subcollection splits the parent document off", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: CREATED }], { display: DISPLAY });
   await action.execute({ collectionPath: "users/alice/orders", data: {} }, ctx);
   assertEquals(
@@ -41,7 +42,7 @@ Deno.test("document-create: a subcollection splits the parent document off", asy
   );
 });
 
-Deno.test("document-create: `data` must be a JSON object", async () => {
+test("document-create: `data` must be a JSON object", async () => {
   const { ctx, calls } = mockCtx([], { display: DISPLAY });
   await assertRejects(
     async () => await action.execute({ collectionPath: "users", data: "[1,2]" }, ctx),

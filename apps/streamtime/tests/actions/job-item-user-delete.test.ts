@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemUserDelete from "../../actions/job-item-user-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-user-delete: DELETEs the schedule entry and reports the status", async () => {
+test("job-item-user-delete: DELETEs the schedule entry and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await jobItemUserDelete.execute({ jobItemUserId: 7 }, ctx) as Record<
     string,
@@ -15,6 +16,6 @@ Deno.test("job-item-user-delete: DELETEs the schedule entry and reports the stat
   assertEquals(result.status, 200);
 });
 
-Deno.test("job-item-user-delete: unscheduling twice is the same end state", () => {
+test("job-item-user-delete: unscheduling twice is the same end state", () => {
   assertEquals(jobItemUserDelete.idempotent, true);
 });

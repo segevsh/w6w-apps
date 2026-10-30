@@ -1,20 +1,21 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: collects only the instance as a field", () => {
+test("oauth2: collects only the instance as a field", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.fields?.map((f) => f.key), ["instance"]);
 });
 
-Deno.test("oauth2: declares per-instance authorize/token URLs", () => {
+test("oauth2: declares per-instance authorize/token URLs", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://{instance}.service-now.com/oauth_auth.do");
   assertEquals(auth.oauth2?.tokenUrl, "https://{instance}.service-now.com/oauth_token.do");
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign sets a Bearer header", async () => {
+test("oauth2: sign sets a Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.service-now.com/api/now/table/incident",
@@ -25,7 +26,7 @@ Deno.test("oauth2: sign sets a Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test refuses a half-filled credential without a request", async () => {
+test("oauth2: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { instance: "acme" } }, ctx), {
     ok: false,
@@ -34,7 +35,7 @@ Deno.test("oauth2: test refuses a half-filled credential without a request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes sys_user_role on the instance's own host", async () => {
+test("oauth2: test probes sys_user_role on the instance's own host", async () => {
   const ok = mockCtx([{ body: { result: [] } }]);
   assertEquals(
     await auth.test({ credential: { instance: "acme", accessToken: "tok" } }, ok.ctx),
@@ -47,7 +48,7 @@ Deno.test("oauth2: test probes sys_user_role on the instance's own host", async 
   assertEquals(ok.calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: afterConnect records only the instance", async () => {
+test("oauth2: afterConnect records only the instance", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.afterConnect!(
     { credential: { instance: "acme", accessToken: "tok" } },

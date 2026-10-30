@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageHookGet from "../../actions/message-hook-get.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-hook-get: GET /channels/7/message_hooks/3/ with the documented query and body", async () => {
+test("message-hook-get: GET /channels/7/message_hooks/3/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "hook": { "id": 3, "url": "https://x.co/h", "token": "s3cret" } },
@@ -18,7 +19,7 @@ Deno.test("message-hook-get: GET /channels/7/message_hooks/3/ with the documente
   assertEquals(out, { "id": 3, "url": "https://x.co/h", "token": "[redacted]" });
 });
 
-Deno.test("message-hook-get: a Landbot error surfaces its status and message", async () => {
+test("message-hook-get: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(messageHookGet.execute({ "channelId": 7, "hookId": 3 } as never, ctx)),
@@ -28,7 +29,7 @@ Deno.test("message-hook-get: a Landbot error surfaces its status and message", a
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("message-hook-get: declares read", () => {
+test("message-hook-get: declares read", () => {
   assertEquals(messageHookGet.type, "read");
   assertEquals(detailBody("x"), { detail: "x" });
 });

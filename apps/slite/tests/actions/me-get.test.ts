@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import meGet from "../../actions/me-get.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("me-get: GET /v1/me with the documented parameters", async () => {
+test("me-get: GET /v1/me with the documented parameters", async () => {
   const response = {
     email: "a@b.c",
     displayName: "A",
@@ -20,7 +21,7 @@ Deno.test("me-get: GET /v1/me with the documented parameters", async () => {
   assertEquals(out, response);
 });
 
-Deno.test("me-get: a vendor error surfaces its own message and id", async () => {
+test("me-get: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -32,6 +33,6 @@ Deno.test("me-get: a vendor error surfaces its own message and id", async () => 
   );
 });
 
-Deno.test("me-get: declares no params", () => {
+test("me-get: declares no params", () => {
   assertEquals(meGet.params, []);
 });

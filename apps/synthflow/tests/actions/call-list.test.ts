@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
 const PAGE = { total_records: 1, limit: 20, offset: 0 };
 
-Deno.test("call-list: GET /calls with every filter named as the vendor names it", async () => {
+test("call-list: GET /calls with every filter named as the vendor names it", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ pagination: PAGE, calls: [{ call_id: "c1" }] }) }]);
   const out = await callList.execute(
     {

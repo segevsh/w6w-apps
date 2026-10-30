@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 
@@ -6,7 +7,7 @@ import quota from "../../health/quota.ts";
  * Both checks are declared absences, not probes — DocuSeal publishes no
  * status page and no rate-limit header. There is no `check` hook to invoke.
  */
-Deno.test("service: a declared absence, informational so it never pins the verdict at unknown", () => {
+test("service: a declared absence, informational so it never pins the verdict at unknown", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
   assertEquals(service.severity, "informational");
@@ -14,7 +15,7 @@ Deno.test("service: a declared absence, informational so it never pins the verdi
   assert(service.unavailable!.reason.includes("statuspage.io"), service.unavailable!.reason);
 });
 
-Deno.test("quota: a declared absence, informational for the same reason", () => {
+test("quota: a declared absence, informational for the same reason", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import employeeList from "../../actions/employee-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "phone": "0102030405",
 };
 
-Deno.test("employee-list: GET /api/v2/employees with the documented query, header and body", async () => {
+test("employee-list: GET /api/v2/employees with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await employeeList.execute(INPUT as never, ctx);
 
@@ -33,13 +34,13 @@ Deno.test("employee-list: GET /api/v2/employees with the documented query, heade
   assertEquals(out, { items: [{ id: 1 }, { id: 2 }], count: 2, page: 2, nextPage: 3 });
 });
 
-Deno.test("employee-list: an Axonaut error surfaces its message and status", async () => {
+test("employee-list: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await employeeList.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("employee-list: an empty page ends the list and the first page is the default", async () => {
+test("employee-list: an empty page ends the list and the first page is the default", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await employeeList.execute({} as never, ctx);
   assertEquals(calls[0].headers["page"], undefined);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import courseEnrollmentsList from "../../actions/course-enrollments-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("course-enrollments-list: paths by course ID and passes through the sort direction", async () => {
+test("course-enrollments-list: paths by course ID and passes through the sort direction", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("enrollments", []) }]);
   await courseEnrollmentsList.execute({ courseId: 7, sortDirection: "desc" }, ctx);
 

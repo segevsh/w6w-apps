@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentDelete from "../../actions/document-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-delete: DELETEs /document/{id}", async () => {
+test("document-delete: DELETEs /document/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   const out = await documentDelete.execute({ documentId: "doc-1" }, ctx) as Record<
     string,
@@ -13,6 +14,6 @@ Deno.test("document-delete: DELETEs /document/{id}", async () => {
   assertEquals(out.status, "success");
 });
 
-Deno.test("document-delete: is declared not idempotent", () => {
+test("document-delete: is declared not idempotent", () => {
   assertEquals(documentDelete.idempotent, false);
 });

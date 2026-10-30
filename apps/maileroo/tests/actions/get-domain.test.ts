@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-domain.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-domain: maps DNS records, tracking flags and statistics", async () => {
+test("get-domain: maps DNS records, tracking flags and statistics", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -26,7 +27,7 @@ Deno.test("get-domain: maps DNS records, tracking flags and statistics", async (
   assertEquals([out.interactionTracking, out.returnPath, out.status], [true, "bounces", true]);
 });
 
-Deno.test("get-domain: needs an id; 404 throws", async () => {
+test("get-domain: needs an id; 404 throws", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: { message: "Domain not found" } } }]);
   await assertRejects(() => run(action, { domainId: "" }, ctx), Error, "domainId is required");
   await assertRejects(() => run(action, { domainId: 9 }, ctx), Error, "Domain not found");

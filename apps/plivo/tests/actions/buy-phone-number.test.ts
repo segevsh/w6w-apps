@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, json, mockCtx } from "../_helpers.ts";
 import action from "../../actions/buy-phone-number.ts";
 
-Deno.test("buy-phone-number: POSTs to PhoneNumber/{number}/ with only the set options", async () => {
+test("buy-phone-number: POSTs to PhoneNumber/{number}/ with only the set options", async () => {
   const body = {
     api_id: "a",
     message: "created",
@@ -20,13 +21,13 @@ Deno.test("buy-phone-number: POSTs to PhoneNumber/{number}/ with only the set op
   assertEquals(out, body);
 });
 
-Deno.test("buy-phone-number: bare purchase sends an empty JSON object", async () => {
+test("buy-phone-number: bare purchase sends an empty JSON object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], CONN);
   await action.execute!({ number: "1" }, ctx);
   assertEquals(json(calls[0]), {});
 });
 
-Deno.test("buy-phone-number: compliance id is forwarded; blank number refused", async () => {
+test("buy-phone-number: compliance id is forwarded; blank number refused", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], CONN);
   await action.execute!({ number: "91", complianceApplicationId: "uuid-1" }, ctx);
   assertEquals(json(calls[0]), { compliance_application_id: "uuid-1" });
@@ -37,7 +38,7 @@ Deno.test("buy-phone-number: compliance id is forwarded; blank number refused", 
   );
 });
 
-Deno.test("buy-phone-number: a 404 (subaccount credentials) is thrown", async () => {
+test("buy-phone-number: a 404 (subaccount credentials) is thrown", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "not found" }], CONN);
   await assertRejects(async () => await action.execute!({ number: "1" }, ctx), Error, "Plivo 404");
 });

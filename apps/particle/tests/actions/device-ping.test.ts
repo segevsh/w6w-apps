@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-ping.ts";
 
@@ -6,7 +7,7 @@ const ID = "0123456789abcdef01234567";
 const record = (connected: boolean) => ({ status: 200, body: { connected } });
 const pong = (online: boolean) => ({ status: 200, body: { online, ok: true } });
 
-Deno.test("device-ping: reads the cached flag, then forces a round trip", async () => {
+test("device-ping: reads the cached flag, then forces a round trip", async () => {
   const { ctx, calls } = mockCtx([record(true), pong(true)]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(calls[1].url, `https://api.particle.io/v1/devices/${ID}/ping`);
@@ -17,7 +18,7 @@ Deno.test("device-ping: reads the cached flag, then forces a round trip", async 
 });
 
 /** The flag stays true until the lost connection times out. */
-Deno.test("device-ping: a record that disagrees with reality is flagged as stale", async () => {
+test("device-ping: a record that disagrees with reality is flagged as stale", async () => {
   const { ctx, logs } = mockCtx([record(true), pong(false)]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.online, false);
@@ -26,7 +27,7 @@ Deno.test("device-ping: a record that disagrees with reality is flagged as stale
   assert(/stays true until the lost connection times out/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("device-ping: the other direction is reported too", async () => {
+test("device-ping: the other direction is reported too", async () => {
   const { ctx, logs } = mockCtx([record(false), pong(true)]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.stale, true);
@@ -36,7 +37,7 @@ Deno.test("device-ping: the other direction is reported too", async () => {
   );
 });
 
-Deno.test("device-ping: agreement does not warn", async () => {
+test("device-ping: agreement does not warn", async () => {
   const { ctx, logs } = mockCtx([record(false), pong(false)]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.stale, false);
@@ -44,7 +45,7 @@ Deno.test("device-ping: agreement does not warn", async () => {
 });
 
 /** Every ping is data over the device's own connection. */
-Deno.test("device-ping: says what it costs on a metered SIM", () => {
+test("device-ping: says what it costs on a metered SIM", () => {
   assert(/Costs the device a little data/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

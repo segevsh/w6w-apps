@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import chatUpdate from "../../actions/chat-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("chat-update: POSTs {muted} to /v2/chats/{iden}", async () => {
+test("chat-update: POSTs {muted} to /v2/chats/{iden}", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "c1", muted: true } }]);
   const out = await chatUpdate.execute({ iden: "c1", muted: true }, ctx) as { muted: boolean };
 
@@ -11,6 +12,6 @@ Deno.test("chat-update: POSTs {muted} to /v2/chats/{iden}", async () => {
   assertEquals(out.muted, true);
 });
 
-Deno.test("chat-update: is declared idempotent", () => {
+test("chat-update: is declared idempotent", () => {
   assertEquals(chatUpdate.idempotent, true);
 });

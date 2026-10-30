@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, display, ok } from "./_shared.ts";
 import action from "../../actions/model-show.ts";
 
-Deno.test("model-show: posts the model to /api/show and lifts the context length", async () => {
+test("model-show: posts the model to /api/show and lifts the context length", async () => {
   const { ctx, calls } = mockCtx([ok({
     capabilities: ["completion", "vision"],
     details: { family: "llama" },
@@ -17,13 +18,13 @@ Deno.test("model-show: posts the model to /api/show and lifts the context length
   assertEquals(result.capabilities, ["completion", "vision"]);
 });
 
-Deno.test("model-show: verbose is sent only when asked for", async () => {
+test("model-show: verbose is sent only when asked for", async () => {
   const { ctx, calls } = mockCtx([ok({})], { display });
   await action.execute!({ model: "m", verbose: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).verbose, true);
 });
 
-Deno.test("model-show: requires a model", async () => {
+test("model-show: requires a model", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`model` is required");
 });

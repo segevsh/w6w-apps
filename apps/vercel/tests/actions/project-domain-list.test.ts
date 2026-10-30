@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-domain-list.ts";
 
@@ -7,7 +8,7 @@ const page = (items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("project-domain-list: filters go as Vercel's string booleans", async () => {
+test("project-domain-list: filters go as Vercel's string booleans", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ name: "a.com" }], null) }], {
     display: {},
   });
@@ -22,7 +23,7 @@ Deno.test("project-domain-list: filters go as Vercel's string booleans", async (
   assertEquals(result, [{ name: "a.com" }]);
 });
 
-Deno.test("project-domain-list: a blank project fails before any request", async () => {
+test("project-domain-list: a blank project fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`projectId`");
   assertEquals(calls.length, 0);

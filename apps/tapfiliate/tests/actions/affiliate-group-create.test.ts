@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateGroupCreate from "../../actions/affiliate-group-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("affiliate-group-create: posts {title} — also only documented in the code sample", async () => {
+test("affiliate-group-create: posts {title} — also only documented in the code sample", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "ag_nK6qZzk0JgnXJFsHQ-", title: "Silver Affiliates" },
   }]);

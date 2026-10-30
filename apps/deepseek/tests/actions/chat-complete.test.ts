@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-complete.ts";
 
-Deno.test("chat-complete: POSTs /chat/completions with model + messages only", async () => {
+test("chat-complete: POSTs /chat/completions with model + messages only", async () => {
   const body = { id: "cmpl-1", choices: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -24,7 +25,7 @@ Deno.test("chat-complete: POSTs /chat/completions with model + messages only", a
   assertEquals(result, body);
 });
 
-Deno.test("chat-complete: omits undefined optional params from the request body", async () => {
+test("chat-complete: omits undefined optional params from the request body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "deepseek-v4-flash", messages: [{ role: "user", content: "x" }] },
@@ -34,7 +35,7 @@ Deno.test("chat-complete: omits undefined optional params from the request body"
   assertEquals(Object.keys(sent).sort(), ["messages", "model"]);
 });
 
-Deno.test("chat-complete: thinking mode nests as { type }", async () => {
+test("chat-complete: thinking mode nests as { type }", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -50,7 +51,7 @@ Deno.test("chat-complete: thinking mode nests as { type }", async () => {
   assertEquals(sent.reasoning_effort, "max");
 });
 
-Deno.test("chat-complete: forwards snake_case params, tools and logprobs", async () => {
+test("chat-complete: forwards snake_case params, tools and logprobs", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const tools = [{ type: "function", function: { name: "get_weather" } }];
   await action.execute!(
@@ -83,7 +84,7 @@ Deno.test("chat-complete: forwards snake_case params, tools and logprobs", async
   assertEquals(sent.user_id, "u-123");
 });
 
-Deno.test("chat-complete: never sends frequency_penalty/presence_penalty (documented no-ops)", async () => {
+test("chat-complete: never sends frequency_penalty/presence_penalty (documented no-ops)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "deepseek-v4-pro", messages: [] }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -91,6 +92,6 @@ Deno.test("chat-complete: never sends frequency_penalty/presence_penalty (docume
   assertEquals("presence_penalty" in sent, false);
 });
 
-Deno.test("chat-complete: is marked non-idempotent", () => {
+test("chat-complete: is marked non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

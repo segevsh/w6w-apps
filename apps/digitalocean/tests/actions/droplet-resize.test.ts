@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-resize.ts";
 
@@ -8,7 +9,7 @@ const droplet = (status: string) => ({
 });
 const accepted = { status: 201, body: { action: { id: 7654321, status: "in-progress" } } };
 
-Deno.test("droplet-resize: checks the droplet is off, then posts the resize", async () => {
+test("droplet-resize: checks the droplet is off, then posts the resize", async () => {
   const { ctx, calls } = mockCtx([droplet("off"), accepted]);
   const result = await action.execute(
     { dropletId: "3164444", size: "s-2vcpu-4gb" },
@@ -24,7 +25,7 @@ Deno.test("droplet-resize: checks the droplet is off, then posts the resize", as
 });
 
 /** The two forms differ by one boolean and only one is reversible. */
-Deno.test("droplet-resize: resizing the disk needs an acknowledgement", async () => {
+test("droplet-resize: resizing the disk needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -41,7 +42,7 @@ Deno.test("droplet-resize: resizing the disk needs an acknowledgement", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("droplet-resize: an acknowledged disk resize is marked irreversible", async () => {
+test("droplet-resize: an acknowledged disk resize is marked irreversible", async () => {
   const { ctx, logs } = mockCtx([droplet("off"), accepted]);
   const result = await action.execute({
     dropletId: "3164444",
@@ -56,7 +57,7 @@ Deno.test("droplet-resize: an acknowledged disk resize is marked irreversible", 
 });
 
 /** Not a formality — the droplet is unavailable for the whole operation. */
-Deno.test("droplet-resize: a running droplet is refused with the reason", async () => {
+test("droplet-resize: a running droplet is refused with the reason", async () => {
   const { ctx, calls } = mockCtx([droplet("active")]);
   let message = "";
   try {
@@ -71,7 +72,7 @@ Deno.test("droplet-resize: a running droplet is refused with the reason", async 
 });
 
 /** Something has to power it back on. */
-Deno.test("droplet-resize: reports that the droplet stays off", async () => {
+test("droplet-resize: reports that the droplet stays off", async () => {
   const { ctx } = mockCtx([droplet("off"), accepted]);
   const result = await action.execute(
     { dropletId: "3164444", size: "s-2vcpu-4gb" },
@@ -80,7 +81,7 @@ Deno.test("droplet-resize: reports that the droplet stays off", async () => {
   assertEquals(result.willStayOff, true);
 });
 
-Deno.test("droplet-resize: a size is required", async () => {
+test("droplet-resize: a size is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

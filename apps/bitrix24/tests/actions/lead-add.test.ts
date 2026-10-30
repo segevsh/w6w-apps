@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-add.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("lead-add: posts fields to crm.lead.add and returns the new id", async () => {
+test("lead-add: posts fields to crm.lead.add and returns the new id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: 42, time: {} } },
   ], { display });
@@ -31,7 +32,7 @@ Deno.test("lead-add: posts fields to crm.lead.add and returns the new id", async
   assertEquals(out, { id: 42 });
 });
 
-Deno.test("lead-add: extraFields merges in, curated fields win on conflict", async () => {
+test("lead-add: extraFields merges in, curated fields win on conflict", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: 1, time: {} } },
   ], { display });
@@ -46,7 +47,7 @@ Deno.test("lead-add: extraFields merges in, curated fields win on conflict", asy
   assertEquals(body.fields.UTM_SOURCE, "google");
 });
 
-Deno.test("lead-add: a 200 carrying {error} is treated as a failure, not a success", async () => {
+test("lead-add: a 200 carrying {error} is treated as a failure, not a success", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { error: "INVALID_REQUEST", error_description: "bad fields" } },
   ], { display });

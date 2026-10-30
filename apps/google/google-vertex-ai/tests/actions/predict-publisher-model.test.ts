@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import predict from "../../actions/predict-publisher-model.ts";
 
 const display = { projectId: "p1", location: "europe-west4" };
 const BASE = "https://europe-west4-aiplatform.googleapis.com/v1/projects/p1/locations/europe-west4";
 
-Deno.test("predict-publisher-model: passes instances and parameters through to :predict", async () => {
+test("predict-publisher-model: passes instances and parameters through to :predict", async () => {
   const { ctx, calls } = mockCtx([{ body: { predictions: [{ embeddings: { values: [1] } }] } }], {
     display,
   });

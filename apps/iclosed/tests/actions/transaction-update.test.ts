@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionUpdate from "../../actions/transaction-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("transaction-update: sends every input as body", async () => {
+test("transaction-update: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await transactionUpdate.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("transaction-update: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("transaction-update: omits every unset optional", async () => {
+test("transaction-update: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await transactionUpdate.execute({ "id": 7 } as never, ctx);
 
@@ -42,7 +43,7 @@ Deno.test("transaction-update: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("transaction-update: declares a perform action's idempotency", () => {
+test("transaction-update: declares a perform action's idempotency", () => {
   assertEquals(transactionUpdate.type, "perform");
   assertEquals(transactionUpdate.idempotent, true);
   assertEquals(transactionUpdate.params!.filter((p) => p.required).map((p) => p.key), ["id"]);

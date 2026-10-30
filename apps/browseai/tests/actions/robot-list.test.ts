@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import robotList from "../../actions/robot-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("robot-list: GETs /robots with no query params", async () => {
+test("robot-list: GETs /robots with no query params", async () => {
   const robots = { totalCount: 1, items: [{ id: "r1", createdAt: 1 }] };
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("robots", robots) }]);
   const out = await robotList.execute({}, ctx) as typeof robots;
@@ -14,6 +15,6 @@ Deno.test("robot-list: GETs /robots with no query params", async () => {
   assertEquals(out.items[0].id, "r1");
 });
 
-Deno.test("robot-list: declares no params", () => {
+test("robot-list: declares no params", () => {
   assertEquals(robotList.params, []);
 });

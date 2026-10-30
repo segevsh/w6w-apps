@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { API_ROOT, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-delete: sends the documented request and returns the answer", async () => {
+test("contact-delete: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: ["Contact deleted"] }]);
   const result = await contactDelete.execute({ "contact": 42 }, ctx) as { deleted: boolean };
 
@@ -13,12 +14,12 @@ Deno.test("contact-delete: sends the documented request and returns the answer",
   assertEquals(result.deleted, true);
 });
 
-Deno.test("contact-delete: declares idempotent = true", () => {
+test("contact-delete: declares idempotent = true", () => {
   assertEquals(contactDelete.idempotent, true);
   assertEquals(contactDelete.type, "perform");
 });
 
-Deno.test("contact-delete: a refused token surfaces the vendor message", async () => {
+test("contact-delete: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

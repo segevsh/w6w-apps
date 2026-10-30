@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createPhoneCall from "../../actions/create-phone-call.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-phone-call: posts to /v2/create-phone-call with the expected body", async () => {
+test("create-phone-call: posts to /v2/create-phone-call with the expected body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -27,7 +28,7 @@ Deno.test("create-phone-call: posts to /v2/create-phone-call with the expected b
   assertEquals(out.call_status, "registered");
 });
 
-Deno.test("create-phone-call: optional fields are mapped to their wire names", async () => {
+test("create-phone-call: optional fields are mapped to their wire names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { call_id: "c1" } }]);
 
   await createPhoneCall.execute({
@@ -46,6 +47,6 @@ Deno.test("create-phone-call: optional fields are mapped to their wire names", a
   assertEquals(body.ignore_e164_validation, true);
 });
 
-Deno.test("create-phone-call: is not idempotent — each call places a new outbound dial", () => {
+test("create-phone-call: is not idempotent — each call places a new outbound dial", () => {
   assertEquals(createPhoneCall.idempotent, false);
 });

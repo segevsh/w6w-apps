@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("update-list: PUTs name and isShared to the list path", async () => {
+test("update-list: PUTs name and isShared to the list path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "id": 7, "name": "renamed", "shared_with_team": true },

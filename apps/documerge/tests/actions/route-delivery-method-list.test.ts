@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeDeliveryMethodList from "../../actions/route-delivery-method-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-delivery-method-list: GET /api/routes/delivery-methods/{routeId}", async () => {
+test("route-delivery-method-list: GET /api/routes/delivery-methods/{routeId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeDeliveryMethodList.execute({ "routeId": 13 } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("route-delivery-method-list: GET /api/routes/delivery-methods/{routeId
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("route-delivery-method-list: a vendor error surfaces its own message", async () => {
+test("route-delivery-method-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () => Promise.resolve(routeDeliveryMethodList.execute({ "routeId": 13 } as never, ctx)),

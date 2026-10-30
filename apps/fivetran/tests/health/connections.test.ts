@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import connections from "../../health/connections.ts";
 
@@ -7,7 +8,7 @@ const list = (items: unknown[]) => ({
   body: { code: "Success", data: { items } },
 });
 
-Deno.test("connections: all healthy is ok, with the count", async () => {
+test("connections: all healthy is ok, with the count", async () => {
   const { ctx, calls } = mockCtx([list([
     { id: "c1", schema: "shop", status: { setup_state: "connected" } },
     { id: "c2", schema: "crm", status: { setup_state: "connected" } },
@@ -19,7 +20,7 @@ Deno.test("connections: all healthy is ok, with the count", async () => {
 });
 
 /** A broken connection stops syncing silently — the warehouse stops changing. */
-Deno.test("connections: a broken connection is down and is named", async () => {
+test("connections: a broken connection is down and is named", async () => {
   const { ctx } = mockCtx([list([
     { id: "c1", schema: "shop", status: { setup_state: "broken" } },
     { id: "c2", schema: "crm", status: { setup_state: "connected" } },
@@ -30,7 +31,7 @@ Deno.test("connections: a broken connection is down and is named", async () => {
 });
 
 /** Warnings mean the data is arriving and incomplete, which nothing else says. */
-Deno.test("connections: warnings are degraded, not down", async () => {
+test("connections: warnings are degraded, not down", async () => {
   const { ctx } = mockCtx([list([
     { id: "c1", schema: "shop", status: { setup_state: "connected", warnings: [{ code: "x" }] } },
   ])]);
@@ -40,7 +41,7 @@ Deno.test("connections: warnings are degraded, not down", async () => {
 });
 
 /** Paused is somebody's decision; reporting it as broken trains people to ignore this. */
-Deno.test("connections: a paused connection is counted and stays ok", async () => {
+test("connections: a paused connection is counted and stays ok", async () => {
   const { ctx } = mockCtx([list([
     { id: "c1", schema: "shop", paused: true, status: { setup_state: "connected" } },
   ])]);
@@ -49,7 +50,7 @@ Deno.test("connections: a paused connection is counted and stays ok", async () =
   assert(/1 paused deliberately/.test(result.message!), result.message);
 });
 
-Deno.test("connections: an account with none configured is ok", async () => {
+test("connections: an account with none configured is ok", async () => {
   const { ctx } = mockCtx([list([])]);
   const result = await connections.check!({}, ctx);
   assertEquals(result.state, "ok");
@@ -57,7 +58,7 @@ Deno.test("connections: an account with none configured is ok", async () => {
 });
 
 /** The derived auth check owns credential failures. */
-Deno.test("connections: a 401 is unknown and a 429 says why", async () => {
+test("connections: a 401 is unknown and a 429 says why", async () => {
   const unauth = mockCtx([{ status: 401, body: "" }]);
   assertEquals((await connections.check!({}, unauth.ctx)).state, "unknown");
 
@@ -67,7 +68,7 @@ Deno.test("connections: a 401 is unknown and a 429 says why", async () => {
   assert(/500 requests an hour/.test(result.message!), result.message);
 });
 
-Deno.test("connections: any other failure is down", async () => {
+test("connections: any other failure is down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await connections.check!({}, ctx)).state, "down");
 });

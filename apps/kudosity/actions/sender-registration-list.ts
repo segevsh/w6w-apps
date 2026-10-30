@@ -30,7 +30,14 @@ const senderRegistrationList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "PENDING_APPROVAL", label: "PENDING_APPROVAL" },
+        { value: "VERIFIED", label: "VERIFIED" },
+        { value: "REJECTED", label: "REJECTED" },
+        { value: "CANCELLED", label: "CANCELLED" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "One or more comma-separated: PENDING_APPROVAL, VERIFIED, REJECTED, CANCELLED.",
     },
     {

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/stream-properties-get.ts";
 
@@ -27,7 +28,7 @@ const streams = {
 };
 
 /** Whether a stream can go incremental is a fact about the connector. */
-Deno.test("stream-properties-get: separates incremental-capable from full-refresh-only", async () => {
+test("stream-properties-get: separates incremental-capable from full-refresh-only", async () => {
   const { ctx, calls } = mockCtx([streams], D);
   const result = await action.execute({ sourceId: SOURCE, destinationId: DEST }, ctx) as Record<
     string,
@@ -42,7 +43,7 @@ Deno.test("stream-properties-get: separates incremental-capable from full-refres
 });
 
 /** A cursor the connector does not define is a choice somebody makes badly. */
-Deno.test("stream-properties-get: names the streams needing a cursor chosen", async () => {
+test("stream-properties-get: names the streams needing a cursor chosen", async () => {
   const { ctx, logs } = mockCtx([streams], D);
   const result = await action.execute({ sourceId: SOURCE }, ctx) as Record<string, unknown>;
   assertEquals(result.sourceDefinedCursors, ["orders"]);
@@ -53,13 +54,13 @@ Deno.test("stream-properties-get: names the streams needing a cursor chosen", as
   );
 });
 
-Deno.test("stream-properties-get: the destination is optional", async () => {
+test("stream-properties-get: the destination is optional", async () => {
   const { ctx, calls } = mockCtx([streams], D);
   await action.execute({ sourceId: SOURCE }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("destinationId"), null);
 });
 
-Deno.test("stream-properties-get: both ids must be UUIDs", async () => {
+test("stream-properties-get: both ids must be UUIDs", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ sourceId: "nope" }, ctx),

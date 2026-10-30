@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-discount.ts";
 
-Deno.test("create-discount: wraps body in discount", async () => {
+test("create-discount: wraps body in discount", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "d1" } }]);
   const result = await action.execute!({
     organizationId: "o1",

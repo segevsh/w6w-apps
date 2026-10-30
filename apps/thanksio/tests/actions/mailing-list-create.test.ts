@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import mailingListCreate from "../../actions/mailing-list-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailing-list-create: calls POST /api/v2/mailing-lists/ and shapes the output", async () => {
+test("mailing-list-create: calls POST /api/v2/mailing-lists/ and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 8, "description": "VIPs", "type": "manual" } }]);
   const out = await mailingListCreate.execute(
     { "description": "VIPs", "qrcodeUrl": "https://x/q" } as never,
@@ -18,7 +19,7 @@ Deno.test("mailing-list-create: calls POST /api/v2/mailing-lists/ and shapes the
   assert(out.id === 8, JSON.stringify(out));
 });
 
-Deno.test("mailing-list-create: a vendor error surfaces the HTTP status and message", async () => {
+test("mailing-list-create: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { "message": "The description field is required." },

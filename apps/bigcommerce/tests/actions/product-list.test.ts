@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productList from "../../actions/product-list.ts";
 import { mockCtx, pathOf, queryOf, v3Page } from "../_helpers.ts";
 
-Deno.test("product-list: GETs /v3/catalog/products and returns data + pagination", async () => {
+test("product-list: GETs /v3/catalog/products and returns data + pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([{ id: 77 }], { total: 1, total_pages: 1 }) }]);
   const out = await productList.execute({ limit: 50 }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("product-list: GETs /v3/catalog/products and returns data + pagination
   assertEquals(out.pagination?.total, 1);
 });
 
-Deno.test("product-list: the two boolean filters use the vendor's TWO spellings", async () => {
+test("product-list: the two boolean filters use the vendor's TWO spellings", async () => {
   // `is_visible` is `type: boolean` in the schema; `is_featured` is
   // `type: integer` documented as "1 for true, 0 for false". Sending the wrong
   // one filters on nothing and silently returns the whole catalog.
@@ -26,7 +27,7 @@ Deno.test("product-list: the two boolean filters use the vendor's TWO spellings"
   assertEquals(queryOf(off.calls[0].url), { is_visible: "false", is_featured: "0" });
 });
 
-Deno.test("product-list: filters map to the vendor's parameter names", async () => {
+test("product-list: filters map to the vendor's parameter names", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([]) }]);
   await productList.execute({
     keyword: "mug",
@@ -53,7 +54,7 @@ Deno.test("product-list: filters map to the vendor's parameter names", async () 
   });
 });
 
-Deno.test("product-list: restates the vendor's own default and ceiling", () => {
+test("product-list: restates the vendor's own default and ceiling", () => {
   const limit = productList.params?.find((p) => p.key === "limit");
   assertEquals(limit?.default, 50);
   assertEquals(limit?.validation?.max, 250);

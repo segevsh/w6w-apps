@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-users.ts";
 
@@ -8,7 +9,7 @@ const reply = {
   body: { audience_id: "900", session_id: "5", num_received: 1, num_invalid_entries: 0 },
 };
 
-Deno.test("add-users: POSTs a hashed payload and a one-batch session", async () => {
+test("add-users: POSTs a hashed payload and a one-batch session", async () => {
   const { ctx, calls } = mockCtx([reply]);
   const out = await action.execute({
     audienceId: "900",
@@ -26,7 +27,7 @@ Deno.test("add-users: POSTs a hashed payload and a one-batch session", async () 
   assertEquals(f.has("method"), false);
 });
 
-Deno.test("add-users: the raw email never appears anywhere on the wire", async () => {
+test("add-users: the raw email never appears anywhere on the wire", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute({
     audienceId: "900",
@@ -36,13 +37,13 @@ Deno.test("add-users: the raw email never appears anywhere on the wire", async (
   for (const raw of ["mary@example.com", "987", "Mary", 'mary"']) assert(!wire.includes(raw), raw);
 });
 
-Deno.test("add-users: accepts the users list as JSON text", async () => {
+test("add-users: accepts the users list as JSON text", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute({ audienceId: "900", users: '[{"email":"mary@example.com"}]' }, ctx);
   assertEquals(JSON.parse(form(calls[0].body).get("payload")!).data, [[MARY]]);
 });
 
-Deno.test("add-users: carries an explicit multi-batch session", async () => {
+test("add-users: carries an explicit multi-batch session", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute({
     audienceId: "900",
@@ -60,7 +61,7 @@ Deno.test("add-users: carries an explicit multi-batch session", async () => {
   });
 });
 
-Deno.test("add-users: refuses more than 10,000 rows before any call", async () => {
+test("add-users: refuses more than 10,000 rows before any call", async () => {
   const { ctx, calls } = mockCtx();
   const users = Array.from({ length: 10_001 }, (_, i) => ({ externalId: String(i) }));
   await assertRejects(
@@ -71,7 +72,7 @@ Deno.test("add-users: refuses more than 10,000 rows before any call", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-users: an invalid row fails before any call and does not echo the value", async () => {
+test("add-users: an invalid row fails before any call and does not echo the value", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     () => Promise.resolve(action.execute({ audienceId: "900", users: [{ email: "zz-no" }] }, ctx)),
@@ -82,7 +83,7 @@ Deno.test("add-users: an invalid row fails before any call and does not echo the
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-users: pre-hashed mode refuses raw values", async () => {
+test("add-users: pre-hashed mode refuses raw values", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>
@@ -97,7 +98,7 @@ Deno.test("add-users: pre-hashed mode refuses raw values", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-users: surfaces the flagged-audience upload block", async () => {
+test("add-users: surfaces the flagged-audience upload block", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

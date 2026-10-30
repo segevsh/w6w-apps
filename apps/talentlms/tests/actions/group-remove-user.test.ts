@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/group-remove-user.ts";
 
-Deno.test("group-remove-user: GET removeuserfromgroup and returns the vendor payload", async () => {
+test("group-remove-user: GET removeuserfromgroup and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({ "userId": 7, "groupId": 2 }, ctx);
   assertEquals(calls.length, 1);
@@ -15,6 +16,6 @@ Deno.test("group-remove-user: GET removeuserfromgroup and returns the vendor pay
   assertEquals(out, { ok: "yes" });
 });
 
-Deno.test("group-remove-user: declares idempotent honestly", () => {
+test("group-remove-user: declares idempotent honestly", () => {
   assertEquals(action.idempotent, true);
 });

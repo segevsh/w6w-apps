@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import monitorGet from "../../actions/monitor-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("monitor-get: GETs /robots/{robotId}/monitors/{monitorId} and unwraps monitor", async () => {
+test("monitor-get: GETs /robots/{robotId}/monitors/{monitorId} and unwraps monitor", async () => {
   const monitor = { id: "m1", name: "Watch", status: "paused", pausedReason: "lowCredits" };
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("monitor", monitor) }]);
   const out = await monitorGet.execute({ robotId: "r1", monitorId: "m1" }, ctx) as typeof monitor;

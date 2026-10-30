@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailThreadMarkRead from "../../actions/email-thread-mark-read.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-thread-mark-read: POSTs /emails/threads/{thread_id}/mark-as-read", async () => {
+test("email-thread-mark-read: POSTs /emails/threads/{thread_id}/mark-as-read", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await emailThreadMarkRead.execute({ thread_id: "t1" }, ctx) as { success: boolean };
 
@@ -11,6 +12,6 @@ Deno.test("email-thread-mark-read: POSTs /emails/threads/{thread_id}/mark-as-rea
   assertEquals(out.success, true);
 });
 
-Deno.test("email-thread-mark-read: is declared idempotent", () => {
+test("email-thread-mark-read: is declared idempotent", () => {
   assertEquals(emailThreadMarkRead.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/container-delete.ts";
 
@@ -12,7 +13,7 @@ const listing = (count: number, more = false) => ({
 });
 
 /** Azure deletes a container with all its blobs — unlike S3 or GCS. */
-Deno.test("container-delete: counts the blobs first, then deletes", async () => {
+test("container-delete: counts the blobs first, then deletes", async () => {
   const { ctx, calls } = mockCtx([listing(3), { status: 202, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", confirmName: "uploads", acknowledgeBlobCount: 3 },
@@ -23,7 +24,7 @@ Deno.test("container-delete: counts the blobs first, then deletes", async () => 
   assertEquals(result.nameHeld, true);
 });
 
-Deno.test("container-delete: the count must be acknowledged exactly", async () => {
+test("container-delete: the count must be acknowledged exactly", async () => {
   for (const acknowledged of [0, 2, 4]) {
     const { ctx, calls } = mockCtx([listing(3)], D);
     let message = "";
@@ -42,7 +43,7 @@ Deno.test("container-delete: the count must be acknowledged exactly", async () =
 });
 
 /** An empty container is the case where 0 is the right acknowledgement. */
-Deno.test("container-delete: an empty container deletes with a zero acknowledgement", async () => {
+test("container-delete: an empty container deletes with a zero acknowledgement", async () => {
   const { ctx } = mockCtx([listing(0), { status: 202, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", confirmName: "uploads" },
@@ -52,7 +53,7 @@ Deno.test("container-delete: an empty container deletes with a zero acknowledgem
 });
 
 /** More than a page means no honest number can be put in front of the caller. */
-Deno.test("container-delete: refuses when it cannot count the contents", async () => {
+test("container-delete: refuses when it cannot count the contents", async () => {
   const { ctx, calls } = mockCtx([listing(5000, true)], D);
   let message = "";
   try {
@@ -68,7 +69,7 @@ Deno.test("container-delete: refuses when it cannot count the contents", async (
   assertEquals(calls.length, 1);
 });
 
-Deno.test("container-delete: the name must be typed back", async () => {
+test("container-delete: the name must be typed back", async () => {
   for (const confirm of [undefined, "", "UPLOADS", "uploads2"]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -83,7 +84,7 @@ Deno.test("container-delete: the name must be typed back", async () => {
 });
 
 /** The name is unusable for at least 30 seconds afterwards. */
-Deno.test("container-delete: warns that the name is held", async () => {
+test("container-delete: warns that the name is held", async () => {
   const { ctx, logs } = mockCtx([listing(0), { status: 202, body: "" }], D);
   await action.execute({ container: "uploads", confirmName: "uploads" }, ctx);
   assertEquals(logs[0].level, "warn");

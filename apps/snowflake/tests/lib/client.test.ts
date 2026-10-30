@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSnowflakeCtx } from "../_helpers.ts";
 import {
   accountFromConnection,
@@ -9,16 +10,16 @@ import {
   sqlStringLiteral,
 } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: "x" }), { a: 1, e: "x" });
 });
 
-Deno.test("sqlStringLiteral: quotes and doubles embedded quotes", () => {
+test("sqlStringLiteral: quotes and doubles embedded quotes", () => {
   assertEquals(sqlStringLiteral("ANALYTICS_%"), "'ANALYTICS_%'");
   assertEquals(sqlStringLiteral("o'brien"), "'o''brien'");
 });
 
-Deno.test("rowsAsObjects: zips rowType names with column-position data", () => {
+test("rowsAsObjects: zips rowType names with column-position data", () => {
   const rows = rowsAsObjects(
     { rowType: [{ name: "NAME" }, { name: "SIZE" }] },
     [["ANALYTICS", "X-SMALL"], ["RAW", "SMALL"]],
@@ -26,12 +27,12 @@ Deno.test("rowsAsObjects: zips rowType names with column-position data", () => {
   assertEquals(rows, [{ NAME: "ANALYTICS", SIZE: "X-SMALL" }, { NAME: "RAW", SIZE: "SMALL" }]);
 });
 
-Deno.test("rowsAsObjects: empty without rowType or data", () => {
+test("rowsAsObjects: empty without rowType or data", () => {
   assertEquals(rowsAsObjects(undefined, undefined), []);
   assertEquals(rowsAsObjects({ rowType: [{ name: "A" }] }, undefined), []);
 });
 
-Deno.test("accountFromConnection: throws a clear message when the connection records no account", () => {
+test("accountFromConnection: throws a clear message when the connection records no account", () => {
   let threw = false;
   try {
     accountFromConnection(
@@ -44,7 +45,7 @@ Deno.test("accountFromConnection: throws a clear message when the connection rec
   assertEquals(threw, true);
 });
 
-Deno.test("SnowflakeClient.submitStatement: POSTs the compacted body to /api/v2/statements", async () => {
+test("SnowflakeClient.submitStatement: POSTs the compacted body to /api/v2/statements", async () => {
   const { ctx, calls } = mockSnowflakeCtx([{ status: 200, body: { statementHandle: "h1" } }]);
   const result = await new SnowflakeClient(ctx).submitStatement({
     statement: "SELECT 1",
@@ -56,7 +57,7 @@ Deno.test("SnowflakeClient.submitStatement: POSTs the compacted body to /api/v2/
   assertEquals(result.status, "complete");
 });
 
-Deno.test("SnowflakeClient.submitStatement: ?async=true when runAsync is set", async () => {
+test("SnowflakeClient.submitStatement: ?async=true when runAsync is set", async () => {
   const { ctx, calls } = mockSnowflakeCtx([{ status: 202, body: { statementHandle: "h1" } }]);
   const result = await new SnowflakeClient(ctx).submitStatement(
     { statement: "SELECT 1" },
@@ -66,7 +67,7 @@ Deno.test("SnowflakeClient.submitStatement: ?async=true when runAsync is set", a
   assertEquals(result.status, "running");
 });
 
-Deno.test("SnowflakeClient.submitStatement: throws SnowflakeApiError on a non-2xx/202 response", async () => {
+test("SnowflakeClient.submitStatement: throws SnowflakeApiError on a non-2xx/202 response", async () => {
   const { ctx } = mockSnowflakeCtx([
     { status: 422, body: { code: "100038", message: "SQL compilation error", sqlState: "42000" } },
   ]);
@@ -78,7 +79,7 @@ Deno.test("SnowflakeClient.submitStatement: throws SnowflakeApiError on a non-2x
   assertEquals((err as SnowflakeApiError).body?.code, "100038");
 });
 
-Deno.test('SnowflakeClient.getStatement: 429 counts as "running" (this endpoint\'s alternate code)', async () => {
+test('SnowflakeClient.getStatement: 429 counts as "running" (this endpoint\'s alternate code)', async () => {
   const { ctx, calls } = mockSnowflakeCtx([{ status: 429, body: { statementHandle: "h1" } }]);
   const result = await new SnowflakeClient(ctx).getStatement("h1", { partition: 2 });
   assertEquals(result.status, "running");
@@ -86,7 +87,7 @@ Deno.test('SnowflakeClient.getStatement: 429 counts as "running" (this endpoint\
   assertEquals(new URL(calls[0].url).searchParams.get("partition"), "2");
 });
 
-Deno.test("SnowflakeClient.cancelStatement: POSTs /cancel and returns success/message", async () => {
+test("SnowflakeClient.cancelStatement: POSTs /cancel and returns success/message", async () => {
   const { ctx, calls } = mockSnowflakeCtx([{ status: 200, body: { success: true } }]);
   const result = await new SnowflakeClient(ctx).cancelStatement("h1");
   assertEquals(calls[0].url, "https://acme.snowflakecomputing.com/api/v2/statements/h1/cancel");

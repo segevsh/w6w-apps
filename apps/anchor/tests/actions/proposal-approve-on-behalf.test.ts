@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import proposalApproveOnBehalf from "../../actions/proposal-approve-on-behalf.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("proposal-approve-on-behalf: sends POST /proposals/p1/approve/vendor", async () => {
+test("proposal-approve-on-behalf: sends POST /proposals/p1/approve/vendor", async () => {
   const { ctx, calls } = mockCtx([{ body: '"ok"' }]);
   const out = await proposalApproveOnBehalf.execute({ "id": "p1" } as never, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("proposal-approve-on-behalf: sends POST /proposals/p1/approve/vendor",
   assertEquals(out.value, "ok");
 });
 
-Deno.test("proposal-approve-on-behalf: a non-2xx answer throws with the vendor's error code", async () => {
+test("proposal-approve-on-behalf: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/config-get.ts";
@@ -12,7 +13,7 @@ const config = ok({
   components: ["light", "sensor", "mobile_app"],
 });
 
-Deno.test("config-get: reports version, zone and the instance-wide units", async () => {
+test("config-get: reports version, zone and the instance-wide units", async () => {
   const { ctx, calls } = mockCtx([config], { display });
   const result = await action.execute!({}, ctx) as {
     version: string;
@@ -28,7 +29,7 @@ Deno.test("config-get: reports version, zone and the instance-wide units", async
 });
 
 /** STARTING is a real window during which entities exist and read unavailable. */
-Deno.test("config-get: STARTING is not ready", async () => {
+test("config-get: STARTING is not ready", async () => {
   const { ctx } = mockCtx([ok({ state: "STARTING" })], { display });
   const result = await action.execute!({}, ctx) as { ready: boolean; state: string };
   assertEquals(result.ready, false);
@@ -36,7 +37,7 @@ Deno.test("config-get: STARTING is not ready", async () => {
 });
 
 /** The list is long, and is how to check an integration is loaded. */
-Deno.test("config-get: the component list is opt-in but always counted", async () => {
+test("config-get: the component list is opt-in but always counted", async () => {
   const without = mockCtx([config], { display });
   const hidden = await action.execute!({}, without.ctx) as {
     components?: string[];
@@ -52,6 +53,6 @@ Deno.test("config-get: the component list is opt-in but always counted", async (
   assertEquals(shown.components.length, 3);
 });
 
-Deno.test("config-get: says the unit system is instance-wide", () => {
+test("config-get: says the unit system is instance-wide", () => {
   assert(/instance-wide/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import captionGet from "../../actions/caption-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("caption-get: calls GET /modern/medias/abc/captions/zh-Hant with the version header", async () => {
+test("caption-get: calls GET /modern/medias/abc/captions/zh-Hant with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await captionGet.execute(
     { "mediaId": "abc", "languageCode": "zh-Hant", "include": "segments" } as never,
@@ -20,7 +21,7 @@ Deno.test("caption-get: calls GET /modern/medias/abc/captions/zh-Hant with the v
   assert(out.ok === true);
 });
 
-Deno.test("caption-get: surfaces a Wistia error with its code", async () => {
+test("caption-get: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -38,7 +39,7 @@ Deno.test("caption-get: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("caption-get: requires a language code", async () => {
+test("caption-get: requires a language code", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

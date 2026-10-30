@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderList from "../../actions/folder-list.ts";
 import { envelope, mockWrikeCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("folder-list: surfaces the response's own `kind` (folderTree vs folders)", async () => {
+test("folder-list: surfaces the response's own `kind` (folderTree vs folders)", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "F1" }], "folders") },
   ]);
@@ -16,7 +17,7 @@ Deno.test("folder-list: surfaces the response's own `kind` (folderTree vs folder
   assertEquals(out.items, [{ id: "F1" }]);
 });
 
-Deno.test("folder-list: no filters at all still runs — Folder Tree Mode per Wrike's own docs", async () => {
+test("folder-list: no filters at all still runs — Folder Tree Mode per Wrike's own docs", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "root" }], "folderTree") },
   ]);

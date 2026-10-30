@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "./_assert.ts";
 import {
   asOptionalJson,
   base64ToBytes,
@@ -11,7 +12,7 @@ import {
   toPage,
 } from "../lib/client.ts";
 
-Deno.test("compact keeps false and 0, drops unset", () => {
+test("compact keeps false and 0, drops unset", () => {
   assertEquals(compact({ a: false, b: 0, c: "", d: undefined, e: null, f: "x" }), {
     a: false,
     b: 0,
@@ -19,26 +20,26 @@ Deno.test("compact keeps false and 0, drops unset", () => {
   });
 });
 
-Deno.test("asOptionalJson parses strings, passes objects, rejects junk", () => {
+test("asOptionalJson parses strings, passes objects, rejects junk", () => {
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson("", "x"), undefined);
   assertThrows(() => asOptionalJson("{nope", "layers"), Error, "layers is not valid JSON");
 });
 
-Deno.test("looseValue: arrays parse, plain strings stay strings", () => {
+test("looseValue: arrays parse, plain strings stay strings", () => {
   assertEquals(looseValue('["a","b"]'), ["a", "b"]);
   assertEquals(looseValue("order-9"), "order-9");
   assertEquals(looseValue("[not json"), "[not json");
   assertEquals(looseValue(""), undefined);
 });
 
-Deno.test("toList splits and trims", () => {
+test("toList splits and trims", () => {
   assertEquals(toList("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(toList([]), undefined);
 });
 
-Deno.test("cursorOf and toPage read links.next", () => {
+test("cursorOf and toPage read links.next", () => {
   const next = "https://api.placid.app/api/rest/templates?cursor=abc%3D";
   assertEquals(cursorOf(next), "abc=");
   assertEquals(cursorOf(null), null);
@@ -47,7 +48,7 @@ Deno.test("cursorOf and toPage read links.next", () => {
   assertEquals(toPage([1, 2]).data, [1, 2]);
 });
 
-Deno.test("formatPlacidError: message, validation errors and a hint", () => {
+test("formatPlacidError: message, validation errors and a hint", () => {
   const m = formatPlacidError(
     422,
     "POST",
@@ -63,7 +64,7 @@ Deno.test("formatPlacidError: message, validation errors and a hint", () => {
   assert(formatPlacidError(500, "GET", "/x", "<html>").includes("<html>"));
 });
 
-Deno.test("buildMultipart frames fields, files and the closing boundary", () => {
+test("buildMultipart frames fields, files and the closing boundary", () => {
   const { body, contentType } = buildMultipart({ title: "T" }, [{
     field: "file",
     filename: 'a"b.png',
@@ -79,6 +80,6 @@ Deno.test("buildMultipart frames fields, files and the closing boundary", () => 
   assert(text.endsWith(`--${boundary}--\r\n`));
 });
 
-Deno.test("base64ToBytes accepts a data URI", () => {
+test("base64ToBytes accepts a data URI", () => {
   assertEquals([...base64ToBytes("data:image/png;base64,AQID")], [1, 2, 3]);
 });

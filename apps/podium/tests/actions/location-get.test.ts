@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import locationGet from "../../actions/location-get.ts";
 
-Deno.test("location-get: sends every documented field in its documented place", async () => {
+test("location-get: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("location-get: sends every documented field in its documented place", 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("location-get: declares its params and kind", () => {
+test("location-get: declares its params and kind", () => {
   assertEquals((locationGet.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((locationGet.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(locationGet.type, "read");

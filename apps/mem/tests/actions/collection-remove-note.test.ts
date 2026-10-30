@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionRemoveNote from "../../actions/collection-remove-note.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const INPUT = {
 };
 const RESPONSE = { "request_id": "r9" };
 
-Deno.test("collection-remove-note: DELETE /v2/collections/{collection_id}/notes/{note_id}", async () => {
+test("collection-remove-note: DELETE /v2/collections/{collection_id}/notes/{note_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionRemoveNote.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -24,13 +25,13 @@ Deno.test("collection-remove-note: DELETE /v2/collections/{collection_id}/notes/
   assertEquals(out.ok, true);
 });
 
-Deno.test("collection-remove-note: puts no credential on the request (sign owns that)", async () => {
+test("collection-remove-note: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionRemoveNote.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-remove-note: a vendor error surfaces its own message", async () => {
+test("collection-remove-note: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

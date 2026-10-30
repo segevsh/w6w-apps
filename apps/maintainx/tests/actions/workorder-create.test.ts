@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workorderCreate from "../../actions/workorder-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workorder-create: POST /v1/workorders with only the fields set", async () => {
+test("workorder-create: POST /v1/workorders with only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 77 } }]);
   const out = await workorderCreate.execute({ title: "Leaking pump", priority: "HIGH" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("workorder-create: POST /v1/workorders with only the fields set", asyn
   assertEquals(out, { id: 77 });
 });
 
-Deno.test("workorder-create: assignees become {type,id} pairs; emails stay strings", async () => {
+test("workorder-create: assignees become {type,id} pairs; emails stay strings", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await workorderCreate.execute({
     title: "T",
@@ -41,7 +42,7 @@ Deno.test("workorder-create: assignees become {type,id} pairs; emails stay strin
   });
 });
 
-Deno.test("workorder-create: invalid custom-field JSON fails before any request", async () => {
+test("workorder-create: invalid custom-field JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(workorderCreate.execute({ title: "T", extraFields: "{x" }, ctx)),
@@ -51,6 +52,6 @@ Deno.test("workorder-create: invalid custom-field JSON fails before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("workorder-create: is declared non-idempotent", () => {
+test("workorder-create: is declared non-idempotent", () => {
   assertEquals(workorderCreate.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/templates-list.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("templates-list: GETs /messageTemplates with pagination, omitting channel when unset", async () => {
+test("templates-list: GETs /messageTemplates with pagination, omitting channel when unset", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { templates: [], page_number: 1, page_size: 10, total: 0 } }],
     conn,
@@ -18,7 +19,7 @@ Deno.test("templates-list: GETs /messageTemplates with pagination, omitting chan
   assertEquals(out, { templates: [], page_number: 1, page_size: 10, total: 0 });
 });
 
-Deno.test("templates-list: includes channel when set", async () => {
+test("templates-list: includes channel when set", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { templates: [], page_number: 1, page_size: 10 } }],
     conn,

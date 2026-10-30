@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: one oauth2 auth method, nine actions, two health checks", () => {
+test("index: one oauth2 auth method, nine actions, two health checks", () => {
   assertEquals(app.auth?.map((a) => a.key), ["oauth2"]);
   assertEquals(app.actions.length, 9);
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: action keys are the documented set and unique", () => {
+test("index: action keys are the documented set and unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   assertEquals(keys, [
@@ -23,7 +24,7 @@ Deno.test("index: action keys are the documented set and unique", () => {
   ]);
 });
 
-Deno.test("index: every action has title, type, description, output and execute", () => {
+test("index: every action has title, type, description, output and execute", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(typeof action.description, "string");
@@ -32,7 +33,7 @@ Deno.test("index: every action has title, type, description, output and execute"
   }
 });
 
-Deno.test("index: every perform action declares idempotent honestly", () => {
+test("index: every perform action declares idempotent honestly", () => {
   const idem = Object.fromEntries(
     app.actions.filter((a) => a.type === "perform").map((a) => [a.key, a.idempotent]),
   );
@@ -46,7 +47,7 @@ Deno.test("index: every perform action declares idempotent honestly", () => {
   });
 });
 
-Deno.test("index: both upload actions offer the hashing control defaulting to auto", () => {
+test("index: both upload actions offer the hashing control defaulting to auto", () => {
   for (const key of ["add-users", "remove-users"]) {
     const hashing = app.actions.find((a) => a.key === key)!.params?.find((p) =>
       p.key === "hashing"

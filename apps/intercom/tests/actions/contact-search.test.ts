@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-search.ts";
 
-Deno.test("contact-search: POSTs /contacts/search with a single filter and pagination", async () => {
+test("contact-search: POSTs /contacts/search with a single filter and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pages: {} } }]);
   await action.execute!({ field: "email", operator: "=", value: "a@b.com", perPage: 25 }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("contact-search: POSTs /contacts/search with a single filter and pagin
   });
 });
 
-Deno.test("contact-search: a full query object overrides field/operator/value", async () => {
+test("contact-search: a full query object overrides field/operator/value", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const query = { operator: "AND", value: [{ field: "role", operator: "=", value: "user" }] };
   await action.execute!({ query, startingAfter: "cur1" }, ctx);

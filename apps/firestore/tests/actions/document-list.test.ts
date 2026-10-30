@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-list.ts";
 
@@ -16,7 +17,7 @@ const PAGE = {
   nextPageToken: "tok-2",
 };
 
-Deno.test("document-list: GETs parent + collectionId and returns one page with its token", async () => {
+test("document-list: GETs parent + collectionId and returns one page with its token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: PAGE }], { display: DISPLAY });
 
   const result = await action.execute({ collectionPath: "users", pageSize: 2 }, ctx) as {
@@ -37,7 +38,7 @@ Deno.test("document-list: GETs parent + collectionId and returns one page with i
   assertEquals(result.documents[1].data, { name: "Bob", age: 41 });
 });
 
-Deno.test("document-list: orderBy/showMissing/readTime/mask reach the query string", async () => {
+test("document-list: orderBy/showMissing/readTime/mask reach the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { documents: [] } }], { display: DISPLAY });
   await action.execute({
     collectionPath: "users/alice/orders",
@@ -59,7 +60,7 @@ Deno.test("document-list: orderBy/showMissing/readTime/mask reach the query stri
   assertEquals(url.searchParams.get("pageToken"), "tok-2");
 });
 
-Deno.test("document-list: an absent nextPageToken stays absent, and showMissing is omitted by default", async () => {
+test("document-list: an absent nextPageToken stays absent, and showMissing is omitted by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { documents: [] } }], { display: DISPLAY });
   const result = await action.execute({ collectionPath: "users" }, ctx) as {
     nextPageToken?: string;

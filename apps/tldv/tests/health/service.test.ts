@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { componentKey, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
@@ -20,21 +21,21 @@ const COMPONENTS = (overrides: Partial<{ status: string }> = {}) => ({
   ],
 });
 
-Deno.test("service: hits the Instatus components endpoint, unsigned", async () => {
+test("service: hits the Instatus components endpoint, unsigned", async () => {
   const { ctx, calls } = mockCtx([{ body: COMPONENTS() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("service: ok when the Public API component is operational", async () => {
+test("service: ok when the Public API component is operational", async () => {
   const { ctx } = mockCtx([{ body: COMPONENTS() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
   assertEquals(report.components?.api.state, "ok");
 });
 
-Deno.test("service: an unrelated component outage does not move the verdict", async () => {
+test("service: an unrelated component outage does not move the verdict", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -48,19 +49,19 @@ Deno.test("service: an unrelated component outage does not move the verdict", as
   assertEquals(report.message?.includes("WebApp"), true);
 });
 
-Deno.test("service: a Public API outage IS the verdict", async () => {
+test("service: a Public API outage IS the verdict", async () => {
   const { ctx } = mockCtx([{ body: COMPONENTS({ status: "MAJOROUTAGE" }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: the Public API component going missing is unknown, not silently ignored", async () => {
+test("service: the Public API component going missing is unknown, not silently ignored", async () => {
   const { ctx } = mockCtx([{
     body: { components: [{ id: "webapp", name: "WebApp", status: "OPERATIONAL" }] },
   }]);
@@ -69,7 +70,7 @@ Deno.test("service: the Public API component going missing is unknown, not silen
   assertEquals(report.message?.includes("Public API"), true);
 });
 
-Deno.test("mapComponentStatus: the documented Instatus vocabulary", () => {
+test("mapComponentStatus: the documented Instatus vocabulary", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("DEGRADEDPERFORMANCE"), "degraded");
   assertEquals(mapComponentStatus("PARTIALOUTAGE"), "degraded");
@@ -80,13 +81,13 @@ Deno.test("mapComponentStatus: the documented Instatus vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a name slug", () => {
+test("componentKey: prefers the vendor id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "abc123", name: "Public API" }, 0), "abc123");
   assertEquals(componentKey({ name: "Public API" }, 4), "public-api-4");
   assertEquals(componentKey({}, 2), "component-2");
 });
 
-Deno.test("service: annotation matches a vendor-status check", () => {
+test("service: annotation matches a vendor-status check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

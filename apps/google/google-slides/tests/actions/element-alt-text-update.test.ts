@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/element-alt-text-update.ts";
 
-Deno.test("element-alt-text-update: maps altTitle/altDescription onto title/description", async () => {
+test("element-alt-text-update: maps altTitle/altDescription onto title/description", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   await action.execute({
     presentationId: "p1",
@@ -23,7 +24,7 @@ Deno.test("element-alt-text-update: maps altTitle/altDescription onto title/desc
   });
 });
 
-Deno.test("element-alt-text-update: an omitted field is left out, not sent empty", async () => {
+test("element-alt-text-update: an omitted field is left out, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ presentationId: "p1", objectId: "img1", altTitle: "Only a title" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).requests[0].updatePageElementAltText, {
@@ -32,7 +33,7 @@ Deno.test("element-alt-text-update: an omitted field is left out, not sent empty
   });
 });
 
-Deno.test("element-alt-text-update: an empty string is a real clear, not an omission", async () => {
+test("element-alt-text-update: an empty string is a real clear, not an omission", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ presentationId: "p1", objectId: "img1", altDescription: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).requests[0].updatePageElementAltText, {
@@ -41,7 +42,7 @@ Deno.test("element-alt-text-update: an empty string is a real clear, not an omis
   });
 });
 
-Deno.test("element-alt-text-update: refuses a call that would change nothing", () => {
+test("element-alt-text-update: refuses a call that would change nothing", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ presentationId: "p1", objectId: "img1" }, ctx),
@@ -51,6 +52,6 @@ Deno.test("element-alt-text-update: refuses a call that would change nothing", (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("element-alt-text-update: is idempotent", () => {
+test("element-alt-text-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

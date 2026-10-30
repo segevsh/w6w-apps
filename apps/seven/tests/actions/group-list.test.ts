@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupList from "../../actions/group-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "limit": 10, "offset": 0 } as Parameters<typeof groupList.execute>[0];
 
-Deno.test("group-list: GET /api/groups with the documented fields", async () => {
+test("group-list: GET /api/groups with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "pagingMetadata": { "total": 1 }, "data": [{ "id": 17923 }] },
   }]);
@@ -20,14 +21,14 @@ Deno.test("group-list: GET /api/groups with the documented fields", async () => 
   assertEquals((out.data as unknown[]).length, 1);
 });
 
-Deno.test("group-list: declares type read-or-search and every required param", () => {
+test("group-list: declares type read-or-search and every required param", () => {
   const required = (groupList.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, []);
   assert(["read", "search", "perform"].includes(groupList.type));
   assertEquals(groupList.type === "perform", false);
 });
 
-Deno.test("group-list: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("group-list: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

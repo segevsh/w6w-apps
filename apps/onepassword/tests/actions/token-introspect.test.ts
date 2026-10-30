@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ok } from "./_shared.ts";
 import action from "../../actions/token-introspect.ts";
 
 /** Grants are per event kind, so a 403 on one endpoint is scope, not a fault. */
-Deno.test("token-introspect: reports which actions this token can run", async () => {
+test("token-introspect: reports which actions this token can run", async () => {
   const { ctx, calls } = mockCtx([
     ok({ Features: ["signinattempts", "itemusages"], UUID: "t1", IssuedAt: "2026-01-01" }),
   ], { display: eventsDisplay });
@@ -21,7 +22,7 @@ Deno.test("token-introspect: reports which actions this token can run", async ()
   assertEquals(result.uuid, "t1");
 });
 
-Deno.test("token-introspect: a token granted everything reports everything", async () => {
+test("token-introspect: a token granted everything reports everything", async () => {
   const { ctx } = mockCtx([
     ok({ Features: ["auditevents", "itemusages", "signinattempts"] }),
   ], { display: eventsDisplay });
@@ -33,7 +34,7 @@ Deno.test("token-introspect: a token granted everything reports everything", asy
   assert(result.canReadAuditEvents && result.canReadItemUsages && result.canReadSignInAttempts);
 });
 
-Deno.test("token-introspect: a token granted nothing reports nothing", async () => {
+test("token-introspect: a token granted nothing reports nothing", async () => {
   const { ctx } = mockCtx([ok({ Features: [] })], { display: eventsDisplay });
   const result = await action.execute!({}, ctx) as {
     features: string[];
@@ -43,13 +44,13 @@ Deno.test("token-introspect: a token granted nothing reports nothing", async () 
   assertEquals(result.canReadAuditEvents, false);
 });
 
-Deno.test("token-introspect: a Connect connection is refused", async () => {
+test("token-introspect: a Connect connection is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "**Events**");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("token-introspect: takes no parameters", () => {
+test("token-introspect: takes no parameters", () => {
   assertEquals(action.params?.length ?? 0, 0);
   assert(/scope rather than a fault/.test(action.description!), action.description);
 });

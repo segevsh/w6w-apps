@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelCreate from "../../actions/channel-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("channel-create: POST /api/v3/channels/add with every documented parameter", async () => {
+test("channel-create: POST /api/v3/channels/add with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await channelCreate.execute({
     "workspaceId": 100,
@@ -38,7 +39,7 @@ Deno.test("channel-create: POST /api/v3/channels/add with every documented param
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("channel-create: sends a form body, never a query string", async () => {
+test("channel-create: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelCreate.execute({
     "workspaceId": 100,
@@ -58,18 +59,18 @@ Deno.test("channel-create: sends a form body, never a query string", async () =>
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("channel-create: omits optional parameters that are not set", async () => {
+test("channel-create: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelCreate.execute({ "workspaceId": 100, "name": "sample name" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "workspace_id": "100", "name": "sample name" });
 });
 
-Deno.test("channel-create: is declared non-idempotent", () => {
+test("channel-create: is declared non-idempotent", () => {
   assertEquals(channelCreate.idempotent, false);
 });
 
-Deno.test("channel-create: sends no credential of its own", async () => {
+test("channel-create: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelCreate.execute({
     "workspaceId": 100,
@@ -88,7 +89,7 @@ Deno.test("channel-create: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("channel-create: surfaces Twist's error body", async () => {
+test("channel-create: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

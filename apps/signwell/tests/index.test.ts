@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: {
     id: string;
@@ -12,7 +14,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 18 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 18 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 18);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -23,14 +25,14 @@ Deno.test("index: exports 18 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Anything that sends, notifies, or creates a new record on every call. */
-Deno.test("index: the actions that duplicate or notify on a retry say so", () => {
+test("index: the actions that duplicate or notify on a retry say so", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, [
     "bulk-send-create",
@@ -43,34 +45,34 @@ Deno.test("index: the actions that duplicate or notify on a retry say so", () =>
   ]);
 });
 
-Deno.test("index: exports the one auth method and the three health checks", () => {
+test("index: exports the one auth method and the three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-key"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: the manifest names exactly the API host and the status host", () => {
+test("index: the manifest names exactly the API host and the status host", () => {
   assertEquals(manifest.w6w.network.allow.sort(), ["status.signwell.com", "www.signwell.com"]);
   assertEquals(manifest.w6w.id, "io.w6w.signwell");
 });
 
-Deno.test("index: 1-3 categories, all from the controlled vocabulary", () => {
+test("index: 1-3 categories, all from the controlled vocabulary", () => {
   assert(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
   assertEquals(manifest.w6w.categories, ["documents", "legal", "productivity"]);
 });
 
-Deno.test("index: the icon is the verified vendor svg", async () => {
+test("index: the icon is the verified vendor svg", async () => {
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   assert(svg.startsWith("<svg") && svg.includes("#4db7c6"), "icon.svg is not the vendor mark");
 });
 
 /** The sandbox rules that can only be seen in source. */
 const code = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
-Deno.test("index: no action reaches the network except through ctx.fetch", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action reaches the network except through ctx.fetch", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(
       !/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")),
       `${entry.name} calls global fetch`,
@@ -79,16 +81,16 @@ Deno.test("index: no action reaches the network except through ctx.fetch", async
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/x-api-key/i.test(src), `${entry.name} sets the auth header`);
     assert(!/credential/i.test(src), `${entry.name} reads the credential`);
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// x-api-key\nconst a = 1;").trim(), "const a = 1;");
 });

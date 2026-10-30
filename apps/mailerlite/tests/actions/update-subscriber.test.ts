@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-subscriber.ts";
 
-Deno.test("update-subscriber: PUTs /api/subscribers/{id}", async () => {
+test("update-subscriber: PUTs /api/subscribers/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1" } } }]);
   await action.execute!({ subscriberId: "1", status: "active" }, ctx);
   assertEquals(calls[0].method, "PUT");
   assertEquals(new URL(calls[0].url).pathname, "/api/subscribers/1");
 });
 
-Deno.test("update-subscriber: never sends an email field — PUT cannot change the address", async () => {
+test("update-subscriber: never sends an email field — PUT cannot change the address", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ subscriberId: "1", fields: { name: "Ada" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).email, undefined);
 });
 
-Deno.test("update-subscriber: maps camelCase params onto snake_case body keys", async () => {
+test("update-subscriber: maps camelCase params onto snake_case body keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({
     subscriberId: "1",
@@ -36,13 +37,13 @@ Deno.test("update-subscriber: maps camelCase params onto snake_case body keys", 
   });
 });
 
-Deno.test("update-subscriber: omitting groups leaves membership untouched (no key sent)", async () => {
+test("update-subscriber: omitting groups leaves membership untouched (no key sent)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ subscriberId: "1", status: "active" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["status"]);
 });
 
-Deno.test("update-subscriber: URL-encodes the id path segment", async () => {
+test("update-subscriber: URL-encodes the id path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ subscriberId: "a b" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/subscribers/a%20b");

@@ -1,4 +1,5 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import {
   basicAuthHeader,
   formatTicketTailorError,
@@ -9,12 +10,12 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("basicAuthHeader: base64(key + ':') — RFC 7617 basic, not base64(key) alone", () => {
+test("basicAuthHeader: base64(key + ':') — RFC 7617 basic, not base64(key) alone", () => {
   // base64("sk_test_123:") computed independently.
   assertEquals(basicAuthHeader("sk_test_123"), "Basic c2tfdGVzdF8xMjM6");
 });
 
-Deno.test("toFormBody: scalars, arrays as key[], objects as key[subkey], drops empty", () => {
+test("toFormBody: scalars, arrays as key[], objects as key[subkey], drops empty", () => {
   const body = toFormBody({
     name: "Test discount",
     price: 540,
@@ -37,21 +38,21 @@ Deno.test("toFormBody: scalars, arrays as key[], objects as key[subkey], drops e
   assertEquals(parts.has("skip_empty"), false);
 });
 
-Deno.test("toList: parses comma strings and passes through arrays", () => {
+test("toList: parses comma strings and passes through arrays", () => {
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(undefined), undefined);
 });
 
-Deno.test("nextCursor: pulls starting_after/ending_before out of a links URL", () => {
+test("nextCursor: pulls starting_after/ending_before out of a links URL", () => {
   assertEquals(nextCursor("/v1/orders?starting_after=or_223"), "or_223");
   assertEquals(nextCursor("/v1/orders?ending_before=or_100"), "or_100");
   assertEquals(nextCursor(null), undefined);
   assertEquals(nextCursor(undefined), undefined);
 });
 
-Deno.test("formatTicketTailorError: surfaces error_code, message, hint and field errors", () => {
+test("formatTicketTailorError: surfaces error_code, message, hint and field errors", () => {
   const raw = JSON.stringify({
     status: 400,
     error_code: "VALIDATION_ERROR",
@@ -63,13 +64,13 @@ Deno.test("formatTicketTailorError: surfaces error_code, message, hint and field
   assertMatch(msg, /name: Value is required/);
 });
 
-Deno.test("formatTicketTailorError: falls back to raw body when not JSON", () => {
+test("formatTicketTailorError: falls back to raw body when not JSON", () => {
   const msg = formatTicketTailorError(500, "GET", "/v1/orders", "<html>oops</html>");
   assertMatch(msg, /500/);
   assertMatch(msg, /oops/);
 });
 
-Deno.test("TicketTailorClient.request: builds the URL, query, and parses JSON", async () => {
+test("TicketTailorClient.request: builds the URL, query, and parses JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   const client = new TicketTailorClient(ctx);
   const result = await client.request("/events", { query: { limit: 5, status: "" } });
@@ -79,7 +80,7 @@ Deno.test("TicketTailorClient.request: builds the URL, query, and parses JSON", 
   assertEquals(queryOf(calls[0].url), { limit: "5" });
 });
 
-Deno.test("TicketTailorClient.request: sends form bodies as application/x-www-form-urlencoded", async () => {
+test("TicketTailorClient.request: sends form bodies as application/x-www-form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "es_1" } }]);
   const client = new TicketTailorClient(ctx);
   await client.request("/event_series", { method: "POST", form: { name: "Test" } });
@@ -88,7 +89,7 @@ Deno.test("TicketTailorClient.request: sends form bodies as application/x-www-fo
   assertEquals(calls[0].body, "name=Test");
 });
 
-Deno.test("TicketTailorClient.request: throws a formatted error on a non-ok response", async () => {
+test("TicketTailorClient.request: throws a formatted error on a non-ok response", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

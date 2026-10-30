@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/email-send.ts";
 import { jsonBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-send: POST /email/send builds recipients, from, domain and template", async () => {
+test("email-send: POST /email/send builds recipients, from, domain and template", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -41,7 +42,7 @@ Deno.test("email-send: POST /email/send builds recipients, from, domain and temp
   assertEquals(out, { uniqueId: "a1d2", message: "Thank you. Your request has been queued." });
 });
 
-Deno.test("email-send: minimal input omits cc, bcc, reply_to and attachments", async () => {
+test("email-send: minimal input omits cc, bcc, reply_to and attachments", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", hasError: false, data: {} } }]);
   await action.execute({
     templateId: "t",
@@ -55,14 +56,14 @@ Deno.test("email-send: minimal input omits cc, bcc, reply_to and attachments", a
   for (const k of ["reply_to", "attachments"]) assertEquals(k in body, false);
 });
 
-Deno.test("email-send: requires at least one recipient", async () => {
+test("email-send: requires at least one recipient", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () =>
     await action.execute({ templateId: "t", domain: "d", fromEmail: "a@d", to: "" }, ctx)
   );
 });
 
-Deno.test("email-send: a 401 fail envelope fails the step", async () => {
+test("email-send: a 401 fail envelope fails the step", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { status: "fail", hasError: true, errors: "Unauthorized", code: "401" },
@@ -73,7 +74,7 @@ Deno.test("email-send: a 401 fail envelope fails the step", async () => {
   assert(err.message.includes("Unauthorized"));
 });
 
-Deno.test("email-send: puts no credential on the request (sign owns that)", async () => {
+test("email-send: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", hasError: false, data: { unique_id: "u" }, message: "queued" },
   }]);
@@ -88,7 +89,7 @@ Deno.test("email-send: puts no credential on the request (sign owns that)", asyn
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("email-send: a vendor error surfaces its own message", async () => {
+test("email-send: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({

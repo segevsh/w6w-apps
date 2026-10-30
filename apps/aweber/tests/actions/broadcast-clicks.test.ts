@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastClicks from "../../actions/broadcast-clicks.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("broadcast-clicks: pages with the before cursor", async () => {
+test("broadcast-clicks: pages with the before cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ email: "a@b.com" }]) }]);
   await broadcastClicks.execute(
     { accountId: "1", listId: "2", broadcastId: "1", before: "cursor-xyz" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-completion.ts";
 
-Deno.test("chat-completion: POSTs /v1/sonar with model + messages only", async () => {
+test("chat-completion: POSTs /v1/sonar with model + messages only", async () => {
   const body = { id: "cmpl-1", choices: [], citations: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -23,7 +24,7 @@ Deno.test("chat-completion: POSTs /v1/sonar with model + messages only", async (
   assertEquals(result, body);
 });
 
-Deno.test("chat-completion: forwards optional params with snake_case keys", async () => {
+test("chat-completion: forwards optional params with snake_case keys", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -71,7 +72,7 @@ Deno.test("chat-completion: forwards optional params with snake_case keys", asyn
   assertEquals(sent.language_preference, "en");
 });
 
-Deno.test("chat-completion: nests web search context/type under web_search_options", async () => {
+test("chat-completion: nests web search context/type under web_search_options", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -86,7 +87,7 @@ Deno.test("chat-completion: nests web search context/type under web_search_optio
   assertEquals(sent.web_search_options, { search_context_size: "high", search_type: "pro" });
 });
 
-Deno.test("chat-completion: response_format text is sent as { type: 'text' }", async () => {
+test("chat-completion: response_format text is sent as { type: 'text' }", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "sonar", messages: [{ role: "user", content: "x" }], responseFormat: "text" },
@@ -95,7 +96,7 @@ Deno.test("chat-completion: response_format text is sent as { type: 'text' }", a
   assertEquals(JSON.parse(calls[0].body!).response_format, { type: "text" });
 });
 
-Deno.test("chat-completion: response_format json_schema carries the schema through", async () => {
+test("chat-completion: response_format json_schema carries the schema through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const jsonSchema = { schema: { type: "object", properties: { answer: { type: "string" } } } };
   await action.execute!(
@@ -113,7 +114,7 @@ Deno.test("chat-completion: response_format json_schema carries the schema throu
   });
 });
 
-Deno.test("chat-completion: omits undefined optional params and empty arrays from the body", async () => {
+test("chat-completion: omits undefined optional params and empty arrays from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/voucher-create.ts";
 
-Deno.test("voucher-create: POST /3/vouchers with a wrapped body", async () => {
+test("voucher-create: POST /3/vouchers with a wrapped body", async () => {
   const reply = { "Voucher": { "Id": 1 } };
   const { ctx, calls } = mockCtx([{ status: 201, body: reply }]);
   const result = await action.execute!({
@@ -60,7 +61,7 @@ Deno.test("voucher-create: POST /3/vouchers with a wrapped body", async () => {
   assertEquals(Object.fromEntries(new URL(bare.calls[0].url).searchParams), {});
 });
 
-Deno.test("voucher-create: rejects an additionalFields that is not a JSON object", async () => {
+test("voucher-create: rejects an additionalFields that is not a JSON object", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

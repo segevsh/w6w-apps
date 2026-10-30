@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 61;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -41,7 +43,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * no idempotency key the vendor accepts — a retry would double-render (and
  * double-bill), so none of them may be marked safe to retry.
  */
-Deno.test("index: no render/create/install action is marked idempotent", () => {
+test("index: no render/create/install action is marked idempotent", () => {
   for (
     const key of [
       "image-create",
@@ -82,7 +84,7 @@ Deno.test("index: no render/create/install action is marked idempotent", () => {
  * hash. Saying so is what lets the runtime recover from a dropped connection
  * instead of failing the run.
  */
-Deno.test("index: deletes, updates, and the content-addressed upload are marked idempotent", () => {
+test("index: deletes, updates, and the content-addressed upload are marked idempotent", () => {
   for (
     const key of [
       "image-template-update",
@@ -100,7 +102,7 @@ Deno.test("index: deletes, updates, and the content-addressed upload are marked 
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -119,7 +121,7 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
 /**
  * `account-get` is the one documented exception to the last rule: `GET
@@ -128,7 +130,7 @@ const actionSource = async (key: string) =>
  * value), and this action's whole job is to report it. Every other action
  * must stay clear of the word entirely.
  */
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -140,7 +142,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -158,7 +160,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * never a fetch target (the actual host swap goes through `SYNC_API_BASE`
  * from `lib/client.ts`). Every other action must contain no host literal.
  */
-Deno.test("index: no action hard-codes a Bannerbear host outside a param hint", async () => {
+test("index: no action hard-codes a Bannerbear host outside a param hint", async () => {
   for (const a of app.actions) {
     if (a.key === "image-create") continue;
     const src = await actionSource(a.key);
@@ -171,7 +173,7 @@ Deno.test("index: no action hard-codes a Bannerbear host outside a param hint", 
  * hint, not a request target — it never reaches `ctx.fetch`. Every other
  * action must contain no absolute URL at all.
  */
-Deno.test("index: no action contains an absolute URL outside a param placeholder", async () => {
+test("index: no action contains an absolute URL outside a param placeholder", async () => {
   for (const a of app.actions) {
     if (a.key === "webhook-create") continue;
     const src = await actionSource(a.key);
@@ -179,7 +181,7 @@ Deno.test("index: no action contains an absolute URL outside a param placeholder
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -194,7 +196,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
  * action may reference it: that would mean an update/get/list path started
  * echoing a secret the API itself never repeats.
  */
-Deno.test("index: signing_key is referenced only by instant-url-create", async () => {
+test("index: signing_key is referenced only by instant-url-create", async () => {
   for (const a of app.actions) {
     if (a.key === "instant-url-create") continue;
     const src = await actionSource(a.key);
@@ -210,12 +212,12 @@ Deno.test("index: signing_key is referenced only by instant-url-create", async (
  * The auth probe is pinned by path. Choosing it is the step where a
  * credential most easily leaks back out or a scope requirement creeps in.
  */
-Deno.test("index: the auth probe is /account", async () => {
-  const src = code(await Deno.readTextFile(new URL("../auth/bearer-token.ts", import.meta.url)));
+test("index: the auth probe is /account", async () => {
+  const src = code(await denoReadTextFile(new URL("../auth/bearer-token.ts", import.meta.url)));
   assert(src.includes('"/account"'), "auth probe no longer hits /account");
 });
 
-Deno.test("index: the credential field is declared secret", () => {
+test("index: the credential field is declared secret", () => {
   const [method] = app.auth;
   assertEquals(method.key, "bearer-token");
   assertEquals(method.type, "bearer");
@@ -228,7 +230,7 @@ Deno.test("index: the credential field is declared secret", () => {
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -242,7 +244,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * `ok` in the roll-up, so at any severity but `informational` a declared
  * absence pins the App at `unknown` forever.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = app.healthChecks.filter((h) => h.unavailable);
   assert(unavailable.length > 0, "no declared absence — this test would pass vacuously");
   for (const h of unavailable) {
@@ -251,7 +253,7 @@ Deno.test("index: every unavailable health check is informational", () => {
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the key. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   const widening = app.healthChecks.filter((h) => h.network?.allow?.length);
   for (const h of widening) {
     assert(
@@ -263,9 +265,9 @@ Deno.test("index: any health check declaring extra egress is unsigned", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows both API hosts and no others", async () => {
+test("index: the manifest allows both API hosts and no others", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] }; appearance: { icon: { svg: string } } } };
   assertEquals(manifest.w6w.id, "io.w6w.bannerbear");
   assertEquals(
@@ -275,8 +277,8 @@ Deno.test("index: the manifest allows both API hosts and no others", async () =>
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is the vendor's mark, embedded verbatim", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is the vendor's mark, embedded verbatim", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Bannerbear's own apple-touch-icon.png (1060x1060), downloaded from
   // www.bannerbear.com/images/touchicon.png on 2026-08-29 and downsized with
   // ImageMagick to 128x128 for a reasonable asset size — the artwork itself
@@ -288,7 +290,7 @@ Deno.test("index: the icon is the vendor's mark, embedded verbatim", async () =>
   assert(svg.includes('href="data:image/png;base64,'), "icon.svg is not an embedded PNG");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: lists users, maps paging", async () => {
+test("user-list: lists users, maps paging", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "data": [{ "id": "1" }], "has_more": true, "next_token": "n2" },
@@ -31,7 +32,7 @@ Deno.test("user-list: lists users, maps paging", async () => {
   });
 });
 
-Deno.test("user-list: empty page", async () => {
+test("user-list: empty page", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "data": [] } }]);
   const out = await action.execute({} as never, ctx);
   assertEquals(calls.length, 1);
@@ -45,6 +46,6 @@ Deno.test("user-list: empty page", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "users": [], "hasMore": false });
 });
 
-Deno.test("user-list: is a read action", () => {
+test("user-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

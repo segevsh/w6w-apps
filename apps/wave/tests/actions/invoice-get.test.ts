@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 
-Deno.test("invoice-get: returns the invoice by id", async () => {
+test("invoice-get: returns the invoice by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { invoice: { id: "i1", invoiceNumber: "INV-001" } } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("invoice-get: returns the invoice by id", async () => {
   assertEquals(body.variables.invoiceId, "i1");
 });
 
-Deno.test("invoice-get: type/resource metadata", () => {
+test("invoice-get: type/resource metadata", () => {
   assertEquals(invoiceGet.type, "read");
   assertEquals(invoiceGet.resource, "invoice");
 });

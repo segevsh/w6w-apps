@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { data, gqlOf, mockCtx, optionValues, param } from "../_helpers.ts";
 import postCreate from "../../actions/post-create.ts";
 
@@ -8,7 +9,7 @@ function input(calls: { body: string | null }[]): Record<string, unknown> {
   return (gqlOf(calls[0] as never).variables as { input: Record<string, unknown> }).input;
 }
 
-Deno.test("post-create: the minimum call matches Buffer's own example", async () => {
+test("post-create: the minimum call matches Buffer's own example", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", text: "Hello", mode: "addToQueue" }, ctx);
   assertEquals(input(calls), {
@@ -19,13 +20,13 @@ Deno.test("post-create: the minimum call matches Buffer's own example", async ()
   });
 });
 
-Deno.test("post-create: schedulingType defaults to automatic when left blank", async () => {
+test("post-create: schedulingType defaults to automatic when left blank", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "shareNow", schedulingType: "" }, ctx);
   assertEquals(input(calls).schedulingType, "automatic");
 });
 
-Deno.test("post-create: customScheduled carries dueAt through", async () => {
+test("post-create: customScheduled carries dueAt through", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({
     channelId: "c1",
@@ -37,7 +38,7 @@ Deno.test("post-create: customScheduled carries dueAt through", async () => {
   assertEquals(input(calls).dueAt, "2026-03-10T15:00:00.000Z");
 });
 
-Deno.test("post-create: the mode options are Buffer's four", () => {
+test("post-create: the mode options are Buffer's four", () => {
   assertEquals(optionValues(postCreate, "mode"), [
     "addToQueue",
     "shareNow",
@@ -48,25 +49,25 @@ Deno.test("post-create: the mode options are Buffer's four", () => {
   assertEquals(param(postCreate, "mode").required, true);
 });
 
-Deno.test("post-create: dueAt and mode each name the other, because the trap is silent", () => {
+test("post-create: dueAt and mode each name the other, because the trap is silent", () => {
   assert(/Custom scheduled time/.test(String(param(postCreate, "dueAt").hint)));
   assert(/Scheduled for/.test(String(param(postCreate, "mode").hint)));
 });
 
-Deno.test("post-create: booleans are omitted unless set — needsApproval especially", async () => {
+test("post-create: booleans are omitted unless set — needsApproval especially", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "addToQueue" }, ctx);
   assertEquals("needsApproval" in input(calls), false);
   assertEquals("saveToDraft" in input(calls), false);
 });
 
-Deno.test("post-create: an explicit false for saveToDraft still goes out", async () => {
+test("post-create: an explicit false for saveToDraft still goes out", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "addToQueue", saveToDraft: false }, ctx);
   assertEquals(input(calls).saveToDraft, false);
 });
 
-Deno.test("post-create: image URLs become one asset each, in order", async () => {
+test("post-create: image URLs become one asset each, in order", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({
     channelId: "c1",
@@ -79,13 +80,13 @@ Deno.test("post-create: image URLs become one asset each, in order", async () =>
   ]);
 });
 
-Deno.test("post-create: no assets key at all when none are supplied", async () => {
+test("post-create: no assets key at all when none are supplied", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "addToQueue" }, ctx);
   assertEquals("assets" in input(calls), false);
 });
 
-Deno.test("post-create: network metadata is passed through unchanged", async () => {
+test("post-create: network metadata is passed through unchanged", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({
     channelId: "c1",
@@ -95,7 +96,7 @@ Deno.test("post-create: network metadata is passed through unchanged", async () 
   assertEquals(input(calls).metadata, { linkedin: { firstComment: "More here →" } });
 });
 
-Deno.test("post-create: bad metadata JSON fails loudly, before any request", () => {
+test("post-create: bad metadata JSON fails loudly, before any request", () => {
   const { ctx, calls } = mockCtx([]);
   // Throws synchronously — the parse happens while the mutation variables are
   // being built, so nothing reaches the network.
@@ -107,7 +108,7 @@ Deno.test("post-create: bad metadata JSON fails loudly, before any request", () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("post-create: tag ids split on commas", async () => {
+test("post-create: tag ids split on commas", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "addToQueue", tagIds: "t1, t2" }, ctx);
   assertEquals(input(calls).tagIds, ["t1", "t2"]);
@@ -115,13 +116,13 @@ Deno.test("post-create: tag ids split on commas", async () => {
 
 /* -------- the 200-that-means-failure arm -------- */
 
-Deno.test("post-create: a success arm returns the post", async () => {
+test("post-create: a success arm returns the post", async () => {
   const { ctx } = mockCtx([ok()]);
   const out = await postCreate.execute({ channelId: "c1", mode: "addToQueue" }, ctx);
   assertEquals((out as { post: { id: string } }).post.id, "p1");
 });
 
-Deno.test("post-create: an InvalidInputError arrives 200 and still throws", async () => {
+test("post-create: an InvalidInputError arrives 200 and still throws", async () => {
   const { ctx } = mockCtx([
     data({ createPost: { __typename: "InvalidInputError", message: "Text is required" } }),
   ]);
@@ -132,7 +133,7 @@ Deno.test("post-create: an InvalidInputError arrives 200 and still throws", asyn
   assert(/Text is required/.test(err.message), err.message);
 });
 
-Deno.test("post-create: LimitReachedError — the daily cap — is a failure, not a result", async () => {
+test("post-create: LimitReachedError — the daily cap — is a failure, not a result", async () => {
   const { ctx } = mockCtx([
     data({
       createPost: { __typename: "LimitReachedError", message: "Daily posting limit reached" },
@@ -145,7 +146,7 @@ Deno.test("post-create: LimitReachedError — the daily cap — is a failure, no
   assert(/Daily posting limit/.test(err.message), err.message);
 });
 
-Deno.test("post-create: RestProxyError names the network's own rejection", async () => {
+test("post-create: RestProxyError names the network's own rejection", async () => {
   const { ctx } = mockCtx([
     data({
       createPost: {
@@ -164,7 +165,7 @@ Deno.test("post-create: RestProxyError names the network's own rejection", async
   assert(/RestProxyError/.test(err.message), err.message);
 });
 
-Deno.test("post-create: the mutation asks for __typename and the MutationError tail", async () => {
+test("post-create: the mutation asks for __typename and the MutationError tail", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await postCreate.execute({ channelId: "c1", mode: "addToQueue" }, ctx);
   const { query } = gqlOf(calls[0]);
@@ -173,7 +174,7 @@ Deno.test("post-create: the mutation asks for __typename and the MutationError t
   assert(/\.\.\. on PostActionSuccess/.test(query), query);
 });
 
-Deno.test("post-create: is not idempotent — every call mints a new post", () => {
+test("post-create: is not idempotent — every call mints a new post", () => {
   assertEquals(postCreate.idempotent, false);
   assertEquals(postCreate.type, "perform");
 });

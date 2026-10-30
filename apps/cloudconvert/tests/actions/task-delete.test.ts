@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskDelete from "../../actions/task-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-delete: DELETEs /v2/tasks/{id} and reports deleted on 204", async () => {
+test("task-delete: DELETEs /v2/tasks/{id} and reports deleted on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await taskDelete.execute({ taskId: "t1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("task-delete: DELETEs /v2/tasks/{id} and reports deleted on 204", asyn
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("task-delete: is declared idempotent", () => {
+test("task-delete: is declared idempotent", () => {
   assertEquals(taskDelete.idempotent, true);
 });

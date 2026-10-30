@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-delete.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("lead-delete: requires confirm=true before any network call", async () => {
+test("lead-delete: requires confirm=true before any network call", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: 1, confirm: false }, ctx);
@@ -12,7 +13,7 @@ Deno.test("lead-delete: requires confirm=true before any network call", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lead-delete: calls crm.lead.delete and returns deleted:true on success", async () => {
+test("lead-delete: calls crm.lead.delete and returns deleted:true on success", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: true, time: {} } },
   ], { display });
@@ -24,7 +25,7 @@ Deno.test("lead-delete: calls crm.lead.delete and returns deleted:true on succes
   assertEquals(out, { id: 9, deleted: true });
 });
 
-Deno.test("lead-delete: the confirm param is required and defaults to false", () => {
+test("lead-delete: the confirm param is required and defaults to false", () => {
   const confirm = action.params!.find((p) => p.key === "confirm")!;
   assertEquals(confirm.required, true);
   assertEquals(confirm.default, false);

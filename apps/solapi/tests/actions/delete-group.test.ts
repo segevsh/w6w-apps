@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import deleteGroup from "../../actions/delete-group.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => deleteGroup.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("delete-group: declares a perform action with a description, params and output", () => {
+test("delete-group: declares a perform action with a description, params and output", () => {
   assertEquals(deleteGroup.key, "delete-group");
   assertEquals(deleteGroup.type, "perform");
   assert((deleteGroup.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("delete-group: declares a perform action with a description, params an
   assertEquals(deleteGroup.idempotent, false);
 });
 
-Deno.test("delete-group: sends the documented request and returns the documented shape", async () => {
+test("delete-group: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "groupId": "G4V1",
@@ -45,7 +46,7 @@ Deno.test("delete-group: sends the documented request and returns the documented
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("delete-group: a SOLAPI error body is thrown with its code and message", async () => {
+test("delete-group: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

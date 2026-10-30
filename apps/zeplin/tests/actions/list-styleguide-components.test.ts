@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-styleguide-components.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-styleguide-components: GETs /styleguides/sg1/components and wraps the array with its paging position", async () => {
+test("list-styleguide-components: GETs /styleguides/sg1/components and wraps the array with its paging position", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     styleguideId: "sg1",
@@ -28,7 +29,7 @@ Deno.test("list-styleguide-components: GETs /styleguides/sg1/components and wrap
   });
 });
 
-Deno.test("list-styleguide-components: a full page yields next_offset; limit and offset are validated", async () => {
+test("list-styleguide-components: a full page yields next_offset; limit and offset are validated", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     ...{
@@ -59,7 +60,7 @@ Deno.test("list-styleguide-components: a full page yields next_offset; limit and
   );
 });
 
-Deno.test("list-styleguide-components: a vendor error is thrown with its message; a non-array body is an error", async () => {
+test("list-styleguide-components: a vendor error is thrown with its message; a non-array body is an error", async () => {
   const bad = mockCtx([{ status: 401, body: { message: "invalid_token" } }]);
   await assertRejects(
     async () =>

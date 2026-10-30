@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { flag01, formatYouformError, truncate } from "../../lib/client.ts";
 
-Deno.test("flag01: maps booleans to 1/0 and leaves unset absent", () => {
+test("flag01: maps booleans to 1/0 and leaves unset absent", () => {
   assertEquals([flag01(true), flag01(false), flag01(undefined), flag01(null)], [
     "1",
     "0",
@@ -10,7 +11,7 @@ Deno.test("flag01: maps booleans to 1/0 and leaves unset absent", () => {
   ]);
 });
 
-Deno.test("formatYouformError: non-JSON bodies are kept, long ones truncated", () => {
+test("formatYouformError: non-JSON bodies are kept, long ones truncated", () => {
   assertEquals(
     formatYouformError(502, "GET", "/api/me", "bad gateway"),
     "Youform 502 for GET /api/me: bad gateway",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationGet from "../../actions/conversation-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("conversation-get: fetches GET /conversations/{id} with a comma-joined include", async () => {
+test("conversation-get: fetches GET /conversations/{id} with a comma-joined include", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       meta: { retrieved_at: "2026-09-29T00:00:00Z" },
@@ -26,13 +27,13 @@ Deno.test("conversation-get: fetches GET /conversations/{id} with a comma-joined
   assertEquals(out.data.relationships?.insights?.[0].topic, "Decisions");
 });
 
-Deno.test("conversation-get: URL-encodes the conversation id", async () => {
+test("conversation-get: URL-encodes the conversation id", async () => {
   const { ctx, calls } = mockCtx([{ body: { meta: {}, data: {} } }]);
   await conversationGet.execute({ id: "conv/1", include: ["all"] }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/conversations/conv%2F1");
 });
 
-Deno.test("conversation-get: include is required, per the docs' own parameter table", () => {
+test("conversation-get: include is required, per the docs' own parameter table", () => {
   const param = conversationGet.params!.find((p) => p.key === "include")!;
   assertEquals(param.required, true);
   assertEquals(param.type, "multiselect");

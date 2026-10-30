@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { cfOk, mockCtx } from "../_helpers.ts";
 import action from "../../actions/zone-settings-get.ts";
 
-Deno.test("zone-settings-get: GETs /zones/{id}/settings", async () => {
+test("zone-settings-get: GETs /zones/{id}/settings", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: cfOk([{ id: "ssl", value: "full" }]) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("zone-settings-get: GETs /zones/{id}/settings", async () => {
   assertEquals(result, [{ id: "ssl", value: "full" }]);
 });
 
-Deno.test("zone-settings-get: missing zoneId rejects", async () => {
+test("zone-settings-get: missing zoneId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "" }, ctx),

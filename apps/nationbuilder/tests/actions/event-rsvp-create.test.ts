@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/event-rsvp-create.ts";
 
-Deno.test("event-rsvp-create: POSTs /event_rsvps", async () => {
+test("event-rsvp-create: POSTs /event_rsvps", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "9", type: "event_rsvps", attributes: { event_id: "1" } } },
   }]);

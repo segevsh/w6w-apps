@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/close-session.ts";
 
-Deno.test("close-session: POSTs closeSession with the required session header", async () => {
+test("close-session: POSTs closeSession with the required session header", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ itemId: "ITEM1", sessionId: "sess-1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("close-session: POSTs closeSession with the required session header", 
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("close-session: works under the path addressing form", async () => {
+test("close-session: works under the path addressing form", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ itemPath: "Reports/Q3.xlsx", sessionId: "s" }, ctx);
   assertEquals(
@@ -21,13 +22,13 @@ Deno.test("close-session: works under the path addressing form", async () => {
   );
 });
 
-Deno.test("close-session: sends no body — the endpoint takes none", async () => {
+test("close-session: sends no body — the endpoint takes none", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ itemId: "ITEM1", sessionId: "s" }, ctx);
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("close-session: refuses a blank session id without calling the network", async () => {
+test("close-session: refuses a blank session id without calling the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", sessionId: "   " }, ctx),
@@ -37,7 +38,7 @@ Deno.test("close-session: refuses a blank session id without calling the network
   assertEquals(calls.length, 0);
 });
 
-Deno.test("close-session: declares the session id required, unlike every other action", () => {
+test("close-session: declares the session id required, unlike every other action", () => {
   const param = action.params?.find((p) => p.key === "sessionId");
   assertEquals(param?.required, true);
 });

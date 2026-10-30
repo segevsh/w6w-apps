@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
 const conn = { display: { tenantId: "42", environment: "production" } };
 
-Deno.test("lead-create: POSTs campaign, summary and prospect details, omitting unset fields", async () => {
+test("lead-create: POSTs campaign, summary and prospect details, omitting unset fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 11, status: "Open" } }], conn);
   await action.execute!(
     {

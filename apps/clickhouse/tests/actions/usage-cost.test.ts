@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/usage-cost.ts";
 
@@ -18,7 +19,7 @@ const costs = {
   },
 };
 
-Deno.test("usage-cost: reads the usage endpoint with the window", async () => {
+test("usage-cost: reads the usage endpoint with the window", async () => {
   const { ctx, calls } = mockCtx([costs], D);
   const result = await action.execute(
     { fromDate: "2026-08-01", toDate: "2026-08-19" },
@@ -32,7 +33,7 @@ Deno.test("usage-cost: reads the usage endpoint with the window", async () => {
 });
 
 /** Compute is where a service with idle scaling off shows up. */
-Deno.test("usage-cost: splits compute, storage and transfer", async () => {
+test("usage-cost: splits compute, storage and transfer", async () => {
   const { ctx } = mockCtx([costs], D);
   const result = await action.execute(
     { fromDate: "2026-08-01", toDate: "2026-08-19" },
@@ -47,7 +48,7 @@ Deno.test("usage-cost: splits compute, storage and transfer", async () => {
   );
 });
 
-Deno.test("usage-cost: totals per service", async () => {
+test("usage-cost: totals per service", async () => {
   const { ctx } = mockCtx([costs], D);
   const result = await action.execute(
     { fromDate: "2026-08-01", toDate: "2026-08-19" },
@@ -58,7 +59,7 @@ Deno.test("usage-cost: totals per service", async () => {
 });
 
 /** ClickHouse Cloud caps how wide a usage query may be. */
-Deno.test("usage-cost: both dates are required, and it says why", async () => {
+test("usage-cost: both dates are required, and it says why", async () => {
   for (const input of [{ fromDate: "2026-08-01" }, { toDate: "2026-08-19" }, {}]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -72,7 +73,7 @@ Deno.test("usage-cost: both dates are required, and it says why", async () => {
   }
 });
 
-Deno.test("usage-cost: no records is not an error", async () => {
+test("usage-cost: no records is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { result: { costs: [] } } }], D);
   const result = await action.execute(
     { fromDate: "2026-08-01", toDate: "2026-08-19" },

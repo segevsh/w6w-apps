@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/business-unit-list-categories.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-unit-list-categories: builds the categories URL with optional filters", async () => {
+test("business-unit-list-categories: builds the categories URL with optional filters", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -22,7 +23,7 @@ Deno.test("business-unit-list-categories: builds the categories URL with optiona
   assertEquals(out.categories[0].categoryId, "pet_store");
 });
 
-Deno.test("business-unit-list-categories: omits unset optional filters", async () => {
+test("business-unit-list-categories: omits unset optional filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { categories: [] } }]);
   await action.execute({ businessUnitId: "bu1" }, ctx);
   const q = queryOf(calls[0].url);

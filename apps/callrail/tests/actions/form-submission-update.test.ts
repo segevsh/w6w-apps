@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formSubmissionUpdate from "../../actions/form-submission-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-submission-update: PUTs tags as an array and the rest verbatim", async () => {
+test("form-submission-update: PUTs tags as an array and the rest verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "FOR1" } }]);
   await formSubmissionUpdate.execute(
     {

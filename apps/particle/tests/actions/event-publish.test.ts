@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-publish.ts";
 
 const ok = { status: 200, body: { ok: true } };
 
-Deno.test("event-publish: posts the event as form fields", async () => {
+test("event-publish: posts the event as form fields", async () => {
   const { ctx, calls } = mockCtx([ok]);
   const result = await action.execute(
     { name: "fleet/reboot", data: "now" },
@@ -20,7 +21,7 @@ Deno.test("event-publish: posts the event as form fields", async () => {
 });
 
 /** Private by default here, against the API's own default. */
-Deno.test("event-publish: publishing publicly needs an acknowledgement", async () => {
+test("event-publish: publishing publicly needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -34,7 +35,7 @@ Deno.test("event-publish: publishing publicly needs an acknowledgement", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-publish: an acknowledged public event goes through and warns", async () => {
+test("event-publish: an acknowledged public event goes through and warns", async () => {
   const { ctx, calls, logs } = mockCtx([ok]);
   const result = await action.execute(
     { name: "telemetry", data: "x", private: false, confirmPublic: true },
@@ -47,7 +48,7 @@ Deno.test("event-publish: an acknowledged public event goes through and warns", 
 });
 
 /** Both limits are in bytes, and a device cannot tell it was truncated. */
-Deno.test("event-publish: the name and payload limits are enforced in bytes", async () => {
+test("event-publish: the name and payload limits are enforced in bytes", async () => {
   const longName = mockCtx([]);
   let nameMessage = "";
   try {
@@ -69,7 +70,7 @@ Deno.test("event-publish: the name and payload limits are enforced in bytes", as
   assertEquals(longData.calls.length, 0);
 });
 
-Deno.test("event-publish: a multi-byte name is measured in bytes", async () => {
+test("event-publish: a multi-byte name is measured in bytes", async () => {
   const { ctx } = mockCtx([]);
   let message = "";
   try {
@@ -82,7 +83,7 @@ Deno.test("event-publish: a multi-byte name is measured in bytes", async () => {
 });
 
 /** Nothing reports which devices received it. */
-Deno.test("event-publish: reports delivery as unknown rather than claiming success", async () => {
+test("event-publish: reports delivery as unknown rather than claiming success", async () => {
   const { ctx } = mockCtx([ok]);
   const result = await action.execute({ name: "e", data: "d" }, ctx) as Record<string, unknown>;
   assertEquals(result.delivered, undefined);
@@ -90,14 +91,14 @@ Deno.test("event-publish: reports delivery as unknown rather than claiming succe
 });
 
 /** The payload is whatever the workflow is telling a fleet. */
-Deno.test("event-publish: logs the name and size, never the payload", async () => {
+test("event-publish: logs the name and size, never the payload", async () => {
   const { ctx, logs } = mockCtx([ok]);
   await action.execute({ name: "cmd", data: "secret-command" }, ctx);
   assertEquals(JSON.stringify(logs).includes("secret-command"), false);
   assertEquals(logs[0].data, { name: "cmd", dataBytes: 14 });
 });
 
-Deno.test("event-publish: a name is required and it is not idempotent", async () => {
+test("event-publish: a name is required and it is not idempotent", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

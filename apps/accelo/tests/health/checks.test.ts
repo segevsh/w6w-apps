@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import deployment from "../../health/deployment.ts";
 import quota from "../../health/quota.ts";
@@ -13,7 +14,7 @@ const summary = (indicator: string, id = "m0sbzc18yt4n") => ({
   status: { indicator, description: "d" },
 });
 
-Deno.test("service: maps the Statuspage indicator, pinned to Accelo's page id", async () => {
+test("service: maps the Statuspage indicator, pinned to Accelo's page id", async () => {
   for (
     const [ind, state] of [["none", "ok"], ["minor", "degraded"], ["major", "down"], [
       "critical",
@@ -26,7 +27,7 @@ Deno.test("service: maps the Statuspage indicator, pinned to Accelo's page id", 
   }
 });
 
-Deno.test("service: a different page, or a failing page, is unknown — never down", async () => {
+test("service: a different page, or a failing page, is unknown — never down", async () => {
   assertEquals(
     (await run(service, mockCtx([{ body: summary("major", "other") }]).ctx)).state,
     "unknown",
@@ -34,12 +35,12 @@ Deno.test("service: a different page, or a failing page, is unknown — never do
   assertEquals((await run(service, mockCtx([{ status: 503, body: {} }]).ctx)).state, "unknown");
 });
 
-Deno.test("service: informational, unsigned, own egress", () => {
+test("service: informational, unsigned, own egress", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.network?.allow, ["status.accelo.com"]);
 });
 
-Deno.test("deployment: Accelo's own 401 invalid_client passes (the host is serving)", async () => {
+test("deployment: Accelo's own 401 invalid_client passes (the host is serving)", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     status: 401,
     body: { meta: { status: "invalid_client", message: "no token" } },
@@ -49,7 +50,7 @@ Deno.test("deployment: Accelo's own 401 invalid_client passes (the host is servi
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("deployment: 400 Deployment not found, 5xx and transport failure are down", async () => {
+test("deployment: 400 Deployment not found, 5xx and transport failure are down", async () => {
   const gone = mockAcceloCtx([{
     status: 400,
     body: { meta: { status: "invalid_request", message: "Deployment 'acme' was not found." } },
@@ -64,7 +65,7 @@ Deno.test("deployment: 400 Deployment not found, 5xx and transport failure are d
   assertEquals((await run(deployment, mockAcceloCtx([]).ctx)).state, "down");
 });
 
-Deno.test("deployment: a 401 that is not Accelo's envelope is degraded; no deployment is unknown", async () => {
+test("deployment: a 401 that is not Accelo's envelope is degraded; no deployment is unknown", async () => {
   assertEquals(
     (await run(deployment, mockAcceloCtx([{ status: 401, body: { x: 1 } }]).ctx)).state,
     "degraded",
@@ -72,7 +73,7 @@ Deno.test("deployment: a 401 that is not Accelo's envelope is degraded; no deplo
   assertEquals((await run(deployment, mockCtx([]).ctx)).state, "unknown");
 });
 
-Deno.test("quota: reads X-RateLimit-* headers; reset is a unix timestamp", async () => {
+test("quota: reads X-RateLimit-* headers; reset is a unix timestamp", async () => {
   const { ctx } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: {} },
     headers: {
@@ -93,7 +94,7 @@ Deno.test("quota: reads X-RateLimit-* headers; reset is a unix timestamp", async
   });
 });
 
-Deno.test("quota: low headroom degrades, exhaustion is down, missing headers are unknown", async () => {
+test("quota: low headroom degrades, exhaustion is down, missing headers are unknown", async () => {
   const h = (remaining: string) => ({
     body: {},
     headers: {

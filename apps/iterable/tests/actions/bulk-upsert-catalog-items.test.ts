@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-upsert-catalog-items.ts";
 
-Deno.test("bulk-upsert-catalog-items: metadata", () => {
+test("bulk-upsert-catalog-items: metadata", () => {
   assertEquals(action.key, "bulk-upsert-catalog-items");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
@@ -13,7 +14,7 @@ Deno.test("bulk-upsert-catalog-items: metadata", () => {
   ]);
 });
 
-Deno.test("bulk-upsert-catalog-items: calls POST /catalogs/my-cat/items on the US host", async () => {
+test("bulk-upsert-catalog-items: calls POST /catalogs/my-cat/items on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "catalogName": "my-cat",
@@ -31,7 +32,7 @@ Deno.test("bulk-upsert-catalog-items: calls POST /catalogs/my-cat/items on the U
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("bulk-upsert-catalog-items: uses the EU host when the connection region is eu", async () => {
+test("bulk-upsert-catalog-items: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -43,7 +44,7 @@ Deno.test("bulk-upsert-catalog-items: uses the EU host when the connection regio
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/catalogs/my-cat/items");
 });
 
-Deno.test("bulk-upsert-catalog-items: rejects a missing `catalogName` without calling Iterable", async () => {
+test("bulk-upsert-catalog-items: rejects a missing `catalogName` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -58,7 +59,7 @@ Deno.test("bulk-upsert-catalog-items: rejects a missing `catalogName` without ca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bulk-upsert-catalog-items: surfaces an HTTP error with Iterable's own code", async () => {
+test("bulk-upsert-catalog-items: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -73,7 +74,7 @@ Deno.test("bulk-upsert-catalog-items: surfaces an HTTP error with Iterable's own
   );
 });
 
-Deno.test("bulk-upsert-catalog-items: treats a 200 carrying a non-Success code as a failure", async () => {
+test("bulk-upsert-catalog-items: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

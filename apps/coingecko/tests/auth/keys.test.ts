@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test as nodeTest } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { AuthDefinition } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import demo from "../../auth/demo-api-key.ts";
@@ -20,25 +21,25 @@ const base = () => ({
   headers: {} as Record<string, string>,
 });
 
-Deno.test("demo sign: stamps x-cg-demo-api-key and keeps the demo host", () => {
+nodeTest("demo sign: stamps x-cg-demo-api-key and keeps the demo host", () => {
   const out = sign(demo, base());
   assertEquals(out.headers["x-cg-demo-api-key"], "CG-k");
   assertEquals(out.url, "https://api.coingecko.com/api/v3/ping");
 });
 
-Deno.test("pro sign: stamps x-cg-pro-api-key and rewrites the host", () => {
+nodeTest("pro sign: stamps x-cg-pro-api-key and rewrites the host", () => {
   const out = sign(pro, base());
   assertEquals(out.headers["x-cg-pro-api-key"], "CG-k");
   assert(!("x-cg-demo-api-key" in out.headers));
   assertEquals(out.url, "https://pro-api.coingecko.com/api/v3/ping");
 });
 
-Deno.test("pro sign: leaves a URL already on the pro host alone", () => {
+nodeTest("pro sign: leaves a URL already on the pro host alone", () => {
   const r = { ...base(), url: "https://pro-api.coingecko.com/api/v3/key" };
   assertEquals(sign(pro, r).url, "https://pro-api.coingecko.com/api/v3/key");
 });
 
-Deno.test("test: ok on gecko_says; the key goes out in the plan's header on the plan's host", async () => {
+nodeTest("test: ok on gecko_says; the key goes out in the plan's header on the plan's host", async () => {
   const d = mockCtx([{ status: 200, body: { gecko_says: "(V3) To the Moon!" } }]);
   assertEquals((await test(demo, d.ctx)).ok, true);
   assertEquals(d.calls[0].url, "https://api.coingecko.com/api/v3/ping");
@@ -50,7 +51,7 @@ Deno.test("test: ok on gecko_says; the key goes out in the plan's header on the 
   assertEquals(p.calls[0].headers["x-cg-pro-api-key"], "CG-k");
 });
 
-Deno.test("test: a 10002 body is a rejected key", async () => {
+nodeTest("test: a 10002 body is a rejected key", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { status: { error_code: 10002, error_message: "API Key Missing. Please" } },
@@ -60,7 +61,7 @@ Deno.test("test: a 10002 body is a rejected key", async () => {
   assert(r.message!.includes("did not accept this pro API key"));
 });
 
-Deno.test("test: a 10010 body points at the other plan's method, whatever the status", async () => {
+nodeTest("test: a 10010 body points at the other plan's method, whatever the status", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error_code: 10010, status: { error_message: "change your root URL" } },
@@ -70,7 +71,7 @@ Deno.test("test: a 10010 body points at the other plan's method, whatever the st
   assert(r.message!.includes("Pro API Key"));
 });
 
-Deno.test("test: a 200 without gecko_says is not a pass; a 5xx is reported verbatim", async () => {
+nodeTest("test: a 200 without gecko_says is not a pass; a 5xx is reported verbatim", async () => {
   const a = mockCtx([{ status: 200, body: "<html>shell</html>" }]);
   assertEquals((await test(demo, a.ctx)).ok, false);
   const b = mockCtx([{ status: 503, body: "upstream down" }]);
@@ -79,7 +80,7 @@ Deno.test("test: a 200 without gecko_says is not a pass; a 5xx is reported verba
   assert(r.message!.includes("503"));
 });
 
-Deno.test("test: missing apiKey fails without a request", async () => {
+nodeTest("test: missing apiKey fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await test(demo, ctx, "")).ok, false);
   assertEquals(calls.length, 0);

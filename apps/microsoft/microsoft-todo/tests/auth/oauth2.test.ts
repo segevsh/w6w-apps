@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { AUTHORIZATION_URL, SCOPES, TOKEN_URL } from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: uses the Entra v2.0 endpoints on the `common` tenant", () => {
+test("oauth2: uses the Entra v2.0 endpoints on the `common` tenant", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(AUTHORIZATION_URL, "https://login.microsoftonline.com/common/oauth2/v2.0/authorize");
@@ -15,7 +16,7 @@ Deno.test("oauth2: uses the Entra v2.0 endpoints on the `common` tenant", () => 
   assertEquals(auth.oauth2?.extraAuthParams, undefined);
 });
 
-Deno.test("oauth2: asks for exactly the least-privileged scope set", () => {
+test("oauth2: asks for exactly the least-privileged scope set", () => {
   assertEquals(SCOPES, ["offline_access", "User.Read", "Tasks.ReadWrite"]);
   assertEquals(auth.oauth2?.scopes, SCOPES);
   // Tasks.ReadWrite is documented as the higher-privileged form of Tasks.Read,
@@ -28,7 +29,7 @@ Deno.test("oauth2: asks for exactly the least-privileged scope set", () => {
   assert(!SCOPES.some((s) => /^(Mail|Calendars|Files|Group|Directory)\./.test(s)));
 });
 
-Deno.test("oauth2: sign appends the Bearer token and makes no network call", async () => {
+test("oauth2: sign appends the Bearer token and makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   const request = {
     url: "https://graph.microsoft.com/v1.0/me/todo/lists",
@@ -40,7 +41,7 @@ Deno.test("oauth2: sign appends the Bearer token and makes no network call", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test reports a missing accessToken without a network call", async () => {
+test("oauth2: test reports a missing accessToken without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -48,7 +49,7 @@ Deno.test("oauth2: test reports a missing accessToken without a network call", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes /me/todo/lists with no query parameters", async () => {
+test("oauth2: test probes /me/todo/lists with no query parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { value: [] } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -62,12 +63,12 @@ Deno.test("oauth2: test probes /me/todo/lists with no query parameters", async (
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test treats an account with zero lists as healthy", async () => {
+test("oauth2: test treats an account with zero lists as healthy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { value: [] } }]);
   assertEquals((await auth.test({ credential: { accessToken: "acc" } }, ctx)).ok, true);
 });
 
-Deno.test("oauth2: test surfaces the upstream status, and leaks no token", async () => {
+test("oauth2: test surfaces the upstream status, and leaks no token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "super-secret" } }, ctx);
   assertEquals(result.ok, false);
@@ -75,7 +76,7 @@ Deno.test("oauth2: test surfaces the upstream status, and leaks no token", async
   assert(!(result.message ?? "").includes("super-secret"));
 });
 
-Deno.test("oauth2: afterConnect labels the connection, preferring mail over UPN", async () => {
+test("oauth2: afterConnect labels the connection, preferring mail over UPN", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "u1",
@@ -93,7 +94,7 @@ Deno.test("oauth2: afterConnect labels the connection, preferring mail over UPN"
   });
 });
 
-Deno.test("oauth2: afterConnect falls back to userPrincipalName when mail is null", async () => {
+test("oauth2: afterConnect falls back to userPrincipalName when mail is null", async () => {
   const { ctx } = mockCtx([{
     body: {
       id: "u1",
@@ -108,7 +109,7 @@ Deno.test("oauth2: afterConnect falls back to userPrincipalName when mail is nul
   assertEquals(user.name, "ada@example.onmicrosoft.com");
 });
 
-Deno.test("oauth2: afterConnect degrades to {} rather than throwing", async () => {
+test("oauth2: afterConnect degrades to {} rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "x" } }, ctx), {});
 });

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deploy-create.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("deploy-create: records a deploy against the release", async () => {
+test("deploy-create: records a deploy against the release", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "7" } }], { display });
   const result = await action.execute!({
     version: "1.2.3",
@@ -20,11 +21,11 @@ Deno.test("deploy-create: records a deploy against the release", async () => {
   assertEquals(result, { id: "7" });
 });
 
-Deno.test("deploy-create: deploying twice is two deploys, so it is not idempotent", () => {
+test("deploy-create: deploying twice is two deploys, so it is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("deploy-create: version and environment are both required", async () => {
+test("deploy-create: version and environment are both required", async () => {
   const noVersion = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ environment: "production" }, noVersion.ctx),

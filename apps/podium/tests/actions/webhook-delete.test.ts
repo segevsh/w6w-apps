@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 
-Deno.test("webhook-delete: sends every documented field in its documented place", async () => {
+test("webhook-delete: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1", secret: "s3cret" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("webhook-delete: sends every documented field in its documented place"
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("webhook-delete: declares its params and kind", () => {
+test("webhook-delete: declares its params and kind", () => {
   assertEquals((webhookDelete.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((webhookDelete.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(webhookDelete.type, "perform");

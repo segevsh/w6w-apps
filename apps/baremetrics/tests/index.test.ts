@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 30;
 
-Deno.test("index: exports actions, one auth method and two health checks", () => {
+test("index: exports actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case, with a description and execute", () => {
+test("index: every action key is unique and kebab-case, with a description and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const a of app.actions) {
@@ -21,7 +22,7 @@ Deno.test("index: every action key is unique and kebab-case, with a description 
   }
 });
 
-Deno.test("index: every perform action states idempotency; reads do not", () => {
+test("index: every perform action states idempotency; reads do not", () => {
   for (const a of app.actions) {
     if (a.type === "perform") {
       assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent unset`);
@@ -31,7 +32,7 @@ Deno.test("index: every perform action states idempotency; reads do not", () => 
   }
 });
 
-Deno.test("index: every source-scoped action requires source_id", () => {
+test("index: every source-scoped action requires source_id", () => {
   for (const a of app.actions) {
     const scoped = !["sources-list", "account-get", "goals-list", "annotations-list"].includes(
       a.key,
@@ -41,7 +42,7 @@ Deno.test("index: every source-scoped action requires source_id", () => {
   }
 });
 
-Deno.test("index: both health checks declare informational/unavailable correctly", () => {
+test("index: both health checks declare informational/unavailable correctly", () => {
   const service = app.healthChecks.find((h) => h.key === "service")!;
   assertEquals(service.severity, "informational");
   assert(service.unavailable?.reason);

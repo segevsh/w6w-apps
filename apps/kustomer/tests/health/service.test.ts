@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import type { HealthFeedEntry, HealthFeedInput } from "@w6w/types";
@@ -11,12 +12,12 @@ function feed(entries: HealthFeedEntry[], error?: string): HealthFeedInput {
   return { entries, latest: entries, fetchedAt: "2026-08-29T00:00:00.000Z", error };
 }
 
-Deno.test("service: declares itself a feed-backed check on Kustomer's real status feed", () => {
+test("service: declares itself a feed-backed check on Kustomer's real status feed", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.feed?.url, "https://status.kustomer.com/history.atom");
 });
 
-Deno.test("service: ok when every incident's newest status word is Resolved", async () => {
+test("service: ok when every incident's newest status word is Resolved", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     {
@@ -29,7 +30,7 @@ Deno.test("service: ok when every incident's newest status word is Resolved", as
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: degraded when an incident's newest status word is not Resolved", async () => {
+test("service: degraded when an incident's newest status word is not Resolved", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     {
@@ -46,13 +47,13 @@ Deno.test("service: degraded when an incident's newest status word is not Resolv
   assertEquals(out.message, "Elevated error rates");
 });
 
-Deno.test("service: unknown when the feed failed to fetch", async () => {
+test("service: unknown when the feed failed to fetch", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!({ feed: feed([], "fetch failed") }, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: unknown when no feed is supplied at all", async () => {
+test("service: unknown when no feed is supplied at all", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

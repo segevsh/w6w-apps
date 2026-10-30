@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upload-photo.ts";
 
-Deno.test("upload-photo: POSTs /{pageId}/photos with url/caption/published as query params", async () => {
+test("upload-photo: POSTs /{pageId}/photos with url/caption/published as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "photo-1", post_id: "post-1" } }]);
   const result = await action.execute!(
     { pageId: "page-1", url: "https://example.com/pic.jpg", caption: "nice" },
@@ -19,6 +20,6 @@ Deno.test("upload-photo: POSTs /{pageId}/photos with url/caption/published as qu
   assertEquals(result, { id: "photo-1", post_id: "post-1" });
 });
 
-Deno.test("upload-photo: declares idempotent: false", () => {
+test("upload-photo: declares idempotent: false", () => {
   assertEquals(action.idempotent, false);
 });

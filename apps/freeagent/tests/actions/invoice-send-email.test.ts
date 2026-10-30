@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-send-email.ts";
 
-Deno.test("invoice-send-email: POSTs /invoices/:id/send_email with the email fields given", async () => {
+test("invoice-send-email: POSTs /invoices/:id/send_email with the email fields given", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 200 }]);
   await action.execute({
     invoiceId: "7",
@@ -27,7 +28,7 @@ Deno.test("invoice-send-email: POSTs /invoices/:id/send_email with the email fie
   });
 });
 
-Deno.test("invoice-send-email: useTemplate sends only use_template, ignoring to/from/subject/body", async () => {
+test("invoice-send-email: useTemplate sends only use_template, ignoring to/from/subject/body", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 200 }]);
   await action.execute({
     invoiceId: "7",

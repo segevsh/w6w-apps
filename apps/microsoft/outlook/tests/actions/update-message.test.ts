@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-message.ts";
 
-Deno.test("update-message: PATCHes only the properties supplied", async () => {
+test("update-message: PATCHes only the properties supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1", isRead: true } }]);
   const out = await action.execute({ messageId: "m1", isRead: true }, ctx);
 
@@ -12,19 +13,19 @@ Deno.test("update-message: PATCHes only the properties supplied", async () => {
   assertEquals((out as { isRead: boolean }).isRead, true);
 });
 
-Deno.test("update-message: marking unread sends false rather than omitting the key", async () => {
+test("update-message: marking unread sends false rather than omitting the key", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ messageId: "m1", isRead: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { isRead: false });
 });
 
-Deno.test("update-message: nests the flag under Graph's followupFlag shape", async () => {
+test("update-message: nests the flag under Graph's followupFlag shape", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ messageId: "m1", flagStatus: "flagged" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { flag: { flagStatus: "flagged" } });
 });
 
-Deno.test("update-message: carries categories, importance and focus", async () => {
+test("update-message: carries categories, importance and focus", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     messageId: "m1",
@@ -39,7 +40,7 @@ Deno.test("update-message: carries categories, importance and focus", async () =
   });
 });
 
-Deno.test("update-message: refuses a no-op PATCH", () => {
+test("update-message: refuses a no-op PATCH", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ messageId: "m1" }, ctx),
@@ -49,7 +50,7 @@ Deno.test("update-message: refuses a no-op PATCH", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-message: exposes only the properties updatable on a sent message", () => {
+test("update-message: exposes only the properties updatable on a sent message", () => {
   const keys = action.params!.map((p) => p.key).filter((k) => k !== "messageId");
   // Draft-only properties (subject, body, toRecipients, …) are deliberately absent.
   assertEquals(keys.sort(), [
@@ -61,6 +62,6 @@ Deno.test("update-message: exposes only the properties updatable on a sent messa
   ]);
 });
 
-Deno.test("update-message: is idempotent — the PATCH converges", () => {
+test("update-message: is idempotent — the PATCH converges", () => {
   assertEquals(action.idempotent, true);
 });

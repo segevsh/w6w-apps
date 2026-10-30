@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-dubbing-job-status.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-dubbing-job-status: GETs the job status and returns the body", async () => {
+test("get-dubbing-job-status: GETs the job status and returns the body", async () => {
   const body = {
     job_id: "j 1",
     status: "COMPLETED",
@@ -14,7 +15,7 @@ Deno.test("get-dubbing-job-status: GETs the job status and returns the body", as
   assertEquals(out, body);
 });
 
-Deno.test("get-dubbing-job-status: requires an id; a 404 fails", async () => {
+test("get-dubbing-job-status: requires an id; a 404 fails", async () => {
   assertEquals((await failure(action, { jobId: "" }, mockCtx().ctx)).includes("jobId"), true);
   const { ctx } = mockCtx([{ status: 404, body: { error_message: "no job", error_code: 404 } }]);
   assertEquals((await failure(action, { jobId: "x" }, ctx)).includes("no job"), true);

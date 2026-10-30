@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/domain-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("domain-list: GETs /api/domains and unwraps the bare array", async () => {
+test("domain-list: GETs /api/domains and unwraps the bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 7, hostname: "go.example.com" }] }]);
   const out = await action.execute({ pattern: "go" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/domains");
@@ -10,7 +11,7 @@ Deno.test("domain-list: GETs /api/domains and unwraps the bare array", async () 
   assertEquals(out.domains[0].hostname, "go.example.com");
 });
 
-Deno.test("domain-list: a non-array body yields an empty list", async () => {
+test("domain-list: a non-array body yields an empty list", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals((await action.execute({}, ctx)).domains, []);
 });

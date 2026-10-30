@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-api-key.ts";
 
 const URL_UNDER_TEST = "https://api.heyreach.io/api/public/auth/CheckApiKey";
 
-Deno.test("check-api-key: a 200 is the whole answer", async () => {
+test("check-api-key: a 200 is the whole answer", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({}, ctx);
   assertEquals(calls[0].url, URL_UNDER_TEST);
@@ -16,7 +17,7 @@ Deno.test("check-api-key: a 200 is the whole answer", async () => {
 });
 
 /** Both refusals are HTTP 401; only the body text separates them. */
-Deno.test("check-api-key: `Invalid API key` is reported, not thrown", async () => {
+test("check-api-key: `Invalid API key` is reported, not thrown", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Invalid API key" }]);
   const result = await action.execute!({}, ctx);
   assertEquals(result.connected, false);
@@ -24,7 +25,7 @@ Deno.test("check-api-key: `Invalid API key` is reported, not thrown", async () =
   assertEquals(result.message, 'HeyReach answered 401 "Invalid API key".');
 });
 
-Deno.test("check-api-key: `Missing API key` reads differently from an invalid one", async () => {
+test("check-api-key: `Missing API key` reads differently from an invalid one", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Missing API key" }]);
   const result = await action.execute!({}, ctx);
   assertEquals(result.connected, false);
@@ -32,7 +33,7 @@ Deno.test("check-api-key: `Missing API key` reads differently from an invalid on
 });
 
 /** A 5xx is not an answer about the key — it is a broken call. */
-Deno.test("check-api-key: a 500 throws rather than answering `connected: false`", async () => {
+test("check-api-key: a 500 throws rather than answering `connected: false`", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   let threw = false;
   try {
@@ -44,7 +45,7 @@ Deno.test("check-api-key: a 500 throws rather than answering `connected: false`"
   assertEquals(threw, true);
 });
 
-Deno.test("check-api-key: an HTML 200 is not mistaken for a working key", async () => {
+test("check-api-key: an HTML 200 is not mistaken for a working key", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "<html><body>login</body></html>",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-info.ts";
 
-Deno.test("contacts-info: POSTs contacts.info with {id} and returns the contact", async () => {
+test("contacts-info: POSTs contacts.info with {id} and returns the contact", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "1", first_name: "Erlich" } },
@@ -13,7 +14,7 @@ Deno.test("contacts-info: POSTs contacts.info with {id} and returns the contact"
   assertEquals(out, { contact: { id: "1", first_name: "Erlich" } });
 });
 
-Deno.test("contacts-info: passes includes through when provided", async () => {
+test("contacts-info: passes includes through when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }]);
   await action.execute({ id: "1", includes: "custom_fields" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: "1", includes: "custom_fields" });

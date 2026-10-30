@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import respondentCreate from "../../actions/respondent-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("respondent-create: POSTs only the provided contact fields", async () => {
+test("respondent-create: POSTs only the provided contact fields", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "r1", name: "Johnny Rose", email: "jr@example.com" } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("respondent-create: POSTs only the provided contact fields", async () 
   assertEquals(out.id, "r1");
 });
 
-Deno.test("respondent-create: with nothing set, sends an empty body rather than nulls", async () => {
+test("respondent-create: with nothing set, sends an empty body rather than nulls", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await respondentCreate.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

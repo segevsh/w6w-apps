@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
-Deno.test("customer-create: POSTs a JSON:API document to /customers", async () => {
+test("customer-create: POSTs a JSON:API document to /customers", async () => {
   const { ctx, calls } = mockBooqableCtx([{ status: 201, body: { data: { id: "1" } } }]);
   await action.execute({ name: "Jo Smith", email: "jo@acme.test", tagList: "vip, repeat" }, ctx);
   assertEquals(calls[0].method, "POST");

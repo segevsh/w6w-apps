@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-list.ts";
 
 const URL_UNDER_TEST = "https://api.heyreach.io/api/public/campaign/GetAll";
 
-Deno.test("campaign-list: POSTs paging in the body", async () => {
+test("campaign-list: POSTs paging in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { totalCount: 0, items: [] } }]);
   await action.execute!({ limit: 100, offset: 0 }, ctx);
   assertEquals(calls[0].url, URL_UNDER_TEST);
@@ -12,7 +13,7 @@ Deno.test("campaign-list: POSTs paging in the body", async () => {
   assertEquals(jsonBody(calls[0]), { offset: 0, limit: 100 });
 });
 
-Deno.test("campaign-list: statuses and account ids are sent as arrays", async () => {
+test("campaign-list: statuses and account ids are sent as arrays", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { totalCount: 0, items: [] } }]);
   await action.execute!({
     keyword: "q3",

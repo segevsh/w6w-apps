@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesUsers from "../../actions/sales-users.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sales-users - maps every filter to its wire name", async () => {
+test("sales-users - maps every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ transaction: "HP1" }]) }]);
   await salesUsers.execute({
     productId: 1,
@@ -34,7 +35,7 @@ Deno.test("sales-users - maps every filter to its wire name", async () => {
   });
 });
 
-Deno.test("sales-users - surfaces a 403 unauthorized_client", async () => {
+test("sales-users - surfaces a 403 unauthorized_client", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("unauthorized_client", "no permission"),

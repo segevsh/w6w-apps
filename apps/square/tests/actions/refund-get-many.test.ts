@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/refund-get-many.ts";
 
-Deno.test("refund-get-many: GETs /v2/refunds and maps the filters", async () => {
+test("refund-get-many: GETs /v2/refunds and maps the filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { refunds: [] } }]);
   await action.execute({
     beginTime: "2026-01-01T00:00:00Z",
@@ -26,7 +27,7 @@ Deno.test("refund-get-many: GETs /v2/refunds and maps the filters", async () => 
   assertEquals(url.searchParams.get("cursor"), "c1");
 });
 
-Deno.test("refund-get-many: the status options are Square's four PaymentRefund states", () => {
+test("refund-get-many: the status options are Square's four PaymentRefund states", () => {
   const p = action.params?.find((p) => p.key === "status");
   assertEquals(
     optionValues(p),
@@ -34,7 +35,7 @@ Deno.test("refund-get-many: the status options are Square's four PaymentRefund s
   );
 });
 
-Deno.test("refund-get-many: documents that omitting the location spans every location", () => {
+test("refund-get-many: documents that omitting the location spans every location", () => {
   const p = action.params?.find((p) => p.key === "locationId");
   assertEquals(p?.required, false);
   assert(/every location/i.test(p?.hint ?? ""), p?.hint);

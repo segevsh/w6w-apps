@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockMoneybirdCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes /contacts/:id.json with only the fields provided", async () => {
+test("contact-update: PATCHes /contacts/:id.json with only the fields provided", async () => {
   const { ctx, calls } = mockMoneybirdCtx([{ body: { id: "c1" } }]);
   await action.execute({ id: "c1", phone: "020-1234567" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v2/123/contacts/c1.json");

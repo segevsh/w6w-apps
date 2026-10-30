@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentGet from "../../actions/agent-get.ts";
 import { mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agent-get: hits /assistant/agent_configurations/{sId} with the given variant", async () => {
+test("agent-get: hits /assistant/agent_configurations/{sId} with the given variant", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { body: { agentConfiguration: { sId: "a1", name: "Support" } } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("agent-get: hits /assistant/agent_configurations/{sId} with the given 
   assertEquals(result, { agentConfiguration: { sId: "a1", name: "Support" } });
 });
 
-Deno.test("agent-get: encodes an sId containing special characters", async () => {
+test("agent-get: encodes an sId containing special characters", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { agentConfiguration: {} } }]);
   await agentGet.execute({ sId: "a/b c" }, ctx);
   assertEquals(

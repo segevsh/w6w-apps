@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: POSTs /projects with mapped snake_case body", async () => {
+test("project-create: POSTs /projects with mapped snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", name: "Work" } }]);
   await action.execute!({ name: "Work", isFavorite: true, viewStyle: "board" }, ctx);
   const url = new URL(calls[0].url);

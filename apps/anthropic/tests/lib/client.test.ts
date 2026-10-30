@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { AnthropicClient, parseJsonl } from "../../lib/client.ts";
 
-Deno.test("AnthropicClient: attaches anthropic-version on every request", async () => {
+test("AnthropicClient: attaches anthropic-version on every request", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new AnthropicClient(ctx);
   await client.request("/v1/models");
   assertEquals(calls[0].headers["anthropic-version"], "2023-06-01");
 });
 
-Deno.test("AnthropicClient: merges extra headers (e.g. anthropic-beta) without dropping version", async () => {
+test("AnthropicClient: merges extra headers (e.g. anthropic-beta) without dropping version", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new AnthropicClient(ctx);
   await client.request("/v1/files", { headers: { "anthropic-beta": "files-api-2025-04-14" } });
@@ -17,7 +18,7 @@ Deno.test("AnthropicClient: merges extra headers (e.g. anthropic-beta) without d
   assertEquals(calls[0].headers["anthropic-beta"], "files-api-2025-04-14");
 });
 
-Deno.test("AnthropicClient: throws with body detail on non-2xx", async () => {
+test("AnthropicClient: throws with body detail on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "bad request" } }]);
   const client = new AnthropicClient(ctx);
   await assertRejects(
@@ -27,7 +28,7 @@ Deno.test("AnthropicClient: throws with body detail on non-2xx", async () => {
   );
 });
 
-Deno.test("AnthropicClient: asText returns the raw text body (for JSONL)", async () => {
+test("AnthropicClient: asText returns the raw text body (for JSONL)", async () => {
   const jsonl =
     `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}`;
   const { ctx } = mockCtx([{
@@ -40,7 +41,7 @@ Deno.test("AnthropicClient: asText returns the raw text body (for JSONL)", async
   assertEquals(text.split("\n").length, 2);
 });
 
-Deno.test("parseJsonl: decodes newline-delimited JSON into an array", () => {
+test("parseJsonl: decodes newline-delimited JSON into an array", () => {
   const jsonl =
     `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}\n`;
   const rows = parseJsonl<{ custom_id: string; result: { type: string } }>(jsonl);
@@ -49,7 +50,7 @@ Deno.test("parseJsonl: decodes newline-delimited JSON into an array", () => {
   assertEquals(rows[1].result.type, "errored");
 });
 
-Deno.test("parseJsonl: skips blank lines but keeps content lines", () => {
+test("parseJsonl: skips blank lines but keeps content lines", () => {
   const jsonl = `\n{"a":1}\n\n{"b":2}\n\n`;
   const rows = parseJsonl<{ a?: number; b?: number }>(jsonl);
   assertEquals(rows.length, 2);

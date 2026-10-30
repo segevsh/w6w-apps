@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("task-create: POST /v2/tasks, payment folded, unset fields omitted", async () => {
+test("task-create: POST /v2/tasks, payment folded, unset fields omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "k1" }, meta: {} } }]);
   await taskCreate.execute({
     property_id: "p1",

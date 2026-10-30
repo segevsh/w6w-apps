@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/record-event.ts";
 
-Deno.test("record-event: POSTs a single-element events array", async () => {
+test("record-event: POSTs a single-element events array", async () => {
   const { ctx, calls } = mockDripCtx([{ status: 204 }]);
   const out = await action.execute({ email: "john@acme.com", action: "Logged in" }, ctx);
   assertEquals(calls[0].url, "https://api.getdrip.com/v2/1234567/events");
@@ -13,7 +14,7 @@ Deno.test("record-event: POSTs a single-element events array", async () => {
   assertEquals(out, { success: true });
 });
 
-Deno.test("record-event: forwards occurredAt and properties", async () => {
+test("record-event: forwards occurredAt and properties", async () => {
   const { ctx, calls } = mockDripCtx([{ status: 204 }]);
   await action.execute(
     {
@@ -36,6 +37,6 @@ Deno.test("record-event: forwards occurredAt and properties", async () => {
   });
 });
 
-Deno.test("record-event: is declared non-idempotent — replaying it records a second event", () => {
+test("record-event: is declared non-idempotent — replaying it records a second event", () => {
   assertEquals(action.idempotent, false);
 });

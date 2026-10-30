@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignDuplicate from "../../actions/campaign-duplicate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-duplicate: POSTs /campaigns/{id}/duplicate with the new name", async () => {
+test("campaign-duplicate: POSTs /campaigns/{id}/duplicate with the new name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c2", name: "My Campaign (copy)" } }]);
   const out = await campaignDuplicate.execute(
     { id: "c1", name: "My Campaign (copy)" },
@@ -15,6 +16,6 @@ Deno.test("campaign-duplicate: POSTs /campaigns/{id}/duplicate with the new name
   assertEquals(out.id, "c2");
 });
 
-Deno.test("campaign-duplicate: is declared non-idempotent — every call creates another campaign", () => {
+test("campaign-duplicate: is declared non-idempotent — every call creates another campaign", () => {
   assertEquals(campaignDuplicate.idempotent, false);
 });

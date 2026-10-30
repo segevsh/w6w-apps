@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getAccount from "../../actions/get-account.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-account: maps the account and its credit usage", async () => {
+test("get-account: maps the account and its credit usage", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: 9,
@@ -22,7 +23,7 @@ Deno.test("get-account: maps the account and its credit usage", async () => {
   assertEquals(out.rateLimits.length, 1);
 });
 
-Deno.test("get-account: a bare body is tolerated; a 401 throws the vendor detail", async () => {
+test("get-account: a bare body is tolerated; a 401 throws the vendor detail", async () => {
   const bare = mockCtx([{ body: {} }]);
   assertEquals((await run(getAccount, {}, bare.ctx)).creditUsage, []);
   const bad = mockCtx([{ status: 401, body: { detail: "Invalid API key" } }]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -31,7 +32,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: it is per-connection and unsigned, and widens egress to status hosts only", () => {
+test("service: it is per-connection and unsigned, and widens egress to status hosts only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "connection");
   assertEquals(service.credential, "context");
@@ -46,7 +47,7 @@ Deno.test("service: it is per-connection and unsigned, and widens egress to stat
  * and no one else. Reading it for an EU1 connection would report the wrong
  * continent's weather.
  */
-Deno.test("service: each site reads its own status page", async () => {
+test("service: each site reads its own status page", async () => {
   for (const site of ["us1", "eu1", "ap2", "gov"] as const) {
     const { ctx, calls } = mockCtx([{
       body: summary({ page: { url: `https://${STATUS_HOSTS[site]}` } }),
@@ -56,7 +57,7 @@ Deno.test("service: each site reads its own status page", async () => {
   }
 });
 
-Deno.test("service: an all-operational page reports ok, naming the page", async () => {
+test("service: an all-operational page reports ok, naming the page", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -68,7 +69,7 @@ Deno.test("service: an all-operational page reports ok, naming the page", async 
   assertEquals(report.components?.p4hwj4wsc5wf?.message, "APM");
 });
 
-Deno.test("service: an incident is reported with the affected components named", async () => {
+test("service: an incident is reported with the affected components named", async () => {
   const body = summary({
     status: { indicator: "major", description: "Partial System Outage" },
     incidents: [{ name: "Elevated monitor evaluation latency", status: "investigating" }],
@@ -89,7 +90,7 @@ Deno.test("service: an incident is reported with the affected components named",
  * be a lie and reporting `down` a worse one, so it reports `unknown` and says
  * why — and makes no request at all.
  */
-Deno.test("service: UK1 reports unknown with the reason, and never fetches", async () => {
+test("service: UK1 reports unknown with the reason, and never fetches", async () => {
   const { ctx, calls } = mockCtx([], "uk1");
   const report = await service.check!({}, ctx);
 
@@ -101,7 +102,7 @@ Deno.test("service: UK1 reports unknown with the reason, and never fetches", asy
 });
 
 /** A broken status page says nothing about Datadog — never `down`. */
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -116,7 +117,7 @@ Deno.test("service: a failing status page reports unknown, not down", async () =
  * The failure mode a 200 cannot catch: a healthy, claimed status page that
  * belongs to a different product, reached through a redirect.
  */
-Deno.test("service: a page that self-identifies as someone else reports unknown", async () => {
+test("service: a page that self-identifies as someone else reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Some Other Product", url: "https://status.example.com" } }),
   }]);
@@ -125,7 +126,7 @@ Deno.test("service: a page that self-identifies as someone else reports unknown"
   assert(report.message?.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: group containers are excluded from the component report", async () => {
+test("service: group containers are excluded from the component report", async () => {
   const body = summary();
   (body.components as Array<Record<string, unknown>>).push({
     id: "grp",
@@ -138,7 +139,7 @@ Deno.test("service: group containers are excluded from the component report", as
   assertEquals("grp" in (report.components ?? {}), false);
 });
 
-Deno.test("service: Statuspage's component vocabulary maps to the four health states", () => {
+test("service: Statuspage's component vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -147,7 +148,7 @@ Deno.test("service: Statuspage's component vocabulary maps to the four health st
   assertEquals(mapComponentStatus("something_new"), "unknown");
 });
 
-Deno.test("service: the page indicator maps to the four health states", () => {
+test("service: the page indicator maps to the four health states", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -156,13 +157,13 @@ Deno.test("service: the page indicator maps to the four health states", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: components fall back to a slug when the vendor drops ids", () => {
+test("service: components fall back to a slug when the vendor drops ids", () => {
   assertEquals(componentKey({ id: "abc", name: "APM" }, 0), "abc");
   assertEquals(componentKey({ name: "Log Management" }, 3), "log-management-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: the eight status URLs are all https and all end in summary.json", () => {
+test("service: the eight status URLs are all https and all end in summary.json", () => {
   assertEquals(STATUS_ALLOW.length, 8);
   for (const host of STATUS_ALLOW) {
     assertEquals(statusUrl(host), `https://${host}/api/v2/summary.json`);

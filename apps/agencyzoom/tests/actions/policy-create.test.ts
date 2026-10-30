@@ -1,4 +1,6 @@
-import { assertEquals } from "@std/assert";
+import { denoReadTextFileSync } from "../_deno.ts";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import policyCreate from "../../actions/policy-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -15,7 +17,7 @@ const REQUIRED = {
   expiryDate: "08/29/2020",
 };
 
-Deno.test("policy-create: POSTs to /policies/create", async () => {
+test("policy-create: POSTs to /policies/create", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok", id: 200 } }]);
   const result = await policyCreate.execute(REQUIRED, ctx);
 
@@ -32,13 +34,13 @@ Deno.test("policy-create: POSTs to /policies/create", async () => {
  * the action (a credential leak — see `core/docs/build-a-w6w-app.md`'s hard
  * rules) is caught by the entry-module guard in `tests/index.test.ts`.
  */
-Deno.test("policy-create: never sets an auth header itself", () => {
-  const src = Deno.readTextFileSync(
+test("policy-create: never sets an auth header itself", () => {
+  const src = denoReadTextFileSync(
     new URL("../../actions/policy-create.ts", import.meta.url),
   );
   assertEquals(/x-api-token/i.test(src.replace(/\/\*[\s\S]*?\*\//g, "")), false);
 });
 
-Deno.test("policy-create: is declared non-idempotent", () => {
+test("policy-create: is declared non-idempotent", () => {
   assertEquals(policyCreate.idempotent, false);
 });

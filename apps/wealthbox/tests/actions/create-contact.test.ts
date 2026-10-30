@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-contact.ts";
 
-Deno.test("create-contact: is a non-idempotent perform requiring first/last name", () => {
+test("create-contact: is a non-idempotent perform requiring first/last name", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const keys = (action.params ?? []).filter((p) => p.required).map((p) => p.key);
@@ -10,7 +11,7 @@ Deno.test("create-contact: is a non-idempotent perform requiring first/last name
   assert(keys.includes("lastName"));
 });
 
-Deno.test("create-contact: POSTs /contacts with the mapped snake_case body", async () => {
+test("create-contact: POSTs /contacts with the mapped snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({
     firstName: "Kevin",
@@ -30,13 +31,13 @@ Deno.test("create-contact: POSTs /contacts with the mapped snake_case body", asy
   });
 });
 
-Deno.test("create-contact: omits every field the caller did not supply", async () => {
+test("create-contact: omits every field the caller did not supply", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ firstName: "Kevin", lastName: "Anderson" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { first_name: "Kevin", last_name: "Anderson" });
 });
 
-Deno.test("create-contact: merges additionalProperties for fields not exposed directly", async () => {
+test("create-contact: merges additionalProperties for fields not exposed directly", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     firstName: "Kevin",
@@ -48,7 +49,7 @@ Deno.test("create-contact: merges additionalProperties for fields not exposed di
   assertEquals(sent.risk_tolerance, "Moderate");
 });
 
-Deno.test("create-contact: passes nested email/phone/street address arrays through as given", async () => {
+test("create-contact: passes nested email/phone/street address arrays through as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const emailAddresses = [{ address: "kevin@example.com", principal: true, kind: "Work" }];
   await action.execute({ firstName: "K", lastName: "A", emailAddresses }, ctx);

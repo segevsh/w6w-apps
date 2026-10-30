@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-create.ts";
 
 const URL_UNDER_TEST = "https://api.heyreach.io/api/public/campaign/Create";
 
-Deno.test("campaign-create: sends only the required trio when nothing else is set", async () => {
+test("campaign-create: sends only the required trio when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { campaignId: 77 } }]);
   const result = await action.execute!({
     name: "Q3 outreach",
@@ -22,7 +23,7 @@ Deno.test("campaign-create: sends only the required trio when nothing else is se
 });
 
 /** The exclusion booleans are meaningful when false, so they are sent when set. */
-Deno.test("campaign-create: exclusion flags and a schedule object are passed through", async () => {
+test("campaign-create: exclusion flags and a schedule object are passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { campaignId: 77 } }]);
   await action.execute!({
     name: "Q3 outreach",
@@ -44,7 +45,7 @@ Deno.test("campaign-create: exclusion flags and a schedule object are passed thr
   });
 });
 
-Deno.test("campaign-create: a sequence object is sent as JSON, not as a string", async () => {
+test("campaign-create: a sequence object is sent as JSON, not as a string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { campaignId: 1 } }]);
   await action.execute!({
     name: "n",

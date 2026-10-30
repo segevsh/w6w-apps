@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { OnceHubClient } from "../../lib/client.ts";
 
-Deno.test("client: GET builds the /v2-prefixed URL and sends no body", async () => {
+test("client: GET builds the /v2-prefixed URL and sends no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   await new OnceHubClient(ctx).request("/bookings");
   assertEquals(calls[0].url, "https://api.oncehub.com/v2/bookings");
@@ -10,7 +11,7 @@ Deno.test("client: GET builds the /v2-prefixed URL and sends no body", async () 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("client: query params are set, undefined/null/empty are skipped", async () => {
+test("client: query params are set, undefined/null/empty are skipped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new OnceHubClient(ctx).request("/bookings", {
     query: { status: "scheduled", owner: undefined, contact: null, limit: "" },
@@ -22,7 +23,7 @@ Deno.test("client: query params are set, undefined/null/empty are skipped", asyn
   assertEquals(url.searchParams.has("limit"), false);
 });
 
-Deno.test("client: POST sends JSON body with content-type header", async () => {
+test("client: POST sends JSON body with content-type header", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "WHK-1" } }]);
   await new OnceHubClient(ctx).request("/webhooks", {
     method: "POST",
@@ -33,13 +34,13 @@ Deno.test("client: POST sends JSON body with content-type header", async () => {
   assertEquals(calls[0].body, JSON.stringify({ name: "x", url: "https://example.com" }));
 });
 
-Deno.test("client: a 204 response resolves to undefined", async () => {
+test("client: a 204 response resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const result = await new OnceHubClient(ctx).request("/webhooks/WHK-1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: a non-ok response throws with the vendor's type/message/param", async () => {
+test("client: a non-ok response throws with the vendor's type/message/param", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { type: "invalid_request_error", message: "No such booking: '123'", param: "id" },

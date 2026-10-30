@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 
-Deno.test("webhook-update: PUTs only the supplied fields, keeping enabled=false", async () => {
+test("webhook-update: PUTs only the supplied fields, keeping enabled=false", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "id": 12 } } }]);
   const out = await webhookUpdate.execute!({ "webhookId": "12", "enabled": false } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("webhook-update: PUTs only the supplied fields, keeping enabled=false"
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("webhook-update: surfaces a vendor error envelope", async () => {
+test("webhook-update: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -28,7 +29,7 @@ Deno.test("webhook-update: surfaces a vendor error envelope", async () => {
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("webhook-update: refuses an update that changes nothing, before the network", async () => {
+test("webhook-update: refuses an update that changes nothing, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await webhookUpdate.execute!({ webhookId: "12" } as never, ctx);

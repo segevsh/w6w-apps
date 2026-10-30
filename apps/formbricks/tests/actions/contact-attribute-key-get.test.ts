@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-attribute-key-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-attribute-key-get: full input maps to the documented request", async () => {
+test("contact-attribute-key-get: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({ "contactAttributeKeyId": "id_contactAttributeKeyId" }, ctx);
   const url = new URL(calls[0].url);
@@ -16,14 +17,14 @@ Deno.test("contact-attribute-key-get: full input maps to the documented request"
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("contact-attribute-key-get: sends x-api-key never itself and no authorization header", async () => {
+test("contact-attribute-key-get: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   await action.execute!({ "contactAttributeKeyId": "id_contactAttributeKeyId" }, ctx);
   assert(!("x-api-key" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("contact-attribute-key-get: surfaces a Formbricks error body as a thrown error", async () => {
+test("contact-attribute-key-get: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

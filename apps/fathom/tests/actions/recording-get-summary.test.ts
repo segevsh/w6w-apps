@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-get-summary.ts";
 
-Deno.test("recording-get-summary: GETs the recording's summary inline by default", async () => {
+test("recording-get-summary: GETs the recording's summary inline by default", async () => {
   const summary = { template_name: "general", markdown_formatted: "## Summary\nWe reviewed Q1." };
   const { ctx, calls } = mockCtx([{ body: { summary } }]);
   const result = await action.execute({ recordingId: 123456789 }, ctx);
@@ -15,7 +16,7 @@ Deno.test("recording-get-summary: GETs the recording's summary inline by default
   assertEquals(result, { summary });
 });
 
-Deno.test("recording-get-summary: passes destination_url for the async mode", async () => {
+test("recording-get-summary: passes destination_url for the async mode", async () => {
   const { ctx, calls } = mockCtx([
     { body: { destination_url: "https://example.com/destination" } },
   ]);
@@ -31,7 +32,7 @@ Deno.test("recording-get-summary: passes destination_url for the async mode", as
   assertEquals(result, { destination_url: "https://example.com/destination" });
 });
 
-Deno.test("recording-get-summary: is a read requiring the recording id", () => {
+test("recording-get-summary: is a read requiring the recording id", () => {
   assertEquals(action.type, "read");
   const param = action.params?.find((p) => p.key === "recordingId");
   assertEquals(param?.required, true);

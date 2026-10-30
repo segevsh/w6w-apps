@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-download-request.ts";
 
-Deno.test("recording-download-request: POSTs to the download endpoint with an empty body", async () => {
+test("recording-download-request: POSTs to the download endpoint with an empty body", async () => {
   const { ctx, calls, logs } = mockCtx([
     {
       status: 202,
@@ -19,7 +20,7 @@ Deno.test("recording-download-request: POSTs to the download endpoint with an em
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("recording-download-request: sends destination_url when given", async () => {
+test("recording-download-request: sends destination_url when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { download_id: "dl_abc" } }]);
   await action.execute({
     recordingId: 1,
@@ -30,7 +31,7 @@ Deno.test("recording-download-request: sends destination_url when given", async 
   });
 });
 
-Deno.test("recording-download-request: an audio-only recording may complete immediately", async () => {
+test("recording-download-request: an audio-only recording may complete immediately", async () => {
   const { ctx } = mockCtx([
     {
       status: 202,
@@ -46,14 +47,14 @@ Deno.test("recording-download-request: an audio-only recording may complete imme
   assertEquals(result.status, "completed");
 });
 
-Deno.test("recording-download-request: a 422 (no downloadable media) surfaces as an error", async () => {
+test("recording-download-request: a 422 (no downloadable media) surfaces as an error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: "" }]);
   const err = await assertRejects(async () => await action.execute({ recordingId: 1 }, ctx));
   assert(err instanceof Error);
   assert(err.message.includes("422"));
 });
 
-Deno.test("recording-download-request: is a non-idempotent perform", () => {
+test("recording-download-request: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

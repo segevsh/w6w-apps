@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-tags-set.ts";
 
@@ -7,7 +8,7 @@ const untagged = { status: 200, body: { user: "amelie@example.com" } };
 const ok = { status: 200, body: {} };
 
 /** There is no add-a-tag endpoint; Tailscale replaces the list. */
-Deno.test("device-tags-set: replace sends exactly what was asked for", async () => {
+test("device-tags-set: replace sends exactly what was asked for", async () => {
   const { ctx, calls } = mockCtx([tagged, ok]);
   const result = await action.execute({ deviceId: "n1", tags: "tag:web" }, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("device-tags-set: replace sends exactly what was asked for", async () 
 });
 
 /** The whole point of the mode: a naive replace drops rules silently. */
-Deno.test("device-tags-set: add merges with the tags already there", async () => {
+test("device-tags-set: add merges with the tags already there", async () => {
   const { ctx, calls } = mockCtx([tagged, ok]);
   const result = await action.execute(
     { deviceId: "n1", tags: "tag:canary", mode: "add" },
@@ -30,7 +31,7 @@ Deno.test("device-tags-set: add merges with the tags already there", async () =>
   assertEquals(result.removed, []);
 });
 
-Deno.test("device-tags-set: remove takes only the named tags off", async () => {
+test("device-tags-set: remove takes only the named tags off", async () => {
   const { ctx, calls } = mockCtx([tagged, ok]);
   const result = await action.execute(
     { deviceId: "n1", tags: "tag:prod", mode: "remove" },
@@ -41,7 +42,7 @@ Deno.test("device-tags-set: remove takes only the named tags off", async () => {
 });
 
 /** Removing a tag removes every ACL rule written against it. */
-Deno.test("device-tags-set: warns when tags are taken away", async () => {
+test("device-tags-set: warns when tags are taken away", async () => {
   const { ctx, logs } = mockCtx([tagged, ok]);
   await action.execute({ deviceId: "n1", tags: "tag:web" }, ctx);
   assert(
@@ -51,7 +52,7 @@ Deno.test("device-tags-set: warns when tags are taken away", async () => {
 });
 
 /** Tagging transfers ownership and stops the key expiring. */
-Deno.test("device-tags-set: notes the ownership transfer on a first tagging", async () => {
+test("device-tags-set: notes the ownership transfer on a first tagging", async () => {
   const { ctx, logs } = mockCtx([untagged, ok]);
   const result = await action.execute({ deviceId: "n2", tags: "tag:prod" }, ctx) as Record<
     string,
@@ -65,7 +66,7 @@ Deno.test("device-tags-set: notes the ownership transfer on a first tagging", as
 });
 
 /** A bare name reads as a missing tag definition. */
-Deno.test("device-tags-set: refuses unprefixed tags before sending anything", async () => {
+test("device-tags-set: refuses unprefixed tags before sending anything", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n1", tags: "prod" }, ctx),
@@ -75,7 +76,7 @@ Deno.test("device-tags-set: refuses unprefixed tags before sending anything", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("device-tags-set: refuses an empty list rather than untagging by accident", async () => {
+test("device-tags-set: refuses an empty list rather than untagging by accident", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n1", tags: "" }, ctx),
@@ -84,7 +85,7 @@ Deno.test("device-tags-set: refuses an empty list rather than untagging by accid
   assert(/hand the device back to nobody/.test(err.message), err.message);
 });
 
-Deno.test("device-tags-set: duplicate tags collapse", async () => {
+test("device-tags-set: duplicate tags collapse", async () => {
   const { ctx, calls } = mockCtx([untagged, ok]);
   await action.execute({ deviceId: "n2", tags: "tag:a, tag:a, tag:b" }, ctx);
   assertEquals(JSON.parse(calls[1].body!), { tags: ["tag:a", "tag:b"] });

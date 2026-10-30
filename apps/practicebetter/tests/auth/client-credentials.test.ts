@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth, {
   isTimezoneList,
   PROFILE_PATH,
@@ -27,14 +28,14 @@ const sign = (url: string, headers: Record<string, string> = {}) =>
     credential: cred,
   } as never, mockCtx([]).ctx) as { url: string; headers: Record<string, string> };
 
-Deno.test("client-credentials: it is the machine-to-machine grant, not a browser flow", () => {
+test("client-credentials: it is the machine-to-machine grant, not a browser flow", () => {
   assertEquals(auth.key, "client-credentials");
   assertEquals(auth.type, "custom");
   assertEquals(auth.oauth2, undefined);
   assertEquals(typeof auth.revoke, "undefined");
 });
 
-Deno.test("client-credentials: both fields are required secrets", () => {
+test("client-credentials: both fields are required secrets", () => {
   assertEquals(auth.fields!.map((f) => f.key), ["clientId", "clientSecret"]);
   for (const field of auth.fields!) {
     assertEquals(field.type, "secret", field.key);
@@ -46,7 +47,7 @@ Deno.test("client-credentials: both fields are required secrets", () => {
  * The document's `OAuthTokenRequest` lists exactly two properties and contains
  * no `grant_type` anywhere, so the exchange sends exactly those two.
  */
-Deno.test("client-credentials: exchange POSTs form-encoded client_id/client_secret only", async () => {
+test("client-credentials: exchange POSTs form-encoded client_id/client_secret only", async () => {
   const { ctx, calls } = mockCtx([{
     body: { access_token: "tok", expires_in: 3600, token_type: "Bearer" },
   }]);
@@ -64,7 +65,7 @@ Deno.test("client-credentials: exchange POSTs form-encoded client_id/client_secr
   assertEquals(credential.accessToken, "tok");
 });
 
-Deno.test("client-credentials: expiresAt is computed from expires_in with a 60s haircut", async () => {
+test("client-credentials: expiresAt is computed from expires_in with a 60s haircut", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "tok", expires_in: 7200 } }]);
   const before = Date.now();
   const credential = await auth.exchange!({
@@ -75,7 +76,7 @@ Deno.test("client-credentials: expiresAt is computed from expires_in with a 60s 
   assert(Math.abs(actual - expected) < 5000, `${credential.expiresAt} vs ${expected}`);
 });
 
-Deno.test("client-credentials: a missing expires_in falls back to the documented nowhere one hour", async () => {
+test("client-credentials: a missing expires_in falls back to the documented nowhere one hour", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "tok" } }]);
   const before = Date.now();
   const credential = await auth.exchange!({
@@ -85,7 +86,7 @@ Deno.test("client-credentials: a missing expires_in falls back to the documented
   assert(Math.abs(actual - (before + (3600 - 60) * 1000)) < 5000, credential.expiresAt);
 });
 
-Deno.test("client-credentials: a missing field is refused before any request", async () => {
+test("client-credentials: a missing field is refused before any request", async () => {
   for (const fields of [{}, { clientId: "id-123" }, { clientSecret: "secret-456" }]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -99,7 +100,7 @@ Deno.test("client-credentials: a missing field is refused before any request", a
   }
 });
 
-Deno.test("client-credentials: a failed exchange names the status and never echoes the secret", async () => {
+test("client-credentials: a failed exchange names the status and never echoes the secret", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error_description: "invalid_client" } }]);
   let message = "";
   try {
@@ -116,7 +117,7 @@ Deno.test("client-credentials: a failed exchange names the status and never echo
  * There is no refresh grant and no refresh token in the document, so refresh is
  * the same client-credentials exchange run again.
  */
-Deno.test("client-credentials: refresh re-runs the client-credentials exchange", async () => {
+test("client-credentials: refresh re-runs the client-credentials exchange", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-2", expires_in: 1800 } }]);
   const credential = await auth.refresh!({ credential: cred }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, `${API_ROOT}/oauth2/token`);
@@ -126,7 +127,7 @@ Deno.test("client-credentials: refresh re-runs the client-credentials exchange",
   assertEquals(credential.refreshToken, undefined);
 });
 
-Deno.test("client-credentials: refresh without stored credentials refuses to guess", async () => {
+test("client-credentials: refresh without stored credentials refuses to guess", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -138,14 +139,14 @@ Deno.test("client-credentials: refresh without stored credentials refuses to gue
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: sign stamps a Bearer header and nothing else", () => {
+test("client-credentials: sign stamps a Bearer header and nothing else", () => {
   const signed = sign(`${API_ROOT}/consultant/records`);
   assertEquals(signed.headers["authorization"], "Bearer access-789");
   assertEquals(Object.keys(signed.headers), ["authorization"]);
   assertEquals(signed.url, `${API_ROOT}/consultant/records`);
 });
 
-Deno.test("client-credentials: sign tolerates a credential with no token", () => {
+test("client-credentials: sign tolerates a credential with no token", () => {
   const signed = auth.sign!({
     request: { url: `${API_ROOT}/tags`, method: "GET", headers: {} },
     credential: {},
@@ -154,7 +155,7 @@ Deno.test("client-credentials: sign tolerates a credential with no token", () =>
 });
 
 /** The probe is `GET /timezones`, chosen by what its body contains. */
-Deno.test("client-credentials: test probes GET /timezones and passes on the documented list", async () => {
+test("client-credentials: test probes GET /timezones and passes on the documented list", async () => {
   const { ctx, calls } = mockCtx([{ body: timezones }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -164,14 +165,14 @@ Deno.test("client-credentials: test probes GET /timezones and passes on the docu
   assert(/2 time zones listed/.test(result.message!), result.message);
 });
 
-Deno.test("client-credentials: an empty time-zone list is not proof of a live credential", async () => {
+test("client-credentials: an empty time-zone list is not proof of a live credential", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(/did not return the documented time-zone list/.test(result.message!), result.message);
 });
 
-Deno.test("client-credentials: a 200 that is not the time-zone list is a failure, not a pass", async () => {
+test("client-credentials: a 200 that is not the time-zone list is a failure, not a pass", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "someone-elses-endpoint" } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -182,7 +183,7 @@ Deno.test("client-credentials: a 200 that is not the time-zone list is a failure
  * The document publishes no error body for this endpoint (or any other), so the
  * status is the classifier and the body is only evidence.
  */
-Deno.test("client-credentials: a 401 is reported as a bad client id/secret", async () => {
+test("client-credentials: a 401 is reported as a bad client id/secret", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -190,7 +191,7 @@ Deno.test("client-credentials: a 401 is reported as a bad client id/secret", asy
   assert(/client id or client secret is wrong/.test(result.message!), result.message);
 });
 
-Deno.test("client-credentials: a 403 means the credential is live but under-scoped", async () => {
+test("client-credentials: a 403 means the credential is live but under-scoped", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Forbidden" } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -199,14 +200,14 @@ Deno.test("client-credentials: a 403 means the credential is live but under-scop
   assert(/`read` scope/.test(result.message!), result.message);
 });
 
-Deno.test("client-credentials: any other non-2xx is surfaced with its status", async () => {
+test("client-credentials: any other non-2xx is surfaced with its status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(/HTTP 500 for GET \/timezones/.test(result.message!), result.message);
 });
 
-Deno.test("client-credentials: a missing token is refused before any request", async () => {
+test("client-credentials: a missing token is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: {} } as never, ctx);
   assertEquals(result.ok, false);
@@ -214,7 +215,7 @@ Deno.test("client-credentials: a missing token is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: an unreachable host fails cleanly", async () => {
+test("client-credentials: an unreachable host fails cleanly", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -225,21 +226,21 @@ Deno.test("client-credentials: an unreachable host fails cleanly", async () => {
 });
 
 /** The probe's result reaches the health surface; it must not carry the token. */
-Deno.test("client-credentials: the probe never echoes the credential", async () => {
+test("client-credentials: the probe never echoes the credential", async () => {
   const { ctx } = mockCtx([{ body: timezones }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assert(!JSON.stringify(result).includes("access-789"), JSON.stringify(result));
   assertEquals(Object.keys(timezones[0]).some((k) => /token|key|secret|password/i.test(k)), false);
 });
 
-Deno.test("client-credentials: the time-zone shape guard is strict about the documented field", () => {
+test("client-credentials: the time-zone shape guard is strict about the documented field", () => {
   assertEquals(isTimezoneList(timezones), true);
   assertEquals(isTimezoneList([{ label: "no name here" }]), false);
   assertEquals(isTimezoneList([]), false);
   assertEquals(isTimezoneList({ name: "UTC" }), false);
 });
 
-Deno.test("client-credentials: afterConnect labels the Connection from the consultant profile", async () => {
+test("client-credentials: afterConnect labels the Connection from the consultant profile", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "con-1",
@@ -253,7 +254,7 @@ Deno.test("client-credentials: afterConnect labels the Connection from the consu
   assertEquals(display, { emailAddress: "practitioner@example.com", company: "Whole Health" });
 });
 
-Deno.test("client-credentials: a failed or nameless afterConnect is silent, not fatal", async () => {
+test("client-credentials: a failed or nameless afterConnect is silent, not fatal", async () => {
   const failing = mockCtx([{ status: 500, body: {} }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, failing.ctx), {});
   const empty = mockCtx([{ body: { id: "con-1" } }]);
@@ -263,7 +264,7 @@ Deno.test("client-credentials: a failed or nameless afterConnect is silent, not 
   assertEquals(noToken.calls.length, 0);
 });
 
-Deno.test("client-credentials: the label template names a variable afterConnect publishes", () => {
+test("client-credentials: the label template names a variable afterConnect publishes", () => {
   assertEquals(auth.connectionLabel, "Practice Better ({{emailAddress}})");
   assert(/read/.test(auth.description!), auth.description);
   assert(/scheduled/.test(auth.description!), auth.description);

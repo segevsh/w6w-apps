@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/runtime-log-list.ts";
 
-Deno.test("runtime-log-list: reads the per-deployment runtime log endpoint", async () => {
+test("runtime-log-list: reads the per-deployment runtime log endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { level: "error" } }], {
     display: { teamId: "team_abc" },
   });
@@ -12,7 +13,7 @@ Deno.test("runtime-log-list: reads the per-deployment runtime log endpoint", asy
   assertEquals(url.searchParams.get("teamId"), "team_abc");
 });
 
-Deno.test("runtime-log-list: both ids are required before any request", async () => {
+test("runtime-log-list: both ids are required before any request", async () => {
   const noProject = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ deploymentId: "dpl_1" }, noProject.ctx),

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectPayrollEmployeeList from "../../actions/project-payroll-employee-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "projectId": "x-projectId" };
 
-Deno.test("project-payroll-employee-list: sends GET /projects/{id}/payroll_employees with the mapped fields", async () => {
+test("project-payroll-employee-list: sends GET /projects/{id}/payroll_employees with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await projectPayrollEmployeeList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -16,20 +17,20 @@ Deno.test("project-payroll-employee-list: sends GET /projects/{id}/payroll_emplo
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("project-payroll-employee-list: sends only what was supplied", async () => {
+test("project-payroll-employee-list: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectPayrollEmployeeList.execute({ "projectId": "x-projectId" } as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("project-payroll-employee-list: percent-encodes path ids", async () => {
+test("project-payroll-employee-list: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectPayrollEmployeeList.execute({ ...INPUT, ...{ "projectId": "a/b" } }, ctx);
   const segs = pathOf(calls[0].url).split("/");
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("project-payroll-employee-list: surfaces the API error type and message", async () => {
+test("project-payroll-employee-list: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await projectPayrollEmployeeList.execute(INPUT, ctx),

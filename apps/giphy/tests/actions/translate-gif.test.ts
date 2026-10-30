@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import translateGif from "../../actions/translate-gif.ts";
 import { envelope, gif, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("translate-gif: calls GET /v1/gifs/translate with the phrase and returns one object", async () => {
+test("translate-gif: calls GET /v1/gifs/translate with the phrase and returns one object", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   const out = await translateGif.execute({ s: "excited about shipping" }, ctx) as {
     data: { slug: string };
@@ -13,13 +14,13 @@ Deno.test("translate-gif: calls GET /v1/gifs/translate with the phrase and retur
   assertEquals(out.data.slug, "abc123-fixture");
 });
 
-Deno.test("translate-gif: rating and weirdness are forwarded", async () => {
+test("translate-gif: rating and weirdness are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   await translateGif.execute({ s: "hello", rating: "pg", weirdness: 7 }, ctx);
   assertEquals(queryOf(calls[0].url), { s: "hello", rating: "pg", weirdness: "7" });
 });
 
-Deno.test("translate-gif: the phrase is required", () => {
+test("translate-gif: the phrase is required", () => {
   assertEquals(translateGif.type, "read");
   assertEquals(translateGif.params?.find((p) => p.key === "s")?.required, true);
 });

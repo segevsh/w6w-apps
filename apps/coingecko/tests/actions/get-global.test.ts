@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-global.ts";
 
-Deno.test("get-global: calls the documented path with the mapped query", async () => {
+test("get-global: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { active_cryptocurrencies: 1 } } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("get-global: calls the documented path with the mapped query", async (
   assert(out !== undefined);
 });
 
-Deno.test("get-global: a vendor error body becomes a readable error", async () => {
+test("get-global: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowList from "../../actions/window-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-list: lists windows for a session", async () => {
+test("window-list: lists windows for a session", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ windows: [{ windowId: "w1" }] }) }]);
   const out = await windowList.execute({ sessionId: "s1" }, ctx) as { windows: unknown[] };
 

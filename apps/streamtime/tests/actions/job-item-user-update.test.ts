@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemUserUpdate from "../../actions/job-item-user-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-user-update: PUTs the changed plan", async () => {
+test("job-item-user-update: PUTs the changed plan", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }]);
   await jobItemUserUpdate.execute({ jobItemUserId: 7, jobCurrencySellRate: 120 }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("job-item-user-update: PUTs the changed plan", async () => {
   assertEquals(bodyOf(calls[0]), { jobCurrencySellRate: 120 });
 });
 
-Deno.test("job-item-user-update: logged and completed figures are read-only", () => {
+test("job-item-user-update: logged and completed figures are read-only", () => {
   const keys = (jobItemUserUpdate.params ?? []).map((p) => p.key);
   for (
     const readonly of ["totalLoggedMinutes", "completedDate", "earliestStartDate", "jobItemId"]

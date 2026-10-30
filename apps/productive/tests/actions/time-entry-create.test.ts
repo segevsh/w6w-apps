@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeEntryCreate from "../../actions/time-entry-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-entry-create: POST /time_entries sends a JSON:API document of attributes", async () => {
+test("time-entry-create: POST /time_entries sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "time_entries", "attributes": { "name": "x" } } },
@@ -40,7 +41,7 @@ Deno.test("time-entry-create: POST /time_entries sends a JSON:API document of at
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("time-entry-create: a vendor error surfaces its status, title and detail", async () => {
+test("time-entry-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -59,7 +60,7 @@ Deno.test("time-entry-create: a vendor error surfaces its status, title and deta
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("time-entry-create: declares perform and idempotent=false", () => {
+test("time-entry-create: declares perform and idempotent=false", () => {
   assertEquals(timeEntryCreate.type, "perform");
   assertEquals(timeEntryCreate.idempotent, false);
   assertEquals(timeEntryCreate.key, "time-entry-create");

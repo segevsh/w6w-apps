@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import start from "../../actions/speech-to-text-start.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("speech-to-text-start: maps every option onto the feature's input fields", async () => {
+test("speech-to-text-start: maps every option onto the feature's input fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: {
@@ -36,7 +37,7 @@ Deno.test("speech-to-text-start: maps every option onto the feature's input fiel
   assertEquals(out.jobId, "job-2");
 });
 
-Deno.test("speech-to-text-start: unset options are omitted from the input", async () => {
+test("speech-to-text-start: unset options are omitted from the input", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "processing", public_id: "j" } }]);
   await start.execute({ file: "f", provider: "deepgram/nova-3" }, ctx);
   assertEquals(bodyOf(calls[0]).input, { file: "f" });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -14,7 +15,7 @@ import {
 
 const display = { projectId: "p1", datasetId: "d1" };
 
-Deno.test("resolveProject / resolveDataset: the override wins, and neither is an error", () => {
+test("resolveProject / resolveDataset: the override wins, and neither is an error", () => {
   const conn = { display } as never;
   assertEquals(resolveProject(conn), "p1");
   assertEquals(resolveProject(conn, "other"), "other");
@@ -26,7 +27,7 @@ Deno.test("resolveProject / resolveDataset: the override wins, and neither is an
   assert(assertThrows(() => resolveDataset(bare), Error).message.includes("dataset"));
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: undefined, c: "", d: false, e: [] }), { a: 1, d: false });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(json('{"a":1}', "labels"), { a: 1 });
@@ -37,7 +38,7 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
  * BigQuery's row encoding is the single most surprising thing about this API:
  * positional cells, every scalar a string.
  */
-Deno.test("decodeRow: zips positional cells against the schema", () => {
+test("decodeRow: zips positional cells against the schema", () => {
   const fields = [{ name: "name", type: "STRING" }, { name: "count", type: "INTEGER" }];
   assertEquals(
     decodeRow(fields, { f: [{ v: "ada" }, { v: "36" }] }),
@@ -45,7 +46,7 @@ Deno.test("decodeRow: zips positional cells against the schema", () => {
   );
 });
 
-Deno.test("decodeRow: INT64 stays a string, because it does not fit a JSON number", () => {
+test("decodeRow: INT64 stays a string, because it does not fit a JSON number", () => {
   const fields = [{ name: "big", type: "INTEGER" }];
   const decoded = decodeRow(fields, { f: [{ v: "9223372036854775807" }] });
   // Coercing this to a number would silently lose precision.
@@ -53,11 +54,11 @@ Deno.test("decodeRow: INT64 stays a string, because it does not fit a JSON numbe
   assertEquals(typeof decoded.big, "string");
 });
 
-Deno.test("decodeRow: NULL becomes null, not undefined or an empty string", () => {
+test("decodeRow: NULL becomes null, not undefined or an empty string", () => {
   assertEquals(decodeRow([{ name: "x", type: "STRING" }], { f: [{ v: null }] }), { x: null });
 });
 
-Deno.test("decodeRow: a REPEATED field becomes a plain array", () => {
+test("decodeRow: a REPEATED field becomes a plain array", () => {
   const fields = [{ name: "tags", type: "STRING", mode: "REPEATED" }];
   assertEquals(
     decodeRow(fields, { f: [{ v: [{ v: "a" }, { v: "b" }] }] }),
@@ -65,7 +66,7 @@ Deno.test("decodeRow: a REPEATED field becomes a plain array", () => {
   );
 });
 
-Deno.test("decodeRow: a RECORD becomes a nested object", () => {
+test("decodeRow: a RECORD becomes a nested object", () => {
   const fields = [{
     name: "user",
     type: "RECORD",
@@ -77,12 +78,12 @@ Deno.test("decodeRow: a RECORD becomes a nested object", () => {
   );
 });
 
-Deno.test("decodeRows: returns undefined when there is no schema to zip against", () => {
+test("decodeRows: returns undefined when there is no schema to zip against", () => {
   assertEquals(decodeRows(undefined, [{ f: [{ v: "x" }] }]), undefined);
   assertEquals(decodeRows({ fields: [{ name: "a" }] }, undefined), undefined);
 });
 
-Deno.test("client: builds paths under the discovery document's base", async () => {
+test("client: builds paths under the discovery document's base", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new BigQueryClient(ctx).request("/projects/p1/datasets");
   assertEquals(calls[0].url, `${API_URL}/projects/p1/datasets`);
@@ -90,14 +91,14 @@ Deno.test("client: builds paths under the discovery document's base", async () =
   assert(calls[0].url.includes("/bigquery/v2/"), calls[0].url);
 });
 
-Deno.test("client: never sends an Authorization header — signing is the host's job", async () => {
+test("client: never sends an Authorization header — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new BigQueryClient(ctx).request("/projects/p1/datasets");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: a failure surfaces the status and Google's error envelope", async () => {
+test("client: a failure surfaces the status and Google's error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {
@@ -112,7 +113,7 @@ Deno.test("client: a failure surfaces the status and Google's error envelope", a
   assert(err.message.includes("quotaExceeded"), err.message);
 });
 
-Deno.test("client: requestAll follows nextPageToken until it is absent", async () => {
+test("client: requestAll follows nextPageToken until it is absent", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { datasets: [{ id: "1" }], nextPageToken: "t2" } },
     { status: 200, body: { datasets: [{ id: "2" }] } },
@@ -122,7 +123,7 @@ Deno.test("client: requestAll follows nextPageToken until it is absent", async (
   assertEquals(new URL(calls[1].url).searchParams.get("pageToken"), "t2");
 });
 
-Deno.test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
+test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

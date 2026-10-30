@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import vendorCreate from "../../actions/vendor-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("vendor-create: POST /vendors sends only what was set, as JSON", async () => {
+test("vendor-create: POST /vendors sends only what was set, as JSON", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: 5, name: "Acme", status: "ACTIVE" },
@@ -20,7 +21,7 @@ Deno.test("vendor-create: POST /vendors sends only what was set, as JSON", async
   assertEquals(out.id, 5);
 });
 
-Deno.test("vendor-create: the contact email goes out as `contactEmail` (create spelling)", async () => {
+test("vendor-create: the contact email goes out as `contactEmail` (create spelling)", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5 } }]);
   await vendorCreate.execute({ name: "Acme", contactEmail: "sec@acme.io" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -28,11 +29,11 @@ Deno.test("vendor-create: the contact email goes out as `contactEmail` (create s
   assertEquals("contactsEmail" in body, false);
 });
 
-Deno.test("vendor-create: is declared non-idempotent", () => {
+test("vendor-create: is declared non-idempotent", () => {
   assertEquals(vendorCreate.idempotent, false);
 });
 
-Deno.test("vendor-create: a 400 surfaces the validation message", async () => {
+test("vendor-create: a 400 surfaces the validation message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody(400, ["url must be a URL address"], 2),

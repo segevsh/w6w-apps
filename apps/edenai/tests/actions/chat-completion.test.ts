@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import chatCompletion from "../../actions/chat-completion.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const reply = {
   usage: { total_tokens: 5 },
 };
 
-Deno.test("chat-completion: a prompt becomes system + user messages", async () => {
+test("chat-completion: a prompt becomes system + user messages", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await chatCompletion.execute({
     model: "openai/gpt-4o",
@@ -34,7 +35,7 @@ Deno.test("chat-completion: a prompt becomes system + user messages", async () =
   assertEquals(out.finishReason, "stop");
 });
 
-Deno.test("chat-completion: explicit messages win, extra body merges, routing and fallbacks map", async () => {
+test("chat-completion: explicit messages win, extra body merges, routing and fallbacks map", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   await chatCompletion.execute({
     model: "gpt-4o",
@@ -53,7 +54,7 @@ Deno.test("chat-completion: explicit messages win, extra body merges, routing an
   assertEquals(body.reasoning_effort, "low");
 });
 
-Deno.test("chat-completion: no prompt and no messages fails before any request", async () => {
+test("chat-completion: no prompt and no messages fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await chatCompletion.execute({ model: "m" }, ctx),
@@ -63,7 +64,7 @@ Deno.test("chat-completion: no prompt and no messages fails before any request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("chat-completion: a null reply (tool call) yields empty content and the tool calls", async () => {
+test("chat-completion: a null reply (tool call) yields empty content and the tool calls", async () => {
   const { ctx } = mockCtx([{
     body: {
       id: "c",
@@ -79,7 +80,7 @@ Deno.test("chat-completion: a null reply (tool call) yields empty content and th
   assertEquals(out.toolCalls, [{ id: "t" }]);
 });
 
-Deno.test("chat-completion: a vendor error surfaces its detail", async () => {
+test("chat-completion: a vendor error surfaces its detail", async () => {
   const { ctx } = mockCtx([{ status: 402, body: { detail: "Insufficient credits" } }]);
   await assertRejects(
     async () => await chatCompletion.execute({ model: "m", prompt: "p" }, ctx),

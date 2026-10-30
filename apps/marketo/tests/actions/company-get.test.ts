@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-get.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("company-get: GETs /rest/v1/companies.json with filterType/filterValues", async () => {
+test("company-get: GETs /rest/v1/companies.json with filterType/filterValues", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 3433, company: "Google" }] } },
   ], conn);
@@ -15,7 +16,7 @@ Deno.test("company-get: GETs /rest/v1/companies.json with filterType/filterValue
   assertEquals(out, [{ id: 3433, company: "Google" }]);
 });
 
-Deno.test("company-get: requires filterType and filterValues", async () => {
+test("company-get: requires filterType and filterValues", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {

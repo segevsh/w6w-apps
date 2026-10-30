@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deal-add.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("deal-add: posts fields to crm.deal.add and returns the new id", async () => {
+test("deal-add: posts fields to crm.deal.add and returns the new id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: 100, time: {} } },
   ], { display });
@@ -23,7 +24,7 @@ Deno.test("deal-add: posts fields to crm.deal.add and returns the new id", async
   assertEquals(out, { id: 100 });
 });
 
-Deno.test("deal-add: rejects contactIds that are not a JSON array", async () => {
+test("deal-add: rejects contactIds that are not a JSON array", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ title: "x", contactIds: '{"not":"array"}' }, ctx);

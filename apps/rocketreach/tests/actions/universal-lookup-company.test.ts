@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/universal-lookup-company.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("universal-lookup-company: GETs /universal/company/lookup by domain and maps the company", async () => {
+test("universal-lookup-company: GETs /universal/company/lookup by domain and maps the company", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: 11,
@@ -24,7 +25,7 @@ Deno.test("universal-lookup-company: GETs /universal/company/lookup by domain an
   assertEquals(out.address.city, "Boston");
 });
 
-Deno.test("universal-lookup-company: needs an identifier; a 404 throws", async () => {
+test("universal-lookup-company: needs an identifier; a 404 throws", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, {}, none.ctx), Error, "Identify the company");
   assertEquals(none.calls.length, 0);

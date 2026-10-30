@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionUpdate from "../../actions/transaction-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-update: PUTs to /transactions/{id}", async () => {
+test("transaction-update: PUTs to /transactions/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "tx_1" }) }]);
   await transactionUpdate.execute({ id: "tx_1", internal_note: "verified" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("transaction-update: PUTs to /transactions/{id}", async () => {
   assertEquals(JSON.parse(calls[0].body!), { internal_note: "verified" });
 });
 
-Deno.test("transaction-update: a dedication is only sent when dedication_type is set", async () => {
+test("transaction-update: a dedication is only sent when dedication_type is set", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "tx_1" }) }]);
   await transactionUpdate.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("transaction-update: a dedication is only sent when dedication_type is
   });
 });
 
-Deno.test("transaction-update: with no dedication_type, no dedication key is sent", async () => {
+test("transaction-update: with no dedication_type, no dedication key is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "tx_1" }) }]);
   await transactionUpdate.execute({ id: "tx_1", method: "check" }, ctx);
   assertEquals("dedication" in JSON.parse(calls[0].body!), false);

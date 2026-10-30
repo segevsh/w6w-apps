@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import uploadGet from "../../actions/upload-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("upload-get: GET /api/v1/recordings/upload/r9 on the workspace host", async () => {
+test("upload-get: GET /api/v1/recordings/upload/r9 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { upload: { recording_id: "r9", status: "PENDING" } },
@@ -18,7 +19,7 @@ Deno.test("upload-get: GET /api/v1/recordings/upload/r9 on the workspace host", 
   assertEquals((out as { status: string }).status, "PENDING");
 });
 
-Deno.test("upload-get: a Fellow error surfaces its detail and status", async () => {
+test("upload-get: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(uploadGet.execute({ recordingId: "r9" }, ctx)),

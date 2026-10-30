@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-create.ts";
 
-Deno.test("form-create: POST /v1/forms with info.title only", async () => {
+test("form-create: POST /v1/forms with info.title only", async () => {
   const { ctx, calls } = mockCtx([{ body: { formId: "f1" } }]);
   const result = await action.execute({ title: "Feedback" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("form-create: POST /v1/forms with info.title only", async () => {
   assertEquals(result, { formId: "f1" });
 });
 
-Deno.test("form-create: sends documentTitle and the unpublished query flag", async () => {
+test("form-create: sends documentTitle and the unpublished query flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { formId: "f2" } }]);
   await action.execute({ title: "Q3 survey", documentTitle: "q3.form", unpublished: true }, ctx);
 
@@ -26,7 +27,7 @@ Deno.test("form-create: sends documentTitle and the unpublished query flag", asy
   });
 });
 
-Deno.test("form-create: is a non-idempotent perform action", () => {
+test("form-create: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

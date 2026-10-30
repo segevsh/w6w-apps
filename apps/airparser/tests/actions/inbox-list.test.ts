@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import inboxList from "../../actions/inbox-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inbox-list: fetches GET /inboxes and returns the body verbatim", async () => {
+test("inbox-list: fetches GET /inboxes and returns the body verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ _id: "in_1", name: "Invoices" }] }]);
   const result = await inboxList.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("inbox-list: fetches GET /inboxes and returns the body verbatim", asyn
   assertEquals(result, [{ _id: "in_1", name: "Invoices" }]);
 });
 
-Deno.test("inbox-list: search type, no params — the same call the auth probe makes", () => {
+test("inbox-list: search type, no params — the same call the auth probe makes", () => {
   assertEquals(inboxList.type, "search");
   assertEquals(inboxList.params, []);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-get-many.ts";
 
-Deno.test("label-get-many: GETs /labels and returns the response", async () => {
+test("label-get-many: GETs /labels and returns the response", async () => {
   const body = [{ id: "l1", name: "urgent" }];
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);

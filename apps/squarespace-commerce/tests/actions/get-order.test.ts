@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getOrder from "../../actions/get-order.ts";
 import { API_ROOT, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-order: GET /1.0/commerce/orders/{id}", async () => {
+test("get-order: GET /1.0/commerce/orders/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "O1", orderNumber: "1001" } }]);
   const out = await getOrder.execute!({ id: "585d498fdee9f31a60284a37" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("get-order: GET /1.0/commerce/orders/{id}", async () => {
   assertEquals(out.orderNumber, "1001");
 });
 
-Deno.test("get-order: an id needing escaping cannot break out of its path segment", async () => {
+test("get-order: an id needing escaping cannot break out of its path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "O1" } }]);
   await getOrder.execute!({ id: "a/b?c" }, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("get-order: an id needing escaping cannot break out of its path segmen
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("get-order: a 404 with MISSING_ARGUMENT is surfaced with its subtype", async () => {
+test("get-order: a 404 with MISSING_ARGUMENT is surfaced with its subtype", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("INVALID_REQUEST_ERROR", {

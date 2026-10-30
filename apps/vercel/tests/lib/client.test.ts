@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, compact, csv, json, VercelClient } from "../../lib/client.ts";
 
@@ -7,7 +8,7 @@ const page = (key: string, items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("compact: drops unset keys but keeps false and zero", () => {
+test("compact: drops unset keys but keeps false and zero", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -15,13 +16,13 @@ Deno.test("compact: drops unset keys but keeps false and zero", () => {
   });
 });
 
-Deno.test("csv: splits, trims and drops blanks; blank input stays unset", () => {
+test("csv: splits, trims and drops blanks; blank input stays unset", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv(42), undefined);
 });
 
-Deno.test("json: parses a string param, passes a live value through, names a bad one", () => {
+test("json: parses a string param, passes a live value through, names a bad one", () => {
   assertEquals(json('{"a":1}', "meta"), { a: 1 });
   assertEquals(json({ a: 1 }, "meta"), { a: 1 });
   assertEquals(json("", "meta"), undefined);
@@ -36,13 +37,13 @@ Deno.test("json: parses a string param, passes a live value through, names a bad
   assert(err!.includes("gitSource"), err);
 });
 
-Deno.test("client: no team scope means the personal account — no teamId on the wire", async () => {
+test("client: no team scope means the personal account — no teamId on the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await VercelClient.fromConnection(ctx).request("/v2/user");
   assertEquals(calls[0].url, `${API_URL}/v2/user`);
 });
 
-Deno.test("client: the connection's teamId rides on every request", async () => {
+test("client: the connection's teamId rides on every request", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     display: { teamId: "team_abc" },
   });
@@ -50,7 +51,7 @@ Deno.test("client: the connection's teamId rides on every request", async () => 
   assertEquals(new URL(calls[0].url).searchParams.get("teamId"), "team_abc");
 });
 
-Deno.test("client: an action's teamId overrides the connection's", async () => {
+test("client: an action's teamId overrides the connection's", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     display: { teamId: "team_abc", teamSlug: "acme" },
   });
@@ -61,14 +62,14 @@ Deno.test("client: an action's teamId overrides the connection's", async () => {
   assertEquals(q.get("slug"), null);
 });
 
-Deno.test("client: never sends an Authorization header — signing is the host's job", async () => {
+test("client: never sends an Authorization header — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await VercelClient.fromConnection(ctx).request("/v2/user");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: a failure surfaces the status and Vercel's own error envelope", async () => {
+test("client: a failure surfaces the status and Vercel's own error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { code: "forbidden", message: "Not authorized" } },
@@ -81,14 +82,14 @@ Deno.test("client: a failure surfaces the status and Vercel's own error envelope
   assert(err.message.includes("forbidden"), err.message);
 });
 
-Deno.test("client: 204 and an empty body both come back as undefined", async () => {
+test("client: 204 and an empty body both come back as undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }], { display: {} });
   const client = VercelClient.fromConnection(ctx);
   assertEquals(await client.request("/v9/projects/x", { method: "DELETE" }), undefined);
   assertEquals(await client.request("/v2/user"), undefined);
 });
 
-Deno.test("client: requestAll follows pagination.next as the next page's `until`", async () => {
+test("client: requestAll follows pagination.next as the next page's `until`", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page("deployments", [{ uid: "1" }], 1540095775951) },
     { status: 200, body: page("deployments", [{ uid: "2" }], null) },
@@ -101,7 +102,7 @@ Deno.test("client: requestAll follows pagination.next as the next page's `until`
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "100");
 });
 
-Deno.test("client: a null `next` ends pagination — Vercel's last-page signal", async () => {
+test("client: a null `next` ends pagination — Vercel's last-page signal", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page("projects", [{ id: "1" }], null) },
   ], { display: {} });
@@ -109,7 +110,7 @@ Deno.test("client: a null `next` ends pagination — Vercel's last-page signal",
   assertEquals(calls.length, 1);
 });
 
-Deno.test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
+test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page("projects", [{ id: "1" }, { id: "2" }, { id: "3" }], 123) },
   ], { display: {} });
@@ -123,7 +124,7 @@ Deno.test("client: requestAll stops at wantTotal even with a next page waiting",
   assertEquals(calls.length, 1);
 });
 
-Deno.test("client: array query values repeat the key, and blanks are dropped", async () => {
+test("client: array query values repeat the key, and blanks are dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await VercelClient.fromConnection(ctx).request("/v7/deployments", {
     query: { projectIds: ["a", "b"], target: "", state: "READY" },

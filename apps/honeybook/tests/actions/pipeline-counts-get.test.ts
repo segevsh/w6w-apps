@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import pipelineCountsGet from "../../actions/pipeline-counts-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const INPUT = {
   "leadSourceIds": ["a1", "b2"],
 };
 
-Deno.test("pipeline-counts-get: sends GET /pipeline/counts with the mapped fields", async () => {
+test("pipeline-counts-get: sends GET /pipeline/counts with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await pipelineCountsGet.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -32,13 +33,13 @@ Deno.test("pipeline-counts-get: sends GET /pipeline/counts with the mapped field
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("pipeline-counts-get: sends only what was supplied", async () => {
+test("pipeline-counts-get: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await pipelineCountsGet.execute({} as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("pipeline-counts-get: surfaces the API error type and message", async () => {
+test("pipeline-counts-get: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await pipelineCountsGet.execute(INPUT, ctx),

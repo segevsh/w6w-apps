@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignCancelFollowup from "../../actions/campaign-cancel-followup.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-cancel-followup: POSTs to /v2/campaigns/{id}/cancel_followup", async () => {
+test("campaign-cancel-followup: POSTs to /v2/campaigns/{id}/cancel_followup", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, message: "Campaign auto followup canceled" },
   }]);

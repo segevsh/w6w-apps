@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/query-records.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const RESP = {
   isLastPage: true,
 };
 
-Deno.test("query-records: sends POST /api/v3/query with the structured body and unwraps the page", async () => {
+test("query-records: sends POST /api/v3/query with the structured body and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: RESP }]);
   const filter = [{
     type: "AND",
@@ -43,7 +44,7 @@ Deno.test("query-records: sends POST /api/v3/query with the structured body and 
   });
 });
 
-Deno.test("query-records: expands bare field names, parses JSON text and omits unset keys", async () => {
+test("query-records: expands bare field names, parses JSON text and omits unset keys", async () => {
   const { ctx, calls } = mockCtx([{ body: RESP }]);
   await action.execute!({
     objectType: 1,
@@ -57,7 +58,7 @@ Deno.test("query-records: expands bare field names, parses JSON text and omits u
   });
 });
 
-Deno.test("query-records: refuses empty fields before any request", async () => {
+test("query-records: refuses empty fields before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ objectType: 1, fields: [] }, ctx),
@@ -67,13 +68,13 @@ Deno.test("query-records: refuses empty fields before any request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("query-records: sends no tokenid header of its own", async () => {
+test("query-records: sends no tokenid header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESP }]);
   await action.execute!({ objectType: 1, fields: ["accountname"] }, ctx);
   assert(!("tokenid" in calls[0].headers));
 });
 
-Deno.test("query-records: surfaces the lowercase message and the error code", async () => {
+test("query-records: surfaces the lowercase message and the error code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid field: nope" } }]);
   await assertRejects(
     async () => await action.execute!({ objectType: 1, fields: ["nope"] }, ctx),
@@ -82,7 +83,7 @@ Deno.test("query-records: surfaces the lowercase message and the error code", as
   );
 });
 
-Deno.test("query-records: declares type and output", () => {
+test("query-records: declares type and output", () => {
   assertEquals(action.type, "search");
   assert(action.params!.some((p) => p.key === "fields" && p.required));
   assert(Array.isArray(action.output) && action.output.length > 0);

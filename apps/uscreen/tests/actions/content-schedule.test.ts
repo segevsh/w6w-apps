@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contentSchedule from "../../actions/content-schedule.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("content-schedule: sends POST /contents/${seg(input.contentId)}/visibility/schedule", async () => {
+test("content-schedule: sends POST /contents/${seg(input.contentId)}/visibility/schedule", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1 } }]);
   const out = await contentSchedule.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("content-schedule: sends POST /contents/${seg(input.contentId)}/visibi
   assertEquals(out, { "id": 1 });
 });
 
-Deno.test("content-schedule: a 422 surfaces the vendor's message", async () => {
+test("content-schedule: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/askfred-continue.ts";
 
 const OK = { data: { continueAskFredThread: { message: { thread_id: "th1" } } } };
 
-Deno.test("askfred-continue: sends the thread id and follow-up in the input object", async () => {
+test("askfred-continue: sends the thread id and follow-up in the input object", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ threadId: "th1", query: "And the budget?" }, ctx);
   const { query, variables } = sent(calls[0]);
@@ -12,7 +13,7 @@ Deno.test("askfred-continue: sends the thread id and follow-up in the input obje
   assertEquals(variables.input, { thread_id: "th1", query: "And the budget?" });
 });
 
-Deno.test("askfred-continue: optional formatting fields are only sent when set", async () => {
+test("askfred-continue: optional formatting fields are only sent when set", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute(
     { threadId: "th1", query: "q", responseLanguage: "es", formatMode: "plaintext" },

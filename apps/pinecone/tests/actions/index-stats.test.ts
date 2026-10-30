@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-stats.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
-Deno.test("index-stats: posts to the index's own host", async () => {
+test("index-stats: posts to the index's own host", async () => {
   const { ctx, calls } = mockCtx([
     describe,
     { status: 200, body: { namespaces: { "": { vectorCount: 3 } }, totalVectorCount: 3 } },
@@ -16,7 +17,7 @@ Deno.test("index-stats: posts to the index's own host", async () => {
 });
 
 /** indexFullness is meaningless on serverless — the output label says so. */
-Deno.test("index-stats: labels indexFullness as pod-based only", () => {
+test("index-stats: labels indexFullness as pod-based only", () => {
   const field = (action.output as Array<{ key: string; label: string }>)
     .find((o) => o.key === "indexFullness")!;
   assertEquals(field.label.includes("pod-based"), true);

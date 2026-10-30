@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/subscription-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-create: POST /api/subscriptions", async () => {
+test("subscription-create: POST /api/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!(
     {

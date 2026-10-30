@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-find.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("lead-find: GETs /rest/v1/leads.json with filterType/filterValues", async () => {
+test("lead-find: GETs /rest/v1/leads.json with filterType/filterValues", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { success: true, result: [{ id: 1 }, { id: 2 }] } }],
     conn,
@@ -17,13 +18,13 @@ Deno.test("lead-find: GETs /rest/v1/leads.json with filterType/filterValues", as
   assertEquals(out, [{ id: 1 }, { id: 2 }]);
 });
 
-Deno.test("lead-find: returns an empty array when nothing matches", async () => {
+test("lead-find: returns an empty array when nothing matches", async () => {
   const { ctx } = mockCtx([{ body: { success: true, result: [] } }], conn);
   const out = await action.execute!({ filterType: "id", filterValues: "999999" }, ctx);
   assertEquals(out, []);
 });
 
-Deno.test("lead-find: requires filterType and filterValues", async () => {
+test("lead-find: requires filterType and filterValues", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -34,6 +35,6 @@ Deno.test("lead-find: requires filterType and filterValues", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("lead-find: is a search action, not a read", () => {
+test("lead-find: is a search action, not a read", () => {
   assertEquals(action.type, "search");
 });

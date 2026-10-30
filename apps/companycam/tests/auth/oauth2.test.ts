@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("oauth2: declares the vendor's endpoints, scopes and rotation URL", () => {
+test("oauth2: declares the vendor's endpoints, scopes and rotation URL", () => {
   assertEquals(oauth2.key, "oauth2");
   assertEquals(oauth2.type, "oauth2");
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://app.companycam.com/oauth/authorize");
@@ -14,7 +15,7 @@ Deno.test("oauth2: declares the vendor's endpoints, scopes and rotation URL", ()
   assertEquals(oauth2.fields, undefined);
 });
 
-Deno.test("oauth2: the OAuth hosts are not the API host", () => {
+test("oauth2: the OAuth hosts are not the API host", () => {
   const apiHost = "api.companycam.com";
   for (const url of [oauth2.oauth2!.authorizationUrl, oauth2.oauth2!.tokenUrl]) {
     assert(!url.includes(apiHost), `${url} points at the API host`);
@@ -22,7 +23,7 @@ Deno.test("oauth2: the OAuth hosts are not the API host", () => {
   }
 });
 
-Deno.test("oauth2: sign stamps the same bearer header as an access token", () => {
+test("oauth2: sign stamps the same bearer header as an access token", () => {
   const request = {
     url: "https://api.companycam.com/v2/photos",
     method: "GET",
@@ -37,21 +38,21 @@ Deno.test("oauth2: sign stamps the same bearer header as an access token", () =>
   assertEquals(request.headers.authorization, "Bearer oauth_tok");
 });
 
-Deno.test("oauth2: test probes /users/current with the token", async () => {
+test("oauth2: test probes /users/current with the token", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", email_address: "a@b.com" } }]);
   assertEquals(await oauth2.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/v2/users/current");
   assertEquals(calls[0].headers.authorization, "Bearer tok");
 });
 
-Deno.test("oauth2: a missing token fails before any request", async () => {
+test("oauth2: a missing token fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await oauth2.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: a rejected token reports the same explanation as the access-token method", async () => {
+test("oauth2: a rejected token reports the same explanation as the access-token method", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthorized") }]);
   const result = await oauth2.test({ credential: { accessToken: "expired" } }, ctx);
   assertEquals(result.ok, false);
@@ -59,7 +60,7 @@ Deno.test("oauth2: a rejected token reports the same explanation as the access-t
   assert(!result.message!.includes("expired"), "the probe echoed the credential");
 });
 
-Deno.test("oauth2: afterConnect relies on the host to sign and publishes only the label", async () => {
+test("oauth2: afterConnect relies on the host to sign and publishes only the label", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "9", company_id: "8", email_address: "a@b.com", first_name: "A", last_name: "B" },
   }]);

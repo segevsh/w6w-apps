@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import suiteqlQuery from "../../actions/suiteql-query.ts";
 import { BASE, mockCtx, run } from "../_helpers.ts";
 
 const row = (n: number) => ({ links: [], id: String(n) });
 
-Deno.test("suiteql-query: POSTs {q} with Prefer: transient and paging in the URL", async () => {
+test("suiteql-query: POSTs {q} with Prefer: transient and paging in the URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: { items: [row(1)], count: 1, offset: 10, hasMore: false, totalResults: 11 },
   }]);
@@ -27,7 +28,7 @@ Deno.test("suiteql-query: POSTs {q} with Prefer: transient and paging in the URL
   });
 });
 
-Deno.test("suiteql-query: bound parameters are sent as params, never spliced into q", async () => {
+test("suiteql-query: bound parameters are sent as params, never spliced into q", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], hasMore: false } }]);
   await run(suiteqlQuery, {
     query: "SELECT * FROM item WHERE id BETWEEN ? AND ?",
@@ -39,7 +40,7 @@ Deno.test("suiteql-query: bound parameters are sent as params, never spliced int
   });
 });
 
-Deno.test("suiteql-query: fetchAll walks hasMore page by page with advancing offsets", async () => {
+test("suiteql-query: fetchAll walks hasMore page by page with advancing offsets", async () => {
   const { ctx, calls } = mockCtx([
     { body: { items: [row(1), row(2)], hasMore: true, totalResults: 5 } },
     { body: { items: [row(3), row(4)], hasMore: true, totalResults: 5 } },
@@ -53,7 +54,7 @@ Deno.test("suiteql-query: fetchAll walks hasMore page by page with advancing off
   assertEquals(out.totalResults, 5);
 });
 
-Deno.test("suiteql-query: maxRows caps fetchAll and says more remain", async () => {
+test("suiteql-query: maxRows caps fetchAll and says more remain", async () => {
   const { ctx, calls } = mockCtx([
     { body: { items: [row(1), row(2), row(3)], hasMore: true } },
     { body: { items: [row(4), row(5), row(6)], hasMore: true } },
@@ -69,14 +70,14 @@ Deno.test("suiteql-query: maxRows caps fetchAll and says more remain", async () 
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("suiteql-query: a single page is one request even when more exist", async () => {
+test("suiteql-query: a single page is one request even when more exist", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [row(1)], hasMore: true } }]);
   const out = await run(suiteqlQuery, { query: "SELECT id FROM t" }, ctx);
   assertEquals(calls.length, 1);
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("suiteql-query: empty query, ragged offset and non-array params are refused locally", async () => {
+test("suiteql-query: empty query, ragged offset and non-array params are refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await run(suiteqlQuery, { query: " " }, ctx), Error, "required");
   await assertRejects(

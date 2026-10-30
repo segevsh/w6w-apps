@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentFieldList from "../../actions/document-field-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-field-list: GET /api/documents/fields/{documentId}", async () => {
+test("document-field-list: GET /api/documents/fields/{documentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentFieldList.execute({ "documentId": 7 } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("document-field-list: GET /api/documents/fields/{documentId}", async (
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("document-field-list: a vendor error surfaces its own message", async () => {
+test("document-field-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () => Promise.resolve(documentFieldList.execute({ "documentId": 7 } as never, ctx)),

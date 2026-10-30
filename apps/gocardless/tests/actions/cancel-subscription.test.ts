@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cancelSubscription from "../../actions/cancel-subscription.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("cancel-subscription: POST …/actions/cancel with the empty envelope", async () => {
+test("cancel-subscription: POST …/actions/cancel with the empty envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("subscriptions", { id: "SB1", status: "cancelled" }) },
   ]);

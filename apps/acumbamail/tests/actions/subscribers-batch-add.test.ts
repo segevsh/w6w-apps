@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscribersBatchAdd from "../../actions/subscribers-batch-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscribers-batch-add: POST /api/1/batchAddSubscribers/ with the documented form fields", async () => {
+test("subscribers-batch-add: POST /api/1/batchAddSubscribers/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await subscribersBatchAdd.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("subscribers-batch-add: POST /api/1/batchAddSubscribers/ with the docu
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("subscribers-batch-add: a vendor error surfaces its status and body", async () => {
+test("subscribers-batch-add: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await subscribersBatchAdd.execute(
@@ -46,7 +47,7 @@ Deno.test("subscribers-batch-add: a vendor error surfaces its status and body", 
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("subscribers-batch-add: an empty list_id fails before any request", async () => {
+test("subscribers-batch-add: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -65,7 +66,7 @@ Deno.test("subscribers-batch-add: an empty list_id fails before any request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscribers-batch-add: unset optional fields are not sent", async () => {
+test("subscribers-batch-add: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await subscribersBatchAdd.execute(
     { "list_id": 7, "subscribers_data": [{ "email": "a@b.co" }, { "email": "c@d.co" }] } as never,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mandateList from "../../actions/mandate-list.ts";
 import { list, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mandate-list: unwraps _embedded.mandates for one customer", async () => {
+test("mandate-list: unwraps _embedded.mandates for one customer", async () => {
   const { ctx, calls } = mockCtx([{ body: list("mandates", [{ id: "mdt_1" }]) }]);
   const out = await mandateList.execute({ customerId: "cst_1" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import offerList from "../../actions/offer-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("offer-list: joins array filters as comma lists", async () => {
+test("offer-list: joins array filters as comma lists", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { offers: [] } }]);
   await offerList.execute({
     statuses: ["draft", "published"],

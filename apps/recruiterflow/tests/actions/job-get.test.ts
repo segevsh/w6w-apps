@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobGet from "../../actions/job-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-get: GET /job with the mapped wire fields", async () => {
+test("job-get: GET /job with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { RESULT: "success", data: { id: 1 } } }]);
   const out = await jobGet.execute({ "jobId": 7, "includeStages": true } as never, ctx) as Record<
     string,
@@ -16,7 +17,7 @@ Deno.test("job-get: GET /job with the mapped wire fields", async () => {
   assertEquals((out.data as { id: number }).id, 1);
 });
 
-Deno.test("job-get: a vendor error is thrown with its message", async () => {
+test("job-get: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

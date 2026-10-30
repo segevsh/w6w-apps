@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import createBooking from "../../actions/create-booking.ts";
 
-Deno.test("create-booking: builds the v1 body from a single room and returns the new id", async () => {
+test("create-booking: builds the v1 body from a single room and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 4242 }]);
   const out = await createBooking.execute({
     propertyId: 5,
@@ -31,7 +32,7 @@ Deno.test("create-booking: builds the v1 body from a single room and returns the
   assertEquals(out, { id: 4242 });
 });
 
-Deno.test("create-booking: `rooms` overrides the single-room fields; deprecated fields never sent", async () => {
+test("create-booking: `rooms` overrides the single-room fields; deprecated fields never sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 1 }]);
   const rooms = [{ room_type_id: 1, guest_breakdown: { adults: 3 } }];
   await createBooking.execute({
@@ -47,7 +48,7 @@ Deno.test("create-booking: `rooms` overrides the single-room fields; deprecated 
   assertEquals("name" in sent.guest, false);
 });
 
-Deno.test("create-booking: needs a room type or `rooms`", async () => {
+test("create-booking: needs a room type or `rooms`", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>

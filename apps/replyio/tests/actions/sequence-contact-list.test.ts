@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceContactList from "../../actions/sequence-contact-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sequence-contact-list: GETs /v3/sequences/{id}/contacts with snake_case sort params", async () => {
+test("sequence-contact-list: GETs /v3/sequences/{id}/contacts with snake_case sort params", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ contactId: 1, statusInSequence: "active" }]) }]);
   await sequenceContactList.execute({ id: 9, sort_by: "email", sort_direction: "asc" }, ctx);
 

@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, page } from "./_shared.ts";
 import action from "../../actions/framework-control-list.ts";
 
-Deno.test("framework-control-list: reads one framework's controls", async () => {
+test("framework-control-list: reads one framework's controls", async () => {
   const { ctx, calls } = mockCtx([page([{ id: "c1" }])], { display });
   const result = await action.execute!({ frameworkId: "soc2" }, ctx) as { count: number };
   assertEquals(
@@ -13,13 +14,13 @@ Deno.test("framework-control-list: reads one framework's controls", async () => 
   assertEquals(result.count, 1);
 });
 
-Deno.test("framework-control-list: needs a framework id", async () => {
+test("framework-control-list: needs a framework id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "frameworkId");
   assertEquals(calls.length, 0);
 });
 
 /** The same control appears under several frameworks with different numbering. */
-Deno.test("framework-control-list: says why this differs from a filtered control list", () => {
+test("framework-control-list: says why this differs from a filtered control list", () => {
   assert(/different numbering/.test(action.description!), action.description);
 });

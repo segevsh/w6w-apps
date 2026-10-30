@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import directoryList from "../../actions/directory-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("directory-list: calls GET /directories and flattens result.elements", async () => {
+test("directory-list: calls GET /directories and flattens result.elements", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ directoryId: "POOL_1" }]) }]);
   const out = await directoryList.execute({}, ctx) as { elements: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("directory-list: calls GET /directories and flattens result.elements",
   assertEquals(out.elements, [{ directoryId: "POOL_1" }]);
 });
 
-Deno.test("directory-list: follows nextPage", async () => {
+test("directory-list: follows nextPage", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/directories?offset=10";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ directoryId: "POOL_1" }], page2) },

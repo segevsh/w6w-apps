@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-limits.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-limits: returns the limit objects with the vendor's string figures untouched", async () => {
+test("get-limits: returns the limit objects with the vendor's string figures untouched", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -24,7 +25,7 @@ Deno.test("get-limits: returns the limit objects with the vendor's string figure
   assertEquals(out.bulkVerifyConcurrencyLimit, { total: "5", remaining: "4" });
 });
 
-Deno.test("get-limits: absent sections are null; 401 throws", async () => {
+test("get-limits: absent sections are null; 401 throws", async () => {
   const { ctx } = mockCtx([{ body: { status: "success", data: {} } }]);
   assertEquals(await run(action, {}, ctx), {
     apiRateLimit: null,

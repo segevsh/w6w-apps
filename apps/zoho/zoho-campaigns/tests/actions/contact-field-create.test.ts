@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-field-create.ts";
 
-Deno.test("contact-field-create: POSTs custom/add with type=json and unwraps the nested response", async () => {
+test("contact-field-create: POSTs custom/add with type=json and unwraps the nested response", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: {

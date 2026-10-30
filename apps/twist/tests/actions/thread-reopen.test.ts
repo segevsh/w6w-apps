@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadReopen from "../../actions/thread-reopen.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("thread-reopen: POST /api/v3/comments/add with every documented parameter", async () => {
+test("thread-reopen: POST /api/v3/comments/add with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadReopen.execute(
     { "threadId": 100, "content": "sample content" },
@@ -21,7 +22,7 @@ Deno.test("thread-reopen: POST /api/v3/comments/add with every documented parame
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("thread-reopen: sends a form body, never a query string", async () => {
+test("thread-reopen: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadReopen.execute({ "threadId": 100, "content": "sample content" }, ctx);
 
@@ -29,18 +30,18 @@ Deno.test("thread-reopen: sends a form body, never a query string", async () => 
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("thread-reopen: is declared non-idempotent", () => {
+test("thread-reopen: is declared non-idempotent", () => {
   assertEquals(threadReopen.idempotent, false);
 });
 
-Deno.test("thread-reopen: sends no credential of its own", async () => {
+test("thread-reopen: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadReopen.execute({ "threadId": 100, "content": "sample content" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-reopen: surfaces Twist's error body", async () => {
+test("thread-reopen: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

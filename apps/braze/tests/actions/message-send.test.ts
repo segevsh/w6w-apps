@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
-Deno.test("message-send: posts external_user_ids and the per-channel messages payload", async () => {
+test("message-send: posts external_user_ids and the per-channel messages payload", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { dispatch_id: "d1" } }], {
     display: { instance: "iad-01" },
   });
@@ -15,7 +16,7 @@ Deno.test("message-send: posts external_user_ids and the per-channel messages pa
   assertEquals(body.messages, { email: { subject: "Hi", body: "Hello" } });
 });
 
-Deno.test("message-send: defaults send_id to the invocation id", async () => {
+test("message-send: defaults send_id to the invocation id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], {
     display: { instance: "iad-01" },
     invocationId: "inv-456",

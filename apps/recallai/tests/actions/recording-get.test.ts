@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/recording-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("recording-get: GETs the record by id with no body", async () => {
+test("recording-get: GETs the record by id with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", status: { code: "done" } } }]);
   const out = await action.execute!({ id: "x1" }, ctx);
   assertEquals(calls[0].url, "https://us-west-2.recall.ai/api/v1/recording/x1/");
@@ -11,7 +12,7 @@ Deno.test("recording-get: GETs the record by id with no body", async () => {
   assertEquals(out, { id: "x1", status: { code: "done" } });
 });
 
-Deno.test("recording-get: percent-encodes the id and reports a 404 by code", async () => {
+test("recording-get: percent-encodes the id and reports a 404 by code", async () => {
   const { ctx, calls } = mockCtx([{
     status: 404,
     body: { detail: "Not found.", code: "not_found" },

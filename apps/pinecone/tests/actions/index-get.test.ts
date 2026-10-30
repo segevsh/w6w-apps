@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-get.ts";
 
-Deno.test("index-get: describes the index on the control plane", async () => {
+test("index-get: describes the index on the control plane", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" },
@@ -13,7 +14,7 @@ Deno.test("index-get: describes the index on the control plane", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/indexes/idx");
 });
 
-Deno.test("index-get: a missing name is refused", async () => {
+test("index-get: a missing name is refused", async () => {
   const { ctx } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "indexName");
 });

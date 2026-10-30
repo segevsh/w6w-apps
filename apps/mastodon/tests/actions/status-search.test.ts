@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok, STATUS } from "./_shared.ts";
 import action from "../../actions/status-search.ts";
@@ -9,7 +10,7 @@ const results = ok({
   hashtags: [{ name: "tag" }],
 });
 
-Deno.test("status-search: searches and strips the statuses' HTML", async () => {
+test("status-search: searches and strips the statuses' HTML", async () => {
   const { ctx, calls } = mockCtx([results], { display });
   const result = await action.execute!({ q: "deno" }, ctx) as {
     count: number;
@@ -21,7 +22,7 @@ Deno.test("status-search: searches and strips the statuses' HTML", async () => {
 });
 
 /** Resolving is what pulls an unseen remote object in. */
-Deno.test("status-search: resolve is on by default and can be turned off", async () => {
+test("status-search: resolve is on by default and can be turned off", async () => {
   const on = mockCtx([results], { display });
   await action.execute!({ q: "https://other.social/@bob/1" }, on.ctx);
   assertEquals(new URL(on.calls[0].url).searchParams.get("resolve"), "true");
@@ -31,7 +32,7 @@ Deno.test("status-search: resolve is on by default and can be turned off", async
   assertEquals(new URL(off.calls[0].url).searchParams.has("resolve"), false);
 });
 
-Deno.test("status-search: the type filter and limit reach the wire", async () => {
+test("status-search: the type filter and limit reach the wire", async () => {
   const { ctx, calls } = mockCtx([results], { display });
   await action.execute!({ q: "deno", type: "accounts", limit: 99 }, ctx);
   const url = new URL(calls[0].url);
@@ -39,14 +40,14 @@ Deno.test("status-search: the type filter and limit reach the wire", async () =>
   assertEquals(url.searchParams.get("limit"), "40", "clamped to Mastodon's ceiling");
 });
 
-Deno.test("status-search: needs a query", async () => {
+test("status-search: needs a query", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`q` is required");
   assertEquals(calls.length, 0);
 });
 
 /** The query is the caller's and the results are other people's posts. */
-Deno.test("status-search: logs counts, never the query or results", async () => {
+test("status-search: logs counts, never the query or results", async () => {
   const { ctx, logs } = mockCtx([results], { display });
   await action.execute!({ q: "something private" }, ctx);
   assert(!JSON.stringify(logs).includes("private"), JSON.stringify(logs));
@@ -54,6 +55,6 @@ Deno.test("status-search: logs counts, never the query or results", async () => 
 });
 
 /** There is no global index, and absence proves nothing. */
-Deno.test("status-search: says it searches this instance's view, not the network", () => {
+test("status-search: says it searches this instance's view, not the network", () => {
   assert(/which is not the network/.test(action.description!), action.description);
 });

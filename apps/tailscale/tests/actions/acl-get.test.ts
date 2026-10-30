@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/acl-get.ts";
 
@@ -25,7 +26,7 @@ const details = {
 };
 
 /** The comments are the reasoning; the JSON form drops them. */
-Deno.test("acl-get: asks for HuJSON and returns it verbatim", async () => {
+test("acl-get: asks for HuJSON and returns it verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: hujson }, details]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
 
@@ -35,7 +36,7 @@ Deno.test("acl-get: asks for HuJSON and returns it verbatim", async () => {
 });
 
 /** `details=true` is the only way to see them, and it forbids an Accept header. */
-Deno.test("acl-get: reads the warnings from the details call and warns", async () => {
+test("acl-get: reads the warnings from the details call and warns", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 200, body: hujson }, details]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
 
@@ -48,7 +49,7 @@ Deno.test("acl-get: reads the warnings from the details call and warns", async (
   );
 });
 
-Deno.test("acl-get: counts rules, tests, tags and groups from the text alone", async () => {
+test("acl-get: counts rules, tests, tags and groups from the text alone", async () => {
   const { ctx } = mockCtx([{ status: 200, body: hujson }, details]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.tagOwners, ["tag:prod", "tag:ci"]);
@@ -58,7 +59,7 @@ Deno.test("acl-get: counts rules, tests, tags and groups from the text alone", a
 });
 
 /** The parsed form is an explicit, lossy extra. */
-Deno.test("acl-get: the JSON form is fetched only when asked for", async () => {
+test("acl-get: the JSON form is fetched only when asked for", async () => {
   const without = mockCtx([{ status: 200, body: hujson }, details]);
   const plain = await action.execute({}, without.ctx) as Record<string, unknown>;
   assertEquals(without.calls.length, 2);
@@ -78,7 +79,7 @@ Deno.test("acl-get: the JSON form is fetched only when asked for", async () => {
   assertEquals(result.tagOwners, ["tag:prod"]);
 });
 
-Deno.test("acl-get: no warnings means no warning log", async () => {
+test("acl-get: no warnings means no warning log", async () => {
   const { ctx, logs } = mockCtx([
     { status: 200, body: hujson },
     { status: 200, body: { warnings: [], errors: [] } },
@@ -88,7 +89,7 @@ Deno.test("acl-get: no warnings means no warning log", async () => {
   assertEquals(logs.length, 0);
 });
 
-Deno.test("acl-get: says why the HuJSON form is the default", () => {
+test("acl-get: says why the HuJSON form is the default", () => {
   assert(/drops every comment/.test(action.description!), action.description);
   assertEquals(action.type, "read");
 });

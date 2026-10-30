@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-verify-lists.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const page = {
   },
 };
 
-Deno.test("list-verify-lists: first page sends start_after null and no filter", async () => {
+test("list-verify-lists: first page sends start_after null and no filter", async () => {
   const { ctx, calls } = mockCtx([page]);
   const out = await run(action, {}, ctx);
   assertEquals(calls[0].url, "https://api.clearout.io/v2/email_verify/list");
@@ -21,7 +22,7 @@ Deno.test("list-verify-lists: first page sends start_after null and no filter", 
   });
 });
 
-Deno.test("list-verify-lists: filters and the cursor are mapped to the vendor's body", async () => {
+test("list-verify-lists: filters and the cursor are mapped to the vendor's body", async () => {
   const { ctx, calls } = mockCtx([page]);
   await run(action, {
     limit: 50,
@@ -37,7 +38,7 @@ Deno.test("list-verify-lists: filters and the cursor are mapped to the vendor's 
   });
 });
 
-Deno.test("list-verify-lists: an empty last page reports no more and a null cursor", async () => {
+test("list-verify-lists: an empty last page reports no more and a null cursor", async () => {
   const { ctx } = mockCtx([{
     body: { data: [], page_info: { has_more: false, last_cursor: null } },
   }]);

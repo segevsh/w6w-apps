@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commissionUpdate from "../../actions/commission-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("commission-update: PATCHes given fields, keeping an explicit false", async () => {
+test("commission-update: PATCHes given fields, keeping an explicit false", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, approved: false } }]);
   const out = await commissionUpdate.execute(
     { commissionId: 1, approved: false, comment: "Amount adjusted" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formList from "../../actions/form-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-list: GETs the collection with every documented filter mapped", async () => {
+test("form-list: GETs the collection with every documented filter mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "forms") }]);
   await formList.execute({ siteId: "111", titleContains: "c", sort: "title" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -13,7 +14,7 @@ Deno.test("form-list: GETs the collection with every documented filter mapped", 
   assertEquals(q["sort"], "title");
 });
 
-Deno.test("form-list: sends no query at all when nothing is filled in", async () => {
+test("form-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "forms") }]);
   await formList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});

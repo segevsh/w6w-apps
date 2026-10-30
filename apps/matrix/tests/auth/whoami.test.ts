@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { checkWhoami, fetchWhoami } from "../../auth/whoami.ts";
 import { matrixError, mockCtx } from "../_helpers.ts";
 
-Deno.test("checkWhoami: ok when the body carries a user_id", async () => {
+test("checkWhoami: ok when the body carries a user_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { user_id: "@alice:example.org", device_id: "ABC" } }]);
   const result = await checkWhoami(ctx, "https://matrix.example.org", "tok123");
   assertEquals(result, { ok: true });
@@ -10,7 +11,7 @@ Deno.test("checkWhoami: ok when the body carries a user_id", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok123");
 });
 
-Deno.test("checkWhoami: a 401 is only 'the token is dead' when errcode says M_UNKNOWN_TOKEN", async () => {
+test("checkWhoami: a 401 is only 'the token is dead' when errcode says M_UNKNOWN_TOKEN", async () => {
   const known = mockCtx([{ status: 401, body: matrixError("M_UNKNOWN_TOKEN", "bad token") }]);
   const knownResult = await checkWhoami(known.ctx, "https://matrix.example.org", "tok");
   assertEquals(knownResult.ok, false);
@@ -24,7 +25,7 @@ Deno.test("checkWhoami: a 401 is only 'the token is dead' when errcode says M_UN
   assert(otherMessage.includes("401"), otherMessage);
 });
 
-Deno.test("checkWhoami: a 404 is diagnosed as a wrong homeserver URL", async () => {
+test("checkWhoami: a 404 is diagnosed as a wrong homeserver URL", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await checkWhoami(ctx, "https://matrix.example.org", "tok");
   assertEquals(result.ok, false);
@@ -32,7 +33,7 @@ Deno.test("checkWhoami: a 404 is diagnosed as a wrong homeserver URL", async () 
   assert(message.includes("check the homeserver URL"), message);
 });
 
-Deno.test("fetchWhoami: returns the parsed body, or null on any failure", async () => {
+test("fetchWhoami: returns the parsed body, or null on any failure", async () => {
   const ok = mockCtx([{ body: { user_id: "@alice:example.org", device_id: "ABC" } }]);
   assertEquals(await fetchWhoami(ok.ctx, "https://matrix.example.org", "tok"), {
     user_id: "@alice:example.org",

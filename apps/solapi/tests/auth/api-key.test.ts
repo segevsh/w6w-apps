@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertMatch } from "@std/assert";
+import { test as nodeTest } from "node:test";
+import { assert, assertEquals, assertMatch } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import apiKey, { buildAuthorization, isoDate, makeSalt, PROBE_PATH } from "../../auth/api-key.ts";
 import { errBody, mockCtx } from "../_helpers.ts";
@@ -12,7 +13,7 @@ const SIG = "4f7f0554a2bf1b7be0e1e5d35eeb4e25190236cf6a8f9a55269597c57b876314";
 // deno-lint-ignore no-explicit-any
 const test = (c: unknown, ctx: HookContext) => (apiKey.test as any)({ credential: c }, ctx);
 
-Deno.test("auth: declares one custom method with two secret fields", () => {
+nodeTest("auth: declares one custom method with two secret fields", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "custom");
   assertEquals(apiKey.fields?.map((f) => [f.key, f.type]), [["apiKey", "secret"], [
@@ -22,14 +23,14 @@ Deno.test("auth: declares one custom method with two secret fields", () => {
   assertEquals(PROBE_PATH, "/cash/v1/balance");
 });
 
-Deno.test("auth: the Authorization value matches an independently computed HMAC-SHA256", async () => {
+nodeTest("auth: the Authorization value matches an independently computed HMAC-SHA256", async () => {
   assertEquals(
     await buildAuthorization(cred, DATE, SALT),
     `HMAC-SHA256 apiKey=NCSAYU7II8WUDJOI, date=${DATE}, salt=${SALT}, signature=${SIG}`,
   );
 });
 
-Deno.test("auth.sign: stamps a fresh signed header and never the secret", async () => {
+nodeTest("auth.sign: stamps a fresh signed header and never the secret", async () => {
   const req = { url: "https://api.solapi.com/cash/v1/balance", method: "GET", headers: {} };
   const out = await apiKey.sign!({ request: req, credential: cred } as never, mockCtx().ctx) as {
     headers: Record<string, string>;
@@ -45,12 +46,12 @@ Deno.test("auth.sign: stamps a fresh signed header and never the secret", async 
   assertEquals(await buildAuthorization(cred, m[1], m[2]), h);
 });
 
-Deno.test("auth: salts differ between calls and isoDate drops milliseconds", () => {
+nodeTest("auth: salts differ between calls and isoDate drops milliseconds", () => {
   assert(makeSalt() !== makeSalt());
   assertEquals(isoDate(new Date("2026-10-06T09:30:00.789Z")), DATE);
 });
 
-Deno.test("auth.test: a numeric balance passes; the secret is never in the URL or headers", async () => {
+nodeTest("auth.test: a numeric balance passes; the secret is never in the URL or headers", async () => {
   const { ctx, calls } = mockCtx([{ body: { accountId: "AC1", balance: 100, point: 0 } }]);
   assertEquals(await test(cred, ctx), { ok: true });
   assertEquals(calls[0].url, "https://api.solapi.com/cash/v1/balance");
@@ -59,7 +60,7 @@ Deno.test("auth.test: a numeric balance passes; the secret is never in the URL o
   assert(!calls[0].headers["authorization"].includes(cred.apiSecret));
 });
 
-Deno.test("auth.test: a missing half fails without a network call", async () => {
+nodeTest("auth.test: a missing half fails without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await test({ apiKey: "k" }, ctx)).ok, false);
   assertEquals((await test({ apiSecret: "s" }, ctx)).ok, false);
@@ -67,7 +68,7 @@ Deno.test("auth.test: a missing half fails without a network call", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth.test: 401 and 400 error bodies are rejections quoting the vendor's text", async () => {
+nodeTest("auth.test: 401 and 400 error bodies are rejections quoting the vendor's text", async () => {
   const a = await test(
     cred,
     mockCtx([{ status: 401, body: errBody("Unauthorized", "권한이 없습니다.") }]).ctx,
@@ -85,7 +86,7 @@ Deno.test("auth.test: 401 and 400 error bodies are rejections quoting the vendor
   assert(b.message.includes("ValidationError"), b.message);
 });
 
-Deno.test("auth.test: a 200 without a numeric balance and a 5xx are not judged valid", async () => {
+nodeTest("auth.test: a 200 without a numeric balance and a 5xx are not judged valid", async () => {
   const odd = await test(cred, mockCtx([{ body: { hello: "world" } }]).ctx);
   assertEquals(odd.ok, false);
   assert(odd.message.includes("not judged"), odd.message);

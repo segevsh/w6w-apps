@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-companies.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
 const filters = { company_industry: ["Computer Software"] };
 
-Deno.test("search-companies: a new search posts filters and size, and returns the page token", async () => {
+test("search-companies: a new search posts filters and size, and returns the page token", async () => {
   const data = {
     total: 50,
     companies: [{ id: "c1", name: "Acme" }],
@@ -23,14 +24,14 @@ Deno.test("search-companies: a new search posts filters and size, and returns th
   });
 });
 
-Deno.test("search-companies: the next page sends only page_token and size", async () => {
+test("search-companies: the next page sends only page_token and size", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { total: 50, companies: [] } } }]);
   const out = await exec(action, { pageToken: "tok", size: 10 }, ctx);
   assertEquals(bodyOf(calls[0]), { page_token: "tok", size: 10 });
   assertEquals(out.next_page_token, null);
 });
 
-Deno.test("search-companies: filters and a token together, neither, or size 0 with a token are refused", async () => {
+test("search-companies: filters and a token together, neither, or size 0 with a token are refused", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { filters, pageToken: "t" }, none.ctx), Error, "not both");
   await assertRejects(() => exec(action, {}, none.ctx), Error, "not both");
@@ -42,7 +43,7 @@ Deno.test("search-companies: filters and a token together, neither, or size 0 wi
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("search-companies: insufficient credits (400) and rate limit (429) fail with the message", async () => {
+test("search-companies: insufficient credits (400) and rate limit (429) fail with the message", async () => {
   const a = mockCtx([{
     status: 400,
     body: { status: { code: 400, message: "Insufficient API credits" } },

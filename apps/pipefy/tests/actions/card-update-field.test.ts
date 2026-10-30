@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardUpdateField from "../../actions/card-update-field.ts";
 
-Deno.test("card-update-field: sets a field's value and surfaces success + the card", async () => {
+test("card-update-field: sets a field's value and surfaces success + the card", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -24,7 +25,7 @@ Deno.test("card-update-field: sets a field's value and surfaces success + the ca
   assert(q.includes('new_value: "option 1"'));
 });
 
-Deno.test("card-update-field: surfaces success: false without throwing", async () => {
+test("card-update-field: surfaces success: false without throwing", async () => {
   const { ctx } = mockCtx([{
     body: { data: { updateCardField: { success: false, card: null } } },
   }]);
@@ -35,7 +36,7 @@ Deno.test("card-update-field: surfaces success: false without throwing", async (
   assertEquals(out.success, false);
 });
 
-Deno.test("card-update-field: type/resource/idempotency metadata", () => {
+test("card-update-field: type/resource/idempotency metadata", () => {
   assertEquals(cardUpdateField.type, "perform");
   assertEquals(cardUpdateField.resource, "card");
   assertEquals(cardUpdateField.idempotent, true);

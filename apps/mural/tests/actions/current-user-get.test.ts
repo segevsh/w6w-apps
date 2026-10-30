@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import currentUserGet from "../../actions/current-user-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = {};
 
-Deno.test("current-user-get: GET /users/me", async () => {
+test("current-user-get: GET /users/me", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -20,7 +21,7 @@ Deno.test("current-user-get: GET /users/me", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("current-user-get: puts no credential on the request (sign owns that)", async () => {
+test("current-user-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -29,7 +30,7 @@ Deno.test("current-user-get: puts no credential on the request (sign owns that)"
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("current-user-get: a vendor error surfaces its own code and message", async () => {
+test("current-user-get: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },

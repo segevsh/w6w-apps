@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/change-create.ts";
 
-Deno.test("change-create: POSTs /changes with the mandatory grading fields", async () => {
+test("change-create: POSTs /changes with the mandatory grading fields", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { change: { id: 2 } } }]);
   const out = await action.execute({
     subject: "Replace ES3",
@@ -27,7 +28,7 @@ Deno.test("change-create: POSTs /changes with the mandatory grading fields", asy
   assertEquals(out, { id: 2 });
 });
 
-Deno.test("change-create: maps the planning window and routing fields", async () => {
+test("change-create: maps the planning window and routing fields", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: {} }]);
   await action.execute({
     subject: "s",
@@ -51,7 +52,7 @@ Deno.test("change-create: maps the planning window and routing fields", async ()
   assertEquals(body.department_id, 3);
 });
 
-Deno.test("change-create: declares the five fields Freshservice marks mandatory", () => {
+test("change-create: declares the five fields Freshservice marks mandatory", () => {
   const required = (action.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), [
     "changeType",

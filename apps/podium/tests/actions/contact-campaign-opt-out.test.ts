@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactCampaignOptOut from "../../actions/contact-campaign-opt-out.ts";
 
-Deno.test("contact-campaign-opt-out: sends every documented field in its documented place", async () => {
+test("contact-campaign-opt-out: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("contact-campaign-opt-out: sends every documented field in its documen
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-campaign-opt-out: a minimal call sends only what was set", async () => {
+test("contact-campaign-opt-out: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -42,7 +43,7 @@ Deno.test("contact-campaign-opt-out: a minimal call sends only what was set", as
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-campaign-opt-out: declares its params and kind", () => {
+test("contact-campaign-opt-out: declares its params and kind", () => {
   assertEquals((contactCampaignOptOut.params ?? []).map((p) => p.key), [
     "phoneNumber",
     "channelType",

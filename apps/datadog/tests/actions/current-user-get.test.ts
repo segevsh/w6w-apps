@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import currentUserGet from "../../actions/current-user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("current-user-get: calls GET /api/v2/current_user", async () => {
+test("current-user-get: calls GET /api/v2/current_user", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { type: "users", id: "u1", attributes: { handle: "ada@example.com" } },
@@ -20,13 +21,13 @@ Deno.test("current-user-get: calls GET /api/v2/current_user", async () => {
   assertEquals(out.included.length, 1);
 });
 
-Deno.test("current-user-get: it takes no parameters", () => {
+test("current-user-get: it takes no parameters", () => {
   assertEquals(currentUserGet.params, []);
   assertEquals(currentUserGet.type, "read");
 });
 
 /** With only an API key this endpoint answers 403, and the error says so. */
-Deno.test("current-user-get: a 403 surfaces Datadog's own message", async () => {
+test("current-user-get: a 403 surfaces Datadog's own message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: ["Forbidden"] } }]);
   const err = await assertRejects(
     () => Promise.resolve(currentUserGet.execute({}, ctx)),

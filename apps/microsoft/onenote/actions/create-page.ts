@@ -86,7 +86,12 @@ const createPage: ActionDefinition<Input> = {
     {
       key: "contentType",
       label: "Content type",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [{ value: "text/html", label: "text/html" }, {
+        value: "application/xhtml+xml",
+        label: "application/xhtml+xml",
+      }],
       default: "text/html",
       advanced: true,
       hint:

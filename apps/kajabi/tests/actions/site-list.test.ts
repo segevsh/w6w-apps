@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import siteList from "../../actions/site-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("site-list: GETs the collection with every documented filter mapped", async () => {
+test("site-list: GETs the collection with every documented filter mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "sites") }]);
   await siteList.execute({
     titleContains: "t",
@@ -23,7 +24,7 @@ Deno.test("site-list: GETs the collection with every documented filter mapped", 
   assertEquals(q["fields[sites]"], "title");
 });
 
-Deno.test("site-list: sends no query at all when nothing is filled in", async () => {
+test("site-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "sites") }]);
   await siteList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});

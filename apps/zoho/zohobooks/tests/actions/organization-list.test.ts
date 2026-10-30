@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooksCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: GETs /organizations with no organization_id query param", async () => {
+test("organization-list: GETs /organizations with no organization_id query param", async () => {
   const { ctx, calls } = mockBooksCtx([
     { body: { code: 0, message: "success", organizations: [{ organization_id: "10234695" }] } },
   ]);

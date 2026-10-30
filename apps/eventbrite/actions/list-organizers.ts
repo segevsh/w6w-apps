@@ -34,7 +34,7 @@ const listOrganizers: ActionDefinition<Input> = {
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizers">>(
-      `/organizations/${input.organizationId}/organizers/`,
+      `/organizations/${encodeURIComponent(input.organizationId)}/organizers/`,
       { query: { page: input.page } },
     );
   },

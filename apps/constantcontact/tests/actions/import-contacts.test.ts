@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/import-contacts.ts";
 
@@ -7,7 +8,7 @@ const rows = [
   { email: "c@d.test" },
 ];
 
-Deno.test("import-contacts: POSTs /v3/activities/contacts_json_import", async () => {
+test("import-contacts: POSTs /v3/activities/contacts_json_import", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { activity_id: "a1", state: "initialized" },
@@ -17,7 +18,7 @@ Deno.test("import-contacts: POSTs /v3/activities/contacts_json_import", async ()
   assertEquals(new URL(calls[0].url).pathname, "/v3/activities/contacts_json_import");
 });
 
-Deno.test("import-contacts: passes rows through verbatim, including cf: keys", async () => {
+test("import-contacts: passes rows through verbatim, including cf: keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ importData: rows, listIds: ["l1", "l2"] }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -25,7 +26,7 @@ Deno.test("import-contacts: passes rows through verbatim, including cf: keys", a
   assertEquals(body.list_ids, ["l1", "l2"]);
 });
 
-Deno.test("import-contacts: sends sms_permission_to_send only when supplied", async () => {
+test("import-contacts: sends sms_permission_to_send only when supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }, { status: 201, body: {} }]);
   await action.execute!({
     importData: rows,
@@ -37,7 +38,7 @@ Deno.test("import-contacts: sends sms_permission_to_send only when supplied", as
   assertEquals("sms_permission_to_send" in JSON.parse(calls[1].body!), false);
 });
 
-Deno.test("import-contacts: returns the queued activity for polling", async () => {
+test("import-contacts: returns the queued activity for polling", async () => {
   const { ctx } = mockCtx([{
     status: 201,
     body: { activity_id: "a1", state: "initialized", status: { items_total_count: 2 } },
@@ -50,13 +51,13 @@ Deno.test("import-contacts: returns the queued activity for polling", async () =
   assertEquals(out.state, "initialized");
 });
 
-Deno.test("import-contacts: logs the row count", async () => {
+test("import-contacts: logs the row count", async () => {
   const { ctx, logs } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ importData: rows, listIds: ["l1"] }, ctx);
   assertEquals(logs[0].level, "info");
   assertEquals(logs[0].data, { rows: 2 });
 });
 
-Deno.test("import-contacts: is declared idempotent — the import keys on email", () => {
+test("import-contacts: is declared idempotent — the import keys on email", () => {
   assertEquals(action.idempotent, true);
 });

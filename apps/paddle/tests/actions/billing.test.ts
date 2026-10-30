@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import customerGet from "../../actions/customer-get.ts";
 import customerCreate from "../../actions/customer-create.ts";
@@ -15,7 +16,7 @@ import adjustmentList from "../../actions/adjustment-list.ts";
 import adjustmentCreate from "../../actions/adjustment-create.ts";
 import { envelope, mockPaddleCtx } from "../_helpers.ts";
 
-Deno.test("customer-list: keeps exact-email and fuzzy-search as separate parameters", async () => {
+test("customer-list: keeps exact-email and fuzzy-search as separate parameters", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await customerList.execute({ email: "jo@example.com,sam@example.com", search: "jo" }, ctx);
   const url = new URL(calls[0].url);
@@ -23,27 +24,27 @@ Deno.test("customer-list: keeps exact-email and fuzzy-search as separate paramet
   assertEquals(url.searchParams.get("search"), "jo");
 });
 
-Deno.test("customer-get: builds the customer path", async () => {
+test("customer-get: builds the customer path", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await customerGet.execute({ customerId: "ctm_01hv6y1jedq4p1n0yqn5ba3ky4" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/customers/ctm_01hv6y1jedq4p1n0yqn5ba3ky4");
 });
 
-Deno.test("customer-create: posts email and name", async () => {
+test("customer-create: posts email and name", async () => {
   const { ctx, calls } = mockPaddleCtx([{ status: 201, body: envelope({ id: "ctm_1" }) }]);
   await customerCreate.execute({ email: "jo@example.com", name: "Jo Brown" }, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(JSON.parse(calls[0].body!), { email: "jo@example.com", name: "Jo Brown" });
 });
 
-Deno.test("customer-update: patches only what changed", async () => {
+test("customer-update: patches only what changed", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await customerUpdate.execute({ customerId: "ctm_1", status: "archived" }, ctx);
   assertEquals(calls[0].method, "PATCH");
   assertEquals(JSON.parse(calls[0].body!), { status: "archived" });
 });
 
-Deno.test("subscription-list: maps the scheduled-change filter", async () => {
+test("subscription-list: maps the scheduled-change filter", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await subscriptionList.execute({
     customerId: "ctm_1",
@@ -58,7 +59,7 @@ Deno.test("subscription-list: maps the scheduled-change filter", async () => {
   assertEquals(url.searchParams.get("collection_mode"), "automatic");
 });
 
-Deno.test("subscription-get: comma-joins the include values", async () => {
+test("subscription-get: comma-joins the include values", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await subscriptionGet.execute({
     subscriptionId: "sub_01h04vsc0qhwtsbsxh3422wjr5",
@@ -73,7 +74,7 @@ Deno.test("subscription-get: comma-joins the include values", async () => {
  * The three subscription writes are POSTs to `/{id}/{verb}`. Getting a verb or
  * a method wrong here is a billing-affecting bug, so each is pinned.
  */
-Deno.test("subscription-cancel: POSTs to /cancel", async () => {
+test("subscription-cancel: POSTs to /cancel", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await subscriptionCancel.execute({ subscriptionId: "sub_1", effectiveFrom: "immediately" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -86,13 +87,13 @@ Deno.test("subscription-cancel: POSTs to /cancel", async () => {
  * null}` — Paddle reads an explicit null as a value and the documented default
  * only applies to an absent key.
  */
-Deno.test("subscription-cancel: an unset effective_from sends no key at all", async () => {
+test("subscription-cancel: an unset effective_from sends no key at all", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await subscriptionCancel.execute({ subscriptionId: "sub_1" }, ctx);
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("subscription-pause: POSTs to /pause with the resume date and on_resume", async () => {
+test("subscription-pause: POSTs to /pause with the resume date and on_resume", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await subscriptionPause.execute({
     subscriptionId: "sub_1",
@@ -111,7 +112,7 @@ Deno.test("subscription-pause: POSTs to /pause with the resume date and on_resum
  * than the `immediately` / `next_billing_period` enum. Passing a date through
  * unchanged is the behaviour being pinned.
  */
-Deno.test("subscription-resume: passes a datetime effective_from straight through", async () => {
+test("subscription-resume: passes a datetime effective_from straight through", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await subscriptionResume.execute({
     subscriptionId: "sub_1",
@@ -121,7 +122,7 @@ Deno.test("subscription-resume: passes a datetime effective_from straight throug
   assertEquals(JSON.parse(calls[0].body!), { effective_from: "2026-09-01T16:30:00Z" });
 });
 
-Deno.test("transaction-list: maps the bracketed date operators verbatim", async () => {
+test("transaction-list: maps the bracketed date operators verbatim", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await transactionList.execute({
     createdAt: "[GTE]2026-08-01T00:00:00Z",
@@ -136,14 +137,14 @@ Deno.test("transaction-list: maps the bracketed date operators verbatim", async 
   assertEquals(url.searchParams.get("per_page"), "30");
 });
 
-Deno.test("transaction-get: builds the transaction path", async () => {
+test("transaction-get: builds the transaction path", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }]);
   await transactionGet.execute({ transactionId: "txn_1", include: "customer" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/transactions/txn_1");
   assertEquals(new URL(calls[0].url).searchParams.get("include"), "customer");
 });
 
-Deno.test("transaction-invoice: hits /invoice and returns the link Paddle issues", async () => {
+test("transaction-invoice: hits /invoice and returns the link Paddle issues", async () => {
   const { ctx, calls } = mockPaddleCtx([
     { body: envelope({ url: "https://paddle-invoice-service…/invoice.pdf" }) },
   ]);
@@ -156,7 +157,7 @@ Deno.test("transaction-invoice: hits /invoice and returns the link Paddle issues
   assert(out.url!.endsWith(".pdf"));
 });
 
-Deno.test("adjustment-list: filters by transaction and action", async () => {
+test("adjustment-list: filters by transaction and action", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await adjustmentList.execute({ transactionId: "txn_1", action: ["refund", "credit"] }, ctx);
   const url = new URL(calls[0].url);
@@ -164,7 +165,7 @@ Deno.test("adjustment-list: filters by transaction and action", async () => {
   assertEquals(url.searchParams.get("action"), "refund,credit");
 });
 
-Deno.test("adjustment-create: posts the documented refund body", async () => {
+test("adjustment-create: posts the documented refund body", async () => {
   const { ctx, calls } = mockPaddleCtx([{ status: 201, body: envelope({ id: "adj_1" }) }]);
   await adjustmentCreate.execute({
     transactionId: "txn_01h04vsc0qhwtsbsxh3422wjr5",
@@ -183,7 +184,7 @@ Deno.test("adjustment-create: posts the documented refund body", async () => {
 });
 
 /** A full adjustment carries no items, and the key must be absent rather than null. */
-Deno.test("adjustment-create: a full adjustment sends no items array", async () => {
+test("adjustment-create: a full adjustment sends no items array", async () => {
   const { ctx, calls } = mockPaddleCtx([{ status: 201, body: envelope({}) }]);
   await adjustmentCreate.execute({
     transactionId: "txn_1",
@@ -197,11 +198,11 @@ Deno.test("adjustment-create: a full adjustment sends no items array", async () 
 });
 
 /** Money movement must never be silently retried by the runtime. */
-Deno.test("adjustment-create: is not idempotent", () => {
+test("adjustment-create: is not idempotent", () => {
   assertEquals(adjustmentCreate.idempotent, false);
 });
 
-Deno.test("adjustment-create: a bad items JSON string names the field", async () => {
+test("adjustment-create: a bad items JSON string names the field", async () => {
   const { ctx } = mockPaddleCtx([]);
   await assertRejects(
     async () => {

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import richMenuImageUpload from "../../actions/rich-menu-image-upload.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
-Deno.test("rich-menu-image-upload: POSTs bytes on api-data.line.me with the chosen content-type", async () => {
+test("rich-menu-image-upload: POSTs bytes on api-data.line.me with the chosen content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   await richMenuImageUpload.execute(
     { richMenuId: "r1", image: toBase64(PNG_BYTES), contentType: "image/png" },
@@ -24,7 +25,7 @@ Deno.test("rich-menu-image-upload: POSTs bytes on api-data.line.me with the chos
   assertEquals(calls[0].body, `<${PNG_BYTES.length} bytes>`);
 });
 
-Deno.test("rich-menu-image-upload: accepts a data: URI", async () => {
+test("rich-menu-image-upload: accepts a data: URI", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   await richMenuImageUpload.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("rich-menu-image-upload: accepts a data: URI", async () => {
   assertEquals(calls[0].body, `<${PNG_BYTES.length} bytes>`);
 });
 
-Deno.test("rich-menu-image-upload: rejects an unrecognised content type before any request", async () => {
+test("rich-menu-image-upload: rejects an unrecognised content type before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -51,7 +52,7 @@ Deno.test("rich-menu-image-upload: rejects an unrecognised content type before a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("rich-menu-image-upload: a re-upload is refused by LINE and surfaces its message", async () => {
+test("rich-menu-image-upload: a re-upload is refused by LINE and surfaces its message", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { message: "An image has already been uploaded to the richmenu" } },
   ]);
@@ -66,6 +67,6 @@ Deno.test("rich-menu-image-upload: a re-upload is refused by LINE and surfaces i
   );
 });
 
-Deno.test("rich-menu-image-upload: is declared non-idempotent", () => {
+test("rich-menu-image-upload: is declared non-idempotent", () => {
   assertEquals(richMenuImageUpload.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import lookupMnp from "../../actions/lookup-mnp.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "number": "4917612345678" } as Parameters<typeof lookupMnp.execute>[0];
 
-Deno.test("lookup-mnp: GET /api/lookup/mnp with the documented fields", async () => {
+test("lookup-mnp: GET /api/lookup/mnp with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "code": 100, "mnp": { "mccmnc": "26201" } },
   }]);
@@ -20,14 +21,14 @@ Deno.test("lookup-mnp: GET /api/lookup/mnp with the documented fields", async ()
   assertEquals((out.mnp as Record<string, unknown>).mccmnc, "26201");
 });
 
-Deno.test("lookup-mnp: declares type read-or-search and every required param", () => {
+test("lookup-mnp: declares type read-or-search and every required param", () => {
   const required = (lookupMnp.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["number"]);
   assert(["read", "search", "perform"].includes(lookupMnp.type));
   assertEquals(lookupMnp.type === "perform", false);
 });
 
-Deno.test("lookup-mnp: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("lookup-mnp: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

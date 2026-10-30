@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listKakaoTemplates from "../../actions/list-kakao-templates.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => listKakaoTemplates.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("list-kakao-templates: declares a read action with a description, params and output", () => {
+test("list-kakao-templates: declares a read action with a description, params and output", () => {
   assertEquals(listKakaoTemplates.key, "list-kakao-templates");
   assertEquals(listKakaoTemplates.type, "read");
   assert((listKakaoTemplates.description ?? "").length > 0);
@@ -19,7 +20,7 @@ Deno.test("list-kakao-templates: declares a read action with a description, para
   assertEquals(listKakaoTemplates.idempotent, undefined);
 });
 
-Deno.test("list-kakao-templates: sends the documented request and returns the documented shape", async () => {
+test("list-kakao-templates: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "templateList": [
@@ -56,7 +57,7 @@ Deno.test("list-kakao-templates: sends the documented request and returns the do
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-kakao-templates: a SOLAPI error body is thrown with its code and message", async () => {
+test("list-kakao-templates: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

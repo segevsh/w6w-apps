@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardLock from "../../actions/card-lock.ts";
 import { bodyOf, CARD, mockCtx, pathOf } from "../_helpers.ts";
 
 const LOCKED = { ...CARD, status: "LOCKED" };
 
-Deno.test("card-lock: POSTs the required reason and an optional description", async () => {
+test("card-lock: POSTs the required reason and an optional description", async () => {
   const { ctx, calls } = mockCtx([{ body: LOCKED }]);
   const result = await cardLock.execute({
     id: "card_1",
@@ -21,7 +22,7 @@ Deno.test("card-lock: POSTs the required reason and an optional description", as
   assertEquals(result.status, "LOCKED");
 });
 
-Deno.test("card-lock: the reason is required and comes from Brex's seven-value enum", () => {
+test("card-lock: the reason is required and comes from Brex's seven-value enum", () => {
   const reason = cardLock.params?.find((p) => p.key === "reason");
   assertEquals(reason?.required, true);
   assertEquals((reason?.options as Array<{ value: string }>).map((o) => o.value), [
@@ -35,7 +36,7 @@ Deno.test("card-lock: the reason is required and comes from Brex's seven-value e
   ]);
 });
 
-Deno.test("card-lock: with no description only the reason is sent", async () => {
+test("card-lock: with no description only the reason is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: LOCKED }]);
   await cardLock.execute({ id: "card_1", reason: "OTHER" }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("card-lock: with no description only the reason is sent", async () => 
 });
 
 /** The target state is LOCKED either way, so a retry converges. */
-Deno.test("card-lock: it is a perform declared idempotent", () => {
+test("card-lock: it is a perform declared idempotent", () => {
   assertEquals(cardLock.type, "perform");
   assertEquals(cardLock.idempotent, true);
 });

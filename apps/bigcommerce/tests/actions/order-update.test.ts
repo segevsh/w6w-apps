@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import orderUpdate from "../../actions/order-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-update: PUTs a partial order", async () => {
+test("order-update: PUTs a partial order", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 100, status: "Shipped" } }]);
   await orderUpdate.execute({ orderId: 100, fields: { status_id: 2 } }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("order-update: PUTs a partial order", async () => {
   assertEquals(bodyOf(calls[0]), { status_id: 2 });
 });
 
-Deno.test("order-update: notes that a status change is what fires customer email", () => {
+test("order-update: notes that a status change is what fires customer email", () => {
   const fields = orderUpdate.params?.find((p) => p.key === "fields");
   assert(fields?.hint?.includes("notification"), fields?.hint);
   assertEquals(orderUpdate.idempotent, true);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-label-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("page-label-list: reads a page's labels, with an optional prefix filter", async () => {
+test("page-label-list: reads a page's labels, with an optional prefix filter", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { results: [{ name: "runbook" }], _links: {} },
@@ -18,11 +19,11 @@ Deno.test("page-label-list: reads a page's labels, with an optional prefix filte
   assertEquals(result, [{ name: "runbook" }]);
 });
 
-Deno.test("page-label-list: is read-only — v2 publishes no label write endpoint", () => {
+test("page-label-list: is read-only — v2 publishes no label write endpoint", () => {
   assertEquals(action.type, "read");
 });
 
-Deno.test("page-label-list: a blank id fails before any request", async () => {
+test("page-label-list: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`pageId` is required");
   assertEquals(calls.length, 0);

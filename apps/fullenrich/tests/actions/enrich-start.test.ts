@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-start.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-start: single contact posts one record with the default field", async () => {
+test("enrich-start: single contact posts one record with the default field", async () => {
   const { ctx, calls } = mockCtx([{ body: { enrichment_id: "e1" } }]);
   const out = await action.execute!({
     name: "Batch",
@@ -30,7 +31,7 @@ Deno.test("enrich-start: single contact posts one record with the default field"
   });
 });
 
-Deno.test("enrich-start: bulk contacts inherit enrichFields and silentFail is a query flag", async () => {
+test("enrich-start: bulk contacts inherit enrichFields and silentFail is a query flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { enrichment_id: "e2" } }]);
   await action.execute!({
     name: "Bulk",
@@ -48,7 +49,7 @@ Deno.test("enrich-start: bulk contacts inherit enrichFields and silentFail is a 
   assertEquals(body.webhook_url, undefined);
 });
 
-Deno.test("enrich-start: sends no authorization header and surfaces vendor errors", async () => {
+test("enrich-start: sends no authorization header and surfaces vendor errors", async () => {
   const ok = mockCtx([{ body: { enrichment_id: "e" } }]);
   await action.execute!({ name: "n" }, ok.ctx);
   assert(!("authorization" in ok.calls[0].headers));

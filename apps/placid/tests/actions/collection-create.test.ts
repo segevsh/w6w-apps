@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionCreate from "../../actions/collection-create.ts";
 import { assertRejects, mockCtx } from "../_helpers.ts";
 
-Deno.test("collection-create: title required, template uuids listed", async () => {
+test("collection-create: title required, template uuids listed", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c" } }]);
   await collectionCreate.execute({ title: "Acme", custom_data: "u1", template_uuids: "a,b" }, ctx);
   assertEquals(calls[0].method, "POST");

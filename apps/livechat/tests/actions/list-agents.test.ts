@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-agents.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-agents: hits the configuration surface with filters and fields", async () => {
+test("list-agents: hits the configuration surface with filters and fields", async () => {
   const rows = [{ id: "a@x.co", role: "owner" }];
   const { ctx, calls } = mockCtx([{ body: rows }]);
   const out = await action.execute({
@@ -18,13 +19,13 @@ Deno.test("list-agents: hits the configuration surface with filters and fields",
   assertEquals(out, { items: rows, count: 1 });
 });
 
-Deno.test("list-agents: no input sends an empty body", async () => {
+test("list-agents: no input sends an empty body", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   assertEquals(await action.execute({}, ctx), { items: [], count: 0 });
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("list-agents: a non-integer group id is refused; vendor errors surface", async () => {
+test("list-agents: a non-integer group id is refused; vendor errors surface", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { type: "authorization", message: "scope" } },

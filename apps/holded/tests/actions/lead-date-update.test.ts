@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadDateUpdate from "../../actions/lead-date-update.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-date-update: metadata — idempotent", () => {
+test("lead-date-update: metadata — idempotent", () => {
   assertEquals(leadDateUpdate.type, "perform");
   assertEquals(leadDateUpdate.idempotent, true);
 });
 
-Deno.test("lead-date-update: PUT /leads/{leadId}/dates with {date}", async () => {
+test("lead-date-update: PUT /leads/{leadId}/dates with {date}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "l1") }]);
   const result = asMutation(
     await leadDateUpdate.execute({ leadId: "l1", date: 1521646788 }, ctx),

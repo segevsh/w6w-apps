@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   compact,
   encodeId,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("errorText: reads error, message and errorMessage; nothing else", () => {
+test("errorText: reads error, message and errorMessage; nothing else", () => {
   assertEquals(errorText({ error: "Unauthorized" }), "Unauthorized");
   assertEquals(
     errorText({ message: "credential could not be resolved" }),
@@ -23,7 +24,7 @@ Deno.test("errorText: reads error, message and errorMessage; nothing else", () =
   assertEquals(errorText(null), undefined);
 });
 
-Deno.test("formatRecruitError: envelope, code, and raw fallback", () => {
+test("formatRecruitError: envelope, code, and raw fallback", () => {
   assertEquals(
     formatRecruitError(401, "GET", "/v1/x", '{"error":"Unauthorized"}'),
     "Recruit CRM 401 for GET /v1/x: Unauthorized",
@@ -40,7 +41,7 @@ Deno.test("formatRecruitError: envelope, code, and raw fallback", () => {
   assert(formatRecruitError(500, "GET", "/v1/x", "boom".repeat(500)).includes("truncated"));
 });
 
-Deno.test("pageOf / recordsOf: tolerate missing and odd shapes", () => {
+test("pageOf / recordsOf: tolerate missing and odd shapes", () => {
   assertEquals(pageOf(undefined), {
     items: [],
     count: 0,
@@ -55,7 +56,7 @@ Deno.test("pageOf / recordsOf: tolerate missing and odd shapes", () => {
   assertEquals(recordsOf({ a: 1 }), [{ a: 1 }]);
 });
 
-Deno.test("compact / encodeId", () => {
+test("compact / encodeId", () => {
   assertEquals(compact({ a: "", b: null, c: undefined, d: 0, e: false, f: "x" }), {
     d: 0,
     e: false,
@@ -65,7 +66,7 @@ Deno.test("compact / encodeId", () => {
   assertThrows(() => encodeId(undefined), Error, "id");
 });
 
-Deno.test("multipartBody: a fresh boundary per body, values kept verbatim", () => {
+test("multipartBody: a fresh boundary per body, values kept verbatim", () => {
   const a = multipartBody({ x: "line1\nline2", y: undefined });
   const b = multipartBody({ x: "1" });
   assert(a.type !== b.type);
@@ -73,14 +74,14 @@ Deno.test("multipartBody: a fresh boundary per body, values kept verbatim", () =
   assert(!a.body.includes('name="y"'));
 });
 
-Deno.test("RecruitClient: non-JSON success body is an error, empty body is undefined", async () => {
+test("RecruitClient: non-JSON success body is an error, empty body is undefined", async () => {
   const bad = mockCtx([{ status: 200, body: "<html>", headers: { "content-type": "text/html" } }]);
   await assertRejects(() => new RecruitClient(bad.ctx).json("/x"), Error, "non-JSON");
   const empty = mockCtx([{ status: 200, body: undefined }]);
   assertEquals(await new RecruitClient(empty.ctx).json("/x"), undefined);
 });
 
-Deno.test("RecruitClient: sends accept JSON and never an authorization header", async () => {
+test("RecruitClient: sends accept JSON and never an authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new RecruitClient(ctx).json("/x", { query: { a: 1, b: "", c: undefined } });
   assertEquals(calls[0].url, "https://api.recruitcrm.io/v1/x?a=1");

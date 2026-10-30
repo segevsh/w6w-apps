@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { mockCtx } from "../_helpers.ts";
 import webhookSubscribe from "../../actions/webhook-subscribe.ts";
 
-Deno.test("webhook-subscribe: subscribes with the event in the path", async () => {
+test("webhook-subscribe: subscribes with the event in the path", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true, "data": { "uuid": "WHK1" } } }]);
   await webhookSubscribe.execute!(
     {
@@ -12,19 +13,19 @@ Deno.test("webhook-subscribe: subscribes with the event in the path", async () =
     } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(
     calls[0].url,
     "https://api.p.2chat.io/open/webhooks/subscribe/whatsapp.message.received",
   );
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "hook_url": "https://h.example/x",
     "on_number": "+595981048477",
   });
 });
 
-Deno.test("webhook-subscribe: passes the conversation window and group filter", async () => {
+test("webhook-subscribe: passes the conversation window and group filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true, "data": {} } }]);
   await webhookSubscribe.execute!(
     {
@@ -36,13 +37,13 @@ Deno.test("webhook-subscribe: passes the conversation window and group filter", 
     } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(
     calls[0].url,
     "https://api.p.2chat.io/open/webhooks/subscribe/whatsapp.conversation.new",
   );
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "hook_url": "https://h",
     "on_number": "+595981048477",
     "time_period": "day",

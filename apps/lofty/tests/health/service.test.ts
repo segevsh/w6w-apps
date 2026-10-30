@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   API_COMPONENT,
@@ -30,7 +31,7 @@ const operational = page([
   ["API", "operational"],
 ]);
 
-Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
+test("service: reads the Statuspage summary unauthenticated", async () => {
   const { ctx, calls } = mockCtx([operational]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -40,7 +41,7 @@ Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
 });
 
 /** Only the API component is a statement about this app. */
-Deno.test("service: a Dialer outage does not drive the API verdict", async () => {
+test("service: a Dialer outage does not drive the API verdict", async () => {
   const { ctx } = mockCtx([
     page([
       ["Lofty", "operational"],
@@ -54,7 +55,7 @@ Deno.test("service: a Dialer outage does not drive the API verdict", async () =>
   assertEquals(result.components!["dialer"].state, "down");
 });
 
-Deno.test("service: a degraded API is degraded", async () => {
+test("service: a degraded API is degraded", async () => {
   const { ctx } = mockCtx([
     page([["Lofty", "operational"], ["API", "degraded_performance"]]),
   ]);
@@ -63,34 +64,34 @@ Deno.test("service: a degraded API is degraded", async () => {
   assert(/API: degraded_performance/.test(result.message!), result.message);
 });
 
-Deno.test("service: a major API outage is down", async () => {
+test("service: a major API outage is down", async () => {
   const { ctx } = mockCtx([page([["API", "major_outage"]])]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
 /** Anchored, so a future component name is not silently substituted. */
-Deno.test("service: the API component is matched by exact name", () => {
+test("service: the API component is matched by exact name", () => {
   assertEquals(API_COMPONENT.test("API"), true);
   assertEquals(API_COMPONENT.test("api"), true);
   assertEquals(API_COMPONENT.test("API Gateway"), false);
   assertEquals(API_COMPONENT.test("Public API"), false);
 });
 
-Deno.test("service: a page with no `API` component is unknown, not ok", async () => {
+test("service: a page with no `API` component is unknown, not ok", async () => {
   const { ctx } = mockCtx([page([["Lofty", "operational"], ["API Gateway", "operational"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no component named "API"/.test(result.message!), result.message);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   for (const status of [404, 503]) {
     const { ctx } = mockCtx([{ status, body: "nope" }]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: a page that is not Lofty's is unknown", async () => {
+test("service: a page that is not Lofty's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { page: { name: "Someone Else" }, components: [{ name: "API", status: "operational" }] },
@@ -100,12 +101,12 @@ Deno.test("service: a page that is not Lofty's is unknown", async () => {
   assert(/self-identifies/.test(result.message!), result.message);
 });
 
-Deno.test("service: a body without components is unknown", async () => {
+test("service: a body without components is unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { page: { name: "Lofty" } } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreachable status host is unknown", async () => {
+test("service: an unreachable status host is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -113,7 +114,7 @@ Deno.test("service: an unreachable status host is unknown", async () => {
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: maps Statuspage's vocabulary and slugs names", () => {
+test("service: maps Statuspage's vocabulary and slugs names", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
@@ -123,7 +124,7 @@ Deno.test("service: maps Statuspage's vocabulary and slugs names", () => {
   assertEquals(slug("API"), "api");
 });
 
-Deno.test("service: is informational, unsigned, and names only the status host", () => {
+test("service: is informational, unsigned, and names only the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.lofty.com"]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 
 import createWebhook from "../../actions/create-webhook.ts";
@@ -9,7 +10,7 @@ const EVENTS = [
   "subscriber.unsubscribed",
 ];
 
-Deno.test("create-webhook: POSTs name, post_url and events", async () => {
+test("create-webhook: POSTs name, post_url and events", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "wh1" } }]);
   await createWebhook.execute(
     { name: "Sync", postUrl: "https://example.com/hooks/x", events: ["subscriber.created"] },
@@ -25,14 +26,14 @@ Deno.test("create-webhook: POSTs name, post_url and events", async () => {
   });
 });
 
-Deno.test("create-webhook: offers exactly Flodesk's three published events", () => {
+test("create-webhook: offers exactly Flodesk's three published events", () => {
   const events = createWebhook.params!.find((p) => p.key === "events")!;
   assertEquals(events.type, "multiselect");
   assertEquals(events.required, true);
   assertEquals(optionValues(events), EVENTS);
 });
 
-Deno.test("create-webhook: rejects an empty event list without calling", () => {
+test("create-webhook: rejects an empty event list without calling", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => createWebhook.execute({ name: "x", postUrl: "https://e.com", events: [] }, ctx),
@@ -41,11 +42,11 @@ Deno.test("create-webhook: rejects an empty event list without calling", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-webhook: is NOT idempotent — a replay double-delivers every event", () => {
+test("create-webhook: is NOT idempotent — a replay double-delivers every event", () => {
   assertEquals(createWebhook.idempotent, false);
 });
 
-Deno.test("create-webhook: warns that Flodesk publishes no signature to verify", () => {
+test("create-webhook: warns that Flodesk publishes no signature to verify", () => {
   const postUrl = createWebhook.params!.find((p) => p.key === "postUrl")!;
   assert(/no signature/i.test(postUrl.hint!), "the missing signature must be surfaced");
 });

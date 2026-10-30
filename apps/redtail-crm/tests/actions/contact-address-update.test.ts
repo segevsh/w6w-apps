@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactAddressUpdate from "../../actions/contact-address-update.ts";
 import { mockCtx, NO_CONTENT_204 } from "../_helpers.ts";
 
-Deno.test("contact-address-update: PUTs /contacts/:id/addresses/:id and reports 204 as success", async () => {
+test("contact-address-update: PUTs /contacts/:id/addresses/:id and reports 204 as success", async () => {
   const { ctx, calls } = mockCtx([NO_CONTENT_204]);
   const out = await contactAddressUpdate.execute(
     { contactId: 1, addressId: 19, isPreferred: true },

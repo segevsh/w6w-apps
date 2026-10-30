@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activity-update.ts";
 
-Deno.test("activity-update: PUTs only the editable fields", async () => {
+test("activity-update: PUTs only the editable fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, name: "Renamed" } }]);
   await action.execute({
     activityId: "42",

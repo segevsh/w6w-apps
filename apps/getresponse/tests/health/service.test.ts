@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentId,
   mapComponentStatus,
@@ -32,7 +33,7 @@ function summary(over: Record<string, unknown> = {}) {
  * The probe is credential-free by design: the network widening below lets it
  * reach a third-party host, and a third-party host must never see the API key.
  */
-Deno.test("service: reaches only the status host, with no credential", () => {
+test("service: reaches only the status host, with no credential", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.getresponse.com"]);
@@ -45,13 +46,13 @@ Deno.test("service: reaches only the status host, with no credential", () => {
  * keeps the `degraded` default instead of dropping to informational the way the
  * self-hostable apps in this pack do.
  */
-Deno.test("service: keeps the degraded default rather than going informational", () => {
+test("service: keeps the degraded default rather than going informational", () => {
   assertEquals(service.severity, undefined);
   assertEquals(service.unavailable, undefined);
   assertEquals(service.covers, ["*"]);
 });
 
-Deno.test("service: reports ok and one component per non-group row", async () => {
+test("service: reports ok and one component per non-group row", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -62,7 +63,7 @@ Deno.test("service: reports ok and one component per non-group row", async () =>
   assertEquals(report.components?.api, { state: "ok" });
 });
 
-Deno.test("service: a component outage lands in the report with its raw status", async () => {
+test("service: a component outage lands in the report with its raw status", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "major", description: "Partial outage" },
@@ -84,7 +85,7 @@ Deno.test("service: a component outage lands in the report with its raw status",
 });
 
 /** The page-level roll-up wins when it is present — it is the vendor's own verdict. */
-Deno.test("service: the indicator decides the state, not the worst component", async () => {
+test("service: the indicator decides the state, not the worst component", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "none", description: "All Systems Operational" },
@@ -99,7 +100,7 @@ Deno.test("service: the indicator decides the state, not the worst component", a
 });
 
 /** With no indicator to defer to, the worst component carries the report. */
-Deno.test("service: without an indicator it falls back to the worst component", async () => {
+test("service: without an indicator it falls back to the worst component", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: undefined,
@@ -117,14 +118,14 @@ Deno.test("service: without an indicator it falls back to the worst component", 
  * A broken status API is not an outage of GetResponse. Reporting `down` here
  * would page somebody over Statuspage's own bad day.
  */
-Deno.test("service: a non-2xx from Statuspage is unknown, never down", async () => {
+test("service: a non-2xx from Statuspage is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("503"), report.message);
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "not json", headers: { "content-type": "text/plain" } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -135,7 +136,7 @@ Deno.test("service: an unreadable body is unknown", async () => {
  * The guard that matters if the page is ever redirected or rebranded: a healthy,
  * claimed page belonging to somebody else would otherwise read as good news.
  */
-Deno.test("service: a page that is not GetResponse's is unknown, not ok", async () => {
+test("service: a page that is not GetResponse's is unknown, not ok", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { id: "x", name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -144,14 +145,14 @@ Deno.test("service: a page that is not GetResponse's is unknown, not ok", async 
   assert(report.message!.includes("self-identifies"), report.message);
 });
 
-Deno.test("service: an empty component list is unknown", async () => {
+test("service: an empty component list is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("no components"), report.message);
 });
 
-Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -161,7 +162,7 @@ Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: only `critical` is down; maintenance is degraded", () => {
+test("mapIndicator: only `critical` is down; maintenance is degraded", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -170,7 +171,7 @@ Deno.test("mapIndicator: only `critical` is down; maintenance is degraded", () =
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentId: slugifies a name into a stable selector", () => {
+test("componentId: slugifies a name into a stable selector", () => {
   assertEquals(componentId("API"), "api");
   assertEquals(componentId("Contacts (+Import)"), "contacts-import");
   assertEquals(componentId("Forms and Popups"), "forms-and-popups");

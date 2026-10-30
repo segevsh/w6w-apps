@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import spaceChannelList from "../../actions/space-channel-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-channel-list: GETs /space/channel", async () => {
+test("space-channel-list: GETs /space/channel", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, source: "whatsapp" }]) }]);
   const out = await spaceChannelList.execute({}, ctx) as { items: unknown[] };
 

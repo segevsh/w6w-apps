@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contentGet from "../../actions/content-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("content-get: sends GET /contents/${seg(input.contentId)}", async () => {
+test("content-get: sends GET /contents/${seg(input.contentId)}", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1 } }]);
   const out = await contentGet.execute({ "contentId": "1", "include": "author" } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("content-get: sends GET /contents/${seg(input.contentId)}", async () =
   assertEquals(out, { "id": 1 });
 });
 
-Deno.test("content-get: a 422 surfaces the vendor's message", async () => {
+test("content-get: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

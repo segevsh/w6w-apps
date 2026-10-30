@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import inboxMessageList from "../../actions/inbox-message-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("inbox-message-list: filters and returns the cursor", async () => {
+test("inbox-message-list: filters and returns the cursor", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -30,7 +31,7 @@ Deno.test("inbox-message-list: filters and returns the cursor", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("inbox-message-list: last page has a null cursor", async () => {
+test("inbox-message-list: last page has a null cursor", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "content": [], "pagination": { "next_page_cursor": null } },

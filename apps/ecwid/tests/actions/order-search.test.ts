@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderSearch from "../../actions/order-search.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("order-search: calls GET /orders and returns the page", async () => {
+test("order-search: calls GET /orders and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ id: "EBJFT" }], { total: 23 }) }]);
   const out = await orderSearch.execute({ limit: 50 }, ctx) as {
     items: unknown[];
@@ -16,7 +17,7 @@ Deno.test("order-search: calls GET /orders and returns the page", async () => {
   assertEquals(out.items, [{ id: "EBJFT" }]);
 });
 
-Deno.test("order-search: multiple statuses go out as one comma-separated value", async () => {
+test("order-search: multiple statuses go out as one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await orderSearch.execute(
     {
@@ -38,7 +39,7 @@ Deno.test("order-search: multiple statuses go out as one comma-separated value",
   assertEquals(query.couponCode, "SPRING");
 });
 
-Deno.test("order-search: there is no status or orderNumber filter, and none is invented", () => {
+test("order-search: there is no status or orderNumber filter, and none is invented", () => {
   const keys = (orderSearch.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("status"), false);
   assertEquals(keys.includes("orderNumber"), false);

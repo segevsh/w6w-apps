@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { AUTH_HEADER, authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, pathOf, queryOf, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
 const KEY = "motion_unitTestFixtureNotARealKey00000";
 
-Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
+test("api-key: sign stamps X-API-Key and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.usemotion.com/v1/tasks",
@@ -23,7 +24,7 @@ Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(AUTH_HEADER, "x-api-key");
   assertEquals(authHeaders({ apiKey: KEY }), { "x-api-key": KEY });
 });
@@ -34,11 +35,11 @@ Deno.test("api-key: authHeaders is the single source of the wire format", () => 
  * `/apikey` and Follow Up Boss's `/me` are not, and that was established by
  * reading the response schema rather than by the endpoint's name.
  */
-Deno.test("api-key: the probe is /v1/users/me", () => {
+test("api-key: the probe is /v1/users/me", () => {
   assertEquals(PROBE_PATH, "/v1/users/me");
 });
 
-Deno.test("api-key: test passes when the whoami returns a user object", async () => {
+test("api-key: test passes when the whoami returns a user object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1", name: "Ada", email: "ada@example.com" } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -48,7 +49,7 @@ Deno.test("api-key: test passes when the whoami returns a user object", async ()
   assertEquals(calls[0].headers["x-api-key"], KEY);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 
@@ -61,7 +62,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
  * is not Motion — a captive portal, a proxy, a rebuilt route. Passing on the
  * status code alone would call that a live credential.
  */
-Deno.test("api-key: a 200 with the wrong shape is not a pass", async () => {
+test("api-key: a 200 with the wrong shape is not a pass", async () => {
   const { ctx } = mockCtx([{ body: { hello: "world" } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -76,7 +77,7 @@ Deno.test("api-key: a 200 with the wrong shape is not a pass", async () => {
  * someone their key is invalid when the real fault was that it never attached
  * sends them to regenerate a perfectly good key.
  */
-Deno.test("api-key: a 401 is reported as undiagnosable, not as a bad key", async () => {
+test("api-key: a 401 is reported as undiagnosable, not as a bad key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const result = await apiKey.test({ credential: { apiKey: "garbage" } }, ctx);
 
@@ -88,7 +89,7 @@ Deno.test("api-key: a 401 is reported as undiagnosable, not as a bad key", async
 });
 
 /** Every cause produces the same message, because Motion gives nothing to tell them apart. */
-Deno.test("api-key: the 401 wording does not vary with the key that produced it", async () => {
+test("api-key: the 401 wording does not vary with the key that produced it", async () => {
   const first = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const second = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const a = await apiKey.test({ credential: { apiKey: "one" } }, first.ctx);
@@ -104,7 +105,7 @@ Deno.test("api-key: the 401 wording does not vary with the key that produced it"
  * minute on the individual tier, which a workflow reaches easily, and reporting
  * that as "your key is invalid" would break a working Connection.
  */
-Deno.test("api-key: a 429 is reported as a rate limit, not a credential failure", async () => {
+test("api-key: a 429 is reported as a rate limit, not a credential failure", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { message: "Too Many Requests" } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -113,7 +114,7 @@ Deno.test("api-key: a 429 is reported as a rate limit, not a credential failure"
   assert(/12 requests\/minute/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure", async () => {
+test("api-key: a 500 is reported as an HTTP failure", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -127,7 +128,7 @@ Deno.test("api-key: a 500 is reported as an HTTP failure", async () => {
  * dropped: connection display data is rendered in shared UI and copied into run
  * records, and the name already makes the Connection readable.
  */
-Deno.test("api-key: afterConnect publishes the user id and name, and drops the email", async () => {
+test("api-key: afterConnect publishes the user id and name, and drops the email", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "u1", name: "Ada", email: "ada@example.com" } },
   ]);
@@ -139,12 +140,12 @@ Deno.test("api-key: afterConnect publishes the user id and name, and drops the e
   assert(!JSON.stringify(display).includes(KEY));
 });
 
-Deno.test("api-key: afterConnect stays silent when the whoami fails", async () => {
+test("api-key: afterConnect stays silent when the whoami fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   assertEquals(await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx), {});
 });
 
-Deno.test("api-key: afterConnect publishes only what the response carried", async () => {
+test("api-key: afterConnect publishes only what the response carried", async () => {
   const { ctx } = mockCtx([{ body: { id: "u1", email: "ada@example.com" } }]);
   assertEquals(await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx), { userId: "u1" });
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentList from "../../actions/document-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-list: GETs /parser/{id}/document_set with filters", async () => {
+test("document-list: GETs /parser/{id}/document_set with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   await documentList.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("document-list: GETs /parser/{id}/document_set with filters", async ()
   });
 });
 
-Deno.test("document-list: withResult omitted leaves with_result unset", async () => {
+test("document-list: withResult omitted leaves with_result unset", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await documentList.execute({ mailboxId: "42" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-list.ts";
 
@@ -22,7 +23,7 @@ const keys = [
   { id: "k4", keyType: "client", description: "workflow client", scopes: ["devices:core"] },
 ];
 
-Deno.test("key-list: asks for every key in the tailnet by default", async () => {
+test("key-list: asks for every key in the tailnet by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { keys } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/tailnet/-/keys");
@@ -31,7 +32,7 @@ Deno.test("key-list: asks for every key in the tailnet by default", async () => 
 });
 
 /** Three different credentials share one list. */
-Deno.test("key-list: counts auth keys, API tokens and OAuth clients apart", async () => {
+test("key-list: counts auth keys, API tokens and OAuth clients apart", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { keys } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.authKeys, 2);
@@ -40,7 +41,7 @@ Deno.test("key-list: counts auth keys, API tokens and OAuth clients apart", asyn
 });
 
 /** A standing invitation into the tailnet. */
-Deno.test("key-list: flags reusable preauthorized keys and warns", async () => {
+test("key-list: flags reusable preauthorized keys and warns", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { keys } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.reusablePreauthorized, ["ci-runner (k1)"]);
@@ -50,14 +51,14 @@ Deno.test("key-list: flags reusable preauthorized keys and warns", async () => {
   );
 });
 
-Deno.test("key-list: an OAuth client has no expiry at all", async () => {
+test("key-list: an OAuth client has no expiry at all", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { keys } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.neverExpires, ["workflow client (k4)"]);
   assertEquals((result.expiringSoon as unknown[]).length, 2);
 });
 
-Deno.test("key-list: filters by kind after fetching, since Tailscale offers no such filter", async () => {
+test("key-list: filters by kind after fetching, since Tailscale offers no such filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { keys } }]);
   const result = await action.execute({ keyType: "client" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -65,7 +66,7 @@ Deno.test("key-list: filters by kind after fetching, since Tailscale offers no s
 });
 
 /** Without `all`, the answer silently depends on what the caller is. */
-Deno.test("key-list: says the unfiltered answer depends on the calling credential", () => {
+test("key-list: says the unfiltered answer depends on the calling credential", () => {
   const param = action.params!.find((p) => p.key === "all")!;
   assert(/without saying so/.test(param.hint!), param.hint);
 });

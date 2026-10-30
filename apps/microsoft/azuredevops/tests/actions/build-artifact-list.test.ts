@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, list } from "./_shared.ts";
 import action from "../../actions/build-artifact-list.ts";
 
-Deno.test("build-artifact-list: returns the artifacts and their names", async () => {
+test("build-artifact-list: returns the artifacts and their names", async () => {
   const { ctx, calls } = mockCtx([list([
     { name: "drop", resource: { downloadUrl: "https://x/drop.zip" } },
   ])], { display });
@@ -19,13 +20,13 @@ Deno.test("build-artifact-list: returns the artifacts and their names", async ()
   assertEquals(result.names, ["drop"]);
 });
 
-Deno.test("build-artifact-list: needs a project and a run id", async () => {
+test("build-artifact-list: needs a project and a run id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ project: "P" }, ctx), Error, "buildId");
   assertEquals(calls.length, 0);
 });
 
 /** An empty list is ambiguous between a failed run and expired retention. */
-Deno.test("build-artifact-list: says what an empty list can mean", () => {
+test("build-artifact-list: says what an empty list can mean", () => {
   assert(/cleaned up/.test(action.description!), action.description);
 });

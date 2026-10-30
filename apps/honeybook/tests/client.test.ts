@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "./_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -10,7 +11,7 @@ import {
 } from "../lib/client.ts";
 import { errorBody, mockCtx, queryOf } from "./_helpers.ts";
 
-Deno.test("client: arrays go on the wire as one comma-separated value", async () => {
+test("client: arrays go on the wire as one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new HoneyBookClient(ctx).request("GET", "/pipeline", {
     query: { stage_ids: ["a", "b"], page: 2, archived: false, skip: undefined, empty: "" },
@@ -18,7 +19,7 @@ Deno.test("client: arrays go on the wire as one comma-separated value", async ()
   assertEquals(queryOf(calls[0].url), { stage_ids: "a,b", page: "2", archived: "false" });
 });
 
-Deno.test("client: JSON bodies carry a content-type; bodiless calls do not", async () => {
+test("client: JSON bodies carry a content-type; bodiless calls do not", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const c = new HoneyBookClient(ctx);
   await c.request("POST", "/contacts", { body: { email: "a@b.co" } });
@@ -27,12 +28,12 @@ Deno.test("client: JSON bodies carry a content-type; bodiless calls do not", asy
   assertEquals(calls[1].headers["content-type"], undefined);
 });
 
-Deno.test("client: 204 resolves to undefined", async () => {
+test("client: 204 resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new HoneyBookClient(ctx).request("DELETE", "/contacts/1"), undefined);
 });
 
-Deno.test("client: a validation failure names the rejected fields", async () => {
+test("client: a validation failure names the rejected fields", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("HBValidationError", "title is missing", {
@@ -46,7 +47,7 @@ Deno.test("client: a validation failure names the rejected fields", async () => 
   );
 });
 
-Deno.test("client: 403 scope and 404 ambiguity are explained", () => {
+test("client: 403 scope and 404 ambiguity are explained", () => {
   const scope = formatHoneyBookError(
     403,
     "GET",
@@ -63,13 +64,13 @@ Deno.test("client: 403 scope and 404 ambiguity are explained", () => {
   assertEquals(nf.includes("may not see it"), true);
 });
 
-Deno.test("client: a non-JSON error body is reported verbatim, truncated", () => {
+test("client: a non-JSON error body is reported verbatim, truncated", () => {
   const out = formatHoneyBookError(502, "GET", "/x", "x".repeat(2000));
   assertEquals(out.startsWith("HoneyBook 502 for GET /x: "), true);
   assertEquals(out.includes("truncated"), true);
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: false }), { a: 1, d: false });
   assertEquals(nonEmpty({}), undefined);
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);

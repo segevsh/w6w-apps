@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, envelope, errorBody, pathOf, WS } from "../_helpers.ts";
 import action from "../../actions/record-create.ts";
 
-Deno.test("record-create: POSTs {records} and returns the ids", async () => {
+test("record-create: POSTs {records} and returns the ids", async () => {
   const { ctx, calls } = connCtx([{ status: 201, body: envelope({ ids: ["11", "12"] }) }]);
   const out = await action.execute(
     { moduleName: "crm", tableName: "contacts", records: [{ name: "A" }, { name: "B" }] },
@@ -16,13 +17,13 @@ Deno.test("record-create: POSTs {records} and returns the ids", async () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("record-create: accepts records as a JSON string", async () => {
+test("record-create: accepts records as a JSON string", async () => {
   const { ctx, calls } = connCtx([{ status: 201, body: envelope({ ids: ["1"] }) }]);
   await action.execute({ moduleName: "m", tableName: "t", records: '[{"a":1}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { records: [{ a: 1 }] });
 });
 
-Deno.test("record-create: empty or non-object records are rejected before any request", async () => {
+test("record-create: empty or non-object records are rejected before any request", async () => {
   const { ctx, calls } = connCtx();
   await assertRejects(
     async () => await action.execute({ moduleName: "m", tableName: "t", records: [] }, ctx),
@@ -38,7 +39,7 @@ Deno.test("record-create: empty or non-object records are rejected before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-create: a 400 carries the vendor message", async () => {
+test("record-create: a 400 carries the vendor message", async () => {
   const { ctx } = connCtx([{ status: 400, body: errorBody("Unknown field zzz") }]);
   await assertRejects(
     async () =>

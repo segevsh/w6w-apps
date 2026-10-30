@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { componentKey, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
@@ -27,7 +28,7 @@ const allGood = page([
   ["Web Application", "operational"],
 ]);
 
-Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
+test("service: reads the Statuspage summary unauthenticated", async () => {
   const { ctx, calls } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -39,7 +40,7 @@ Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
  * Ingest and query fail independently, and a workflow that only sends does not
  * care about a reporting outage.
  */
-Deno.test("service: names the ingest half when Data Reception is affected", async () => {
+test("service: names the ingest half when Data Reception is affected", async () => {
   const { ctx } = mockCtx([
     page([["Web Reporting", "operational"], ["Data Reception", "major_outage", "g2"]]),
   ]);
@@ -48,7 +49,7 @@ Deno.test("service: names the ingest half when Data Reception is affected", asyn
   assert(!/query/.test(result.message!.split("—")[0]), result.message);
 });
 
-Deno.test("service: names the query half when Web Reporting is affected", async () => {
+test("service: names the query half when Web Reporting is affected", async () => {
   const { ctx } = mockCtx([
     page([["Web Reporting", "partial_outage"], ["Data Reception", "operational", "g2"]]),
   ]);
@@ -56,7 +57,7 @@ Deno.test("service: names the query half when Web Reporting is affected", async 
   assert(/query affected/.test(result.message!), result.message);
 });
 
-Deno.test("service: names both when both are affected", async () => {
+test("service: names both when both are affected", async () => {
   const { ctx } = mockCtx([
     page([["Web Reporting", "major_outage"], ["Data Reception", "major_outage", "g2"]]),
   ]);
@@ -64,14 +65,14 @@ Deno.test("service: names both when both are affected", async () => {
   assert(/ingest and query affected/.test(result.message!), result.message);
 });
 
-Deno.test("service: an outage in neither half says so", async () => {
+test("service: an outage in neither half says so", async () => {
   const { ctx } = mockCtx([page([["Marketing Website", "major_outage"]])]);
   const result = await service.check!({}, ctx);
   assert(/neither the ingest nor the query path/.test(result.message!), result.message);
 });
 
 /** An app-scoped check cannot know whether a connection sends, reads or both. */
-Deno.test("service: even a major outage is capped at degraded", async () => {
+test("service: even a major outage is capped at degraded", async () => {
   const { ctx } = mockCtx([page([["Data Reception", "major_outage", "g2"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -79,7 +80,7 @@ Deno.test("service: even a major outage is capped at degraded", async () => {
 });
 
 /** "Web Application" appears under three products; a name-only key drops two. */
-Deno.test("service: component keys are group-qualified, so repeats do not collide", async () => {
+test("service: component keys are group-qualified, so repeats do not collide", async () => {
   const { ctx } = mockCtx([
     page([["Web Application", "operational"], ["Web Application", "operational", "g2"]]),
   ]);
@@ -90,21 +91,21 @@ Deno.test("service: component keys are group-qualified, so repeats do not collid
   ]);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   for (const status of [404, 503]) {
     const { ctx } = mockCtx([{ status, body: "nope" }]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: a page that is not Amplitude's is unknown", async () => {
+test("service: a page that is not Amplitude's is unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { page: { name: "Other" }, components: [] } }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/self-identifies/.test(result.message!), result.message);
 });
 
-Deno.test("service: an unreachable status host is unknown", async () => {
+test("service: an unreachable status host is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -112,7 +113,7 @@ Deno.test("service: an unreachable status host is unknown", async () => {
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: maps Atlassian's vocabulary and falls back on the id", () => {
+test("service: maps Atlassian's vocabulary and falls back on the id", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -121,7 +122,7 @@ Deno.test("service: maps Atlassian's vocabulary and falls back on the id", () =>
   assertEquals(componentKey({}, new Map(), 2), "component-2");
 });
 
-Deno.test("service: is informational, unsigned, and names only the status host", () => {
+test("service: is informational, unsigned, and names only the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.amplitude.com"]);

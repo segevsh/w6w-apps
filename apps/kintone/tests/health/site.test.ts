@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import site from "../../health/site.ts";
 
-Deno.test("site: reports ok on a structured Kintone JSON error (tenant identified, request rejected)", async () => {
+test("site: reports ok on a structured Kintone JSON error (tenant identified, request rejected)", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 400, body: { code: "CB_VA01", id: "x", message: "Illegal app id." } }],
     { display: { baseUrl: "https://acme.cybozu.com" } },
@@ -12,7 +13,7 @@ Deno.test("site: reports ok on a structured Kintone JSON error (tenant identifie
   assertEquals(calls[0].url, "https://acme.cybozu.com/k/v1/records.json?app=0");
 });
 
-Deno.test("site: reports ok directly on a 200", async () => {
+test("site: reports ok directly on a 200", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { records: [], totalCount: null } }],
     { display: { baseUrl: "https://acme.cybozu.com" } },
@@ -21,7 +22,7 @@ Deno.test("site: reports ok directly on a 200", async () => {
   assertEquals(out.state, "ok");
 });
 
-Deno.test("site: reports down on Cybozu's non-JSON edge decoy page", async () => {
+test("site: reports down on Cybozu's non-JSON edge decoy page", async () => {
   const { ctx } = mockCtx(
     [{
       status: 404,
@@ -34,13 +35,13 @@ Deno.test("site: reports down on Cybozu's non-JSON edge decoy page", async () =>
   assertEquals(out.state, "down");
 });
 
-Deno.test("site: reports unknown when the connection records no tenant URL", async () => {
+test("site: reports unknown when the connection records no tenant URL", async () => {
   const { ctx } = mockCtx([], { display: {} });
   const out = await site.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("site: is declared unsigned (credential: context)", () => {
+test("site: is declared unsigned (credential: context)", () => {
   assertEquals(site.credential, "context");
   assertEquals(site.scope, "connection");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSplunkCtx } from "../_helpers.ts";
 import action from "../../actions/search-oneshot.ts";
 
-Deno.test("search-oneshot: sets exec_mode=oneshot and returns results inline", async () => {
+test("search-oneshot: sets exec_mode=oneshot and returns results inline", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { results: [{ count: "3" }], fields: [] } }]);
   const out = await action.execute(
     { search: "search index=_internal | head 3", maxCount: 3 },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import barcodeGenerate from "../../actions/barcode-generate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("barcode-generate: posts to /v1/barcode/generate", async () => {
+test("barcode-generate: posts to /v1/barcode/generate", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "https://x/barcode.png" } }]);
   const out = await barcodeGenerate.execute({ value: "abc123", type: "QRCode" }, ctx);
 

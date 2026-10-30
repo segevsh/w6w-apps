@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deskList from "../../actions/desk-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("desk-list: GET /api/external/v1/companies/bodyglove/desks/", async () => {
+test("desk-list: GET /api/external/v1/companies/bodyglove/desks/", async () => {
   const body = { desks: [{ pk: 1 }] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(
@@ -15,7 +16,7 @@ Deno.test("desk-list: GET /api/external/v1/companies/bodyglove/desks/", async ()
   assertEquals(calls[0].headers["x-fareharbor-api-app"], undefined);
 });
 
-Deno.test("desk-list: a vendor error surfaces its code and sentence", async () => {
+test("desk-list: a vendor error surfaces its code and sentence", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(404, "company-shortname-invalid", "nope is not a valid company shortname"),
@@ -27,7 +28,7 @@ Deno.test("desk-list: a vendor error surfaces its code and sentence", async () =
   );
 });
 
-Deno.test("desk-list: refuses an empty shortname before any request", async () => {
+test("desk-list: refuses an empty shortname before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await deskList.execute({ ...{ shortname: "bodyglove" }, shortname: " " }, ctx),

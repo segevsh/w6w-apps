@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleCreate from "../../actions/article-create.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-create: POSTs the documented body fields in snake_case", async () => {
+test("article-create: POSTs the documented body fields in snake_case", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "a1", status: "draft" }) }]);
   const out = await articleCreate.execute({
     workspaceId: "w1",
@@ -28,7 +29,7 @@ Deno.test("article-create: POSTs the documented body fields in snake_case", asyn
   assertEquals(out.id, "a1");
 });
 
-Deno.test("article-create: omits unset optionals rather than sending nulls", async () => {
+test("article-create: omits unset optionals rather than sending nulls", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "a2" }) }]);
   const out = await articleCreate.execute(
     { workspaceId: "w1", categoryId: "c1", title: "Hi" },
@@ -43,7 +44,7 @@ Deno.test("article-create: omits unset optionals rather than sending nulls", asy
   assertEquals(typeof out, "object");
 });
 
-Deno.test("article-create: a vendor error surfaces its code and message", async () => {
+test("article-create: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

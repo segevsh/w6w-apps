@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageEvaluate from "../../actions/message-evaluate.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const INFO = {
   errors: [],
 };
 
-Deno.test("message-evaluate: POSTs the body it is evaluating and returns the verdict", async () => {
+test("message-evaluate: POSTs the body it is evaluating and returns the verdict", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: INFO }]);
   const result = await messageEvaluate.execute({ mode: "AUTO", text: "x".repeat(200) }, ctx) as {
     detectedCategory: string;
@@ -33,7 +34,7 @@ Deno.test("message-evaluate: POSTs the body it is evaluating and returns the ver
  * would be rejected" in the body. Throwing would destroy the answer the caller
  * asked for, so the action returns it.
  */
-Deno.test("message-evaluate: a 201 with errors is returned, not thrown", async () => {
+test("message-evaluate: a 201 with errors is returned, not thrown", async () => {
   const { ctx } = mockCtx([
     { status: 201, body: { ...INFO, errors: ["Text is too long"] } },
   ]);
@@ -49,12 +50,12 @@ Deno.test("message-evaluate: a 201 with errors is returned, not thrown", async (
 });
 
 /** It sends nothing and charges nothing; the verb is the vendor's, not a side effect. */
-Deno.test("message-evaluate: is declared a read, with no idempotency flag", () => {
+test("message-evaluate: is declared a read, with no idempotency flag", () => {
   assertEquals(messageEvaluate.type, "read");
   assertEquals(messageEvaluate.idempotent, undefined);
 });
 
-Deno.test("message-evaluate: the mode param is required and defaults to AUTO", () => {
+test("message-evaluate: the mode param is required and defaults to AUTO", () => {
   const mode = messageEvaluate.params!.find((p) => p.key === "mode");
   assertEquals(mode?.required, true);
   assertEquals(mode?.default, "AUTO");
@@ -64,7 +65,7 @@ Deno.test("message-evaluate: the mode param is required and defaults to AUTO", (
   );
 });
 
-Deno.test("message-evaluate: media items are forwarded when supplied", async () => {
+test("message-evaluate: media items are forwarded when supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { ...INFO, detectedCategory: "MMS" } }]);
   await messageEvaluate.execute(
     { mode: "MMS_PREFERRED", text: "Look", mediaItems: ["507f1f77bcf86cd799439011"] },

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagContactsList from "../../actions/tag-contacts-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const PAGE = {
   next_page_token: "n",
 };
 
-Deno.test("tag-contacts-list: reads the tagged-contacts path", async () => {
+test("tag-contacts-list: reads the tagged-contacts path", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await tagContactsList.execute({ tagId: "7" }, ctx) as { count: number };
   assertEquals(pathOf(calls[0].url), "/crm/rest/v2/tags/7/contacts");
@@ -19,13 +20,13 @@ Deno.test("tag-contacts-list: reads the tagged-contacts path", async () => {
  * check for the non-existence of that field" — the only way to ask this
  * question here.
  */
-Deno.test("tag-contacts-list: the NONE sentinel is passed through untouched", async () => {
+test("tag-contacts-list: the NONE sentinel is passed through untouched", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await tagContactsList.execute({ tagId: "7", email: "NONE" }, ctx);
   assertEquals(queryOf(calls[0].url).filter, "email==NONE");
 });
 
-Deno.test("tag-contacts-list: the applied-time window uses Keap's own clause names", async () => {
+test("tag-contacts-list: the applied-time window uses Keap's own clause names", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await tagContactsList.execute(
     { tagId: "7", sinceAppliedTime: "2026-01-01T00:00:00.000Z" },
@@ -39,7 +40,7 @@ Deno.test("tag-contacts-list: the applied-time window uses Keap's own clause nam
  * returns `TaggedContact`, flat, with `applied_time` alongside the contact's
  * own fields.
  */
-Deno.test("tag-contacts-list: rows are flat, with applied_time alongside the contact fields", async () => {
+test("tag-contacts-list: rows are flat, with applied_time alongside the contact fields", async () => {
   const { ctx } = mockCtx([{ body: PAGE }]);
   const out = await tagContactsList.execute({ tagId: "7" }, ctx) as {
     contacts: Array<Record<string, unknown>>;

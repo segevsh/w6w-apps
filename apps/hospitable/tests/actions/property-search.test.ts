@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import propertySearch from "../../actions/property-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("property-search: dates, guests and the deepObject location reach the query", async () => {
+test("property-search: dates, guests and the deepObject location reach the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await propertySearch.execute({
     start_date: "2026-11-01",

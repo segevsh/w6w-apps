@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskGet from "../../actions/task-get.ts";
 import { envelope, hostOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-get: GETs /v2/tasks/{id} on the async host", async () => {
+test("task-get: GETs /v2/tasks/{id} on the async host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "t1", status: "finished" }),
@@ -13,7 +14,7 @@ Deno.test("task-get: GETs /v2/tasks/{id} on the async host", async () => {
   assertEquals(out.id, "t1");
 });
 
-Deno.test("task-get: passes multiple include values comma-joined", async () => {
+test("task-get: passes multiple include values comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   await taskGet.execute({ taskId: "t1", include: ["payload", "job"] }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "payload,job" });

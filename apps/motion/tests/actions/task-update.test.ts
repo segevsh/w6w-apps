@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-update: PATCHes /v1/tasks/{id} with content-type set", async () => {
+test("task-update: PATCHes /v1/tasks/{id} with content-type set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await taskUpdate.execute(
     { id: "t1", name: "Draft", workspaceId: "ws1", status: "In Progress" },
@@ -20,7 +21,7 @@ Deno.test("task-update: PATCHes /v1/tasks/{id} with content-type set", async () 
  * `workspaceId` marked required — so this is not a sparse patch, and declaring
  * those two optional would produce requests the documentation says are invalid.
  */
-Deno.test("task-update: name and workspaceId are required, as Motion's reference documents", () => {
+test("task-update: name and workspaceId are required, as Motion's reference documents", () => {
   const byKey = Object.fromEntries((taskUpdate.params ?? []).map((p) => [p.key, p]));
   assertEquals(byKey.id?.required, true);
   assertEquals(byKey.name?.required, true);
@@ -38,7 +39,7 @@ Deno.test("task-update: name and workspaceId are required, as Motion's reference
  * field must not appear at all. Collapsing the two would make the feature
  * unreachable.
  */
-Deno.test("task-update: an explicit null autoScheduled is sent; an unset one is omitted", async () => {
+test("task-update: an explicit null autoScheduled is sent; an unset one is omitted", async () => {
   const off = mockCtx([{ body: {} }]);
   await taskUpdate.execute(
     { id: "t1", name: "n", workspaceId: "ws1", autoScheduled: null },
@@ -54,6 +55,6 @@ Deno.test("task-update: an explicit null autoScheduled is sent; an unset one is 
 });
 
 /** A full restatement of the task is safe to repeat, which is what idempotent licenses. */
-Deno.test("task-update: is idempotent", () => {
+test("task-update: is idempotent", () => {
   assertEquals(taskUpdate.idempotent, true);
 });

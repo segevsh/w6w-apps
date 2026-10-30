@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/question-update.ts";
 
-Deno.test("question-update: PATCHes only the title", async () => {
+test("question-update: PATCHes only the title", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "q1", title: "Work email" } }]);
   const result = await action.execute({ formId: "f1", questionId: "q1", title: "Work email" }, ctx);
 

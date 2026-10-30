@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeEntryList from "../../actions/time-entry-list.ts";
 import { hostOf, mockCtx, odataList, pathOf } from "../_helpers.ts";
 
-Deno.test("time-entry-list: calls GET /v1/TimeEntries on the time-tracking host", async () => {
+test("time-entry-list: calls GET /v1/TimeEntries on the time-tracking host", async () => {
   const { ctx, calls } = mockCtx([{ body: odataList([{ id: "t1", type: "In" }], 1) }]);
   const out = await timeEntryList.execute({}, ctx) as { items: unknown[]; count?: number };
   assertEquals(hostOf(calls[0].url), "https://time-tracking.prod.jibble.io");

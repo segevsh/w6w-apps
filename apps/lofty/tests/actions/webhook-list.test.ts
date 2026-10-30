@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-list.ts";
 
-Deno.test("webhook-list: reads the plural path and returns the bare array", async () => {
+test("webhook-list: reads the plural path and returns the bare array", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ subscribeId: 1234, teamId: 99, listId: 2, callbackUrl: "https://example.com/h" }],
@@ -15,6 +16,6 @@ Deno.test("webhook-list: reads the plural path and returns the bare array", asyn
   assertEquals(result[0].subscribeId, 1234);
 });
 
-Deno.test("webhook-list: declares no params", () => {
+test("webhook-list: declares no params", () => {
   assertEquals(action.params, []);
 });

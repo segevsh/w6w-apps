@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceCreate from "../../actions/invoice-create.ts";
 import { alegraError, assertRejects, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const ITEMS = [{ id: "1", price: 120, quantity: 5, tax: [{ id: "6" }] }];
 
-Deno.test("invoice-create: POST /invoices with client/numbering/seller as {id} references", async () => {
+test("invoice-create: POST /invoices with client/numbering/seller as {id} references", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "77", status: "draft" } }]);
   const out = await invoiceCreate.execute({
     date: "2026-10-01",
@@ -32,7 +33,7 @@ Deno.test("invoice-create: POST /invoices with client/numbering/seller as {id} r
   assertEquals(out, { id: "77", status: "draft" });
 });
 
-Deno.test("invoice-create: items given as JSON text are parsed; omitted optionals are not sent", async () => {
+test("invoice-create: items given as JSON text are parsed; omitted optionals are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await invoiceCreate.execute({
     date: "2026-10-01",
@@ -45,7 +46,7 @@ Deno.test("invoice-create: items given as JSON text are parsed; omitted optional
   assertEquals(Object.keys(body).sort(), ["client", "date", "dueDate", "items"]);
 });
 
-Deno.test("invoice-create: additionalFields are merged and win over the named fields", async () => {
+test("invoice-create: additionalFields are merged and win over the named fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await invoiceCreate.execute({
     date: "2026-10-01",
@@ -59,7 +60,7 @@ Deno.test("invoice-create: additionalFields are merged and win over the named fi
   assertEquals(body.status, "draft");
 });
 
-Deno.test("invoice-create: empty or non-array items fail before any request", async () => {
+test("invoice-create: empty or non-array items fail before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const base = { date: "2026-10-01", dueDate: "2026-10-01", clientId: "2" };
   await assertRejects(() => invoiceCreate.execute({ ...base, items: [] }, ctx), Error, "non-empty");
@@ -76,7 +77,7 @@ Deno.test("invoice-create: empty or non-array items fail before any request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("invoice-create: a 400 surfaces Alegra's wording", async () => {
+test("invoice-create: a 400 surfaces Alegra's wording", async () => {
   const { ctx } = mockCtx([{ status: 400, body: alegraError(400, "invalid model") }]);
   await assertRejects(
     () => invoiceCreate.execute({ date: "d", dueDate: "d", clientId: "2", items: ITEMS }, ctx),

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   API_COMPONENT_NAME,
@@ -42,7 +43,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.practicebetter.io/api/v2/summary.json");
   assertEquals(STATUS_HOST, "status.practicebetter.io");
   assertEquals(service.network?.allow, ["status.practicebetter.io"]);
@@ -51,12 +52,12 @@ Deno.test("service: probes the status host, not the API host", () => {
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: the page id and the API component id are the verified ones", () => {
+test("service: the page id and the API component id are the verified ones", () => {
   assertEquals(API_COMPONENT_ID, "hg7zsrq27t7g");
   assertEquals(API_COMPONENT_NAME, "Practice Better API");
 });
 
-Deno.test("service: an all-operational page reports ok, keyed by component id", async () => {
+test("service: an all-operational page reports ok, keyed by component id", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -69,7 +70,7 @@ Deno.test("service: an all-operational page reports ok, keyed by component id", 
   assertEquals(report.components!["zoom1"].state, "ok");
 });
 
-Deno.test("service: the API component decides, even when the page indicator is worse", async () => {
+test("service: the API component decides, even when the page indicator is worse", async () => {
   const { ctx } = mockCtx([{
     body: summary({ status: { indicator: "minor", description: "Partially Degraded Service" } }),
   }]);
@@ -81,7 +82,7 @@ Deno.test("service: the API component decides, even when the page indicator is w
   assert(/Stripe \(degraded_performance\)/.test(report.message!), report.message);
 });
 
-Deno.test("service: a degraded API component is the verdict", async () => {
+test("service: a degraded API component is the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -95,7 +96,7 @@ Deno.test("service: a degraded API component is the verdict", async () => {
   assert(/Practice Better API: degraded_performance/.test(report.message!), report.message);
 });
 
-Deno.test("service: a major outage on the API component is down", async () => {
+test("service: a major outage on the API component is down", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [{ id: API_COMPONENT_ID, name: API_COMPONENT_NAME, status: "major_outage" }],
@@ -104,7 +105,7 @@ Deno.test("service: a major outage on the API component is down", async () => {
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: a page without the API component reports unknown, never a verdict", async () => {
+test("service: a page without the API component reports unknown, never a verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary({ components: [{ id: "web1", name: "Web Portal", status: "operational" }] }),
   }]);
@@ -113,7 +114,7 @@ Deno.test("service: a page without the API component reports unknown, never a ve
   assert(/no longer publishes/.test(report.message!), report.message);
 });
 
-Deno.test("service: a page that stops identifying as Practice Better's reports unknown", async () => {
+test("service: a page that stops identifying as Practice Better's reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       page: { id: "other", name: "Someone Else", url: "https://status.example.org" },
@@ -124,7 +125,7 @@ Deno.test("service: a page that stops identifying as Practice Better's reports u
   assert(/no longer self-identifies/.test(report.message!), report.message);
 });
 
-Deno.test("service: the alternative Statuspage hostname is accepted too", async () => {
+test("service: the alternative Statuspage hostname is accepted too", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       page: {
@@ -137,7 +138,7 @@ Deno.test("service: the alternative Statuspage hostname is accepted too", async 
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a broken status API says nothing about Practice Better", async () => {
+test("service: a broken status API says nothing about Practice Better", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -150,7 +151,7 @@ Deno.test("service: a broken status API says nothing about Practice Better", asy
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 });
 
-Deno.test("service: the mapping helpers follow Statuspage's documented vocabularies", () => {
+test("service: the mapping helpers follow Statuspage's documented vocabularies", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -167,7 +168,7 @@ Deno.test("service: the mapping helpers follow Statuspage's documented vocabular
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: the API component is matched by id first, then by exact name", () => {
+test("service: the API component is matched by id first, then by exact name", () => {
   assertEquals(findApiComponent([{ id: API_COMPONENT_ID, name: "renamed" }])?.name, "renamed");
   assertEquals(
     findApiComponent([{ id: "new-id", name: API_COMPONENT_NAME }])?.id,

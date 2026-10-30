@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok, POST_URI } from "./_shared.ts";
 import action from "../../actions/like-create.ts";
@@ -10,7 +11,7 @@ const created = ok({ uri: "at://did:plc:me/app.bsky.feed.like/3new", cid: "bafy"
  * The record lives in YOUR repository and points at the post — it is not a flag
  * on the post, which is the single most common AT Protocol confusion.
  */
-Deno.test("like-create: writes a app.bsky.feed.like record into the caller's own repo", async () => {
+test("like-create: writes a app.bsky.feed.like record into the caller's own repo", async () => {
   const { ctx, calls } = mockCtx([target, created], { display });
   const result = await action.execute!({ uri: POST_URI }, ctx) as { uri: string; subject: string };
   const body = JSON.parse(calls[1].body!);
@@ -27,13 +28,13 @@ Deno.test("like-create: writes a app.bsky.feed.like record into the caller's own
 });
 
 /** The subject needs the CID as well as the URI — it pins the exact version. */
-Deno.test("like-create: fetches the post first, for its CID", async () => {
+test("like-create: fetches the post first, for its CID", async () => {
   const { ctx, calls } = mockCtx([target, created], { display });
   await action.execute!({ uri: POST_URI }, ctx);
   assert(calls[0].url.includes("getPosts"), calls[0].url);
 });
 
-Deno.test("like-create: a post that cannot be found is refused with a reason", async () => {
+test("like-create: a post that cannot be found is refused with a reason", async () => {
   const { ctx } = mockCtx([ok({ posts: [] })], { display });
   const error = await assertRejects(
     async () => await action.execute!({ uri: POST_URI }, ctx),
@@ -43,7 +44,7 @@ Deno.test("like-create: a post that cannot be found is refused with a reason", a
 });
 
 /** There is no uniqueness constraint, so doing it twice orphans the first record. */
-Deno.test("like-create: an existing one is reported and warned about", async () => {
+test("like-create: an existing one is reported and warned about", async () => {
   const existing = ok({
     posts: [{
       uri: POST_URI,
@@ -58,17 +59,17 @@ Deno.test("like-create: an existing one is reported and warned about", async () 
   assert(/orphaned/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("like-create: a bsky.app link works", async () => {
+test("like-create: a bsky.app link works", async () => {
   const { ctx, calls } = mockCtx([target, created], { display });
   await action.execute!({ uri: "https://bsky.app/profile/a.bsky.social/post/3k2a" }, ctx);
   assert(calls[0].url.includes("a.bsky.social"), calls[0].url);
 });
 
-Deno.test("like-create: needs a post", async () => {
+test("like-create: needs a post", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`uri` is required");
 });
 
-Deno.test("like-create: is non-idempotent, because a retry makes a second record", () => {
+test("like-create: is non-idempotent, because a retry makes a second record", () => {
   assertEquals(action.idempotent, false);
 });

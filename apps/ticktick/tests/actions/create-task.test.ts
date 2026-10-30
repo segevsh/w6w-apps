@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs the un-nested /task path with projectId in the BODY", async () => {
+test("create-task: POSTs the un-nested /task path with projectId in the BODY", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "T1" } }]);
   await action.execute!({ projectId: "P1", title: "Ship it" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("create-task: POSTs the un-nested /task path with projectId in the BOD
   assertEquals(JSON.parse(calls[0].body!), { projectId: "P1", title: "Ship it" });
 });
 
-Deno.test("create-task: converts dates to TickTick's numeric-offset format", async () => {
+test("create-task: converts dates to TickTick's numeric-offset format", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     projectId: "P1",
@@ -24,7 +25,7 @@ Deno.test("create-task: converts dates to TickTick's numeric-offset format", asy
   assertEquals(body.dueDate, "2026-08-10T17:00:00+0200");
 });
 
-Deno.test("create-task: sends tags, reminders, repeat rule and priority as given", async () => {
+test("create-task: sends tags, reminders, repeat rule and priority as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     projectId: "P1",
@@ -46,26 +47,26 @@ Deno.test("create-task: sends tags, reminders, repeat rule and priority as given
   });
 });
 
-Deno.test("create-task: passes a subtask array through verbatim", async () => {
+test("create-task: passes a subtask array through verbatim", async () => {
   const items = [{ title: "step one", status: 0, isAllDay: false }];
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ projectId: "P1", title: "t", items }, ctx);
   assertEquals(JSON.parse(calls[0].body!).items, items);
 });
 
-Deno.test("create-task: offers only the four priorities TickTick defines", () => {
+test("create-task: offers only the four priorities TickTick defines", () => {
   const priority = action.params!.find((p) => p.key === "priority")!;
   assertEquals((priority.options as Array<{ value: unknown }>).map((o) => o.value), [0, 1, 3, 5]);
 });
 
-Deno.test("create-task: never offers server-stamped fields as inputs", () => {
+test("create-task: never offers server-stamped fields as inputs", () => {
   const keys = action.params!.map((p) => p.key);
   for (const forbidden of ["id", "status", "completedTime", "etag", "kind"]) {
     assert(!keys.includes(forbidden), `${forbidden} must not be an input`);
   }
 });
 
-Deno.test("create-task: honestly non-idempotent, and requires title + project", () => {
+test("create-task: honestly non-idempotent, and requires title + project", () => {
   assertEquals(action.idempotent, false);
   assert(action.params!.find((p) => p.key === "title")?.required);
   assert(action.params!.find((p) => p.key === "projectId")?.required);

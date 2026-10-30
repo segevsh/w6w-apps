@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-transcript-download.ts";
 
-Deno.test("recording-transcript-download: GETs the .txt path by default", async () => {
+test("recording-transcript-download: GETs the .txt path by default", async () => {
   const { ctx, calls } = mockCtx([{
     body: "Obi Wan Kenobi: Hello there.",
     headers: { "content-type": "text/plain" },
@@ -15,7 +16,7 @@ Deno.test("recording-transcript-download: GETs the .txt path by default", async 
   assertEquals(result, { content: "Obi Wan Kenobi: Hello there.", format: "txt" });
 });
 
-Deno.test("recording-transcript-download: honors vtt and srt formats", async () => {
+test("recording-transcript-download: honors vtt and srt formats", async () => {
   for (const format of ["vtt", "srt"] as const) {
     const { ctx, calls } = mockCtx([{ body: "WEBVTT", headers: { "content-type": "text/plain" } }]);
     await action.execute({ recordingId: "r1", format }, ctx);
@@ -26,7 +27,7 @@ Deno.test("recording-transcript-download: honors vtt and srt formats", async () 
   }
 });
 
-Deno.test("recording-transcript-download: falls back to txt for an unrecognized format", async () => {
+test("recording-transcript-download: falls back to txt for an unrecognized format", async () => {
   const { ctx, calls } = mockCtx([{ body: "x", headers: { "content-type": "text/plain" } }]);
   await action.execute({ recordingId: "r1", format: "docx" }, ctx);
   assertEquals(
@@ -35,7 +36,7 @@ Deno.test("recording-transcript-download: falls back to txt for an unrecognized 
   );
 });
 
-Deno.test("recording-transcript-download: throws with status and body on failure", async () => {
+test("recording-transcript-download: throws with status and body on failure", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: "not found",
@@ -48,7 +49,7 @@ Deno.test("recording-transcript-download: throws with status and body on failure
   );
 });
 
-Deno.test("recording-transcript-download: is a read action defaulting to txt", () => {
+test("recording-transcript-download: is a read action defaulting to txt", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.find((p) => p.key === "format")?.default, "txt");
 });

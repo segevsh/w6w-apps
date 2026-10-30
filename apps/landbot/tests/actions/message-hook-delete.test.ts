@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageHookDelete from "../../actions/message-hook-delete.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-hook-delete: DELETE /channels/7/message_hooks/3/ with the documented query and body", async () => {
+test("message-hook-delete: DELETE /channels/7/message_hooks/3/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await messageHookDelete.execute({ "channelId": 7, "hookId": 3 } as never, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("message-hook-delete: DELETE /channels/7/message_hooks/3/ with the doc
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("message-hook-delete: a Landbot error surfaces its status and message", async () => {
+test("message-hook-delete: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(messageHookDelete.execute({ "channelId": 7, "hookId": 3 } as never, ctx)),
@@ -25,7 +26,7 @@ Deno.test("message-hook-delete: a Landbot error surfaces its status and message"
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("message-hook-delete: declares perform", () => {
+test("message-hook-delete: declares perform", () => {
   assertEquals(messageHookDelete.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

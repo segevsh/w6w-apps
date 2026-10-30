@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import productGet from "../../actions/product-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "productId": 42 };
 
-Deno.test("product-get: GET /api/v2/products/42 with the documented query, header and body", async () => {
+test("product-get: GET /api/v2/products/42 with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await productGet.execute(INPUT as never, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("product-get: GET /api/v2/products/42 with the documented query, heade
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("product-get: an Axonaut error surfaces its message and status", async () => {
+test("product-get: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await productGet.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: posts the body and returns the one-time signing secret", async () => {
+test("webhook-create: posts the body and returns the one-time signing secret", async () => {
   const created = { id: "whe_x", signing_secret: "whsec_abc", enabled: true };
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   const out = await webhookCreate.execute({
@@ -23,7 +24,7 @@ Deno.test("webhook-create: posts the body and returns the one-time signing secre
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("webhook-create: empty events and folders are omitted, so the vendor defaults apply", async () => {
+test("webhook-create: empty events and folders are omitted, so the vendor defaults apply", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await webhookCreate.execute({
     url: "https://e.com/h",
@@ -34,7 +35,7 @@ Deno.test("webhook-create: empty events and folders are omitted, so the vendor d
   assertEquals(JSON.parse(calls[0].body!), { url: "https://e.com/h", scopes: ["workspace"] });
 });
 
-Deno.test("webhook-create: 404 (webhooks not enabled) is an error", async () => {
+test("webhook-create: 404 (webhooks not enabled) is an error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "NOT_FOUND", message: "not available" } }]);
   await assertRejects(
     async () => await webhookCreate.execute({ url: "https://e.com/h", scopes: ["personal"] }, ctx),
@@ -43,6 +44,6 @@ Deno.test("webhook-create: 404 (webhooks not enabled) is an error", async () => 
   );
 });
 
-Deno.test("webhook-create: is not idempotent", () => {
+test("webhook-create: is not idempotent", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

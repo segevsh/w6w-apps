@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-upload-create.ts";
 
-Deno.test("recording-upload-create: POSTs filename and optional user_id", async () => {
+test("recording-upload-create: POSTs filename and optional user_id", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       uuid: "up1",
@@ -24,7 +25,7 @@ Deno.test("recording-upload-create: POSTs filename and optional user_id", async 
   });
 });
 
-Deno.test("recording-upload-create: omits user_id when not given", async () => {
+test("recording-upload-create: omits user_id when not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { uuid: "up1", url: "https://example.com/x", max_duration_sec: 1, max_upload_bytes: 1 },
   }]);
@@ -32,7 +33,7 @@ Deno.test("recording-upload-create: omits user_id when not given", async () => {
   assertEquals(JSON.parse(calls[0].body!), { filename: "a.mp4" });
 });
 
-Deno.test("recording-upload-create: is a non-idempotent perform action", () => {
+test("recording-upload-create: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

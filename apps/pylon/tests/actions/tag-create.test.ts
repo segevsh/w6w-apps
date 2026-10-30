@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/tag-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-create: POSTs value, object_type and color", async () => {
+test("tag-create: POSTs value, object_type and color", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "g1", value: "vip" } } }]);
   const out = await action.execute!(
     { value: "vip", objectType: "issue", hexColor: "#ff0000" },
@@ -18,7 +19,7 @@ Deno.test("tag-create: POSTs value, object_type and color", async () => {
   assertEquals(out, { id: "g1", value: "vip" });
 });
 
-Deno.test("tag-create: value and object type are required; a duplicate reports the existing id", async () => {
+test("tag-create: value and object type are required; a duplicate reports the existing id", async () => {
   assertEquals(action.params!.filter((p) => p.required).map((p) => p.key), ["value", "objectType"]);
   const { ctx } = mockCtx([{
     status: 400,

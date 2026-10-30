@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { child, children, decodeText, parseXml, text, toRecord } from "../../lib/xml.ts";
 
 /** A real List Containers response, trimmed. */
@@ -20,7 +21,7 @@ const LIST_CONTAINERS = `﻿<?xml version="1.0" encoding="utf-8"?>
   <NextMarker />
 </EnumerationResults>`;
 
-Deno.test("parseXml: reads a real List Containers response", () => {
+test("parseXml: reads a real List Containers response", () => {
   const root = parseXml(LIST_CONTAINERS);
   const containers = children(child(child(root, "EnumerationResults"), "Containers"), "Container");
   assertEquals(containers.length, 2);
@@ -29,20 +30,20 @@ Deno.test("parseXml: reads a real List Containers response", () => {
 });
 
 /** Azure sends a BOM and a declaration; both have to go before parsing. */
-Deno.test("parseXml: strips the BOM, the declaration and comments", () => {
+test("parseXml: strips the BOM, the declaration and comments", () => {
   const root = parseXml('﻿<?xml version="1.0"?><!-- note --><A><B>x</B></A>');
   assertEquals(text(root, "A", "B"), "x");
 });
 
 /** `<NextMarker />` is how Azure says there are no more pages. */
-Deno.test("parseXml: a self-closing element is present and empty", () => {
+test("parseXml: a self-closing element is present and empty", () => {
   const root = parseXml(LIST_CONTAINERS);
   assertEquals(text(root, "EnumerationResults", "NextMarker"), "");
   assertEquals(text(root, "EnumerationResults", "Missing"), undefined);
 });
 
 /** Repeated tags collect; a single one is still a list of one. */
-Deno.test("children: repeated tags collect, and an absent tag is an empty list", () => {
+test("children: repeated tags collect, and an absent tag is an empty list", () => {
   const root = parseXml("<R><I>a</I><I>b</I></R>");
   assertEquals(children(child(root, "R"), "I").map((n) => n.text), ["a", "b"]);
   assertEquals(children(child(root, "R"), "Z"), []);
@@ -50,7 +51,7 @@ Deno.test("children: repeated tags collect, and an absent tag is an empty list",
 });
 
 /** XML has no types; nothing is coerced on the way through. */
-Deno.test("toRecord: flattens leaf children to strings, skipping branches", () => {
+test("toRecord: flattens leaf children to strings, skipping branches", () => {
   const root = parseXml(
     "<Blob><Name>a.txt</Name><Properties><Content-Length>1024</Content-Length></Properties></Blob>",
   );
@@ -60,7 +61,7 @@ Deno.test("toRecord: flattens leaf children to strings, skipping branches", () =
   assertEquals(typeof toRecord(child(blob, "Properties"))["Content-Length"], "string");
 });
 
-Deno.test("decodeText: resolves the five predefined entities and numeric references", () => {
+test("decodeText: resolves the five predefined entities and numeric references", () => {
   assertEquals(decodeText("a &amp; b &lt;c&gt; &quot;d&quot; &apos;e&apos;"), `a & b <c> "d" 'e'`);
   assertEquals(decodeText("&#65;&#x42;"), "AB");
 });
@@ -70,7 +71,7 @@ Deno.test("decodeText: resolves the five predefined entities and numeric referen
  * entities beyond the predefined five, so a declared one stays literal text
  * rather than being expanded into anything.
  */
-Deno.test("decodeText: a custom or external entity is left alone, not resolved", () => {
+test("decodeText: a custom or external entity is left alone, not resolved", () => {
   assertEquals(decodeText("&xxe;"), "&xxe;");
   assertEquals(decodeText("&custom;"), "&custom;");
   const root = parseXml(
@@ -80,18 +81,18 @@ Deno.test("decodeText: a custom or external entity is left alone, not resolved",
 });
 
 /** A response this cannot read should be heard about, not guessed at. */
-Deno.test("parseXml: refuses malformed input rather than guessing", () => {
+test("parseXml: refuses malformed input rather than guessing", () => {
   assertThrows(() => parseXml("<A><B></A>"), Error, "never closed");
   assertThrows(() => parseXml("</A>"), Error, "unexpected </A>");
 });
 
-Deno.test("parseXml: an empty document is an empty tree, not an error", () => {
+test("parseXml: an empty document is an empty tree, not an error", () => {
   const root = parseXml("");
   assertEquals(root.children, {});
   assertEquals(root.text, "");
 });
 
-Deno.test("text: walks a path and stops at the first missing element", () => {
+test("text: walks a path and stops at the first missing element", () => {
   const root = parseXml("<A><B><C>deep</C></B></A>");
   assertEquals(text(root, "A", "B", "C"), "deep");
   assertEquals(text(root, "A", "X", "C"), undefined);

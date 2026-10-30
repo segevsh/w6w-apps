@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/request-list.ts";
 
-Deno.test("request-list: sort is a LIST here — Jobber changed the type in 2024-11-12", async () => {
+test("request-list: sort is a LIST here — Jobber changed the type in 2024-11-12", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { requests: { nodes: [] } } } }]);
   await action.execute({ sortKey: "REQUESTED_AT", sortDirection: "ASCENDING" }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -10,7 +11,7 @@ Deno.test("request-list: sort is a LIST here — Jobber changed the type in 2024
   assertEquals(sent.variables.sort, [{ key: "REQUESTED_AT", direction: "ASCENDING" }]);
 });
 
-Deno.test("request-list: filters map onto Jobber's names", async () => {
+test("request-list: filters map onto Jobber's names", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { requests: { nodes: [] } } } }]);
   await action.execute({
     clientId: "c1",

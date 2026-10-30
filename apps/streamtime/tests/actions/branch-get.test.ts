@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import branchGet from "../../actions/branch-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("branch-get: reads GET /v2/branches/{id}", async () => {
+test("branch-get: reads GET /v2/branches/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, name: "Auckland" } }]);
   const result = await branchGet.execute({ branchId: 7 }, ctx) as Record<string, unknown>;
 
@@ -10,7 +11,7 @@ Deno.test("branch-get: reads GET /v2/branches/{id}", async () => {
   assertEquals(result, { id: 7, name: "Auckland" });
 });
 
-Deno.test("branch-get: the path id is validated as an integer before it is used", () => {
+test("branch-get: the path id is validated as an integer before it is used", () => {
   assertEquals(branchGet.params?.[0].key, "branchId");
   assertEquals(branchGet.params?.[0].required, true);
   assertEquals(branchGet.params?.[0].validation, { integer: true, min: 1 });

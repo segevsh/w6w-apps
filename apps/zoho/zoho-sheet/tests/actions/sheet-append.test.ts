@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-append.ts";
 
-Deno.test("sheet-append: POSTs worksheet.jsondata.append with JSON-stringified rows", async () => {
+test("sheet-append: POSTs worksheet.jsondata.append with JSON-stringified rows", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {
@@ -29,7 +30,7 @@ Deno.test("sheet-append: POSTs worksheet.jsondata.append with JSON-stringified r
   assertEquals(out.startRow, 10);
 });
 
-Deno.test("sheet-append: accepts a JSON string and parses it", async () => {
+test("sheet-append: accepts a JSON string and parses it", async () => {
   const { ctx, calls } = mockSheetCtx([
     { body: { status: "success", method: "worksheet.jsondata.append" } },
   ]);
@@ -41,7 +42,7 @@ Deno.test("sheet-append: accepts a JSON string and parses it", async () => {
   assertEquals(JSON.parse(body.get("json_data")!), [{ Name: "Joe" }]);
 });
 
-Deno.test("sheet-append: rejects an empty row array without making a request", async () => {
+test("sheet-append: rejects an empty row array without making a request", async () => {
   const { ctx, calls } = mockSheetCtx([]);
   await assertRejects(
     async () =>

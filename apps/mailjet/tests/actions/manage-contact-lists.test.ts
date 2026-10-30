@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import manageContactLists from "../../actions/manage-contact-lists.ts";
 
 // -------------------------------------------------------- manage-contact-lists
 
-Deno.test("manage-contact-lists: POSTs the ContactsLists array with capitalised Action", async () => {
+test("manage-contact-lists: POSTs the ContactsLists array with capitalised Action", async () => {
   const { ctx, calls } = mockCtx([{ body: { Count: 1, Data: [] } }]);
   await manageContactLists.execute!({ contact: "1", listId: 42, action: "unsub" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/REST/contact/1/managecontactslists");
@@ -13,7 +14,7 @@ Deno.test("manage-contact-lists: POSTs the ContactsLists array with capitalised 
   });
 });
 
-Deno.test("manage-contact-lists: defaults to addnoforce, which respects an unsubscribe", async () => {
+test("manage-contact-lists: defaults to addnoforce, which respects an unsubscribe", async () => {
   // addforce would silently resurrect an opt-out; that must never be a default.
   const { ctx, calls } = mockCtx([{ body: { Data: [] } }]);
   await manageContactLists.execute!({ contact: "1", listId: 42 }, ctx);
@@ -22,7 +23,7 @@ Deno.test("manage-contact-lists: defaults to addnoforce, which respects an unsub
   assertEquals(param?.default, "addnoforce");
 });
 
-Deno.test("manage-contact-lists: an explicit contactsLists array takes precedence", async () => {
+test("manage-contact-lists: an explicit contactsLists array takes precedence", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [] } }]);
   await manageContactLists.execute!({
     contact: "a@x.com",
@@ -36,7 +37,7 @@ Deno.test("manage-contact-lists: an explicit contactsLists array takes precedenc
   ]);
 });
 
-Deno.test("manage-contact-lists: offers all four Mailjet verbs", () => {
+test("manage-contact-lists: offers all four Mailjet verbs", () => {
   const param = manageContactLists.params?.find((p) => p.key === "action");
   const values = (param?.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values.sort(), ["addforce", "addnoforce", "remove", "unsub"]);

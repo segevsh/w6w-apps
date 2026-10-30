@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-finder-lists.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-finder-lists: the status filter is `processed` and there is no type filter", async () => {
+test("list-finder-lists: the status filter is `processed` and there is no type filter", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ list_id: "f1" }], page_info: { has_more: false, last_cursor: "C" } },
   }]);

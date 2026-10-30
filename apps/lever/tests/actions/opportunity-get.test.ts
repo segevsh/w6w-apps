@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-get.ts";
 
@@ -20,7 +21,7 @@ const opportunity = (extra: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("opportunity-get: expands by default and returns the contact id", async () => {
+test("opportunity-get: expands by default and returns the contact id", async () => {
   const { ctx, calls } = mockCtx([opportunity()], D);
   const result = await action.execute({ opportunityId: UUID }, ctx) as Record<string, unknown>;
   const q = new URL(calls[0].url).searchParams;
@@ -30,7 +31,7 @@ Deno.test("opportunity-get: expands by default and returns the contact id", asyn
 });
 
 /** An archived opportunity carries the reason that says hire or rejection. */
-Deno.test("opportunity-get: reports the archive reason id", async () => {
+test("opportunity-get: reports the archive reason id", async () => {
   const { ctx } = mockCtx([opportunity({ archived: { reason: "r1", archivedAt: 1 } })], D);
   const result = await action.execute({ opportunityId: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.isArchived, true);
@@ -38,7 +39,7 @@ Deno.test("opportunity-get: reports the archive reason id", async () => {
 });
 
 /** An anonymized contact has no name by design. */
-Deno.test("opportunity-get: flags an anonymized contact as deliberate", async () => {
+test("opportunity-get: flags an anonymized contact as deliberate", async () => {
   const { ctx, logs } = mockCtx([
     opportunity({ contact: { id: "c1", isAnonymized: true }, name: "" }),
   ], D);
@@ -50,14 +51,14 @@ Deno.test("opportunity-get: flags an anonymized contact as deliberate", async ()
   );
 });
 
-Deno.test("opportunity-get: an unexpanded contact still yields an id", async () => {
+test("opportunity-get: an unexpanded contact still yields an id", async () => {
   const { ctx } = mockCtx([opportunity({ contact: "c9" })], D);
   const result = await action.execute({ opportunityId: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.contactId, "c9");
   assertEquals(result.isAnonymized, false);
 });
 
-Deno.test("opportunity-get: refuses a non-UUID before requesting", async () => {
+test("opportunity-get: refuses a non-UUID before requesting", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ opportunityId: "abc" }, ctx),

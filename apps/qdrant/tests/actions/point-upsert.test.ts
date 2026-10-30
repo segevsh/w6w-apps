@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/point-upsert.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/point-upsert.ts";
 const accepted = ok({ operation_id: 7, status: "completed" });
 
 /** Qdrant's `wait` defaults to false; a sequential workflow assumes otherwise. */
-Deno.test("point-upsert: waits for the write by default", async () => {
+test("point-upsert: waits for the write by default", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   const result = await action.execute!({
     collection: "docs",
@@ -21,7 +22,7 @@ Deno.test("point-upsert: waits for the write by default", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("point-upsert: waiting can be turned off", async () => {
+test("point-upsert: waiting can be turned off", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   await action.execute!({
     collection: "docs",
@@ -35,7 +36,7 @@ Deno.test("point-upsert: waiting can be turned off", async () => {
  * Upsert replaces a point entirely, so a point with no vector would erase the
  * vector it had.
  */
-Deno.test("point-upsert: a point without a vector is refused, and says why", async () => {
+test("point-upsert: a point without a vector is refused, and says why", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -46,7 +47,7 @@ Deno.test("point-upsert: a point without a vector is refused, and says why", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-upsert: a point without an id is refused", async () => {
+test("point-upsert: a point without an id is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", points: '[{"vector":[0.1]}]' }, ctx),
@@ -55,7 +56,7 @@ Deno.test("point-upsert: a point without an id is refused", async () => {
   );
 });
 
-Deno.test("point-upsert: an empty list is refused rather than sent", async () => {
+test("point-upsert: an empty list is refused rather than sent", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", points: "[]" }, ctx),
@@ -66,7 +67,7 @@ Deno.test("point-upsert: an empty list is refused rather than sent", async () =>
 });
 
 /** The points are the caller's data. */
-Deno.test("point-upsert: logs a count, never the points", async () => {
+test("point-upsert: logs a count, never the points", async () => {
   const { ctx, logs } = mockCtx([accepted], { display });
   await action.execute!({
     collection: "docs",
@@ -76,6 +77,6 @@ Deno.test("point-upsert: logs a count, never the points", async () => {
   assertEquals(logs[0].data, { collection: "docs", count: 1 });
 });
 
-Deno.test("point-upsert: says it replaces rather than merges", () => {
+test("point-upsert: says it replaces rather than merges", () => {
   assert(/REPLACE/.test(action.description!), action.description);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/team-list.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("team-list: lists teams, detailed by default", async () => {
+test("team-list: lists teams, detailed by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ slug: "platform" }] }], { display });
   const result = await action.execute!({ query: "plat" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("team-list: lists teams, detailed by default", async () => {
   assertEquals(result, [{ slug: "platform" }]);
 });
 
-Deno.test('team-list: detailed off sends Sentry\'s "0", not false', async () => {
+test('team-list: detailed off sends Sentry\'s "0", not false', async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display });
   await action.execute!({ detailed: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("detailed"), "0");

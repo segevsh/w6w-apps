@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentDelete from "../../actions/comment-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-delete: DELETEs one comment and returns the 204 status", async () => {
+test("comment-delete: DELETEs one comment and returns the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await commentDelete.execute({
     socialSetId: 4,

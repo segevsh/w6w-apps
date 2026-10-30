@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import monitorResponseTimesGet from "../../actions/monitor-response-times-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("monitor-response-times-get: GET /api/v2/monitors/{monitor_id}/response-times", async () => {
+test("monitor-response-times-get: GET /api/v2/monitors/{monitor_id}/response-times", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -32,7 +33,7 @@ Deno.test("monitor-response-times-get: GET /api/v2/monitors/{monitor_id}/respons
   assertEquals((out.regions as Array<{ region: string }>)[0].region, "us");
 });
 
-Deno.test("monitor-response-times-get: puts no credential on the request (sign owns that)", async () => {
+test("monitor-response-times-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -52,7 +53,7 @@ Deno.test("monitor-response-times-get: puts no credential on the request (sign o
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("monitor-response-times-get: a vendor error surfaces its own message", async () => {
+test("monitor-response-times-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await monitorResponseTimesGet.execute({ "monitor_id": "42" }, ctx)

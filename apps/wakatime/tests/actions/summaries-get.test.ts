@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/summaries-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("summaries-get: GETs the documented path", async () => {
+test("summaries-get: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], start: "s", end: "e" } }]);
   const out = await action.execute!(
     { start: "2026-09-01", end: "2026-09-07", project: "w6w" },
@@ -16,7 +17,7 @@ Deno.test("summaries-get: GETs the documented path", async () => {
   assertEquals(out, { data: [], start: "s", end: "e" });
 });
 
-Deno.test("summaries-get: a vendor error reports status and message", async () => {
+test("summaries-get: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () =>
@@ -26,7 +27,7 @@ Deno.test("summaries-get: a vendor error reports status and message", async () =
   );
 });
 
-Deno.test("summaries-get: needs a range or both dates", async () => {
+test("summaries-get: needs a range or both dates", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ start: "2026-09-01" }, ctx),

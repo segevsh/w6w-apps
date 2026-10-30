@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-upload.ts";
 
@@ -19,7 +20,7 @@ const base = { bucket: "uploads", name: "reports/summary.json", content: '{"ok":
  * The most common reason a hand-built upload fails: content goes to
  * /upload/storage/v1, not /storage/v1.
  */
-Deno.test("object-upload: posts to the upload path, not the metadata one", async () => {
+test("object-upload: posts to the upload path, not the metadata one", async () => {
   const { ctx, calls } = mockCtx([written()]);
   await action.execute(base, ctx);
   const url = new URL(calls[0].url);
@@ -29,14 +30,14 @@ Deno.test("object-upload: posts to the upload path, not the metadata one", async
 });
 
 /** On upload the object does not exist, so the name is a parameter. */
-Deno.test("object-upload: the name goes in the query, not the path", async () => {
+test("object-upload: the name goes in the query, not the path", async () => {
   const { ctx, calls } = mockCtx([written()]);
   await action.execute(base, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("name"), "reports/summary.json");
   assertEquals(calls[0].body, '{"ok":true}');
 });
 
-Deno.test("object-upload: the content type is the object's, not JSON", async () => {
+test("object-upload: the content type is the object's, not JSON", async () => {
   const { ctx, calls } = mockCtx([written()]);
   await action.execute({ ...base, contentType: "application/json" }, ctx);
   assertEquals(calls[0].headers["content-type"], "application/json");
@@ -47,7 +48,7 @@ Deno.test("object-upload: the content type is the object's, not JSON", async () 
 });
 
 /** Without a precondition, an upload replaces what is there and returns 200. */
-Deno.test("object-upload: ifNotExists sends generation zero", async () => {
+test("object-upload: ifNotExists sends generation zero", async () => {
   const { ctx, calls } = mockCtx([written()]);
   await action.execute({ ...base, ifNotExists: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("ifGenerationMatch"), "0");
@@ -57,7 +58,7 @@ Deno.test("object-upload: ifNotExists sends generation zero", async () => {
   assertEquals(new URL(plain.calls[0].url).searchParams.get("ifGenerationMatch"), null);
 });
 
-Deno.test("object-upload: a generation is the compare-and-swap form", async () => {
+test("object-upload: a generation is the compare-and-swap form", async () => {
   const { ctx, calls } = mockCtx([written()]);
   await action.execute({ ...base, ifGenerationMatch: "1700000000000001" }, ctx);
   assertEquals(
@@ -67,7 +68,7 @@ Deno.test("object-upload: a generation is the compare-and-swap form", async () =
 });
 
 /** They mean different things and cannot both be sent. */
-Deno.test("object-upload: the two preconditions are mutually exclusive", async () => {
+test("object-upload: the two preconditions are mutually exclusive", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -80,7 +81,7 @@ Deno.test("object-upload: the two preconditions are mutually exclusive", async (
 });
 
 /** A 412 means the safety worked. */
-Deno.test("object-upload: a conflicting write explains the 412", async () => {
+test("object-upload: a conflicting write explains the 412", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { error: { message: "Precondition Failed" } } }]);
   let message = "";
   try {
@@ -92,7 +93,7 @@ Deno.test("object-upload: a conflicting write explains the 412", async () => {
 });
 
 /** A media upload carries content only, so metadata is a second call. */
-Deno.test("object-upload: metadata and cache control are PATCHed afterwards", async () => {
+test("object-upload: metadata and cache control are PATCHed afterwards", async () => {
   const { ctx, calls } = mockCtx([written(), written()]);
   await action.execute(
     { ...base, metadata: '{"owner":"jane"}', cacheControl: "no-store" },
@@ -109,7 +110,7 @@ Deno.test("object-upload: metadata and cache control are PATCHed afterwards", as
   assertEquals(plain.calls.length, 1, "no second call when there is nothing to set");
 });
 
-Deno.test("object-upload: reports whether something was replaced", async () => {
+test("object-upload: reports whether something was replaced", async () => {
   const fresh = mockCtx([written({ metageneration: "1" })]);
   const first = await action.execute(base, fresh.ctx) as Record<string, unknown>;
   assertEquals(first.overwroteExisting, false);
@@ -120,14 +121,14 @@ Deno.test("object-upload: reports whether something was replaced", async () => {
 });
 
 /** The contents are the caller's. */
-Deno.test("object-upload: logs the name and size, never the content", async () => {
+test("object-upload: logs the name and size, never the content", async () => {
   const { ctx, logs } = mockCtx([written()]);
   await action.execute({ ...base, content: "secret-ish" }, ctx);
   assertEquals(logs[0].data, { name: "reports/summary.json", size: 10 });
   assertEquals(JSON.stringify(logs[0]).includes("secret-ish"), false);
 });
 
-Deno.test("object-upload: says it overwrites by default", () => {
+test("object-upload: says it overwrites by default", () => {
   assert(
     /This OVERWRITES an existing name and returns 200/.test(action.description!),
     action.description,

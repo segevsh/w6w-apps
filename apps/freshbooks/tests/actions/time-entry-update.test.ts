@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-update.ts";
 
-Deno.test("time-entry-update: PUTs /time_entries/{timeEntryId} with the fields envelope", async () => {
+test("time-entry-update: PUTs /time_entries/{timeEntryId} with the fields envelope", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: { time_entry: {} } }]);
   await action.execute({ timeEntryId: "5095", fields: { duration: 600 } }, ctx);
   assertEquals(

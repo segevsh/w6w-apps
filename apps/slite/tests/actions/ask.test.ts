@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import ask from "../../actions/ask.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("ask: GET /v1/ask with the question and filters; a 200 is a completed answer", async () => {
+test("ask: GET /v1/ask with the question and filters; a 200 is a completed answer", async () => {
   const sources = [{ id: "n1", title: "T", url: "u", updatedAt: "2026-01-01T00:00:00Z" }];
   const { ctx, calls } = mockCtx([{ body: { answer: "Forty-two", sources } }]);
   const out = await ask.execute(
@@ -20,7 +21,7 @@ Deno.test("ask: GET /v1/ask with the question and filters; a 200 is a completed 
   assertEquals(out, { status: "completed", answer: "Forty-two", sources });
 });
 
-Deno.test("ask: a 202 processing body is returned as a thread to poll, never as an answer", async () => {
+test("ask: a 202 processing body is returned as a thread to poll, never as an answer", async () => {
   const { ctx } = mockCtx([{
     status: 202,
     headers: { "content-type": "application/json", "retry-after": "5" },
@@ -43,7 +44,7 @@ Deno.test("ask: a 202 processing body is returned as a thread to poll, never as 
   assertEquals("answer" in out, false);
 });
 
-Deno.test("ask: a 202 without retryAfterSeconds falls back to the Retry-After header", async () => {
+test("ask: a 202 without retryAfterSeconds falls back to the Retry-After header", async () => {
   const { ctx } = mockCtx([{
     status: 202,
     headers: { "content-type": "application/json", "retry-after": "9" },
@@ -53,7 +54,7 @@ Deno.test("ask: a 202 without retryAfterSeconds falls back to the Retry-After he
   assertEquals(out.retryAfterSeconds, 9);
 });
 
-Deno.test("ask: a blank question is refused before any request; 429 surfaces the vendor message", async () => {
+test("ask: a blank question is refused before any request; 429 surfaces the vendor message", async () => {
   const none = mockCtx([]);
   await assertRejects(
     async () => await ask.execute({ question: "  " }, none.ctx),

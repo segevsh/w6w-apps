@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-organization.ts";
 
-Deno.test("get-organization: GETs by permalink with no field_ids/card_ids when unset", async () => {
+test("get-organization: GETs by permalink with no field_ids/card_ids when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { properties: { name: "Tesla" } } }]);
   await action.execute!({ entityId: "tesla-motors" }, ctx);
   assertEquals(
@@ -11,7 +12,7 @@ Deno.test("get-organization: GETs by permalink with no field_ids/card_ids when u
   );
 });
 
-Deno.test("get-organization: field_ids and card_ids are comma-joined query params", async () => {
+test("get-organization: field_ids and card_ids are comma-joined query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     {
@@ -26,7 +27,7 @@ Deno.test("get-organization: field_ids and card_ids are comma-joined query param
   assertEquals(url.searchParams.get("card_ids"), "founders,raised_funding_rounds");
 });
 
-Deno.test("get-organization: a UUID entityId is URL-encoded the same as a permalink", async () => {
+test("get-organization: a UUID entityId is URL-encoded the same as a permalink", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ entityId: "05564cba-3c31-4a5c-8f7d-000000000000" }, ctx);
   assertEquals(
@@ -35,7 +36,7 @@ Deno.test("get-organization: a UUID entityId is URL-encoded the same as a permal
   );
 });
 
-Deno.test("get-organization: entityId is required", async () => {
+test("get-organization: entityId is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`entityId`");
   assertEquals(calls.length, 0);

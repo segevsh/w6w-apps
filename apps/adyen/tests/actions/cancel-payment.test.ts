@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import cancelPayment from "../../actions/cancel-payment.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "paymentPspReference": "853", "reference": "c-1" } as Parameters
   typeof cancelPayment.execute
 >[0];
 
-Deno.test("cancel-payment: sends POST to the documented path and returns the response", async () => {
+test("cancel-payment: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -22,7 +23,7 @@ Deno.test("cancel-payment: sends POST to the documented path and returns the res
   assertEquals(out, { "pspReference": "9", "status": "received" });
 });
 
-Deno.test("cancel-payment: targets the connection's base URL and carries no credential", async () => {
+test("cancel-payment: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -37,7 +38,7 @@ Deno.test("cancel-payment: targets the connection's base URL and carries no cred
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("cancel-payment: surfaces Adyen's error code, type and message", async () => {
+test("cancel-payment: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -55,7 +56,7 @@ Deno.test("cancel-payment: surfaces Adyen's error code, type and message", async
   );
 });
 
-Deno.test("cancel-payment: sends the invocation id as Idempotency-Key", async () => {
+test("cancel-payment: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -65,11 +66,11 @@ Deno.test("cancel-payment: sends the invocation id as Idempotency-Key", async ()
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("cancel-payment: declares idempotency as false", () => {
+test("cancel-payment: declares idempotency as false", () => {
   assertEquals(cancelPayment.idempotent, false);
 });
 
-Deno.test("cancel-payment: an explicit merchantAccount beats the connection's", async () => {
+test("cancel-payment: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },

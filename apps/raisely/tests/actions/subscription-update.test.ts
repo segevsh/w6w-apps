@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionUpdate from "../../actions/subscription-update.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscription-update: PATCH /v3/subscriptions/s-1 with the documented wrapped body", async () => {
+test("subscription-update: PATCH /v3/subscriptions/s-1 with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "r-1" }) }]);
   const out = await subscriptionUpdate.execute({
     "uuid": "s-1",
@@ -27,18 +28,18 @@ Deno.test("subscription-update: PATCH /v3/subscriptions/s-1 with the documented 
   assertEquals(out, { uuid: "r-1" });
 });
 
-Deno.test("subscription-update: is a perform action marked idempotent=true", () => {
+test("subscription-update: is a perform action marked idempotent=true", () => {
   assertEquals(subscriptionUpdate.type, "perform");
   assertEquals(subscriptionUpdate.idempotent, true);
 });
 
-Deno.test("subscription-update: only the fields given are sent", async () => {
+test("subscription-update: only the fields given are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await subscriptionUpdate.execute({ "uuid": "s" }, ctx);
   assertEquals(bodyOf(calls[0]), { "data": {} });
 });
 
-Deno.test("subscription-update: malformed JSON in a custom-field param fails before any request", async () => {
+test("subscription-update: malformed JSON in a custom-field param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -58,7 +59,7 @@ Deno.test("subscription-update: malformed JSON in a custom-field param fails bef
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscription-update: an HTTP error becomes a readable Raisely error", async () => {
+test("subscription-update: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

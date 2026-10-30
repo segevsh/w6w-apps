@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockBiginCtx, mockCtx } from "../_helpers.ts";
 import {
   apiDomainFromConnection,
@@ -10,7 +11,7 @@ import {
   unwrapRecordResult,
 } from "../../lib/client.ts";
 
-Deno.test("apiDomainFromConnection: falls back to the US host when the connection has none", () => {
+test("apiDomainFromConnection: falls back to the US host when the connection has none", () => {
   assertEquals(apiDomainFromConnection(undefined), DEFAULT_API_DOMAIN);
   assertEquals(DEFAULT_API_DOMAIN, "https://www.zohoapis.com");
   assertEquals(
@@ -21,7 +22,7 @@ Deno.test("apiDomainFromConnection: falls back to the US host when the connectio
   );
 });
 
-Deno.test("apiDomainFromConnection: reads the recorded regional host and trims trailing slashes", () => {
+test("apiDomainFromConnection: reads the recorded regional host and trims trailing slashes", () => {
   const connection = {
     id: "c",
     app: "a",
@@ -32,7 +33,7 @@ Deno.test("apiDomainFromConnection: reads the recorded regional host and trims t
   assertEquals(apiDomainFromConnection(connection), "https://www.zohoapis.eu");
 });
 
-Deno.test("apiDomainFromCredential: accepts apiDomain and api_domain, defaults to US", () => {
+test("apiDomainFromCredential: accepts apiDomain and api_domain, defaults to US", () => {
   assertEquals(
     apiDomainFromCredential({ apiDomain: "https://www.zohoapis.jp" }),
     "https://www.zohoapis.jp",
@@ -44,28 +45,28 @@ Deno.test("apiDomainFromCredential: accepts apiDomain and api_domain, defaults t
   assertEquals(apiDomainFromCredential({}), DEFAULT_API_DOMAIN);
 });
 
-Deno.test("moduleName: accepts a plain identifier, rejects a path-escaping value", () => {
+test("moduleName: accepts a plain identifier, rejects a path-escaping value", () => {
   assertEquals(moduleName("Contacts"), "Contacts");
   assertEquals(moduleName("Accounts"), "Accounts");
   assertThrows(() => moduleName("../users"), Error, "not a valid Bigin module API name");
   assertThrows(() => moduleName("Contacts/search"), Error, "not a valid Bigin module API name");
 });
 
-Deno.test("fields: requires an object and rejects blanks", () => {
+test("fields: requires an object and rejects blanks", () => {
   assertEquals(fields({ Last_Name: "Smith" }), { Last_Name: "Smith" });
   assertEquals(fields('{"Last_Name":"Smith"}'), { Last_Name: "Smith" });
   assertThrows(() => fields(undefined), Error, "required");
   assertThrows(() => fields([1, 2]), Error, "must be a JSON object");
 });
 
-Deno.test("unwrapRecordResult: returns the single entry on success", () => {
+test("unwrapRecordResult: returns the single entry on success", () => {
   const entry = unwrapRecordResult({
     data: [{ code: "SUCCESS", status: "success", message: "record added" }],
   });
   assertEquals(entry.code, "SUCCESS");
 });
 
-Deno.test("unwrapRecordResult: throws on a per-item error even with an otherwise-2xx response", () => {
+test("unwrapRecordResult: throws on a per-item error even with an otherwise-2xx response", () => {
   assertThrows(
     () =>
       unwrapRecordResult({
@@ -76,17 +77,17 @@ Deno.test("unwrapRecordResult: throws on a per-item error even with an otherwise
   );
 });
 
-Deno.test("unwrapRecordResult: throws when the response carries no entry", () => {
+test("unwrapRecordResult: throws when the response carries no entry", () => {
   assertThrows(() => unwrapRecordResult({}), Error, "no result entry");
 });
 
-Deno.test("BiginClient: builds the versioned URL against the connection's regional host", async () => {
+test("BiginClient: builds the versioned URL against the connection's regional host", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }], "https://www.zohoapis.eu");
   await new BiginClient(ctx).request("/Contacts");
   assertEquals(calls[0].url, "https://www.zohoapis.eu/bigin/v2/Contacts");
 });
 
-Deno.test("BiginClient: surfaces code + message from a request-level error body", async () => {
+test("BiginClient: surfaces code + message from a request-level error body", async () => {
   const { ctx } = mockBiginCtx([
     {
       status: 401,
@@ -100,7 +101,7 @@ Deno.test("BiginClient: surfaces code + message from a request-level error body"
   );
 });
 
-Deno.test("BiginClient: keeps the raw body when the error is not JSON", async () => {
+test("BiginClient: keeps the raw body when the error is not JSON", async () => {
   const { ctx } = mockBiginCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   await assertRejects(
     () => new BiginClient(ctx).request("/Contacts"),
@@ -109,19 +110,19 @@ Deno.test("BiginClient: keeps the raw body when the error is not JSON", async ()
   );
 });
 
-Deno.test("BiginClient: never sets Authorization itself", async () => {
+test("BiginClient: never sets Authorization itself", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }]);
   await new BiginClient(ctx).request("/Contacts");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("BiginClient: omits empty query parameters instead of sending blanks", async () => {
+test("BiginClient: omits empty query parameters instead of sending blanks", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }]);
   await new BiginClient(ctx).request("/Contacts", { query: { fields: "id", cvid: "" } });
   assertEquals(new URL(calls[0].url).search, "?fields=id");
 });
 
-Deno.test("mockCtx sanity: fetch is required for the sandbox contract", () => {
+test("mockCtx sanity: fetch is required for the sandbox contract", () => {
   const { ctx } = mockCtx();
   assertEquals(typeof ctx.fetch, "function");
   assert(typeof ctx.log === "function");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketMessagesList from "../../actions/ticket-messages-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("ticket-messages-list: GET .../tickets/{n}/messages, joins types", async () => {
+test("ticket-messages-list: GET .../tickets/{n}/messages, joins types", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "msg1", type: "reply" }]) }]);
   const out = await ticketMessagesList.execute(
     { agentId: "a1", ticketNumber: 1, types: ["reply", "event"], order: "desc" },

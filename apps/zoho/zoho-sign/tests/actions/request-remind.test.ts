@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-remind.ts";
 
-Deno.test("request-remind: POST /requests/{id}/remind with no body", async () => {
+test("request-remind: POST /requests/{id}/remind with no body", async () => {
   const { ctx, calls } = mockSignCtx([
     { body: { code: 0, status: "success", message: "Reminder has been sent" } },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timelogUpdate from "../../actions/timelog-update.ts";
 import { envelope, mockWrikeCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timelog-update: PUTs to /timelogs/{timelogId}, every field optional", async () => {
+test("timelog-update: PUTs to /timelogs/{timelogId}, every field optional", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "TL1", hours: 3 }]) },
   ]);
@@ -12,6 +13,6 @@ Deno.test("timelog-update: PUTs to /timelogs/{timelogId}, every field optional",
   assertEquals(queryOf(calls[0].url), { hours: "3" });
 });
 
-Deno.test("timelog-update: is declared idempotent", () => {
+test("timelog-update: is declared idempotent", () => {
   assertEquals(timelogUpdate.idempotent, true);
 });

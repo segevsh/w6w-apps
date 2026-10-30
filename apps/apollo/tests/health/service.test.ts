@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { componentKey, mapResourceStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: reads status.apollo.io/index.json, unsigned, informational severity", () => {
+test("service: reads status.apollo.io/index.json, unsigned, informational severity", () => {
   assertEquals(STATUS_URL, "https://status.apollo.io/index.json");
   assertEquals(service.credential, "none");
   assertEquals(service.severity, "informational");
 });
 
-Deno.test("mapResourceStatus: Better Stack's documented vocabulary", () => {
+test("mapResourceStatus: Better Stack's documented vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
@@ -17,7 +18,7 @@ Deno.test("mapResourceStatus: Better Stack's documented vocabulary", () => {
   assertEquals(mapResourceStatus("something-new"), "unknown");
 });
 
-Deno.test("componentKey: slugifies a monitor's public name", () => {
+test("componentKey: slugifies a monitor's public name", () => {
   assertEquals(componentKey("app.apollo.io"), "app-apollo-io");
   assertEquals(componentKey("Background Jobs Latency"), "background-jobs-latency");
 });
@@ -42,7 +43,7 @@ function page(
   };
 }
 
-Deno.test("service: all-operational relevant monitors report ok", async () => {
+test("service: all-operational relevant monitors report ok", async () => {
   const { ctx } = mockCtx([
     {
       body: page([
@@ -58,7 +59,7 @@ Deno.test("service: all-operational relevant monitors report ok", async () => {
   assertEquals(report.components?.["payment-gateway"], undefined);
 });
 
-Deno.test("service: a down relevant monitor is reflected in the verdict and named in the message", async () => {
+test("service: a down relevant monitor is reflected in the verdict and named in the message", async () => {
   const { ctx } = mockCtx([
     { body: page([{ public_name: "Background Jobs Latency", status: "downtime" }], "major") },
   ]);
@@ -67,7 +68,7 @@ Deno.test("service: a down relevant monitor is reflected in the verdict and name
   assert(/Background Jobs Latency/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: an unclaimed/wrong page (fails to self-identify) reports unknown", async () => {
+test("service: an unclaimed/wrong page (fails to self-identify) reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -80,13 +81,13 @@ Deno.test("service: an unclaimed/wrong page (fails to self-identify) reports unk
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page with none of the relevant monitors reports unknown", async () => {
+test("service: a page with none of the relevant monitors reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: page([{ public_name: "Some Other Thing", status: "operational" }]),
   }]);

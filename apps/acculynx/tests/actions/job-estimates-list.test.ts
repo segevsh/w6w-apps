@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-estimates-list.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("job-estimates-list: sends GET /jobs/j1/estimates and returns the vendor body", async () => {
+test("job-estimates-list: sends GET /jobs/j1/estimates and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { count: 1, pageSize: 2, pageStartIndex: 0, items: [{ id: "e1", isPrimary: true }] },
   }]);
@@ -21,7 +22,7 @@ Deno.test("job-estimates-list: sends GET /jobs/j1/estimates and returns the vend
   });
 });
 
-Deno.test("job-estimates-list: a vendor error surfaces its title and status", async () => {
+test("job-estimates-list: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ jobId: "j1", pageSize: 2 } as never, ctx),

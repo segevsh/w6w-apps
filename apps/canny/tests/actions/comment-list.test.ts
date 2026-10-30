@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentList from "../../actions/comment-list.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("comment-list: posts filters to /v2/comments/list", async () => {
+test("comment-list: posts filters to /v2/comments/list", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], hasNextPage: false, cursor: null } }]);
   await commentList.execute({ postID: "p1", limit: 25 }, ctx);
 

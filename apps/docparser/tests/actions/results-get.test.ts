@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import resultsGet from "../../actions/results-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("results-get: GET /v1/results/<parser>/<doc>, result is the first element", async () => {
+test("results-get: GET /v1/results/<parser>/<doc>, result is the first element", async () => {
   const rows = [{ document_id: "d1", customer: { first_name: "John" } }];
   const { ctx, calls } = mockCtx([{ body: rows }]);
   const out = await resultsGet.execute(
@@ -14,7 +15,7 @@ Deno.test("results-get: GET /v1/results/<parser>/<doc>, result is the first elem
   assertEquals(out, { result: rows[0], items: rows, count: 1 });
 });
 
-Deno.test("results-get: no query params by default; empty array gives null result", async () => {
+test("results-get: no query params by default; empty array gives null result", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await resultsGet.execute({ parserId: "p1", documentId: "d1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

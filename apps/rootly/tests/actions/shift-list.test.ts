@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/shift-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("shift-list: full input maps to GET /v1/shifts", async () => {
+test("shift-list: full input maps to GET /v1/shifts", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -119,7 +120,7 @@ Deno.test("shift-list: full input maps to GET /v1/shifts", async () => {
   });
 });
 
-Deno.test("shift-list: required input only maps to GET /v1/shifts", async () => {
+test("shift-list: required input only maps to GET /v1/shifts", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -182,7 +183,7 @@ Deno.test("shift-list: required input only maps to GET /v1/shifts", async () => 
   });
 });
 
-Deno.test("shift-list: an API error rejects with the vendor's title and detail", async () => {
+test("shift-list: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

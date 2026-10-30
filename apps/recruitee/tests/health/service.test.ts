@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   recruiteeComponents,
@@ -12,7 +13,7 @@ function summary(components: Array<Record<string, unknown>>) {
   return { page: PAGE, components };
 }
 
-Deno.test("recruiteeComponents: keeps only children of the page's own 'Tellent Recruitee' group", () => {
+test("recruiteeComponents: keeps only children of the page's own 'Tellent Recruitee' group", () => {
   const components = [
     { id: "g1", name: "Tellent Recruitee", group: true },
     { id: "a", name: "Recruitee API", group_id: "g1" },
@@ -25,12 +26,12 @@ Deno.test("recruiteeComponents: keeps only children of the page's own 'Tellent R
   assertEquals(kept.map((c) => c.id).sort(), ["a", "b"]);
 });
 
-Deno.test("recruiteeComponents: an unrecognisable page structure yields nothing, not everything", () => {
+test("recruiteeComponents: an unrecognisable page structure yields nothing, not everything", () => {
   const components = [{ id: "x", name: "Something Else", group_id: null }];
   assertEquals(recruiteeComponents(components), []);
 });
 
-Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -39,7 +40,7 @@ Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: reports ok when every Recruitee-group component is operational", async () => {
+test("service: reports ok when every Recruitee-group component is operational", async () => {
   const { ctx, calls } = mockCtxNoConnection([
     {
       status: 200,
@@ -57,7 +58,7 @@ Deno.test("service: reports ok when every Recruitee-group component is operation
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage inside the Recruitee group is reported", async () => {
+test("service: an outage inside the Recruitee group is reported", async () => {
   const { ctx } = mockCtxNoConnection([
     {
       status: 200,
@@ -72,13 +73,13 @@ Deno.test("service: an outage inside the Recruitee group is reported", async () 
   assertEquals(report.message?.includes("Recruitee API"), true);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtxNoConnection([{ status: 500, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a missing Recruitee group is unknown, not a silent ok", async () => {
+test("service: a missing Recruitee group is unknown, not a silent ok", async () => {
   const { ctx } = mockCtxNoConnection([
     { status: 200, body: summary([{ id: "g2", name: "Tellent HR", group: true }]) },
   ]);
@@ -86,7 +87,7 @@ Deno.test("service: a missing Recruitee group is unknown, not a silent ok", asyn
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a rebrand/redirect to a different page is unknown, not trusted", async () => {
+test("service: a rebrand/redirect to a different page is unknown, not trusted", async () => {
   const { ctx } = mockCtxNoConnection([
     {
       status: 200,
@@ -100,7 +101,7 @@ Deno.test("service: a rebrand/redirect to a different page is unknown, not trust
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is unsigned and only widens egress to the status host", () => {
+test("service: is unsigned and only widens egress to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.tellent.com"]);
 });

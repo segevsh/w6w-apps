@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -9,12 +10,12 @@ import {
   withCustomFields,
 } from "../../lib/client.ts";
 
-Deno.test("client: targets the current api.close.com host, not the legacy close.io one", () => {
+test("client: targets the current api.close.com host, not the legacy close.io one", () => {
   assertEquals(API_URL, "https://api.close.com/api/v1");
   assert(!API_URL.includes("close.io"));
 });
 
-Deno.test("client: GETs with an accept header and no body", async () => {
+test("client: GETs with an accept header and no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await new CloseClient(ctx).request("/lead/");
   assertEquals(calls[0].url, "https://api.close.com/api/v1/lead/");
@@ -23,19 +24,19 @@ Deno.test("client: GETs with an accept header and no body", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("client: never sets an Authorization header — that is the sign hook's job", async () => {
+test("client: never sets an Authorization header — that is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new CloseClient(ctx).request("/lead/", { method: "POST", body: { name: "x" } });
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: preserves the trailing slash Close's router requires", async () => {
+test("client: preserves the trailing slash Close's router requires", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new CloseClient(ctx).request("/lead/lead_1/");
   assert(calls[0].url.endsWith("/lead/lead_1/"), calls[0].url);
 });
 
-Deno.test("client: serialises a JSON body and sets content-type", async () => {
+test("client: serialises a JSON body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "lead_1" } }]);
   await new CloseClient(ctx).request("/lead/", { method: "POST", body: { name: "Bluth" } });
   assertEquals(calls[0].method, "POST");
@@ -43,7 +44,7 @@ Deno.test("client: serialises a JSON body and sets content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Bluth" });
 });
 
-Deno.test("client: appends query params, skipping undefined, null and empty string", async () => {
+test("client: appends query params, skipping undefined, null and empty string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new CloseClient(ctx).request("/lead/", {
     query: { _limit: 10, _skip: 0, _fields: undefined, lead_id: null, q: "" },
@@ -57,7 +58,7 @@ Deno.test("client: appends query params, skipping undefined, null and empty stri
   assertEquals(url.searchParams.has("q"), false);
 });
 
-Deno.test("client: throws with status, method, path and body on a non-2xx", async () => {
+test("client: throws with status, method, path and body on a non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "bad status_id" } }]);
   const err = await assertRejects(
     () => new CloseClient(ctx).request("/lead/", { method: "POST", body: {} }),
@@ -69,14 +70,14 @@ Deno.test("client: throws with status, method, path and body on a non-2xx", asyn
   assert(err.message.includes("bad status_id"));
 });
 
-Deno.test("client: returns undefined for a 204 and for an empty body", async () => {
+test("client: returns undefined for a 204 and for an empty body", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new CloseClient(ctx);
   assertEquals(await client.request("/lead/lead_1/", { method: "DELETE" }), undefined);
   assertEquals(await client.request("/lead/"), undefined);
 });
 
-Deno.test("pageQuery: maps the shared page inputs onto Close's underscore names", () => {
+test("pageQuery: maps the shared page inputs onto Close's underscore names", () => {
   assertEquals(pageQuery({ skip: 100, limit: 50, fields: "id,name" }), {
     _skip: 100,
     _limit: 50,
@@ -85,13 +86,13 @@ Deno.test("pageQuery: maps the shared page inputs onto Close's underscore names"
   assertEquals(pageQuery({}), { _skip: undefined, _limit: undefined, _fields: undefined });
 });
 
-Deno.test("PAGE_PARAMS: exposes limit, skip and fields, and warns about deep pagination", () => {
+test("PAGE_PARAMS: exposes limit, skip and fields, and warns about deep pagination", () => {
   assertEquals(PAGE_PARAMS.map((p) => p.key), ["limit", "skip", "fields"]);
   const skip = PAGE_PARAMS.find((p) => p.key === "skip")!;
   assert(/date_created/.test(skip.hint!), "the deep-pagination workaround should be stated");
 });
 
-Deno.test("compact: drops undefined but keeps null, false and 0", () => {
+test("compact: drops undefined but keeps null, false and 0", () => {
   // The distinction is load-bearing: Close's PUT is a patch, so an omitted field
   // must vanish while an explicit null must survive to clear the value.
   assertEquals(compact({ a: undefined, b: null, c: false, d: 0, e: "" }), {
@@ -102,21 +103,21 @@ Deno.test("compact: drops undefined but keeps null, false and 0", () => {
   });
 });
 
-Deno.test("withCustomFields: flattens onto top-level `custom.<id>` keys", () => {
+test("withCustomFields: flattens onto top-level `custom.<id>` keys", () => {
   assertEquals(
     withCustomFields({ name: "Bluth" }, { cf_abc: "Segway" }),
     { name: "Bluth", "custom.cf_abc": "Segway" },
   );
 });
 
-Deno.test("withCustomFields: accepts an already-prefixed key without double-prefixing", () => {
+test("withCustomFields: accepts an already-prefixed key without double-prefixing", () => {
   assertEquals(
     withCustomFields({}, { "custom.cf_abc": "x" }),
     { "custom.cf_abc": "x" },
   );
 });
 
-Deno.test("withCustomFields: is a no-op for undefined or null, and does not mutate its input", () => {
+test("withCustomFields: is a no-op for undefined or null, and does not mutate its input", () => {
   const body = { name: "Bluth" };
   assertEquals(withCustomFields(body, undefined), { name: "Bluth" });
   assertEquals(withCustomFields(body, null), { name: "Bluth" });
@@ -125,7 +126,7 @@ Deno.test("withCustomFields: is a no-op for undefined or null, and does not muta
   assertEquals(out["custom.cf_a"], 1);
 });
 
-Deno.test("withCustomFields: never nests a deprecated `custom` object", () => {
+test("withCustomFields: never nests a deprecated `custom` object", () => {
   const out = withCustomFields({}, { cf_a: 1 });
   // Close is removing the nested `custom` dict form; only flat keys are correct.
   assertEquals((out as Record<string, unknown>).custom, undefined);

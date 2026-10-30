@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/deal-update.ts";
 
-Deno.test("deal-update: PUTs the id alongside the changed fields", async () => {
+test("deal-update: PUTs the id alongside the changed fields", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: {} }] } },
   ]);

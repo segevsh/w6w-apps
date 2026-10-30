@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-list.ts";
 
-Deno.test("task-list: filters by lead and returns both open and finished tasks", async () => {
+test("task-list: filters by lead and returns both open and finished tasks", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -22,6 +23,6 @@ Deno.test("task-list: filters by lead and returns both open and finished tasks",
   assertEquals(result.taskList.filter((t) => !t.finishFlag).length, 1);
 });
 
-Deno.test("task-list: leadId is required", () => {
+test("task-list: leadId is required", () => {
   assertEquals(action.params!.find((p) => p.key === "leadId")!.required, true);
 });

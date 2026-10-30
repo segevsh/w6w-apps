@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/timesheet-update-status.ts";
 
-Deno.test("timesheet-update-status: PUTs the status to /v2/timesheets/{id}", async () => {
+test("timesheet-update-status: PUTs the status to /v2/timesheets/{id}", async () => {
   const body = envelope("timesheet", { id: 1, status: "approved" });
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({ timesheet_id: 1, status: "approved" }, ctx) as typeof body;
@@ -13,7 +14,7 @@ Deno.test("timesheet-update-status: PUTs the status to /v2/timesheets/{id}", asy
   assertEquals(result.timesheet.status, "approved");
 });
 
-Deno.test("timesheet-update-status: a denial reason accompanies a denial", async () => {
+test("timesheet-update-status: a denial reason accompanies a denial", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope("timesheet", { id: 1, status: "denied" }),
@@ -23,7 +24,7 @@ Deno.test("timesheet-update-status: a denial reason accompanies a denial", async
 });
 
 /** Approving a period resolves what is pending inside it, hence the two flags. */
-Deno.test("timesheet-update-status: both confirmations are sent when set", async () => {
+test("timesheet-update-status: both confirmations are sent when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("timesheet", { id: 1 }) }]);
   await action.execute!({
     timesheet_id: 1,

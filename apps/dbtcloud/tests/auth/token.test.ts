@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
-Deno.test("token: sign sets a Bearer header", () => {
+test("token: sign sets a Bearer header", () => {
   const request = { url: "https://cloud.getdbt.com/api/v2/accounts/", method: "GET", headers: {} };
   const signed = auth.sign!({ request, credential: { token: "svc_1" } }, mockCtx().ctx) as {
     headers: Record<string, string>;
@@ -10,7 +11,7 @@ Deno.test("token: sign sets a Bearer header", () => {
   assertEquals(signed.headers["authorization"], "Bearer svc_1");
 });
 
-Deno.test("token: test probes the account list at the given access url", async () => {
+test("token: test probes the account list at the given access url", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: 42, name: "Acme" }] } }]);
   const result = await auth.test!(
     { credential: { token: "svc_1", accessUrl: "ab123.us1.dbt.com" } },
@@ -21,7 +22,7 @@ Deno.test("token: test probes the account list at the given access url", async (
   assert(result.message!.includes("Acme"), result.message);
 });
 
-Deno.test("token: a blank access url falls back to the legacy US host", async () => {
+test("token: a blank access url falls back to the legacy US host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: 1, name: "A" }] } }]);
   await auth.test!({ credential: { token: "svc_1" } }, ctx);
   assertEquals(calls[0].url, "https://cloud.getdbt.com/api/v2/accounts/");
@@ -31,7 +32,7 @@ Deno.test("token: a blank access url falls back to the legacy US host", async ()
  * A valid token presented to the wrong cell answers 401 exactly like a bad one,
  * and the two have different fixes — so the message names both.
  */
-Deno.test("token: a 401 reports the wrong-region possibility as well as a bad token", async () => {
+test("token: a 401 reports the wrong-region possibility as well as a bad token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: { user_message: "Invalid token." } } }]);
   const result = await auth.test!({ credential: { token: "svc_1" } }, ctx);
   assertEquals(result.ok, false);
@@ -39,14 +40,14 @@ Deno.test("token: a 401 reports the wrong-region possibility as well as a bad to
 });
 
 /** Authenticating and seeing nothing is a permission-set problem, not success. */
-Deno.test("token: a token that reaches no account does not connect", async () => {
+test("token: a token that reaches no account does not connect", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] } }]);
   const result = await auth.test!({ credential: { token: "svc_1" } }, ctx);
   assertEquals(result.ok, false);
   assert(/permission sets/.test(result.message!), result.message);
 });
 
-Deno.test("token: several reachable accounts connect, and say to choose one", async () => {
+test("token: several reachable accounts connect, and say to choose one", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [{ id: 1, name: "A" }, { id: 2, name: "B" }] },
@@ -56,21 +57,21 @@ Deno.test("token: several reachable accounts connect, and say to choose one", as
   assert(/set an Account ID/.test(result.message!), result.message);
 });
 
-Deno.test("token: any other failure reports the status and the host", async () => {
+test("token: any other failure reports the status and the host", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await auth.test!({ credential: { token: "svc_1" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("503"), result.message);
 });
 
-Deno.test("token: a missing credential is refused before a request is made", async () => {
+test("token: a missing credential is refused before a request is made", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test!({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
 /** The account id is discovered once, so no action has to ask for it. */
-Deno.test("token: afterConnect records the access url, account id and name", async () => {
+test("token: afterConnect records the access url, account id and name", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [{ id: 42, name: "Acme" }] } }]);
   const display = await auth.afterConnect!(
     { credential: { token: "svc_secret", accessUrl: "ab123.us1.dbt.com" } },
@@ -84,7 +85,7 @@ Deno.test("token: afterConnect records the access url, account id and name", asy
   assert(!JSON.stringify(display).includes("svc_secret"));
 });
 
-Deno.test("token: afterConnect honours an explicitly chosen account", async () => {
+test("token: afterConnect honours an explicitly chosen account", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [{ id: 1, name: "A" }, { id: 2, name: "B" }] },
@@ -98,7 +99,7 @@ Deno.test("token: afterConnect honours an explicitly chosen account", async () =
 });
 
 /** Discovery failing must not block the connection — the test hook reports that. */
-Deno.test("token: afterConnect still records the access url when discovery fails", async () => {
+test("token: afterConnect still records the access url when discovery fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!({ credential: { token: "svc_1" } }, ctx) as {
     accessUrl: string;
@@ -106,7 +107,7 @@ Deno.test("token: afterConnect still records the access url when discovery fails
   assertEquals(display.accessUrl, "https://cloud.getdbt.com");
 });
 
-Deno.test("token: declares one secret field and two plain ones", () => {
+test("token: declares one secret field and two plain ones", () => {
   assertEquals(auth.fields!.map((f) => f.key), ["token", "accessUrl", "accountId"]);
   assertEquals(auth.fields![0].type, "secret");
   assert(/service token/i.test(auth.fields![0].hint!), auth.fields![0].hint);

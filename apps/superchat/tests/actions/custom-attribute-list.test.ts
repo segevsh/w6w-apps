@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/custom-attribute-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("custom-attribute-list: GETs one page", async () => {
+test("custom-attribute-list: GETs one page", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "results": [{ "id": "ca_1" }], "pagination": { "next_cursor": "ca_1" } },
   }]);
@@ -33,7 +34,7 @@ Deno.test("custom-attribute-list: GETs one page", async () => {
   });
 });
 
-Deno.test("custom-attribute-list: rejects after + before together", async () => {
+test("custom-attribute-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "after": "a", "before": "b" } as never, ctx),

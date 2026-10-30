@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import responseStore from "../../actions/response-store.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("response-store: POSTs answers flat beside form_uuid and the user", async () => {
+test("response-store: POSTs answers flat beside form_uuid and the user", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok", uuid: "r1" } }]);
   const out = await responseStore.execute(
     {
@@ -31,13 +32,13 @@ Deno.test("response-store: POSTs answers flat beside form_uuid and the user", as
   assertEquals(out, { message: "ok", uuid: "r1" });
 });
 
-Deno.test("response-store: prevent_duplicates is omitted unless turned off", async () => {
+test("response-store: prevent_duplicates is omitted unless turned off", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await responseStore.execute({ formUuid: "f1", email: "a@b.co", preventDuplicates: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.co", form_uuid: "f1" });
 });
 
-Deno.test("response-store: reserved keys in answers are refused", async () => {
+test("response-store: reserved keys in answers are refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -50,7 +51,7 @@ Deno.test("response-store: reserved keys in answers are refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("response-store: needs a user identifier and at most 20 tags", async () => {
+test("response-store: needs a user identifier and at most 20 tags", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(responseStore.execute({ formUuid: "f1" }, ctx)),
@@ -66,9 +67,9 @@ Deno.test("response-store: needs a user identifier and at most 20 tags", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("response-store: is not idempotent", () => assertEquals(responseStore.idempotent, false));
+test("response-store: is not idempotent", () => assertEquals(responseStore.idempotent, false));
 
-Deno.test("response-store: a vendor error surfaces its own message", async () => {
+test("response-store: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(responseStore.execute({ formUuid: "f1", id: "u1" }, ctx)),

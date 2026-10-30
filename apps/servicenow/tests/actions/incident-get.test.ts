@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/incident-get.ts";
 
-Deno.test("incident-get: GETs /table/incident/{sysId}", async () => {
+test("incident-get: GETs /table/incident/{sysId}", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: { sys_id: "abc" } } }]);
   const out = await action.execute({ sysId: "abc" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("incident-get: GETs /table/incident/{sysId}", async () => {
   assertEquals(out, { result: { sys_id: "abc" } });
 });
 
-Deno.test("incident-get: encodes the sys_id and forwards field/display options", async () => {
+test("incident-get: encodes the sys_id and forwards field/display options", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute({ sysId: "a/b", fields: "number,state", displayValue: "true" }, ctx);
   assertEquals(

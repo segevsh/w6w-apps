@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sequence-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sequence-list: GET /sequences?name=Sales&expand=stages", async () => {
+test("sequence-list: GET /sequences?name=Sales&expand=stages", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ _id: "s1" }] } }]);
   const out = await action.execute!({ name: "Sales", expandStages: true } as never, ctx);
   assertEquals(calls[0].method, "GET");

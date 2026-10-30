@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import avatarLookList from "../../actions/avatar-look-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("avatar-look-list: lists looks and forwards filters, including the group filter", async () => {
+test("avatar-look-list: lists looks and forwards filters, including the group filter", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "lk_1", name: "Business Suit", avatar_type: "photo_avatar" }]) },
   ]);

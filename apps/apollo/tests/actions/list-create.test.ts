@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCreate from "../../actions/list-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-create: POSTs to /labels and unwraps the `label` envelope", async () => {
+test("list-create: POSTs to /labels and unwraps the `label` envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { label: { id: "l1", name: "VIP", modality: "contacts" } },
   }]);

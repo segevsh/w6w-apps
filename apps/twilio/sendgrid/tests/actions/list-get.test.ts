@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-get.ts";
 
-Deno.test("list-get: GET /marketing/lists/{id} with contact_sample=false by default", async () => {
+test("list-get: GET /marketing/lists/{id} with contact_sample=false by default", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "list-1", name: "VIPs", contact_count: 42 } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("list-get: GET /marketing/lists/{id} with contact_sample=false by defa
   assertEquals(result, { id: "list-1", name: "VIPs", contact_count: 42 });
 });
 
-Deno.test("list-get: contactSample=true flips the flag", async () => {
+test("list-get: contactSample=true flips the flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ listId: "list-1", contactSample: true }, ctx);
 
@@ -27,7 +28,7 @@ Deno.test("list-get: contactSample=true flips the flag", async () => {
   );
 });
 
-Deno.test("list-get: missing listId rejects", async () => {
+test("list-get: missing listId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ listId: "" }, ctx),

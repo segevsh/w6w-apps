@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-delete.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("note-delete: DELETEs the resource and returns its id", async () => {
+test("note-delete: DELETEs the resource and returns its id", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "x_1" } }]);
   const result = await action.execute!({ "conversationId": "cv_1", "noteId": "n_1" } as never, ctx);
   const expected: Array<

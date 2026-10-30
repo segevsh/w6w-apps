@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import textMessageSend from "../../actions/text-message-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("text-message-send: POSTs an SMS body with the vendor's field names", async () => {
+test("text-message-send: POSTs an SMS body with the vendor's field names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "FyzZ6", company_id: "COM1" } }]);
   const out = await textMessageSend.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("text-message-send: POSTs an SMS body with the vendor's field names", 
   assertEquals(out, { id: "FyzZ6", company_id: "COM1" });
 });
 
-Deno.test("text-message-send: mediaUrl maps to media_url for MMS, media_file is not a param", async () => {
+test("text-message-send: mediaUrl maps to media_url for MMS, media_file is not a param", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await textMessageSend.execute(
     {
@@ -42,6 +43,6 @@ Deno.test("text-message-send: mediaUrl maps to media_url for MMS, media_file is 
   assertEquals(keys.includes("mediaFile"), false);
 });
 
-Deno.test("text-message-send: not idempotent — a retry must not send the text twice", () => {
+test("text-message-send: not idempotent — a retry must not send the text twice", () => {
   assertEquals(textMessageSend.idempotent, false);
 });

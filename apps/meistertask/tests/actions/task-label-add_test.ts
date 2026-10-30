@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskLabelAdd from "../../actions/task-label-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-label-add: POST /tasks/:task_id/task_labels", async () => {
+test("task-label-add: POST /tasks/:task_id/task_labels", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 364, label_id: 25, task_id: 123 } }]);
   const out = await taskLabelAdd.execute({ taskId: 123, labelId: 25 }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/tasks/123/task_labels");

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/otp-send.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("otp-send: POST /otp with template, mobile and options in the query", async () => {
+test("otp-send: POST /otp with template, mobile and options in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "success", request_id: "34676b6d" } }]);
   const out = await action.execute({
     templateId: "otpt",
@@ -31,14 +32,14 @@ Deno.test("otp-send: POST /otp with template, mobile and options in the query", 
   assertEquals(out, { requestId: "34676b6d" });
 });
 
-Deno.test("otp-send: omits unset options and sends an empty JSON body", async () => {
+test("otp-send: omits unset options and sends an empty JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "success", request_id: "r" } }]);
   await action.execute({ templateId: "t", mobile: "919876543210" }, ctx);
   assertEquals(queryOf(calls[0].url), { template_id: "t", mobile: "919876543210" });
   assertEquals(jsonBody(calls[0]), {});
 });
 
-Deno.test("otp-send: a bad template is a failure even though HTTP is 200", async () => {
+test("otp-send: a bad template is a failure even though HTTP is 200", async () => {
   const { ctx } = mockCtx([{
     body: { type: "error", message: "The provided flow ID or template ID is invalid." },
   }]);
@@ -48,7 +49,7 @@ Deno.test("otp-send: a bad template is a failure even though HTTP is 200", async
   assert(err.message.includes("template ID is invalid"));
 });
 
-Deno.test("otp-send: puts no credential on the request (sign owns that)", async () => {
+test("otp-send: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "success", request_id: "34676b" } }]);
   await action.execute({ templateId: "otpt", mobile: "919876543210" }, ctx);
   assertEquals(calls[0].headers.authkey, undefined);
@@ -56,7 +57,7 @@ Deno.test("otp-send: puts no credential on the request (sign owns that)", async 
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("otp-send: a vendor error surfaces its own message", async () => {
+test("otp-send: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ templateId: "otpt", mobile: "919876543210" }, ctx)

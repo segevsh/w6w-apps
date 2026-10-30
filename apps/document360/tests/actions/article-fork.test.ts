@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleFork from "../../actions/article-fork.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-fork: POSTs the version to fork", async () => {
+test("article-fork: POSTs the version to fork", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ id: "a1", version_number: 3 }),
@@ -19,7 +20,7 @@ Deno.test("article-fork: POSTs the version to fork", async () => {
   assertEquals(out.version_number, 3);
 });
 
-Deno.test("article-fork: a vendor error surfaces its code and message", async () => {
+test("article-fork: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

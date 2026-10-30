@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs /contacts with the mapped body", async () => {
+test("contact-create: POSTs /contacts with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await contactCreate.execute({
     "firstName": "Erlich",
@@ -32,7 +33,7 @@ Deno.test("contact-create: POSTs /contacts with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("contact-create: the free-form fields object is merged and typed params win", async () => {
+test("contact-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await contactCreate.execute(
     {
@@ -46,13 +47,13 @@ Deno.test("contact-create: the free-form fields object is merged and typed param
   assertEquals(sent["firstName"], "Erlich");
 });
 
-Deno.test("contact-create: fields may be a JSON string", async () => {
+test("contact-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await contactCreate.execute({ "firstName": "Erlich", "fields": '{"extraKey":1}' } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("contact-create: invalid fields JSON is refused before any request", async () => {
+test("contact-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await contactCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -62,12 +63,12 @@ Deno.test("contact-create: invalid fields JSON is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: required params are declared", () => {
+test("contact-create: required params are declared", () => {
   const required = (contactCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["firstName", "clientId"]);
 });
 
-Deno.test("contact-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("contact-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -90,7 +91,7 @@ Deno.test("contact-create: a rejected key surfaces Upsales' plain-text Unauthori
   );
 });
 
-Deno.test("contact-create: a JSON error envelope surfaces the vendor key", async () => {
+test("contact-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

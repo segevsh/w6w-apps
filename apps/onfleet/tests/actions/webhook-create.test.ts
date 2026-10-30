@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-create.ts";
 
-Deno.test("webhook-create: sends the URL and numeric trigger", async () => {
+test("webhook-create: sends the URL and numeric trigger", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "wh_1", trigger: 0 } }]);
   await action.execute!({ url: "https://example.com/hook", trigger: "0" }, ctx);
   assertEquals(calls[0].url, "https://onfleet.com/api/v2/webhooks");
@@ -12,7 +13,7 @@ Deno.test("webhook-create: sends the URL and numeric trigger", async () => {
   });
 });
 
-Deno.test("webhook-create: url and trigger are required", async () => {
+test("webhook-create: url and trigger are required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ trigger: "0" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("webhook-create: url and trigger are required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("webhook-create: offers every documented trigger as a select option", () => {
+test("webhook-create: offers every documented trigger as a select option", () => {
   const trigger = (action.params as Array<{ key: string; options?: unknown[] }>).find((p) =>
     p.key === "trigger"
   )!;

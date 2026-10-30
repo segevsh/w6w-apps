@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import getSegment from "../../actions/get-segment.ts";
 
-Deno.test("get-segment: GET /v1/segments/{id}", async () => {
+test("get-segment: GET /v1/segments/{id}", async () => {
   const body = {
     id: "61b2",
     name: "VIP",

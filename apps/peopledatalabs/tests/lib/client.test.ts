@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { buildQuery, errorText, errorTypes, jsonValue, PdlClient } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: skips unset, empty and false values, keeps true and 0", () => {
+test("buildQuery: skips unset, empty and false values, keeps true and 0", () => {
   assertEquals(
     buildQuery({ a: "x", b: undefined, c: "", d: false, e: true, f: 0 }),
     "?a=x&e=true&f=0",
@@ -10,7 +11,7 @@ Deno.test("buildQuery: skips unset, empty and false values, keeps true and 0", (
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("errorText/errorTypes: handle the live array `type` and the documented string `type`", () => {
+test("errorText/errorTypes: handle the live array `type` and the documented string `type`", () => {
   const arr = { status: 401, error: { type: ["authentication_error"], message: "bad key" } };
   const str = { status: 402, error: { type: "payment_required", message: "no credits" } };
   assertEquals(errorText(arr), "authentication_error: bad key");
@@ -21,14 +22,14 @@ Deno.test("errorText/errorTypes: handle the live array `type` and the documented
   assertEquals(errorText(null, "  raw text "), "raw text");
 });
 
-Deno.test("jsonValue: parses text, passes objects, throws on bad JSON", () => {
+test("jsonValue: parses text, passes objects, throws on bad JSON", () => {
   assertEquals(jsonValue('{"a":1}', "q"), { a: 1 });
   assertEquals(jsonValue({ a: 1 }, "q"), { a: 1 });
   assertEquals(jsonValue("  ", "q"), undefined);
   assertThrows(() => jsonValue("{nope", "q"), Error, "q must be valid JSON");
 });
 
-Deno.test("client: sends JSON accept, never credentials; non-JSON errors report the raw text", async () => {
+test("client: sends JSON accept, never credentials; non-JSON errors report the raw text", async () => {
   const { ctx, calls } = mockCtx([{ status: 502, body: "Bad gateway" }]);
   await assertRejects(
     () => new PdlClient(ctx).request("POST", "/v5/x", { body: { a: 1 } }),

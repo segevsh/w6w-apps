@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/activity-list.ts";
 
-Deno.test("activity-list: GETs /activities with date-range filters", async () => {
+test("activity-list: GETs /activities with date-range filters", async () => {
   const { ctx, calls } = mockMocoCtx([{
     body: [{ id: 1, date: "2024-03-21", hours: 2.5 }],
     headers: {

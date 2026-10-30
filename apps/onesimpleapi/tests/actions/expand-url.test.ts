@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/expand-url.ts";
 
-Deno.test("expand-url: GETs /unshorten with the url query param", async () => {
+test("expand-url: GETs /unshorten with the url query param", async () => {
   const body = { url: "https://twitter.com/full/path", hops: 2, trace: ["a", "b"] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ url: "https://t.co/abc123" }, ctx);

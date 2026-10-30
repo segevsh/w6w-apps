@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import search from "../../actions/search-brands.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("search-brands: encodes the name and shapes the hits", async () => {
+test("search-brands: encodes the name and shapes the hits", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       {
@@ -27,7 +28,7 @@ Deno.test("search-brands: encodes the name and shapes the hits", async () => {
   assertEquals(brands[1].name, null);
 });
 
-Deno.test("search-brands: a non-array body is zero matches, a 503 throws", async () => {
+test("search-brands: a non-array body is zero matches, a 503 throws", async () => {
   const empty = mockCtx([{ body: {} }]);
   assertEquals(await run(search, { name: "x" }, empty.ctx), { count: 0, brands: [] });
   const down = mockCtx([{ status: 503, body: { message: "try later" } }]);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionList from "../../actions/collection-list.ts";
 import collectionItems from "../../actions/collection-items.ts";
 import collectionCreate from "../../actions/collection-create.ts";
 import { mockMetabaseCtx, SITE_URL } from "../_helpers.ts";
 
-Deno.test("collection-list: sends Metabase's kebab-case query params", async () => {
+test("collection-list: sends Metabase's kebab-case query params", async () => {
   // The endpoint spells these `personal-only` and
   // `exclude-other-user-collections`, not snake_case like most of the API.
   const { ctx, calls } = mockMetabaseCtx([{ body: [] }]);
@@ -24,7 +25,7 @@ Deno.test("collection-list: sends Metabase's kebab-case query params", async () 
  * `root` is a real, working collection id and it is a string. Typing this param
  * as a number would make the top level of every instance unreachable.
  */
-Deno.test("collection-items: `root` is a valid id and reaches the top level", async () => {
+test("collection-items: `root` is a valid id and reaches the top level", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [], total: 0 } }]);
   await collectionItems.execute({ collectionId: "root" }, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/api/collection/root/items`);
@@ -32,7 +33,7 @@ Deno.test("collection-items: `root` is a valid id and reaches the top level", as
   assertEquals(collectionItems.params!.find((p) => p.key === "collectionId")!.default, "root");
 });
 
-Deno.test("collection-items: a numeric id works too", async () => {
+test("collection-items: a numeric id works too", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [] } }]);
   await collectionItems.execute({ collectionId: "5" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/collection/5/items");
@@ -41,7 +42,7 @@ Deno.test("collection-items: a numeric id works too", async () => {
 /**
  * `models` REPEATS. Comma-joining is a hard 400, verified on the wire.
  */
-Deno.test("collection-items: models is repeated, never comma-joined", async () => {
+test("collection-items: models is repeated, never comma-joined", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [] } }]);
   await collectionItems.execute({
     collectionId: "root",
@@ -56,13 +57,13 @@ Deno.test("collection-items: models is repeated, never comma-joined", async () =
   assertEquals(url.searchParams.get("offset"), "20");
 });
 
-Deno.test("collection-items: a single selection arriving as a string still repeats correctly", async () => {
+test("collection-items: a single selection arriving as a string still repeats correctly", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [] } }]);
   await collectionItems.execute({ collectionId: "root", models: "dashboard" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("models"), ["dashboard"]);
 });
 
-Deno.test("collection-items: its model enum is the collection one, not search's", () => {
+test("collection-items: its model enum is the collection one, not search's", () => {
   const opts = collectionItems.params!.find((p) => p.key === "models")!.options as Array<
     { value: string }
   >;
@@ -77,7 +78,7 @@ Deno.test("collection-items: its model enum is the collection one, not search's"
   }
 });
 
-Deno.test("collection-create: only name is required and parentId is omitted for the root", async () => {
+test("collection-create: only name is required and parentId is omitted for the root", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { id: 5 } }]);
   await collectionCreate.execute({ name: "Reports" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -85,7 +86,7 @@ Deno.test("collection-create: only name is required and parentId is omitted for 
   assertEquals(JSON.parse(calls[0].body!), { name: "Reports" });
 });
 
-Deno.test("collection-create: nests under a parent when one is given", async () => {
+test("collection-create: nests under a parent when one is given", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: {} }]);
   await collectionCreate.execute({ name: "Q3", parentId: 5, description: "quarterly" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -95,6 +96,6 @@ Deno.test("collection-create: nests under a parent when one is given", async () 
   });
 });
 
-Deno.test("collection-create: is declared non-idempotent", () => {
+test("collection-create: is declared non-idempotent", () => {
   assertEquals(collectionCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { description, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: GETs /task/ and maps filters to Close's names", async () => {
+test("list-tasks: GETs /task/ and maps filters to Close's names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({
     leadId: "lead_1",
@@ -22,7 +23,7 @@ Deno.test("list-tasks: GETs /task/ and maps filters to Close's names", async () 
   assertEquals(q.get("_order_by"), "date");
 });
 
-Deno.test("list-tasks: filters on `date`, NOT the deprecated `due_date`", async () => {
+test("list-tasks: filters on `date`, NOT the deprecated `due_date`", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({ dateGte: "2026-01-01", dateLte: "2026-02-01" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -33,14 +34,14 @@ Deno.test("list-tasks: filters on `date`, NOT the deprecated `due_date`", async 
   assertEquals(q.has("due_date__lte"), false);
 });
 
-Deno.test("list-tasks: sends is_complete=false rather than dropping the false", async () => {
+test("list-tasks: sends is_complete=false rather than dropping the false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({ isComplete: false }, ctx);
   // A dropped `false` would silently return the archive too.
   assertEquals(new URL(calls[0].url).searchParams.get("is_complete"), "false");
 });
 
-Deno.test("list-tasks: offers `all`, because Close otherwise returns only lead tasks", () => {
+test("list-tasks: offers `all`, because Close otherwise returns only lead tasks", () => {
   const values = optionValues(action, "type");
   assertEquals(values[0], "all");
   assert(values.includes("missed_call") && values.includes("voicemail"));

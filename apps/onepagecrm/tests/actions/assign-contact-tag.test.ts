@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assignContactTag from "../../actions/assign-contact-tag.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("assign-contact-tag: PUT .../assign_tag/{tag} with the tag URL-encoded", async () => {
+test("assign-contact-tag: PUT .../assign_tag/{tag} with the tag URL-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   const out = await assignContactTag.execute({ contactId: "c1", tagName: "VIP / gold" }, ctx);
   assertEquals(calls[0].method, "PUT");

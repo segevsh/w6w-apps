@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/appointment-get.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("appointment-get: sends GET /calendars/cal1/appointments/a1 and returns the vendor body", async () => {
+test("appointment-get: sends GET /calendars/cal1/appointments/a1 and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "a1", jobName: "Smith roof" } }]);
   const out = await action.execute({ calendarId: "cal1", appointmentId: "a1" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("appointment-get: sends GET /calendars/cal1/appointments/a1 and return
   assertEquals(out, { id: "a1", jobName: "Smith roof" });
 });
 
-Deno.test("appointment-get: a vendor error surfaces its title and status", async () => {
+test("appointment-get: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ calendarId: "cal1", appointmentId: "a1" } as never, ctx),

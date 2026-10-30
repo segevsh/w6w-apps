@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recurringTaskCreate from "../../actions/recurring-task-create.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recurring-task-create: POSTs /v1/recurring-tasks with content-type set", async () => {
+test("recurring-task-create: POSTs /v1/recurring-tasks with content-type set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1" } }]);
   await recurringTaskCreate.execute({
     name: "Weekly review",
@@ -27,7 +28,7 @@ Deno.test("recurring-task-create: POSTs /v1/recurring-tasks with content-type se
 });
 
 /** An assignee is optional on a one-off task and required on a recurring one. */
-Deno.test("recurring-task-create: assigneeId is required, unlike on a one-off task", () => {
+test("recurring-task-create: assigneeId is required, unlike on a one-off task", () => {
   assertEquals(
     recurringTaskCreate.params?.find((p) => p.key === "assigneeId")?.required,
     true,
@@ -39,7 +40,7 @@ Deno.test("recurring-task-create: assigneeId is required, unlike on a one-off ta
  * The two enums that differ from a one-off task's. Offering the task lists here
  * would put values in the dropdown that this endpoint rejects.
  */
-Deno.test("recurring-task-create: priority and deadlineType take the narrower value sets", () => {
+test("recurring-task-create: priority and deadlineType take the narrower value sets", () => {
   const values = (key: string) =>
     ((recurringTaskCreate.params?.find((p) => p.key === key)?.options ?? []) as Array<
       { value: string }
@@ -53,6 +54,6 @@ Deno.test("recurring-task-create: priority and deadlineType take the narrower va
   assertEquals(taskPriority, ["ASAP", "HIGH", "MEDIUM", "LOW"]);
 });
 
-Deno.test("recurring-task-create: is not idempotent", () => {
+test("recurring-task-create: is not idempotent", () => {
   assertEquals(recurringTaskCreate.idempotent, false);
 });

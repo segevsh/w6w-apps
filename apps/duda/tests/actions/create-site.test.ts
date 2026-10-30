@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockConnectedCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/create-site.ts";
 
-Deno.test("create-site: POSTs the documented body to /create", async () => {
+test("create-site: POSTs the documented body to /create", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { site_name: "new123" } }]);
   const result = await action.execute!({
     templateAlias: "agency-template",
@@ -26,13 +27,13 @@ Deno.test("create-site: POSTs the documented body to /create", async () => {
   assertEquals(result.site_name, "new123");
 });
 
-Deno.test("create-site: leaves unset optionals out rather than sending empties", async () => {
+test("create-site: leaves unset optionals out rather than sending empties", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { site_name: "new123" } }]);
   await action.execute!({ templateAlias: "agency-template" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { template_alias: "agency-template" });
 });
 
-Deno.test("create-site: import_platform_type is a query parameter, not a body field", async () => {
+test("create-site: import_platform_type is a query parameter, not a body field", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { site_name: "new123" } }]);
   await action.execute!({ templateAlias: "t", importPlatformType: "wix" }, ctx);
   assertEquals(queryOf(calls[0].url).import_platform_type, "wix");
@@ -43,12 +44,12 @@ Deno.test("create-site: import_platform_type is a query parameter, not a body fi
  * The schema marks everything optional and the action is still `idempotent:
  * false`: a retry starts a second site build, which the account is billed for.
  */
-Deno.test("create-site: is explicitly not idempotent", () => {
+test("create-site: is explicitly not idempotent", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.type, "perform");
 });
 
-Deno.test("create-site: a bad body surfaces Duda's own InvalidInput", async () => {
+test("create-site: a bad body surfaces Duda's own InvalidInput", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 400,
     body: {

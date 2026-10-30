@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tweet-create.ts";
 
-Deno.test("tweet-create: POSTs /tweets with just text", async () => {
+test("tweet-create: POSTs /tweets with just text", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", text: "hi" } } }]);
   const out = await action.execute({ text: "hi" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("tweet-create: POSTs /tweets with just text", async () => {
   assertEquals(out, { id: "1", text: "hi" });
 });
 
-Deno.test("tweet-create: adds reply and quote-tweet fields", async () => {
+test("tweet-create: adds reply and quote-tweet fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", text: "hi" } } }]);
   await action.execute({ text: "hi", replyToTweetId: "10", quoteTweetId: "20" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -20,7 +21,7 @@ Deno.test("tweet-create: adds reply and quote-tweet fields", async () => {
   assertEquals(body.quote_tweet_id, "20");
 });
 
-Deno.test("tweet-create: uploads media first (INIT/APPEND/FINALIZE) then attaches media_ids", async () => {
+test("tweet-create: uploads media first (INIT/APPEND/FINALIZE) then attaches media_ids", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: { id: "media1" } } }, // INIT
     { body: { data: { id: "media1" } } }, // APPEND
@@ -43,7 +44,7 @@ Deno.test("tweet-create: uploads media first (INIT/APPEND/FINALIZE) then attache
   assertEquals(tweetBody.media, { media_ids: ["media1"] });
 });
 
-Deno.test("tweet-create: polls STATUS when FINALIZE reports pending processing", async () => {
+test("tweet-create: polls STATUS when FINALIZE reports pending processing", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: { id: "media1" } } }, // INIT
     { body: { data: { id: "media1" } } }, // APPEND
@@ -58,7 +59,7 @@ Deno.test("tweet-create: polls STATUS when FINALIZE reports pending processing",
   assertEquals(calls[3].url, "https://api.x.com/2/media/upload?command=STATUS&media_id=media1");
 });
 
-Deno.test("tweet-create: throws without text or media", async () => {
+test("tweet-create: throws without text or media", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => {
@@ -69,6 +70,6 @@ Deno.test("tweet-create: throws without text or media", async () => {
   );
 });
 
-Deno.test("tweet-create: is not idempotent", () => {
+test("tweet-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

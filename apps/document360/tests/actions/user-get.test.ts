@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("user-get: GETs the user", async () => {
+test("user-get: GETs the user", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "u1", email: "ann@example.com" }),
@@ -17,7 +18,7 @@ Deno.test("user-get: GETs the user", async () => {
   assertEquals(out.email, "ann@example.com");
 });
 
-Deno.test("user-get: a vendor error surfaces its code and message", async () => {
+test("user-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

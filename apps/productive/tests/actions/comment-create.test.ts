@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-create: POST /comments sends a JSON:API document of attributes", async () => {
+test("comment-create: POST /comments sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "comments", "attributes": { "name": "x" } } },
@@ -44,7 +45,7 @@ Deno.test("comment-create: POST /comments sends a JSON:API document of attribute
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("comment-create: a vendor error surfaces its status, title and detail", async () => {
+test("comment-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -57,7 +58,7 @@ Deno.test("comment-create: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("comment-create: declares perform and idempotent=false", () => {
+test("comment-create: declares perform and idempotent=false", () => {
   assertEquals(commentCreate.type, "perform");
   assertEquals(commentCreate.idempotent, false);
   assertEquals(commentCreate.key, "comment-create");

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -11,11 +12,11 @@ const page = (components: Array<Record<string, unknown>>) => ({
  * `status.easypost.com` answers 200 with a megabyte of HTML — the real
  * Statuspage is `www.easypoststatus.com`.
  */
-Deno.test("service: reads the real status host, not the decoy", () => {
+test("service: reads the real status host, not the decoy", () => {
   assertEquals(service.network!.allow, ["www.easypoststatus.com"]);
 });
 
-Deno.test("service: EasyPost's own services decide the verdict", async () => {
+test("service: EasyPost's own services decide the verdict", async () => {
   const { ctx, calls } = mockCtx([page([
     { name: "API", status: "operational" },
     { name: "Label Purchases", status: "operational" },
@@ -31,7 +32,7 @@ Deno.test("service: EasyPost's own services decide the verdict", async () => {
  * When FedEx is down EasyPost is fine — you buy a different rate. Naming the
  * carrier is what makes this actionable.
  */
-Deno.test("service: a carrier outage is named but does not count", async () => {
+test("service: a carrier outage is named but does not count", async () => {
   const { ctx } = mockCtx([page([
     { name: "API", status: "operational" },
     { name: "FedEx", status: "major_outage" },
@@ -44,7 +45,7 @@ Deno.test("service: a carrier outage is named but does not count", async () => {
   assertEquals(result.components!["fedex"].state, "down");
 });
 
-Deno.test("service: an outage of EasyPost's own API is down", async () => {
+test("service: an outage of EasyPost's own API is down", async () => {
   const { ctx } = mockCtx([page([
     { name: "API", status: "major_outage" },
     { name: "FedEx", status: "operational" },
@@ -54,12 +55,12 @@ Deno.test("service: an outage of EasyPost's own API is down", async () => {
   assert(/API/.test(result.message!), result.message);
 });
 
-Deno.test("service: label purchasing degraded is degraded", async () => {
+test("service: label purchasing degraded is degraded", async () => {
   const { ctx } = mockCtx([page([{ name: "Label Purchases", status: "degraded_performance" }])]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: component groups are skipped, not counted twice", async () => {
+test("service: component groups are skipped, not counted twice", async () => {
   const { ctx } = mockCtx([page([
     { name: "API", status: "major_outage", group: true },
     { name: "API", status: "operational" },
@@ -68,7 +69,7 @@ Deno.test("service: component groups are skipped, not counted twice", async () =
 });
 
 /** The decoy host produces HTML, which parses to nothing useful. */
-Deno.test("service: a page of the wrong shape is unknown, never down", async () => {
+test("service: a page of the wrong shape is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { nope: true } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -76,7 +77,7 @@ Deno.test("service: a page of the wrong shape is unknown, never down", async () 
   assertEquals((await service.check!({}, broken.ctx)).state, "unknown");
 });
 
-Deno.test("service: a page naming only carriers cannot produce a verdict", async () => {
+test("service: a page naming only carriers cannot produce a verdict", async () => {
   const { ctx } = mockCtx([page([{ name: "FedEx", status: "operational" }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");

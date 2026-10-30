@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-calendars.ts";
 
-Deno.test("list-calendars: GETs /users/me/calendarList with default maxResults", async () => {
+test("list-calendars: GETs /users/me/calendarList with default maxResults", async () => {
   const body = { items: [{ id: "primary" }], nextPageToken: "tok" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-calendars: GETs /users/me/calendarList with default maxResults",
   assertEquals(result, body);
 });
 
-Deno.test("list-calendars: forwards optional filters", async () => {
+test("list-calendars: forwards optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({
     maxResults: 25,
@@ -28,7 +29,7 @@ Deno.test("list-calendars: forwards optional filters", async () => {
   assertEquals(params.get("minAccessRole"), "writer");
 });
 
-Deno.test("list-calendars: omits unset filters", async () => {
+test("list-calendars: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;

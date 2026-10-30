@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 17);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: the two actions that can double-charge or double-create are NOT idempotent", () => {
+test("index: the two actions that can double-charge or double-create are NOT idempotent", () => {
   const byKey = Object.fromEntries(app.actions.map((a) => [a.key, a]));
   // A retry here creates a second subscription / attempts a second charge, and
   // this App sends no `chargebee-idempotency-key` header.
@@ -57,7 +59,7 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
 /**
  * The pack auditor's own "is an auth header being written" pattern.
@@ -70,7 +72,7 @@ const actionSource = async (key: string) =>
  */
 const WRITES_AUTH_HEADER = /["'`]?authorization["'`]?\s*[\]:=]/i;
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -78,7 +80,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: that auth-header guard still catches a real violation", () => {
+test("index: that auth-header guard still catches a real violation", () => {
   // Guards the guard, since it was loosened to let a legitimate parameter name
   // through.
   assert(WRITES_AUTH_HEADER.test('headers["authorization"] = "Basic x";'));
@@ -86,7 +88,7 @@ Deno.test("index: that auth-header guard still catches a real violation", () => 
   assert(!WRITES_AUTH_HEADER.test("authorization_transaction_id: input.x,"));
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -94,7 +96,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
   }
 });
 
-Deno.test("index: no action hard-codes a Chargebee host — the host is per-connection", async () => {
+test("index: no action hard-codes a Chargebee host — the host is per-connection", async () => {
   // The whole point of `ChargebeeClient.fromConnection` is that the site comes
   // from the Connection. A literal host in an action would work for exactly one
   // customer and silently misroute for every other.
@@ -104,7 +106,7 @@ Deno.test("index: no action hard-codes a Chargebee host — the host is per-conn
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// credential\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.
@@ -113,7 +115,7 @@ Deno.test("index: the comment stripper actually strips, so the guards above mean
   assert(/credential/.test(code("const c = credential;")));
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -122,7 +124,7 @@ Deno.test("index: every param has a key and a label", () => {
   }
 });
 
-Deno.test("index: every select param offers a non-empty static option list", () => {
+test("index: every select param offers a non-empty static option list", () => {
   for (const a of app.actions) {
     for (const p of (a.params ?? []).filter((p) => p.type === "select")) {
       assert(Array.isArray(p.options), `${a.key}/${p.key}: select without static options`);
@@ -131,7 +133,7 @@ Deno.test("index: every select param offers a non-empty static option list", () 
   }
 });
 
-Deno.test("index: every action that names a resource path takes an id param", () => {
+test("index: every action that names a resource path takes an id param", () => {
   const byKey = Object.fromEntries(app.actions.map((a) => [a.key, a]));
   const required = (key: string, paramKey: string) => {
     const p = (byKey[key].params ?? []).find((p) => p.key === paramKey);
@@ -150,7 +152,7 @@ Deno.test("index: every action that names a resource path takes an id param", ()
   required("collect-payment", "invoiceId");
 });
 
-Deno.test("index: every list action exposes the shared paging params and envelope", () => {
+test("index: every list action exposes the shared paging params and envelope", () => {
   const lists = app.actions.filter((a) => a.type === "search");
   assertEquals(lists.length, 7);
   for (const a of lists) {
@@ -162,14 +164,14 @@ Deno.test("index: every list action exposes the shared paging params and envelop
   }
 });
 
-Deno.test("index: `offset` is a string everywhere — it is an opaque cursor, not a row count", () => {
+test("index: `offset` is a string everywhere — it is an opaque cursor, not a row count", () => {
   for (const a of app.actions.filter((a) => a.type === "search")) {
     const offset = (a.params ?? []).find((p) => p.key === "offset")!;
     assertEquals(offset.type, "string", `${a.key}: offset must not be numeric`);
   }
 });
 
-Deno.test("index: health checks cover the declared kinds and are informational where they should be", () => {
+test("index: health checks cover the declared kinds and are informational where they should be", () => {
   const byKey = Object.fromEntries(app.healthChecks.map((c) => [c.key, c]));
   assertEquals(byKey.service.kind, "service");
   assertEquals(byKey.quota.kind, "quota");
@@ -177,14 +179,14 @@ Deno.test("index: health checks cover the declared kinds and are informational w
   assertEquals(byKey.quota.severity, "informational");
 });
 
-Deno.test("index: the service check widens egress only for itself, and stays unsigned", () => {
+test("index: the service check widens egress only for itself, and stays unsigned", () => {
   const service = app.healthChecks.find((c) => c.key === "service")!;
   assertEquals(service.network?.allow, ["status.chargebee.com"]);
   // Widening egress is bound to an unsigned posture — `none` is this kind's default.
   assert(service.credential === undefined || service.credential === "none");
 });
 
-Deno.test("index: the quota check declares no egress, having nothing to probe", () => {
+test("index: the quota check declares no egress, having nothing to probe", () => {
   const quota = app.healthChecks.find((c) => c.key === "quota")!;
   assertEquals(quota.network, undefined);
   assert(quota.unavailable);

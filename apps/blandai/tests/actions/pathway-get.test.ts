@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pathwayGet from "../../actions/pathway-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pathway-get: fetches by id and maps nodes/edges", async () => {
+test("pathway-get: fetches by id and maps nodes/edges", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "Demo", description: null, nodes: [{ id: "1" }], edges: [{ id: "e1" }] },
@@ -14,7 +15,7 @@ Deno.test("pathway-get: fetches by id and maps nodes/edges", async () => {
   assertEquals(out.edges, [{ id: "e1" }]);
 });
 
-Deno.test("pathway-get: defaults nodes/edges to empty arrays when absent", async () => {
+test("pathway-get: defaults nodes/edges to empty arrays when absent", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { name: "Demo" } }]);
   const out = await pathwayGet.execute({ pathwayId: "p-1" }, ctx) as Record<string, unknown>;
   assertEquals(out.nodes, []);

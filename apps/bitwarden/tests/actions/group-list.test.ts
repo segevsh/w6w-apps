@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-list.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("group-list: returns the list and a count", async () => {
+test("group-list: returns the list and a count", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "list",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceHtmlGet from "../../actions/invoice-html-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-html-get: returns the HTML document as a string", async () => {
+test("invoice-html-get: returns the HTML document as a string", async () => {
   const { ctx, calls } = mockCtx([
     { body: "<html>INV-2025-001</html>", headers: { "content-type": "text/html; charset=UTF-8" } },
   ]);

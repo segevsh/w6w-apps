@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import blogAvatarGet from "../../actions/blog-avatar-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const AVATAR_URL = "https://64.media.tumblr.com/abc/def/s64x64u_c1/0123456789abcdef.png";
 
-Deno.test("blog-avatar-get: reads avatar_url off the 302 response, never following it", async () => {
+test("blog-avatar-get: reads avatar_url off the 302 response, never following it", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 302,
@@ -21,7 +22,7 @@ Deno.test("blog-avatar-get: reads avatar_url off the 302 response, never followi
   assertEquals(out, { avatarUrl: AVATAR_URL });
 });
 
-Deno.test("blog-avatar-get: omitting size calls the sizeless path", async () => {
+test("blog-avatar-get: omitting size calls the sizeless path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 302, headers: { location: AVATAR_URL } },
   ]);
@@ -29,7 +30,7 @@ Deno.test("blog-avatar-get: omitting size calls the sizeless path", async () => 
   assertEquals(pathOf(calls[0].url), "/v2/blog/david.tumblr.com/avatar");
 });
 
-Deno.test("blog-avatar-get: falls back to parsing the JSON body if no Location header", async () => {
+test("blog-avatar-get: falls back to parsing the JSON body if no Location header", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,

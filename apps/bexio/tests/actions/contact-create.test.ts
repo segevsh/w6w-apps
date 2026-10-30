@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs to /2.0/contact with mapped body", async () => {
+test("contact-create: POSTs to /2.0/contact with mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 4, nr: "K-0001" } }]);
   const result = await action.execute!({
     contactTypeId: 1,
@@ -29,7 +30,7 @@ Deno.test("contact-create: POSTs to /2.0/contact with mapped body", async () => 
   assertEquals(result, { id: 4, nr: "K-0001" });
 });
 
-Deno.test("contact-create: omits unset optional fields", async () => {
+test("contact-create: omits unset optional fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 4 } }]);
   await action.execute!({ contactTypeId: 2, name1: "Muster", userId: 1, ownerId: 1 }, ctx);
   const body = JSON.parse(calls[0].body!);

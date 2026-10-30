@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldUpdate from "../../actions/field-update.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-update: PUT /customers/42/fields/age/ with the documented query and body", async () => {
+test("field-update: PUT /customers/42/fields/age/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "field": { "name": "age", "type": "integer", "value": 31 } },
@@ -31,7 +32,7 @@ Deno.test("field-update: PUT /customers/42/fields/age/ with the documented query
   assertEquals(out, { "name": "age", "type": "integer", "value": 31 });
 });
 
-Deno.test("field-update: a Landbot error surfaces its status and message", async () => {
+test("field-update: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -53,7 +54,7 @@ Deno.test("field-update: a Landbot error surfaces its status and message", async
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("field-update: declares perform", () => {
+test("field-update: declares perform", () => {
   assertEquals(fieldUpdate.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

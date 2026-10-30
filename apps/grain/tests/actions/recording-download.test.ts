@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-download.ts";
 
-Deno.test("recording-download: GETs the download endpoint and base64-encodes the body", async () => {
+test("recording-download: GETs the download endpoint and base64-encodes the body", async () => {
   const { ctx, calls } = mockCtx([{
     body: "fake-media-bytes",
     headers: { "content-type": "video/mp4" },
@@ -16,7 +17,7 @@ Deno.test("recording-download: GETs the download endpoint and base64-encodes the
   assertEquals(atob(result.content), "fake-media-bytes");
 });
 
-Deno.test("recording-download: throws with status and truncated body on failure", async () => {
+test("recording-download: throws with status and truncated body on failure", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "recording not found" }]);
   await assertRejects(
     async () => await action.execute({ recordingId: "missing" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("recording-download: throws with status and truncated body on failure"
   );
 });
 
-Deno.test("recording-download: is a read action", () => {
+test("recording-download: is a read action", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "recording");
 });

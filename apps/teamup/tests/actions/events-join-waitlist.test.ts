@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/events-join-waitlist.ts";
 
 const sample = { id: 91, object: "waitlist_spot", status: "on_waitlist", position: 3 };
 
-Deno.test("events-join-waitlist: posts the documented body to /events/8/join_waitlist", async () => {
+test("events-join-waitlist: posts the documented body to /events/8/join_waitlist", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 8, customer: 12 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("events-join-waitlist: posts the documented body to /events/8/join_wai
   assertEquals(result.position, 3);
 });
 
-Deno.test("events-join-waitlist: sends only the fields the caller supplied", async () => {
+test("events-join-waitlist: sends only the fields the caller supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 8, customer: 12 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -25,7 +26,7 @@ Deno.test("events-join-waitlist: sends only the fields the caller supplied", asy
 });
 
 /** The spot's state, not the join, is what a notifier has to watch. */
-Deno.test("events-join-waitlist: declares the spot's status and reservation fields", () => {
+test("events-join-waitlist: declares the spot's status and reservation fields", () => {
   const fields = action.output as Array<{ key: string; type: string }>;
   assertEquals(fields.find((f) => f.key === "status")!.type, "string");
   assertEquals(fields.find((f) => f.key === "reserved_spot_expires_at")!.type, "string");

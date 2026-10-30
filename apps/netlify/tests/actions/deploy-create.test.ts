@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deploy-create.ts";
 
-Deno.test("deploy-create: POSTs to /sites/{id}/deploys with a branch body", async () => {
+test("deploy-create: POSTs to /sites/{id}/deploys with a branch body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "deploy1", state: "building" } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("deploy-create: POSTs to /sites/{id}/deploys with a branch body", asyn
   assertEquals(result, { id: "deploy1", state: "building" });
 });
 
-Deno.test("deploy-create: sends title as a query param, not body", async () => {
+test("deploy-create: sends title as a query param, not body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "deploy1" } }]);
   await action.execute!({ siteId: "site1", title: "Redeploy" }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("deploy-create: sends title as a query param, not body", async () => {
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("deploy-create: requires siteId", async () => {
+test("deploy-create: requires siteId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "siteId");
 });

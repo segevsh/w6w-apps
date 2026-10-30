@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-user-remove.ts";
 
-Deno.test("organization-user-remove: DELETEs the member and handles the empty 204", async () => {
+test("organization-user-remove: DELETEs the member and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ organizationId: "org1", userId: "u1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("organization-user-remove: DELETEs the member and handles the empty 20
   assertEquals(result, { userId: "u1", removed: true });
 });
 
-Deno.test("organization-user-remove: is idempotent", () => {
+test("organization-user-remove: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

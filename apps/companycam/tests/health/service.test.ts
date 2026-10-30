@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -28,7 +29,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the CompanyCam status page, unsigned", async () => {
+test("service: probes the CompanyCam status page, unsigned", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -39,13 +40,13 @@ Deno.test("service: probes the CompanyCam status page, unsigned", async () => {
   assertEquals(report.components?.["n5595r721mdr"], { state: "ok", message: "API" });
 });
 
-Deno.test("service: the declared host is the status host, not the API host", () => {
+test("service: the declared host is the status host, not the API host", () => {
   assertEquals(service.network?.allow, ["status.companycam.com"]);
   assertEquals(service.credential, "none");
   assertEquals(new URL(STATUS_URL).hostname, "status.companycam.com");
 });
 
-Deno.test("service: a degraded component is named in the message", async () => {
+test("service: a degraded component is named in the message", async () => {
   const body = summary();
   body.components[2] = {
     id: "wcmkdhs44hgb",
@@ -61,14 +62,14 @@ Deno.test("service: a degraded component is named in the message", async () => {
   assertEquals(report.components?.["wcmkdhs44hgb"].state, "degraded");
 });
 
-Deno.test("service: a major outage on the page is down", async () => {
+test("service: a major outage on the page is down", async () => {
   const { ctx } = mockCtx([{
     body: summary({ status: { indicator: "critical", description: "Major Outage" } }),
   }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: open incidents and maintenance windows are counted", async () => {
+test("service: open incidents and maintenance windows are counted", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       incidents: [{ name: "Elevated API errors", status: "investigating" }],
@@ -82,19 +83,19 @@ Deno.test("service: open incidents and maintenance windows are counted", async (
 });
 
 /** A broken status page says nothing about the vendor — never `down`. */
-Deno.test("service: a failing status page is unknown, not down", async () => {
+test("service: a failing status page is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("503"));
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "not json", headers: { "content-type": "text/plain" } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer identifies as CompanyCam's is unknown", async () => {
+test("service: a page that no longer identifies as CompanyCam's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       page: { id: "x", name: "Someone Else", url: "https://status.someoneelse.com" },
@@ -105,12 +106,12 @@ Deno.test("service: a page that no longer identifies as CompanyCam's is unknown"
   assert(report.message!.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: a page with no components is unknown", async () => {
+test("service: a page with no components is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: group rows are not counted as components", async () => {
+test("service: group rows are not counted as components", async () => {
   const body = summary();
   body.components.push({ id: "grp", name: "Platform", status: "operational", group: true });
   const { ctx } = mockCtx([{ body }]);
@@ -118,7 +119,7 @@ Deno.test("service: group rows are not counted as components", async () => {
   assertEquals(Object.keys(report.components ?? {}).length, 7);
 });
 
-Deno.test("service: the Statuspage vocabularies map as documented", () => {
+test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -134,7 +135,7 @@ Deno.test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: components fall back to a slug when the vendor drops ids", () => {
+test("service: components fall back to a slug when the vendor drops ids", () => {
   assertEquals(componentKey({ id: "abc", name: "API" }, 0), "abc");
   assertEquals(componentKey({ name: "Uploads & Processing" }, 3), "uploads-processing-3");
   assertEquals(componentKey({}, 5), "component-5");
@@ -144,7 +145,7 @@ Deno.test("service: components fall back to a slug when the vendor drops ids", (
  * The quota check is a declared absence. `informational` is what stops it
  * pinning the app's roll-up at `unknown` forever.
  */
-Deno.test("quota: is a declared absence with a reason, and informational", () => {
+test("quota: is a declared absence with a reason, and informational", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.length > 40, "the absence needs an actual reason");

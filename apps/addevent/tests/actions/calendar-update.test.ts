@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarUpdate from "../../actions/calendar-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-update: PATCHes only the fields provided", async () => {
+test("calendar-update: PATCHes only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "cal-1", title: "Renamed" } }]);
   const out = await calendarUpdate.execute({ calendarId: "cal-1", title: "Renamed" }, ctx) as {
     title: string;
@@ -13,6 +14,6 @@ Deno.test("calendar-update: PATCHes only the fields provided", async () => {
   assertEquals(out.title, "Renamed");
 });
 
-Deno.test("calendar-update: is declared idempotent", () => {
+test("calendar-update: is declared idempotent", () => {
   assertEquals(calendarUpdate.idempotent, true);
 });

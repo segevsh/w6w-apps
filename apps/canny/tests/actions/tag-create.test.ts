@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-create: posts boardID and name", async () => {
+test("tag-create: posts boardID and name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", name: "bug" } }]);
   const out = await tagCreate.execute({ boardID: "b1", name: "bug" }, ctx) as { name: string };
 
@@ -11,6 +12,6 @@ Deno.test("tag-create: posts boardID and name", async () => {
   assertEquals(out.name, "bug");
 });
 
-Deno.test("tag-create: is idempotent — Canny's own docs say 'created or already exists'", () => {
+test("tag-create: is idempotent — Canny's own docs say 'created or already exists'", () => {
   assertEquals(tagCreate.idempotent, true);
 });

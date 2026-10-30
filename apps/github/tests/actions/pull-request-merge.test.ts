@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pull-request-merge.ts";
 
-Deno.test("pull-request-merge: PUTs /pulls/{n}/merge with the strategy", async () => {
+test("pull-request-merge: PUTs /pulls/{n}/merge with the strategy", async () => {
   const { ctx, calls } = mockCtx([{ body: { merged: true } }]);
   await action.execute(
     { owner: "acme", repository: "api", pullRequestNumber: 12, mergeMethod: "squash" },
@@ -13,7 +14,7 @@ Deno.test("pull-request-merge: PUTs /pulls/{n}/merge with the strategy", async (
   assertEquals(JSON.parse(calls[0].body!), { merge_method: "squash" });
 });
 
-Deno.test("pull-request-merge: passes the expected head SHA for compare-and-set merges", async () => {
+test("pull-request-merge: passes the expected head SHA for compare-and-set merges", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { owner: "acme", repository: "api", pullRequestNumber: 12, sha: "deadbeef" },

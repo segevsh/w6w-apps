@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api health: Rootly's JSON errors 401 is a pass, and no credential is sent", async () => {
+test("api health: Rootly's JSON errors 401 is a pass, and no credential is sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: { errors: [{ title: "Invalid token", status: "401" }] },
@@ -13,7 +14,7 @@ Deno.test("api health: Rootly's JSON errors 401 is a pass, and no credential is 
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api health: 5xx is down; an HTML page is unknown, not ok", async () => {
+test("api health: 5xx is down; an HTML page is unknown, not ok", async () => {
   assertEquals((await api.check!({}, mockCtx([{ status: 503, body: "x" }]).ctx)).state, "down");
   const html = mockCtx([{
     status: 403,
@@ -23,7 +24,7 @@ Deno.test("api health: 5xx is down; an HTML page is unknown, not ok", async () =
   assertEquals((await api.check!({}, html.ctx)).state, "unknown");
 });
 
-Deno.test("api health: is unauthenticated and app-scoped", () => {
+test("api health: is unauthenticated and app-scoped", () => {
   assertEquals(api.credential, "none");
   assertEquals(api.scope, "app");
   assertEquals(api.kind, "dependency");

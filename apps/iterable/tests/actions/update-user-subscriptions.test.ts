@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-user-subscriptions.ts";
 
-Deno.test("update-user-subscriptions: metadata", () => {
+test("update-user-subscriptions: metadata", () => {
   assertEquals(action.key, "update-user-subscriptions");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
@@ -19,7 +20,7 @@ Deno.test("update-user-subscriptions: metadata", () => {
   ]);
 });
 
-Deno.test("update-user-subscriptions: calls POST /users/updateSubscriptions on the US host", async () => {
+test("update-user-subscriptions: calls POST /users/updateSubscriptions on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "email": "abc",
@@ -50,7 +51,7 @@ Deno.test("update-user-subscriptions: calls POST /users/updateSubscriptions on t
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("update-user-subscriptions: uses the EU host when the connection region is eu", async () => {
+test("update-user-subscriptions: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -68,7 +69,7 @@ Deno.test("update-user-subscriptions: uses the EU host when the connection regio
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/updateSubscriptions");
 });
 
-Deno.test("update-user-subscriptions: rejects an input with no identifier without calling Iterable", async () => {
+test("update-user-subscriptions: rejects an input with no identifier without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -80,7 +81,7 @@ Deno.test("update-user-subscriptions: rejects an input with no identifier withou
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-user-subscriptions: surfaces an HTTP error with Iterable's own code", async () => {
+test("update-user-subscriptions: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -101,7 +102,7 @@ Deno.test("update-user-subscriptions: surfaces an HTTP error with Iterable's own
   );
 });
 
-Deno.test("update-user-subscriptions: treats a 200 carrying a non-Success code as a failure", async () => {
+test("update-user-subscriptions: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

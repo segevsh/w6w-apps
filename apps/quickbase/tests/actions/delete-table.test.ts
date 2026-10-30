@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/delete-table.ts";
 
-Deno.test("delete-table: DELETEs the table with the appId query", async () => {
+test("delete-table: DELETEs the table with the appId query", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { deletedTableId: "bck1" } }]);
   const out = await action.execute({ tableId: "bck1" }, ctx);
 

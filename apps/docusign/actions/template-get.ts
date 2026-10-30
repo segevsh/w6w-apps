@@ -33,7 +33,16 @@ const templateGet: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "recipients", label: "Recipients" },
+        { value: "documents", label: "Documents" },
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "notification", label: "Notification" },
+        { value: "powerforms", label: "Powerforms" },
+        { value: "tabs", label: "Tabs" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated extras: recipients, documents, custom_fields, notification, powerforms, tabs. Use `recipients` to read the template's role names.",
     },

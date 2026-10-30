@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionList from "../../actions/subscription-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-list: fetches GET /publications/:id/subscriptions with the given filters", async () => {
+test("subscription-list: fetches GET /publications/:id/subscriptions with the given filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "sub_1" }], limit: 10, has_more: true, next_cursor: "next_1" },
   }]);
@@ -29,7 +30,7 @@ Deno.test("subscription-list: fetches GET /publications/:id/subscriptions with t
   assertEquals(out.next_cursor, "next_1");
 });
 
-Deno.test("subscription-list: a cursor overrides page rather than combining with it", async () => {
+test("subscription-list: a cursor overrides page rather than combining with it", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await subscriptionList.execute({ publicationId: "pub_1", cursor: "abc", page: 5 }, ctx);
   const url = new URL(calls[0].url);
@@ -37,6 +38,6 @@ Deno.test("subscription-list: a cursor overrides page rather than combining with
   assertEquals(url.searchParams.has("page"), false);
 });
 
-Deno.test("subscription-list: is a read action", () => {
+test("subscription-list: is a read action", () => {
   assertEquals(subscriptionList.type, "read");
 });

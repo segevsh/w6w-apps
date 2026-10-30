@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs /channels/{id}/messages with content", async () => {
+test("send-message: POSTs /channels/{id}/messages with content", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!({ channelId: "c1", content: "hi" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,14 +12,14 @@ Deno.test("send-message: POSTs /channels/{id}/messages with content", async () =
   assertEquals(body.content, "hi");
 });
 
-Deno.test("send-message: replyToMessageId maps to message_reference.message_id", async () => {
+test("send-message: replyToMessageId maps to message_reference.message_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!({ channelId: "c1", content: "hi", replyToMessageId: "orig-1" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.message_reference, { message_id: "orig-1" });
 });
 
-Deno.test("send-message: forwards embeds/flags/tts verbatim, omits undefined content", async () => {
+test("send-message: forwards embeds/flags/tts verbatim, omits undefined content", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     {
@@ -41,7 +42,7 @@ Deno.test("send-message: forwards embeds/flags/tts verbatim, omits undefined con
 // included. A workflow relaying content it did not author had no way to stop
 // that; these cover the control that was added.
 
-Deno.test("send-message: suppressAllMentions sends the empty parse array", async () => {
+test("send-message: suppressAllMentions sends the empty parse array", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     { channelId: "c1", content: "@everyone hi", suppressAllMentions: true },
@@ -50,7 +51,7 @@ Deno.test("send-message: suppressAllMentions sends the empty parse array", async
   assertEquals(JSON.parse(calls[0].body!).allowed_mentions, { parse: [] });
 });
 
-Deno.test("send-message: a hand-written allowedMentions object rides through", async () => {
+test("send-message: a hand-written allowedMentions object rides through", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     { channelId: "c1", content: "hi", allowedMentions: { parse: ["users"] } },
@@ -59,7 +60,7 @@ Deno.test("send-message: a hand-written allowedMentions object rides through", a
   assertEquals(JSON.parse(calls[0].body!).allowed_mentions, { parse: ["users"] });
 });
 
-Deno.test("send-message: the suppress checkbox wins over a hand-written object", async () => {
+test("send-message: the suppress checkbox wins over a hand-written object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     {
@@ -73,13 +74,13 @@ Deno.test("send-message: the suppress checkbox wins over a hand-written object",
   assertEquals(JSON.parse(calls[0].body!).allowed_mentions, { parse: [] });
 });
 
-Deno.test("send-message: allowed_mentions is omitted when neither is set", async () => {
+test("send-message: allowed_mentions is omitted when neither is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!({ channelId: "c1", content: "hi" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).allowed_mentions, undefined);
 });
 
-Deno.test("send-message: components and sticker ids are forwarded", async () => {
+test("send-message: components and sticker ids are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   const components = [{
     type: 1,

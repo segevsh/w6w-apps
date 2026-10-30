@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import blacklistEmailRemove from "../../actions/blacklist-email-remove.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("blacklist-email-remove: DELETE /rest/v2/blacklist/emails with a JSON body", async () => {
+test("blacklist-email-remove: DELETE /rest/v2/blacklist/emails with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "emails": ["x.email"] } }]);
   const out = await blacklistEmailRemove.execute({ "emails": ["x.email"] } as never, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("blacklist-email-remove: DELETE /rest/v2/blacklist/emails with a JSON 
   assertEquals(out.count, 1);
 });
 
-Deno.test("blacklist-email-remove: accepts the list as JSON text", async () => {
+test("blacklist-email-remove: accepts the list as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "emails": ["y.email"] } }]);
   await blacklistEmailRemove.execute({ "emails": '["y.email"]' } as never, ctx);
   assertEquals(calls.length, 1);
@@ -32,7 +33,7 @@ Deno.test("blacklist-email-remove: accepts the list as JSON text", async () => {
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("blacklist-email-remove: refuses more than 500 entries", async () => {
+test("blacklist-email-remove: refuses more than 500 entries", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

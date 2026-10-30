@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payout-get.ts";
 
-Deno.test("payout-get: fetches the batch by id with the default page size", async () => {
+test("payout-get: fetches the batch by id with the default page size", async () => {
   const { ctx, calls } = mockCtx([{ body: { batch_header: { payout_batch_id: "B-1" } } }]);
   const result = await action.execute!({ payoutBatchId: "B-1" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("payout-get: fetches the batch by id with the default page size", asyn
   assertEquals(result, { batch_header: { payout_batch_id: "B-1" } });
 });
 
-Deno.test("payout-get: payoutBatchId is required", async () => {
+test("payout-get: payoutBatchId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ payoutBatchId: "" }, ctx)),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import memberList from "../../actions/member-list.ts";
 import { mockCtx, odataList, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("member-list: calls GET /v1/People and unwraps the page", async () => {
+test("member-list: calls GET /v1/People and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: odataList([{ id: "p1" }], 3) }]);
   const out = await memberList.execute({ top: 5 }, ctx) as { items: unknown[]; count?: number };
   assertEquals(pathOf(calls[0].url), "/v1/People");
@@ -11,7 +12,7 @@ Deno.test("member-list: calls GET /v1/People and unwraps the page", async () => 
   assertEquals(out.count, 3);
 });
 
-Deno.test("member-list: passes filter/select/expand/orderBy through as OData keys", async () => {
+test("member-list: passes filter/select/expand/orderBy through as OData keys", async () => {
   const { ctx, calls } = mockCtx([{ body: odataList([]) }]);
   await memberList.execute({
     filter: "role eq 'Member'",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: calls GET /v3/tags with filters", async () => {
+test("tag-list: calls GET /v3/tags with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ tag: "hero" }] }]);
   const out = await action.execute({
     groupId: "5",
@@ -22,7 +23,7 @@ Deno.test("tag-list: calls GET /v3/tags with filters", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("tag-list: rejects an order outside the documented set", async () => {
+test("tag-list: rejects an order outside the documented set", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ orderBy: "name" }, ctx),

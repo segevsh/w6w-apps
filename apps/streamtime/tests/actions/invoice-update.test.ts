@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceUpdate from "../../actions/invoice-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-update: PUTs the writable fields, status included", async () => {
+test("invoice-update: PUTs the writable fields, status included", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3456 } }]);
   await invoiceUpdate.execute({
     invoiceId: 3456,
@@ -18,7 +19,7 @@ Deno.test("invoice-update: PUTs the writable fields, status included", async () 
   });
 });
 
-Deno.test("invoice-update: amounts and paidDate are read-only", () => {
+test("invoice-update: amounts and paidDate are read-only", () => {
   const keys = (invoiceUpdate.params ?? []).map((p) => p.key);
   for (
     const readonly of [

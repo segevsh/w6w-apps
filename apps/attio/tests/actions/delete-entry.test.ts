@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import deleteEntry from "../../actions/delete-entry.ts";
 
-Deno.test("delete-entry: DELETEs the entry and summarises the empty 200", async () => {
+test("delete-entry: DELETEs the entry and summarises the empty 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await run<{ deleted: boolean; entry_id: string }>(
     deleteEntry,
@@ -15,6 +16,6 @@ Deno.test("delete-entry: DELETEs the entry and summarises the empty 200", async 
 });
 
 /** The distinction that stops someone reading "delete" as "delete the contact". */
-Deno.test("delete-entry: says the record itself is untouched", () => {
+test("delete-entry: says the record itself is untouched", () => {
   assert(/record itself is untouched/i.test(deleteEntry.description!));
 });

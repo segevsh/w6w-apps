@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-playlists.ts";
 
-Deno.test("list-playlists: hits /youtube/v3/playlists with part and a channel filter", async () => {
+test("list-playlists: hits /youtube/v3/playlists with part and a channel filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: ["snippet", "contentDetails"], channelId: "UC1" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,13 +12,13 @@ Deno.test("list-playlists: hits /youtube/v3/playlists with part and a channel fi
   assertEquals(url.searchParams.get("channelId"), "UC1");
 });
 
-Deno.test("list-playlists: joins multiple ids into one comma-separated value", async () => {
+test("list-playlists: joins multiple ids into one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "id", id: ["PL1", "PL2"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("id"), ["PL1,PL2"]);
 });
 
-Deno.test("list-playlists: supports the mine filter", async () => {
+test("list-playlists: supports the mine filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { part: "snippet", mine: true, maxResults: 50, pageToken: "t", hl: "es" },
@@ -30,7 +31,7 @@ Deno.test("list-playlists: supports the mine filter", async () => {
   assertEquals(p.get("hl"), "es");
 });
 
-Deno.test("list-playlists: rejects zero or multiple filters", async () => {
+test("list-playlists: rejects zero or multiple filters", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {

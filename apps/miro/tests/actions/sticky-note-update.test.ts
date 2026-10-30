@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sticky-note-update.ts";
 
-Deno.test("sticky-note-update: changes content, which item-move cannot", async () => {
+test("sticky-note-update: changes content, which item-move cannot", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "i1" } }], { display: {} });
   await action.execute!({ boardId: "b1", itemId: "i1", content: "Shipped" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -10,7 +11,7 @@ Deno.test("sticky-note-update: changes content, which item-move cannot", async (
   assertEquals(JSON.parse(calls[0].body!), { data: { content: "Shipped" } });
 });
 
-Deno.test("sticky-note-update: refuses a no-op and the both-dimensions error", async () => {
+test("sticky-note-update: refuses a no-op and the both-dimensions error", async () => {
   const noop = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ boardId: "b1", itemId: "i1" }, noop.ctx),

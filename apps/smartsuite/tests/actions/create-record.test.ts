@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-record.ts";
 
-Deno.test("create-record: the record object IS the body — not nested under `fields`", async () => {
+test("create-record: the record object IS the body — not nested under `fields`", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec1" } }]);
   const result = await action.execute!(
     { tableId: "tbl1", fields: { s5f6a1b2c: "Jane", status: "Active" } },
@@ -14,7 +15,7 @@ Deno.test("create-record: the record object IS the body — not nested under `fi
   assertEquals(result, { id: "rec1" });
 });
 
-Deno.test("create-record: surfaces a 422 body as the thrown error detail", async () => {
+test("create-record: surfaces a 422 body as the thrown error detail", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: { status: "required" } } }]);
   let message = "";
   try {
@@ -26,6 +27,6 @@ Deno.test("create-record: surfaces a 422 body as the thrown error detail", async
   assertEquals(message.includes("required"), true);
 });
 
-Deno.test("create-record: is not idempotent", () => {
+test("create-record: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

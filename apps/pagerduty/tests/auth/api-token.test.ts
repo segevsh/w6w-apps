@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: declares the apiKey config with PagerDuty's non-standard prefix", () => {
+test("api-token: declares the apiKey config with PagerDuty's non-standard prefix", () => {
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "Authorization", prefix: "Token token=" });
 });
 
-Deno.test("api-token: sign sets `Authorization: Token token=<key>`", async () => {
+test("api-token: sign sets `Authorization: Token token=<key>`", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.pagerduty.com/incidents",
@@ -18,7 +19,7 @@ Deno.test("api-token: sign sets `Authorization: Token token=<key>`", async () =>
   assertEquals(out.headers["authorization"], "Token token=pd-key-123");
 });
 
-Deno.test("api-token: test probes GET /abilities and reports the upstream status", async () => {
+test("api-token: test probes GET /abilities and reports the upstream status", async () => {
   const ok = mockCtx([{ status: 200, body: { abilities: [] } }]);
   assertEquals(await auth.test({ credential: { apiKey: "k" } }, ok.ctx), { ok: true });
   assertEquals(ok.calls[0].url, "https://api.pagerduty.com/abilities");
@@ -31,7 +32,7 @@ Deno.test("api-token: test probes GET /abilities and reports the upstream status
   });
 });
 
-Deno.test("api-token: test reports missing credential without calling the network", async () => {
+test("api-token: test reports missing credential without calling the network", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -40,7 +41,7 @@ Deno.test("api-token: test reports missing credential without calling the networ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect fetches /users/me and degrades gracefully on failure", async () => {
+test("api-token: afterConnect fetches /users/me and degrades gracefully on failure", async () => {
   const ok = mockCtx([
     { status: 200, body: { user: { id: "U1", name: "Ada", email: "ada@example.com" } } },
   ]);

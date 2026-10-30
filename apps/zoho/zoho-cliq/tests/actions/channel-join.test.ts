@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-join.ts";
 
-Deno.test("channel-join: joins and returns the channel", async () => {
+test("channel-join: joins and returns the channel", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "channel_id": "O1", "joined": true },
@@ -21,7 +22,7 @@ Deno.test("channel-join: joins and returns the channel", async () => {
   });
 });
 
-Deno.test("channel-join: idempotent is declared as true", () => {
+test("channel-join: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -23,13 +24,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host unsigned, not the API host", () => {
+test("service: probes the status host unsigned, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.unbounce.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.unbounce.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: the verdict is the Partner API component's own state, not the page indicator", async () => {
+test("service: the verdict is the Partner API component's own state, not the page indicator", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -41,7 +42,7 @@ Deno.test("service: the verdict is the Partner API component's own state, not th
  * The failure mode this guards: a marketing-site or AWS-infra incident must
  * NOT report this app's own surface (api.unbounce.com) as down.
  */
-Deno.test("service: an outage on an unrelated component does not affect the verdict", async () => {
+test("service: an outage on an unrelated component does not affect the verdict", async () => {
   const body = summary();
   body.components[0].status = "major_outage"; // Main Web Site and Blog
   body.components[3].status = "major_outage"; // an AWS row
@@ -53,7 +54,7 @@ Deno.test("service: an outage on an unrelated component does not affect the verd
   assertEquals(report.components?.["4l0sjp2mmxxw"]?.state, "down");
 });
 
-Deno.test("service: an outage on the Partner API component itself is reported down", async () => {
+test("service: an outage on the Partner API component itself is reported down", async () => {
   const body = summary();
   body.components[2].status = "major_outage"; // Partner API
   const { ctx } = mockCtx([{ body }]);
@@ -63,7 +64,7 @@ Deno.test("service: an outage on the Partner API component itself is reported do
   assert(/Partner API: major_outage/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page that stops listing a Partner API component reports unknown", async () => {
+test("service: a page that stops listing a Partner API component reports unknown", async () => {
   const body = summary({
     components: [{ id: "4l0sjp2mmxxw", name: "Main Web Site and Blog", status: "operational" }],
   });
@@ -74,17 +75,17 @@ Deno.test("service: a page that stops listing a Partner API component reports un
   assert(/no longer lists a "Partner API"/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that stops self-identifying as Unbounce's reports unknown", async () => {
+test("service: a page that stops self-identifying as Unbounce's reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({ page: { id: "x", name: "Somebody Else", url: "https://status.other.com" } }),
@@ -95,7 +96,7 @@ Deno.test("service: a page that stops self-identifying as Unbounce's reports unk
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: Statuspage's component vocabulary maps to the four health states", () => {
+test("service: Statuspage's component vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -104,13 +105,13 @@ Deno.test("service: Statuspage's component vocabulary maps to the four health st
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id and falls back to a slug", () => {
+test("service: componentKey prefers the vendor id and falls back to a slug", () => {
   assertEquals(componentKey({ id: "abc", name: "API" }, 0), "abc");
   assertEquals(componentKey({ name: "Partner API" }, 3), "partner-api-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: the target-component matcher is case-insensitive on the exact label", () => {
+test("service: the target-component matcher is case-insensitive on the exact label", () => {
   assert(TARGET_COMPONENT_NAME.test("Partner API"));
   assert(TARGET_COMPONENT_NAME.test("partner api"));
   assert(!TARGET_COMPONENT_NAME.test("Web Application (app.unbounce.com)"));

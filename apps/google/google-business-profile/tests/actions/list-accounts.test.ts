@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-accounts.ts";
 
-Deno.test("list-accounts: GETs /v1/accounts with default pageSize", async () => {
+test("list-accounts: GETs /v1/accounts with default pageSize", async () => {
   const body = { accounts: [{ name: "accounts/1" }], nextPageToken: "tok" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-accounts: GETs /v1/accounts with default pageSize", async () => 
   assertEquals(result, body);
 });
 
-Deno.test("list-accounts: forwards optional filters", async () => {
+test("list-accounts: forwards optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { accounts: [] } }]);
   await action.execute!({
     pageSize: 5,
@@ -29,7 +30,7 @@ Deno.test("list-accounts: forwards optional filters", async () => {
   assertEquals(params.get("parentAccount"), "accounts/9");
 });
 
-Deno.test("list-accounts: omits unset filters", async () => {
+test("list-accounts: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { accounts: [] } }]);
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-action.ts";
 
@@ -7,7 +8,7 @@ const RESPONSE = {
   "data": { "campaignId": 5, "action": "PAUSE", "status": "paused" },
 };
 
-Deno.test("campaign-action: calls POST /api/client/v2/campaigns/{id}/actions and returns the vendor body", async () => {
+test("campaign-action: calls POST /api/client/v2/campaigns/{id}/actions and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "id": "5", "action": "PAUSE" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("campaign-action: calls POST /api/client/v2/campaigns/{id}/actions and
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("campaign-action: sends nothing for fields left unset", async () => {
+test("campaign-action: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "5", "action": "PAUSE" }, ctx);
   const url = new URL(calls[0].url);
@@ -29,13 +30,13 @@ Deno.test("campaign-action: sends nothing for fields left unset", async () => {
   assertEquals(JSON.parse(calls[0].body!), { "action": "PAUSE" });
 });
 
-Deno.test("campaign-action: refuses a missing id before any request", async () => {
+test("campaign-action: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ "action": "PAUSE" } as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-action: surfaces the vendor's error body", async () => {
+test("campaign-action: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

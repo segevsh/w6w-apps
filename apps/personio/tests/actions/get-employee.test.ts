@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-employee.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-employee: fetches by id and flattens the response", async () => {
+test("get-employee: fetches by id and flattens the response", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -24,7 +25,7 @@ Deno.test("get-employee: fetches by id and flattens the response", async () => {
   assertEquals(out.employee.email, "a@b.com");
 });
 
-Deno.test("get-employee: surfaces the documented 403 (invalid auth) message", async () => {
+test("get-employee: surfaces the documented 403 (invalid auth) message", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

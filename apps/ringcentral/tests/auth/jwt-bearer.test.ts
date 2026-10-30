@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import jwtBearer from "../../auth/jwt-bearer.ts";
 import { OAUTH_TOKEN_URL, WHOAMI_PATH } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const FIELDS = { jwtToken: "eyJ.jwt.credential", clientId: "cid", clientSecret: "csecret" };
 
-Deno.test("jwt-bearer: is a custom-type method with three secret fields", () => {
+test("jwt-bearer: is a custom-type method with three secret fields", () => {
   assertEquals(jwtBearer.type, "custom");
   assertEquals(
     (jwtBearer.fields ?? []).map((f) => f.key).sort(),
@@ -14,7 +15,7 @@ Deno.test("jwt-bearer: is a custom-type method with three secret fields", () => 
   for (const f of jwtBearer.fields ?? []) assertEquals(f.type, "secret", f.key);
 });
 
-Deno.test("jwt-bearer: exchange posts the jwt-bearer grant with Basic client auth", async () => {
+test("jwt-bearer: exchange posts the jwt-bearer grant with Basic client auth", async () => {
   const { ctx, calls } = mockCtx([
     { body: { access_token: "tok-1", expires_in: 7199, token_type: "Bearer" } },
   ]);
@@ -33,7 +34,7 @@ Deno.test("jwt-bearer: exchange posts the jwt-bearer grant with Basic client aut
   assert(typeof credential.expiresAt === "string");
 });
 
-Deno.test("jwt-bearer: exchange requires all three fields before making a request", () => {
+test("jwt-bearer: exchange requires all three fields before making a request", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => jwtBearer.exchange!({ fields: { jwtToken: "x" } }, ctx),
@@ -43,7 +44,7 @@ Deno.test("jwt-bearer: exchange requires all three fields before making a reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("jwt-bearer: exchange throws with the vendor's own error_description on failure", async () => {
+test("jwt-bearer: exchange throws with the vendor's own error_description on failure", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error: "invalid_grant", error_description: "JWT is expired" } },
   ]);
@@ -54,7 +55,7 @@ Deno.test("jwt-bearer: exchange throws with the vendor's own error_description o
   );
 });
 
-Deno.test("jwt-bearer: refresh re-mints from the stored jwtToken, not a refresh_token", async () => {
+test("jwt-bearer: refresh re-mints from the stored jwtToken, not a refresh_token", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-2", expires_in: 7199 } }]);
   const credential = await jwtBearer.refresh!(
     { credential: { ...FIELDS, accessToken: "old" } },
@@ -66,7 +67,7 @@ Deno.test("jwt-bearer: refresh re-mints from the stored jwtToken, not a refresh_
   assertEquals(credential.accessToken, "tok-2");
 });
 
-Deno.test("jwt-bearer: sign stamps the bearer header and nothing else", () => {
+test("jwt-bearer: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://platform.ringcentral.com/x",
@@ -78,14 +79,14 @@ Deno.test("jwt-bearer: sign stamps the bearer header and nothing else", () => {
   assertEquals(signed.headers.authorization, "Bearer tok");
 });
 
-Deno.test("jwt-bearer: test passes when the whoami answers", async () => {
+test("jwt-bearer: test passes when the whoami answers", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", name: "Bot User" } }]);
   const result = await jwtBearer.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result, { ok: true });
   assertEquals(pathOf(calls[0].url), WHOAMI_PATH);
 });
 
-Deno.test("jwt-bearer: test rejects a bad token distinctly", async () => {
+test("jwt-bearer: test rejects a bad token distinctly", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("TokenInvalid", "OAuth token is invalid") },
   ]);
@@ -93,7 +94,7 @@ Deno.test("jwt-bearer: test rejects a bad token distinctly", async () => {
   assertEquals(result.ok, false);
 });
 
-Deno.test("jwt-bearer: afterConnect publishes name/extensionNumber/accountId only", async () => {
+test("jwt-bearer: afterConnect publishes name/extensionNumber/accountId only", async () => {
   const { ctx } = mockCtx([
     { body: { id: "1", name: "Bot User", extensionNumber: "1001", account: { id: "42" } } },
   ]);

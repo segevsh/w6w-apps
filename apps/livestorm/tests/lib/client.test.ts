@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildBody,
   compact,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -18,33 +19,33 @@ Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () =>
   });
 });
 
-Deno.test("toList: comma-joins an array, passes through a comma string, drops empties", () => {
+test("toList: comma-joins an array, passes through a comma string, drops empties", () => {
   assertEquals(toList(["a", "b"]), "a,b");
   assertEquals(toList("a,b"), "a,b");
   assertEquals(toList(undefined), undefined);
   assertEquals(toList(""), undefined);
 });
 
-Deno.test("toPersonFields: normalises a flat record into {id, value} pairs", () => {
+test("toPersonFields: normalises a flat record into {id, value} pairs", () => {
   assertEquals(toPersonFields({ email: "a@b.com", first_name: "A" }), [
     { id: "email", value: "a@b.com" },
     { id: "first_name", value: "A" },
   ]);
 });
 
-Deno.test("toPersonFields: passes an already-built array through, dropping entries with no id", () => {
+test("toPersonFields: passes an already-built array through, dropping entries with no id", () => {
   assertEquals(
     toPersonFields([{ id: "email", value: "a@b.com" }, { id: "", value: "x" }]),
     [{ id: "email", value: "a@b.com" }],
   );
 });
 
-Deno.test("toPersonFields: undefined/empty input yields undefined", () => {
+test("toPersonFields: undefined/empty input yields undefined", () => {
   assertEquals(toPersonFields(undefined), undefined);
   assertEquals(toPersonFields({}), undefined);
 });
 
-Deno.test("buildBody: assembles a JSON:API write body, omitting empty sections", () => {
+test("buildBody: assembles a JSON:API write body, omitting empty sections", () => {
   assertEquals(buildBody("events", { title: "x" }), {
     data: { type: "events", attributes: { title: "x" } },
   });
@@ -58,7 +59,7 @@ Deno.test("buildBody: assembles a JSON:API write body, omitting empty sections",
   });
 });
 
-Deno.test("listQuery: maps pageNumber/pageSize/include into page[]/include query keys", () => {
+test("listQuery: maps pageNumber/pageSize/include into page[]/include query keys", () => {
   assertEquals(listQuery({ pageNumber: 2, pageSize: 10, include: ["sessions", "tags"] }), {
     "page[number]": 2,
     "page[size]": 10,
@@ -67,7 +68,7 @@ Deno.test("listQuery: maps pageNumber/pageSize/include into page[]/include query
   assertEquals(listQuery({}), {});
 });
 
-Deno.test("formatLivestormError: reads errors[0].status/title/detail", () => {
+test("formatLivestormError: reads errors[0].status/title/detail", () => {
   const raw = JSON.stringify({
     errors: [{ title: "Unauthorized", detail: "bad token", status: "unauthorized" }],
   });
@@ -78,12 +79,12 @@ Deno.test("formatLivestormError: reads errors[0].status/title/detail", () => {
   );
 });
 
-Deno.test("formatLivestormError: falls back to raw text when the body is not the error envelope", () => {
+test("formatLivestormError: falls back to raw text when the body is not the error envelope", () => {
   const msg = formatLivestormError(500, "GET", "/ping", "upstream exploded");
   assertEquals(msg, "Livestorm 500 for GET /ping: upstream exploded");
 });
 
-Deno.test("LivestormClient.request: parses the JSON:API envelope and hits the right URL", async () => {
+test("LivestormClient.request: parses the JSON:API envelope and hits the right URL", async () => {
   const { ctx, calls } = mockCtx([{ body: single("events", "e1", { title: "Demo" }) }]);
   const body = await new LivestormClient(ctx).request("/events/e1");
 
@@ -93,7 +94,7 @@ Deno.test("LivestormClient.request: parses the JSON:API envelope and hits the ri
   assertEquals(body, single("events", "e1", { title: "Demo" }));
 });
 
-Deno.test("LivestormClient.request: sends the JSON:API content-type on a write", async () => {
+test("LivestormClient.request: sends the JSON:API content-type on a write", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("events", "e1") }]);
   await new LivestormClient(ctx).request("/events", {
     method: "POST",
@@ -107,19 +108,19 @@ Deno.test("LivestormClient.request: sends the JSON:API content-type on a write",
   });
 });
 
-Deno.test("LivestormClient.request: returns undefined on a 204", async () => {
+test("LivestormClient.request: returns undefined on a 204", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const body = await new LivestormClient(ctx).request("/events/e1", { method: "DELETE" });
   assertEquals(body, undefined);
 });
 
-Deno.test("LivestormClient.status: returns the HTTP status without parsing a body", async () => {
+test("LivestormClient.status: returns the HTTP status without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const status = await new LivestormClient(ctx).status("/events/e1", { method: "DELETE" });
   assertEquals(status, 204);
 });
 
-Deno.test("LivestormClient: a non-ok response throws the formatted error", async () => {
+test("LivestormClient: a non-ok response throws the formatted error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("unauthorized", "Unauthorized") }]);
   await assertRejects(
     () => new LivestormClient(ctx).request("/ping"),

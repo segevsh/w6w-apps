@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageDelete from "../../actions/message-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-delete: DELETEs the singular, unversioned /api/message/{handle}", async () => {
+test("message-delete: DELETEs the singular, unversioned /api/message/{handle}", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK" } }]);
   await messageDelete.execute({ messageHandle: "m1" }, ctx);
 

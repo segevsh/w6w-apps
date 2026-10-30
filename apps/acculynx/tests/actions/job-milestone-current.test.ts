@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-milestone-current.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("job-milestone-current: sends GET /jobs/j1/milestones/current and returns the vendor body", async () => {
+test("job-milestone-current: sends GET /jobs/j1/milestones/current and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1", name: "Lead", isCurrent: true } }]);
   const out = await action.execute({ jobId: "j1" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("job-milestone-current: sends GET /jobs/j1/milestones/current and retu
   assertEquals(out, { id: "m1", name: "Lead", isCurrent: true });
 });
 
-Deno.test("job-milestone-current: a vendor error surfaces its title and status", async () => {
+test("job-milestone-current: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ jobId: "j1" } as never, ctx),

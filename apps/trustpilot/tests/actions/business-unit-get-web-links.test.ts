@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/business-unit-get-web-links.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-unit-get-web-links: sends the required locale and returns the links", async () => {
+test("business-unit-get-web-links: sends the required locale and returns the links", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

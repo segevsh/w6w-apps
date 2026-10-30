@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFileSync } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_KEYS = [
@@ -12,14 +14,14 @@ const ACTION_KEYS = [
   "view-affiliate",
 ];
 
-Deno.test("index: exports exactly the eight documented actions", () => {
+test("index: exports exactly the eight documented actions", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.map((a) => a.key).sort(), [...ACTION_KEYS].sort());
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 1);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -27,7 +29,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a type, a description and an execute hook", () => {
+test("index: every action declares a type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -40,14 +42,14 @@ Deno.test("index: every action declares a type, a description and an execute hoo
   }
 });
 
-Deno.test("index: the four view/delete actions are the read ones", () => {
+test("index: the four view/delete actions are the read ones", () => {
   for (const a of app.actions) {
     const read = a.key.startsWith("view-");
     assertEquals(a.type, read ? "read" : "perform", `${a.key}: wrong type`);
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions) {
     if (a.type !== "perform") continue;
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
@@ -59,7 +61,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * record. Updates are retryable (same values, same record) and deletes cannot
  * compound (the pack's convention), both recorded in each action's doc comment.
  */
-Deno.test("index: inserts are not idempotent, updates and deletes are", () => {
+test("index: inserts are not idempotent, updates and deletes are", () => {
   const byKey = new Map(app.actions.map((a) => [a.key, a]));
   for (const key of ["insert-lead", "insert-affiliate"]) {
     assertEquals(byKey.get(key)?.idempotent, false, key);
@@ -69,7 +71,7 @@ Deno.test("index: inserts are not idempotent, updates and deletes are", () => {
   }
 });
 
-Deno.test("index: no action declares a credential-shaped param", () => {
+test("index: no action declares a credential-shaped param", () => {
   // Credentials live on the Auth method; an Action that accepted one would put
   // a secret in every workflow's saved input.
   for (const a of app.actions) {
@@ -83,7 +85,7 @@ Deno.test("index: no action declares a credential-shaped param", () => {
   }
 });
 
-Deno.test("index: every required field each method documents is present", () => {
+test("index: every required field each method documents is present", () => {
   const required = (key: string) =>
     (app.actions.find((a) => a.key === key)?.params ?? [])
       .filter((p) => p.required === true)
@@ -108,7 +110,7 @@ Deno.test("index: every required field each method documents is present", () => 
   assertEquals(required("view-affiliate"), ["id"]);
 });
 
-Deno.test("index: the affiliate zip/post_code split is preserved per method", () => {
+test("index: the affiliate zip/post_code split is preserved per method", () => {
   const keys = (key: string) =>
     (app.actions.find((a) => a.key === key)?.params ?? []).map((p) => p.key);
   assert(keys("insert-affiliate").includes("zip"), "insert-affiliate should send `zip`");
@@ -120,7 +122,7 @@ Deno.test("index: the affiliate zip/post_code split is preserved per method", ()
   assert(!keys("update-affiliate").includes("zip"));
 });
 
-Deno.test("index: the undocumented-table fields are not declared", () => {
+test("index: the undocumented-table fields are not declared", () => {
   // `phone_work_ext` and `fax` appear in the vendor's example XML but not in the
   // same page's Request Parameters table; `fax` also on the affiliate insert.
   const keys = new Set(app.actions.flatMap((a) => (a.params ?? []).map((p) => p.key)));
@@ -128,7 +130,7 @@ Deno.test("index: the undocumented-table fields are not declared", () => {
   assert(!keys.has("fax"), "fax is not in the vendor's table");
 });
 
-Deno.test("index: the insert-only portal fields are absent from the update actions", () => {
+test("index: the insert-only portal fields are absent from the update actions", () => {
   const insertOnly = [
     "client_portal_access",
     "client_userid",
@@ -147,7 +149,7 @@ Deno.test("index: the insert-only portal fields are absent from the update actio
   }
 });
 
-Deno.test("index: the icon is the vendor's own 16x16 PNG, embedded verbatim", () => {
+test("index: the icon is the vendor's own 16x16 PNG, embedded verbatim", () => {
   // 522 bytes, decoded from the payload the contract pins. If `deno fmt` ever
   // rewrites assets/icon.svg (bare `deno fmt` does), this fails.
   const payload =
@@ -160,7 +162,7 @@ Deno.test("index: the icon is the vendor's own 16x16 PNG, embedded verbatim", ()
     "MroMALIKv1UyAI68ueXh7FJj+ZIOMJGbzfnJLUl30/fRwPLoVHqQJHX2aeFZe1a7Ja0c62mKHmHjZDy4vpJ6" +
     "j32drQWEGb2V40IqRuW76gF+TpIudna7klT1sOvbw9cvL6t7FiYeLOR5nlJKafF8wgCOP7j/0v/M/dr/AJlf" +
     "JN96dFV7AAAAAElFTkSuQmCC";
-  const svg = Deno.readTextFileSync(new URL("../assets/icon.svg", import.meta.url));
+  const svg = denoReadTextFileSync(new URL("../assets/icon.svg", import.meta.url));
   assert(svg.includes(`base64,${payload}"`), "icon no longer embeds the vendor payload verbatim");
   const bytes = Uint8Array.from(
     atob(payload),

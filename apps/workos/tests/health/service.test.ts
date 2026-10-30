@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -7,7 +8,7 @@ const page = (components: Array<Record<string, unknown>>) => ({
   body: { components },
 });
 
-Deno.test("service: reads the Statuspage components and rolls them up", async () => {
+test("service: reads the Statuspage components and rolls them up", async () => {
   const { ctx, calls } = mockCtx([
     page([
       { name: "API", status: "operational" },
@@ -26,7 +27,7 @@ Deno.test("service: reads the Statuspage components and rolls them up", async ()
  * SSO being down stops an entire customer's staff logging in, whatever this app
  * happens to be doing, so it counts at full weight.
  */
-Deno.test("service: an SSO outage is down, not a footnote", async () => {
+test("service: an SSO outage is down, not a footnote", async () => {
   const { ctx } = mockCtx([
     page([
       { name: "API", status: "operational" },
@@ -38,12 +39,12 @@ Deno.test("service: an SSO outage is down, not a footnote", async () => {
   assert(result.message!.includes("SSO"), result.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([page([{ name: "API", status: "degraded_performance" }])]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: component groups are skipped, not counted twice", async () => {
+test("service: component groups are skipped, not counted twice", async () => {
   const { ctx } = mockCtx([
     page([
       { name: "API", status: "major_outage", group: true },
@@ -54,7 +55,7 @@ Deno.test("service: component groups are skipped, not counted twice", async () =
 });
 
 /** A status page that itself fails tells us nothing about WorkOS. */
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -62,13 +63,13 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, bad.ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer names the watched components says so", async () => {
+test("service: a page that no longer names the watched components says so", async () => {
   const { ctx } = mockCtx([page([{ name: "Corporate blog", status: "operational" }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no longer names/.test(result.message!), result.message);
 });
 
-Deno.test("service: declares the status host, which is not the API host", () => {
+test("service: declares the status host, which is not the API host", () => {
   assertEquals(service.network!.allow, ["status.workos.com"]);
 });

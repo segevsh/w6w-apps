@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-rows.ts";
 
-Deno.test("list-rows: GETs rows with query, sort and pagination params", async () => {
+test("list-rows: GETs rows with query, sort and pagination params", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute({
     docId: "doc-1",
@@ -26,7 +27,7 @@ Deno.test("list-rows: GETs rows with query, sort and pagination params", async (
   assertEquals(url.searchParams.get("pageToken"), "cur-1");
 });
 
-Deno.test("list-rows: defaults useColumnNames to true", async () => {
+test("list-rows: defaults useColumnNames to true", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute({ docId: "doc-1", tableId: "grid-1" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import collectionGet from "../../actions/collection-get.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { item, mockCtx, pathOf } from "../_helpers.ts";
  * question — the pluralisation is the single most common way to write a broken
  * Raindrop request.
  */
-Deno.test("collection-get: reads the SINGULAR collection path", async () => {
+test("collection-get: reads the SINGULAR collection path", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 8492393, title: "Development" }) }]);
   const out = await collectionGet.execute({ id: 8492393 }, ctx) as { item: unknown };
 
@@ -16,7 +17,7 @@ Deno.test("collection-get: reads the SINGULAR collection path", async () => {
   assertEquals(out.item, { _id: 8492393, title: "Development" });
 });
 
-Deno.test("collection-get: a system collection id survives the path build", async () => {
+test("collection-get: a system collection id survives the path build", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: -99 }) }]);
   await collectionGet.execute({ id: -99 }, ctx);
   assertEquals(pathOf(calls[0].url), "/rest/v1/collection/-99");

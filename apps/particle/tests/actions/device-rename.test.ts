@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-rename.ts";
 
 const ID = "0123456789abcdef01234567";
 
-Deno.test("device-rename: PUTs the changed fields as a form", async () => {
+test("device-rename: PUTs the changed fields as a form", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "roof-sensor", notes: "north wall" },
@@ -20,13 +21,13 @@ Deno.test("device-rename: PUTs the changed fields as a form", async () => {
   assertEquals(result.changed, ["name", "notes"]);
 });
 
-Deno.test("device-rename: only what was given is sent", async () => {
+test("device-rename: only what was given is sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "x" } }]);
   await action.execute({ deviceId: ID, name: "x" }, ctx);
   assertEquals(calls[0].body, "name=x");
 });
 
-Deno.test("device-rename: a call with nothing to change is refused", async () => {
+test("device-rename: a call with nothing to change is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -39,7 +40,7 @@ Deno.test("device-rename: a call with nothing to change is refused", async () =>
 });
 
 /** The opposite of most systems, where a rename breaks references. */
-Deno.test("device-rename: says renaming breaks nothing", () => {
+test("device-rename: says renaming breaks nothing", () => {
   assert(/Renaming breaks nothing/.test(action.description!), action.description);
   const notes = action.params!.find((p) => p.key === "notes")!;
   assert(/where it physically is/.test(notes.hint!), notes.hint);

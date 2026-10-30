@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/country-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("country-list: GET /v1/countries; a bare array is wrapped as items, with no query string", async () => {
+test("country-list: GET /v1/countries; a bare array is wrapped as items, with no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({}, ctx) as { items: unknown[] };
   assertEquals(pathOf(calls[0].url), "/v1/countries");

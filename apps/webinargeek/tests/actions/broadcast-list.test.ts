@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastList from "../../actions/broadcast-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("broadcast-list: hits GET /broadcasts with order/sort and pagination", async () => {
+test("broadcast-list: hits GET /broadcasts with order/sort and pagination", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

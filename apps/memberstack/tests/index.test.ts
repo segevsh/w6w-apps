@@ -1,15 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 15;
 
-Deno.test("index: exports actions, one auth method and two health checks", () => {
+test("index: exports actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.map((a) => a.key), ["secret-key"]);
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: action keys are unique kebab-case with description, output and execute", () => {
+test("index: action keys are unique kebab-case with description, output and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -22,7 +24,7 @@ Deno.test("index: action keys are unique kebab-case with description, output and
   }
 });
 
-Deno.test("index: every perform declares idempotency; only these are non-idempotent", () => {
+test("index: every perform declares idempotency; only these are non-idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -33,7 +35,7 @@ Deno.test("index: every perform declares idempotency; only these are non-idempot
   );
 });
 
-Deno.test("index: manifest allowlist is exactly the API host", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest allowlist is exactly the API host", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["admin.memberstack.com"]);
 });

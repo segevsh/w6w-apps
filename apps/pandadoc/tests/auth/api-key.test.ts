@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares PandaDoc's `API-Key ` header prefix, not Bearer", () => {
+test("api-key: declares PandaDoc's `API-Key ` header prefix, not Bearer", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -10,14 +11,14 @@ Deno.test("api-key: declares PandaDoc's `API-Key ` header prefix, not Bearer", (
   assertEquals(auth.apiKey?.prefix, "API-Key ");
 });
 
-Deno.test("api-key: the credential field is a secret", () => {
+test("api-key: the credential field is a secret", () => {
   const field = auth.fields?.find((f) => f.key === "apiKey");
   assert(field);
   assertEquals(field.type, "secret");
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign stamps `Authorization: API-Key <key>`", () => {
+test("api-key: sign stamps `Authorization: API-Key <key>`", () => {
   const request = {
     method: "GET",
     url: "https://api.pandadoc.com/public/v1/documents",
@@ -30,7 +31,7 @@ Deno.test("api-key: sign stamps `Authorization: API-Key <key>`", () => {
   assertEquals(signed.headers, { authorization: "API-Key k123" });
 });
 
-Deno.test("api-key: test probes GET /public/v1/members/current and reports ok", async () => {
+test("api-key: test probes GET /public/v1/members/current and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com" } }]);
   const result = await auth.test({ credential: { apiKey: "k123" } } as never, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("api-key: test probes GET /public/v1/members/current and reports ok", 
   assertEquals(result, { ok: true });
 });
 
-Deno.test("api-key: test surfaces PandaDoc's `detail` on a rejected key", async () => {
+test("api-key: test surfaces PandaDoc's `detail` on a rejected key", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { type: "authentication_error", detail: "Invalid key." } },
   ]);
@@ -47,20 +48,20 @@ Deno.test("api-key: test surfaces PandaDoc's `detail` on a rejected key", async 
   assertEquals(result, { ok: false, message: "Invalid key." });
 });
 
-Deno.test("api-key: test falls back to the status code when there is no detail", async () => {
+test("api-key: test falls back to the status code when there is no detail", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   const result = await auth.test({ credential: { apiKey: "k" } } as never, ctx);
   assertEquals(result, { ok: false, message: "PandaDoc returned HTTP 503" });
 });
 
-Deno.test("api-key: test rejects a credential with no key without calling out", async () => {
+test("api-key: test rejects a credential with no key without calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test({ credential: {} } as never, ctx);
   assertEquals(result, { ok: false, message: "credential missing apiKey" });
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect records display metadata, never the credential", async () => {
+test("api-key: afterConnect records display metadata, never the credential", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -94,7 +95,7 @@ Deno.test("api-key: afterConnect records display metadata, never the credential"
   assertEquals("apiKey" in display, false);
 });
 
-Deno.test("api-key: afterConnect degrades to empty display rather than throwing", async () => {
+test("api-key: afterConnect degrades to empty display rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   assertEquals(await auth.afterConnect!({ credential: {} } as never, ctx), {});
 });

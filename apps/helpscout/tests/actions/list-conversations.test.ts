@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-conversations.ts";
 
-Deno.test("list-conversations: GETs /conversations with the filter params mapped", async () => {
+test("list-conversations: GETs /conversations with the filter params mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: { _embedded: { conversations: [{ id: 1 }] } } }]);
   const out = await action.execute({
     mailboxId: 123,
@@ -19,7 +20,7 @@ Deno.test("list-conversations: GETs /conversations with the filter params mapped
   assertEquals(out, { conversations: [{ id: 1 }] });
 });
 
-Deno.test("list-conversations: returns an empty array when _embedded is absent", async () => {
+test("list-conversations: returns an empty array when _embedded is absent", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await action.execute({}, ctx);
   assertEquals(out, { conversations: [] });

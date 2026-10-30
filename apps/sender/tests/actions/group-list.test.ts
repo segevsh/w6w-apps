@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupList from "../../actions/group-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-list: GETs /v2/groups and keeps meta", async () => {
+test("group-list: GETs /v2/groups and keeps meta", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "g1" }]) }]);
   const out = await groupList.execute({}, ctx) as { data: unknown[] };
 

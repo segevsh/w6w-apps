@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { baseFromConnection, JsmClient, readErrorDetail } from "../../lib/client.ts";
 
-Deno.test("baseFromConnection: prefers cloudId (OAuth gateway) over site", () => {
+test("baseFromConnection: prefers cloudId (OAuth gateway) over site", () => {
   const base = baseFromConnection({
     id: "c1",
     app: "io.w6w.jira-service-management",
@@ -13,7 +14,7 @@ Deno.test("baseFromConnection: prefers cloudId (OAuth gateway) over site", () =>
   assertEquals(base, "https://api.atlassian.com/ex/jira/cloud-1/rest/servicedeskapi");
 });
 
-Deno.test("baseFromConnection: falls back to the site host", () => {
+test("baseFromConnection: falls back to the site host", () => {
   const base = baseFromConnection({
     id: "c1",
     app: "io.w6w.jira-service-management",
@@ -24,7 +25,7 @@ Deno.test("baseFromConnection: falls back to the site host", () => {
   assertEquals(base, "https://acme.atlassian.net/rest/servicedeskapi");
 });
 
-Deno.test("baseFromConnection: throws when neither is recorded", () => {
+test("baseFromConnection: throws when neither is recorded", () => {
   try {
     baseFromConnection({
       id: "c1",
@@ -39,7 +40,7 @@ Deno.test("baseFromConnection: throws when neither is recorded", () => {
   }
 });
 
-Deno.test("JsmClient: appends repeated query params for arrays", async () => {
+test("JsmClient: appends repeated query params for arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   (ctx as { connection?: unknown }).connection = { display: { site: "acme" } };
   await new JsmClient(ctx).request("/request", { query: { expand: ["sla", "status"] } });
@@ -47,14 +48,14 @@ Deno.test("JsmClient: appends repeated query params for arrays", async () => {
   assertEquals(url.searchParams.getAll("expand"), ["sla", "status"]);
 });
 
-Deno.test("JsmClient: returns undefined on 204 with no body", async () => {
+test("JsmClient: returns undefined on 204 with no body", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   (ctx as { connection?: unknown }).connection = { display: { site: "acme" } };
   const out = await new JsmClient(ctx).request("/request/HD-1/transition", { method: "POST" });
   assertEquals(out, undefined);
 });
 
-Deno.test("JsmClient: throws with the parsed error detail on a non-2xx response", async () => {
+test("JsmClient: throws with the parsed error detail on a non-2xx response", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { errorMessage: "requestTypeId is required" } }]);
   (ctx as { connection?: unknown }).connection = { display: { site: "acme" } };
   await assertRejects(
@@ -64,7 +65,7 @@ Deno.test("JsmClient: throws with the parsed error detail on a non-2xx response"
   );
 });
 
-Deno.test("readErrorDetail: falls back to raw text for a non-JSON body", async () => {
+test("readErrorDetail: falls back to raw text for a non-JSON body", async () => {
   const res = new Response("Client must be authenticated to access this resource.", {
     status: 401,
     headers: { "content-type": "text/html;charset=UTF-8" },

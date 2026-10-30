@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-usage.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-usage: sends the date range", async () => {
+test("get-usage: sends the date range", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -29,7 +30,7 @@ Deno.test("get-usage: sends the date range", async () => {
   });
 });
 
-Deno.test("get-usage: surfaces a 422 bad date", async () => {
+test("get-usage: surfaces a 422 bad date", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

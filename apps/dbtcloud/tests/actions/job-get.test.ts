@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-get.ts";
 
 const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
 
-Deno.test("job-get: fetches one job and passes include_related through", async () => {
+test("job-get: fetches one job and passes include_related through", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { data: { id: 9, execute_steps: ["dbt build"] } } }],
     { display },
@@ -21,13 +22,13 @@ Deno.test("job-get: fetches one job and passes include_related through", async (
   assertEquals(result.execute_steps, ["dbt build"]);
 });
 
-Deno.test("job-get: needs a job id", async () => {
+test("job-get: needs a job id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "jobId");
   assertEquals(calls.length, 0);
 });
 
 /** The commands, the environment and the triggers decide what a run does. */
-Deno.test("job-get: names what makes a job's definition worth reading", () => {
+test("job-get: names what makes a job's definition worth reading", () => {
   assert(/dbt commands/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import invoiceList from "../../actions/invoice-list.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-list: sends GET /invoices", async () => {
+test("invoice-list: sends GET /invoices", async () => {
   const { ctx, calls } = mockCtx([{ body: { "entries": [] } }]);
   const out = await invoiceList.execute(
     {
@@ -32,7 +33,7 @@ Deno.test("invoice-list: sends GET /invoices", async () => {
   assertEquals(out.entries, []);
 });
 
-Deno.test("invoice-list: a non-2xx answer throws with the vendor's error code", async () => {
+test("invoice-list: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

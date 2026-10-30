@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-ip.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-ip: GETs /v5/ip/enrich with the ip and the set flags", async () => {
+test("enrich-ip: GETs /v5/ip/enrich with the ip and the set flags", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: 200, data: { ip: { address: "72.212.42.169" } } },
   }]);
@@ -25,7 +26,7 @@ Deno.test("enrich-ip: GETs /v5/ip/enrich with the ip and the set flags", async (
   assertEquals((out as Record<string, unknown>).found, true);
 });
 
-Deno.test("enrich-ip: no ip is refused; 404 is found: false", async () => {
+test("enrich-ip: no ip is refused; 404 is found: false", async () => {
   await assertRejects(
     async () => await action.execute!({} as never, mockCtx([]).ctx),
     Error,

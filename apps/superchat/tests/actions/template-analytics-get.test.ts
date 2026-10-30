@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-analytics-get.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("template-analytics-get: sends the period and one template_ids param per id", async () => {
+test("template-analytics-get: sends the period and one template_ids param per id", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "results": [] } }]);
   const result = await action.execute!(
     {
@@ -42,7 +43,7 @@ Deno.test("template-analytics-get: sends the period and one template_ids param p
   assertEquals(result, { "results": [] });
 });
 
-Deno.test("template-analytics-get: an empty list throws", async () => {
+test("template-analytics-get: an empty list throws", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "templateIds": [], "from": "a", "to": "b" } as never, ctx),

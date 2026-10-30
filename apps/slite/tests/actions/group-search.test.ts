@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import groupSearch from "../../actions/group-search.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("group-search: GET /v1/groups with the documented parameters", async () => {
+test("group-search: GET /v1/groups with the documented parameters", async () => {
   const response = { groups: [{ id: "g1" }], total: 1, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await groupSearch.execute({ query: "eng", cursor: "c" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("group-search: GET /v1/groups with the documented parameters", async (
   assertEquals(out, response);
 });
 
-Deno.test("group-search: a vendor error surfaces its own message and id", async () => {
+test("group-search: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("group-search: a vendor error surfaces its own message and id", async 
   );
 });
 
-Deno.test("group-search: a blank query is refused before any request", async () => {
+test("group-search: a blank query is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await groupSearch.execute({ query: "" }, ctx), Error, "query");
   assertEquals(calls.length, 0);

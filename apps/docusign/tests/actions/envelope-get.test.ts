@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/envelope-get.ts";
 
-Deno.test("envelope-get: GETs one envelope by id", async () => {
+test("envelope-get: GETs one envelope by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { envelopeId: "e1", status: "sent" } }]);
   const out = await action.execute({ envelopeId: "e1" }, ctx) as { status: string };
 
@@ -11,7 +12,7 @@ Deno.test("envelope-get: GETs one envelope by id", async () => {
   assertEquals(out.status, "sent");
 });
 
-Deno.test("envelope-get: passes include and advanced_update", async () => {
+test("envelope-get: passes include and advanced_update", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { envelopeId: "e1", include: "recipients,documents", advancedUpdate: true },
@@ -22,13 +23,13 @@ Deno.test("envelope-get: passes include and advanced_update", async () => {
   assertEquals(q.get("advanced_update"), "true");
 });
 
-Deno.test("envelope-get: URL-encodes an id with awkward characters", async () => {
+test("envelope-get: URL-encodes an id with awkward characters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ envelopeId: "a/b c" }, ctx);
   assertEquals(pathOf(calls[0]), `${ACCOUNT_BASE}/envelopes/a%2Fb%20c`);
 });
 
-Deno.test("envelope-get: is a read action", () => {
+test("envelope-get: is a read action", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "envelope");
 });

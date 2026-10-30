@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-details-get.ts";
 
-Deno.test("campaign-details-get: sends campaign_id as a query param", async () => {
+test("campaign-details-get: sends campaign_id as a query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "Welcome" } }], {
     display: { instance: "iad-01" },
   });

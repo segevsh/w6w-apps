@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-create.ts";
 
-Deno.test("bucket-create: us-east-1 sends no LocationConstraint body", async () => {
+test("bucket-create: us-east-1 sends no LocationConstraint body", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, headers: { location: "/my-bucket" } }],
     mockConnection({ region: "us-east-1" }),
@@ -15,7 +16,7 @@ Deno.test("bucket-create: us-east-1 sends no LocationConstraint body", async () 
   assertEquals(result, { bucket: "my-bucket", location: "/my-bucket" });
 });
 
-Deno.test("bucket-create: other regions send a LocationConstraint body", async () => {
+test("bucket-create: other regions send a LocationConstraint body", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200 }],
     mockConnection({ region: "eu-west-1" }),
@@ -29,18 +30,18 @@ Deno.test("bucket-create: other regions send a LocationConstraint body", async (
   }
 });
 
-Deno.test("bucket-create: sets x-amz-acl when provided", async () => {
+test("bucket-create: sets x-amz-acl when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }], mockConnection({ region: "us-east-1" }));
   await action.execute!({ bucket: "my-bucket", acl: "public-read" }, ctx);
   assertEquals(calls[0].headers["x-amz-acl"], "public-read");
 });
 
-Deno.test("bucket-create: missing bucket rejects", async () => {
+test("bucket-create: missing bucket rejects", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({ bucket: "" }, ctx)), Error, "bucket");
 });
 
-Deno.test("bucket-create: propagates S3 errors", async () => {
+test("bucket-create: propagates S3 errors", async () => {
   const { ctx } = mockCtx(
     [{
       status: 409,

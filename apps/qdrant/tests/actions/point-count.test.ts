@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/point-count.ts";
@@ -7,7 +8,7 @@ import action from "../../actions/point-count.ts";
  * Qdrant defaults `exact` to false and answers with an index estimate. A
  * number that might be wrong looks exactly like one that is right.
  */
-Deno.test("point-count: asks for the exact count, against Qdrant's default", async () => {
+test("point-count: asks for the exact count, against Qdrant's default", async () => {
   const { ctx, calls } = mockCtx([ok({ count: 1204 })], { display });
   const result = await action.execute!({ collection: "docs" }, ctx) as {
     count: number;
@@ -21,7 +22,7 @@ Deno.test("point-count: asks for the exact count, against Qdrant's default", asy
   assertEquals(result, { count: 1204, exact: true });
 });
 
-Deno.test("point-count: the fast estimate is still available", async () => {
+test("point-count: the fast estimate is still available", async () => {
   const { ctx, calls } = mockCtx([ok({ count: 1200 })], { display });
   const result = await action.execute!({ collection: "docs", exact: false }, ctx) as {
     exact: boolean;
@@ -31,7 +32,7 @@ Deno.test("point-count: the fast estimate is still available", async () => {
 });
 
 /** The cheap way to ask "does this tenant have anything". */
-Deno.test("point-count: a filter narrows the count", async () => {
+test("point-count: a filter narrows the count", async () => {
   const { ctx, calls } = mockCtx([ok({ count: 0 })], { display });
   const result = await action.execute!({
     collection: "docs",
@@ -41,18 +42,18 @@ Deno.test("point-count: a filter narrows the count", async () => {
   assertEquals(result.count, 0);
 });
 
-Deno.test("point-count: a missing count reads as zero, not NaN", async () => {
+test("point-count: a missing count reads as zero, not NaN", async () => {
   const { ctx } = mockCtx([ok({})], { display });
   const result = await action.execute!({ collection: "docs" }, ctx) as { count: number };
   assertEquals(result.count, 0);
 });
 
-Deno.test("point-count: needs a collection", async () => {
+test("point-count: needs a collection", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "collection");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-count: warns in the description that Qdrant's default is an estimate", () => {
+test("point-count: warns in the description that Qdrant's default is an estimate", () => {
   assert(/ESTIMATE/.test(action.description!), action.description);
 });

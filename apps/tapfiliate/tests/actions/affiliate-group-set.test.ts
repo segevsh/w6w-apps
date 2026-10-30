@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateGroupSet from "../../actions/affiliate-group-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * documented ONLY in the page's Node.js code sample, not in its (empty)
  * "Arguments" prose section.
  */
-Deno.test("affiliate-group-set: PUTs {group_id} — the undocumented-in-prose body field", async () => {
+test("affiliate-group-set: PUTs {group_id} — the undocumented-in-prose body field", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "janejameson", affiliate_group_id: "ag_eXampl3" },
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionDelete from "../../actions/submission-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("submission-delete: DELETEs the submission and reports the status", async () => {
+test("submission-delete: DELETEs the submission and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await submissionDelete.execute({ formId: "aB1", submissionId: "s1" }, ctx);
 
@@ -17,12 +18,12 @@ Deno.test("submission-delete: DELETEs the submission and reports the status", as
  * there is nothing to parse. Using `status()` rather than `json()` is what
  * keeps an empty body from becoming a parse error.
  */
-Deno.test("submission-delete: an empty body is not a failure", async () => {
+test("submission-delete: an empty body is not a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   const out = await submissionDelete.execute({ formId: "aB1", submissionId: "s1" }, ctx);
   assertEquals(out.status, 200);
 });
 
-Deno.test("submission-delete: is idempotent — the same end state after a retry", () => {
+test("submission-delete: is idempotent — the same end state after a retry", () => {
   assertEquals(submissionDelete.idempotent, true);
 });

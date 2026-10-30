@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import conversionEventReport from "../../actions/conversion-event-report.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const oneEvent = [{
   eventId: "abc12345",
 }];
 
-Deno.test("conversion-event-report: a single event is sent as a plain create, no batch header", async () => {
+test("conversion-event-report: a single event is sent as a plain create, no batch header", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: undefined }]);
   const result = await conversionEventReport.execute(
     { conversionId: "123", events: oneEvent },
@@ -25,7 +26,7 @@ Deno.test("conversion-event-report: a single event is sent as a plain create, no
   assertEquals(result, { ok: true, batch: false, count: 1 });
 });
 
-Deno.test("conversion-event-report: two or more events use BATCH_CREATE with an elements wrapper", async () => {
+test("conversion-event-report: two or more events use BATCH_CREATE with an elements wrapper", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: undefined }]);
   const events = [
     { conversionHappenedAt: 1, user: { userIds: [{ idType: "SHA256_EMAIL", idValue: "a" }] } },
@@ -41,7 +42,7 @@ Deno.test("conversion-event-report: two or more events use BATCH_CREATE with an 
   assertEquals(result, { ok: true, batch: true, count: 2 });
 });
 
-Deno.test("conversion-event-report: a per-event conversion field overrides the action-level default", async () => {
+test("conversion-event-report: a per-event conversion field overrides the action-level default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: undefined }]);
   await conversionEventReport.execute(
     {
@@ -58,7 +59,7 @@ Deno.test("conversion-event-report: a per-event conversion field overrides the a
   assertEquals(body.conversion, "urn:lla:llaPartnerConversion:999");
 });
 
-Deno.test("conversion-event-report: accepts events as a JSON string, matching the json Param contract", async () => {
+test("conversion-event-report: accepts events as a JSON string, matching the json Param contract", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: undefined }]);
   await conversionEventReport.execute(
     { conversionId: "123", events: JSON.stringify(oneEvent) },
@@ -67,7 +68,7 @@ Deno.test("conversion-event-report: accepts events as a JSON string, matching th
   assertEquals(calls.length, 1);
 });
 
-Deno.test("conversion-event-report: rejects an empty array without making a request", async () => {
+test("conversion-event-report: rejects an empty array without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await conversionEventReport.execute({ conversionId: "123", events: [] }, ctx),
@@ -77,7 +78,7 @@ Deno.test("conversion-event-report: rejects an empty array without making a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("conversion-event-report: rejects an event with no conversion and no default, without making a request", async () => {
+test("conversion-event-report: rejects an event with no conversion and no default, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -91,6 +92,6 @@ Deno.test("conversion-event-report: rejects an event with no conversion and no d
   assertEquals(calls.length, 0);
 });
 
-Deno.test("conversion-event-report: is not idempotent", () => {
+test("conversion-event-report: is not idempotent", () => {
   assertEquals(conversionEventReport.idempotent, false);
 });

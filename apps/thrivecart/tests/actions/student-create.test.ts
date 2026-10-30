@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import studentCreate from "../../actions/student-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("student-create: calls POST /students with nested order_info[] keys", async () => {
+test("student-create: calls POST /students with nested order_info[] keys", async () => {
   const { ctx, calls } = mockCtx([
     { body: { auto_signin_url: "https://x/signin", student: { id: "1" } } },
   ]);
@@ -28,13 +29,13 @@ Deno.test("student-create: calls POST /students with nested order_info[] keys", 
   assertEquals(form.trigger_emails, "true");
 });
 
-Deno.test("student-create: order_info fields are omitted when no order is linked", async () => {
+test("student-create: order_info fields are omitted when no order is linked", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await studentCreate.execute({ email: "a@b.com", courseId: "9" }, ctx);
   const form = formOf(calls[0]);
   assertEquals("order_info[order_id]" in form, false);
 });
 
-Deno.test("student-create: is not idempotent", () => {
+test("student-create: is not idempotent", () => {
   assertEquals(studentCreate.idempotent, false);
 });

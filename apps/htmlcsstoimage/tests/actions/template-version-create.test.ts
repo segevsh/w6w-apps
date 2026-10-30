@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateVersionCreate from "../../actions/template-version-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-version-create: POSTs /template/{id} without leaking template_id into the body", async () => {
+test("template-version-create: POSTs /template/{id} without leaking template_id into the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { template_id: "t-1", template_version: 2 } }]);
   const out = await templateVersionCreate.execute({
     template_id: "t-1",
@@ -15,7 +16,7 @@ Deno.test("template-version-create: POSTs /template/{id} without leaking templat
   assertEquals(out, { template_id: "t-1", template_version: 2 });
 });
 
-Deno.test("template-version-create: requires template_id and html", async () => {
+test("template-version-create: requires template_id and html", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await templateVersionCreate.execute({ template_id: "", html: "<p/>" }, ctx),

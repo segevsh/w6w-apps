@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-monitors.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-monitors: wraps the array response and sends ownership", async () => {
+test("list-monitors: wraps the array response and sends ownership", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1, "name": "Hiring monitor" }] }]);
   const out = await action.execute!({ "ownership": "team" } as never, ctx);
   const url = new URL(calls[0].url);

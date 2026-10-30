@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskEstimateDelete from "../../actions/task-estimate-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-estimate-delete: DELETE /tasks/{taskId}/estimate with the documented query and body", async () => {
+test("task-estimate-delete: DELETE /tasks/{taskId}/estimate with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await taskEstimateDelete.execute({ "taskId": "ev:9" }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("task-estimate-delete: DELETE /tasks/{taskId}/estimate with the docume
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("task-estimate-delete: an Everhour error surfaces its message and status", async () => {
+test("task-estimate-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(taskEstimateDelete.execute({ "taskId": "ev:9" }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("task-estimate-delete: an Everhour error surfaces its message and stat
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("task-estimate-delete: declares perform and idempotent=true", () => {
+test("task-estimate-delete: declares perform and idempotent=true", () => {
   assertEquals(taskEstimateDelete.type, "perform");
   assertEquals(taskEstimateDelete.idempotent, true);
 });

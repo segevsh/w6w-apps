@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkCreate from "../../actions/link-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("link-create: personal scope posts to /v1/links", async () => {
+test("link-create: personal scope posts to /v1/links", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "link_new" } }]);
   const out = await linkCreate.execute({
     name: "Intro",
@@ -21,7 +22,7 @@ Deno.test("link-create: personal scope posts to /v1/links", async () => {
   assertEquals(out.id, "link_new");
 });
 
-Deno.test("link-create: a scope slug posts to /v1/scopes/{slug}/links", async () => {
+test("link-create: a scope slug posts to /v1/scopes/{slug}/links", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await linkCreate.execute({ name: "Demo", scopeSlug: "acme-inc" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/scopes/acme-inc/links");

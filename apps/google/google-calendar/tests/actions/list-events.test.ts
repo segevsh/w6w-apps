@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-events.ts";
 
-Deno.test("list-events: defaults maxResults=100 and singleEvents=true", async () => {
+test("list-events: defaults maxResults=100 and singleEvents=true", async () => {
   const body = { items: [], nextPageToken: undefined };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ calendarId: "primary" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("list-events: defaults maxResults=100 and singleEvents=true", async ()
   assertEquals(url.searchParams.get("singleEvents"), "true");
 });
 
-Deno.test("list-events: forwards every optional filter", async () => {
+test("list-events: forwards every optional filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({
     calendarId: "primary",
@@ -49,7 +50,7 @@ Deno.test("list-events: forwards every optional filter", async () => {
   assertEquals(params.get("fields"), "items(id,summary)");
 });
 
-Deno.test("list-events: encodes email calendar IDs in the path", async () => {
+test("list-events: encodes email calendar IDs in the path", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ calendarId: "team@example.com" }, ctx);
   assert(new URL(calls[0].url).pathname.includes("team%40example.com/events"));

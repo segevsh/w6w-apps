@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-list: lists campaigns filtered by status", async () => {
+test("campaign-list: lists campaigns filtered by status", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ "id": 1234567, "name": "SaaS CEOs", "status": "RUNNING" }],
@@ -23,7 +24,7 @@ Deno.test("campaign-list: lists campaigns filtered by status", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("campaign-list: an empty match is an empty list, not an error", async () => {
+test("campaign-list: an empty match is an empty list, not an error", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "message": "There are no campaigns." } }]);
   const out = await campaignList.execute({} as never, ctx) as Record<string, unknown>;
   assertEquals(calls.length, 1);

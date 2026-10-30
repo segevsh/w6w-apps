@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import balance from "../../actions/timeoff-balance-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timeoff-balance-get: GETs the balance with policyType and date", async () => {
+test("timeoff-balance-get: GETs the balance with policyType and date", async () => {
   const { ctx, calls } = mockCtx([{ body: { totalBalanceAsOfDate: 12.5, policy: "Holiday" } }]);
   const out = await balance.execute(
     { employeeId: "11", policyType: "Holiday", date: "2026-10-06" },
@@ -13,7 +14,7 @@ Deno.test("timeoff-balance-get: GETs the balance with policyType and date", asyn
   assertEquals(out.totalBalanceAsOfDate, 12.5);
 });
 
-Deno.test("timeoff-balance-get: requires a policy type", async () => {
+test("timeoff-balance-get: requires a policy type", async () => {
   const { ctx } = mockCtx();
   await assertRejects(() =>
     Promise.resolve(balance.execute({ employeeId: "11", policyType: "", date: "2026-10-06" }, ctx))

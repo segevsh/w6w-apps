@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-get.ts";
 
-Deno.test("group-get: GETs /groups/{groupKey}", async () => {
+test("group-get: GETs /groups/{groupKey}", async () => {
   const body = { id: "g-1", email: "team@example.com" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ groupKey: "team@example.com" }, ctx);

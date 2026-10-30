@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import apiToken, { authHeaders } from "../../auth/api-token.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("authHeaders - builds the Bearer header", () => {
+test("authHeaders - builds the Bearer header", () => {
   assertEquals(authHeaders({ apiToken: "tok_123" }), { authorization: "Bearer tok_123" });
 });
 
-Deno.test("sign - injects the Authorization header and returns the request", () => {
+test("sign - injects the Authorization header and returns the request", () => {
   const request = {
     url: "https://api.float.com/v3/people",
     method: "GET",
@@ -20,14 +21,14 @@ Deno.test("sign - injects the Authorization header and returns the request", () 
   assertEquals(out, request); // same object, mutated in place
 });
 
-Deno.test("test - missing apiToken fails without a network call", async () => {
+test("test - missing apiToken fails without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test - 200 on the departments probe is a live token", async () => {
+test("test - 200 on the departments probe is a live token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   const result = await apiToken.test({ credential: { apiToken: "tok_good" } }, ctx);
   assertEquals(result.ok, true);
@@ -35,7 +36,7 @@ Deno.test("test - 200 on the departments probe is a live token", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok_good");
 });
 
-Deno.test("test - a real JSON 401 is reported as a rejected token", async () => {
+test("test - a real JSON 401 is reported as a rejected token", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -52,7 +53,7 @@ Deno.test("test - a real JSON 401 is reported as a rejected token", async () => 
   assertEquals(result.message?.includes("Float rejected the token"), true);
 });
 
-Deno.test("test - a non-JSON 403 (edge/WAF refusal) does not crash on res.json() and is reported distinctly", async () => {
+test("test - a non-JSON 403 (edge/WAF refusal) does not crash on res.json() and is reported distinctly", async () => {
   const { ctx } = mockCtx([
     { status: 403, headers: { "content-type": "text/html; charset=UTF-8" }, body: "403 Forbidden" },
   ]);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: signs with the X-Auth-Token header", async () => {
+test("api-key: signs with the X-Auth-Token header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.docuseal.com/templates",
@@ -14,7 +15,7 @@ Deno.test("api-key: signs with the X-Auth-Token header", async () => {
   assertEquals(auth.apiKey, { in: "header", name: "X-Auth-Token" });
 });
 
-Deno.test("api-key: both region and apiKey are required; only apiKey is a secret", () => {
+test("api-key: both region and apiKey are required; only apiKey is a secret", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiKey", "region"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiKey"]);
@@ -26,7 +27,7 @@ Deno.test("api-key: both region and apiKey are required; only apiKey is a secret
   );
 });
 
-Deno.test("api-key: test probes /templates on the region's own host", async () => {
+test("api-key: test probes /templates on the region's own host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], pagination: { count: 0 } } }]);
   assertEquals(
     await auth.test!({ credential: { apiKey: "k", region: "eu" } } as never, ctx),
@@ -36,7 +37,7 @@ Deno.test("api-key: test probes /templates on the region's own host", async () =
   assertEquals(calls[0].headers["x-auth-token"], "k");
 });
 
-Deno.test("api-key: a missing key fails before any network call", async () => {
+test("api-key: a missing key fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -50,7 +51,7 @@ Deno.test("api-key: a missing key fails before any network call", async () => {
  * classification comes from that body, never the status alone, and the
  * message never echoes the key back.
  */
-Deno.test("api-key: a rejected key is classified from the vendor's own error body", async () => {
+test("api-key: a rejected key is classified from the vendor's own error body", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Not authenticated" } }]);
   const result = await auth.test!({ credential: { apiKey: "wrong" } } as never, ctx) as {
     ok: boolean;
@@ -61,13 +62,13 @@ Deno.test("api-key: a rejected key is classified from the vendor's own error bod
   assert(!result.message.includes("wrong"), "the credential must never be echoed back");
 });
 
-Deno.test("api-key: defaults to the global host when no region is set", async () => {
+test("api-key: defaults to the global host when no region is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], pagination: {} } }]);
   await auth.test!({ credential: { apiKey: "k" } } as never, ctx);
   assertEquals(new URL(calls[0].url).host, "api.docuseal.com");
 });
 
-Deno.test("api-key: afterConnect records the region, never the key", async () => {
+test("api-key: afterConnect records the region, never the key", async () => {
   const display = await auth.afterConnect!(
     { credential: { apiKey: "supersecret", region: "eu" } } as never,
     null as never,
@@ -76,7 +77,7 @@ Deno.test("api-key: afterConnect records the region, never the key", async () =>
   assert(!JSON.stringify(display).includes("supersecret"), "the credential leaked into display");
 });
 
-Deno.test("api-key: with no region the connection records global", async () => {
+test("api-key: with no region the connection records global", async () => {
   assertEquals(
     await auth.afterConnect!({ credential: { apiKey: "k" } } as never, null as never),
     { region: "global" },

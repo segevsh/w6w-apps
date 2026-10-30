@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-record.ts";
 
-Deno.test("update-record: PATCHes {baseId}/{table}/{recordId} by default", async () => {
+test("update-record: PATCHes {baseId}/{table}/{recordId} by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec1" } }]);
   await action.execute!(
     { baseId: "appABC", table: "Users", recordId: "rec1", fields: { Name: "Jane" } },
@@ -15,7 +16,7 @@ Deno.test("update-record: PATCHes {baseId}/{table}/{recordId} by default", async
   assertEquals(body.typecast, false);
 });
 
-Deno.test("update-record: replace=true switches to PUT", async () => {
+test("update-record: replace=true switches to PUT", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -30,7 +31,7 @@ Deno.test("update-record: replace=true switches to PUT", async () => {
   assertEquals(calls[0].method, "PUT");
 });
 
-Deno.test("update-record: forwards typecast=true", async () => {
+test("update-record: forwards typecast=true", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

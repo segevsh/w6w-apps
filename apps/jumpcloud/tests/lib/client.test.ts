@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   apiUrl,
   apiV2Url,
@@ -14,7 +15,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("the three regions are the hosts the specs' servers blocks name", () => {
+test("the three regions are the hosts the specs' servers blocks name", () => {
   assertEquals(REGIONS, {
     us: "console.jumpcloud.com",
     eu: "console.eu.jumpcloud.com",
@@ -24,13 +25,13 @@ Deno.test("the three regions are the hosts the specs' servers blocks name", () =
 });
 
 /** V2 did not replace V1: they are two base paths on the same host. */
-Deno.test("the two APIs are two base paths, not two versions", () => {
+test("the two APIs are two base paths, not two versions", () => {
   assertEquals(apiUrl("us"), "https://console.jumpcloud.com/api");
   assertEquals(apiV2Url("us"), "https://console.jumpcloud.com/api/v2");
   assertEquals(apiV2Url("in"), "https://console.in.jumpcloud.com/api/v2");
 });
 
-Deno.test("resolveRegion defaults to us and ignores a value it does not know", () => {
+test("resolveRegion defaults to us and ignores a value it does not know", () => {
   assertEquals(resolveRegion(undefined), "us");
   assertEquals(resolveRegion({ display: {} } as never), "us");
   assertEquals(resolveRegion({ display: { region: "eu" } } as never), "eu");
@@ -38,7 +39,7 @@ Deno.test("resolveRegion defaults to us and ignores a value it does not know", (
   assertEquals(resolveRegion({ display: { region: "mars" } } as never), "us");
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: [], f: false }), {
     a: 1,
     f: false,
@@ -53,13 +54,13 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
  * JumpCloud's sort and fields are space-separated. A comma-separated value is
  * not rejected — it is read as one impossible field name and ignored.
  */
-Deno.test("spaced converts the pack's comma convention to JumpCloud's spaces", () => {
+test("spaced converts the pack's comma convention to JumpCloud's spaces", () => {
   assertEquals(spaced("lastname, -created"), "lastname -created");
   assertEquals(spaced(""), undefined);
   assertEquals(spaced(["a", "b"]), "a b");
 });
 
-Deno.test("client: builds V1 paths on the connection's region", async () => {
+test("client: builds V1 paths on the connection's region", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], {
     display: { region: "eu" },
   });
@@ -67,20 +68,20 @@ Deno.test("client: builds V1 paths on the connection's region", async () => {
   assertEquals(calls[0].url, "https://console.eu.jumpcloud.com/api/systemusers?limit=1");
 });
 
-Deno.test('client: `api: "v2"` moves the call to the V2 base', async () => {
+test('client: `api: "v2"` moves the call to the V2 base', async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display: { region: "us" } });
   await new JumpCloudClient(ctx).request("/usergroups", { api: "v2" });
   assertEquals(calls[0].url, "https://console.jumpcloud.com/api/v2/usergroups");
 });
 
-Deno.test("client: never sends the api key — signing is the host's job", async () => {
+test("client: never sends the api key — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await new JumpCloudClient(ctx).request("/systemusers");
   assertEquals(calls[0].headers["x-api-key"], undefined);
   assertEquals(calls[0].headers["x-org-id"], undefined);
 });
 
-Deno.test("client: a failure surfaces the status and JumpCloud's error envelope", async () => {
+test("client: a failure surfaces the status and JumpCloud's error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -98,7 +99,7 @@ Deno.test("client: a failure surfaces the status and JumpCloud's error envelope"
  * The measured trap: no api key answers 302 to /login, and following it yields
  * a 200 HTML page that reads as success.
  */
-Deno.test("assertNotLoginPage turns the login redirect back into a failure", () => {
+test("assertNotLoginPage turns the login redirect back into a failure", () => {
   const url = new URL("https://console.jumpcloud.com/api/systemusers");
   const redirect = new Response(null, { status: 302, headers: { location: "/login" } });
   const err = assertThrows(() => assertNotLoginPage(redirect, url), Error);
@@ -106,20 +107,20 @@ Deno.test("assertNotLoginPage turns the login redirect back into a failure", () 
   assert(err.message.includes("/login"), err.message);
 });
 
-Deno.test("assertNotLoginPage leaves real responses alone", () => {
+test("assertNotLoginPage leaves real responses alone", () => {
   const url = new URL("https://console.jumpcloud.com/api/systemusers");
   assertNotLoginPage(new Response(null, { status: 200 }), url);
   assertNotLoginPage(new Response(null, { status: 401 }), url);
   assertNotLoginPage(new Response(null, { status: 500 }), url);
 });
 
-Deno.test("client: requests are made with redirect: manual, not followed", async () => {
+test("client: requests are made with redirect: manual, not followed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await new JumpCloudClient(ctx).request("/systemusers");
   assertEquals(calls[0].redirect, "manual");
 });
 
-Deno.test("client: a redirect from the API is raised, not parsed", async () => {
+test("client: a redirect from the API is raised, not parsed", async () => {
   const { ctx } = mockCtx([{ status: 302, headers: { location: "/login" }, body: "" }], {
     display: {},
   });
@@ -131,7 +132,7 @@ Deno.test("client: a redirect from the API is raised, not parsed", async () => {
 });
 
 /** V1 wraps its list in `results`; V2 answers a bare array. */
-Deno.test("requestAll reads the V1 envelope and the V2 bare array alike", async () => {
+test("requestAll reads the V1 envelope and the V2 bare array alike", async () => {
   const v1 = mockCtx([{ status: 200, body: { results: [{ _id: "a" }], totalCount: 1 } }], {
     display: {},
   });
@@ -149,7 +150,7 @@ Deno.test("requestAll reads the V1 envelope and the V2 bare array alike", async 
  * JumpCloud sends no next cursor, so a page shorter than the one asked for is
  * how the walk knows it has reached the end.
  */
-Deno.test("requestAll walks the skip offset until a short page", async () => {
+test("requestAll walks the skip offset until a short page", async () => {
   const full = Array.from({ length: 100 }, (_, i) => ({ _id: `u${i}` }));
   const { ctx, calls } = mockCtx([
     { status: 200, body: { results: full } },
@@ -161,7 +162,7 @@ Deno.test("requestAll walks the skip offset until a short page", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("skip"), "100");
 });
 
-Deno.test("requestAll stops on the first page when it is already short", async () => {
+test("requestAll stops on the first page when it is already short", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { results: [{ _id: "a" }, { _id: "b" }] } },
   ], { display: {} });
@@ -169,7 +170,7 @@ Deno.test("requestAll stops on the first page when it is already short", async (
   assertEquals(calls.length, 1);
 });
 
-Deno.test("requestAll asks for no more than it wants, and never over 100", async () => {
+test("requestAll asks for no more than it wants, and never over 100", async () => {
   const small = mockCtx([{ status: 200, body: { results: [] } }], { display: {} });
   await new JumpCloudClient(small.ctx).requestAll("/systemusers", {}, 5);
   assertEquals(new URL(small.calls[0].url).searchParams.get("limit"), "5");

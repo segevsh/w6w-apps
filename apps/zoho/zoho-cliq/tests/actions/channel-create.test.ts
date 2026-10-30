@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-create.ts";
 
-Deno.test("channel-create: creates a private channel with members", async () => {
+test("channel-create: creates a private channel with members", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 201, "body": { "channel_id": "O9" } }]);
   const out = await action.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("channel-create: creates a private channel with members", async () => 
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "channel": { "channel_id": "O9" } });
 });
 
-Deno.test("channel-create: rejects a team channel with no team ids", async () => {
+test("channel-create: rejects a team channel with no team ids", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "name": "x", "level": "team" } as never, ctx)),
@@ -43,7 +44,7 @@ Deno.test("channel-create: rejects a team channel with no team ids", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-create: idempotent is declared as false", () => {
+test("channel-create: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

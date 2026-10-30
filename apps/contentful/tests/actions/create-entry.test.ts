@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-entry.ts";
 
-Deno.test("create-entry: POSTs to Management API with X-Contentful-Content-Type header", async () => {
+test("create-entry: POSTs to Management API with X-Contentful-Content-Type header", async () => {
   const body = { sys: { id: "e-new", version: 1 }, fields: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(

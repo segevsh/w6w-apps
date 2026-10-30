@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import stageCreate from "../../actions/stage-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("stage-create: PUTs a form body", async () => {
+test("stage-create: PUTs a form body", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "New Stage", key: "5008" } }]);
   await stageCreate.execute({ pipelineKey: "p1", name: "New Stage" }, ctx);
   assertEquals(calls[0].method, "PUT");

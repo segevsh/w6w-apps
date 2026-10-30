@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import audienceSegmentDelete from "../../actions/audience-segment-delete.ts";
 import { mockCtx, noContentResponse, pathOf } from "../_helpers.ts";
 
-Deno.test("audience-segment-delete: DELETEs by numeric segment id", async () => {
+test("audience-segment-delete: DELETEs by numeric segment id", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await audienceSegmentDelete.execute({ segmentId: "10000" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("audience-segment-delete: DELETEs by numeric segment id", async () => 
   assertEquals(result, { ok: true });
 });
 
-Deno.test("audience-segment-delete: is not marked idempotent — a repeat delete 404s rather than no-ops", () => {
+test("audience-segment-delete: is not marked idempotent — a repeat delete 404s rather than no-ops", () => {
   assertEquals(audienceSegmentDelete.idempotent, false);
 });

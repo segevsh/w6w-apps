@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import disputeContest from "../../actions/dispute-contest.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("dispute-contest: patches /disputes/{id}/contest, mapping camelCase evidence arrays to snake_case", async () => {
+test("dispute-contest: patches /disputes/{id}/contest, mapping camelCase evidence arrays to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "disp_1", status: "under_review" } }]);
   await disputeContest.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("dispute-contest: patches /disputes/{id}/contest, mapping camelCase ev
   });
 });
 
-Deno.test("dispute-contest: with no fields set beyond the id, sends an empty body (the 'draft' default is the Param's, not execute's)", async () => {
+test("dispute-contest: with no fields set beyond the id, sends an empty body (the 'draft' default is the Param's, not execute's)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "disp_1" } }]);
   await disputeContest.execute({ id: "disp_1" }, ctx);
 

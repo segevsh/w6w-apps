@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import orderShipmentCreate from "../../actions/order-shipment-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-shipment-create: POSTs the shipment with both foreign ids", async () => {
+test("order-shipment-create: POSTs the shipment with both foreign ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, order_id: 100 } }]);
   const out = await orderShipmentCreate.execute({
     orderId: 100,
@@ -22,13 +23,13 @@ Deno.test("order-shipment-create: POSTs the shipment with both foreign ids", asy
   assertEquals(out.id, 1);
 });
 
-Deno.test("order-shipment-create: optional fields are dropped, not sent as null", async () => {
+test("order-shipment-create: optional fields are dropped, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await orderShipmentCreate.execute({ orderId: 1, orderAddressId: 2, items: [] }, ctx);
   assertEquals(Object.keys(bodyOf(calls[0]) as object).sort(), ["items", "order_address_id"]);
 });
 
-Deno.test("order-shipment-create: is non-idempotent, and says it sends email", () => {
+test("order-shipment-create: is non-idempotent, and says it sends email", () => {
   // A repeat ships the same lines again and emails the customer again.
   assertEquals(orderShipmentCreate.idempotent, false);
   assert(

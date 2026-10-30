@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-list.ts";
 
-Deno.test("booking-list: GETs /bookings and maps all camelCase filters to dotted query params", async () => {
+test("booking-list: GETs /bookings and maps all camelCase filters to dotted query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   await action.execute({
     status: "scheduled",
@@ -38,7 +39,7 @@ Deno.test("booking-list: GETs /bookings and maps all camelCase filters to dotted
   assertEquals(url.searchParams.get("limit"), "25");
 });
 
-Deno.test("booking-list: omits unset filters", async () => {
+test("booking-list: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

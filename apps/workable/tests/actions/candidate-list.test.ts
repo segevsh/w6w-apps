@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockWorkableCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-list.ts";
 
-Deno.test("candidate-list: GETs /candidates account-wide when no filter is given", async () => {
+test("candidate-list: GETs /candidates account-wide when no filter is given", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: { candidates: [] } }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.workable.com/spi/v3/candidates");
 });
 
-Deno.test("candidate-list: narrows by job shortcode and stage", async () => {
+test("candidate-list: narrows by job shortcode and stage", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: { candidates: [{ id: "c1" }] } }]);
   const out = await action.execute({ shortcode: "GROOV005", stage: "applied" }, ctx);
   assertEquals(
@@ -18,7 +19,7 @@ Deno.test("candidate-list: narrows by job shortcode and stage", async () => {
   assertEquals(out, { candidates: [{ id: "c1" }], nextUrl: undefined });
 });
 
-Deno.test("candidate-list: pageUrl bypasses every other filter", async () => {
+test("candidate-list: pageUrl bypasses every other filter", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: { candidates: [] } }]);
   const nextUrl = "https://acme.workable.com/spi/v3/candidates?since_id=abc";
   await action.execute({ pageUrl: nextUrl, email: "ignored@example.com" }, ctx);

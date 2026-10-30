@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import endUserCreate from "../../actions/end-user-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("end-user-create: calls POST /v1/endusers", async () => {
+test("end-user-create: calls POST /v1/endusers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "data": { "id": "11111111-2222-3333-4444-555555555555" } },
@@ -28,7 +29,7 @@ Deno.test("end-user-create: calls POST /v1/endusers", async () => {
   assertEquals(out, { "data": { "id": "11111111-2222-3333-4444-555555555555" } });
 });
 
-Deno.test("end-user-create: surfaces a Dixa error message with the status", async () => {
+test("end-user-create: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -47,7 +48,7 @@ Deno.test("end-user-create: surfaces a Dixa error message with the status", asyn
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("end-user-create: rejects bad input before any request", async () => {
+test("end-user-create: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-contacts-add.ts";
 
 const RESPONSE = { "success": true, "data": { "contactsAdded": 2 } };
 
-Deno.test("campaign-contacts-add: calls POST /api/client/v2/campaigns/{id}/contacts and returns the vendor body", async () => {
+test("campaign-contacts-add: calls POST /api/client/v2/campaigns/{id}/contacts and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "id": "5", "contactIds": ["11", "12"] }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("campaign-contacts-add: calls POST /api/client/v2/campaigns/{id}/conta
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("campaign-contacts-add: sends nothing for fields left unset", async () => {
+test("campaign-contacts-add: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "5", "contactIds": ["11", "12"] }, ctx);
   const url = new URL(calls[0].url);
@@ -26,7 +27,7 @@ Deno.test("campaign-contacts-add: sends nothing for fields left unset", async ()
   assertEquals(JSON.parse(calls[0].body!), { "contactIds": ["11", "12"] });
 });
 
-Deno.test("campaign-contacts-add: refuses a missing id before any request", async () => {
+test("campaign-contacts-add: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await action.execute!({ "contactIds": ["11", "12"] } as never, ctx)
@@ -34,7 +35,7 @@ Deno.test("campaign-contacts-add: refuses a missing id before any request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-contacts-add: surfaces the vendor's error body", async () => {
+test("campaign-contacts-add: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

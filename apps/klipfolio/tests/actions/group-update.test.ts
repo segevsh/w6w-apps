@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/group-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const RESPONSE = {
   "data": {},
 };
 
-Deno.test("group-update: sends PUT /groups/group1 with the mapped input", async () => {
+test("group-update: sends PUT /groups/group1 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -27,7 +28,7 @@ Deno.test("group-update: sends PUT /groups/group1 with the mapped input", async 
   assertEquals(JSON.parse(JSON.stringify(out)), { "success": true });
 });
 
-Deno.test("group-update: sends no optional field when only required input is given", async () => {
+test("group-update: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "group_id": "group1" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -35,13 +36,13 @@ Deno.test("group-update: sends no optional field when only required input is giv
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("group-update: sends no credential header of its own", async () => {
+test("group-update: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("group-update: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("group-update: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -55,7 +56,7 @@ Deno.test("group-update: surfaces Klipfolio's error envelope as a thrown error",
   );
 });
 
-Deno.test("group-update: declares type, idempotency and output", () => {
+test("group-update: declares type, idempotency and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assert(Array.isArray(action.output) && action.output.length > 0);

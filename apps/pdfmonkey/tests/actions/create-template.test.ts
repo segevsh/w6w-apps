@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-template.ts";
 
-Deno.test("create-template: POSTs /document_templates with app_id and identifier", async () => {
+test("create-template: POSTs /document_templates with app_id and identifier", async () => {
   const tpl = { id: "tpl-1", identifier: "Invoice Template" };
   const { ctx, calls } = mockCtx([{ status: 201, body: { document_template: tpl } }]);
   const result = await action.execute!(
@@ -26,7 +27,7 @@ Deno.test("create-template: POSTs /document_templates with app_id and identifier
   assertEquals(result, tpl);
 });
 
-Deno.test("create-template: omits unset optional fields", async () => {
+test("create-template: omits unset optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { document_template: { id: "tpl-1" } } }]);
   await action.execute!({ workspaceId: "ws-1", identifier: "Blank" }, ctx);
   const body = JSON.parse(calls[0].body!);

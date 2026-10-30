@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/companies-add.ts";
 
-Deno.test("companies-add: POSTs companies.add with the snake_case body and returns id/type", async () => {
+test("companies-add: POSTs companies.add with the snake_case body and returns id/type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { type: "company", id: "c1" } } }]);
   const out = await action.execute({
     name: "Pied Piper",

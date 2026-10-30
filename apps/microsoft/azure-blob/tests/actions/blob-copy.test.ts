@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-copy.ts";
 
@@ -18,7 +19,7 @@ const base = {
 };
 
 /** The source is a URL, which is what makes cross-account copies work. */
-Deno.test("blob-copy: PUTs the destination with the source as a URL", async () => {
+test("blob-copy: PUTs the destination with the source as a URL", async () => {
   const { ctx, calls } = mockCtx([accepted("success")], D);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "PUT");
@@ -31,7 +32,7 @@ Deno.test("blob-copy: PUTs the destination with the source as a URL", async () =
   assertEquals(result.done, true);
 });
 
-Deno.test("blob-copy: a blank destination container copies within the source", async () => {
+test("blob-copy: a blank destination container copies within the source", async () => {
   const { ctx, calls } = mockCtx([accepted("success")], D);
   await action.execute(
     { sourceContainer: "inbox", sourceBlob: "a.txt", destinationBlob: "b.txt" },
@@ -41,7 +42,7 @@ Deno.test("blob-copy: a blank destination container copies within the source", a
 });
 
 /** 202 with `pending` is the normal answer for anything but a small blob. */
-Deno.test("blob-copy: a pending copy is not reported as done", async () => {
+test("blob-copy: a pending copy is not reported as done", async () => {
   const { ctx } = mockCtx([accepted("pending")], D);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(result.copyStatus, "pending");
@@ -49,7 +50,7 @@ Deno.test("blob-copy: a pending copy is not reported as done", async () => {
 });
 
 /** The destination exists but its contents are not there yet. */
-Deno.test("blob-copy: a move refuses while the copy is pending", async () => {
+test("blob-copy: a move refuses while the copy is pending", async () => {
   const { ctx, calls } = mockCtx([accepted("pending")], D);
   let message = "";
   try {
@@ -62,7 +63,7 @@ Deno.test("blob-copy: a move refuses while the copy is pending", async () => {
   assertEquals(calls.length, 1);
 });
 
-Deno.test("blob-copy: a finished copy can delete the source, making it a move", async () => {
+test("blob-copy: a finished copy can delete the source, making it a move", async () => {
   const { ctx, calls } = mockCtx([accepted("success"), { status: 202, body: "" }], D);
   const result = await action.execute({ ...base, deleteSource: true }, ctx) as Record<
     string,
@@ -74,7 +75,7 @@ Deno.test("blob-copy: a finished copy can delete the source, making it a move", 
 });
 
 /** With deleteSource on, this would delete what was just written. */
-Deno.test("blob-copy: copying a blob onto itself is refused", async () => {
+test("blob-copy: copying a blob onto itself is refused", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -89,7 +90,7 @@ Deno.test("blob-copy: copying a blob onto itself is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("blob-copy: says the copy is asynchronous", () => {
+test("blob-copy: says the copy is asynchronous", () => {
   assert(/ASYNCHRONOUS/.test(action.description!), action.description);
   assert(/there is no move/.test(action.description!), action.description);
 });

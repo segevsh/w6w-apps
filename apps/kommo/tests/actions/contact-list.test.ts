@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("contact-list: GETs /contacts with page and limit", async () => {
+test("contact-list: GETs /contacts with page and limit", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { contacts: [{ id: 1 }] } } }],
     conn,
@@ -14,7 +15,7 @@ Deno.test("contact-list: GETs /contacts with page and limit", async () => {
   assertEquals(out.contacts, [{ id: 1 }]);
 });
 
-Deno.test("contact-list: query and ids filter through", async () => {
+test("contact-list: query and ids filter through", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { contacts: [] } } }],
     conn,
@@ -25,7 +26,7 @@ Deno.test("contact-list: query and ids filter through", async () => {
   assertEquals(url.searchParams.getAll("filter[id][]"), ["5", "6"]);
 });
 
-Deno.test("contact-list: type is search, and resource is contact", () => {
+test("contact-list: type is search, and resource is contact", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "contact");
 });

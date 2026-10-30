@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { API_ROOT, errorBody, listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import userList from "../../actions/user-list.ts";
 
 const NEXT = `${API_ROOT}/users/?cursor=abc%3D&limit=2`;
 
-Deno.test("user-list: GETs /users/ with every query parameter and shapes the page", async () => {
+test("user-list: GETs /users/ with every query parameter and shapes the page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -38,7 +39,7 @@ Deno.test("user-list: GETs /users/ with every query parameter and shapes the pag
   }]);
 });
 
-Deno.test("user-list: last page has a null cursor and sends no stray parameters", async () => {
+test("user-list: last page has a null cursor and sends no stray parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   const out = await userList.execute({}, ctx) as Record<string, unknown>;
 
@@ -48,7 +49,7 @@ Deno.test("user-list: last page has a null cursor and sends no stray parameters"
   assertEquals(out.redactedFields, []);
 });
 
-Deno.test("user-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
+test("user-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await userList.execute({ cursor: NEXT }, ctx);
 
@@ -57,7 +58,7 @@ Deno.test("user-list: a pasted next_link URL is reduced to its cursor, never fet
   assertEquals(queryOf(calls[0].url), { cursor: "abc=" });
 });
 
-Deno.test("user-list: sends no credential (sign owns it) and declares its scope", async () => {
+test("user-list: sends no credential (sign owns it) and declares its scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await userList.execute({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -67,7 +68,7 @@ Deno.test("user-list: sends no credential (sign owns it) and declares its scope"
   assert(userList.params!.some((p) => p.key === "limit" && p.validation?.max === 100));
 });
 
-Deno.test("user-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
+test("user-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

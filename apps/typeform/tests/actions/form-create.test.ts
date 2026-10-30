@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-create.ts";
 
-Deno.test("form-create: POSTs /forms with the title and merged definition", async () => {
+test("form-create: POSTs /forms with the title and merged definition", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "abc", title: "Survey" } }]);
   const result = await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("form-create: POSTs /forms with the title and merged definition", asyn
   assertEquals(result, { id: "abc", title: "Survey" });
 });
 
-Deno.test("form-create: sends only the title when no extras are given", async () => {
+test("form-create: sends only the title when no extras are given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ title: "Bare" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { title: "Bare" });

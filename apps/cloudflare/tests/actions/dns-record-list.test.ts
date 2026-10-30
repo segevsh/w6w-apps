@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { cfOk, mockCtx } from "../_helpers.ts";
 import action from "../../actions/dns-record-list.ts";
 
-Deno.test("dns-record-list: GETs /zones/{id}/dns_records", async () => {
+test("dns-record-list: GETs /zones/{id}/dns_records", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: cfOk([{ id: "r1", type: "A", name: "example.com", content: "1.2.3.4" }]) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("dns-record-list: GETs /zones/{id}/dns_records", async () => {
   assertEquals(result, [{ id: "r1", type: "A", name: "example.com", content: "1.2.3.4" }]);
 });
 
-Deno.test("dns-record-list: filters by type and name", async () => {
+test("dns-record-list: filters by type and name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: cfOk([]) }]);
   await action.execute!({ zoneId: "z1", type: "A", name: "www.example.com" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("dns-record-list: filters by type and name", async () => {
   assertStringIncludes(calls[0].url, "name=www.example.com");
 });
 
-Deno.test("dns-record-list: missing zoneId rejects", async () => {
+test("dns-record-list: missing zoneId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "" }, ctx),

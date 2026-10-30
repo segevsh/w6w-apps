@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
-Deno.test("service: reports ok when the API endpoints component is operational", async () => {
+test("service: reports ok when the API endpoints component is operational", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -20,7 +21,7 @@ Deno.test("service: reports ok when the API endpoints component is operational",
   assertEquals(out.components?.[API_COMPONENT_ID].state, "ok");
 });
 
-Deno.test("service: reports degraded when the API endpoints component is degraded", async () => {
+test("service: reports degraded when the API endpoints component is degraded", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -32,7 +33,7 @@ Deno.test("service: reports degraded when the API endpoints component is degrade
   assertEquals(out.state, "degraded");
 });
 
-Deno.test("service: reports unknown when the component is missing from the page", async () => {
+test("service: reports unknown when the component is missing from the page", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { page: { url: "https://status.teamleader.eu" }, components: [] },
@@ -41,13 +42,13 @@ Deno.test("service: reports unknown when the component is missing from the page"
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: reports unknown, never down, when the status page itself errors", async () => {
+test("service: reports unknown, never down, when the status page itself errors", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: reports unknown when the page no longer self-identifies as Teamleader's", async () => {
+test("service: reports unknown when the page no longer self-identifies as Teamleader's", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { page: { url: "https://status.example.com" }, components: [] },
@@ -56,7 +57,7 @@ Deno.test("service: reports unknown when the page no longer self-identifies as T
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -65,7 +66,7 @@ Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: declares no credential and only widens egress to the status host", () => {
+test("service: declares no credential and only widens egress to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.teamleader.eu"]);
 });

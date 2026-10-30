@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleUnarchive from "../../actions/article-unarchive.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-unarchive: POSTs to /unarchive", async () => {
+test("article-unarchive: POSTs to /unarchive", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ is_archived: false }) }]);
   const out = await articleUnarchive.execute({ articleId: "a1", langCode: "en" }, ctx) as {
     is_archived: boolean;
@@ -16,7 +17,7 @@ Deno.test("article-unarchive: POSTs to /unarchive", async () => {
   assertEquals(out.is_archived, false);
 });
 
-Deno.test("article-unarchive: a vendor error surfaces its code and message", async () => {
+test("article-unarchive: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

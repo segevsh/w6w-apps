@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/video-to-video.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("video-to-video: sends the documented request and maps the answer", async () => {
+test("video-to-video: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "11111111-1111-4111-8111-111111111111" } }]);
   const out = await run(action, {
     "model": "aleph2",
@@ -25,7 +26,7 @@ Deno.test("video-to-video: sends the documented request and maps the answer", as
   });
 });
 
-Deno.test("video-to-video: a 401 surfaces Runway's error text", async () => {
+test("video-to-video: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },
@@ -43,7 +44,7 @@ Deno.test("video-to-video: a 401 surfaces Runway's error text", async () => {
   );
 });
 
-Deno.test("video-to-video: needs videoUri or promptVideo", async () => {
+test("video-to-video: needs videoUri or promptVideo", async () => {
   await assertRejects(
     () => run(action, { model: "aleph2" }, mockCtx().ctx),
     Error,

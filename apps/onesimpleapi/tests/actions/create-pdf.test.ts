@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-pdf.ts";
 
-Deno.test("create-pdf: GETs /pdf with the url query param", async () => {
+test("create-pdf: GETs /pdf with the url query param", async () => {
   const body = { url: "https://cdn.opq.to/x.pdf", page_size: "A4" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ url: "https://example.com" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("create-pdf: GETs /pdf with the url query param", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("create-pdf: accepts html instead of a url", async () => {
+test("create-pdf: accepts html instead of a url", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "x" } }]);
   await action.execute!({ html: "<h1>Hi</h1>" }, ctx);
   const url = new URL(calls[0].url);
@@ -21,7 +22,7 @@ Deno.test("create-pdf: accepts html instead of a url", async () => {
   assertEquals(url.searchParams.has("url"), false);
 });
 
-Deno.test("create-pdf: forwards page/background/force", async () => {
+test("create-pdf: forwards page/background/force", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "x" } }]);
   await action.execute!(
     { url: "https://example.com", page: "A4", background: true, force: true },
@@ -33,7 +34,7 @@ Deno.test("create-pdf: forwards page/background/force", async () => {
   assertEquals(url.searchParams.get("force"), "yes");
 });
 
-Deno.test("create-pdf: throws locally when neither url nor html is provided", async () => {
+test("create-pdf: throws locally when neither url nor html is provided", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => {

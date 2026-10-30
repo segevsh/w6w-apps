@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionRefillLinkSet from "../../actions/submission-refill-link-set.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("submission-refill-link-set: POSTs {enable} to /api/submissions/{id}/refill-link", async () => {
+test("submission-refill-link-set: POSTs {enable} to /api/submissions/{id}/refill-link", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }, { body: { success: true } }]);
   await submissionRefillLinkSet.execute({ submission: 761506, enable: true }, ctx);
   assertEquals(calls[0].method, "POST");

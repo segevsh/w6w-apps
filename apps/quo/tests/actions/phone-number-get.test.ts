@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import phoneNumberGet from "../../actions/phone-number-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("phone-number-get: GETs /v1/phone-numbers/{id}", async () => {
+test("phone-number-get: GETs /v1/phone-numbers/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "PN1" } } }]);
   const out = await phoneNumberGet.execute({ phoneNumberId: "PN1" }, ctx) as {
     data: { id: string };
@@ -11,6 +12,6 @@ Deno.test("phone-number-get: GETs /v1/phone-numbers/{id}", async () => {
   assertEquals(out.data.id, "PN1");
 });
 
-Deno.test("phone-number-get: is a read action", () => {
+test("phone-number-get: is a read action", () => {
   assertEquals(phoneNumberGet.type, "read");
 });

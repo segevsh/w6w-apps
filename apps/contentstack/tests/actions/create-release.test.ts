@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-release.ts";
 
-Deno.test("create-release: metadata", () => {
+test("create-release: metadata", () => {
   assertEquals(action.key, "create-release");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("create-release: metadata", () => {
   ]);
 });
 
-Deno.test("create-release: calls POST /releases on the NA host", async () => {
+test("create-release: calls POST /releases on the NA host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Release created successfully.", "release": { "uid": "bltr" } },
   }]);
@@ -30,7 +31,7 @@ Deno.test("create-release: calls POST /releases on the NA host", async () => {
   assertEquals(out, { "notice": "Release created successfully.", "release": { "uid": "bltr" } });
 });
 
-Deno.test("create-release: uses the connection's regional host", async () => {
+test("create-release: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Release created successfully.", "release": { "uid": "bltr" } },
   }], {
@@ -40,7 +41,7 @@ Deno.test("create-release: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/releases");
 });
 
-Deno.test("create-release: sends the branch header only when a branch is given", async () => {
+test("create-release: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Release created successfully.", "release": { "uid": "bltr" } },
   }, { body: { "notice": "Release created successfully.", "release": { "uid": "bltr" } } }]);
@@ -53,7 +54,7 @@ Deno.test("create-release: sends the branch header only when a branch is given",
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("create-release: rejects without `name` and makes no request", async () => {
+test("create-release: rejects without `name` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -65,7 +66,7 @@ Deno.test("create-release: rejects without `name` and makes no request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-release: surfaces Contentstack's own error body", async () => {
+test("create-release: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

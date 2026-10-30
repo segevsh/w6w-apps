@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import type { HookContext } from "@w6w/types";
 import service from "../health/service.ts";
 import api from "../health/api.ts";
@@ -11,13 +12,13 @@ const check = (c: Checkable, ctx: HookContext) =>
     { state: string; message?: string; quota?: Array<Record<string, unknown>> }
   >;
 
-Deno.test("health.service: declared unavailable at informational severity", () => {
+test("health.service: declared unavailable at informational severity", () => {
   assertEquals(service.severity, "informational");
   assert(service.unavailable?.reason);
   assertEquals(service.check, undefined);
 });
 
-Deno.test("health.api: a schema-correct 401 is a pass, unsigned", async () => {
+test("health.api: a schema-correct 401 is a pass, unsigned", async () => {
   assertEquals(api.credential, "none");
   const { ctx, calls } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const r = await check(api, ctx);
@@ -26,7 +27,7 @@ Deno.test("health.api: a schema-correct 401 is a pass, unsigned", async () => {
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("health.api: HTML, 5xx and foreign JSON are not a pass", async () => {
+test("health.api: HTML, 5xx and foreign JSON are not a pass", async () => {
   assertEquals(
     (await check(api, mockCtx([{ status: 200, body: "<html></html>" }]).ctx)).state,
     "down",
@@ -38,7 +39,7 @@ Deno.test("health.api: HTML, 5xx and foreign JSON are not a pass", async () => {
   assertEquals((await check(api, mockCtx([{ status: 200, body: { a: 1 } }]).ctx)).state, "unknown");
 });
 
-Deno.test("health.quota: reads X-RateLimit-* headers; reset is an epoch timestamp", async () => {
+test("health.quota: reads X-RateLimit-* headers; reset is an epoch timestamp", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [] },
     headers: {
@@ -56,7 +57,7 @@ Deno.test("health.quota: reads X-RateLimit-* headers; reset is an epoch timestam
   assertEquals(queryOf(calls[0].url), { per_page: "1" });
 });
 
-Deno.test("health.quota: exhausted is down, nearly spent is degraded, no header is unknown", async () => {
+test("health.quota: exhausted is down, nearly spent is degraded, no header is unknown", async () => {
   const h = (rem: string) => ({
     "content-type": "application/json",
     "x-ratelimit-limit": "60",

@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import create from "../../actions/company-create.ts";
 
 const B = "https://acme.salesmate.io/apis/company/v4";
 const ok = (Data: unknown) => ({ body: { Status: "success", Data } });
 
-Deno.test("company-create: POSTs the fields and custom fields at the top level", async () => {
+test("company-create: POSTs the fields and custom fields at the top level", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ id: 9 })]);
   const out = await create.execute(
     {
@@ -25,13 +26,13 @@ Deno.test("company-create: POSTs the fields and custom fields at the top level",
   });
 });
 
-Deno.test("company-create: drops unset optional fields rather than sending nulls", async () => {
+test("company-create: drops unset optional fields rather than sending nulls", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({})]);
   await create.execute({ ...{ "name": "Acme", "owner": 1 }, tags: "" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "name": "Acme", "owner": 1 });
 });
 
-Deno.test("company-create: declares the documented required params", () => {
+test("company-create: declares the documented required params", () => {
   const required = (create.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["name", "owner"]);
 });

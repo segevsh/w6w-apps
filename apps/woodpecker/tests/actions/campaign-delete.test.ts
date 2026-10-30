@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignDelete from "../../actions/campaign-delete.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-delete: DELETE /rest/v2/campaigns/{id}", async () => {
+test("campaign-delete: DELETE /rest/v2/campaigns/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await campaignDelete.execute({ "campaign_id": "31" } as never, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("campaign-delete: DELETE /rest/v2/campaigns/{id}", async () => {
   assertEquals(out.deleted, true);
 });
 
-Deno.test("campaign-delete: a campaign inside a workflow is refused", async () => {
+test("campaign-delete: a campaign inside a workflow is refused", async () => {
   const { ctx, calls } = mockCtx([{
     status: 409,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-add: POST /contacts sends a one-element array and repeats listnames", async () => {
+test("contact-add: POST /contacts sends a one-element array and repeats listnames", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ Email: "a@x.com" }] }]);
   const out = await action.execute({
     email: "a@x.com",
@@ -25,7 +26,7 @@ Deno.test("contact-add: POST /contacts sends a one-element array and repeats lis
   }]);
 });
 
-Deno.test("contact-add: email only sends no query and no empty fields; email required", async () => {
+test("contact-add: email only sends no query and no empty fields; email required", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({ email: " a@x.com " }, ctx);
   assertEquals(new URL(calls[0].url).search, "");

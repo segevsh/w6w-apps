@@ -38,7 +38,12 @@ const action: ActionDefinition = {
     {
       key: "states",
       label: "States",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "CREATED", label: "CREATED" }, {
+        value: "ACTIVATED",
+        label: "ACTIVATED",
+      }, { value: "CLOSED", label: "CLOSED" }],
+      config: { valueFormat: "csv" },
       default: "CREATED,ACTIVATED",
       hint: "Comma-separated: CREATED, ACTIVATED, CLOSED. The default is everything still open.",
     },

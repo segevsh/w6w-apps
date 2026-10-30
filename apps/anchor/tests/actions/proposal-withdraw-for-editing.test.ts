@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import proposalWithdrawForEditing from "../../actions/proposal-withdraw-for-editing.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("proposal-withdraw-for-editing: sends POST /v2/proposals/p1/withdraw-for-editing", async () => {
+test("proposal-withdraw-for-editing: sends POST /v2/proposals/p1/withdraw-for-editing", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await proposalWithdrawForEditing.execute({ "id": "p1" } as never, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("proposal-withdraw-for-editing: sends POST /v2/proposals/p1/withdraw-f
   assertEquals(out.ok, true);
 });
 
-Deno.test("proposal-withdraw-for-editing: a non-2xx answer throws with the vendor's error code", async () => {
+test("proposal-withdraw-for-editing: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

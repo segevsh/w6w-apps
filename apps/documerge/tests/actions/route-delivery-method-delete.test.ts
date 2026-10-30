@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeDeliveryMethodDelete from "../../actions/route-delivery-method-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-delivery-method-delete: DELETE /api/routes/delivery-methods/{routeId}/{deliveryMethodId}", async () => {
+test("route-delivery-method-delete: DELETE /api/routes/delivery-methods/{routeId}/{deliveryMethodId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await routeDeliveryMethodDelete.execute(
     { "routeId": 13, "deliveryMethodId": 5 } as never,
@@ -15,7 +16,7 @@ Deno.test("route-delivery-method-delete: DELETE /api/routes/delivery-methods/{ro
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("route-delivery-method-delete: a vendor error surfaces its own message", async () => {
+test("route-delivery-method-delete: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -28,5 +29,5 @@ Deno.test("route-delivery-method-delete: a vendor error surfaces its own message
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("route-delivery-method-delete: idempotency is declared as true", () =>
+test("route-delivery-method-delete: idempotency is declared as true", () =>
   assertEquals(routeDeliveryMethodDelete.idempotent, true));

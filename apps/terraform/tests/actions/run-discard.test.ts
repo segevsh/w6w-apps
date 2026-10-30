@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-discard.ts";
 
@@ -7,7 +8,7 @@ const run = (status: string) => ({
   body: { data: { type: "runs", id: "run-1", attributes: { status } } },
 });
 
-Deno.test("run-discard: reads the run, then posts a bare comment to the discard action", async () => {
+test("run-discard: reads the run, then posts a bare comment to the discard action", async () => {
   const { ctx, calls } = mockCtx([run("planned"), { status: 202, body: {} }]);
   const result = await action.execute(
     { runId: "run-1", comment: "superseded" },
@@ -20,26 +21,26 @@ Deno.test("run-discard: reads the run, then posts a bare comment to the discard 
 });
 
 /** Discarding changes no infrastructure — the plan was only a proposal. */
-Deno.test("run-discard: logs at info, not warn", async () => {
+test("run-discard: logs at info, not warn", async () => {
   const { ctx, logs } = mockCtx([run("planned"), { status: 202, body: {} }]);
   await action.execute({ runId: "run-1" }, ctx);
   assertEquals(logs[0].level, "info");
   assert(/releasing its workspace/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("run-discard: the comment defaults rather than being sent blank", async () => {
+test("run-discard: the comment defaults rather than being sent blank", async () => {
   const { ctx, calls } = mockCtx([run("planned"), { status: 202, body: {} }]);
   await action.execute({ runId: "run-1", comment: "  " }, ctx);
   assertEquals(JSON.parse(calls[1].body!).comment, "Discarded by a w6w workflow");
 });
 
 /** Their plans were computed against a state this one would have changed. */
-Deno.test("run-discard: says it also discards the runs queued behind it", () => {
+test("run-discard: says it also discards the runs queued behind it", () => {
   assert(/ALSO discards any runs queued behind it/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("run-discard: a run that cannot be discarded surfaces the conflict", async () => {
+test("run-discard: a run that cannot be discarded surfaces the conflict", async () => {
   const { ctx } = mockCtx([run("applied"), {
     status: 409,
     body: { errors: [{ title: "conflict", detail: "run is not discardable" }] },
@@ -54,7 +55,7 @@ Deno.test("run-discard: a run that cannot be discarded surfaces the conflict", a
   assert(/already been applied, discarded or cancelled/.test(message), message);
 });
 
-Deno.test("run-discard: a run id is required", async () => {
+test("run-discard: a run id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsStart from "../../actions/jobs-start.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-start: posts job_id and run_sample, returns queue_id", async () => {
+test("jobs-start: posts job_id and run_sample, returns queue_id", async () => {
   const body = { status: "success", queue_id: "NB-PQ-59246392E9E5D", execution_time: 712 };
   const { ctx, calls } = mockCtx([{ body }]);
 

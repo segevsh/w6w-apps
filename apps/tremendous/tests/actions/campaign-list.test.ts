@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-list: lists every campaign with no query params", async () => {
+test("campaign-list: lists every campaign with no query params", async () => {
   const page = { campaigns: [{ id: "IVM0I3WNJJL0", name: "Default" }] };
   const { ctx, calls } = mockCtx([{ status: 200, body: page }]);
   const result = await campaignList.execute({}, ctx);

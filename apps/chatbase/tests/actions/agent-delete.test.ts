@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import agentDelete from "../../actions/agent-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-delete: DELETE /agents/{id}", async () => {
+test("agent-delete: DELETE /agents/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await agentDelete.execute({ agentId: "a1" }, ctx) as { success: boolean };
 
@@ -11,7 +12,7 @@ Deno.test("agent-delete: DELETE /agents/{id}", async () => {
   assertEquals(out.success, true);
 });
 
-Deno.test("agent-delete: a repeat delete surfaces AGENT_NOT_FOUND rather than succeeding again", async () => {
+test("agent-delete: a repeat delete surfaces AGENT_NOT_FOUND rather than succeeding again", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("AGENT_NOT_FOUND", "Agent not found."),

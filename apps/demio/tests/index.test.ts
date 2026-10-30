@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports six actions, one auth method and two health checks", () => {
+test("index: exports six actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, 6);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case with descriptions and execute hooks", () => {
+test("index: action keys are unique kebab-case with descriptions and execute hooks", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -18,15 +20,15 @@ Deno.test("index: action keys are unique kebab-case with descriptions and execut
   }
 });
 
-Deno.test("index: the one creating action is explicitly not idempotent", () => {
+test("index: the one creating action is explicitly not idempotent", () => {
   assertEquals(app.actions.find((a) => a.key === "event-register")?.idempotent, false);
 });
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 
-Deno.test("index: actions never touch credentials, global fetch, Deno.* or a hard-coded host", async () => {
+test("index: actions never touch credentials, global fetch, Deno.* or a hard-coded host", async () => {
   for (const a of app.actions) {
-    const src = strip(await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url)));
+    const src = strip(await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url)));
     assert(!/credential|api-?secret|api-?key/i.test(src), `${a.key}: credential`);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: bare fetch`);
     assert(!/\bDeno\./.test(src), `${a.key}: Deno.*`);
@@ -34,7 +36,7 @@ Deno.test("index: actions never touch credentials, global fetch, Deno.* or a har
   }
 });
 
-Deno.test("index: manifest egress allowlist is exactly my.demio.com", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest egress allowlist is exactly my.demio.com", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["my.demio.com"]);
 });

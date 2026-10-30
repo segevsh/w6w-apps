@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: declares the Workspace dashboard, unsigned, polled at 120s", () => {
+test("service: declares the Workspace dashboard, unsigned, polled at 120s", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["www.google.com"]);
   assertEquals(service.minIntervalSeconds, 120);
 });
 
-Deno.test("service: ok when no OPEN Google Meet incident exists", async () => {
+test("service: ok when no OPEN Google Meet incident exists", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [
@@ -24,7 +25,7 @@ Deno.test("service: ok when no OPEN Google Meet incident exists", async () => {
   assertEquals(calls[0].url, "https://www.google.com/appsstatus/dashboard/incidents.json");
 });
 
-Deno.test("service: maps an open SERVICE_OUTAGE to down (case-insensitive service_name)", async () => {
+test("service: maps an open SERVICE_OUTAGE to down (case-insensitive service_name)", async () => {
   const { ctx } = mockCtx([
     {
       body: [
@@ -41,7 +42,7 @@ Deno.test("service: maps an open SERVICE_OUTAGE to down (case-insensitive servic
   assertEquals(result.message, "Meet is down");
 });
 
-Deno.test("service: SERVICE_DISRUPTION maps to degraded", async () => {
+test("service: SERVICE_DISRUPTION maps to degraded", async () => {
   const { ctx } = mockCtx([
     { body: [{ service_name: "Google Meet", status_impact: "SERVICE_DISRUPTION" }] },
   ]);
@@ -49,13 +50,13 @@ Deno.test("service: SERVICE_DISRUPTION maps to degraded", async () => {
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("service: unknown when the dashboard itself fails", async () => {
+test("service: unknown when the dashboard itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: unknown when the dashboard returns an unexpected shape", async () => {
+test("service: unknown when the dashboard returns an unexpected shape", async () => {
   const { ctx } = mockCtx([{ body: { not: "an array" } }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");

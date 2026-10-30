@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-list.ts";
 
@@ -16,7 +17,7 @@ const notes = {
 };
 
 /** A deleted note is one somebody chose to retract. */
-Deno.test("note-list: excludes deleted notes and still counts them", async () => {
+test("note-list: excludes deleted notes and still counts them", async () => {
   const { ctx, calls } = mockCtx([notes], D);
   const result = await action.execute({ opportunityId: OPP }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, `/v1/opportunities/${OPP}/notes`);
@@ -24,7 +25,7 @@ Deno.test("note-list: excludes deleted notes and still counts them", async () =>
   assertEquals(result.deletedCount, 1);
 });
 
-Deno.test("note-list: includeDeleted returns them", async () => {
+test("note-list: includeDeleted returns them", async () => {
   const { ctx } = mockCtx([notes], D);
   const result = await action.execute({ opportunityId: OPP, includeDeleted: true }, ctx) as Record<
     string,
@@ -33,7 +34,7 @@ Deno.test("note-list: includeDeleted returns them", async () => {
   assertEquals(result.count, 3);
 });
 
-Deno.test("note-list: reports the authors and the most recent note", async () => {
+test("note-list: reports the authors and the most recent note", async () => {
   const { ctx } = mockCtx([notes], D);
   const result = await action.execute({ opportunityId: OPP }, ctx) as Record<string, unknown>;
   assertEquals(result.authors, ["u1", "u2"]);
@@ -41,7 +42,7 @@ Deno.test("note-list: reports the authors and the most recent note", async () =>
   assertEquals(result.latestAt, 300);
 });
 
-Deno.test("note-list: requires a UUID", async () => {
+test("note-list: requires a UUID", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ opportunityId: "abc" }, ctx),
@@ -51,6 +52,6 @@ Deno.test("note-list: requires a UUID", async () => {
 });
 
 /** An empty result and a filtered one look the same. */
-Deno.test("note-list: says restricted notes depend on the key", () => {
+test("note-list: says restricted notes depend on the key", () => {
   assert(/look identical/.test(action.description!), action.description);
 });

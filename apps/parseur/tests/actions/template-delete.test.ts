@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateDelete from "../../actions/template-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-delete: DELETEs /template/{id} and reports the status", async () => {
+test("template-delete: DELETEs /template/{id} and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await templateDelete.execute({ templateId: "5" }, ctx) as {
     templateId: string;
@@ -14,6 +15,6 @@ Deno.test("template-delete: DELETEs /template/{id} and reports the status", asyn
   assertEquals(out, { templateId: "5", status: 204 });
 });
 
-Deno.test("template-delete: is idempotent", () => {
+test("template-delete: is idempotent", () => {
   assertEquals(templateDelete.idempotent, true);
 });

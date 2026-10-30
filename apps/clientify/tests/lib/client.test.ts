@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asJson,
   asObject,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: keeps the trailing slash and omits empty query values", async () => {
+test("client: keeps the trailing slash and omits empty query values", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ClientifyClient(ctx).request("/v1/contacts/", {
     query: { query: "a b", page: 2, empty: "", none: undefined },
@@ -17,12 +18,12 @@ Deno.test("client: keeps the trailing slash and omits empty query values", async
   assertEquals(calls[0].url, "https://api.clientify.net/v1/contacts/?query=a+b&page=2");
 });
 
-Deno.test("client: 204 resolves to undefined", async () => {
+test("client: 204 resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new ClientifyClient(ctx).request("/v1/x/", { method: "DELETE" }), undefined);
 });
 
-Deno.test("client: errors carry the vendor `detail`", async () => {
+test("client: errors carry the vendor `detail`", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { detail: "Invalid token." } }]);
   await assertRejects(
     () => new ClientifyClient(ctx).request("/v1/users/"),
@@ -31,7 +32,7 @@ Deno.test("client: errors carry the vendor `detail`", async () => {
   );
 });
 
-Deno.test("client: DRF field-error bodies are flattened; non-JSON is truncated raw", () => {
+test("client: DRF field-error bodies are flattened; non-JSON is truncated raw", () => {
   assertEquals(
     formatClientifyError(
       400,
@@ -47,7 +48,7 @@ Deno.test("client: DRF field-error bodies are flattened; non-JSON is truncated r
   );
 });
 
-Deno.test("client: errorText, compact, asJson, asObject", () => {
+test("client: errorText, compact, asJson, asObject", () => {
   assertEquals(errorText({ detail: "x" }), "x");
   assertEquals(errorText([]), undefined);
   assertEquals(compact({ a: 0, b: false, c: "", d: null, e: undefined, f: "x" }), {

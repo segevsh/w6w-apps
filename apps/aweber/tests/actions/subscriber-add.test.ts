@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberAdd from "../../actions/subscriber-add.ts";
 import { created, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-add: adds a subscriber and reads the id off Location", async () => {
+test("subscriber-add: adds a subscriber and reads the id off Location", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/2/subscribers/789"),
   ]);
@@ -25,7 +26,7 @@ Deno.test("subscriber-add: adds a subscriber and reads the id off Location", asy
  * are the literal strings "true"/"false" in AWeber's schema, not JSON
  * booleans. Sending a real boolean is outside the documented enum.
  */
-Deno.test("subscriber-add: converts boolean flags to the string enum AWeber documents", async () => {
+test("subscriber-add: converts boolean flags to the string enum AWeber documents", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/2/subscribers/1"),
   ]);
@@ -46,7 +47,7 @@ Deno.test("subscriber-add: converts boolean flags to the string enum AWeber docu
   assertEquals(typeof body.update_existing, "string");
 });
 
-Deno.test("subscriber-add: omits update_existing/strict_custom_fields entirely when not set", async () => {
+test("subscriber-add: omits update_existing/strict_custom_fields entirely when not set", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/2/subscribers/1"),
   ]);
@@ -57,7 +58,7 @@ Deno.test("subscriber-add: omits update_existing/strict_custom_fields entirely w
   assertEquals("strict_custom_fields" in body, false);
 });
 
-Deno.test("subscriber-add: normalizes a single tag string into a one-element array", async () => {
+test("subscriber-add: normalizes a single tag string into a one-element array", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/2/subscribers/1"),
   ]);

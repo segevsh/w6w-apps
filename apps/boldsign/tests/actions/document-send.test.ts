@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentSend from "../../actions/document-send.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-send: posts fileUrls and signers as given, dropping unset optionals", async () => {
+test("document-send: posts fileUrls and signers as given, dropping unset optionals", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { documentId: "doc-1" } }]);
   const out = await documentSend.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("document-send: posts fileUrls and signers as given, dropping unset op
   assertEquals(out, { documentId: "doc-1" });
 });
 
-Deno.test("document-send: maps `cc` addresses into BoldSign's {emailAddress} shape", async () => {
+test("document-send: maps `cc` addresses into BoldSign's {emailAddress} shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { documentId: "doc-1" } }]);
   await documentSend.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("document-send: maps `cc` addresses into BoldSign's {emailAddress} sha
   assertEquals(body.cc, [{ emailAddress: "a@x.com" }, { emailAddress: "b@x.com" }]);
 });
 
-Deno.test("document-send: passes title, message and enableSigningOrder through", async () => {
+test("document-send: passes title, message and enableSigningOrder through", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { documentId: "doc-1" } }]);
   await documentSend.execute(
     {
@@ -57,6 +58,6 @@ Deno.test("document-send: passes title, message and enableSigningOrder through",
   assertEquals(body.enableSigningOrder, true);
 });
 
-Deno.test("document-send: is declared not idempotent", () => {
+test("document-send: is declared not idempotent", () => {
   assertEquals(documentSend.idempotent, false);
 });

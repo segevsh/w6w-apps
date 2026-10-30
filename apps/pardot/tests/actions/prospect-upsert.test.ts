@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPardotCtx } from "../_helpers.ts";
 import action from "../../actions/prospect-upsert.ts";
 
-Deno.test("prospect-upsert: POSTs matchEmail, prospect and a fields ARRAY to do/upsertLatestByEmail", async () => {
+test("prospect-upsert: POSTs matchEmail, prospect and a fields ARRAY to do/upsertLatestByEmail", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { id: 345, email: "tony@stark.com" } }]);
   const out = await action.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("prospect-upsert: POSTs matchEmail, prospect and a fields ARRAY to do/
   assertEquals(out, { id: 345, email: "tony@stark.com" });
 });
 
-Deno.test("prospect-upsert: fields default to id and email; matchEmail is omitted when blank", async () => {
+test("prospect-upsert: fields default to id and email; matchEmail is omitted when blank", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { id: 1 } }]);
   await action.execute({ email: "a@b.com", matchEmail: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -32,7 +33,7 @@ Deno.test("prospect-upsert: fields default to id and email; matchEmail is omitte
   });
 });
 
-Deno.test("prospect-upsert: requires an email", async () => {
+test("prospect-upsert: requires an email", async () => {
   const { ctx, calls } = mockPardotCtx([]);
   await assertRejects(async () => await action.execute({ email: "" }, ctx), Error, "email");
   assertEquals(calls.length, 0);

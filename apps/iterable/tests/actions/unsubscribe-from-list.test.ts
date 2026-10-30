@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unsubscribe-from-list.ts";
 
-Deno.test("unsubscribe-from-list: metadata", () => {
+test("unsubscribe-from-list: metadata", () => {
   assertEquals(action.key, "unsubscribe-from-list");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
@@ -14,7 +15,7 @@ Deno.test("unsubscribe-from-list: metadata", () => {
   ]);
 });
 
-Deno.test("unsubscribe-from-list: calls POST /lists/unsubscribe on the US host", async () => {
+test("unsubscribe-from-list: calls POST /lists/unsubscribe on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }]);
   const out = await action.execute({
     "listId": 7,
@@ -35,7 +36,7 @@ Deno.test("unsubscribe-from-list: calls POST /lists/unsubscribe on the US host",
   assertEquals(out, { "successCount": 1, "failCount": 0 });
 });
 
-Deno.test("unsubscribe-from-list: uses the EU host when the connection region is eu", async () => {
+test("unsubscribe-from-list: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }], {
     connection: { display: { region: "eu" } },
   });
@@ -48,7 +49,7 @@ Deno.test("unsubscribe-from-list: uses the EU host when the connection region is
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/lists/unsubscribe");
 });
 
-Deno.test("unsubscribe-from-list: rejects a missing `listId` without calling Iterable", async () => {
+test("unsubscribe-from-list: rejects a missing `listId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -64,7 +65,7 @@ Deno.test("unsubscribe-from-list: rejects a missing `listId` without calling Ite
   assertEquals(calls.length, 0);
 });
 
-Deno.test("unsubscribe-from-list: surfaces an HTTP error with Iterable's own code", async () => {
+test("unsubscribe-from-list: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -80,7 +81,7 @@ Deno.test("unsubscribe-from-list: surfaces an HTTP error with Iterable's own cod
   );
 });
 
-Deno.test("unsubscribe-from-list: treats a 200 carrying a non-Success code as a failure", async () => {
+test("unsubscribe-from-list: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

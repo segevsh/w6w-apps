@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/staff-add.ts";
 
-Deno.test("staff-add: wraps the input into staffMap's data array, dropping unset fields", async () => {
+test("staff-add: wraps the input into staffMap's data array, dropping unset fields", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: { response: [{ id: "1", name: "Test1", email: "test1@test.com", status: "success" }] },
@@ -30,7 +31,7 @@ Deno.test("staff-add: wraps the input into staffMap's data array, dropping unset
   assertEquals(out, { id: "1", name: "Test1", email: "test1@test.com", status: "success" });
 });
 
-Deno.test("staff-add: a 2xx per-item non-success status is thrown as an error", async () => {
+test("staff-add: a 2xx per-item non-success status is thrown as an error", async () => {
   const { ctx } = mockBookingsCtx([
     { body: { response: [{ status: "Staff already exists" }] } },
   ]);
@@ -41,6 +42,6 @@ Deno.test("staff-add: a 2xx per-item non-success status is thrown as an error", 
   );
 });
 
-Deno.test("staff-add: is not idempotent", () => {
+test("staff-add: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

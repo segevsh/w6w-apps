@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-list: GETs /v1/tasks with pagination params", async () => {
+test("task-list: GETs /v1/tasks with pagination params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], totalItems: 0 } }]);
   await taskList.execute({ maxResults: 15, pageToken: "next" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/tasks");
@@ -10,6 +11,6 @@ Deno.test("task-list: GETs /v1/tasks with pagination params", async () => {
   assertEquals(queryOf(calls[0].url).pageToken, "next");
 });
 
-Deno.test("task-list: is a search action", () => {
+test("task-list: is a search action", () => {
   assertEquals(taskList.type, "search");
 });

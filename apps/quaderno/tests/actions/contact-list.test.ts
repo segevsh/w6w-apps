@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuadernoCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
-Deno.test("contact-list: calls the documented endpoint", async () => {
+test("contact-list: calls the documented endpoint", async () => {
   const { ctx, calls } = mockQuadernoCtx([{
     headers: { "content-type": "application/json", "x-pages-hasmore": "true" },
     body: [{ id: 9 }, { id: 8 }],

@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-finance-standard-report.ts";
 
-Deno.test("get-finance-standard-report: POSTs form data, not JSON, and returns the CSV verbatim", async () => {
+test("get-finance-standard-report: POSTs form data, not JSON, and returns the CSV verbatim", async () => {
   const csv = '"Reservation ID"\tChannel\tStatus\n724558\tdirect\tnew\n';
   const { ctx, calls } = mockCtx([{ body: csv, headers: { "content-type": "text/csv" } }]);
   const result = await action.execute(
@@ -34,14 +36,14 @@ Deno.test("get-finance-standard-report: POSTs form data, not JSON, and returns t
   assertEquals(result.csv, csv);
 });
 
-Deno.test("get-finance-standard-report: always asks for csv, the only documented format", async () => {
+test("get-finance-standard-report: always asks for csv, the only documented format", async () => {
   const { ctx, calls } = mockCtx([{ body: "id\n" }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].body, "format=csv");
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("get-finance-standard-report: surfaces the account-feature failure from the body", async () => {
+test("get-finance-standard-report: surfaces the account-feature failure from the body", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: "fail", result: "financial reporting is not enabled for your account" },
@@ -55,11 +57,11 @@ Deno.test("get-finance-standard-report: surfaces the account-feature failure fro
   assert(message.includes("financial reporting is not enabled"), message);
 });
 
-Deno.test("get-finance-standard-report: the account-feature requirement is documented on the action", async () => {
+test("get-finance-standard-report: the account-feature requirement is documented on the action", async () => {
   // The docs' Financial Reporting section: "Before using those endpoints please make
   // sure financial reporting feature is enabled for your account" — recorded as a
   // doc-comment, never as a runtime check.
-  const src = await Deno.readTextFile(
+  const src = await denoReadTextFile(
     new URL("../../actions/get-finance-standard-report.ts", import.meta.url),
   );
   assert(

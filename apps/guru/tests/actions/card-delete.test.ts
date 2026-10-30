@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardDelete from "../../actions/card-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-delete: DELETEs the card and reports success", async () => {
+test("card-delete: DELETEs the card and reports success", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await cardDelete.execute({ cardId: "c1" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-workspace-hook.ts";
 
-Deno.test("create-workspace-hook: POSTs the required subscription payload", async () => {
+test("create-workspace-hook: POSTs the required subscription payload", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "{abc}" } }]);
   await action.execute(
     { workspace: "acme", url: "https://cb", events: ["repo:push"] },
@@ -18,7 +19,7 @@ Deno.test("create-workspace-hook: POSTs the required subscription payload", asyn
   assert(!("secret" in body), "secret must be omitted when not provided");
 });
 
-Deno.test("create-workspace-hook: forwards optional description, active, secret", async () => {
+test("create-workspace-hook: forwards optional description, active, secret", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "{abc}" } }]);
   await action.execute(
     {

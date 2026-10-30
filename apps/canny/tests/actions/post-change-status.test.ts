@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postChangeStatus from "../../actions/post-change-status.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-change-status: posts every required field, defaulting commentImageURLs to []", async () => {
+test("post-change-status: posts every required field, defaulting commentImageURLs to []", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", status: "planned" } }]);
   await postChangeStatus.execute(
     {
@@ -26,6 +27,6 @@ Deno.test("post-change-status: posts every required field, defaulting commentIma
   });
 });
 
-Deno.test("post-change-status: is not idempotent — retrying would duplicate the comment", () => {
+test("post-change-status: is not idempotent — retrying would duplicate the comment", () => {
   assertEquals(postChangeStatus.idempotent, false);
 });

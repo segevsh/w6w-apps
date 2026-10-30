@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/salesorder-delete.ts";
 
-Deno.test("salesorder-delete: DELETEs /salesorders/{id} and returns the bare envelope", async () => {
+test("salesorder-delete: DELETEs /salesorders/{id} and returns the bare envelope", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "The sales order has been deleted." } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("salesorder-delete: DELETEs /salesorders/{id} and returns the bare env
   assertEquals(out, { code: 0, message: "The sales order has been deleted." });
 });
 
-Deno.test("salesorder-delete: is an idempotent perform action", () => {
+test("salesorder-delete: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

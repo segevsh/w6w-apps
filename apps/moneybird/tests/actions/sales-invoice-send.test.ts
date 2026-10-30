@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sales-invoice-send.ts";
 import { mockMoneybirdCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sales-invoice-send: PATCHes .../send_invoice.json with an empty body by default", async () => {
+test("sales-invoice-send: PATCHes .../send_invoice.json with an empty body by default", async () => {
   const { ctx, calls } = mockMoneybirdCtx([{ body: { id: "i1", state: "open" } }]);
   await action.execute({ id: "i1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v2/123/sales_invoices/i1/send_invoice.json");
@@ -10,7 +11,7 @@ Deno.test("sales-invoice-send: PATCHes .../send_invoice.json with an empty body 
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("sales-invoice-send: wraps overrides under sales_invoice_sending", async () => {
+test("sales-invoice-send: wraps overrides under sales_invoice_sending", async () => {
   const { ctx, calls } = mockMoneybirdCtx([{ body: {} }]);
   await action.execute({
     id: "i1",
@@ -22,6 +23,6 @@ Deno.test("sales-invoice-send: wraps overrides under sales_invoice_sending", asy
   });
 });
 
-Deno.test("sales-invoice-send: is not idempotent — retrying re-sends the email", () => {
+test("sales-invoice-send: is not idempotent — retrying re-sends the email", () => {
   assertEquals(action.idempotent, false);
 });

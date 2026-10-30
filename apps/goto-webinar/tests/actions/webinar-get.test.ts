@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarGet from "../../actions/webinar-get.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("webinar-get: reads /organizers/{organizerKey}/webinars/{webinarKey}", async () => {
+test("webinar-get: reads /organizers/{organizerKey}/webinars/{webinarKey}", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ body: { webinarKey: "9", subject: "Launch" } }],
     "org-1",

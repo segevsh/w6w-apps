@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactNoteAdd from "../../actions/contact-note-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-note-add: PUTs to /contact/{id}/action/note without the id in the body", async () => {
+test("contact-note-add: PUTs to /contact/{id}/action/note without the id in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 9, contact_id: 1 } }]);
   await contactNoteAdd.execute(
     { contact_id: "1", title: "Called", details: "Left a voicemail" },
@@ -16,6 +17,6 @@ Deno.test("contact-note-add: PUTs to /contact/{id}/action/note without the id in
   assertEquals("contact_id" in body, false);
 });
 
-Deno.test("contact-note-add: is not idempotent — each call creates a new note", () => {
+test("contact-note-add: is not idempotent — each call creates a new note", () => {
   assertEquals(contactNoteAdd.idempotent, false);
 });

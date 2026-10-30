@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-folder.ts";
 
-Deno.test("delete-folder: POSTs /files/delete_v2 with the folder path", async () => {
+test("delete-folder: POSTs /files/delete_v2 with the folder path", async () => {
   const { ctx, calls } = mockCtx([{ body: { metadata: { id: "id:f" } } }]);
   await action.execute!({ path: "/invoices/2026" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-note-list.ts";
 
@@ -7,7 +8,7 @@ const page = (results: unknown[], extra: Record<string, unknown> = {}) => ({
   body: { success: true, results, moreDataAvailable: false, ...extra },
 });
 
-Deno.test("candidate-note-list: pages a candidate's notes to the end by default", async () => {
+test("candidate-note-list: pages a candidate's notes to the end by default", async () => {
   const { ctx, calls } = mockCtx([
     page([{ id: "n1" }], { moreDataAvailable: true, nextCursor: "Rl" }),
     page([{ id: "n2" }]),
@@ -22,19 +23,19 @@ Deno.test("candidate-note-list: pages a candidate's notes to the end by default"
  * incremental sync — so passing one would silently fetch everything while
  * looking like a delta.
  */
-Deno.test("candidate-note-list: deliberately offers no sync-token parameter", () => {
+test("candidate-note-list: deliberately offers no sync-token parameter", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(!keys.includes("syncToken"), keys.join(","));
   assert(/IGNORES it/.test(action.description!), action.description);
 });
 
-Deno.test("candidate-note-list: never sends a sync token even if paged", async () => {
+test("candidate-note-list: never sends a sync token even if paged", async () => {
   const { ctx, calls } = mockCtx([page([])]);
   await action.execute!({ candidateId: "c1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).syncToken, undefined);
 });
 
-Deno.test("candidate-note-list: needs a candidate id", async () => {
+test("candidate-note-list: needs a candidate id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "candidateId");
   assertEquals(calls.length, 0);

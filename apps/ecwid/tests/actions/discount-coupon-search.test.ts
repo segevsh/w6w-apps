@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import discountCouponSearch from "../../actions/discount-coupon-search.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("discount-coupon-search: calls GET /discount_coupons", async () => {
+test("discount-coupon-search: calls GET /discount_coupons", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ id: 162428889, code: "SUMMER" }]) }]);
   const out = await discountCouponSearch.execute({ limit: 50 }, ctx) as { items: unknown[] };
 
@@ -12,7 +13,7 @@ Deno.test("discount-coupon-search: calls GET /discount_coupons", async () => {
   assertEquals(out.items, [{ id: 162428889, code: "SUMMER" }]);
 });
 
-Deno.test("discount-coupon-search: the filter names are the underscore ones, not the body's", async () => {
+test("discount-coupon-search: the filter names are the underscore ones, not the body's", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await discountCouponSearch.execute(
     { code: "SUMMER", discount_type: "PERCENT", availability: "ACTIVE" },

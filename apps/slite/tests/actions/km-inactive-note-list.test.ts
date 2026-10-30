@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import kmInactiveNoteList from "../../actions/km-inactive-note-list.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("km-inactive-note-list: GET /v1/knowledge-management/notes/inactive with the documented parameters", async () => {
+test("km-inactive-note-list: GET /v1/knowledge-management/notes/inactive with the documented parameters", async () => {
   const response = { notes: [{ id: "n1" }], total: 1, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await kmInactiveNoteList.execute({
@@ -20,7 +21,7 @@ Deno.test("km-inactive-note-list: GET /v1/knowledge-management/notes/inactive wi
   assertEquals(out, response);
 });
 
-Deno.test("km-inactive-note-list: a vendor error surfaces its own message and id", async () => {
+test("km-inactive-note-list: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -38,7 +39,7 @@ Deno.test("km-inactive-note-list: a vendor error surfaces its own message and id
   );
 });
 
-Deno.test("km-inactive-note-list: the review-state and recency filters are not offered", () => {
+test("km-inactive-note-list: the review-state and recency filters are not offered", () => {
   const keys = (kmInactiveNoteList.params ?? []).map((p) => p.key);
   assertEquals(keys, ["ownerIdList", "channelIdList", "first", "cursor"]);
 });

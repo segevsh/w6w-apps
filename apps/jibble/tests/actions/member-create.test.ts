@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import memberCreate from "../../actions/member-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("member-create: POSTs to /v1/People with the vendor's odd IPersonSetting field", async () => {
+test("member-create: POSTs to /v1/People with the vendor's odd IPersonSetting field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "p1" } }]);
   await memberCreate.execute({
     fullName: "John Doe",
@@ -16,7 +17,7 @@ Deno.test("member-create: POSTs to /v1/People with the vendor's odd IPersonSetti
   assertEquals(body["IPersonSetting/SendInviteEmail"], true);
 });
 
-Deno.test("member-create: defaults sendInviteEmail to false rather than omitting it", async () => {
+test("member-create: defaults sendInviteEmail to false rather than omitting it", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "p1" } }]);
   await memberCreate.execute({ fullName: "Jane Doe" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -24,7 +25,7 @@ Deno.test("member-create: defaults sendInviteEmail to false rather than omitting
   assert(!("email" in body) || body.email === undefined);
 });
 
-Deno.test("member-create: requires fullName", async () => {
+test("member-create: requires fullName", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(memberCreate.execute({ fullName: "" }, ctx)),

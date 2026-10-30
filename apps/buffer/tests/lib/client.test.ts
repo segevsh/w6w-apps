@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { API, gqlError, gqlOf, mockCtx } from "../_helpers.ts";
 import {
   API_HOST,
@@ -14,14 +15,14 @@ import {
   unwrapMutation,
 } from "../../lib/client.ts";
 
-Deno.test("client: the base URL is the bare origin, as Buffer's examples document", () => {
+test("client: the base URL is the bare origin, as Buffer's examples document", () => {
   assertEquals(API_HOST, "api.buffer.com");
   assertEquals(API_URL, "https://api.buffer.com");
   // Not `/graphql` — that alias answers identically but is undocumented.
   assert(!API_URL.endsWith("/graphql"));
 });
 
-Deno.test("client: POSTs the query and variables as JSON, and sets no Authorization", async () => {
+test("client: POSTs the query and variables as JSON, and sets no Authorization", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { ok: true } } }]);
   await new BufferClient(ctx).request("query X { ok }", { a: 1 });
   assertEquals(calls[0].method, "POST");
@@ -32,7 +33,7 @@ Deno.test("client: POSTs the query and variables as JSON, and sets no Authorizat
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: variables are sent separately, never interpolated into the query", async () => {
+test("client: variables are sent separately, never interpolated into the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await new BufferClient(ctx).request("query X($id: ID!) { post(id: $id) { id } }", {
     id: "abc123",
@@ -42,7 +43,7 @@ Deno.test("client: variables are sent separately, never interpolated into the qu
 
 /* ---------------- the three failure arms ---------------- */
 
-Deno.test("client: arm 1 — a real non-2xx throws", () => {
+test("client: arm 1 — a real non-2xx throws", () => {
   assertThrows(
     () => parseGraphQLBody(500, JSON.stringify({ data: null })),
     Error,
@@ -50,7 +51,7 @@ Deno.test("client: arm 1 — a real non-2xx throws", () => {
   );
 });
 
-Deno.test("client: arm 1 — a non-JSON body names the status rather than exploding", () => {
+test("client: arm 1 — a non-JSON body names the status rather than exploding", () => {
   assertThrows(
     () => parseGraphQLBody(502, "<html>Bad gateway</html>"),
     Error,
@@ -58,7 +59,7 @@ Deno.test("client: arm 1 — a non-JSON body names the status rather than explod
   );
 });
 
-Deno.test("client: arm 2 — HTTP 200 with an errors array is a failure, not data", async () => {
+test("client: arm 2 — HTTP 200 with an errors array is a failure, not data", async () => {
   const { ctx } = mockCtx([gqlError("Not authorized", "UNAUTHORIZED")]);
   const err = await assertRejects(
     () => new BufferClient(ctx).request("query X { ok }"),
@@ -68,7 +69,7 @@ Deno.test("client: arm 2 — HTTP 200 with an errors array is a failure, not dat
   assert(/UNAUTHORIZED/.test(err.message), err.message);
 });
 
-Deno.test("client: arm 2 — the errors array wins over the status line on a 429", () => {
+test("client: arm 2 — the errors array wins over the status line on a 429", () => {
   // Buffer sends both. The body is the half that says which window blew.
   const body = JSON.stringify({
     errors: [{
@@ -82,7 +83,7 @@ Deno.test("client: arm 2 — the errors array wins over the status line on a 429
   assert(!/HTTP 429/.test(err.message), "the generic status message should not win");
 });
 
-Deno.test("client: arm 3 — a mutation error arm arrives 200 with no errors array", async () => {
+test("client: arm 3 — a mutation error arm arrives 200 with no errors array", async () => {
   // Buffer's own documented example, verbatim.
   const { ctx } = mockCtx([
     {
@@ -102,7 +103,7 @@ Deno.test("client: arm 3 — a mutation error arm arrives 200 with no errors arr
   assert(/InvalidInputError/.test(err.message), err.message);
 });
 
-Deno.test("client: arm 3 — a success arm is returned unchanged", async () => {
+test("client: arm 3 — a success arm is returned unchanged", async () => {
   const { ctx } = mockCtx([
     { body: { data: { createPost: { __typename: "PostActionSuccess", post: { id: "p1" } } } } },
   ]);
@@ -115,13 +116,13 @@ Deno.test("client: arm 3 — a success arm is returned unchanged", async () => {
   assertEquals(out.post.id, "p1");
 });
 
-Deno.test("client: neither data nor errors is a failure, not an empty success", () => {
+test("client: neither data nor errors is a failure, not an empty success", () => {
   assertThrows(() => parseGraphQLBody(200, JSON.stringify({})), Error, "neither");
 });
 
 /* ---------------- unwrapMutation edge cases ---------------- */
 
-Deno.test("unwrapMutation: RestProxyError surfaces the network's link and code", () => {
+test("unwrapMutation: RestProxyError surfaces the network's link and code", () => {
   const err = assertThrows(
     () =>
       unwrapMutation(
@@ -141,7 +142,7 @@ Deno.test("unwrapMutation: RestProxyError surfaces the network's link and code",
   assert(/support\.buffer\.com/.test(err.message), err.message);
 });
 
-Deno.test("unwrapMutation: a missing __typename is an error, never an optimistic success", () => {
+test("unwrapMutation: a missing __typename is an error, never an optimistic success", () => {
   assertThrows(
     () => unwrapMutation({ post: { id: "p1" } }, "createPost", ["PostActionSuccess"]),
     Error,
@@ -149,7 +150,7 @@ Deno.test("unwrapMutation: a missing __typename is an error, never an optimistic
   );
 });
 
-Deno.test("unwrapMutation: a null payload is an error", () => {
+test("unwrapMutation: a null payload is an error", () => {
   assertThrows(
     () => unwrapMutation(null, "deletePost", ["DeletePostSuccess"]),
     Error,
@@ -157,7 +158,7 @@ Deno.test("unwrapMutation: a null payload is an error", () => {
   );
 });
 
-Deno.test("unwrapMutation: several success types are all accepted", () => {
+test("unwrapMutation: several success types are all accepted", () => {
   // createIdea resolves to `Idea` OR `IdeaResponse`.
   const idea = unwrapMutation({ __typename: "Idea", id: "i1" }, "createIdea", [
     "Idea",
@@ -173,7 +174,7 @@ Deno.test("unwrapMutation: several success types are all accepted", () => {
 
 /* ---------------- error rendering ---------------- */
 
-Deno.test("formatGraphQLErrors: reports the count when there are several", () => {
+test("formatGraphQLErrors: reports the count when there are several", () => {
   const msg = formatGraphQLErrors([
     { message: "first", extensions: { code: "NOT_FOUND" } },
     { message: "second" },
@@ -183,7 +184,7 @@ Deno.test("formatGraphQLErrors: reports the count when there are several", () =>
   assert(/\+1 more/.test(msg));
 });
 
-Deno.test("isCredentialError: accepts both the documented and the observed spelling", () => {
+test("isCredentialError: accepts both the documented and the observed spelling", () => {
   // The docs table says UNAUTHORIZED; the live API returns UNAUTHENTICATED.
   assert(isCredentialError("UNAUTHENTICATED"));
   assert(isCredentialError("UNAUTHORIZED"));
@@ -193,36 +194,36 @@ Deno.test("isCredentialError: accepts both the documented and the observed spell
 
 /* ---------------- helpers ---------------- */
 
-Deno.test("compact: drops blanks but keeps false and 0", () => {
+test("compact: drops blanks but keeps false and 0", () => {
   assertEquals(
     compact({ a: "", b: null, c: undefined, d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("compact: keeps an explicit empty array — on editPost that means 'clear'", () => {
+test("compact: keeps an explicit empty array — on editPost that means 'clear'", () => {
   assertEquals(compact({ assets: [] }), { assets: [] });
 });
 
-Deno.test("idList: trims, drops blanks, and never coerces a Buffer id to a number", () => {
+test("idList: trims, drops blanks, and never coerces a Buffer id to a number", () => {
   assertEquals(idList(" a1 , b2 ,, c3 "), ["a1", "b2", "c3"]);
   // A Buffer id is an opaque string; Number() would turn it into NaN.
   assertEquals(idList("507f1f77bcf86cd799439011"), ["507f1f77bcf86cd799439011"]);
 });
 
-Deno.test("idList: whitespace yields undefined, not [] — they are opposite instructions", () => {
+test("idList: whitespace yields undefined, not [] — they are opposite instructions", () => {
   // aggregatedPostMetrics: omitted spans every channel, `[]` matches none.
   assertEquals(idList("   "), undefined);
   assertEquals(idList(""), undefined);
   assertEquals(idList(undefined), undefined);
 });
 
-Deno.test("unset: a blank string is absent", () => {
+test("unset: a blank string is absent", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("x"), "x");
 });
 
-Deno.test("jsonObject: parses a string, passes an object, rejects an array", () => {
+test("jsonObject: parses a string, passes an object, rejects an array", () => {
   assertEquals(jsonObject('{"a":1}', "M"), { a: 1 });
   assertEquals(jsonObject({ a: 1 }, "M"), { a: 1 });
   assertEquals(jsonObject("", "M"), undefined);

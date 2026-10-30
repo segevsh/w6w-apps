@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-get.ts";
 
-Deno.test("task-get: GETs /task/{id} with subtask/custom-id query flags", async () => {
+test("task-get: GETs /task/{id} with subtask/custom-id query flags", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({
     taskId: "t1",
@@ -19,7 +20,7 @@ Deno.test("task-get: GETs /task/{id} with subtask/custom-id query flags", async 
   assertEquals(url.searchParams.get("team_id"), "42");
 });
 
-Deno.test("task-get: omits team_id when not using custom IDs", async () => {
+test("task-get: omits team_id when not using custom IDs", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({ taskId: "t1", teamId: "42" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   errorText,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: seg, buildQuery and jsonValue", () => {
+test("client: seg, buildQuery and jsonValue", () => {
   assertEquals(seg(" a/b "), "a%2Fb");
   assertEquals(buildQuery({ a: 1, b: undefined, c: "", d: null, e: false }), "?a=1&e=false");
   assertEquals(buildQuery(undefined), "");
@@ -19,7 +20,7 @@ Deno.test("client: seg, buildQuery and jsonValue", () => {
   assertEquals(jsonValue([1]), [1]);
 });
 
-Deno.test("client: errorText reads Message, message+error and falls back to the raw text", () => {
+test("client: errorText reads Message, message+error and falls back to the raw text", () => {
   assertEquals(errorText({ Message: "Invalid ids" }), "Invalid ids");
   assertEquals(
     errorText({ error: "Unauthorized", status: 401, message: "Invalid token x" }),
@@ -29,7 +30,7 @@ Deno.test("client: errorText reads Message, message+error and falls back to the 
   assertEquals(errorText(undefined, "  plain  "), "plain");
 });
 
-Deno.test("client: request throws on non-2xx and on success:false, and tolerates an empty 2xx", async () => {
+test("client: request throws on non-2xx and on success:false, and tolerates an empty 2xx", async () => {
   const bad = mockCtx([{ status: 408, body: { Message: "timeout" } }]);
   await assertRejects(
     () => new FireberryClient(bad.ctx).request("GET", "/x"),
@@ -42,7 +43,7 @@ Deno.test("client: request throws on non-2xx and on success:false, and tolerates
   assertEquals(await new FireberryClient(empty.ctx).request("GET", "/x"), {});
 });
 
-Deno.test("client: pageOutput on an empty envelope yields no records and hasMore false", () => {
+test("client: pageOutput on an empty envelope yields no records and hasMore false", () => {
   const out = pageOutput({});
   assertEquals(out.records, []);
   assertEquals(out.hasMore, false);

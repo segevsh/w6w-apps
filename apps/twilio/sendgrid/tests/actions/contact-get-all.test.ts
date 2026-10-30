@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get-all.ts";
 
-Deno.test("contact-get-all: no filter → GET /marketing/contacts, respects limit", async () => {
+test("contact-get-all: no filter → GET /marketing/contacts, respects limit", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -17,7 +18,7 @@ Deno.test("contact-get-all: no filter → GET /marketing/contacts, respects limi
   assertEquals(result, [{ id: "1" }, { id: "2" }]);
 });
 
-Deno.test("contact-get-all: filter query → POST /marketing/contacts/search", async () => {
+test("contact-get-all: filter query → POST /marketing/contacts/search", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: [{ id: "1" }], _metadata: {} } },
   ]);
@@ -32,7 +33,7 @@ Deno.test("contact-get-all: filter query → POST /marketing/contacts/search", a
   assertEquals(body.query, "email LIKE '%@x.com'");
 });
 
-Deno.test("contact-get-all: follows _metadata.next pagination when returnAll", async () => {
+test("contact-get-all: follows _metadata.next pagination when returnAll", async () => {
   const nextUrl = "https://api.sendgrid.com/v3/marketing/contacts?page_token=xyz";
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: [{ id: "1" }], _metadata: { next: nextUrl } } },
@@ -45,7 +46,7 @@ Deno.test("contact-get-all: follows _metadata.next pagination when returnAll", a
   assertEquals(result, [{ id: "1" }, { id: "2" }]);
 });
 
-Deno.test("contact-get-all: the SGQL query is a flat param", async () => {
+test("contact-get-all: the SGQL query is a flat param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [] } }]);
   await action.execute!({ query: "email LIKE '%@x.com'" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -53,13 +54,13 @@ Deno.test("contact-get-all: the SGQL query is a flat param", async () => {
   assertEquals(JSON.parse(calls[0].body ?? "").query, "email LIKE '%@x.com'");
 });
 
-Deno.test("contact-get-all: a flat query wins over the deprecated filters group", async () => {
+test("contact-get-all: a flat query wins over the deprecated filters group", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [] } }]);
   await action.execute!({ query: "new", filters: { query: "old" } }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "").query, "new");
 });
 
-Deno.test("contact-get-all: no param is buried in a `group` the studio renders as JSON", () => {
+test("contact-get-all: no param is buried in a `group` the studio renders as JSON", () => {
   const walk = (list: typeof action.params): string[] =>
     (list ?? []).flatMap((p) => [...(p.type === "group" ? [p.key] : []), ...walk(p.children)]);
   assertEquals(walk(action.params), []);

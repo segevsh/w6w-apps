@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: sends GET /v2/projects/project%201%2Fx/tags", async () => {
+test("tag-list: sends GET /v2/projects/project%201%2Fx/tags", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "x1" }] }]);
   const input = {
     "projectId": "project 1/x",
@@ -27,7 +28,7 @@ Deno.test("tag-list: sends GET /v2/projects/project%201%2Fx/tags", async () => {
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("tag-list: surfaces Phrase's validation message on a 422", async () => {
+test("tag-list: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await tagList.execute({
@@ -42,7 +43,7 @@ Deno.test("tag-list: surfaces Phrase's validation message on a 422", async () =>
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("tag-list: declares key, type and every param it reads", () => {
+test("tag-list: declares key, type and every param it reads", () => {
   assertEquals(tagList.key, "tag-list");
   assertEquals(tagList.type, "search");
   const declared = new Set((tagList.params ?? []).map((p) => p.key));
@@ -58,7 +59,7 @@ Deno.test("tag-list: declares key, type and every param it reads", () => {
   ) assert(declared.has(k), `missing param ${k}`);
 });
 
-Deno.test("tag-list: lifts the Pagination header into the output", async () => {
+test("tag-list: lifts the Pagination header into the output", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",
@@ -89,7 +90,7 @@ Deno.test("tag-list: lifts the Pagination header into the output", async () => {
   ]);
 });
 
-Deno.test("tag-list: falls back to the Link header for the next page", async () => {
+test("tag-list: falls back to the Link header for the next page", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",

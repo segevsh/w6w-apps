@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import entityList from "../../actions/entity-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("entity-list: GET /entities with search and sort", async () => {
+test("entity-list: GET /entities with search and sort", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "e1" }]) }]);
   await entityList.execute({ search: "acme", sortField: "name", sortDirection: "ASC" }, ctx);
   assertEquals(pathOf(calls[0].url), "/public/api/v1/entities");

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import meGet from "../../actions/me-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("me-get: GET /me and returns the token description", async () => {
+test("me-get: GET /me and returns the token description", async () => {
   const body = {
     name: "CI",
     scopes: ["forms:read"],
@@ -17,7 +18,7 @@ Deno.test("me-get: GET /me and returns the token description", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("me-get: sets no Authorization header itself and takes no params", async () => {
+test("me-get: sets no Authorization header itself and takes no params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await meGet.execute({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embedded-edit-url-get.ts";
 import signUrl from "../../actions/embedded-sign-url-get.ts";
 
 /** Its sibling is a GET, which is easy to get backwards. */
-Deno.test("edit-url: POSTs, unlike sign-url", async () => {
+test("edit-url: POSTs, unlike sign-url", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { embedded: { edit_url: "https://x" } } }]);
   await action.execute!({ templateId: "t1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -15,7 +16,7 @@ Deno.test("edit-url: POSTs, unlike sign-url", async () => {
   assertEquals(sign.calls[0].method, "GET");
 });
 
-Deno.test("edit-url: editor options pass through as an object", async () => {
+test("edit-url: editor options pass through as an object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     templateId: "t1",
@@ -27,7 +28,7 @@ Deno.test("edit-url: editor options pass through as an object", async () => {
   assertEquals(body.skip_signer_roles, true);
 });
 
-Deno.test("edit-url: a blank id fails before any request", async () => {
+test("edit-url: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`templateId`");
   assertEquals(calls.length, 0);

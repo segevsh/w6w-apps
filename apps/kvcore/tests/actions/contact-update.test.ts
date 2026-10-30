@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs to /contact/{id} without the id in the body", async () => {
+test("contact-update: PUTs to /contact/{id} without the id in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 123, email: "new@test.com" } }]);
   await contactUpdate.execute({ contact_id: "123", email: "new@test.com" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("contact-update: PUTs to /contact/{id} without the id in the body", as
   assertEquals("contact_id" in body, false);
 });
 
-Deno.test("contact-update: no field is required except contact_id", () => {
+test("contact-update: no field is required except contact_id", () => {
   const required = (contactUpdate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["contact_id"]);
 });

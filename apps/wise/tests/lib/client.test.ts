@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   asJson,
   asOptionalJson,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { authErrorBody, mockCtx, pathOf, queryOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("client: builds the calendar-versioned URL and drops empty query values", async () => {
+test("client: builds the calendar-versioned URL and drops empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new WiseClient(ctx).json("/currencies", { query: { a: "x", b: undefined, c: "" } });
 
@@ -19,7 +20,7 @@ Deno.test("client: builds the calendar-versioned URL and drops empty query value
   assertEquals(queryOf(calls[0].url), { a: "x" });
 });
 
-Deno.test("client: JSON body defaults to application/json", async () => {
+test("client: JSON body defaults to application/json", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await new WiseClient(ctx).json("/accounts", { method: "POST", body: { currency: "GBP" } });
 
@@ -27,7 +28,7 @@ Deno.test("client: JSON body defaults to application/json", async () => {
   assertEquals(JSON.parse(calls[0].body!), { currency: "GBP" });
 });
 
-Deno.test("client: an explicit content type overrides the default (Quote Update's merge-patch)", async () => {
+test("client: an explicit content type overrides the default (Quote Update's merge-patch)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "q1" } }]);
   await new WiseClient(ctx).json("/profiles/1/quotes/q1", {
     method: "PATCH",
@@ -38,7 +39,7 @@ Deno.test("client: an explicit content type overrides the default (Quote Update'
   assertEquals(calls[0].headers["content-type"], "application/merge-patch+json");
 });
 
-Deno.test("client: a request with no body sends none", async () => {
+test("client: a request with no body sends none", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "cancelled" } }]);
   await new WiseClient(ctx).json("/transfers/1/cancel", { method: "PUT" });
 
@@ -46,7 +47,7 @@ Deno.test("client: a request with no body sends none", async () => {
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("client: throws formatWiseError's message on a non-2xx response", async () => {
+test("client: throws formatWiseError's message on a non-2xx response", async () => {
   const { ctx } = mockCtx([{ status: 401, body: authErrorBody("invalid_token", "Invalid token") }]);
   await assertRejects(
     () => new WiseClient(ctx).json("/profiles"),
@@ -55,13 +56,13 @@ Deno.test("client: throws formatWiseError's message on a non-2xx response", asyn
   );
 });
 
-Deno.test("client: a 204-shaped empty body parses to undefined, not a JSON error", async () => {
+test("client: a 204-shaped empty body parses to undefined, not a JSON error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: undefined }]);
   const result = await new WiseClient(ctx).json("/whatever");
   assertEquals(result, undefined);
 });
 
-Deno.test("compact: drops undefined/null/empty-string values and stringifies the rest", () => {
+test("compact: drops undefined/null/empty-string values and stringifies the rest", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: "x" }), {
     a: "1",
     e: "false",
@@ -69,14 +70,14 @@ Deno.test("compact: drops undefined/null/empty-string values and stringifies the
   });
 });
 
-Deno.test("compactBody: drops unset keys WITHOUT stringifying survivors", () => {
+test("compactBody: drops unset keys WITHOUT stringifying survivors", () => {
   assertEquals(compactBody({ sourceAmount: 100, targetAmount: undefined, payOut: "BALANCE" }), {
     sourceAmount: 100,
     payOut: "BALANCE",
   });
 });
 
-Deno.test("formatWiseError: reports the OAuth-style shape verbatim", () => {
+test("formatWiseError: reports the OAuth-style shape verbatim", () => {
   const msg = formatWiseError(
     401,
     "GET",
@@ -87,7 +88,7 @@ Deno.test("formatWiseError: reports the OAuth-style shape verbatim", () => {
   assert(msg.includes("Invalid token"));
 });
 
-Deno.test("formatWiseError: reports the validation-error shape with the failing field's path", () => {
+test("formatWiseError: reports the validation-error shape with the failing field's path", () => {
   const msg = formatWiseError(
     400,
     "POST",
@@ -100,12 +101,12 @@ Deno.test("formatWiseError: reports the validation-error shape with the failing 
   assert(msg.includes("Unknown bank code"));
 });
 
-Deno.test("formatWiseError: falls back to the raw body when neither shape matches", () => {
+test("formatWiseError: falls back to the raw body when neither shape matches", () => {
   const msg = formatWiseError(500, "GET", "/profiles", "upstream exploded");
   assert(msg.includes("upstream exploded"));
 });
 
-Deno.test("asOptionalJson/asJson: accepts a parsed value, a JSON string, and rejects malformed JSON", () => {
+test("asOptionalJson/asJson: accepts a parsed value, a JSON string, and rejects malformed JSON", () => {
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -127,7 +128,7 @@ Deno.test("asOptionalJson/asJson: accepts a parsed value, a JSON string, and rej
   assert(requiredThrew);
 });
 
-Deno.test("deriveUuid: deterministic per seed, and shaped like a UUID", async () => {
+test("deriveUuid: deterministic per seed, and shaped like a UUID", async () => {
   const a = await deriveUuid("inv_0001");
   const b = await deriveUuid("inv_0001");
   const c = await deriveUuid("inv_0002");

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-create.ts";
 
@@ -11,7 +12,7 @@ function baseInput(overrides: Record<string, unknown> = {}): Record<string, unkn
   };
 }
 
-Deno.test("incident-create: posts a minimal incident and sends the From header", async () => {
+test("incident-create: posts a minimal incident and sends the From header", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { incident: { id: "P1" } } }]);
   const result = await action.execute!(baseInput(), ctx);
 
@@ -28,7 +29,7 @@ Deno.test("incident-create: posts a minimal incident and sends the From header",
   assertEquals(result, { id: "P1" });
 });
 
-Deno.test("incident-create: additionalFields map onto the request body", async () => {
+test("incident-create: additionalFields map onto the request body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { incident: {} } }]);
   await action.execute!(
     baseInput({
@@ -50,7 +51,7 @@ Deno.test("incident-create: additionalFields map onto the request body", async (
   assertEquals(body.incident.incident_key, "dedupe-key");
 });
 
-Deno.test("incident-create: missing required fields reject with informative errors", async () => {
+test("incident-create: missing required fields reject with informative errors", async () => {
   const cases: Array<[string, Record<string, unknown>]> = [
     ["title", { title: "" }],
     ["serviceId", { serviceId: "" }],
@@ -66,7 +67,7 @@ Deno.test("incident-create: missing required fields reject with informative erro
   }
 });
 
-Deno.test("incident-create: non-2xx response propagates as Error", async () => {
+test("incident-create: non-2xx response propagates as Error", async () => {
   const { ctx } = mockCtx([{ status: 400, body: '{"error":{"message":"bad request"}}' }]);
   await assertRejects(
     async () => await action.execute!(baseInput(), ctx),
@@ -75,7 +76,7 @@ Deno.test("incident-create: non-2xx response propagates as Error", async () => {
   );
 });
 
-Deno.test("incident-create: the former group's fields are read flat", async () => {
+test("incident-create: the former group's fields are read flat", async () => {
   // They used to sit in a `type: "group"`, which renders as a raw JSON editor —
   // so urgency, priority, escalation policy and the dedupe key were all
   // unreachable as form fields. A section writes them flat.
@@ -101,7 +102,7 @@ Deno.test("incident-create: the former group's fields are read flat", async () =
   assertEquals(incident.body, { type: "incident_body", details: "on node 3" });
 });
 
-Deno.test("incident-create: a flat field wins over the deprecated group", async () => {
+test("incident-create: a flat field wins over the deprecated group", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { incident: {} } }]);
   await action.execute!(
     {

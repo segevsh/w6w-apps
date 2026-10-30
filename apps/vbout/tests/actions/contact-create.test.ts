@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { bodyOf, errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs emailmarketing/addcontact.json with the documented parameters", async () => {
+test("contact-create: POSTs emailmarketing/addcontact.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "item": { "id": "14523" } }) }]);
   const out = await contactCreate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("contact-create: POSTs emailmarketing/addcontact.json with the documen
   assertEquals(out, { "ok": true, "item": { "id": "14523" } });
 });
 
-Deno.test("contact-create: sends a form-encoded body, not a query string", async () => {
+test("contact-create: sends a form-encoded body, not a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "item": { "id": "14523" } }) }]);
   await contactCreate.execute(
     {
@@ -46,11 +47,11 @@ Deno.test("contact-create: sends a form-encoded body, not a query string", async
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("contact-create: is declared non-idempotent", () => {
+test("contact-create: is declared non-idempotent", () => {
   assertEquals(contactCreate.idempotent, false);
 });
 
-Deno.test("contact-create: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("contact-create: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

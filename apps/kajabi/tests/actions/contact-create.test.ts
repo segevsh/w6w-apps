@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { bodyOf, doc, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs a JSON:API document with the site relationship", async () => {
+test("contact-create: POSTs a JSON:API document with the site relationship", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: doc("5") }]);
   await contactCreate.execute(
     { siteId: "111", name: "Jo", email: "jo@x.com", phoneNumber: "555" },
@@ -26,7 +27,7 @@ Deno.test("contact-create: POSTs a JSON:API document with the site relationship"
   assertEquals(body.data.relationships.site.data, { id: "111", type: "sites" });
 });
 
-Deno.test("contact-create: unfilled attributes are omitted, not sent blank", async () => {
+test("contact-create: unfilled attributes are omitted, not sent blank", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: doc("5") }]);
   await contactCreate.execute({ siteId: "111", name: "Jo", email: "jo@x.com" }, ctx);
   const attrs = (bodyOf(calls[0]) as { data: { attributes: Record<string, unknown> } })
@@ -34,7 +35,7 @@ Deno.test("contact-create: unfilled attributes are omitted, not sent blank", asy
   assertEquals(Object.keys(attrs).sort(), ["email", "name"]);
 });
 
-Deno.test("contact-create: custom fields merge into attributes", async () => {
+test("contact-create: custom fields merge into attributes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: doc("5") }]);
   await contactCreate.execute({
     siteId: "111",
@@ -47,7 +48,7 @@ Deno.test("contact-create: custom fields merge into attributes", async () => {
   assertEquals(attrs.custom_1, "Referred");
 });
 
-Deno.test("contact-create: malformed custom-field JSON fails before the network", async () => {
+test("contact-create: malformed custom-field JSON fails before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -67,17 +68,17 @@ Deno.test("contact-create: malformed custom-field JSON fails before the network"
  * offer or makes a purchase"* — it silently does nothing at creation time, so
  * it is deliberately not offered here. It IS offered on `contact-update`.
  */
-Deno.test("contact-create: does not offer external_user_id, which is inert at creation", () => {
+test("contact-create: does not offer external_user_id, which is inert at creation", () => {
   const keys = contactCreate.params!.map((p) => p.key);
   assertEquals(keys.includes("externalUserId"), false);
 });
 
 /** A contact cannot exist without a site, so the param cannot be optional. */
-Deno.test("contact-create: the site is required here, unlike on the list actions", () => {
+test("contact-create: the site is required here, unlike on the list actions", () => {
   const site = contactCreate.params!.find((p) => p.key === "siteId")!;
   assertEquals(site.required, true);
 });
 
-Deno.test("contact-create: is not idempotent — a retry creates a second contact", () => {
+test("contact-create: is not idempotent — a retry creates a second contact", () => {
   assertEquals(contactCreate.idempotent, false);
 });

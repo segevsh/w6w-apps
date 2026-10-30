@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-update.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("post-update: POSTs /posts/{id} with the parsed numeric id in the body", async () => {
+test("post-update: POSTs /posts/{id} with the parsed numeric id in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }], { display });
   await action.execute!({ postId: "42", title: "New" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,13 +13,13 @@ Deno.test("post-update: POSTs /posts/{id} with the parsed numeric id in the body
   assertEquals(JSON.parse(calls[0].body!), { id: 42, title: "New" });
 });
 
-Deno.test("post-update: only sends fields the caller explicitly provided", async () => {
+test("post-update: only sends fields the caller explicitly provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ postId: "42", status: "draft" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: 42, status: "draft" });
 });
 
-Deno.test("post-update: maps all optional camelCase fields to snake_case", async () => {
+test("post-update: maps all optional camelCase fields to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!(
     {

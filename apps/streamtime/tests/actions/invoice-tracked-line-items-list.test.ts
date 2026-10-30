@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceTrackedLineItemsList from "../../actions/invoice-tracked-line-items-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-tracked-line-items-list: returns the untyped body under a name", async () => {
+test("invoice-tracked-line-items-list: returns the untyped body under a name", async () => {
   const { ctx, calls } = mockCtx([{ body: { JobItem: [{ id: 88 }] } }]);
   const result = await invoiceTrackedLineItemsList.execute({ invoiceId: 3456 }, ctx) as Record<
     string,

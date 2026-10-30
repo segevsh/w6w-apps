@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/survey-create.ts";
 
-Deno.test("survey-create: POSTs /satisfaction-surveys with ticket and customer ids", async () => {
+test("survey-create: POSTs /satisfaction-surveys with ticket and customer ids", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1234 } }]);
   await action.execute({ ticketId: 12, customerId: 120 }, ctx);
   assertEquals(calls[0].url, "https://acme.gorgias.com/api/satisfaction-surveys");
@@ -12,7 +13,7 @@ Deno.test("survey-create: POSTs /satisfaction-surveys with ticket and customer i
   assertEquals(body.should_send_datetime, undefined);
 });
 
-Deno.test("survey-create: passes through shouldSendDatetime, bodyText and score", async () => {
+test("survey-create: passes through shouldSendDatetime, bodyText and score", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     {

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workspaceGet from "../../actions/workspace-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": "ws12345" };
 
-Deno.test("workspace-get: GET /workspaces/{workspaceId}", async () => {
+test("workspace-get: GET /workspaces/{workspaceId}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -20,7 +21,7 @@ Deno.test("workspace-get: GET /workspaces/{workspaceId}", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("workspace-get: puts no credential on the request (sign owns that)", async () => {
+test("workspace-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -29,7 +30,7 @@ Deno.test("workspace-get: puts no credential on the request (sign owns that)", a
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("workspace-get: a vendor error surfaces its own code and message", async () => {
+test("workspace-get: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -40,7 +41,7 @@ Deno.test("workspace-get: a vendor error surfaces its own code and message", asy
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("workspace-get: an empty workspaceId is refused before any request", async () => {
+test("workspace-get: an empty workspaceId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await workspaceGet.execute({ ...INPUT, workspaceId: "  " as never }, ctx)

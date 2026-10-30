@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tableCreate from "../../actions/table-create.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("table-create: sends name/schema/rows in the JSON body, onSchemaError as a query param", async () => {
+test("table-create: sends name/schema/rows in the JSON body, onSchemaError as a query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ tableID: "t1", jobID: "j1" }) }]);
   const out = await tableCreate.execute({
     name: "Employees",
@@ -17,13 +18,13 @@ Deno.test("table-create: sends name/schema/rows in the JSON body, onSchemaError 
   assertEquals(out, { tableID: "t1", jobID: "j1" });
 });
 
-Deno.test("table-create: accepts a stash reference in place of inline rows", async () => {
+test("table-create: accepts a stash reference in place of inline rows", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ tableID: "t1", jobID: "j1" }) }]);
   await tableCreate.execute({ name: "Employees", rows: { $stashID: "20240215-job32" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).rows, { $stashID: "20240215-job32" });
 });
 
-Deno.test("table-create: parses a JSON-string schema param", async () => {
+test("table-create: parses a JSON-string schema param", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ tableID: "t1", jobID: "j1" }) }]);
   await tableCreate.execute({
     name: "Employees",
@@ -35,13 +36,13 @@ Deno.test("table-create: parses a JSON-string schema param", async () => {
   });
 });
 
-Deno.test("table-create: splits comma-separated appsToLink and omits it when blank", async () => {
+test("table-create: splits comma-separated appsToLink and omits it when blank", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ tableID: "t1", jobID: "j1" }) }]);
   await tableCreate.execute({ name: "X", rows: [], appsToLink: "app1, app2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).appsToLink, ["app1", "app2"]);
 });
 
-Deno.test("table-create: sets x-glide-asynchronous only when the caller states it", async () => {
+test("table-create: sets x-glide-asynchronous only when the caller states it", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: envelope({ tableID: "t1", jobID: "j1" }) },
     { status: 201, body: envelope({ tableID: "t2", jobID: "j2" }) },
@@ -53,6 +54,6 @@ Deno.test("table-create: sets x-glide-asynchronous only when the caller states i
   assert(!("x-glide-asynchronous" in calls[1].headers));
 });
 
-Deno.test("table-create: not idempotent", () => {
+test("table-create: not idempotent", () => {
   assertEquals(tableCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-contacts.ts";
 
-Deno.test("list-contacts: GETs /v3/contacts with the default limit", async () => {
+test("list-contacts: GETs /v3/contacts with the default limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("list-contacts: GETs /v3/contacts with the default limit", async () =>
   assertEquals(url.searchParams.get("limit"), "50");
 });
 
-Deno.test("list-contacts: forwards every filter under its snake_case name", async () => {
+test("list-contacts: forwards every filter under its snake_case name", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await action.execute!({
     status: "active,unsubscribed",
@@ -41,7 +42,7 @@ Deno.test("list-contacts: forwards every filter under its snake_case name", asyn
   assertEquals(p.get("cursor"), "abc");
 });
 
-Deno.test("list-contacts: include_count is sent only when asked for", async () => {
+test("list-contacts: include_count is sent only when asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }, { body: { contacts: [] } }]);
   await action.execute!({ includeCount: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("include_count"), "true");
@@ -49,13 +50,13 @@ Deno.test("list-contacts: include_count is sent only when asked for", async () =
   assert(!new URL(calls[1].url).searchParams.has("include_count"));
 });
 
-Deno.test("list-contacts: maps segmentId to the API's segment_id", async () => {
+test("list-contacts: maps segmentId to the API's segment_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [], status: "processing" } }]);
   await action.execute!({ segmentId: "42" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("segment_id"), "42");
 });
 
-Deno.test("list-contacts: omits every filter that was not supplied", async () => {
+test("list-contacts: omits every filter that was not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await action.execute!({}, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -64,7 +65,7 @@ Deno.test("list-contacts: omits every filter that was not supplied", async () =>
   }
 });
 
-Deno.test("list-contacts: lifts the cursor out of _links.next for the caller", async () => {
+test("list-contacts: lifts the cursor out of _links.next for the caller", async () => {
   const { ctx } = mockCtx([{
     body: {
       contacts: [{ contact_id: "c1" }],
@@ -77,7 +78,7 @@ Deno.test("list-contacts: lifts the cursor out of _links.next for the caller", a
   assertEquals(out.contacts_count, 1);
 });
 
-Deno.test("list-contacts: next_cursor is undefined on the last page", async () => {
+test("list-contacts: next_cursor is undefined on the last page", async () => {
   const { ctx } = mockCtx([{ body: { contacts: [] } }]);
   const out = await action.execute!({}, ctx) as Record<string, unknown>;
   assertEquals(out.next_cursor, undefined);

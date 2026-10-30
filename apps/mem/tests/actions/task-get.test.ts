@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskGet from "../../actions/task-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const RESPONSE = {
   "updated_at": "2026-01-31T09:00:00Z",
 };
 
-Deno.test("task-get: GET /v2/tasks/{task_id}", async () => {
+test("task-get: GET /v2/tasks/{task_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await taskGet.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -29,13 +30,13 @@ Deno.test("task-get: GET /v2/tasks/{task_id}", async () => {
   assertEquals(out.status, "pending");
 });
 
-Deno.test("task-get: puts no credential on the request (sign owns that)", async () => {
+test("task-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await taskGet.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("task-get: a vendor error surfaces its own message", async () => {
+test("task-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

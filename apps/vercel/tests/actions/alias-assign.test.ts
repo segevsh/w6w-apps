@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias-assign.ts";
 
-Deno.test("alias-assign: POSTs the alias onto the deployment", async () => {
+test("alias-assign: POSTs the alias onto the deployment", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { uid: "al_1", alias: "my-app.com", oldDeploymentId: "dpl_old" },
@@ -15,13 +16,13 @@ Deno.test("alias-assign: POSTs the alias onto the deployment", async () => {
   assertEquals((result as Record<string, unknown>).oldDeploymentId, "dpl_old");
 });
 
-Deno.test("alias-assign: a redirect target is sent when given", async () => {
+test("alias-assign: a redirect target is sent when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await action.execute!({ deploymentId: "dpl_1", alias: "a.com", redirect: "b.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { alias: "a.com", redirect: "b.com" });
 });
 
-Deno.test("alias-assign: deployment and alias are both required", async () => {
+test("alias-assign: deployment and alias are both required", async () => {
   const a = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ alias: "a.com" }, a.ctx),

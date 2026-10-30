@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display } from "./_shared.ts";
 import action from "../../actions/person-offboard.ts";
 
 const ok = { status: 200, body: {} };
 
-Deno.test("person-offboard: posts one update per person with the acknowledger", async () => {
+test("person-offboard: posts one update per person with the acknowledger", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   assertEquals(
     await action.execute!(
@@ -24,7 +25,7 @@ Deno.test("person-offboard: posts one update per person with the acknowledger", 
 });
 
 /** Somebody is recorded as having done it, and an auditor asks about them. */
-Deno.test("person-offboard: refuses without an acknowledger, and says why", async () => {
+test("person-offboard: refuses without an acknowledger, and says why", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ personIds: "p1", confirm: true }, ctx),
@@ -34,7 +35,7 @@ Deno.test("person-offboard: refuses without an acknowledger, and says why", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("person-offboard: refuses without the confirmation", async () => {
+test("person-offboard: refuses without the confirmation", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ personIds: "p1", acknowledgerId: "u1" }, ctx),
@@ -44,7 +45,7 @@ Deno.test("person-offboard: refuses without the confirmation", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("person-offboard: refuses more than Vanta's batch limit", async () => {
+test("person-offboard: refuses more than Vanta's batch limit", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const ids = Array.from({ length: 1001 }, (_, i) => `p${i}`).join(",");
   await assertRejects(
@@ -56,13 +57,13 @@ Deno.test("person-offboard: refuses more than Vanta's batch limit", async () => 
 });
 
 /** A count and the acknowledger; never the roster. */
-Deno.test("person-offboard: logs the count and acknowledger only", async () => {
+test("person-offboard: logs the count and acknowledger only", async () => {
   const { ctx, logs } = mockCtx([ok], { display });
   await action.execute!({ personIds: "p1,p2", acknowledgerId: "u1", confirm: true }, ctx);
   assertEquals(logs[0].data, { count: 2, acknowledgerId: "u1" });
 });
 
 /** It records an offboarding; it does not reach into every system. */
-Deno.test("person-offboard: does not overclaim what it does", () => {
+test("person-offboard: does not overclaim what it does", () => {
   assert(/checklist/.test(action.description!), action.description);
 });

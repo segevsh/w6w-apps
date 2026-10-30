@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import apiKey, { basicHeader, PASSWORD } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("auth: declares the shape a Basic API key connection needs", () => {
+test("auth: declares the shape a Basic API key connection needs", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "basic");
   assertEquals(typeof apiKey.sign, "function");
@@ -33,7 +34,7 @@ Deno.test("auth: declares the shape a Basic API key connection needs", () => {
  * the STRING BEING ENCODED is right instead of merely reproducing whatever the
  * implementation happens to emit.
  */
-Deno.test("auth: basicHeader encodes `${key}:x`, per BambooHR's own curl sample", () => {
+test("auth: basicHeader encodes `${key}:x`, per BambooHR's own curl sample", () => {
   assertEquals(PASSWORD, "x");
   assertEquals(
     basicHeader("abc123"),
@@ -45,7 +46,7 @@ Deno.test("auth: basicHeader encodes `${key}:x`, per BambooHR's own curl sample"
   assertEquals(atob("YWJjMTIzOng="), "abc123:x");
 });
 
-Deno.test("auth: the password is `x`, NOT empty — close's format is one char away", () => {
+test("auth: the password is `x`, NOT empty — close's format is one char away", () => {
   // `close` in this same pack is also Basic-with-key-as-username but fixes the
   // password EMPTY. The two are not interchangeable, and this is the assertion
   // that catches a copy-paste between them.
@@ -53,7 +54,7 @@ Deno.test("auth: the password is `x`, NOT empty — close's format is one char a
   assertEquals(atob(basicHeader("abc123").slice("Basic ".length)).endsWith(":x"), true);
 });
 
-Deno.test("auth: sign stamps the Authorization header and returns the request", () => {
+test("auth: sign stamps the Authorization header and returns the request", () => {
   const request = {
     url: "https://acme.bamboohr.com/api/v1/employees/0",
     method: "GET",
@@ -67,7 +68,7 @@ Deno.test("auth: sign stamps the Authorization header and returns the request", 
   assertEquals((signed as typeof request).headers["authorization"], "Basic YWJjMTIzOng=");
 });
 
-Deno.test("auth: sign does not rewrite the request URL", () => {
+test("auth: sign does not rewrite the request URL", () => {
   // The host travels via `connection.display.subdomain`, not from inside `sign`.
   // Rewriting it here would hide the destination from the action that built it.
   const url = "https://acme.bamboohr.com/api/v1/employees/0";
@@ -79,7 +80,7 @@ Deno.test("auth: sign does not rewrite the request URL", () => {
 
 // ------------------------------------------------------------------ the test hook --
 
-Deno.test("auth: test probes /employees/0 — the scope-free whoami", async () => {
+test("auth: test probes /employees/0 — the scope-free whoami", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "42", firstName: "Ava" } }]);
   const result = await apiKey.test!({ credential: { subdomain: "acme", apiKey: "abc123" } }, ctx);
 
@@ -92,14 +93,14 @@ Deno.test("auth: test probes /employees/0 — the scope-free whoami", async () =
   assertEquals(new URL(calls[0].url).searchParams.has("fields"), false);
 });
 
-Deno.test("auth: test accepts an integration key that is bound to no employee", async () => {
+test("auth: test accepts an integration key that is bound to no employee", async () => {
   // Documented: `0` returns only `{"id": "0"}` for integration-style accounts.
   // That is a live key, not a failure.
   const { ctx } = mockCtx([{ body: { id: "0" } }]);
   assertEquals((await apiKey.test!({ credential: { subdomain: "a", apiKey: "k" } }, ctx)).ok, true);
 });
 
-Deno.test("auth: test distinguishes 401, 403 and 404 — the fixes differ", async () => {
+test("auth: test distinguishes 401, 403 and 404 — the fixes differ", async () => {
   const cases: Array<[number, string]> = [
     [401, "401"],
     [403, "403"],
@@ -113,7 +114,7 @@ Deno.test("auth: test distinguishes 401, 403 and 404 — the fixes differ", asyn
   }
 });
 
-Deno.test("auth: a 403 explains the lockout, not just the permission", async () => {
+test("auth: a 403 explains the lockout, not just the permission", async () => {
   // BambooHR disables API access for a while after repeated unknown-key
   // attempts, and reports that as 403 too. Telling someone to re-check a key
   // they already fixed is a bad half hour.
@@ -122,7 +123,7 @@ Deno.test("auth: a 403 explains the lockout, not just the permission", async () 
   assert(/disabled|unknown key/i.test(r.message ?? ""), `got: ${r.message}`);
 });
 
-Deno.test("auth: test rejects a missing or malformed credential without calling out", async () => {
+test("auth: test rejects a missing or malformed credential without calling out", async () => {
   const { ctx: c1, calls: k1 } = mockCtx([]);
   assertEquals((await apiKey.test!({ credential: {} }, c1)).ok, false);
   assertEquals(k1.length, 0, "must not make a request without a credential");
@@ -134,7 +135,7 @@ Deno.test("auth: test rejects a missing or malformed credential without calling 
   assertEquals(k2.length, 0, "must not make a request to a rejected host");
 });
 
-Deno.test("auth: test surfaces the error header on an unexpected status", async () => {
+test("auth: test surfaces the error header on an unexpected status", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     headers: { "x-bamboohr-error-message": "upstream exploded" },
@@ -146,7 +147,7 @@ Deno.test("auth: test surfaces the error header on an unexpected status", async 
 
 // ----------------------------------------------------------------- afterConnect --
 
-Deno.test("afterConnect: publishes the subdomain so actions can build a base URL", async () => {
+test("afterConnect: publishes the subdomain so actions can build a base URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { displayName: "Acme Inc", legalName: "Acme LLC" } }]);
   const display = await apiKey.afterConnect!(
     { credential: { subdomain: "https://ACME.bamboohr.com/", apiKey: "abc123" } },
@@ -158,13 +159,13 @@ Deno.test("afterConnect: publishes the subdomain so actions can build a base URL
   assertEquals(calls[0].url, "https://acme.bamboohr.com/api/v1/company_information");
 });
 
-Deno.test("afterConnect: prefers displayName, falls back to legalName", async () => {
+test("afterConnect: prefers displayName, falls back to legalName", async () => {
   const { ctx } = mockCtx([{ body: { legalName: "Acme LLC" } }]);
   const d = await apiKey.afterConnect!({ credential: { subdomain: "acme", apiKey: "k" } }, ctx);
   assertEquals((d as { companyName: string }).companyName, "Acme LLC");
 });
 
-Deno.test("afterConnect: a failed lookup still publishes the subdomain", async () => {
+test("afterConnect: a failed lookup still publishes the subdomain", async () => {
   // The label is cosmetic; the subdomain is what every action depends on.
   // Failing here would block a perfectly good credential.
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
@@ -172,14 +173,14 @@ Deno.test("afterConnect: a failed lookup still publishes the subdomain", async (
   assertEquals(d, { subdomain: "acme", companyName: "acme" });
 });
 
-Deno.test("afterConnect: a malformed subdomain degrades instead of throwing", async () => {
+test("afterConnect: a malformed subdomain degrades instead of throwing", async () => {
   const { ctx, calls } = mockCtx([]);
   const d = await apiKey.afterConnect!({ credential: { subdomain: "a.b.c", apiKey: "k" } }, ctx);
   assertEquals(d, { subdomain: "a.b.c", companyName: "a.b.c" });
   assertEquals(calls.length, 0, "must not call a host it refused to build");
 });
 
-Deno.test("auth: the connection label renders from the published display keys", () => {
+test("auth: the connection label renders from the published display keys", () => {
   // `connectionLabel` is interpolated against `connection.display`, so every
   // placeholder in it must be a key `afterConnect` actually returns.
   const label = apiKey.connectionLabel!;

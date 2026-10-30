@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/account-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("account-create: POSTs snake_case fields", async () => {
+test("account-create: POSTs snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "a1", name: "Acme" } } }]);
   const out = await action.execute!({
     name: "Acme",
@@ -29,7 +30,7 @@ Deno.test("account-create: POSTs snake_case fields", async () => {
   assertEquals(out, { id: "a1", name: "Acme" });
 });
 
-Deno.test("account-create: name only; the deprecated `domain` field is not exposed", async () => {
+test("account-create: name only; the deprecated `domain` field is not exposed", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ name: "Solo" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Solo" });

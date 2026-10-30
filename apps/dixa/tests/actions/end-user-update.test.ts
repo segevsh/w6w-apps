@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import endUserUpdate from "../../actions/end-user-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("end-user-update: calls PATCH /v1/endusers/11111111-2222-3333-4444-555555555555", async () => {
+test("end-user-update: calls PATCH /v1/endusers/11111111-2222-3333-4444-555555555555", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "11111111-2222-3333-4444-555555555555" } },
@@ -23,7 +24,7 @@ Deno.test("end-user-update: calls PATCH /v1/endusers/11111111-2222-3333-4444-555
   assertEquals(out, { "data": { "id": "11111111-2222-3333-4444-555555555555" } });
 });
 
-Deno.test("end-user-update: surfaces a Dixa error message with the status", async () => {
+test("end-user-update: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("end-user-update: surfaces a Dixa error message with the status", asyn
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("end-user-update: rejects bad input before any request", async () => {
+test("end-user-update: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

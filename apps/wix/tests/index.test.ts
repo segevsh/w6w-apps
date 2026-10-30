@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 24);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,15 +30,15 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
     // Stripping comments first: several files legitimately *discuss* the
     // Authorization header in prose explaining why they do not set it.
@@ -46,10 +48,10 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: every action has a unit test file", async () => {
+test("index: every action has a unit test file", async () => {
   for (const a of app.actions) {
     const path = new URL(`./actions/${a.key}.test.ts`, import.meta.url);
-    const stat = await Deno.stat(path).catch(() => null);
+    const stat = await denoStat(path).catch(() => null);
     assert(stat?.isFile, `${a.key}: no unit test`);
   }
 });

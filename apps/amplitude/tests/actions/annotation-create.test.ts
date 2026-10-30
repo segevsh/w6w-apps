@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/annotation-create.ts";
 
 const created = ok({ annotation: { id: 7, date: "2026-08-18", label: "Release 1.4.2" } });
 
-Deno.test("annotation-create: posts the date and label", async () => {
+test("annotation-create: posts the date and label", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   const result = await action.execute!({ date: "2026-08-18", label: "Release 1.4.2" }, ctx) as {
     id: number;
@@ -22,7 +23,7 @@ Deno.test("annotation-create: posts the date and label", async () => {
  * This endpoint wants dashes; the query endpoints want YYYYMMDD without them.
  * Getting it wrong is easy and the error should say which is which.
  */
-Deno.test("annotation-create: a YYYYMMDD date is refused, naming the inconsistency", async () => {
+test("annotation-create: a YYYYMMDD date is refused, naming the inconsistency", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ date: "20260818", label: "x" }, ctx),
@@ -33,13 +34,13 @@ Deno.test("annotation-create: a YYYYMMDD date is refused, naming the inconsisten
   assertEquals(calls.length, 0);
 });
 
-Deno.test("annotation-create: a chart id scopes it to one chart", async () => {
+test("annotation-create: a chart id scopes it to one chart", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({ date: "2026-08-18", label: "x", chartId: "abc" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("app_id"), "abc");
 });
 
-Deno.test("annotation-create: needs a date and a label", async () => {
+test("annotation-create: needs a date and a label", async () => {
   const noDate = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ label: "x" }, noDate.ctx),
@@ -54,14 +55,14 @@ Deno.test("annotation-create: needs a date and a label", async () => {
   );
 });
 
-Deno.test("annotation-create: logs the date only", async () => {
+test("annotation-create: logs the date only", async () => {
   const { ctx, logs } = mockCtx([created], { display });
   await action.execute!({ date: "2026-08-18", label: "Release 1.4.2" }, ctx);
   assertEquals(logs[0].data, { date: "2026-08-18" });
 });
 
 /** Posting twice leaves two permanent lines on every chart. */
-Deno.test("annotation-create: is non-idempotent and warns about retries", () => {
+test("annotation-create: is non-idempotent and warns about retries", () => {
   assertEquals(action.idempotent, false);
   assert(/NO uniqueness/.test(action.description!), action.description);
 });

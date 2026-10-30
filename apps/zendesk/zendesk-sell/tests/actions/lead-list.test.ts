@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadList from "../../actions/lead-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("lead-list: unwraps items and maps filters", async () => {
+test("lead-list: unwraps items and maps filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await leadList.execute({ organizationName: "Acme", ids: "1,2,3" }, ctx) as {
     items: unknown[];

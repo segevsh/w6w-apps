@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-delete.ts";
 
 /** Irreversible, and reachable by a mis-set variable. */
-Deno.test("index-delete: refuses without an explicit confirmation", async () => {
+test("index-delete: refuses without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "prod-index" }, ctx),
@@ -13,7 +14,7 @@ Deno.test("index-delete: refuses without an explicit confirmation", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("index-delete: deletes once confirmed", async () => {
+test("index-delete: deletes once confirmed", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   assertEquals(await action.execute!({ indexName: "idx", confirm: true }, ctx), {
     ok: true,
@@ -23,7 +24,7 @@ Deno.test("index-delete: deletes once confirmed", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/indexes/idx");
 });
 
-Deno.test("index-delete: the confirmation param is required and warns", () => {
+test("index-delete: the confirmation param is required and warns", () => {
   const p = (action.params as Array<{ key: string; required?: boolean; hint?: string }>)
     .find((p) => p.key === "confirm")!;
   assertEquals(p.required, true);

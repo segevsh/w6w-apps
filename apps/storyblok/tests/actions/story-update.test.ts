@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-update.ts";
 
@@ -17,7 +18,7 @@ const existing = {
 const updated = { status: 200, body: { story: { id: 9, full_slug: "blog/old-post" } } };
 
 /** Storyblok replaces content; a two-field payload would leave a two-field story. */
-Deno.test("story-update: merges over the existing content by default", async () => {
+test("story-update: merges over the existing content by default", async () => {
   const { ctx, calls } = mockCtx([existing, updated], M);
   const result = await action.execute(
     { storyId: "9", content: '{"component":"article","title":"New"}' },
@@ -31,7 +32,7 @@ Deno.test("story-update: merges over the existing content by default", async () 
   assertEquals(result.removedFields, []);
 });
 
-Deno.test("story-update: replaceContent drops what the payload omits, and says which", async () => {
+test("story-update: replaceContent drops what the payload omits, and says which", async () => {
   const { ctx, calls, logs } = mockCtx([existing, updated], M);
   const result = await action.execute({
     storyId: "9",
@@ -49,7 +50,7 @@ Deno.test("story-update: replaceContent drops what the payload omits, and says w
 });
 
 /** Storyblok leaves no redirect behind. */
-Deno.test("story-update: warns when the slug changes", async () => {
+test("story-update: warns when the slug changes", async () => {
   const { ctx, logs } = mockCtx([existing, updated], M);
   const result = await action.execute({ storyId: "9", slug: "new-post" }, ctx) as Record<
     string,
@@ -62,7 +63,7 @@ Deno.test("story-update: warns when the slug changes", async () => {
   );
 });
 
-Deno.test("story-update: touches the draft unless publish is set", async () => {
+test("story-update: touches the draft unless publish is set", async () => {
   const draft = mockCtx([existing, updated], M);
   await action.execute({ storyId: "9", name: "New" }, draft.ctx);
   assertEquals((JSON.parse(draft.calls[1].body!) as { publish: number }).publish, 0);
@@ -72,7 +73,7 @@ Deno.test("story-update: touches the draft unless publish is set", async () => {
   assertEquals((JSON.parse(live.calls[1].body!) as { publish: number }).publish, 1);
 });
 
-Deno.test("story-update: merged content is still shape-checked", async () => {
+test("story-update: merged content is still shape-checked", async () => {
   const { ctx, calls } = mockCtx([existing], M);
   await assertRejects(
     async () =>
@@ -86,7 +87,7 @@ Deno.test("story-update: merged content is still shape-checked", async () => {
   assertEquals(calls.length, 1, "it must not write");
 });
 
-Deno.test("story-update: an unknown story is refused", async () => {
+test("story-update: an unknown story is refused", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }], M);
   await assertRejects(
     async () => await action.execute({ storyId: "9", name: "x" }, ctx),

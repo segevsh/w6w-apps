@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import likeList from "../../actions/like-list.ts";
 import { collection, mockCtx, q, url, video } from "../_helpers.ts";
 
-Deno.test("like-list: hits /me/likes", async () => {
+test("like-list: hits /me/likes", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([video(1)]) }]);
   const out = await likeList.execute({}, ctx);
   assertEquals(url(calls[0]).pathname, "/me/likes");
   assertEquals(out.total, 1);
 });
 
-Deno.test("like-list: forwards the query, embeddable pair, sort and pagination", async () => {
+test("like-list: forwards the query, embeddable pair, sort and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await likeList.execute({
     query: "reel",
@@ -29,7 +30,7 @@ Deno.test("like-list: forwards the query, embeddable pair, sort and pagination",
 });
 
 /** The likes group documents no `direction` parameter, so none is offered. */
-Deno.test("like-list: offers no sort direction, because Vimeo documents none here", () => {
+test("like-list: offers no sort direction, because Vimeo documents none here", () => {
   const keys = (likeList.params ?? []).map((p) => p.key);
   assert(!keys.includes("direction"));
   assertEquals(likeList.type, "search");

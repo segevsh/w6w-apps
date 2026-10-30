@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deals-create.ts";
 
-Deno.test("deals-create: POSTs deals.create nesting customer under lead, returns id/type", async () => {
+test("deals-create: POSTs deals.create nesting customer under lead, returns id/type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { type: "deal", id: "d1" } } }]);
   const out = await action.execute({
     customerType: "company",

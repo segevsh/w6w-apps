@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 15 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 15 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 15);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,7 +23,7 @@ Deno.test("index: exports 15 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -31,18 +33,18 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
  * The ingest actions are idempotent only because they derive a stable
  * insert_id. An annotation has no deduplication at all.
  */
-Deno.test("index: only the annotation duplicates on a retry", () => {
+test("index: only the annotation duplicates on a retry", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key);
   assertEquals(notIdempotent, ["annotation-create"]);
 });
 
-Deno.test("index: exports the one auth method and both health checks", () => {
+test("index: exports the one auth method and both health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-keys"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "quota"]);
 });
 
 /** Two products, two regions — four hosts, plus the status page. */
-Deno.test("index: the manifest names all four API hosts", () => {
+test("index: the manifest names all four API hosts", () => {
   assertEquals(manifest.w6w.network.allow, [
     "api2.amplitude.com",
     "api.eu.amplitude.com",
@@ -58,7 +60,7 @@ Deno.test("index: the manifest names all four API hosts", () => {
  * Ids under five characters are removed rather than refused, so every action
  * that sends one must check before the request.
  */
-Deno.test("index: both ingest actions guard the id length", () => {
+test("index: both ingest actions guard the id length", () => {
   for (const key of ["event-track", "event-batch"]) {
     const action = app.actions.find((a) => a.key === key)!;
     const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
@@ -67,7 +69,7 @@ Deno.test("index: both ingest actions guard the id length", () => {
 });
 
 /** A retry is only safe because the id is derived from the payload. */
-Deno.test("index: both ingest actions offer derived insert ids, defaulted on", () => {
+test("index: both ingest actions offer derived insert ids, defaulted on", () => {
   for (const key of ["event-track", "event-batch"]) {
     const action = app.actions.find((a) => a.key === key)!;
     const derive = (action.params as Array<{ key: string; default?: unknown }>)
@@ -78,7 +80,7 @@ Deno.test("index: both ingest actions offer derived insert ids, defaulted on", (
 });
 
 /** Erasure is irreversible, so it takes a deliberate second input. */
-Deno.test("index: deleting users takes an acknowledgement", () => {
+test("index: deleting users takes an acknowledgement", () => {
   const action = app.actions.find((a) => a.key === "user-delete")!;
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(keys.includes("confirmPermanentDeletion"), keys.join(","));
@@ -99,10 +101,10 @@ const code = (src: string) =>
       "",
     );
 
-Deno.test("index: no action reaches the network except through ctx.fetch", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action reaches the network except through ctx.fetch", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(
       !/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")),
       `${entry.name} calls global fetch`,
@@ -116,10 +118,10 @@ Deno.test("index: no action reaches the network except through ctx.fetch", async
  * the auth hook's job — an action putting `api_key` in a body would work and
  * would take the credential out of the one hook that is allowed to hold it.
  */
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/authorization/i.test(src), `${entry.name} sets an authorization header`);
     assert(!/credential/i.test(src), `${entry.name} reads the credential`);
     assert(!/api_key/i.test(src), `${entry.name} sets the api key itself`);
@@ -131,10 +133,10 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * Events, user properties and identifiers are what this product exists to
  * collect. A run log records counts and shapes.
  */
-Deno.test("index: no action logs events, properties or identifiers", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action logs events, properties or identifiers", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
     for (const call of logs) {
       const object = call.slice(call.indexOf("{"));
@@ -154,7 +156,7 @@ Deno.test("index: no action logs events, properties or identifiers", async () =>
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

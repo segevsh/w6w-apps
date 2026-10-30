@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys, page } from "../_helpers.ts";
 import action from "../../actions/meeting-get-many.ts";
 
-Deno.test("meeting-get-many: GETs /meetings mapping every filter to its documented name", async () => {
+test("meeting-get-many: GETs /meetings mapping every filter to its documented name", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ recording_id: 123456789 }], "cur2", 10) }]);
   const result = await action.execute({
     cursor: "cur1",
@@ -43,20 +44,20 @@ Deno.test("meeting-get-many: GETs /meetings mapping every filter to its document
   });
 });
 
-Deno.test("meeting-get-many: sends no query at all when nothing is set", async () => {
+test("meeting-get-many: sends no query at all when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("meeting-get-many: is a search action with cursor paging declared", () => {
+test("meeting-get-many: is a search action with cursor paging declared", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "meeting");
   assertEquals(action.params?.some((p) => p.key === "cursor"), true);
   assertEquals(outputKeys(action), ["items", "nextCursor", "limit"]);
 });
 
-Deno.test("meeting-get-many: the heavy include flags default to off", () => {
+test("meeting-get-many: the heavy include flags default to off", () => {
   for (const key of ["includeTranscript", "includeSummary"]) {
     assertEquals(action.params?.find((p) => p.key === key)?.default, false, key);
   }

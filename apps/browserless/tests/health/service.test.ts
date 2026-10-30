@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapResourceStatus, PAGE_ID } from "../../health/service.ts";
 import { mockCtx, region } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ function page(statuses: Record<string, string>, id = PAGE_ID, company = "Browser
   };
 }
 
-Deno.test("service: the connection's own region drives the verdict", async () => {
+test("service: the connection's own region drives the verdict", async () => {
   const body = page({ "US West": "operational", "London": "downtime", "Amsterdam": "operational" });
   const sfo = mockCtx([{ body }], { connection: region("sfo") });
   const ok = await service.check!({}, sfo.ctx);
@@ -27,7 +28,7 @@ Deno.test("service: the connection's own region drives the verdict", async () =>
   assertEquals(down.components?.["london"]?.state, "down");
 });
 
-Deno.test("service: unknown when the page is not Browserless's or lacks the region", async () => {
+test("service: unknown when the page is not Browserless's or lacks the region", async () => {
   const wrongId = mockCtx([{ body: page({ "US West": "operational" }, "1") }]);
   assertEquals((await service.check!({}, wrongId.ctx)).state, "unknown");
   const wrongName = mockCtx([{ body: page({ "US West": "operational" }, PAGE_ID, "Acme") }]);
@@ -36,7 +37,7 @@ Deno.test("service: unknown when the page is not Browserless's or lacks the regi
   assertEquals((await service.check!({}, absent.ctx)).state, "unknown");
 });
 
-Deno.test("service: a non-200 or non-JSON page is unknown", async () => {
+test("service: a non-200 or non-JSON page is unknown", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "unknown",
@@ -45,7 +46,7 @@ Deno.test("service: a non-200 or non-JSON page is unknown", async () => {
   assertEquals((await service.check!({}, html.ctx)).state, "unknown");
 });
 
-Deno.test("service: status mapping", () => {
+test("service: status mapping", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");

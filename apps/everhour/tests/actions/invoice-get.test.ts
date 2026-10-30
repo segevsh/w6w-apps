@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-get: GET /invoices/{invoiceId} with the documented query and body", async () => {
+test("invoice-get: GET /invoices/{invoiceId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await invoiceGet.execute({ "invoiceId": 11903 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("invoice-get: GET /invoices/{invoiceId} with the documented query and 
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("invoice-get: an Everhour error surfaces its message and status", async () => {
+test("invoice-get: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(invoiceGet.execute({ "invoiceId": 11903 }, ctx)),
@@ -30,6 +31,6 @@ Deno.test("invoice-get: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("invoice-get: declares read", () => {
+test("invoice-get: declares read", () => {
   assertEquals(invoiceGet.type, "read");
 });

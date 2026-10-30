@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceList from "../../actions/invoice-list.ts";
 import { mockCtx, page, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-list: calls GET /invoices", async () => {
+test("invoice-list: calls GET /invoices", async () => {
   const { ctx, calls } = mockCtx([{ body: page("invoices", [{ id: "in1" }]) }]);
   const out = await invoiceList.execute({ amountDueMin: 1 }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("invoice-list: calls GET /invoices", async () => {
   assertEquals(out.items, [{ id: "in1" }]);
 });
 
-Deno.test("invoice-list: status, customer_uuid and payment_method all travel bracketed", async () => {
+test("invoice-list: status, customer_uuid and payment_method all travel bracketed", async () => {
   const { ctx, calls } = mockCtx([{ body: page("invoices", []) }]);
   await invoiceList.execute({
     status: ["open", "pending_payment"],
@@ -24,7 +25,7 @@ Deno.test("invoice-list: status, customer_uuid and payment_method all travel bra
   assertEquals(queryAll(calls[0].url, "payment_method[]"), ["credit_card"]);
 });
 
-Deno.test("invoice-list: the three date ranges keep their own parameter names", async () => {
+test("invoice-list: the three date ranges keep their own parameter names", async () => {
   const { ctx, calls } = mockCtx([{ body: page("invoices", []) }]);
   await invoiceList.execute({
     createdAtMin: "2026-01-01",

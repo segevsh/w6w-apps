@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBiginCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: GETs /bigin/v2/users with the documented type filter", async () => {
+test("user-list: GETs /bigin/v2/users with the documented type filter", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { users: [{ id: "1" }], info: { count: 1 } } }]);
   const body = await action.execute({ type: "CurrentUser", page: 1, per_page: 200 }, ctx) as {
     users: unknown[];
@@ -14,7 +15,7 @@ Deno.test("user-list: GETs /bigin/v2/users with the documented type filter", asy
   assertEquals(body.users.length, 1);
 });
 
-Deno.test("user-list: declares every documented type as a choice", () => {
+test("user-list: declares every documented type as a choice", () => {
   const param = (action.params ?? []).find((p) => p.key === "type");
   const values = (param?.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values, [

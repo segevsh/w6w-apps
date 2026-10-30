@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-worksheet.ts";
 
-Deno.test("update-worksheet: PATCHes the worksheet addressed by name", async () => {
+test("update-worksheet: PATCHes the worksheet addressed by name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "{S1}", name: "Renamed" } }]);
   const out = await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", name: "Renamed" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("update-worksheet: PATCHes the worksheet addressed by name", async () 
   assertEquals(out.name, "Renamed");
 });
 
-Deno.test("update-worksheet: URL-encodes a brace-wrapped worksheet id", async () => {
+test("update-worksheet: URL-encodes a brace-wrapped worksheet id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemId: "ITEM1",
@@ -28,19 +29,19 @@ Deno.test("update-worksheet: URL-encodes a brace-wrapped worksheet id", async ()
   );
 });
 
-Deno.test("update-worksheet: sends only the properties actually set", async () => {
+test("update-worksheet: sends only the properties actually set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", position: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { position: 0 });
 });
 
-Deno.test("update-worksheet: can hide a sheet outright", async () => {
+test("update-worksheet: can hide a sheet outright", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", visibility: "VeryHidden" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { visibility: "VeryHidden" });
 });
 
-Deno.test("update-worksheet: refuses an empty PATCH rather than sending one", async () => {
+test("update-worksheet: refuses an empty PATCH rather than sending one", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", worksheet: "Sheet1" }, ctx),
@@ -50,6 +51,6 @@ Deno.test("update-worksheet: refuses an empty PATCH rather than sending one", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-worksheet: converges on an end state, so it is idempotent", () => {
+test("update-worksheet: converges on an end state, so it is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-response.ts";
 
-Deno.test("create-response: calls POST /v1/responses on api.x.ai and returns the body", async () => {
+test("create-response: calls POST /v1/responses on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({
@@ -23,7 +24,7 @@ Deno.test("create-response: calls POST /v1/responses on api.x.ai and returns the
   assertEquals(result, reply);
 });
 
-Deno.test("create-response: surfaces the vendor error code on failure", async () => {
+test("create-response: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {
@@ -39,7 +40,7 @@ Deno.test("create-response: surfaces the vendor error code on failure", async ()
   assert(message.includes("400") && message.includes("[invalid-argument]"), message);
 });
 
-Deno.test("create-response: a JSON-array input is parsed into input items", async () => {
+test("create-response: a JSON-array input is parsed into input items", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "m", input: '[{"role":"user","content":"x"}]' },

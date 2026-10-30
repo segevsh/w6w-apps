@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkToggle from "../../actions/link-toggle.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("link-toggle: POST /v1/links/{id}/toggle", async () => {
+test("link-toggle: POST /v1/links/{id}/toggle", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "link_1", state: "disabled" } }]);
   const out = await linkToggle.execute({ linkId: "link_1" }, ctx) as { state: string };
   assertEquals(calls[0].method, "POST");

@@ -1,12 +1,13 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, MailerLiteClient } from "../../lib/client.ts";
 
-Deno.test("client: targets the current connect.mailerlite.com API, not Classic", () => {
+test("client: targets the current connect.mailerlite.com API, not Classic", () => {
   assertEquals(API_URL, "https://connect.mailerlite.com/api");
 });
 
-Deno.test("client: resolves a relative path against the API base", async () => {
+test("client: resolves a relative path against the API base", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new MailerLiteClient(ctx).request("/subscribers");
   const url = new URL(calls[0].url);
@@ -14,25 +15,25 @@ Deno.test("client: resolves a relative path against the API base", async () => {
   assertEquals(url.pathname, "/api/subscribers");
 });
 
-Deno.test("client: tolerates a path without a leading slash", async () => {
+test("client: tolerates a path without a leading slash", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerLiteClient(ctx).request("groups");
   assertEquals(new URL(calls[0].url).pathname, "/api/groups");
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const result = await new MailerLiteClient(ctx).request("/subscribers/x");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: an empty 200 body returns undefined", async () => {
+test("client: an empty 200 body returns undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   const result = await new MailerLiteClient(ctx).request("/subscribers/x");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     {
       status: 422,
@@ -49,7 +50,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("The given data was invalid."), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params but keeps 0", async () => {
+test("client: skips null/undefined/empty query params but keeps 0", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerLiteClient(ctx).request("/x", {
     query: { a: "kept", b: undefined, c: null, d: "", limit: 0 },
@@ -62,7 +63,7 @@ Deno.test("client: skips null/undefined/empty query params but keeps 0", async (
   assertEquals(url.searchParams.get("limit"), "0");
 });
 
-Deno.test("client: passes bracketed filter keys through intact", async () => {
+test("client: passes bracketed filter keys through intact", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerLiteClient(ctx).request("/subscribers", {
     query: { "filter[status]": "active" },
@@ -70,7 +71,7 @@ Deno.test("client: passes bracketed filter keys through intact", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("filter[status]"), "active");
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerLiteClient(ctx).request("https://example.internal/foo?x=1");
   const url = new URL(calls[0].url);
@@ -78,7 +79,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: sends a JSON body with a content-type header", async () => {
+test("client: sends a JSON body with a content-type header", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1" } } }]);
   await new MailerLiteClient(ctx).request("/groups", { method: "POST", body: { name: "x" } });
   assertEquals(calls[0].method, "POST");
@@ -86,14 +87,14 @@ Deno.test("client: sends a JSON body with a content-type header", async () => {
   assertEquals(calls[0].body, JSON.stringify({ name: "x" }));
 });
 
-Deno.test("client: always asks for JSON and never sets a credential header", async () => {
+test("client: always asks for JSON and never sets a credential header", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerLiteClient(ctx).request("/subscribers");
   assertEquals(calls[0].headers["accept"], "application/json");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: returns the {data, links, meta} envelope verbatim", async () => {
+test("client: returns the {data, links, meta} envelope verbatim", async () => {
   const envelope = {
     data: [{ id: "1" }],
     links: { next: "https://connect.mailerlite.com/api/subscribers?cursor=abc" },

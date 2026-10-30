@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionRecordingsList from "../../actions/session-recordings-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("session-recordings-list: GETs /sessions/{id}/recordings, forwarding url_expires_in", async () => {
+test("session-recordings-list: GETs /sessions/{id}/recordings, forwarding url_expires_in", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("recordings", "r1")]) }]);
   await sessionRecordingsList.execute({ id: "s1", urlExpiresIn: 604800 }, ctx);
 

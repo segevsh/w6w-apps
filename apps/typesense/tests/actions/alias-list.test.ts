@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias-list.ts";
 
@@ -13,7 +14,7 @@ const aliases = {
   },
 };
 
-Deno.test("alias-list: returns each alias and what it points at", async () => {
+test("alias-list: returns each alias and what it points at", async () => {
   const { ctx, calls } = mockCtx([
     aliases,
     { status: 200, body: [{ name: "products_v3" }, { name: "articles_v1" }] },
@@ -26,7 +27,7 @@ Deno.test("alias-list: returns each alias and what it points at", async () => {
 });
 
 /** An alias outlives its collection and every search through it 404s. */
-Deno.test("alias-list: flags an alias pointing at a collection that is gone", async () => {
+test("alias-list: flags an alias pointing at a collection that is gone", async () => {
   const { ctx, logs } = mockCtx([aliases, { status: 200, body: [{ name: "products_v3" }] }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.broken, [{ alias: "articles", collection: "articles_v1" }]);
@@ -36,7 +37,7 @@ Deno.test("alias-list: flags an alias pointing at a collection that is gone", as
   );
 });
 
-Deno.test("alias-list: takes no parameters", () => {
+test("alias-list: takes no parameters", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
 });

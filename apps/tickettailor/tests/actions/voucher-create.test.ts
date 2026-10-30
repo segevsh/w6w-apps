@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voucherCreate from "../../actions/voucher-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("voucher-create: sends codes as repeated codes[] fields", async () => {
+test("voucher-create: sends codes as repeated codes[] fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "vo_1" } }]);
   await voucherCreate.execute(
     { name: "Launch gift card", value: 5000, voucherType: "GIFT_CARD", codes: "AAA,BBB" },

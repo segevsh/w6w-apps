@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import del from "../../actions/data-record-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("data-record-delete: DELETEs the record and returns the deleted record", async () => {
+test("data-record-delete: DELETEs the record and returns the deleted record", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec_1", tableKey: "products" } }]);
   const out = await del.execute({ tableKey: "products", recordId: "rec_1" }, ctx) as {
     id: string;
@@ -12,7 +13,7 @@ Deno.test("data-record-delete: DELETEs the record and returns the deleted record
   assertEquals(out.id, "rec_1");
 });
 
-Deno.test("data-record-delete: 404 Data record not found surfaces", async () => {
+test("data-record-delete: 404 Data record not found surfaces", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("Data record not found") }]);
   await assertRejects(
     () => Promise.resolve(del.execute({ tableKey: "t", recordId: "x" }, ctx)),

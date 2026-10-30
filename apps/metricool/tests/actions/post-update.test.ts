@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postUpdate from "../../actions/post-update.ts";
 import { envelope, jsonBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const POST = {
   providers: [{ network: "instagram" }],
 };
 
-Deno.test("post-update: PUT /v2/scheduler/posts/{id} sends the whole post", async () => {
+test("post-update: PUT /v2/scheduler/posts/{id} sends the whole post", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 5 }) }]);
   await postUpdate.execute({ blogId: "9", id: "5", ...POST }, ctx);
   assertEquals(calls[0].method, "PUT");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountList from "../../actions/account-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("account-list: hits /v3/a.json and reshapes pagination to camelCase", async () => {
+test("account-list: hits /v3/a.json and reshapes pagination to camelCase", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope("accounts", [{ id: "ACC1", name: "Acme" }]) },
   ]);
@@ -17,7 +18,7 @@ Deno.test("account-list: hits /v3/a.json and reshapes pagination to camelCase", 
   });
 });
 
-Deno.test("account-list: forwards filter, sort and pagination params using the vendor's names", async () => {
+test("account-list: forwards filter, sort and pagination params using the vendor's names", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("accounts", []) }]);
   await accountList.execute(
     { hipaaAccount: true, sort: "name", order: "desc", page: 2, perPage: 25 },
@@ -31,7 +32,7 @@ Deno.test("account-list: forwards filter, sort and pagination params using the v
   assertEquals(q.per_page, "25");
 });
 
-Deno.test("account-list: takes no accountId — it is the discovery action", () => {
+test("account-list: takes no accountId — it is the discovery action", () => {
   const keys = accountList.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("accountId"), false);
 });

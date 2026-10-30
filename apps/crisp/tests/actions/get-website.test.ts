@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getWebsite from "../../actions/get-website.ts";
 
-Deno.test("get-website: fetches GET /website/{website_id} and returns data", async () => {
+test("get-website: fetches GET /website/{website_id} and returns data", async () => {
   const { ctx, calls } = mockCtx([
     { body: { error: false, reason: "resolved", data: { website_id: "site_1", name: "Acme" } } },
   ], "site_1");
@@ -13,7 +14,7 @@ Deno.test("get-website: fetches GET /website/{website_id} and returns data", asy
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("get-website: declares no params — nothing to configure beyond the Connection", () => {
+test("get-website: declares no params — nothing to configure beyond the Connection", () => {
   assertEquals(getWebsite.params, []);
   assertEquals(getWebsite.type, "read");
 });

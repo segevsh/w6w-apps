@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import categoryList from "../../actions/category-list.ts";
 import { mockCtx, pathOf, queryOf, v3Page } from "../_helpers.ts";
 
-Deno.test("category-list: uses the Category TREES path, not the deprecated flat one", async () => {
+test("category-list: uses the Category TREES path, not the deprecated flat one", async () => {
   // /v3/catalog/categories carries no `deprecated: true` in the OpenAPI document
   // but IS deprecated on the vendor's Deprecations page. This is the difference.
   const { ctx, calls } = mockCtx([{ body: v3Page([{ category_id: 5 }]) }]);
@@ -13,7 +14,7 @@ Deno.test("category-list: uses the Category TREES path, not the deprecated flat 
   assertEquals(out.data, [{ category_id: 5 }]);
 });
 
-Deno.test("category-list: list filters are :in forms and booleans are true/false", async () => {
+test("category-list: list filters are :in forms and booleans are true/false", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([]) }]);
   await categoryList.execute({ treeIds: "1,2", parentIds: "0", isVisible: false }, ctx);
   assertEquals(queryOf(calls[0].url), {

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 /**
@@ -8,14 +9,14 @@ import service from "../../health/service.ts";
  * check declares that absence, and the declaration has to stay `informational`
  * or the app's roll-up is pinned at `unknown` forever.
  */
-Deno.test("health/service: the status page is a declared absence, not a probe", () => {
+test("health/service: the status page is a declared absence, not a probe", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
   assertEquals(service.severity, "informational");
   assert(service.unavailable !== undefined);
 });
 
-Deno.test("health/service: the reason names the page and why it is unreadable", () => {
+test("health/service: the reason names the page and why it is unreadable", () => {
   const reason = service.unavailable!.reason;
   assert(/status\.heyreach\.io/.test(reason), reason);
   assert(/UptimeRobot/.test(reason), reason);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import chatbotChatBlock from "../../actions/chatbot-chat-block.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => chatbotChatBlock.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("chatbot-chat-block: declares a perform action with a description, params and output", () => {
+test("chatbot-chat-block: declares a perform action with a description, params and output", () => {
   assertEquals(chatbotChatBlock.key, "chatbot-chat-block");
   assertEquals(chatbotChatBlock.type, "perform");
   assert((chatbotChatBlock.description ?? "").length > 0);
@@ -16,7 +17,7 @@ Deno.test("chatbot-chat-block: declares a perform action with a description, par
   assertEquals(chatbotChatBlock.idempotent, true);
 });
 
-Deno.test("chatbot-chat-block: sends the documented request and returns the documented shape", async () => {
+test("chatbot-chat-block: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -40,7 +41,7 @@ Deno.test("chatbot-chat-block: sends the documented request and returns the docu
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("chatbot-chat-block: an Aidbase failure body is thrown with its message", async () => {
+test("chatbot-chat-block: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

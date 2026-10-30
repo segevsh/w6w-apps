@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import listDeals from "../../actions/list-deals.ts";
 import { envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("list-deals: GET /deals maps every filter to its documented query name", async () => {
+test("list-deals: GET /deals maps every filter to its documented query name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("deals", []) }]);
 
   await listDeals.execute(
@@ -41,7 +42,7 @@ Deno.test("list-deals: GET /deals maps every filter to its documented query name
   });
 });
 
-Deno.test("list-deals: leaving the outcome empty sends no win at all (the API's 'open' form)", async () => {
+test("list-deals: leaving the outcome empty sends no win at all (the API's 'open' form)", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("deals", []) }]);
 
   await listDeals.execute({ win: "" }, ctx);
@@ -52,7 +53,7 @@ Deno.test("list-deals: leaving the outcome empty sends no win at all (the API's 
   assertEquals(options.map((o) => o.value), ["true", "false"]);
 });
 
-Deno.test("list-deals: the vendor's deal envelope (incl. next_page) is returned verbatim", async () => {
+test("list-deals: the vendor's deal envelope (incl. next_page) is returned verbatim", async () => {
   const payload = { deals: [{ _id: "d1" }], has_more: true, total: 40, next_page: 3 };
   const { ctx } = mockCtx([{ body: payload }]);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-languages.ts";
 
-Deno.test("list-languages: GETs /v3/languages?resource=translate_text and maps fields", async () => {
+test("list-languages: GETs /v3/languages?resource=translate_text and maps fields", async () => {
   const body = [
     {
       lang: "DE",
@@ -38,7 +39,7 @@ Deno.test("list-languages: GETs /v3/languages?resource=translate_text and maps f
   ]);
 });
 
-Deno.test("list-languages: includeBeta sets include=beta", async () => {
+test("list-languages: includeBeta sets include=beta", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute!({ includeBeta: true }, ctx);
   const url = new URL(calls[0].url);

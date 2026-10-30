@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-update.ts";
 
-Deno.test("form-update: PATCHes only the fields supplied", async () => {
+test("form-update: PATCHes only the fields supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "f1", name: "Renamed" } }]);
   const result = await action.execute({ formId: "f1", name: "Renamed" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("form-update: PATCHes only the fields supplied", async () => {
   assertEquals(result.name, "Renamed");
 });
 
-Deno.test("form-update: warns when it is about to replace the block array", async () => {
+test("form-update: warns when it is about to replace the block array", async () => {
   const { ctx, calls, logs } = mockCtx([{ body: {} }]);
   await action.execute({ formId: "f1", blocks: [{ uuid: "b1" }] }, ctx);
 
@@ -22,12 +23,12 @@ Deno.test("form-update: warns when it is about to replace the block array", asyn
   assert(logs[0].message.includes("omitted blocks are deleted"));
 });
 
-Deno.test("form-update: stays silent when blocks are untouched", async () => {
+test("form-update: stays silent when blocks are untouched", async () => {
   const { ctx, logs } = mockCtx([{ body: {} }]);
   await action.execute({ formId: "f1", status: "DRAFT" }, ctx);
   assertEquals(logs.length, 0);
 });
 
-Deno.test("form-update: is idempotent", () => {
+test("form-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

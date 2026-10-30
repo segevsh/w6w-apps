@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderTrack from "../../actions/order-track.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-track: calls GET /api/v2/orders/42/track and shapes the output", async () => {
+test("order-track: calls GET /api/v2/orders/42/track and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "data": { "id": 42, "order": { "id": 42 }, "stats": { "delivered": 1 } } },
   }]);
@@ -25,7 +26,7 @@ Deno.test("order-track: calls GET /api/v2/orders/42/track and shapes the output"
   );
 });
 
-Deno.test("order-track: a vendor error surfaces the HTTP status and message", async () => {
+test("order-track: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { "message": "Not Found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(orderTrack.execute({ "orderId": "42" } as never, ctx)),

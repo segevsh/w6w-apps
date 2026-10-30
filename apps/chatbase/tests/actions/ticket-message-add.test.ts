@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketMessageAdd from "../../actions/ticket-message-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-message-add: POST .../messages, type is always 'reply'", async () => {
+test("ticket-message-add: POST .../messages, type is always 'reply'", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "msg1", content: "<p>Fixed</p>", contentText: "Fixed" } },
   ]);

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import fileGet from "../../actions/file-get.ts";
 
-Deno.test("file-get: gets the file", async () => {
+test("file-get: gets the file", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "uid": "f1" } } }]);
   const out = await fileGet.execute!({ "fileUid": "f1" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("file-get: gets the file", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("file-get: refuses an empty path id before the network", async () => {
+test("file-get: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await fileGet.execute!({ "fileUid": "" } as never, ctx);
@@ -26,7 +27,7 @@ Deno.test("file-get: refuses an empty path id before the network", async () => {
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("file-get: surfaces a vendor error envelope", async () => {
+test("file-get: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

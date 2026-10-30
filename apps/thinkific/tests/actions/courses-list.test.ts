@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import coursesList from "../../actions/courses-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("courses-list: fetches GET /courses with page/limit", async () => {
+test("courses-list: fetches GET /courses with page/limit", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: listEnvelope([{ id: 1, name: "My Course" }]) },
   ]);
@@ -12,7 +13,7 @@ Deno.test("courses-list: fetches GET /courses with page/limit", async () => {
   assertEquals(out.items, [{ id: 1, name: "My Course" }]);
 });
 
-Deno.test("courses-list: defaults are page 1 / limit 25", () => {
+test("courses-list: defaults are page 1 / limit 25", () => {
   const page = coursesList.params!.find((p) => p.key === "page")!;
   const limit = coursesList.params!.find((p) => p.key === "limit")!;
   assertEquals(page.default, 1);

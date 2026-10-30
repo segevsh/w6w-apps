@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/evaluate.ts";
 
-Deno.test("evaluate: POSTs model, state and questions to /v1/systemone", async () => {
+test("evaluate: POSTs model, state and questions to /v1/systemone", async () => {
   const body = { model: "m", answers: { q: { type: "boolean", value: true } }, usage: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const questions = { q: { type: "boolean" } };
@@ -13,7 +14,7 @@ Deno.test("evaluate: POSTs model, state and questions to /v1/systemone", async (
   assertEquals(result, body);
 });
 
-Deno.test("evaluate: surfaces API errors with status", async () => {
+test("evaluate: surfaces API errors with status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "bad" }]);
   await assertRejects(
     async () => await action.execute!({ model: "m", state: "x", questions: {} }, ctx),

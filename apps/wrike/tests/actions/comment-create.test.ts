@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { envelope, mockWrikeCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-create: POSTs to /tasks/{taskId}/comments", async () => {
+test("comment-create: POSTs to /tasks/{taskId}/comments", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "C1", text: "hi" }]) },
   ]);
@@ -13,6 +14,6 @@ Deno.test("comment-create: POSTs to /tasks/{taskId}/comments", async () => {
   assertEquals(out.id, "C1");
 });
 
-Deno.test("comment-create: is declared non-idempotent — a retry posts a duplicate comment", () => {
+test("comment-create: is declared non-idempotent — a retry posts a duplicate comment", () => {
   assertEquals(commentCreate.idempotent, false);
 });

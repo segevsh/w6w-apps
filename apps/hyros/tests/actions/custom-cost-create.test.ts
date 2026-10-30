@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, OK, pathOf } from "../_helpers.ts";
 import customCostCreate from "../../actions/custom-cost-create.ts";
 
-Deno.test("custom-cost-create: POST /custom-costs with the documented body", async () => {
+test("custom-cost-create: POST /custom-costs with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await customCostCreate.execute({
     startDate: "2026-01-01",
@@ -21,7 +22,7 @@ Deno.test("custom-cost-create: POST /custom-costs with the documented body", asy
   assertEquals(out, { requestId: "req1", result: "OK" });
 });
 
-Deno.test("custom-cost-create: tag count is bounded 1..10", async () => {
+test("custom-cost-create: tag count is bounded 1..10", async () => {
   const { ctx } = mockCtx([]);
   const base = { startDate: "2026-01-01", frequency: "DAILY", cost: 1 };
   await assertRejects(

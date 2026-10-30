@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagRecordList from "../../actions/tag-record-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-record-list: GETs /tags/{uuid}/records with list params", async () => {
+test("tag-record-list: GETs /tags/{uuid}/records with list params", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ uuid: "u1", tags: [] }]) }]);
   const out = await tagRecordList.execute(
     { uuid: "t-1", private: true, limit: 2, offset: 4 },
@@ -16,7 +17,7 @@ Deno.test("tag-record-list: GETs /tags/{uuid}/records with list params", async (
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("tag-record-list: a Raisely error body surfaces its code", async () => {
+test("tag-record-list: a Raisely error body surfaces its code", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "not found", detail: "No such tag" } }]);
   let message = "";
   try {

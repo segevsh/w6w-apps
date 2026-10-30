@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   AircallClient,
   API_BASE,
@@ -16,59 +17,59 @@ import {
 } from "../../lib/client.ts";
 import { entityBody, listBody, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("client: one origin, version in the path", () => {
+test("client: one origin, version in the path", () => {
   assertEquals(API_BASE, "https://api.aircall.io");
   assertEquals(V1, "/v1");
   assertEquals(V2, "/v2");
 });
 
-Deno.test("client: entity() unwraps the resource envelope", async () => {
+test("client: entity() unwraps the resource envelope", async () => {
   const { ctx } = mockCtx([{ body: entityBody("call", { id: 812 }) }]);
   const out = await new AircallClient(ctx).entity<{ id: number }>("/calls/812", "call");
   assertEquals(out?.id, 812);
 });
 
 /** A response that is not enveloped must come back whole rather than as undefined. */
-Deno.test("client: entity() passes an unenveloped body through", async () => {
+test("client: entity() passes an unenveloped body through", async () => {
   const { ctx } = mockCtx([{ body: { id: 812 } }]);
   const out = await new AircallClient(ctx).entity<{ id: number }>("/calls/812", "call");
   assertEquals(out?.id, 812);
 });
 
-Deno.test("client: list() splits meta from the named collection", async () => {
+test("client: list() splits meta from the named collection", async () => {
   const { ctx } = mockCtx([{ body: listBody("calls", [{ id: 1 }, { id: 2 }], { total: 9 }) }]);
   const { meta, items } = await new AircallClient(ctx).list("/calls", "calls");
   assertEquals(items.length, 2);
   assertEquals(meta.total, 9);
 });
 
-Deno.test("client: list() of an absent collection is empty, not a crash", async () => {
+test("client: list() of an absent collection is empty, not a crash", async () => {
   const { ctx } = mockCtx([{ body: { meta: {} } }]);
   const { items } = await new AircallClient(ctx).list("/calls", "calls");
   assertEquals(items, []);
 });
 
 /** Several endpoints answer 204 with no body; that is success, not a parse error. */
-Deno.test("client: a 204 yields undefined rather than throwing", async () => {
+test("client: a 204 yields undefined rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const out = await new AircallClient(ctx).json("/calls/812/transfers", { method: "POST" });
   assertEquals(out, undefined);
 });
 
-Deno.test("client: a JSON body sets the content type Aircall requires", async () => {
+test("client: a JSON body sets the content type Aircall requires", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await new AircallClient(ctx).status("/tags", { method: "POST", body: { name: "x" } });
   assertEquals(calls[0].headers["content-type"], "application/json");
   assertEquals(calls[0].body, JSON.stringify({ name: "x" }));
 });
 
-Deno.test("client: a request with no body sets no content type", async () => {
+test("client: a request with no body sets no content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await new AircallClient(ctx).status("/calls/1/pause_recording", { method: "POST" });
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("client: the prefix selects the v1 or v2 surface", async () => {
+test("client: the prefix selects the v1 or v2 surface", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new AircallClient(ctx);
   await client.json("/users");
@@ -81,13 +82,13 @@ Deno.test("client: the prefix selects the v1 or v2 surface", async () => {
  * Aircall's only array query param is `tags[]` on Search Calls, and it is a
  * repeated key. Comma-joining it matches nothing and looks like an empty result.
  */
-Deno.test("client: array query values become repeated key[] parameters", async () => {
+test("client: array query values become repeated key[] parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new AircallClient(ctx).json("/calls/search", { query: { tags: [545, 678] } });
   assertEquals(queryAll(calls[0].url, "tags[]"), ["545", "678"]);
 });
 
-Deno.test("client: empty, null and undefined query values are dropped", async () => {
+test("client: empty, null and undefined query values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new AircallClient(ctx).json("/calls", {
     query: { a: undefined, b: null, c: "", d: 0, e: false },
@@ -101,7 +102,7 @@ Deno.test("client: empty, null and undefined query values are dropped", async ()
  * addressing form Aircall documents verbatim — turns into `%40`.
  * `encodeURIComponent` alone escapes it, which is the trap.
  */
-Deno.test("client: encodeId keeps @ . and - but neutralises path separators", () => {
+test("client: encodeId keeps @ . and - but neutralises path separators", () => {
   assertEquals(encodeId("john.doe@aircall.io"), "john.doe@aircall.io");
   assertEquals(
     encodeId("c2501111-8a69-4342-bb34-bcd6cfe564ab"),
@@ -114,20 +115,20 @@ Deno.test("client: encodeId keeps @ . and - but neutralises path separators", ()
   assertEquals(encodeId("  812  "), "812");
 });
 
-Deno.test("client: compact drops empties but keeps false and zero", () => {
+test("client: compact drops empties but keeps false and zero", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: "x" }),
     { a: 1, e: false, f: 0, g: "x" },
   );
 });
 
-Deno.test("client: flag renders only a true as a query value", () => {
+test("client: flag renders only a true as a query value", () => {
   assertEquals(flag(true), "true");
   assertEquals(flag(false), undefined);
   assertEquals(flag(undefined), undefined);
 });
 
-Deno.test("client: toList and toIdList normalise arrays and comma strings", () => {
+test("client: toList and toIdList normalise arrays and comma strings", () => {
   assertEquals(toList(["a", " b "]), ["a", "b"]);
   assertEquals(toList("a, b"), ["a", "b"]);
   assertEquals(toList([]), undefined);
@@ -140,7 +141,7 @@ Deno.test("client: toList and toIdList normalise arrays and comma strings", () =
   assertEquals(toIdList(["nope"]), undefined);
 });
 
-Deno.test("client: truncate says how much it dropped", () => {
+test("client: truncate says how much it dropped", () => {
   assertEquals(truncate("abc", 10), "abc");
   const long = truncate("x".repeat(50), 10);
   assert(long.startsWith("xxxxxxxxxx"), long);
@@ -155,7 +156,7 @@ Deno.test("client: truncate says how much it dropped", () => {
  * Aircall's application runs. A formatter that knows only one renders the other
  * as an empty string.
  */
-Deno.test("client: both error-body shapes are surfaced", () => {
+test("client: both error-body shapes are surfaced", () => {
   const documented = formatAircallError(
     400,
     "POST",
@@ -169,12 +170,12 @@ Deno.test("client: both error-body shapes are surfaced", () => {
   assert(edge.includes("Forbidden"), edge);
 });
 
-Deno.test("client: a non-JSON body still reaches the message", () => {
+test("client: a non-JSON body still reaches the message", () => {
   const out = formatAircallError(502, "GET", "/v1/calls", "<html>bad gateway</html>");
   assert(out.includes("bad gateway"), out);
 });
 
-Deno.test("client: 401 and 403 are explained the way Aircall means them", () => {
+test("client: 401 and 403 are explained the way Aircall means them", () => {
   const unauthorized = formatAircallError(401, "GET", "/v1/ping", "");
   assert(unauthorized.includes("no Authorization header"), unauthorized);
 
@@ -186,7 +187,7 @@ Deno.test("client: 401 and 403 are explained the way Aircall means them", () => 
   );
 });
 
-Deno.test("client: 405 is explained as a state error, and 429 quotes the ceiling", () => {
+test("client: 405 is explained as a state error, and 429 quotes the ceiling", () => {
   const state = formatAircallError(405, "POST", "/v1/users/456/calls", "");
   assert(state.includes("state error"), state);
 
@@ -194,7 +195,7 @@ Deno.test("client: 405 is explained as a state error, and 429 quotes the ceiling
   assert(limited.includes("120 requests/minute per company"), limited);
 });
 
-Deno.test("client: a failed request throws with the method and path", async () => {
+test("client: a failed request throws with the method and path", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Not Found" } }]);
   const err = await assertRejects(
     () => new AircallClient(ctx).json("/calls/999"),
@@ -205,7 +206,7 @@ Deno.test("client: a failed request throws with the method and path", async () =
 
 // --- webhook secret stripping ----------------------------------------------
 
-Deno.test("client: stripWebhookToken removes only the token", () => {
+test("client: stripWebhookToken removes only the token", () => {
   const stripped = stripWebhookToken({
     webhook_id: "uuid-1",
     url: "https://a.example.com",
@@ -220,13 +221,13 @@ Deno.test("client: stripWebhookToken removes only the token", () => {
   assertEquals(stripped.events, ["call.created"]);
 });
 
-Deno.test("client: stripWebhookToken copies rather than mutating its input", () => {
+test("client: stripWebhookToken copies rather than mutating its input", () => {
   const original = { webhook_id: "uuid-1", token: "abc123" };
   stripWebhookToken(original);
   assertEquals(original.token, "abc123", "the caller's object must be untouched");
 });
 
-Deno.test("client: stripWebhookTokens covers a whole page", () => {
+test("client: stripWebhookTokens covers a whole page", () => {
   const rows = stripWebhookTokens([
     { webhook_id: "a", token: "s1" },
     { webhook_id: "b", token: "s2" },
@@ -241,7 +242,7 @@ Deno.test("client: stripWebhookTokens covers a whole page", () => {
  * `token` would corrupt a Contact's `information` payload or a Call's tags —
  * user data this app exists to move.
  */
-Deno.test("client: stripping a non-webhook shape leaves user data intact", () => {
+test("client: stripping a non-webhook shape leaves user data intact", () => {
   const contact = stripWebhookToken({
     id: 710,
     information: "token: keep-me",
@@ -251,7 +252,7 @@ Deno.test("client: stripping a non-webhook shape leaves user data intact", () =>
   assertEquals((contact.phone_numbers as unknown[]).length, 1);
 });
 
-Deno.test("client: stripping a non-object is a no-op", () => {
+test("client: stripping a non-object is a no-op", () => {
   assertEquals(stripWebhookToken(undefined), undefined);
   assertEquals(stripWebhookToken(null), null);
   assertEquals(stripWebhookToken("a string"), "a string");

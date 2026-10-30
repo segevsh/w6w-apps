@@ -49,7 +49,12 @@ const listSites: ActionDefinition<Input> = {
     {
       key: "publishStatus",
       label: "Publish status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "NOT_PUBLISHED_YET", label: "NOT_PUBLISHED_YET" }, {
+        value: "PUBLISHED",
+        label: "PUBLISHED",
+      }, { value: "UNPUBLISHED", label: "UNPUBLISHED" }],
+      config: { valueFormat: "csv" },
       advanced: true,
       placeholder: "PUBLISHED,UNPUBLISHED",
       hint: "Comma-separated `NOT_PUBLISHED_YET`, `PUBLISHED` and/or `UNPUBLISHED`. Omit for all.",

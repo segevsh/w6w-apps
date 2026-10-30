@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerPaymentList from "../../actions/customer-payment-list.ts";
 import { list, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-payment-list: unwraps _embedded.payments for one customer", async () => {
+test("customer-payment-list: unwraps _embedded.payments for one customer", async () => {
   const { ctx, calls } = mockCtx([{ body: list("payments", [{ id: "tr_1" }]) }]);
   const out = await customerPaymentList.execute({ customerId: "cst_1" }, ctx);
 

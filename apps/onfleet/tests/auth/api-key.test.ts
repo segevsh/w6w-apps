@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
 /** The key is the username and the password is EMPTY — a trailing colon. */
-Deno.test("api-key: sign sends Basic auth with an empty password", () => {
+test("api-key: sign sends Basic auth with an empty password", () => {
   const request = { url: "https://onfleet.com/api/v2/tasks/all", method: "GET", headers: {} };
   const signed = auth.sign!({ request, credential: { apiKey: "ofk_1" } }, mockCtx().ctx) as {
     headers: Record<string, string>;
@@ -12,7 +13,7 @@ Deno.test("api-key: sign sends Basic auth with an empty password", () => {
 });
 
 /** `/auth/test` names the organization and the caller's IP, never the key. */
-Deno.test("api-key: test hits /auth/test and reports Onfleet's own message", async () => {
+test("api-key: test hits /auth/test and reports Onfleet's own message", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { message: "Hello organization 'acme' hitting Onfleet from 1.2.3.4" },
@@ -24,7 +25,7 @@ Deno.test("api-key: test hits /auth/test and reports Onfleet's own message", asy
   assert(/Hello organization/.test(result.message!), result.message);
 });
 
-Deno.test("api-key: a rejected key is reported without echoing it", async () => {
+test("api-key: a rejected key is reported without echoing it", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "InvalidCredentials", message: { error: 1102, message: "invalid" } },
@@ -35,20 +36,20 @@ Deno.test("api-key: a rejected key is reported without echoing it", async () => 
   assert(!result.message!.includes("ofk_secret"), result.message);
 });
 
-Deno.test("api-key: any other failure reports the status", async () => {
+test("api-key: any other failure reports the status", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await auth.test!({ credential: { apiKey: "ofk_1" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("503"), result.message);
 });
 
-Deno.test("api-key: a missing credential is refused before a request is made", async () => {
+test("api-key: a missing credential is refused before a request is made", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test!({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a network failure is reported, not thrown", async () => {
+test("api-key: a network failure is reported, not thrown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("network down")),
     log: () => {},
@@ -58,7 +59,7 @@ Deno.test("api-key: a network failure is reported, not thrown", async () => {
   assert(/could not reach Onfleet/.test(result.message!), result.message);
 });
 
-Deno.test("api-key: is basic auth with one secret field", () => {
+test("api-key: is basic auth with one secret field", () => {
   assertEquals(auth.type, "basic");
   assertEquals(auth.fields!.map((f) => f.key), ["apiKey"]);
   assertEquals(auth.fields![0].type, "secret");

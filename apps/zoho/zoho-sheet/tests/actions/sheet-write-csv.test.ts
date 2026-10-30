@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-write-csv.ts";
 
-Deno.test("sheet-write-csv: POSTs worksheet.csvdata.set with row/column/data", async () => {
+test("sheet-write-csv: POSTs worksheet.csvdata.set with row/column/data", async () => {
   const { ctx, calls } = mockSheetCtx([
     { body: { status: "success", method: "worksheet.csvdata.set" } },
   ]);

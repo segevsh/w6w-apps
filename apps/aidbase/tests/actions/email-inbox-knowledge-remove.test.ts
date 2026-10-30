@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailInboxKnowledgeRemove from "../../actions/email-inbox-knowledge-remove.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => emailInboxKnowledgeRemove.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("email-inbox-knowledge-remove: declares a perform action with a description, params and output", () => {
+test("email-inbox-knowledge-remove: declares a perform action with a description, params and output", () => {
   assertEquals(emailInboxKnowledgeRemove.key, "email-inbox-knowledge-remove");
   assertEquals(emailInboxKnowledgeRemove.type, "perform");
   assert((emailInboxKnowledgeRemove.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("email-inbox-knowledge-remove: declares a perform action with a descri
   assertEquals(emailInboxKnowledgeRemove.idempotent, true);
 });
 
-Deno.test("email-inbox-knowledge-remove: sends the documented request and returns the documented shape", async () => {
+test("email-inbox-knowledge-remove: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true } }]);
   const out = await run(ctx);
   assertEquals(out, { "ok": true });
@@ -31,7 +32,7 @@ Deno.test("email-inbox-knowledge-remove: sends the documented request and return
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("email-inbox-knowledge-remove: an Aidbase failure body is thrown with its message", async () => {
+test("email-inbox-knowledge-remove: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

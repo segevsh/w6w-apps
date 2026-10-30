@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignTotalsGet from "../../actions/campaign-totals-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-totals-get: POST /api/1/getCampaignTotalInformation/ with the documented form fields", async () => {
+test("campaign-totals-get: POST /api/1/getCampaignTotalInformation/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await campaignTotalsGet.execute({ "campaign_id": 55 } as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("campaign-totals-get: POST /api/1/getCampaignTotalInformation/ with th
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("campaign-totals-get: a vendor error surfaces its status and body", async () => {
+test("campaign-totals-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await campaignTotalsGet.execute({ "campaign_id": 55 } as never, ctx)
@@ -25,7 +26,7 @@ Deno.test("campaign-totals-get: a vendor error surfaces its status and body", as
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("campaign-totals-get: an empty campaign_id fails before any request", async () => {
+test("campaign-totals-get: an empty campaign_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignTotalsGet.execute({ "campaign_id": "  " } as never, ctx),

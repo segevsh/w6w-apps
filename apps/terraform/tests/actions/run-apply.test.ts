@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-apply.ts";
 
@@ -18,7 +19,7 @@ const run = (status: string, plan: Record<string, unknown> = {}) => ({
 const additive = run("planned", { "resource-additions": 2, "resource-changes": 1 });
 
 /** "Apply whatever this is" is not a thing to offer. */
-Deno.test("run-apply: reads the run and its plan before confirming anything", async () => {
+test("run-apply: reads the run and its plan before confirming anything", async () => {
   const { ctx, calls } = mockCtx([additive, { status: 202, body: {} }]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("include"), "plan");
@@ -33,7 +34,7 @@ Deno.test("run-apply: reads the run and its plan before confirming anything", as
  * Every other write in this API needs the JSON:API envelope; the action
  * endpoints take a bare object and silently drop a wrapped comment.
  */
-Deno.test("run-apply: sends a bare comment body, not a JSON:API document", async () => {
+test("run-apply: sends a bare comment body, not a JSON:API document", async () => {
   const { ctx, calls } = mockCtx([additive, { status: 202, body: {} }]);
   await action.execute({ runId: "run-1", comment: "shipped by CI" }, ctx);
   const body = JSON.parse(calls[1].body!);
@@ -42,7 +43,7 @@ Deno.test("run-apply: sends a bare comment body, not a JSON:API document", async
 });
 
 /** A replaced resource is one destruction and one addition. */
-Deno.test("run-apply: refuses a destructive plan without the count acknowledged", async () => {
+test("run-apply: refuses a destructive plan without the count acknowledged", async () => {
   const { ctx, calls } = mockCtx([run("planned", { "resource-destructions": 3 })]);
   let message = "";
   try {
@@ -56,7 +57,7 @@ Deno.test("run-apply: refuses a destructive plan without the count acknowledged"
   assertEquals(calls.length, 1, "nothing was applied");
 });
 
-Deno.test("run-apply: the acknowledgement must equal the count, not merely exceed it", async () => {
+test("run-apply: the acknowledgement must equal the count, not merely exceed it", async () => {
   for (const acknowledged of [2, 4]) {
     const { ctx, calls } = mockCtx([run("planned", { "resource-destructions": 3 })]);
     let threw = false;
@@ -82,14 +83,14 @@ Deno.test("run-apply: the acknowledgement must equal the count, not merely excee
 });
 
 /** An additive plan is not gated — the destruction count is the risk. */
-Deno.test("run-apply: a plan that destroys nothing applies without an acknowledgement", async () => {
+test("run-apply: a plan that destroys nothing applies without an acknowledgement", async () => {
   const { ctx } = mockCtx([additive, { status: 202, body: {} }]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.applied, true);
   assertEquals(result.destroys, 0);
 });
 
-Deno.test("run-apply: planned_and_finished explains there is nothing to apply", async () => {
+test("run-apply: planned_and_finished explains there is nothing to apply", async () => {
   const { ctx, calls } = mockCtx([run("planned_and_finished")]);
   let message = "";
   try {
@@ -101,7 +102,7 @@ Deno.test("run-apply: planned_and_finished explains there is nothing to apply", 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("run-apply: a run in any other state is refused with what state it is in", async () => {
+test("run-apply: a run in any other state is refused with what state it is in", async () => {
   for (
     const [status, expected] of [
       ["applied", /already been applied/],
@@ -123,7 +124,7 @@ Deno.test("run-apply: a run in any other state is refused with what state it is 
 });
 
 /** A Sentinel soft-failure is the other applyable state. */
-Deno.test("run-apply: policy_override is applyable", async () => {
+test("run-apply: policy_override is applyable", async () => {
   const { ctx } = mockCtx([run("policy_override"), { status: 202, body: {} }]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.applied, true);
@@ -131,7 +132,7 @@ Deno.test("run-apply: policy_override is applyable", async () => {
 });
 
 /** For an apply nobody watched, the comment is the only record of why. */
-Deno.test("run-apply: warns that infrastructure is changing, with the counts", async () => {
+test("run-apply: warns that infrastructure is changing, with the counts", async () => {
   const { ctx, logs } = mockCtx([
     run("planned", { "resource-additions": 1, "resource-destructions": 2 }),
     { status: 202, body: {} },
@@ -142,7 +143,7 @@ Deno.test("run-apply: warns that infrastructure is changing, with the counts", a
   assertEquals(logs[0].data, { id: "run-1", adds: 1, changes: 0, destroys: 2 });
 });
 
-Deno.test("run-apply: a run id is required", async () => {
+test("run-apply: a run id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

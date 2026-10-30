@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_BASE,
   compact,
@@ -15,18 +16,18 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: the API base is the single documented host", () => {
+test("client: the API base is the single documented host", () => {
   assertEquals(API_BASE, "https://api.everhour.com");
 });
 
-Deno.test("encodeId: keeps the colon of ev:123 and escapes anything path-changing", () => {
+test("encodeId: keeps the colon of ev:123 and escapes anything path-changing", () => {
   assertEquals(encodeId("ev:3000010034"), "ev:3000010034");
   assertEquals(encodeId(107), "107");
   assertEquals(encodeId(" as:1 "), "as:1");
   assertEquals(encodeId("a/../b?x=1#y"), "a%2F..%2Fb%3Fx%3D1%23y");
 });
 
-Deno.test("compact / queryString: drop undefined, null and empty, keep false and 0", () => {
+test("compact / queryString: drop undefined, null and empty, keep false and 0", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -36,13 +37,13 @@ Deno.test("compact / queryString: drop undefined, null and empty, keep false and
   assertEquals(queryString({}), "");
 });
 
-Deno.test("one: is 1 for true and omitted otherwise", () => {
+test("one: is 1 for true and omitted otherwise", () => {
   assertEquals(one(true), 1);
   assertEquals(one(false), undefined);
   assertEquals(one(undefined), undefined);
 });
 
-Deno.test("toList / toNumberList: accept CSV or arrays and reject non-numbers", () => {
+test("toList / toNumberList: accept CSV or arrays and reject non-numbers", () => {
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(toList(["x", " y "]), ["x", "y"]);
   assertEquals(toList(""), undefined);
@@ -52,7 +53,7 @@ Deno.test("toList / toNumberList: accept CSV or arrays and reject non-numbers", 
   assertThrows(() => toNumberList("1,x"), Error, '"x" is not a number');
 });
 
-Deno.test("toObject / toArray: parse JSON strings, pass values, and fail loudly", () => {
+test("toObject / toArray: parse JSON strings, pass values, and fail loudly", () => {
   assertEquals(toObject('{"a":1}', "f"), { a: 1 });
   assertEquals(toObject({ a: 1 }, "f"), { a: 1 });
   assertEquals(toObject(undefined, "f"), undefined);
@@ -64,7 +65,7 @@ Deno.test("toObject / toArray: parse JSON strings, pass values, and fail loudly"
   assertThrows(() => toArray("[", "f"), Error, "f is not valid JSON");
 });
 
-Deno.test("errorText / isErrorEnvelope: read Everhour's {code, message} body", () => {
+test("errorText / isErrorEnvelope: read Everhour's {code, message} body", () => {
   assertEquals(errorText({ code: 403, message: "Access denied" }), "Access denied");
   assertEquals(errorText("x"), undefined);
   assertEquals(isErrorEnvelope({ code: 403, message: "Access denied" }), true);
@@ -73,7 +74,7 @@ Deno.test("errorText / isErrorEnvelope: read Everhour's {code, message} body", (
   assertEquals(isErrorEnvelope(null), false);
 });
 
-Deno.test("EverhourClient.many: wraps a bare array and computes nextPage from limit", async () => {
+test("EverhourClient.many: wraps a bare array and computes nextPage from limit", async () => {
   const full = mockCtx([{ body: [{ id: 1 }, { id: 2 }] }]);
   const a = await new EverhourClient(full.ctx).many("/x", { query: { limit: 2, page: 3 } });
   assertEquals(a, { items: [{ id: 1 }, { id: 2 }], count: 2, nextPage: 4 });
@@ -84,19 +85,19 @@ Deno.test("EverhourClient.many: wraps a bare array and computes nextPage from li
   assertEquals((await new EverhourClient(none.ctx).many("/x")).nextPage, null);
 });
 
-Deno.test("EverhourClient.many: a non-array answer is an error, not an empty list", async () => {
+test("EverhourClient.many: a non-array answer is an error, not an empty list", async () => {
   const { ctx } = mockCtx([{ body: { items: [] } }]);
   await assertRejects(() => new EverhourClient(ctx).many("/x"), Error, "expected a JSON array");
 });
 
-Deno.test("EverhourClient.one: 204 becomes {ok: true}; objects pass through", async () => {
+test("EverhourClient.one: 204 becomes {ok: true}; objects pass through", async () => {
   const del = mockCtx([{ status: 204 }]);
   assertEquals(await new EverhourClient(del.ctx).one("/x", { method: "DELETE" }), { ok: true });
   const get = mockCtx([{ body: { id: 5 } }]);
   assertEquals(await new EverhourClient(get.ctx).one("/x"), { id: 5 });
 });
 
-Deno.test("EverhourClient: sends version + JSON headers and never a credential", async () => {
+test("EverhourClient: sends version + JSON headers and never a credential", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new EverhourClient(ctx).one("/x", { method: "POST", body: { a: 1 } });
   assertEquals(calls[0].headers["accept"], "application/json");
@@ -106,7 +107,7 @@ Deno.test("EverhourClient: sends version + JSON headers and never a credential",
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("EverhourClient: errors carry status and message; 429 adds Retry-After", async () => {
+test("EverhourClient: errors carry status and message; 429 adds Retry-After", async () => {
   const forbidden = mockCtx([{ status: 403, body: { code: 403, message: "Access denied" } }]);
   await assertRejects(
     () => new EverhourClient(forbidden.ctx).one("/x"),
@@ -123,7 +124,7 @@ Deno.test("EverhourClient: errors carry status and message; 429 adds Retry-After
   await assertRejects(() => new EverhourClient(html.ctx).one("/x"), Error, "Everhour 502");
 });
 
-Deno.test("EverhourClient: a 200 that is not JSON is an error", async () => {
+test("EverhourClient: a 200 that is not JSON is an error", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },

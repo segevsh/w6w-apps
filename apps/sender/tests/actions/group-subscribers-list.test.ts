@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupSubscribersList from "../../actions/group-subscribers-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-subscribers-list: GETs /v2/groups/{id}/subscribers", async () => {
+test("group-subscribers-list: GETs /v2/groups/{id}/subscribers", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "s1" }]) }]);
   const out = await groupSubscribersList.execute({ id: "g1" }, ctx) as { data: unknown[] };
 

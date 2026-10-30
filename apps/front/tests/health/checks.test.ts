@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -22,7 +23,7 @@ const components = (over: Record<string, string> = {}) => ({
   ].map((name) => ({ name, status: over[name] ?? "operational", group: false })),
 });
 
-Deno.test("service: all green reports ok", async () => {
+test("service: all green reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: components() }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -30,7 +31,7 @@ Deno.test("service: all green reports ok", async () => {
 });
 
 /** A dead API is a real outage — nothing this app does works. */
-Deno.test("service: an API outage is down", async () => {
+test("service: an API outage is down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: components({ "API and integrations": "major_outage" }),
@@ -44,29 +45,29 @@ Deno.test("service: an API outage is down", async () => {
  * A dead channel is not. Reads, comments and tagging all still work — only
  * sending on that channel does not.
  */
-Deno.test("service: a channel outage is capped at degraded", async () => {
+test("service: a channel outage is capped at degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: components({ Gmail: "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "degraded");
   assertEquals(out.components!["gmail"].state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: renamed components report unknown rather than a false green", async () => {
+test("service: renamed components report unknown rather than a false green", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { components: [{ name: "Something else" }] } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: is unsigned and declares the status host separately", () => {
+test("service: is unsigned and declares the status host separately", () => {
   assertEquals(service.credential ?? "none", "none");
   assertEquals(service.network!.allow, ["www.frontstatus.com"]);
 });
 
-Deno.test("quota: reads both the minute allowance and the burst bucket", async () => {
+test("quota: reads both the minute allowance and the burst bucket", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { id: "cmp_1" },
@@ -94,7 +95,7 @@ Deno.test("quota: reads both the minute allowance and the burst bucket", async (
 });
 
 /** The burst bucket empties quietly and refills over ten minutes. */
-Deno.test("quota: an empty burst bucket is degraded even with a full minute", async () => {
+test("quota: an empty burst bucket is degraded even with a full minute", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { id: "cmp_1" },
@@ -111,12 +112,12 @@ Deno.test("quota: an empty burst bucket is degraded even with a full minute", as
   assert(out.message!.includes("burst"), out.message);
 });
 
-Deno.test("quota: no headers is unknown, not a failure", async () => {
+test("quota: no headers is unknown, not a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "cmp_1" } }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: headroom is informational, not an outage", () => {
+test("quota: headroom is informational, not an outage", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-container-status.ts";
 
-Deno.test("get-container-status: GET /k1 with the documented query params", async () => {
+test("get-container-status: GET /k1 with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ containerId: "k1" }, ctx);
   assertEquals(calls.length, 1);
@@ -15,7 +16,7 @@ Deno.test("get-container-status: GET /k1 with the documented query params", asyn
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-container-status: surfaces a Graph error body", async () => {
+test("get-container-status: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/envelope-recipient-update.ts";
 
 const conn = { display: {} };
 
-Deno.test("envelope-recipient-update: POSTs the changes keyed by recipient id", async () => {
+test("envelope-recipient-update: POSTs the changes keyed by recipient id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { recipients: [] } }], conn);
   await action.execute!({
     envelopeId: "e1",
@@ -15,7 +16,7 @@ Deno.test("envelope-recipient-update: POSTs the changes keyed by recipient id", 
 });
 
 /** Updates are keyed by id, not by position in the list. */
-Deno.test("envelope-recipient-update: a recipient without an id is refused", async () => {
+test("envelope-recipient-update: a recipient without an id is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () =>

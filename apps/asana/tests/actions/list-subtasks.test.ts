@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-subtasks.ts";
 
-Deno.test("list-subtasks: GETs /tasks/{taskId}/subtasks with default limit=100", async () => {
+test("list-subtasks: GETs /tasks/{taskId}/subtasks with default limit=100", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ taskId: "t-1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("list-subtasks: GETs /tasks/{taskId}/subtasks with default limit=100",
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("list-subtasks: forwards optional pagination + opt_fields", async () => {
+test("list-subtasks: forwards optional pagination + opt_fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({
     taskId: "t-1",
@@ -28,7 +29,7 @@ Deno.test("list-subtasks: forwards optional pagination + opt_fields", async () =
   assertEquals(params.get("opt_pretty"), "true");
 });
 
-Deno.test("list-subtasks: omits undefined offset", async () => {
+test("list-subtasks: omits undefined offset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ taskId: "t-1" }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("offset"));

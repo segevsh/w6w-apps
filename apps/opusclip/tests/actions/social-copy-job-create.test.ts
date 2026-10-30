@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import socialCopyJobCreate from "../../actions/social-copy-job-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("social-copy-job-create: POSTs the required fields and optional ones when given", async () => {
+test("social-copy-job-create: POSTs the required fields and optional ones when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ jobId: "j1" }) }]);
   const out = await socialCopyJobCreate.execute({
     projectId: "P1",
@@ -25,7 +26,7 @@ Deno.test("social-copy-job-create: POSTs the required fields and optional ones w
   assertEquals(out.jobId, "j1");
 });
 
-Deno.test("social-copy-job-create: omits optional fields entirely when absent", async () => {
+test("social-copy-job-create: omits optional fields entirely when absent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ jobId: "j2" }) }]);
   await socialCopyJobCreate.execute(
     { projectId: "P1", clipId: "C1", postAccountId: "pa1" },

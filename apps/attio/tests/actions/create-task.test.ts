@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import createTask, { assigneeRefs, TASK_CONTENT_MAX } from "../../actions/create-task.ts";
 
@@ -7,7 +8,7 @@ import createTask, { assigneeRefs, TASK_CONTENT_MAX } from "../../actions/create
  * the ones a user leaves blank. Omitting them is a 400, so blanks become
  * explicit neutral values — this is why `compact()` is not used here.
  */
-Deno.test("create-task: sends ALL six required fields, filling blanks with neutral values", async () => {
+test("create-task: sends ALL six required fields, filling blanks with neutral values", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: { task_id: "t1" } } } }]);
   await createTask.execute({ content: "Follow up on current software solutions" }, ctx);
 
@@ -24,16 +25,16 @@ Deno.test("create-task: sends ALL six required fields, filling blanks with neutr
   });
 });
 
-Deno.test("create-task: format is not a param — the enum has one member", () => {
+test("create-task: format is not a param — the enum has one member", () => {
   assertEquals((createTask.params ?? []).some((p) => p.key === "format"), false);
 });
 
-Deno.test("create-task: enforces the documented 2000-character content limit", () => {
+test("create-task: enforces the documented 2000-character content limit", () => {
   assertEquals(TASK_CONTENT_MAX, 2000);
   assertEquals(param(createTask, "content").validation?.maxLength, 2000);
 });
 
-Deno.test("create-task: passes linked_records through in Attio's shorthand string form", async () => {
+test("create-task: passes linked_records through in Attio's shorthand string form", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await createTask.execute({
     content: "Chase",
@@ -45,13 +46,13 @@ Deno.test("create-task: passes linked_records through in Attio's shorthand strin
   ]);
 });
 
-Deno.test("assigneeRefs: an email becomes workspace_member_email_address", () => {
+test("assigneeRefs: an email becomes workspace_member_email_address", () => {
   assertEquals(assigneeRefs(["alice@attio.com"]), [
     { workspace_member_email_address: "alice@attio.com" },
   ]);
 });
 
-Deno.test("assigneeRefs: a UUID becomes the explicit actor reference", () => {
+test("assigneeRefs: a UUID becomes the explicit actor reference", () => {
   assertEquals(assigneeRefs(["50cf242c-7fa3-4cad-87d0-75b1af71c57b"]), [
     {
       referenced_actor_type: "workspace-member",
@@ -60,7 +61,7 @@ Deno.test("assigneeRefs: a UUID becomes the explicit actor reference", () => {
   ]);
 });
 
-Deno.test("assigneeRefs: a mixed list produces the right shape per entry", () => {
+test("assigneeRefs: a mixed list produces the right shape per entry", () => {
   assertEquals(assigneeRefs(["a@x.com", "id-1"]).length, 2);
   assertEquals(assigneeRefs(undefined), []);
 });

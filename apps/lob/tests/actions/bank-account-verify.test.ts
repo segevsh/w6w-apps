@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bankAccountVerify from "../../actions/bank-account-verify.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bank-account-verify: POSTs the amounts to the verify route", async () => {
+test("bank-account-verify: POSTs the amounts to the verify route", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "bank_1", verified: true, account_number: "123456789" },
   }]);
@@ -17,13 +18,13 @@ Deno.test("bank-account-verify: POSTs the amounts to the verify route", async ()
   assertEquals("account_number" in out, false);
 });
 
-Deno.test("bank-account-verify: a descriptor code is sent as descriptor_code", async () => {
+test("bank-account-verify: a descriptor code is sent as descriptor_code", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "bank_1", verified: true } }]);
   await bankAccountVerify.execute({ bankAccountId: "bank_1", descriptorCode: "ABC123" }, ctx);
   assertEquals(bodyOf(calls[0]), { descriptor_code: "ABC123" });
 });
 
-Deno.test("bank-account-verify: bad input is refused before any request", async () => {
+test("bank-account-verify: bad input is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await bankAccountVerify.execute({ bankAccountId: "b" }, ctx),
@@ -52,7 +53,7 @@ Deno.test("bank-account-verify: bad input is refused before any request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bank-account-verify: wrong amounts surface Lob's error", async () => {
+test("bank-account-verify: wrong amounts surface Lob's error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid", "amounts do not match", 422),

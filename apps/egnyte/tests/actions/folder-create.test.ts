@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/folder-create.ts";
 
-Deno.test("folder-create: POSTs add_folder to the path", async () => {
+test("folder-create: POSTs add_folder to the path", async () => {
   const { ctx, calls } = mockEgnyteCtx([{
     status: 201,
     body: { path: "/Shared/t", folder_id: "f" },

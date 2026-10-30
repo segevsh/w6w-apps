@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contractContentUpdate from "../../actions/contract-content-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contract-content-update: calls POST /api/contracts/c1/content with the documented body", async () => {
+test("contract-content-update: calls POST /api/contracts/c1/content with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "updated", data: { markdown: "b" } } }]);
   const out = await contractContentUpdate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("contract-content-update: calls POST /api/contracts/c1/content with th
   assert(out.status === "updated" && out.markdown === "b", JSON.stringify(out));
 });
 
-Deno.test("contract-content-update: a vendor error surfaces its error_code and message", async () => {
+test("contract-content-update: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -50,7 +51,7 @@ Deno.test("contract-content-update: a vendor error surfaces its error_code and m
   );
 });
 
-Deno.test("contract-content-update: a slash pasted into an id cannot escape the path segment", async () => {
+test("contract-content-update: a slash pasted into an id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "updated", data: { markdown: "b" } } }]);
   await contractContentUpdate.execute(
     {

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import nodeDelete from "../../actions/node-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const OK = { status: "ok" };
-Deno.test("node-delete: DELETEs /nodes/:id", async () => {
+test("node-delete: DELETEs /nodes/:id", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   assertEquals(await nodeDelete.execute({ id: "abc" }, ctx), OK);
   assertEquals(calls[0].method, "DELETE");

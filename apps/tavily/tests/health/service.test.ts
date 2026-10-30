@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const summary = (api: string, mcp = "operational", name = "Tavily") => ({
   ],
 });
 
-Deno.test("service: reads the Tavily status page", async () => {
+test("service: reads the Tavily status page", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -19,14 +20,14 @@ Deno.test("service: reads the Tavily status page", async () => {
   assertEquals(Object.keys(r.components!).length, 3);
 });
 
-Deno.test("service: only the API component decides, MCP is capped at degraded", async () => {
+test("service: only the API component decides, MCP is capped at degraded", async () => {
   const { ctx } = mockCtx([{ body: summary("operational", "major_outage") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
   assertEquals(r.components!["m"].state, "degraded");
 });
 
-Deno.test("service: API outage is down; partial outage is degraded", async () => {
+test("service: API outage is down; partial outage is degraded", async () => {
   const down = await service.check!({} as never, mockCtx([{ body: summary("major_outage") }]).ctx);
   assertEquals(down.state, "down");
   const part = await service.check!(
@@ -36,7 +37,7 @@ Deno.test("service: API outage is down; partial outage is degraded", async () =>
   assertEquals(part.state, "degraded");
 });
 
-Deno.test("service: a foreign page, bad status or missing component is unknown, never down", async () => {
+test("service: a foreign page, bad status or missing component is unknown, never down", async () => {
   const foreign = await service.check!(
     {} as never,
     mockCtx([{ body: summary("major_outage", "operational", "Other") }]).ctx,
@@ -51,7 +52,7 @@ Deno.test("service: a foreign page, bad status or missing component is unknown, 
   assertEquals(none.state, "unknown");
 });
 
-Deno.test("service: declares the unsigned posture and the status host in its own allowlist", () => {
+test("service: declares the unsigned posture and the status host in its own allowlist", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.tavily.com"] });
   assertEquals(mapComponentStatus("weird"), "unknown");

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-get-many.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("order-get-many: GETs /orders with defaults", async () => {
+test("order-get-many: GETs /orders with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("order-get-many: GETs /orders with defaults", async () => {
   assertEquals(url.searchParams.get("page"), "1");
 });
 
-Deno.test("order-get-many: forwards filters", async () => {
+test("order-get-many: forwards filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!(
     { search: "abc", status: "completed", customer: 9, product: 5, orderBy: "date", order: "desc" },
@@ -28,7 +29,7 @@ Deno.test("order-get-many: forwards filters", async () => {
   assertEquals(p.get("order"), "desc");
 });
 
-Deno.test("order-get-many: omits unset filters", async () => {
+test("order-get-many: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const p = new URL(calls[0].url).searchParams;

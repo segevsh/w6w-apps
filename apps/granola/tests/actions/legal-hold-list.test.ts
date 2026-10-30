@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import legalHoldList from "../../actions/legal-hold-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("legal-hold-list: GET /v1/legal-holds with paging", async () => {
+test("legal-hold-list: GET /v1/legal-holds with paging", async () => {
   const page = { legal_holds: [], hasMore: false, cursor: null };
   const { ctx, calls } = mockCtx([{ body: page }]);
   assertEquals(await legalHoldList.execute({ cursor: "c", pageSize: 20 }, ctx), page);
@@ -10,7 +11,7 @@ Deno.test("legal-hold-list: GET /v1/legal-holds with paging", async () => {
   assertEquals(queryOf(calls[0].url), { cursor: "c", page_size: "20" });
 });
 
-Deno.test("legal-hold-list: 401 surfaces", async () => {
+test("legal-hold-list: 401 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { code: "INVALID_API_KEY", message: "x" } }]);
   await assertRejects(async () => await legalHoldList.execute({}, ctx), Error, "401");
 });

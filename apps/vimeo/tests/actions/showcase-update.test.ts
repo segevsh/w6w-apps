@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import showcaseUpdate from "../../actions/showcase-update.ts";
 import { jsonBody, mockCtx, q, url } from "../_helpers.ts";
 
 const showcase = { uri: "/users/152184/albums/3706071", name: "Renamed" };
 
-Deno.test("showcase-update: PATCHes /me/albums/{id}", async () => {
+test("showcase-update: PATCHes /me/albums/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: showcase }]);
   await showcaseUpdate.execute({ showcaseId: "/showcases/3706071", name: "Renamed" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -13,7 +14,7 @@ Deno.test("showcase-update: PATCHes /me/albums/{id}", async () => {
 });
 
 /** Unlike create, `name` is optional on edit — only present fields are applied. */
-Deno.test("showcase-update: name is optional and unset params are absent", async () => {
+test("showcase-update: name is optional and unset params are absent", async () => {
   const name = (showcaseUpdate.params ?? []).find((p) => p.key === "name");
   assertEquals(name?.required, undefined);
   const { ctx, calls } = mockCtx([{ body: showcase }]);
@@ -22,7 +23,7 @@ Deno.test("showcase-update: name is optional and unset params are absent", async
 });
 
 /** The three edit-only fields, and the create-only one that must not be here. */
-Deno.test("showcase-update: carries the edit-only custom URL and domain fields", async () => {
+test("showcase-update: carries the edit-only custom URL and domain fields", async () => {
   const { ctx, calls } = mockCtx([{ body: showcase }]);
   await showcaseUpdate.execute({
     showcaseId: "1",
@@ -39,13 +40,13 @@ Deno.test("showcase-update: carries the edit-only custom URL and domain fields",
   assert(!keys.includes("hideFromVimeo"), "hide_from_vimeo is documented on create only");
 });
 
-Deno.test("showcase-update: fields goes on the query", async () => {
+test("showcase-update: fields goes on the query", async () => {
   const { ctx, calls } = mockCtx([{ body: showcase }]);
   await showcaseUpdate.execute({ showcaseId: "1", name: "x", fields: "uri" }, ctx);
   assertEquals(q(calls[0], "fields"), "uri");
 });
 
-Deno.test("showcase-update: is a convergent perform", () => {
+test("showcase-update: is a convergent perform", () => {
   assertEquals(showcaseUpdate.type, "perform");
   assertEquals(showcaseUpdate.idempotent, true);
 });

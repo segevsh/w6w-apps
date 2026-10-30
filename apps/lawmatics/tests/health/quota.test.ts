@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declared unavailable, informational — no rate-limit header exists to read", () => {
+test("quota: declared unavailable, informational — no rate-limit header exists to read", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");

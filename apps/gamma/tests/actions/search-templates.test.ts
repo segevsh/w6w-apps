@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import searchTemplates from "../../actions/search-templates.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search-templates: calls GET /templates/search and returns both lists", async () => {
+test("search-templates: calls GET /templates/search and returns both lists", async () => {
   const { ctx, calls } = mockCtx([
     { body: { workspaceTemplates: [{ id: "t1" }], exploreTemplates: [{ id: "e1" }] } },
   ]);

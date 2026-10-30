@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import teammatesList from "../../actions/teammates-list.ts";
 
-Deno.test("teammates-list: lists teammates", async () => {
+test("teammates-list: lists teammates", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "teammates": [] } } }]);
   const out = await teammatesList.execute!({} as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("teammates-list: lists teammates", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("teammates-list: surfaces a vendor error envelope", async () => {
+test("teammates-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

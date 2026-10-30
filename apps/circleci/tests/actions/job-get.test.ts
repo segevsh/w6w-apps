@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-get.ts";
 
-Deno.test("job-get: GETs /project/{slug}/job/{number}", async () => {
+test("job-get: GETs /project/{slug}/job/{number}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { job_number: 7, status: "success" } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("job-get: GETs /project/{slug}/job/{number}", async () => {
   assertEquals(result, { job_number: 7, status: "success" });
 });
 
-Deno.test("job-get: requires projectSlug", async () => {
+test("job-get: requires projectSlug", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ jobNumber: 7 }, ctx)),
@@ -22,7 +23,7 @@ Deno.test("job-get: requires projectSlug", async () => {
   );
 });
 
-Deno.test("job-get: requires jobNumber", async () => {
+test("job-get: requires jobNumber", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ projectSlug: "gh/org/repo" }, ctx)),

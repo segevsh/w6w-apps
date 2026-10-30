@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-copy.ts";
 
-Deno.test("object-copy: PUTs the destination with x-amz-copy-source", async () => {
+test("object-copy: PUTs the destination with x-amz-copy-source", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -26,7 +27,7 @@ Deno.test("object-copy: PUTs the destination with x-amz-copy-source", async () =
   assertEquals(result, { etag: '"e1"', lastModified: "2024-01-01T00:00:00.000Z" });
 });
 
-Deno.test("object-copy: sets x-amz-acl when provided", async () => {
+test("object-copy: sets x-amz-acl when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "<CopyObjectResult></CopyObjectResult>" }]);
   await action.execute!(
     {
@@ -41,7 +42,7 @@ Deno.test("object-copy: sets x-amz-acl when provided", async () => {
   assertEquals(calls[0].headers["x-amz-acl"], "private");
 });
 
-Deno.test("object-copy: a 200 response carrying an <Error> body still throws", async () => {
+test("object-copy: a 200 response carrying an <Error> body still throws", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -61,7 +62,7 @@ Deno.test("object-copy: a 200 response carrying an <Error> body still throws", a
   );
 });
 
-Deno.test("object-copy: missing params reject", async () => {
+test("object-copy: missing params reject", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>

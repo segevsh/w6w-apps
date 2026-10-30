@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rfi-create.ts";
 
-Deno.test("rfi-create: POSTs { rfi } with the question wrapped as { body }", async () => {
+test("rfi-create: POSTs { rfi } with the question wrapped as { body }", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 10, subject: "Slab" } }]);
   const out = await action.execute!({
     companyId: 5,
@@ -33,7 +34,7 @@ Deno.test("rfi-create: POSTs { rfi } with the question wrapped as { body }", asy
   assertEquals(out, { id: 10, subject: "Slab" });
 });
 
-Deno.test("rfi-create: sends only the required fields when the rest are blank", async () => {
+test("rfi-create: sends only the required fields when the rest are blank", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 10 } }]);
   await action.execute!({
     projectId: 8,
@@ -47,6 +48,6 @@ Deno.test("rfi-create: sends only the required fields when the rest are blank", 
   });
 });
 
-Deno.test("rfi-create: is declared non-idempotent", () => {
+test("rfi-create: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

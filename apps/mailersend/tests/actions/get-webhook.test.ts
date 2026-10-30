@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-webhook.ts";
 import { exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-webhook: GETs /v1/webhooks/{id} and drops any signing secret", async () => {
+test("get-webhook: GETs /v1/webhooks/{id} and drops any signing secret", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "w1", url: "https://x.test/h", signing_secret: "abc" } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("get-webhook: GETs /v1/webhooks/{id} and drops any signing secret", as
   assertEquals(out, { data: { id: "w1", url: "https://x.test/h" } });
 });
 
-Deno.test("get-webhook: is a read action with a required id", () => {
+test("get-webhook: is a read action with a required id", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params![0].required, true);
 });

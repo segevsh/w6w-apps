@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionDelete from "../../actions/conversion-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversion-delete: DELETEs by numeric id", async () => {
+test("conversion-delete: DELETEs by numeric id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await conversionDelete.execute({ conversionId: 1 }, ctx);
 

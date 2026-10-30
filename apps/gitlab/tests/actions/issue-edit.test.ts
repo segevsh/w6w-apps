@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-edit.ts";
 
-Deno.test("issue-edit: PUTs only the supplied fields", async () => {
+test("issue-edit: PUTs only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { iid: 3 } }]);
   await action.execute(
     { projectId: "group/project", issueIid: 3, title: "New", stateEvent: "reopen" },

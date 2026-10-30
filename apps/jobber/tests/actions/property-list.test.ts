@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/property-list.ts";
 
-Deno.test("property-list: narrows to a client and keeps `primary: false` as a value", async () => {
+test("property-list: narrows to a client and keeps `primary: false` as a value", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { properties: { nodes: [] } } } }]);
   await action.execute({ clientId: "c1", primaryOnly: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables, {
@@ -11,7 +12,7 @@ Deno.test("property-list: narrows to a client and keeps `primary: false` as a va
   });
 });
 
-Deno.test("property-list: an empty form sends no filter at all", async () => {
+test("property-list: an empty form sends no filter at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { properties: { nodes: [] } } } }]);
   await action.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables, { first: 25 });

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import licenseVerify from "../../actions/license-verify.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const INPUT = {
   "incrementUsesCount": true,
 };
 
-Deno.test("license-verify: sends POST /v2/licenses/verify with the mapped parameters", async () => {
+test("license-verify: sends POST /v2/licenses/verify with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "uses": 3, "purchase": { "id": "p1" } },
   }]);
@@ -24,12 +25,12 @@ Deno.test("license-verify: sends POST /v2/licenses/verify with the mapped parame
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("license-verify: returns the documented result shape", async () => {
+test("license-verify: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: { "success": true, "uses": 3, "purchase": { "id": "p1" } } }]);
   assertEquals(await licenseVerify.execute(INPUT, ctx), { "uses": 3, "purchase": { "id": "p1" } });
 });
 
-Deno.test("license-verify: a 404 surfaces Gumroad's own message", async () => {
+test("license-verify: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -38,7 +39,7 @@ Deno.test("license-verify: a 404 surfaces Gumroad's own message", async () => {
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("license-verify: a 200 carrying success:false is still a failure", async () => {
+test("license-verify: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(() => Promise.resolve(licenseVerify.execute(INPUT, ctx)), Error, "refused");
 });

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createComment from "../../actions/create-comment.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const CREATED = {
   comment: { id: 79800950, comment_type: "User", content: "hi", relation_id: 5123 },
 };
 
-Deno.test("create-comment: posts expense_id and content at top level", async () => {
+test("create-comment: posts expense_id and content at top level", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   const out = await createComment.execute({ expenseId: 5123, content: "hi" }, ctx) as {
     id: number;
@@ -18,7 +19,7 @@ Deno.test("create-comment: posts expense_id and content at top level", async () 
   assertEquals(out.id, 79800950);
 });
 
-Deno.test("create-comment: an empty comment fails before the request", async () => {
+test("create-comment: an empty comment fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await createComment.execute({ expenseId: 1, content: "   " }, ctx),
@@ -29,6 +30,6 @@ Deno.test("create-comment: an empty comment fails before the request", async () 
 });
 
 /** Splitwise does not deduplicate comments — a retry posts twice in a thread people read. */
-Deno.test("create-comment: is declared non-idempotent", () => {
+test("create-comment: is declared non-idempotent", () => {
   assertEquals(createComment.idempotent, false);
 });

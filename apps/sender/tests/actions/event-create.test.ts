@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventCreate from "../../actions/event-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-create: POSTs to /v2/events with a nested subscriber object", async () => {
+test("event-create: POSTs to /v2/events with a nested subscriber object", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, message: "Event created" } }]);
   await eventCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("event-create: POSTs to /v2/events with a nested subscriber object", a
   assertEquals(body.properties, { int: 123 });
 });
 
-Deno.test("event-create: rejects when no subscriber identifier is given, without a network call", async () => {
+test("event-create: rejects when no subscriber identifier is given, without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await eventCreate.execute({ type: "product_viewed" }, ctx);

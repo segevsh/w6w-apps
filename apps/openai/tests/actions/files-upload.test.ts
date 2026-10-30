@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/files-upload.ts";
 
 const FILE_B64 = "aGVsbG8=";
 
-Deno.test("files-upload: POSTs multipart to /files with file + purpose", async () => {
+test("files-upload: POSTs multipart to /files with file + purpose", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "file-1" } }]);
   await action.execute!({ file: FILE_B64, purpose: "assistants" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("files-upload: POSTs multipart to /files with file + purpose", async (
   assertEquals(file.type, "application/octet-stream");
 });
 
-Deno.test("files-upload: honors caller-provided filename + mime type", async () => {
+test("files-upload: honors caller-provided filename + mime type", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

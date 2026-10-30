@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-categories.ts";
 
-Deno.test("list-categories: GETs /v1/categories with region, language, and default view", async () => {
+test("list-categories: GETs /v1/categories with region, language, and default view", async () => {
   const body = {
     categories: [{ displayName: "Coffee shop", name: "categories/gcid:coffee_shop" }],
   };
@@ -20,7 +21,7 @@ Deno.test("list-categories: GETs /v1/categories with region, language, and defau
   assertEquals(result, body);
 });
 
-Deno.test("list-categories: forwards filter and view=FULL", async () => {
+test("list-categories: forwards filter and view=FULL", async () => {
   const { ctx, calls } = mockCtx([{ body: { categories: [] } }]);
   await action.execute!({
     regionCode: "US",
@@ -33,7 +34,7 @@ Deno.test("list-categories: forwards filter and view=FULL", async () => {
   assertEquals(params.get("filter"), "displayName=coffee");
 });
 
-Deno.test("list-categories: defaults view to BASIC when omitted", async () => {
+test("list-categories: defaults view to BASIC when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { categories: [] } }]);
   // @ts-expect-error — exercising the runtime default when a caller omits a required param.
   await action.execute!({ regionCode: "US", languageCode: "en" }, ctx);

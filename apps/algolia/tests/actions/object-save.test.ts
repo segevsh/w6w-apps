@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-save.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("object-save: PUTs the record to the write host, keyed on objectID", async () => {
+test("object-save: PUTs the record to the write host, keyed on objectID", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { objectID: "1", taskID: 42 } }], {
     display,
   });
@@ -21,7 +22,7 @@ Deno.test("object-save: PUTs the record to the write host, keyed on objectID", a
   assertEquals((result as Record<string, unknown>).taskID, 42);
 });
 
-Deno.test("object-save: a record must be a JSON object, not an array", async () => {
+test("object-save: a record must be a JSON object, not an array", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p", objectID: "1", record: "[1,2]" }, ctx),
@@ -31,7 +32,7 @@ Deno.test("object-save: a record must be a JSON object, not an array", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("object-save: index, objectID and record are all required", async () => {
+test("object-save: index, objectID and record are all required", async () => {
   for (
     const patch of [
       { objectID: "1", record: "{}" },

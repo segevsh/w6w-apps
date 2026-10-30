@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/employee-update.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("employee-update: POSTs only the fields provided to /resource/Employee/{id}", async () => {
+test("employee-update: POSTs only the fields provided to /resource/Employee/{id}", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 9, Position: "Senior Engineer" } }],
     { display: { baseUrl: BASE_URL } },
@@ -14,7 +15,7 @@ Deno.test("employee-update: POSTs only the fields provided to /resource/Employee
   assertEquals(out, { Id: 9, Position: "Senior Engineer" });
 });
 
-Deno.test("employee-update: an untouched field is never sent — no accidental blanking", async () => {
+test("employee-update: an untouched field is never sent — no accidental blanking", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Id: 9 } }], {
     display: { baseUrl: BASE_URL },
   });
@@ -22,6 +23,6 @@ Deno.test("employee-update: an untouched field is never sent — no accidental b
   assertEquals(JSON.parse(calls[0].body!), { Active: false });
 });
 
-Deno.test("employee-update: is idempotent — replaying the same body lands the same state", () => {
+test("employee-update: is idempotent — replaying the same body lands the same state", () => {
   assertEquals(action.idempotent, true);
 });

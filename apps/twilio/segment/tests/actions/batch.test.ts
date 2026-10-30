@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch.ts";
 
-Deno.test("batch: posts the batch array, each item carrying its own type", async () => {
+test("batch: posts the batch array, each item carrying its own type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const items = [
     { type: "identify", userId: "u1", traits: { email: "a@b.com" } },
@@ -14,7 +15,7 @@ Deno.test("batch: posts the batch array, each item carrying its own type", async
   assertEquals(result, { success: true });
 });
 
-Deno.test("batch: top-level context/integrations pass through alongside batch", async () => {
+test("batch: top-level context/integrations pass through alongside batch", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     {
@@ -29,7 +30,7 @@ Deno.test("batch: top-level context/integrations pass through alongside batch", 
   assertEquals(body.integrations, { All: true });
 });
 
-Deno.test("batch: rejects an empty or non-array batch", async () => {
+test("batch: rejects an empty or non-array batch", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ batch: [] }, ctx),
@@ -44,7 +45,7 @@ Deno.test("batch: rejects an empty or non-array batch", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("batch: rejects more than 2,500 items", async () => {
+test("batch: rejects more than 2,500 items", async () => {
   const { ctx, calls } = mockCtx();
   const items = Array.from({ length: 2501 }, () => ({ type: "track", event: "e", userId: "u1" }));
   const err = await assertRejects(
@@ -55,7 +56,7 @@ Deno.test("batch: rejects more than 2,500 items", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("batch: rejects an item with no `type`", async () => {
+test("batch: rejects an item with no `type`", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ batch: [{ userId: "u1" }] }, ctx),
@@ -64,7 +65,7 @@ Deno.test("batch: rejects an item with no `type`", async () => {
   );
 });
 
-Deno.test("batch: accepts a JSON-string batch param (host passthrough case)", async () => {
+test("batch: accepts a JSON-string batch param (host passthrough case)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     { batch: JSON.stringify([{ type: "track", event: "e", userId: "u1" }]) },

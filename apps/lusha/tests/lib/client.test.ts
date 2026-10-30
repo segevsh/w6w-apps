@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { buildQuery, errorText, jsonValue, LushaClient, seg, strList } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("helpers: seg, strList, jsonValue, buildQuery", () => {
+test("helpers: seg, strList, jsonValue, buildQuery", () => {
   assertEquals(seg("a b/c"), "a%20b%2Fc");
   assertEquals(strList(" a, b ,,c"), ["a", "b", "c"]);
   assertEquals(strList(["x"]), ["x"]);
@@ -14,7 +15,7 @@ Deno.test("helpers: seg, strList, jsonValue, buildQuery", () => {
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("errorText: both of Lusha's error shapes", () => {
+test("errorText: both of Lusha's error shapes", () => {
   assertEquals(errorText({ statusCode: 401, message: "Invalid API key" }), "Invalid API key");
   assertEquals(errorText({ message: ["a", "b"] }), "a; b");
   assertEquals(
@@ -24,7 +25,7 @@ Deno.test("errorText: both of Lusha's error shapes", () => {
   assertEquals(errorText(null, "  raw  "), "raw");
 });
 
-Deno.test("request: sends no credential, parses JSON, empty body is {}", async () => {
+test("request: sends no credential, parses JSON, empty body is {}", async () => {
   const { ctx, calls } = mockCtx([{ body: { a: 1 } }, { status: 204 }]);
   const c = new LushaClient(ctx);
   assertEquals(await c.request("POST", "/x", { body: { q: 1 } }), { a: 1 });
@@ -33,7 +34,7 @@ Deno.test("request: sends no credential, parses JSON, empty body is {}", async (
   assertEquals(await c.request("GET", "/y"), {});
 });
 
-Deno.test("request: failures carry status, vendor text and a hint for 402/429", async () => {
+test("request: failures carry status, vendor text and a hint for 402/429", async () => {
   const c = new LushaClient(
     mockCtx([
       { status: 402, body: { statusCode: 402, message: "No credits" } },

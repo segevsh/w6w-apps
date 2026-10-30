@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("service: maps Statuspage's component vocabulary", () => {
+test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -11,7 +12,7 @@ Deno.test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: maps the page-level indicator", () => {
+test("service: maps the page-level indicator", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -19,13 +20,13 @@ Deno.test("service: maps the page-level indicator", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor's own id", () => {
+test("service: componentKey prefers the vendor's own id", () => {
   assertEquals(componentKey({ id: "lwx818h8c19p", name: "API" }, 0), "lwx818h8c19p");
   assertEquals(componentKey({ name: "Phone Call" }, 2), "phone-call-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: check() reads status.retellai.com and reports the page indicator", async () => {
+test("service: check() reads status.retellai.com and reports the page indicator", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       page: { url: "https://status.retellai.com" },
@@ -48,7 +49,7 @@ Deno.test("service: check() reads status.retellai.com and reports the page indic
   assertEquals(Object.keys(report.components ?? {}).length, 2);
 });
 
-Deno.test("service: check() surfaces an affected component in the message", async () => {
+test("service: check() surfaces an affected component in the message", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { url: "https://status.retellai.com" },
@@ -64,13 +65,13 @@ Deno.test("service: check() surfaces an affected component in the message", asyn
   assertEquals(report.message?.includes("API (degraded_performance)"), true);
 });
 
-Deno.test("service: check() is unknown, not down, when the status page itself fails", async () => {
+test("service: check() is unknown, not down, when the status page itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: check() refuses to trust a page that no longer self-identifies as Retell's", async () => {
+test("service: check() refuses to trust a page that no longer self-identifies as Retell's", async () => {
   const { ctx } = mockCtx([{ body: { page: { url: "https://status.example.com" } } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

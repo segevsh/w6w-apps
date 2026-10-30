@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clientCampaignsGet from "../../actions/client-campaigns-get.ts";
 import { API_PATH, mockCtx, pagedBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client-campaigns-get: GETs /clients/{clientid}/campaigns.json with every filter", async () => {
+test("client-campaigns-get: GETs /clients/{clientid}/campaigns.json with every filter", async () => {
   const { ctx, calls } = mockCtx([{ body: pagedBody([]) }]);
   await clientCampaignsGet.execute({
     clientId: "cid",
@@ -28,7 +29,7 @@ Deno.test("client-campaigns-get: GETs /clients/{clientid}/campaigns.json with ev
  * Paginated as of v3.3 — this endpoint used to answer a bare array in 3.2, and
  * the envelope is the headline breaking change of the version bump.
  */
-Deno.test("client-campaigns-get: returns the v3.3 paged envelope, not a bare array", async () => {
+test("client-campaigns-get: returns the v3.3 paged envelope, not a bare array", async () => {
   const campaign = {
     CampaignID: "fc0ce7105baeaf97f47c99be31d02a91",
     Name: "Campaign One",

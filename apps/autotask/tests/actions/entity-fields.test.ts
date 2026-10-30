@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import entityFields from "../../actions/entity-fields.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("entity-fields: returns required-writable names and picklists, optionally one field", async () => {
+test("entity-fields: returns required-writable names and picklists, optionally one field", async () => {
   const body = {
     fields: [
       { name: "id", isRequired: true, isReadOnly: true, isPickList: false },

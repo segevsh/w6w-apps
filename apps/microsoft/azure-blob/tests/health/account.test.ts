@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import account from "../../health/account.ts";
 import { API_VERSION } from "../../lib/signing.ts";
 
 const display = { account: "myaccount" };
 
-Deno.test("account: lists containers against this connection's own account", async () => {
+test("account: lists containers against this connection's own account", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "<EnumerationResults/>" }], { display });
   const result = await account.check!({}, ctx);
   assert(
@@ -18,7 +19,7 @@ Deno.test("account: lists containers against this connection's own account", asy
 });
 
 /** A storage account is a DNS name. */
-Deno.test("account: a name that does not resolve is reported as that, not an outage", async () => {
+test("account: a name that does not resolve is reported as that, not an outage", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns error")),
     log: () => {},
@@ -30,7 +31,7 @@ Deno.test("account: a name that does not resolve is reported as that, not an out
 });
 
 /** Azure reports clock drift as a permission error with nothing about time. */
-Deno.test("account: an authentication failure names both a rotated key and clock drift", async () => {
+test("account: an authentication failure names both a rotated key and clock drift", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: "<Error><Code>AuthenticationFailed</Code><Message>no</Message></Error>",
@@ -42,14 +43,14 @@ Deno.test("account: an authentication failure names both a rotated key and clock
   assert(/15 minutes/.test(result.message!), result.message);
 });
 
-Deno.test("account: a 5xx is attributed to Azure rather than the credential", async () => {
+test("account: a 5xx is attributed to Azure rather than the credential", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }], { display });
   const result = await account.check!({}, ctx);
   assertEquals(result.state, "down");
   assert(/this one is Azure, not the credential/.test(result.message!), result.message);
 });
 
-Deno.test("account: another 4xx is degraded", async () => {
+test("account: another 4xx is degraded", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: "<Error><Code>InvalidQueryParameterValue</Code><Message>bad</Message></Error>",
@@ -58,7 +59,7 @@ Deno.test("account: another 4xx is degraded", async () => {
   assertEquals((await account.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("account: a connection with no account recorded is unknown", async () => {
+test("account: a connection with no account recorded is unknown", async () => {
   const { ctx } = mockCtx([], { display: {} });
   const result = await account.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -66,7 +67,7 @@ Deno.test("account: a connection with no account recorded is unknown", async () 
 });
 
 /** Azure gives no unauthenticated probe, so this one has to be signed. */
-Deno.test("account: is signed, and says why it cannot separate the two failures", () => {
+test("account: is signed, and says why it cannot separate the two failures", () => {
   assertEquals(account.credential, "signed");
   assertEquals(account.scope, "connection");
   assertEquals(account.severity, "fatal");

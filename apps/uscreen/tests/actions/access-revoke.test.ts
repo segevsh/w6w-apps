@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import accessRevoke from "../../actions/access-revoke.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("access-revoke: sends DELETE /customers/${seg(input.customerId)}/accesses/${seg(input.accessId)} and reports ok on an empty 200", async () => {
+test("access-revoke: sends DELETE /customers/${seg(input.customerId)}/accesses/${seg(input.accessId)} and reports ok on an empty 200", async () => {
   const { ctx, calls } = mockCtx([{ body: "" }]);
   const out = await accessRevoke.execute({ "customerId": "5", "accessId": "9" } as never, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("access-revoke: sends DELETE /customers/${seg(input.customerId)}/acces
   assertEquals(out, { ok: true });
 });
 
-Deno.test("access-revoke: a 404 surfaces the vendor's message", async () => {
+test("access-revoke: a 404 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Not Found" } }]);
   await assertRejects(
     () =>

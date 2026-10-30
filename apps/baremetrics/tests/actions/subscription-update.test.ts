@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import subscriptionUpdate from "../../actions/subscription-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-update: PUT /v1/src1/subscriptions/o%201 with the documented query/body", async () => {
+test("subscription-update: PUT /v1/src1/subscriptions/o%201 with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscription: {} } }]);
   const out = await subscriptionUpdate.execute({
     source_id: "src1",
@@ -28,13 +29,13 @@ Deno.test("subscription-update: PUT /v1/src1/subscriptions/o%201 with the docume
   assert("subscription" in out);
 });
 
-Deno.test("subscription-update: omits unset optional body fields", async () => {
+test("subscription-update: omits unset optional body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await subscriptionUpdate.execute({ source_id: "src1", oid: "o 1", plan_oid: "x1" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body ?? "{}")).sort(), ["plan_oid"].sort());
 });
 
-Deno.test("subscription-update: add-ons given as a JSON string are parsed into an array", async () => {
+test("subscription-update: add-ons given as a JSON string are parsed into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await subscriptionUpdate.execute({
     ...{ source_id: "src1", oid: "o 1", plan_oid: "x1" },
@@ -43,14 +44,14 @@ Deno.test("subscription-update: add-ons given as a JSON string are parsed into a
   assertEquals(JSON.parse(calls[0].body ?? "{}").addons, [{ oid: "a", amount: 1, quantity: 2 }]);
 });
 
-Deno.test("subscription-update: declares type perform and every required param", () => {
+test("subscription-update: declares type perform and every required param", () => {
   assertEquals(subscriptionUpdate.type, "perform");
   const required = (subscriptionUpdate.params ?? []).filter((p) => p.required).map((p) => p.key)
     .sort();
   assertEquals(required, ["oid", "plan_oid", "source_id"]);
 });
 
-Deno.test("subscription-update: surfaces a vendor error as a thrown message", async () => {
+test("subscription-update: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

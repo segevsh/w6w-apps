@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timecardClockOut from "../../actions/timecard-clock-out.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timecard-clock-out: POST /users/{userId}/timecards/clock-out with the documented query and body", async () => {
+test("timecard-clock-out: POST /users/{userId}/timecards/clock-out with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timecardClockOut.execute({ "userId": 89 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("timecard-clock-out: POST /users/{userId}/timecards/clock-out with the
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timecard-clock-out: an Everhour error surfaces its message and status", async () => {
+test("timecard-clock-out: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timecardClockOut.execute({ "userId": 89 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("timecard-clock-out: an Everhour error surfaces its message and status
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timecard-clock-out: declares perform and idempotent=false", () => {
+test("timecard-clock-out: declares perform and idempotent=false", () => {
   assertEquals(timecardClockOut.type, "perform");
   assertEquals(timecardClockOut.idempotent, false);
 });

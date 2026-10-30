@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import invoiceCreate from "../../actions/invoice-create.ts";
 
-Deno.test("invoice-create: single-item convenience builds a one-element items array", async () => {
+test("invoice-create: single-item convenience builds a one-element items array", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -23,7 +24,7 @@ Deno.test("invoice-create: single-item convenience builds a one-element items ar
   assertEquals(body.variables.input.items, [{ productId: "p1", quantity: 3 }]);
 });
 
-Deno.test("invoice-create: an explicit `items` JSON array overrides the single-item fields", async () => {
+test("invoice-create: an explicit `items` JSON array overrides the single-item fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { invoiceCreate: { didSucceed: true, inputErrors: [], invoice: { id: "inv1" } } },
@@ -42,7 +43,7 @@ Deno.test("invoice-create: an explicit `items` JSON array overrides the single-i
   assertEquals(body.variables.input.items, [{ productId: "p2", quantity: 5 }]);
 });
 
-Deno.test("invoice-create: a rejected create throws with field-level detail", async () => {
+test("invoice-create: a rejected create throws with field-level detail", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -63,7 +64,7 @@ Deno.test("invoice-create: a rejected create throws with field-level detail", as
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("invoice-create: type/resource/idempotency metadata", () => {
+test("invoice-create: type/resource/idempotency metadata", () => {
   assertEquals(invoiceCreate.type, "perform");
   assertEquals(invoiceCreate.resource, "invoice");
   assertEquals(invoiceCreate.idempotent, false);

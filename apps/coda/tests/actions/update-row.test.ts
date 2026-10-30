@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-row.ts";
 
-Deno.test("update-row: PUTs the row wrapped as { row: { cells } }", async () => {
+test("update-row: PUTs the row wrapped as { row: { cells } }", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { requestId: "req-1", id: "row-1" } }]);
   const out = await action.execute({
     docId: "doc-1",

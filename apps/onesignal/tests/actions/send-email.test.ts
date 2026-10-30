@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sendEmail from "../../actions/send-email.ts";
 import { mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
-Deno.test("send-email: posts to the bare /notifications, never ?c=email", async () => {
+test("send-email: posts to the bare /notifications, never ?c=email", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ status: 200, body: { id: "msg-1" } }]);
   await sendEmail.execute(
     { emailSubject: "Hi", emailBody: "<p>Hi</p>", includedSegments: "All" },
@@ -16,7 +17,7 @@ Deno.test("send-email: posts to the bare /notifications, never ?c=email", async 
   assertEquals(body.target_channel, "email");
 });
 
-Deno.test("send-email: a direct emailTo bypasses segment targeting fields", async () => {
+test("send-email: a direct emailTo bypasses segment targeting fields", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ status: 200, body: { id: "msg-1" } }]);
   await sendEmail.execute(
     { emailSubject: "Hi", emailBody: "<p>Hi</p>", emailTo: "a@example.com" },

@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/profile-update.ts";
 
 const conn = { display: { projectId: "123", region: "us", hasProjectToken: true } };
 const accepted = { status: 200, body: { status: 1, error: null } };
 
-Deno.test("profile-update: posts to /engage with verbose on", async () => {
+test("profile-update: posts to /engage with verbose on", async () => {
   const { ctx, calls } = mockCtx([accepted], conn);
   await action.execute!(
     { operation: "$set", distinctId: "u1", properties: '{"plan":"pro"}' },
@@ -20,7 +21,7 @@ Deno.test("profile-update: posts to /engage with verbose on", async () => {
 });
 
 /** The token goes in the payload, and only the sign hook may put it there. */
-Deno.test("profile-update: a connection without a project token is refused before calling", async () => {
+test("profile-update: a connection without a project token is refused before calling", async () => {
   const { ctx, calls } = mockCtx([], {
     display: { projectId: "123", region: "us", hasProjectToken: false },
   });
@@ -34,13 +35,13 @@ Deno.test("profile-update: a connection without a project token is refused befor
 });
 
 /** The action never builds the token itself — the sign hook does. */
-Deno.test("profile-update: does not put a token in the body", async () => {
+test("profile-update: does not put a token in the body", async () => {
   const { ctx, calls } = mockCtx([accepted], conn);
   await action.execute!({ operation: "$set", distinctId: "u1", properties: "{}" }, ctx);
   assert(!calls[0].body!.includes("$token"), calls[0].body!);
 });
 
-Deno.test("profile-update: $unset takes an array, and says so when given an object", async () => {
+test("profile-update: $unset takes an array, and says so when given an object", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(
     async () =>
@@ -53,7 +54,7 @@ Deno.test("profile-update: $unset takes an array, and says so when given an obje
   );
 });
 
-Deno.test("profile-update: a batch of records overrides the single-user fields", async () => {
+test("profile-update: a batch of records overrides the single-user fields", async () => {
   const { ctx, calls } = mockCtx([accepted], conn);
   await action.execute!({
     operation: "$set",
@@ -63,7 +64,7 @@ Deno.test("profile-update: a batch of records overrides the single-user fields",
 });
 
 /** A 200 with status 0 is a failure, and must not read as success. */
-Deno.test("profile-update: a rejected payload inside a 200 becomes an error", async () => {
+test("profile-update: a rejected payload inside a 200 becomes an error", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { status: 0, error: "$token, missing or empty" } }],
     conn,
@@ -77,6 +78,6 @@ Deno.test("profile-update: a rejected payload inside a 200 becomes an error", as
 });
 
 /** $add and $append are not idempotent, so the action does not claim to be. */
-Deno.test("profile-update: declares itself non-idempotent", () => {
+test("profile-update: declares itself non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

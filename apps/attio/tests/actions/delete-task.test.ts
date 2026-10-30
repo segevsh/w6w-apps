@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import deleteTask from "../../actions/delete-task.ts";
 
-Deno.test("delete-task: DELETEs and summarises the empty 200", async () => {
+test("delete-task: DELETEs and summarises the empty 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await run<{ deleted: boolean; task_id: string }>(deleteTask, { taskId: "t1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

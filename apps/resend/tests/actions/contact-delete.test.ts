@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-delete.ts";
 
-Deno.test("contact-delete: deletes by id or email", async () => {
+test("contact-delete: deletes by id or email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "c_1", deleted: true } }], {
     display: {},
   });
@@ -12,7 +13,7 @@ Deno.test("contact-delete: deletes by id or email", async () => {
   assertEquals(result, { id: "c_1", deleted: true });
 });
 
-Deno.test("contact-delete: a blank identifier fails before any request", async () => {
+test("contact-delete: a blank identifier fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`contact`");
   assertEquals(calls.length, 0);

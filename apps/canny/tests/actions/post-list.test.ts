@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postList from "../../actions/post-list.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-list: posts filters to /v1/posts/list, normalising tagIDs", async () => {
+test("post-list: posts filters to /v1/posts/list, normalising tagIDs", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [], hasMore: false } }]);
   await postList.execute(
     { boardID: "b1", tagIDs: "t1, t2", search: "dark mode", sort: "relevance", limit: 20 },
@@ -19,7 +20,7 @@ Deno.test("post-list: posts filters to /v1/posts/list, normalising tagIDs", asyn
   });
 });
 
-Deno.test("post-list: an array of tagIDs is passed through unchanged", async () => {
+test("post-list: an array of tagIDs is passed through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [] } }]);
   await postList.execute({ tagIDs: ["t1", "t2"] }, ctx);
 

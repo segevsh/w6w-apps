@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import metricPlans from "../../actions/metric-plans.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("metric-plans: GET /v1/metrics/mrr/plans with the documented query/body", async () => {
+test("metric-plans: GET /v1/metrics/mrr/plans with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { plans: [] } }]);
   const out = await metricPlans.execute({
     metric: "mrr",
@@ -29,13 +30,13 @@ Deno.test("metric-plans: GET /v1/metrics/mrr/plans with the documented query/bod
   assert("plans" in out);
 });
 
-Deno.test("metric-plans: declares type read and every required param", () => {
+test("metric-plans: declares type read and every required param", () => {
   assertEquals(metricPlans.type, "read");
   const required = (metricPlans.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["end_date", "metric", "start_date"]);
 });
 
-Deno.test("metric-plans: surfaces a vendor error as a thrown message", async () => {
+test("metric-plans: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

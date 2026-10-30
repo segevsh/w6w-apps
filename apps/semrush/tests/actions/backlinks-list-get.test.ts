@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksListGet from "../../actions/backlinks-list-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-list-get: GETs the link rows and unwraps data", async () => {
+test("backlinks-list-get: GETs the link rows and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([
@@ -22,7 +23,7 @@ Deno.test("backlinks-list-get: GETs the link rows and unwraps data", async () =>
   assertEquals(out.data[0].anchor, "click here");
 });
 
-Deno.test("backlinks-list-get: forwards the full sort/page/filter set", async () => {
+test("backlinks-list-get: forwards the full sort/page/filter set", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await backlinksListGet.execute(
@@ -51,7 +52,7 @@ Deno.test("backlinks-list-get: forwards the full sort/page/filter set", async ()
   });
 });
 
-Deno.test("backlinks-list-get: an empty page is an empty array, never undefined", async () => {
+test("backlinks-list-get: an empty page is an empty array, never undefined", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
 
   const out = await backlinksListGet.execute(
@@ -62,7 +63,7 @@ Deno.test("backlinks-list-get: an empty page is an empty array, never undefined"
   assertEquals(out.data, []);
 });
 
-Deno.test("backlinks-list-get: order_by has no prefilled default and direction defaults to DESC", () => {
+test("backlinks-list-get: order_by has no prefilled default and direction defaults to DESC", () => {
   const orderBy = backlinksListGet.params?.find((p) => p.key === "order_by");
   const direction = backlinksListGet.params?.find((p) => p.key === "direction");
   assertEquals(orderBy?.default, undefined);

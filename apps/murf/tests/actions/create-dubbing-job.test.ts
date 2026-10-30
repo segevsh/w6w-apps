@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/create-dubbing-job.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const reply = {
   target_locales: ["fr_FR"],
 };
 
-Deno.test("create-dubbing-job: multipart with file_url and one target_locales part per locale", async () => {
+test("create-dubbing-job: multipart with file_url and one target_locales part per locale", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await exec(action, {
     fileUrl: "https://x/v.mp4",
@@ -38,7 +39,7 @@ Deno.test("create-dubbing-job: multipart with file_url and one target_locales pa
   assertEquals(out, reply);
 });
 
-Deno.test("create-dubbing-job: validates before calling", async () => {
+test("create-dubbing-job: validates before calling", async () => {
   const { ctx, calls } = mockCtx();
   assert((await failure(action, { fileUrl: "", targetLocales: "fr_FR" }, ctx)).includes("fileUrl"));
   assert(
@@ -47,7 +48,7 @@ Deno.test("create-dubbing-job: validates before calling", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-dubbing-job: a 400 fails with the vendor message", async () => {
+test("create-dubbing-job: a 400 fails with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error_message: "bad locale", error_code: 400 },

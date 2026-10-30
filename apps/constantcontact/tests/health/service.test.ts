@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/service.ts";
 
@@ -8,19 +9,19 @@ const summary = (indicator: string, components: Array<Record<string, unknown>> =
   components,
 });
 
-Deno.test("service: is an unsigned, app-scoped service check", () => {
+test("service: is an unsigned, app-scoped service check", () => {
   assertEquals(check.key, "service");
   assertEquals(check.kind, "service");
   assertEquals(check.credential, undefined, "defaults to `none` for kind service");
   assertEquals(check.scope, undefined, "defaults to `app` for kind service");
 });
 
-Deno.test("service: widens egress to the status host only, and not to the API host", () => {
+test("service: widens egress to the status host only, and not to the API host", () => {
   assertEquals(check.network?.allow, ["status.constantcontact.com"]);
   assert(!check.network?.allow?.includes("api.cc.email"));
 });
 
-Deno.test("service: a `none` indicator reports ok", async () => {
+test("service: a `none` indicator reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("none") }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -30,7 +31,7 @@ Deno.test("service: a `none` indicator reports ok", async () => {
   assertEquals(url.pathname, "/api/v2/summary.json");
 });
 
-Deno.test("service: minor maps to degraded, major and critical to down", async () => {
+test("service: minor maps to degraded, major and critical to down", async () => {
   for (
     const [indicator, state] of [
       ["minor", "degraded"],
@@ -43,12 +44,12 @@ Deno.test("service: minor maps to degraded, major and critical to down", async (
   }
 });
 
-Deno.test("service: an unrecognised indicator reports unknown, not down", async () => {
+test("service: an unrecognised indicator reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ body: summary("weather") }]);
   assertEquals((await check.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: slugs each component and maps its status", async () => {
+test("service: slugs each component and maps its status", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", [
       { name: "API's and Integrations", status: "operational" },
@@ -64,7 +65,7 @@ Deno.test("service: slugs each component and maps its status", async () => {
   assertEquals(report.components?.["landing-pages"]?.state, "degraded");
 });
 
-Deno.test("service: an unknown component status reports unknown for that component", async () => {
+test("service: an unknown component status reports unknown for that component", async () => {
   const { ctx } = mockCtx([{
     body: summary("none", [{ name: "Reporting", status: "vibes_based" }]),
   }]);
@@ -72,7 +73,7 @@ Deno.test("service: an unknown component status reports unknown for that compone
   assertEquals(report.components?.["reporting"]?.state, "unknown");
 });
 
-Deno.test("service: duplicate component names fold to the WORST state, not last-wins", async () => {
+test("service: duplicate component names fold to the WORST state, not last-wins", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", [
       { name: "Email Campaigns", status: "major_outage" },
@@ -84,7 +85,7 @@ Deno.test("service: duplicate component names fold to the WORST state, not last-
   assertEquals(report.components?.["email-campaigns"]?.state, "down");
 });
 
-Deno.test("service: the worst-state fold is order-independent", async () => {
+test("service: the worst-state fold is order-independent", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", [
       { name: "Email Campaigns", status: "operational" },
@@ -95,7 +96,7 @@ Deno.test("service: the worst-state fold is order-independent", async () => {
   assertEquals(report.components?.["email-campaigns"]?.state, "down");
 });
 
-Deno.test("service: skips group headers, which only restate their children", async () => {
+test("service: skips group headers, which only restate their children", async () => {
   const { ctx } = mockCtx([{
     body: summary("none", [
       { name: "Campaign Creation", status: "operational", group: true },
@@ -106,14 +107,14 @@ Deno.test("service: skips group headers, which only restate their children", asy
   assertEquals(Object.keys(report.components ?? {}), ["api-s-and-integrations"]);
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert((report.message ?? "").includes("503"));
 });
 
-Deno.test("service: an unparseable body reports unknown", async () => {
+test("service: an unparseable body reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>nope</html>" }]);
   assertEquals((await check.check!({}, ctx)).state, "unknown");
 });

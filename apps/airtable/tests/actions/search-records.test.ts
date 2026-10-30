@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-records.ts";
 
-Deno.test("search-records: sends defaults (pageSize=100)", async () => {
+test("search-records: sends defaults (pageSize=100)", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [], offset: undefined } }]);
   await action.execute!({ baseId: "appABC", table: "Users" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("search-records: sends defaults (pageSize=100)", async () => {
   assertEquals(url.searchParams.get("pageSize"), "100");
 });
 
-Deno.test("search-records: forwards filter, view, fields[] and offset", async () => {
+test("search-records: forwards filter, view, fields[] and offset", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {
@@ -32,7 +33,7 @@ Deno.test("search-records: forwards filter, view, fields[] and offset", async ()
   assertEquals(url.searchParams.getAll("fields[]"), ["Name", "Email"]);
 });
 
-Deno.test("search-records: flattens sort into sort[i][field]/sort[i][direction]", async () => {
+test("search-records: flattens sort into sort[i][field]/sort[i][direction]", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {
@@ -52,7 +53,7 @@ Deno.test("search-records: flattens sort into sort[i][field]/sort[i][direction]"
   assertEquals(url.searchParams.get("sort[1][direction]"), "desc");
 });
 
-Deno.test("search-records: omits filter when not provided", async () => {
+test("search-records: omits filter when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!({ baseId: "appABC", table: "Users" }, ctx);
   const url = new URL(calls[0].url);
@@ -61,7 +62,7 @@ Deno.test("search-records: omits filter when not provided", async () => {
   assert(!url.searchParams.has("offset"));
 });
 
-Deno.test("search-records: returns the envelope including offset for cursor pagination", async () => {
+test("search-records: returns the envelope including offset for cursor pagination", async () => {
   const { ctx } = mockCtx([{ body: { records: [{ id: "rec1" }], offset: "next-cursor" } }]);
   const result = await action.execute!({ baseId: "appABC", table: "Users" }, ctx);
   assertEquals(result.records?.length, 1);

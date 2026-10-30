@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardGet from "../../actions/card-get.ts";
 
-Deno.test("card-get: fetches a card by numeric id", async () => {
+test("card-get: fetches a card by numeric id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { card: { id: "1", title: "Deal", done: false } } },
   }]);
@@ -15,7 +16,7 @@ Deno.test("card-get: fetches a card by numeric id", async () => {
   assert(q.includes("attachments { url path }"));
 });
 
-Deno.test("card-get: type/resource metadata", () => {
+test("card-get: type/resource metadata", () => {
   assertEquals(cardGet.type, "read");
   assertEquals(cardGet.resource, "card");
 });

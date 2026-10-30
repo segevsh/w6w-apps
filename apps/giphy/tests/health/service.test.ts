@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_NAMES,
   apiComponents,
@@ -42,7 +43,7 @@ function summary(overrides: Record<string, unknown> = {}): Record<string, unknow
   };
 }
 
-Deno.test("service: reports the API group's components and nothing from Web & Mobile", async () => {
+test("service: reports the API group's components and nothing from Web & Mobile", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -63,7 +64,7 @@ Deno.test("service: reports the API group's components and nothing from Web & Mo
   }
 });
 
-Deno.test("service: the page-level indicator decides the verdict", async () => {
+test("service: the page-level indicator decides the verdict", async () => {
   for (
     const [indicator, expected] of [["none", "ok"], ["minor", "degraded"], ["major", "down"], [
       "critical",
@@ -78,7 +79,7 @@ Deno.test("service: the page-level indicator decides the verdict", async () => {
   }
 });
 
-Deno.test("service: a degraded component is reported by name and status", async () => {
+test("service: a degraded component is reported by name and status", async () => {
   const body = summary({ status: { indicator: "minor", description: "Partially Degraded" } });
   (body.components as Array<{ id: string; status: string }>)
     .find((c) => c.id === "c-search")!.status = "degraded_performance";
@@ -93,12 +94,12 @@ Deno.test("service: a degraded component is reported by name and status", async 
   assert(/affected: Search \(degraded_performance\)/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that stops identifying itself as GIPHY's is unknown", async () => {
+test("service: a page that stops identifying itself as GIPHY's is unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -111,7 +112,7 @@ Deno.test("service: a page that stops identifying itself as GIPHY's is unknown",
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page with no API-group components is unknown, not ok", async () => {
+test("service: a page with no API-group components is unknown, not ok", async () => {
   const { ctx } = mockCtx([
     { body: summary({ components: [{ id: "grp-web", name: "Web & Mobile", group: true }] }) },
   ]);
@@ -119,7 +120,7 @@ Deno.test("service: a page with no API-group components is unknown, not ok", asy
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares its own egress and an unsigned posture", () => {
+test("service: declares its own egress and an unsigned posture", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
@@ -132,7 +133,7 @@ Deno.test("service: declares its own egress and an unsigned posture", () => {
 });
 
 /** The pure mappings, read one by one. */
-Deno.test("service: Statuspage's vocabularies map as documented", () => {
+test("service: Statuspage's vocabularies map as documented", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "down");
@@ -147,7 +148,7 @@ Deno.test("service: Statuspage's vocabularies map as documented", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: apiComponents follows group_id, and falls back to the documented names", () => {
+test("service: apiComponents follows group_id, and falls back to the documented names", () => {
   const withIds = summary().components as Parameters<typeof apiComponents>[0];
   assertEquals(apiComponents(withIds).map((c) => c.id).includes("c-search"), true);
   assertEquals(apiComponents(withIds).map((c) => c.id).includes("w-home"), false);
@@ -162,14 +163,14 @@ Deno.test("service: apiComponents follows group_id, and falls back to the docume
   assertEquals(API_COMPONENT_NAMES.includes("search"), true);
 });
 
-Deno.test("service: a component with no id still gets a stable-ish key", () => {
+test("service: a component with no id still gets a stable-ish key", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({ name: "Search" }, 3), "search-3");
   assertEquals(componentKey({}, 4), "component-4");
 });
 
 /** Guard the helper the check uses to roll up when there is no indicator. */
-Deno.test("service: without an indicator the components decide", async () => {
+test("service: without an indicator the components decide", async () => {
   const body = summary({ status: undefined }) as Record<string, unknown>;
   (body.components as Array<{ id: string; status: string }>)
     .find((c) => c.id === "c-api")!.status = "major_outage";

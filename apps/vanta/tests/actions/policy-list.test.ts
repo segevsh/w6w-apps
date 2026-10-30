@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, page } from "./_shared.ts";
 import action from "../../actions/policy-list.ts";
 
-Deno.test("policy-list: reads the policies", async () => {
+test("policy-list: reads the policies", async () => {
   const { ctx, calls } = mockCtx([page([{ id: "p1", name: "Information Security Policy" }])], {
     display,
   });
@@ -12,7 +13,7 @@ Deno.test("policy-list: reads the policies", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("policy-list: pages to the end when asked", async () => {
+test("policy-list: pages to the end when asked", async () => {
   const { ctx, calls } = mockCtx([
     page([{ id: "p1" }], { hasNextPage: true, endCursor: "c1" }),
     page([{ id: "p2" }]),
@@ -23,6 +24,6 @@ Deno.test("policy-list: pages to the end when asked", async () => {
 });
 
 /** A policy update resets every acceptance. */
-Deno.test("policy-list: says why the reminder workflow recurs", () => {
+test("policy-list: says why the reminder workflow recurs", () => {
   assert(/resets every\s+acceptance/.test(action.description!), action.description);
 });

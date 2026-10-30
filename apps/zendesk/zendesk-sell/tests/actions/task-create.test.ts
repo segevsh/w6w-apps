@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: posts a related task", async () => {
+test("task-create: posts a related task", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await taskCreate.execute({
     content: "Contact Tom",
@@ -20,7 +21,7 @@ Deno.test("task-create: posts a related task", async () => {
   assertEquals(body.data.remind_at, "2014-09-26T15:32:56Z");
 });
 
-Deno.test("task-create: a floating task omits resource fields entirely", async () => {
+test("task-create: a floating task omits resource fields entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await taskCreate.execute({ content: "Follow up" }, ctx);
   const body = JSON.parse(calls[0].body!);

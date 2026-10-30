@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-list.ts";
 
@@ -29,7 +30,7 @@ const keys = {
 };
 
 /** Only a prefix comes back; the value is shown once at creation. */
-Deno.test("key-list: returns prefixes rather than values", async () => {
+test("key-list: returns prefixes rather than values", async () => {
   const { ctx, calls } = mockCtx([keys], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/keys");
@@ -40,7 +41,7 @@ Deno.test("key-list: returns prefixes rather than values", async () => {
 });
 
 /** "A search key in the front end" and "the admin key" look the same outside. */
-Deno.test("key-list: flags unrestricted keys and warns", async () => {
+test("key-list: flags unrestricted keys and warns", async () => {
   const { ctx, logs } = mockCtx([keys], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.unrestricted, ["admin"]);
@@ -51,7 +52,7 @@ Deno.test("key-list: flags unrestricted keys and warns", async () => {
   );
 });
 
-Deno.test("key-list: separates keys expiring soon from those that never expire", async () => {
+test("key-list: separates keys expiring soon from those that never expire", async () => {
   const { ctx } = mockCtx([keys], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals((result.expiringSoon as unknown[]).length, 1);
@@ -59,7 +60,7 @@ Deno.test("key-list: separates keys expiring soon from those that never expire",
 });
 
 /** Typesense uses a far-future sentinel rather than omitting the field. */
-Deno.test("key-list: the sentinel expiry counts as never", async () => {
+test("key-list: the sentinel expiry counts as never", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

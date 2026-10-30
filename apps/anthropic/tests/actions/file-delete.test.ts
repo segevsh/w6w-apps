@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-delete.ts";
 
-Deno.test("file-delete: DELETEs /v1/files/{id} with files-api beta flag", async () => {
+test("file-delete: DELETEs /v1/files/{id} with files-api beta flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "file_1", type: "file_deleted" } }]);
   await action.execute!({ fileId: "file_1" }, ctx);
 

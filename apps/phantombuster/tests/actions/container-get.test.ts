@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import containerGet from "../../actions/container-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("container-get: calls GET /containers/fetch with the id", async () => {
+test("container-get: calls GET /containers/fetch with the id", async () => {
   const container = {
     id: "c1",
     status: "finished",
@@ -19,7 +20,7 @@ Deno.test("container-get: calls GET /containers/fetch with the id", async () => 
   assertEquals(out.container, container);
 });
 
-Deno.test("container-get: forwards the with* flags only when set", async () => {
+test("container-get: forwards the with* flags only when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
 
   await containerGet.execute({

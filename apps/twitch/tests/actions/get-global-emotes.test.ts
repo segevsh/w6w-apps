@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGlobalEmotes from "../../actions/get-global-emotes.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-global-emotes: calls GET /helix/chat/emotes/global with no query at all", async () => {
+test("get-global-emotes: calls GET /helix/chat/emotes/global with no query at all", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "196892", name: "TwitchUnity" }],
@@ -18,6 +19,6 @@ Deno.test("get-global-emotes: calls GET /helix/chat/emotes/global with no query 
   assertEquals(out.template.includes("{{id}}"), true);
 });
 
-Deno.test("get-global-emotes: declares no params, matching the reference", () => {
+test("get-global-emotes: declares no params, matching the reference", () => {
   assertEquals(getGlobalEmotes.params, []);
 });

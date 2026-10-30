@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import contactGet from "../../actions/contact-get.ts";
 import contactCreate from "../../actions/contact-create.ts";
@@ -15,7 +16,7 @@ import newsletterList from "../../actions/newsletter-list.ts";
 import newsletterCreate from "../../actions/newsletter-create.ts";
 import { errorBody, mockGetResponseCtx } from "../_helpers.ts";
 
-Deno.test("contact-list: flattens its filters into bracketed parameters", async () => {
+test("contact-list: flattens its filters into bracketed parameters", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await contactList.execute({
     email: "ada@example.com",
@@ -37,13 +38,13 @@ Deno.test("contact-list: flattens its filters into bracketed parameters", async 
 });
 
 /** A sort with no direction defaults to ascending rather than being dropped. */
-Deno.test("contact-list: a sort field without a direction still sorts", async () => {
+test("contact-list: a sort field without a direction still sorts", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await contactList.execute({ sortBy: "email" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("sort[email]"), "ASC");
 });
 
-Deno.test("contact-get: builds the contact path", async () => {
+test("contact-get: builds the contact path", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: { contactId: "c1" } }]);
   await contactGet.execute({ contactId: "c1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/contacts/c1");
@@ -53,7 +54,7 @@ Deno.test("contact-get: builds the contact path", async () => {
  * The load-bearing shape: `campaign` is an OBJECT with `campaignId`, not a bare
  * string. Sending the id alone is a validation error.
  */
-Deno.test("contact-create: wraps the campaign id in the object the API requires", async () => {
+test("contact-create: wraps the campaign id in the object the API requires", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 202, body: {} }]);
   await contactCreate.execute({ email: "ada@example.com", campaignId: "camp1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -64,7 +65,7 @@ Deno.test("contact-create: wraps the campaign id in the object the API requires"
 });
 
 /** Tags are referenced by id, wrapped as `{tagId}` objects. */
-Deno.test("contact-create: wraps tag ids as objects", async () => {
+test("contact-create: wraps tag ids as objects", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 202, body: {} }]);
   await contactCreate.execute(
     { email: "a@b.com", campaignId: "camp1", tags: "tag1, tag2" },
@@ -74,7 +75,7 @@ Deno.test("contact-create: wraps tag ids as objects", async () => {
 });
 
 /** The add is queued: a 202 with no contact id is the documented success. */
-Deno.test("contact-create: treats the queued 202 as success", async () => {
+test("contact-create: treats the queued 202 as success", async () => {
   const { ctx } = mockGetResponseCtx([{ status: 202, body: "" }]);
   assertEquals(
     await contactCreate.execute({ email: "a@b.com", campaignId: "camp1" }, ctx),
@@ -83,7 +84,7 @@ Deno.test("contact-create: treats the queued 202 as success", async () => {
   assertEquals(contactCreate.idempotent, false);
 });
 
-Deno.test("contact-create: a duplicate address surfaces as GetResponse's 409", async () => {
+test("contact-create: a duplicate address surfaces as GetResponse's 409", async () => {
   const { ctx } = mockGetResponseCtx([
     { status: 409, body: { code: 1008, message: "Contact already exists" } },
   ]);
@@ -97,7 +98,7 @@ Deno.test("contact-create: a duplicate address surfaces as GetResponse's 409", a
 });
 
 /** Update is a POST, not a PUT or PATCH — the id in the path is what marks it. */
-Deno.test("contact-update: POSTs to the contact path with only the changed fields", async () => {
+test("contact-update: POSTs to the contact path with only the changed fields", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: { contactId: "c1" } }]);
   await contactUpdate.execute({ contactId: "c1", name: "Ada L" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -105,13 +106,13 @@ Deno.test("contact-update: POSTs to the contact path with only the changed field
   assertEquals(JSON.parse(calls[0].body!), { name: "Ada L" });
 });
 
-Deno.test("contact-update: moving campaigns sends the wrapped object", async () => {
+test("contact-update: moving campaigns sends the wrapped object", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: {} }]);
   await contactUpdate.execute({ contactId: "c1", campaignId: "camp2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { campaign: { campaignId: "camp2" } });
 });
 
-Deno.test("contact-delete: DELETEs with the optional provenance parameters", async () => {
+test("contact-delete: DELETEs with the optional provenance parameters", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 204 }]);
   await contactDelete.execute({ contactId: "c1", messageId: "m1", ipAddress: "1.2.3.4" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -121,7 +122,7 @@ Deno.test("contact-delete: DELETEs with the optional provenance parameters", asy
   assertEquals(url.searchParams.get("ipAddress"), "1.2.3.4");
 });
 
-Deno.test("contact-tags-add: wraps each id and refuses an empty list", async () => {
+test("contact-tags-add: wraps each id and refuses an empty list", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: {} }]);
   await contactTagsAdd.execute({ contactId: "c1", tagIds: "t1,t2" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/contacts/c1/tags");
@@ -139,7 +140,7 @@ Deno.test("contact-tags-add: wraps each id and refuses an empty list", async () 
 });
 
 /** The API takes isDefault as a string flag, not a JSON boolean. */
-Deno.test("campaign-list: sends isDefault as a string flag", async () => {
+test("campaign-list: sends isDefault as a string flag", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }, { body: [] }]);
   await campaignList.execute({ isDefault: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("query[isDefault]"), "true");
@@ -147,7 +148,7 @@ Deno.test("campaign-list: sends isDefault as a string flag", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("query[isDefault]"), "false");
 });
 
-Deno.test("campaign-contacts: scopes the contact search to one campaign", async () => {
+test("campaign-contacts: scopes the contact search to one campaign", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await campaignContacts.execute(
     { campaignId: "camp1", createdFrom: "2026-08-01T00:00:00+00:00" },
@@ -158,7 +159,7 @@ Deno.test("campaign-contacts: scopes the contact search to one campaign", async 
   assertEquals(url.searchParams.get("query[createdOn][from]"), "2026-08-01T00:00:00+00:00");
 });
 
-Deno.test("tag-list: filters and sorts by name", async () => {
+test("tag-list: filters and sorts by name", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await tagList.execute({ name: "vip", sortDirection: "DESC" }, ctx);
   const url = new URL(calls[0].url);
@@ -167,7 +168,7 @@ Deno.test("tag-list: filters and sorts by name", async () => {
   assertEquals(url.searchParams.get("sort[name]"), "DESC");
 });
 
-Deno.test("tag-create: posts the name and is not idempotent", async () => {
+test("tag-create: posts the name and is not idempotent", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 201, body: { tagId: "t1" } }]);
   await tagCreate.execute({ name: "vip_customers" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -176,12 +177,12 @@ Deno.test("tag-create: posts the name and is not idempotent", async () => {
 });
 
 /** GetResponse rejects spaces and punctuation in tag names rather than normalising. */
-Deno.test("tag-create: declares the vendor's name pattern on the param", () => {
+test("tag-create: declares the vendor's name pattern on the param", () => {
   const name = tagCreate.params!.find((p) => p.key === "name")!;
   assertEquals(name.validation?.pattern, "^[A-Za-z0-9_-]+$");
 });
 
-Deno.test("custom-field-list and from-field-list: plain paged lookups", async () => {
+test("custom-field-list and from-field-list: plain paged lookups", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }, { body: [] }]);
   await customFieldList.execute({ perPage: 50 }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/custom-fields");
@@ -190,7 +191,7 @@ Deno.test("custom-field-list and from-field-list: plain paged lookups", async ()
   assertEquals(new URL(calls[1].url).pathname, "/v3/from-fields");
 });
 
-Deno.test("newsletter-list: filters by status and date", async () => {
+test("newsletter-list: filters by status and date", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await newsletterList.execute({ status: "sent", createdFrom: "2026-01-01T00:00:00+00:00" }, ctx);
   const url = new URL(calls[0].url);
@@ -204,7 +205,7 @@ Deno.test("newsletter-list: filters by status and date", async () => {
  * the second from the first keeps the common case to one input while leaving the
  * uncommon one expressible.
  */
-Deno.test("newsletter-create: defaults the audience to the owning campaign", async () => {
+test("newsletter-create: defaults the audience to the owning campaign", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 201, body: { newsletterId: "n1" } }]);
   await newsletterCreate.execute({
     subject: "August update",
@@ -221,7 +222,7 @@ Deno.test("newsletter-create: defaults the audience to the owning campaign", asy
   assertEquals(body.editor, "custom");
 });
 
-Deno.test("newsletter-create: a different audience overrides the default", async () => {
+test("newsletter-create: a different audience overrides the default", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ status: 201, body: {} }]);
   await newsletterCreate.execute({
     subject: "s",
@@ -234,7 +235,7 @@ Deno.test("newsletter-create: a different audience overrides the default", async
 });
 
 /** A newsletter with no content is a 400; catching it here says which field. */
-Deno.test("newsletter-create: refuses to send with no content", async () => {
+test("newsletter-create: refuses to send with no content", async () => {
   const { ctx, calls } = mockGetResponseCtx([]);
   await assertRejects(
     async () => {
@@ -247,11 +248,11 @@ Deno.test("newsletter-create: refuses to send with no content", async () => {
 });
 
 /** It sends real email to real people; the runtime must never retry it. */
-Deno.test("newsletter-create: is not idempotent", () => {
+test("newsletter-create: is not idempotent", () => {
   assertEquals(newsletterCreate.idempotent, false);
 });
 
-Deno.test("actions: throttling surfaces GetResponse's 1015 rather than a generic error", async () => {
+test("actions: throttling surfaces GetResponse's 1015 rather than a generic error", async () => {
   const { ctx } = mockGetResponseCtx([
     { status: 429, body: errorBody(1015, "You have reached your requests limit") },
   ]);

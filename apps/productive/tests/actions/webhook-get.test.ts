@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: GET /webhooks/{id} flattens the resource", async () => {
+test("webhook-get: GET /webhooks/{id} flattens the resource", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -31,7 +32,7 @@ Deno.test("webhook-get: GET /webhooks/{id} flattens the resource", async () => {
   assertEquals(out.custom_headers, undefined, "stored secrets are not returned");
 });
 
-Deno.test("webhook-get: an id cannot change the path", async () => {
+test("webhook-get: an id cannot change the path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -47,7 +48,7 @@ Deno.test("webhook-get: an id cannot change the path", async () => {
   assertEquals(pathOf(calls[0].url), "/api/v2/webhooks/4%2F..%2Fx");
 });
 
-Deno.test("webhook-get: a vendor error surfaces its status, title and detail", async () => {
+test("webhook-get: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -60,7 +61,7 @@ Deno.test("webhook-get: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("webhook-get: declares read", () => {
+test("webhook-get: declares read", () => {
   assertEquals(webhookGet.type, "read");
   assertEquals(webhookGet.idempotent, undefined);
   assertEquals(webhookGet.key, "webhook-get");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-subscribe.ts";
 
-Deno.test("contact-subscribe: POSTs json/listsubscribe with contactinfo JSON-encoded as a query param", async () => {
+test("contact-subscribe: POSTs json/listsubscribe with contactinfo JSON-encoded as a query param", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: { status: "success", code: "0", message: "A confirmation email is sent to the user." },
@@ -24,7 +25,7 @@ Deno.test("contact-subscribe: POSTs json/listsubscribe with contactinfo JSON-enc
   assertEquals(out, { message: "A confirmation email is sent to the user." });
 });
 
-Deno.test("contact-subscribe: accepts a JSON string for contactInfo too", async () => {
+test("contact-subscribe: accepts a JSON string for contactInfo too", async () => {
   const { ctx, calls } = mockCampaignsCtx([{ body: { status: "success", code: "0" } }]);
   await action.execute(
     { listKey: "abc", contactInfo: '{"Contact Email":"jai@zoho.com"}' },

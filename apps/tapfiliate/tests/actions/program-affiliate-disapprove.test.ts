@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import programAffiliateDisapprove from "../../actions/program-affiliate-disapprove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("program-affiliate-disapprove: DELETEs the nested approved sub-resource", async () => {
+test("program-affiliate-disapprove: DELETEs the nested approved sub-resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "janejameson", approved: false } }]);
   const out = await programAffiliateDisapprove.execute(
     { programId: "johns-affiliate-program", affiliateId: "janejameson" },

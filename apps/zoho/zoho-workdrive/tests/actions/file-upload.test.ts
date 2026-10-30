@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import fileUpload from "../../actions/file-upload.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ function withFile(ctx: unknown, bytes: Uint8Array) {
   };
 }
 
-Deno.test("file-upload: POSTs multipart with parent_id, filename and the file bytes", async () => {
+test("file-upload: POSTs multipart with parent_id, filename and the file bytes", async () => {
   const { ctx, calls } = mockWorkDriveCtx(
     [{ body: { data: [{ attributes: { resource_id: "n1" }, type: "files" }] } }],
     "www.zohoapis.eu",
@@ -25,7 +26,7 @@ Deno.test("file-upload: POSTs multipart with parent_id, filename and the file by
   assertEquals(res.item.length, 1);
 });
 
-Deno.test("file-upload: fails clearly when the host has no file storage", async () => {
+test("file-upload: fails clearly when the host has no file storage", async () => {
   const { ctx } = mockWorkDriveCtx([]);
   let message = "";
   try {
@@ -36,7 +37,7 @@ Deno.test("file-upload: fails clearly when the host has no file storage", async 
   assert(message.includes("ctx.file"));
 });
 
-Deno.test("file-upload: a vendor error id surfaces", async () => {
+test("file-upload: a vendor error id surfaces", async () => {
   const { ctx } = mockWorkDriveCtx([{
     status: 422,
     body: { errors: [{ id: "F7004", title: "Invalid OAuth scope" }] },

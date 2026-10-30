@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/account-get.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const ACCOUNT = {
   }],
 };
 
-Deno.test("account-get: reads /v4/account with the days window", async () => {
+test("account-get: reads /v4/account with the days window", async () => {
   const { ctx, calls } = mockCtx([{ body: ACCOUNT }]);
   const out = await run(action, { days: 7 }, ctx);
   const u = new URL(calls[0].url);
@@ -29,7 +30,7 @@ Deno.test("account-get: reads /v4/account with the days window", async () => {
   assertEquals((out.usage as unknown[]).length, 2);
 });
 
-Deno.test("account-get: never returns the token or the child tokens the vendor echoes", async () => {
+test("account-get: never returns the token or the child tokens the vendor echoes", async () => {
   const { ctx } = mockCtx([{ body: ACCOUNT }]);
   const out = await run(action, {}, ctx);
   const json = JSON.stringify(out);

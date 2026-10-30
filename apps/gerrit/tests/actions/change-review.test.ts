@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-review.ts";
 
 const D = { display: { host: "https://gerrit.example.com" } };
 const ok = { status: 200, body: ")]}'\n{}" };
 
-Deno.test("change-review: posts to the revision's review endpoint", async () => {
+test("change-review: posts to the revision's review endpoint", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   const result = await action.execute(
     { changeId: "620421", label: "Verified", value: 1, message: "CI passed" },
@@ -20,7 +21,7 @@ Deno.test("change-review: posts to the revision's review endpoint", async () => 
 });
 
 /** Code-Review +2 is a person taking responsibility, not a bot's job. */
-Deno.test("change-review: warns when automation grants a Code-Review +2", async () => {
+test("change-review: warns when automation grants a Code-Review +2", async () => {
   const { ctx, logs } = mockCtx([ok], D);
   const result = await action.execute(
     { changeId: "620421", label: "Code-Review", value: 2, message: "lgtm" },
@@ -34,7 +35,7 @@ Deno.test("change-review: warns when automation grants a Code-Review +2", async 
 });
 
 /** A -2 cannot be overridden by any number of +2s. */
-Deno.test("change-review: warns about a blocking vote and reports what it means", async () => {
+test("change-review: warns about a blocking vote and reports what it means", async () => {
   const { ctx, logs } = mockCtx([ok], D);
   const result = await action.execute(
     { changeId: "620421", label: "Code-Review", value: -2, message: "no" },
@@ -48,7 +49,7 @@ Deno.test("change-review: warns about a blocking vote and reports what it means"
   );
 });
 
-Deno.test("change-review: a message with no vote is allowed", async () => {
+test("change-review: a message with no vote is allowed", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   await action.execute({ changeId: "620421", message: "Just a note", value: 0 }, ctx);
   const body = JSON.parse(calls[0].body!) as Record<string, unknown>;
@@ -56,7 +57,7 @@ Deno.test("change-review: a message with no vote is allowed", async () => {
   assertEquals("labels" in body, false);
 });
 
-Deno.test("change-review: refuses a value outside Gerrit's scale, and an empty review", async () => {
+test("change-review: refuses a value outside Gerrit's scale, and an empty review", async () => {
   const { ctx, calls } = mockCtx([], D);
   const range = await assertRejects(
     async () => await action.execute({ changeId: "620421", value: 5 }, ctx),
@@ -72,7 +73,7 @@ Deno.test("change-review: refuses a value outside Gerrit's scale, and an empty r
 });
 
 /** A vote lands on one patch set. */
-Deno.test("change-review: reports which revision the vote landed on", async () => {
+test("change-review: reports which revision the vote landed on", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   const result = await action.execute(
     { changeId: "620421", label: "Verified", value: 1, revision: "3" },
@@ -83,7 +84,7 @@ Deno.test("change-review: reports which revision the vote landed on", async () =
 });
 
 /** The message is somebody's review comment. */
-Deno.test("change-review: logs the votes, never the message", async () => {
+test("change-review: logs the votes, never the message", async () => {
   const { ctx, logs } = mockCtx([ok], D);
   await action.execute(
     { changeId: "620421", label: "Verified", value: 1, message: "secret internal detail" },

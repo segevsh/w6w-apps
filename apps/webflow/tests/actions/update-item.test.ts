@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-item.ts";
 
-Deno.test("update-item: PATCHes /v2/collections/{id}/items/{itemId}", async () => {
+test("update-item: PATCHes /v2/collections/{id}/items/{itemId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i1" } }]);
   await action.execute!(
     { collectionId: "c1", itemId: "i1", fieldData: { name: "New" } },
@@ -13,7 +14,7 @@ Deno.test("update-item: PATCHes /v2/collections/{id}/items/{itemId}", async () =
   assertEquals(JSON.parse(calls[0].body!), { fieldData: { name: "New" } });
 });
 
-Deno.test("update-item: targets the /live variant when live is set", async () => {
+test("update-item: targets the /live variant when live is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i1" } }]);
   await action.execute!(
     { collectionId: "c1", itemId: "i1", fieldData: { name: "New" }, live: true },

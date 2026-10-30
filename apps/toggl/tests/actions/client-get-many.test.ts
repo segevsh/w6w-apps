@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-get-many.ts";
 
-Deno.test("client-get-many: GETs /workspaces/{id}/clients with filters", async () => {
+test("client-get-many: GETs /workspaces/{id}/clients with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Acme Co" }] }]);
   const result = await action.execute(
     { workspaceId: 123, status: "both", name: "Acme" },

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, page } from "./_shared.ts";
 import action from "../../actions/control-list.ts";
 
 /** The most common finding in a readiness review. */
-Deno.test("control-list: separates the controls nobody owns", async () => {
+test("control-list: separates the controls nobody owns", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: "c1", name: "Access reviewed quarterly", owner: { id: "u1" } },
     { id: "c2", name: "Backups tested", owner: null },
@@ -16,7 +17,7 @@ Deno.test("control-list: separates the controls nobody owns", async () => {
   assertEquals(result.unowned, ["Backups tested", "Encryption at rest"]);
 });
 
-Deno.test("control-list: the framework filter is sent as repeated keys", async () => {
+test("control-list: the framework filter is sent as repeated keys", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ frameworks: "soc2, iso27001" }, ctx);
   assertEquals(
@@ -25,6 +26,6 @@ Deno.test("control-list: the framework filter is sent as repeated keys", async (
   );
 });
 
-Deno.test("control-list: distinguishes a control from a test", () => {
+test("control-list: distinguishes a control from a test", () => {
   assert(/requirements a framework imposes/.test(action.description!), action.description);
 });

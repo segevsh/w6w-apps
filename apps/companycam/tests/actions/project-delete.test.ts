@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectDelete from "../../actions/project-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-delete: DELETEs the project and reports the 204", async () => {
+test("project-delete: DELETEs the project and reports the 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, headers: {} }]);
   const result = await projectDelete.execute({ projectId: "94772883" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/projects/94772883");
@@ -11,7 +12,7 @@ Deno.test("project-delete: DELETEs the project and reports the 204", async () =>
   assertEquals(result, { status: 204 });
 });
 
-Deno.test("project-delete: says in its description that archiving is the reversible option", () => {
+test("project-delete: says in its description that archiving is the reversible option", () => {
   assertEquals(projectDelete.idempotent, true);
   assertEquals(/Archive/.test(projectDelete.description!), true);
 });

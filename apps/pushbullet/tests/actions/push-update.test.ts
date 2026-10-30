@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pushUpdate from "../../actions/push-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("push-update: POSTs {dismissed} to /v2/pushes/{iden}", async () => {
+test("push-update: POSTs {dismissed} to /v2/pushes/{iden}", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "p1", dismissed: true } }]);
   const out = await pushUpdate.execute({ iden: "p1", dismissed: true }, ctx) as {
     dismissed: boolean;
@@ -14,11 +15,11 @@ Deno.test("push-update: POSTs {dismissed} to /v2/pushes/{iden}", async () => {
   assertEquals(out.dismissed, true);
 });
 
-Deno.test("push-update: is declared idempotent", () => {
+test("push-update: is declared idempotent", () => {
   assertEquals(pushUpdate.idempotent, true);
 });
 
-Deno.test("push-update: encodes the iden into the path", async () => {
+test("push-update: encodes the iden into the path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await pushUpdate.execute({ iden: "id with space", dismissed: false }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/pushes/id%20with%20space");

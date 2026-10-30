@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: GETs /robots/{robotId}/webhooks and unwraps webhooks", async () => {
+test("webhook-list: GETs /robots/{robotId}/webhooks and unwraps webhooks", async () => {
   const webhooks = {
     totalCount: 1,
     items: [{ id: "w1", url: "https://x", webhookEvent: "taskFinished", createdAt: 1 }],

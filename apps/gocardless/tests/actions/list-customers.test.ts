@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import listCustomers from "../../actions/list-customers.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const page = listEnvelope("customers", [{ id: "CU1", email: "a@b.co" }], {
   limit: 50,
 });
 
-Deno.test("list-customers: GET /customers with the cursors lifted out of meta", async () => {
+test("list-customers: GET /customers with the cursors lifted out of meta", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await listCustomers.execute!({}, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("list-customers: GET /customers with the cursors lifted out of meta", 
   assertEquals(out.limit, 50);
 });
 
-Deno.test("list-customers: blank filters are dropped, set ones use the vendor's query keys", async () => {
+test("list-customers: blank filters are dropped, set ones use the vendor's query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await listCustomers.execute!({
     limit: 10,
@@ -44,14 +45,14 @@ Deno.test("list-customers: blank filters are dropped, set ones use the vendor's 
   });
 });
 
-Deno.test("list-customers: an empty collection reports null cursors, not undefined", async () => {
+test("list-customers: an empty collection reports null cursors, not undefined", async () => {
   const { ctx } = mockCtx([{ body: listEnvelope("customers", []) }]);
   const out = await listCustomers.execute!({}, ctx);
   assertEquals(out.items, []);
   assertEquals(out.afterCursor, null);
 });
 
-Deno.test("list-customers: a vendor validation error names the offending field", async () => {
+test("list-customers: a vendor validation error names the offending field", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("validation_failed", {

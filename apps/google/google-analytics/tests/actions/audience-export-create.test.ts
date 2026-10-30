@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audience-export-create.ts";
 
 const display = { propertyId: "123" };
 
 /** Starts a long-running job; it does not return the users. */
-Deno.test("audience-export-create: posts the export and returns Google's Operation", async () => {
+test("audience-export-create: posts the export and returns Google's Operation", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "properties/123/audienceExports/9", done: false },
@@ -23,7 +24,7 @@ Deno.test("audience-export-create: posts the export and returns Google's Operati
   assertEquals((result as Record<string, unknown>).done, false);
 });
 
-Deno.test("audience-export-create: audience and dimensions are both required", async () => {
+test("audience-export-create: audience and dimensions are both required", async () => {
   const noAudience = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ dimensions: "deviceId" }, noAudience.ctx),

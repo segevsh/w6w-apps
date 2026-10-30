@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/get-field.ts";
 
-Deno.test("get-field: puts the field in the path and the table in the query", async () => {
+test("get-field: puts the field in the path and the table in the query", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { id: 9, label: "Email" } }]);
   const out = await action.execute({ tableId: "bck1", fieldId: 9 }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("get-field: puts the field in the path and the table in the query", as
   assertEquals(out.label, "Email");
 });
 
-Deno.test("get-field: returns type-specific settings under `properties`", async () => {
+test("get-field: returns type-specific settings under `properties`", async () => {
   const { ctx } = mockQbCtx([{
     body: { id: 12, fieldType: "formula", properties: { formula: "[a]*[b]", decimalPlaces: 2 } },
   }]);

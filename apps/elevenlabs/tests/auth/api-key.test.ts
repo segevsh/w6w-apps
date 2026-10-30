@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH, WHY_NOT_USER } from "../../auth/api-key.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const CREDENTIAL = { apiKey: "sk_test_key_0123456789" };
 
-Deno.test("auth: sign stamps xi-api-key and nothing else", () => {
+test("auth: sign stamps xi-api-key and nothing else", () => {
   const request = {
     url: "https://api.elevenlabs.io/v1/models",
     headers: {} as Record<string, string>,
@@ -20,12 +21,12 @@ Deno.test("auth: sign stamps xi-api-key and nothing else", () => {
   assert(!signed.url.includes(CREDENTIAL.apiKey));
 });
 
-Deno.test("auth: sign and test build the header the same way", () => {
+test("auth: sign and test build the header the same way", () => {
   assertEquals(authHeaders(CREDENTIAL), { "xi-api-key": CREDENTIAL.apiKey });
   assertEquals(authHeaders({}), { "xi-api-key": "" });
 });
 
-Deno.test("auth: the probe is the subscription read, not the whoami", async () => {
+test("auth: the probe is the subscription read, not the whoami", async () => {
   const { ctx, calls } = mockCtx([{ body: { tier: "creator" } }]);
   assertEquals(await apiKey.test({ credential: CREDENTIAL } as never, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/v1/user/subscription");
@@ -34,7 +35,7 @@ Deno.test("auth: the probe is the subscription read, not the whoami", async () =
   assertStringIncludes(WHY_NOT_USER, "xi_api_key");
 });
 
-Deno.test("auth: a missing credential fails without a request", async () => {
+test("auth: a missing credential fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} } as never, ctx);
   assertEquals(result.ok, false);
@@ -47,7 +48,7 @@ Deno.test("auth: a missing credential fails without a request", async () => {
  * live on 2026-08-11 against this exact path. A `res.status === 401` test would
  * report a mistyped key as a generic bad request.
  */
-Deno.test("auth: a 400 invalid_api_key is reported as a rejected key, not a bad request", async () => {
+test("auth: a 400 invalid_api_key is reported as a rejected key, not a bad request", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -65,7 +66,7 @@ Deno.test("auth: a 400 invalid_api_key is reported as a rejected key, not a bad 
   assertStringIncludes(result.message!, "secret-scanning");
 });
 
-Deno.test("auth: a 401 with no key at all is also reported as a rejected key", async () => {
+test("auth: a 401 with no key at all is also reported as a rejected key", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -86,7 +87,7 @@ Deno.test("auth: a 401 with no key at all is also reported as a rejected key", a
  * different message from "wrong key" — conflating them sends the user to rotate
  * a perfectly good credential.
  */
-Deno.test("auth: a 403 is reported as scoped-away, not as an invalid key", async () => {
+test("auth: a 403 is reported as scoped-away, not as an invalid key", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody("authorization_error", "missing_permissions", "Nope.") },
   ]);
@@ -97,7 +98,7 @@ Deno.test("auth: a 403 is reported as scoped-away, not as an invalid key", async
   assertStringIncludes(result.message!, "IP allowlist");
 });
 
-Deno.test("auth: a 429 says to retry rather than blaming the credential", async () => {
+test("auth: a 429 says to retry rather than blaming the credential", async () => {
   const { ctx } = mockCtx([
     { status: 429, body: errorBody("rate_limit_error", "rate_limit_exceeded", "Slow down.") },
   ]);
@@ -106,14 +107,14 @@ Deno.test("auth: a 429 says to retry rather than blaming the credential", async 
   assertStringIncludes(result.message!, "rate-limited");
 });
 
-Deno.test("auth: an unexpected status falls through with the path named", async () => {
+test("auth: an unexpected status falls through with the path named", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "gateway" }]);
   const result = await apiKey.test({ credential: CREDENTIAL } as never, ctx);
   assertEquals(result.ok, false);
   assertStringIncludes(result.message!, "/v1/user/subscription");
 });
 
-Deno.test("auth: afterConnect publishes the tier and never calls the whoami", async () => {
+test("auth: afterConnect publishes the tier and never calls the whoami", async () => {
   const { ctx, calls } = mockCtx([{ body: { tier: "creator", status: "active", foo: "bar" } }]);
   const label = await apiKey.afterConnect!({ credential: CREDENTIAL } as never, ctx);
   assertEquals(label, { tier: "creator", status: "active" });
@@ -121,7 +122,7 @@ Deno.test("auth: afterConnect publishes the tier and never calls the whoami", as
   assertEquals(calls.length, 1);
 });
 
-Deno.test("auth: afterConnect fails silently — a label must not fail a good connection", async () => {
+test("auth: afterConnect fails silently — a label must not fail a good connection", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   assertEquals(await apiKey.afterConnect!({ credential: CREDENTIAL } as never, ctx), {});
 });

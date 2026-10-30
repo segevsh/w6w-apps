@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactTimelineGet from "../../actions/contact-timeline-get.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-timeline-get: GETs emailmarketing/getcontacttimeline.json with the documented parameters", async () => {
+test("contact-timeline-get: GETs emailmarketing/getcontacttimeline.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "id": 123, "timeline": { "data": [] } }) }]);
   const out = await contactTimelineGet.execute({ "id": "3", "include": "utm" } as never, ctx);
 
@@ -14,14 +15,14 @@ Deno.test("contact-timeline-get: GETs emailmarketing/getcontacttimeline.json wit
   assertEquals(out, { "id": 123, "timeline": { "data": [] } });
 });
 
-Deno.test("contact-timeline-get: is a read with no request body", async () => {
+test("contact-timeline-get: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "id": 123, "timeline": { "data": [] } }) }]);
   await contactTimelineGet.execute({ "id": "3", "include": "utm" } as never, ctx);
   assertEquals(calls[0].body, null);
   assertEquals(contactTimelineGet.type, "read");
 });
 
-Deno.test("contact-timeline-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("contact-timeline-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

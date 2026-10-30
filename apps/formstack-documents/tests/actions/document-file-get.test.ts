@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-file-get.ts";
 
-Deno.test("document-file-get: GETs /documents/{id}/file", async () => {
+test("document-file-get: GETs /documents/{id}/file", async () => {
   const { ctx, calls } = mockCtx([{
     body: { type: "pdf", last_update: "2015-03-24 16:34:20", contents: "JVBERg==" },
   }]);
@@ -16,7 +17,7 @@ Deno.test("document-file-get: GETs /documents/{id}/file", async () => {
   assert(out !== null);
 });
 
-Deno.test("document-file-get: declares key, type and a description", () => {
+test("document-file-get: declares key, type and a description", () => {
   assertEquals(action.key, "document-file-get");
   assertEquals(action.type, "read");
   assert(action.description!.length > 10);

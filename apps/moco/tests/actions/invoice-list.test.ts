@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: GETs /invoices with a status filter", async () => {
+test("invoice-list: GETs /invoices with a status filter", async () => {
   const { ctx, calls } = mockMocoCtx([{
     body: [{ id: 1, status: "sent" }],
     headers: {

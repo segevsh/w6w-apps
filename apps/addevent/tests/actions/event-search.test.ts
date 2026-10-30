@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSearch from "../../actions/event-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("event-search: maps camelCase params onto the documented snake_case query", async () => {
+test("event-search: maps camelCase params onto the documented snake_case query", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { pagination: { total_items: 0 }, links: {}, events: [] } },
   ]);
@@ -35,13 +36,13 @@ Deno.test("event-search: maps camelCase params onto the documented snake_case qu
   assertEquals(out.pagination.total_items, 0);
 });
 
-Deno.test("event-search: a zero-match result is a plain empty array, not an error", async () => {
+test("event-search: a zero-match result is a plain empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { events: [], pagination: {}, links: {} } }]);
   const out = await eventSearch.execute({}, ctx) as { events: unknown[] };
   assertEquals(out.events.length, 0);
 });
 
-Deno.test("event-search: unset optional params are omitted from the query string", async () => {
+test("event-search: unset optional params are omitted from the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { events: [] } }]);
   await eventSearch.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

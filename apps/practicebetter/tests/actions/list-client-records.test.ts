@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-client-records.ts";
 import { API_ROOT, mockCtx, page, pathOf, queryAllOf, queryOf, urlOf } from "../_helpers.ts";
 
 const sample = page([{ id: "rec-1", isActive: true }], { count: 1, hasMore: true });
 
-Deno.test("list-client-records: reads /consultant/records and returns the envelope verbatim", async () => {
+test("list-client-records: reads /consultant/records and returns the envelope verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("list-client-records: reads /consultant/records and returns the envelo
   assertEquals(result, sample);
 });
 
-Deno.test("list-client-records: passes the documented filters through", async () => {
+test("list-client-records: passes the documented filters through", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({
     child: true,
@@ -41,25 +42,25 @@ Deno.test("list-client-records: passes the documented filters through", async ()
   assertEquals(queryAllOf(calls[0].url).status, ["active", "archived"]);
 });
 
-Deno.test("list-client-records: unset filters are not sent", async () => {
+test("list-client-records: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("list-client-records: limit declares the documented 1-100 range", () => {
+test("list-client-records: limit declares the documented 1-100 range", () => {
   const limit = action.params!.find((p) => p.key === "limit")!;
   assertEquals(limit.validation, { integer: true, min: 1, max: 100 });
   assertEquals(limit.default, undefined, "the document declares no default");
 });
 
-Deno.test("list-client-records: a comma-typed multiselect is still split into repeated keys", async () => {
+test("list-client-records: a comma-typed multiselect is still split into repeated keys", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({ status: "active,archived" }, ctx);
   assertEquals(queryAllOf(calls[0].url).status, ["active", "archived"]);
 });
 
-Deno.test("list-client-records: the list shape is the documented one", () => {
+test("list-client-records: the list shape is the documented one", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "client-record");
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), [

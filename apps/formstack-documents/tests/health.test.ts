@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import { mockCtx } from "./_helpers.ts";
 import service, { GROUP_ID, mapComponentStatus } from "../health/service.ts";
 import quota from "../health/quota.ts";
@@ -26,24 +27,24 @@ const run = (body: unknown, status = 200) =>
     { state: string; message?: string; components?: Record<string, unknown> }
   >;
 
-Deno.test("service: all operational -> ok, ignoring other products' outages", async () => {
+test("service: all operational -> ok, ignoring other products' outages", async () => {
   const r = await run(page("operational"));
   assertEquals(r.state, "ok");
   assertEquals(Object.keys(r.components!).sort(), ["c1", "c2", "c3"]);
 });
 
-Deno.test("service: API outage -> down; website degraded -> degraded", async () => {
+test("service: API outage -> down; website degraded -> degraded", async () => {
   assertEquals((await run(page("major_outage"))).state, "down");
   assertEquals((await run(page("operational", "partial_outage"))).state, "degraded");
 });
 
-Deno.test("service: SendGrid trouble is reported but does not drive the verdict", async () => {
+test("service: SendGrid trouble is reported but does not drive the verdict", async () => {
   const r = await run(page("operational", "operational", "major_outage"));
   assertEquals(r.state, "ok");
   assertEquals((r.components as Record<string, { state: string }>).c3.state, "down");
 });
 
-Deno.test("service: unreadable, wrong page, and missing group are unknown, never down", async () => {
+test("service: unreadable, wrong page, and missing group are unknown, never down", async () => {
   assertEquals((await run("x", 500)).state, "unknown");
   assertEquals((await run({ page: { name: "Other Corp" }, components: [] })).state, "unknown");
   const none = page("operational");
@@ -51,12 +52,12 @@ Deno.test("service: unreadable, wrong page, and missing group are unknown, never
   assertEquals((await run(none)).state, "unknown");
 });
 
-Deno.test("service: status vocabulary maps", () => {
+test("service: status vocabulary maps", () => {
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("quota: is a declared absence at informational severity", () => {
+test("quota: is a declared absence at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");
 });

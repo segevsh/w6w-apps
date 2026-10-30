@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import profileUpdate from "../../actions/profile-update.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("profile-update: PATCH /v3/profiles/jane-d with the documented wrapped body", async () => {
+test("profile-update: PATCH /v3/profiles/jane-d with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "r-1" }) }]);
   const out = await profileUpdate.execute({
     "path": "jane-d",
@@ -24,18 +25,18 @@ Deno.test("profile-update: PATCH /v3/profiles/jane-d with the documented wrapped
   assertEquals(out, { uuid: "r-1" });
 });
 
-Deno.test("profile-update: is a perform action marked idempotent=true", () => {
+test("profile-update: is a perform action marked idempotent=true", () => {
   assertEquals(profileUpdate.type, "perform");
   assertEquals(profileUpdate.idempotent, true);
 });
 
-Deno.test("profile-update: only the fields given are sent", async () => {
+test("profile-update: only the fields given are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await profileUpdate.execute({ "path": "p" }, ctx);
   assertEquals(bodyOf(calls[0]), { "data": {} });
 });
 
-Deno.test("profile-update: malformed JSON in a custom-field param fails before any request", async () => {
+test("profile-update: malformed JSON in a custom-field param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -57,7 +58,7 @@ Deno.test("profile-update: malformed JSON in a custom-field param fails before a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("profile-update: an HTTP error becomes a readable Raisely error", async () => {
+test("profile-update: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-categories.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: "abc",
 };
 
-Deno.test("list-categories: GETs /categories", async () => {
+test("list-categories: GETs /categories", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({ cursor: "abc" }, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("list-categories: GETs /categories", async () => {
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-categories: filters on the owning category group", async () => {
+test("list-categories: filters on the owning category group", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute(
     { filter: [{ field: "category_group_id", operator: "eq", value: 42 }] },

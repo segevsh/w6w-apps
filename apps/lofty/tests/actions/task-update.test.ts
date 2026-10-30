@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-update.ts";
 
-Deno.test("task-update: puts the full body and reports the status", async () => {
+test("task-update: puts the full body and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await action.execute!({
     taskId: 9,
@@ -31,7 +32,7 @@ Deno.test("task-update: puts the full body and reports the status", async () => 
  * The schema marks these required even though the description says "partial",
  * so none of them is optional here.
  */
-Deno.test("task-update: keeps the schema's required fields required", () => {
+test("task-update: keeps the schema's required fields required", () => {
   for (const key of ["content", "leadId", "deadline", "type", "assignedRole"]) {
     assertEquals(action.params!.find((p) => p.key === key)!.required, true, key);
   }

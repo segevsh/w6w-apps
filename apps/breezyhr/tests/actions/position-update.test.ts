@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/position-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("position-update: PUTs only the provided fields", async () => {
+test("position-update: PUTs only the provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "p1", name: "New" } }]);
   const out = await action.execute!({ companyId: "c1", positionId: "p1", name: "New" }, ctx);
   assertEquals(calls[0].url, "https://api.breezy.hr/v3/company/c1/position/p1");
@@ -11,7 +12,7 @@ Deno.test("position-update: PUTs only the provided fields", async () => {
   assertEquals(out, { _id: "p1", name: "New" });
 });
 
-Deno.test("position-update: salary is assembled and an empty tag list clears tags", async () => {
+test("position-update: salary is assembled and an empty tag list clears tags", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     companyId: "c1",

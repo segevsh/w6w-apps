@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-folder-create.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("template-folder-create: POSTs the folder with null defaults for the nullable required fields", async () => {
+test("template-folder-create: POSTs the folder with null defaults for the nullable required fields", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "fo_1", "name": "Promo" } }]);
   const result = await action.execute!({ "name": "Promo" } as never, ctx);
   const expected: Array<
@@ -31,7 +32,7 @@ Deno.test("template-folder-create: POSTs the folder with null defaults for the n
   assertEquals(result, { "id": "fo_1", "name": "Promo" });
 });
 
-Deno.test("template-folder-create: forwards parent and WABA", async () => {
+test("template-folder-create: forwards parent and WABA", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "fo_2" } }]);
   const result = await action.execute!(
     { "name": "P", "parentId": "fo_1", "whatsAppBusinessAccountId": "w_1" } as never,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-create: posts the body with snake_case fields and the override flag as a query param", async () => {
+test("customer-create: posts the body with snake_case fields and the override flag as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cu_0Th3r", customer_id: "USER789" } }]);
   const out = await customerCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("customer-create: posts the body with snake_case fields and the overri
   assertEquals(out, { id: "cu_0Th3r", customer_id: "USER789" });
 });
 
-Deno.test("customer-create: omits unset optional fields entirely rather than sending nulls", async () => {
+test("customer-create: omits unset optional fields entirely rather than sending nulls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customerCreate.execute({ customerId: "USER1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { customer_id: "USER1" });

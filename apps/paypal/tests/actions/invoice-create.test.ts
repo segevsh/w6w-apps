@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
@@ -13,7 +14,7 @@ function baseInput(overrides: Record<string, unknown> = {}): Record<string, unkn
   };
 }
 
-Deno.test("invoice-create: happy path posts detail/recipient/item", async () => {
+test("invoice-create: happy path posts detail/recipient/item", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "INV-1", status: "DRAFT" } }]);
   const result = await action.execute!(baseInput(), ctx);
 
@@ -30,7 +31,7 @@ Deno.test("invoice-create: happy path posts detail/recipient/item", async () => 
   assertEquals(result, { id: "INV-1", status: "DRAFT" });
 });
 
-Deno.test("invoice-create: note and additionalFields populate detail", async () => {
+test("invoice-create: note and additionalFields populate detail", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     baseInput({
@@ -50,7 +51,7 @@ Deno.test("invoice-create: note and additionalFields populate detail", async () 
   assertEquals(body.detail.terms_and_conditions, "Net 30");
 });
 
-Deno.test("invoice-create: recipientEmail, itemName and unitAmount are required", async () => {
+test("invoice-create: recipientEmail, itemName and unitAmount are required", async () => {
   const cases: Array<[string, Record<string, unknown>]> = [
     ["recipientEmail", { recipientEmail: "" }],
     ["itemName", { itemName: "" }],

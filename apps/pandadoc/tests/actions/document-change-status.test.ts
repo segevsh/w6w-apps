@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/document-change-status.ts";
 
-Deno.test("document-change-status: PATCHes /documents/{id}/status", async () => {
+test("document-change-status: PATCHes /documents/{id}/status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute(
     { documentId: "d1", status: 2, note: "signed offline", notifyRecipients: true },
@@ -16,13 +17,13 @@ Deno.test("document-change-status: PATCHes /documents/{id}/status", async () => 
   assertEquals(out, { documentId: "d1", status: 2 });
 });
 
-Deno.test("document-change-status: sends only the status when nothing else is set", async () => {
+test("document-change-status: sends only the status when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ documentId: "d1", status: 11 }, ctx);
   assertEquals(bodyOf(calls[0]), { status: 11 });
 });
 
-Deno.test("document-change-status: offers exactly the four documented target codes", () => {
+test("document-change-status: offers exactly the four documented target codes", () => {
   const status = action.params?.find((p) => p.key === "status");
   assertEquals(
     (status?.options as Array<{ value: number }>).map((o) => o.value),
@@ -30,7 +31,7 @@ Deno.test("document-change-status: offers exactly the four documented target cod
   );
 });
 
-Deno.test("document-change-status: a 409 illegal transition surfaces as an error", async () => {
+test("document-change-status: a 409 illegal transition surfaces as an error", async () => {
   const { ctx } = mockCtx([
     { status: 409, body: { type: "conflict_error", detail: "Invalid status transition." } },
   ]);
@@ -43,7 +44,7 @@ Deno.test("document-change-status: a 409 illegal transition surfaces as an error
   assert(err.message.includes("PandaDoc 409"), err.message);
 });
 
-Deno.test("document-change-status: a 423 locked document surfaces as an error", async () => {
+test("document-change-status: a 423 locked document surfaces as an error", async () => {
   const { ctx } = mockCtx([
     { status: 423, body: { type: "document_locked", detail: "Locked for editing." } },
   ]);
@@ -56,7 +57,7 @@ Deno.test("document-change-status: a 423 locked document surfaces as an error", 
   assert(err.message.includes("PandaDoc 423"), err.message);
 });
 
-Deno.test("document-change-status: is a non-idempotent perform", () => {
+test("document-change-status: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

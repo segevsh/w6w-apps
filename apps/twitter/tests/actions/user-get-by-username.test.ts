@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-by-username.ts";
 
-Deno.test("user-get-by-username: GETs /users/by/username/{username}", async () => {
+test("user-get-by-username: GETs /users/by/username/{username}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "1", username: "n8n_io", name: "n8n" } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("user-get-by-username: GETs /users/by/username/{username}", async () =
   assertEquals(out, { id: "1", username: "n8n_io", name: "n8n" });
 });
 
-Deno.test("user-get-by-username: strips a leading @", async () => {
+test("user-get-by-username: strips a leading @", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "1", username: "n8n_io", name: "n8n" } },
   }]);

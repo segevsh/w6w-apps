@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs the body to /v2/projects/{project_id}/tasks", async () => {
+test("task-create: POSTs the body to /v2/projects/{project_id}/tasks", async () => {
   const body = envelope("task", { id: 77, summary: "Ship it" });
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({
@@ -25,7 +26,7 @@ Deno.test("task-create: POSTs the body to /v2/projects/{project_id}/tasks", asyn
   assertEquals(result.task.id, 77);
 });
 
-Deno.test("task-create: only summary is required, and unset fields are omitted", async () => {
+test("task-create: only summary is required, and unset fields are omitted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("task", { id: 1 }) }]);
   await action.execute!({ project_id: 9, summary: "Only this" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { summary: "Only this" });
@@ -33,7 +34,7 @@ Deno.test("task-create: only summary is required, and unset fields are omitted",
 });
 
 /** Hubstaff refuses a create in an integrated project rather than proxying it. */
-Deno.test("task-create: is explicitly non-idempotent and requires organization context", () => {
+test("task-create: is explicitly non-idempotent and requires organization context", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(action.params!.some((p) => p.key === "project_id" && p.required === true));

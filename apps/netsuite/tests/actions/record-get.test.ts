@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordGet from "../../actions/record-get.ts";
 import { BASE, mockCtx, nsError, run } from "../_helpers.ts";
 
-Deno.test("record-get: GETs the record by id and returns the body", async () => {
+test("record-get: GETs the record by id and returns the body", async () => {
   const rec = { id: "107", companyName: "Glenrock", links: [] };
   const { ctx, calls } = mockCtx([{ body: rec }]);
   const out = await run(recordGet, { recordType: "customer", id: "107" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("record-get: GETs the record by id and returns the body", async () => 
   assertEquals(out, { record: rec });
 });
 
-Deno.test("record-get: external id, fields and expandSubResources reach the URL", async () => {
+test("record-get: external id, fields and expandSubResources reach the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await run(recordGet, {
     recordType: "customer",
@@ -25,7 +26,7 @@ Deno.test("record-get: external id, fields and expandSubResources reach the URL"
   );
 });
 
-Deno.test("record-get: a missing record surfaces NetSuite's own error", async () => {
+test("record-get: a missing record surfaces NetSuite's own error", async () => {
   const { ctx } = mockCtx([nsError(404, "RCRD_DSNT_EXIST", "That record does not exist.")]);
   await assertRejects(
     async () => await run(recordGet, { recordType: "customer", id: "999" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("record-get: a missing record surfaces NetSuite's own error", async ()
   );
 });
 
-Deno.test("record-get: a hostile record type never reaches the network", async () => {
+test("record-get: a hostile record type never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await run(recordGet, { recordType: "../system", id: "1" }, ctx),

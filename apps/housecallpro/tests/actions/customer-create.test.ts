@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-create: POSTs the snake_case body the API documents", async () => {
+test("customer-create: POSTs the snake_case body the API documents", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }]);
   await customerCreate.execute({
     firstName: "Ada",
@@ -26,7 +27,7 @@ Deno.test("customer-create: POSTs the snake_case body the API documents", async 
   });
 });
 
-Deno.test("customer-create: addresses accept a JSON string as well as a parsed array", async () => {
+test("customer-create: addresses accept a JSON string as well as a parsed array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await customerCreate.execute({ addresses: '[{"street":"1 Main St"}]' }, ctx);
   await customerCreate.execute({ addresses: [{ street: "1 Main St" }] }, ctx);
@@ -35,7 +36,7 @@ Deno.test("customer-create: addresses accept a JSON string as well as a parsed a
   assertEquals(bodyOf(calls[1]), bodyOf(calls[0]));
 });
 
-Deno.test("customer-create: malformed addresses JSON fails before any request", async () => {
+test("customer-create: malformed addresses JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -47,6 +48,6 @@ Deno.test("customer-create: malformed addresses JSON fails before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("customer-create: is not idempotent — a retry would duplicate the customer", () => {
+test("customer-create: is not idempotent — a retry would duplicate the customer", () => {
   assertEquals(customerCreate.idempotent, false);
 });

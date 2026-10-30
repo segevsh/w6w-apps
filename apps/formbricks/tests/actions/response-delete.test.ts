@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/response-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("response-delete: full input maps to the documented request", async () => {
+test("response-delete: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({ "responseId": "id_responseId" }, ctx);
   const url = new URL(calls[0].url);
@@ -16,14 +17,14 @@ Deno.test("response-delete: full input maps to the documented request", async ()
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("response-delete: sends x-api-key never itself and no authorization header", async () => {
+test("response-delete: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   await action.execute!({ "responseId": "id_responseId" }, ctx);
   assert(!("x-api-key" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("response-delete: surfaces a Formbricks error body as a thrown error", async () => {
+test("response-delete: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

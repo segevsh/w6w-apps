@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateGet from "../../actions/template-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-get: fetches by id and returns the template's variable schema unwrapped", async () => {
+test("template-get: fetches by id and returns the template's variable schema unwrapped", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({

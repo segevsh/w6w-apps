@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-delete.ts";
 
@@ -7,7 +8,7 @@ const listing = (attributes: Record<string, unknown>) => ({
   body: { data: [{ id: "var-1", attributes }] },
 });
 
-Deno.test("variable-delete: resolves the variable by name and deletes it by id", async () => {
+test("variable-delete: resolves the variable by name and deletes it by id", async () => {
   const { ctx, calls } = mockCtx([
     listing({ key: "region", category: "terraform", sensitive: false }),
     { status: 204 },
@@ -24,7 +25,7 @@ Deno.test("variable-delete: resolves the variable by name and deletes it by id",
 });
 
 /** The same name can exist in both categories. */
-Deno.test("variable-delete: a name in the other category is not found", async () => {
+test("variable-delete: a name in the other category is not found", async () => {
   const { ctx, calls } = mockCtx([listing({ key: "region", category: "terraform" })]);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("variable-delete: a name in the other category is not found", async ()
 });
 
 /** Nothing could read it while it existed, so there is no copy to restore. */
-Deno.test("variable-delete: a sensitive variable needs its name typed back", async () => {
+test("variable-delete: a sensitive variable needs its name typed back", async () => {
   for (const confirm of [undefined, "", "REGION"]) {
     const { ctx, calls } = mockCtx([
       listing({ key: "AWS_SECRET_ACCESS_KEY", category: "env", sensitive: true }),
@@ -59,7 +60,7 @@ Deno.test("variable-delete: a sensitive variable needs its name typed back", asy
   }
 });
 
-Deno.test("variable-delete: a confirmed sensitive delete goes through and warns", async () => {
+test("variable-delete: a confirmed sensitive delete goes through and warns", async () => {
   const { ctx, logs } = mockCtx([
     listing({ key: "AWS_SECRET_ACCESS_KEY", category: "env", sensitive: true }),
     { status: 204 },
@@ -76,7 +77,7 @@ Deno.test("variable-delete: a confirmed sensitive delete goes through and warns"
 });
 
 /** A non-sensitive variable does not need the confirmation. */
-Deno.test("variable-delete: an ordinary variable deletes without a confirmation", async () => {
+test("variable-delete: an ordinary variable deletes without a confirmation", async () => {
   const { ctx, logs } = mockCtx([
     listing({ key: "region", category: "terraform", sensitive: false }),
     { status: 204 },
@@ -85,7 +86,7 @@ Deno.test("variable-delete: an ordinary variable deletes without a confirmation"
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("variable-delete: a key is required", async () => {
+test("variable-delete: a key is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -98,7 +99,7 @@ Deno.test("variable-delete: a key is required", async () => {
 });
 
 /** The difference only appears at the next plan, days later. */
-Deno.test("variable-delete: says when the effect actually shows up", () => {
+test("variable-delete: says when the effect actually shows up", () => {
   assert(/effect only appears at the NEXT plan/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

@@ -87,7 +87,9 @@ const itemList: ActionDefinition<Input> = {
     {
       "key": "type",
       "label": "Type",
-      "type": "string",
+      "type": "select",
+      placeholder: "Select…",
+      options: [{ "value": "simple", "label": "simple" }, { "value": "kit", "label": "kit" }],
       "hint": "simple or kit.",
     },
     {

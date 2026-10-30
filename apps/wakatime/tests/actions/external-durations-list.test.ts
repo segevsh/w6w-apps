@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/external-durations-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("external-durations-list: GETs the documented path", async () => {
+test("external-durations-list: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const out = await action.execute!({ date: "2026-09-01" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -13,7 +14,7 @@ Deno.test("external-durations-list: GETs the documented path", async () => {
   assertEquals(out, { data: [] });
 });
 
-Deno.test("external-durations-list: a vendor error reports status and message", async () => {
+test("external-durations-list: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({ date: "2026-09-01" }, ctx),

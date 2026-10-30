@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import endUserList from "../../actions/end-user-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("end-user-list: calls GET /v1/endusers", async () => {
+test("end-user-list: calls GET /v1/endusers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": [{ "id": "11111111-2222-3333-4444-555555555555" }] },
@@ -20,7 +21,7 @@ Deno.test("end-user-list: calls GET /v1/endusers", async () => {
   assertEquals(out, { "data": [{ "id": "11111111-2222-3333-4444-555555555555" }] });
 });
 
-Deno.test("end-user-list: surfaces a Dixa error message with the status", async () => {
+test("end-user-list: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {

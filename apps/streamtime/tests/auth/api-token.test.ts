@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, {
   authHeaders,
   fetchProbe,
@@ -18,7 +19,7 @@ const ORGANISATION = {
   country: { id: "NZ", name: "New Zealand" },
 };
 
-Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
+test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.streamtime.net/v2/jobs",
@@ -34,7 +35,7 @@ Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", (
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("api-token: authHeaders is the single source of the wire format", () => {
+test("api-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiToken: ` ${TOKEN} ` }), { authorization: `Bearer ${TOKEN}` });
   // A credential that never arrived still produces a well-formed header — the
   // probe, not this function, is what decides that it is empty.
@@ -46,12 +47,12 @@ Deno.test("api-token: authHeaders is the single source of the wire format", () =
  * the file somebody edits when a shorter endpoint looks tempting. `/organisation`
  * is the authenticated read whose response carries no credential material.
  */
-Deno.test("api-token: the probe is GET /organisation", () => {
+test("api-token: the probe is GET /organisation", () => {
   assertEquals(PROBE_PATH, "/organisation");
   assertEquals(PROBE_URL, "https://api.streamtime.net/v2/organisation");
 });
 
-Deno.test("api-token: test passes on 200 with an Organisation body", async () => {
+test("api-token: test passes on 200 with an Organisation body", async () => {
   const { ctx, calls } = mockCtx([{ body: ORGANISATION }]);
   const result = await apiToken.test!({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -60,7 +61,7 @@ Deno.test("api-token: test passes on 200 with an Organisation body", async () =>
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("api-token: test fails with no token, without making a request", async () => {
+test("api-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test!({ credential: {} }, ctx);
 
@@ -74,7 +75,7 @@ Deno.test("api-token: test fails with no token, without making a request", async
  * evidence Streamtime gives, and it makes the "missing token, revoked token and
  * unknown path are the same answer" caveat visible where it is needed.
  */
-Deno.test("api-token: test reports a rejected token from the vendor's own words", async () => {
+test("api-token: test reports a rejected token from the vendor's own words", async () => {
   const { ctx } = mockCtx([unauthorisedResponse()]);
   const result = await apiToken.test!({ credential: { apiToken: "garbage" } }, ctx);
 
@@ -91,7 +92,7 @@ Deno.test("api-token: test reports a rejected token from the vendor's own words"
  * A 200 that is not an Organisation is not evidence of a live credential — a
  * captive portal or a proxy answering 200 would otherwise pass the probe.
  */
-Deno.test("api-token: a 200 without an Organisation body is not accepted", async () => {
+test("api-token: a 200 without an Organisation body is not accepted", async () => {
   const { ctx } = mockCtx([{ body: { hello: "world" } }]);
   const result = await apiToken.test!({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -99,7 +100,7 @@ Deno.test("api-token: a 200 without an Organisation body is not accepted", async
   assert(/did not accept the token/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("readProbe: four outcomes, none of them decided by the status code", async () => {
+test("readProbe: four outcomes, none of them decided by the status code", async () => {
   const accepted = await readProbe(
     new Response(JSON.stringify(ORGANISATION), { status: 200 }),
   );
@@ -122,7 +123,7 @@ Deno.test("readProbe: four outcomes, none of them decided by the status code", a
   assertEquals(serverError.status, 503);
 });
 
-Deno.test("fetchProbe: a transport failure is unknown, not a rejection", async () => {
+test("fetchProbe: a transport failure is unknown, not a rejection", async () => {
   const { ctx } = mockCtx([]);
   const reading = await fetchProbe(ctx);
   assertEquals(reading.reason, "unexpected");
@@ -130,7 +131,7 @@ Deno.test("fetchProbe: a transport failure is unknown, not a rejection", async (
   assert(/could not reach/.test(reading.detail), reading.detail);
 });
 
-Deno.test("afterConnect: publishes the organisation name and domain, and nothing else", async () => {
+test("afterConnect: publishes the organisation name and domain, and nothing else", async () => {
   const { ctx } = mockCtx([{ body: ORGANISATION }]);
   const label = await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -139,7 +140,7 @@ Deno.test("afterConnect: publishes the organisation name and domain, and nothing
   assert(!JSON.stringify(label).includes("High St"), "the object was published whole");
 });
 
-Deno.test("afterConnect: a failure returns nothing rather than failing the connection", async () => {
+test("afterConnect: a failure returns nothing rather than failing the connection", async () => {
   const { ctx } = mockCtx([unauthorisedResponse()]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });

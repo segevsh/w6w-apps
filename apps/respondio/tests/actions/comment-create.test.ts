@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-create: POSTs {text} to /contact/{identifier}/comment", async () => {
+test("comment-create: POSTs {text} to /contact/{identifier}/comment", async () => {
   const { ctx, calls } = mockCtx([
     { body: { contactId: 1, text: "Called back", created_at: 1700000000 } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("comment-create: POSTs {text} to /contact/{identifier}/comment", async
   assertEquals(out.text, "Called back");
 });
 
-Deno.test("comment-create: a comment over 1000 characters is refused before any request", async () => {
+test("comment-create: a comment over 1000 characters is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await commentCreate.execute({ identifier: "id:1", text: "x".repeat(1001) }, ctx),
@@ -26,6 +27,6 @@ Deno.test("comment-create: a comment over 1000 characters is refused before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("comment-create: is not idempotent", () => {
+test("comment-create: is not idempotent", () => {
   assertEquals(commentCreate.idempotent, false);
 });

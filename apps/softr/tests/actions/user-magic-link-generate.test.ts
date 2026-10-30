@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userMagicLinkGenerate from "../../actions/user-magic-link-generate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-magic-link-generate: POSTs /users/magic-link/generate/{email}", async () => {
+test("user-magic-link-generate: POSTs /users/magic-link/generate/{email}", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userMagicLinkGenerate.execute({ domain: "yourdomain.com", email: "user@softr.io" }, ctx);
 
@@ -10,6 +11,6 @@ Deno.test("user-magic-link-generate: POSTs /users/magic-link/generate/{email}", 
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("user-magic-link-generate: is explicitly not idempotent", () => {
+test("user-magic-link-generate: is explicitly not idempotent", () => {
   assertEquals(userMagicLinkGenerate.idempotent, false);
 });

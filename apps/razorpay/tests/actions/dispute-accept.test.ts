@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import disputeAccept from "../../actions/dispute-accept.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("dispute-accept: posts to /disputes/{id}/accept — irreversible, so no body needed", async () => {
+test("dispute-accept: posts to /disputes/{id}/accept — irreversible, so no body needed", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "disp_1", status: "lost" } }]);
   const out = await disputeAccept.execute({ id: "disp_1" }, ctx);
 

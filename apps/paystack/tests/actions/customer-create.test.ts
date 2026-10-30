@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/customer-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-create: POSTs snake_case fields and drops unset ones", async () => {
+test("customer-create: POSTs snake_case fields and drops unset ones", async () => {
   const data = { customer_code: "CUS_1", id: 1, email: "a@b.co" };
   const { ctx, calls } = mockCtx([{ body: ok(data) }]);
   assertEquals(
@@ -19,7 +20,7 @@ Deno.test("customer-create: POSTs snake_case fields and drops unset ones", async
   });
 });
 
-Deno.test("customer-create: requires an email", async () => {
+test("customer-create: requires an email", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ email: "" }, ctx),

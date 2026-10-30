@@ -26,7 +26,14 @@ const action: ActionDefinition = {
     {
       key: "includeRelated",
       label: "Include Related",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "environment", label: "Environment" },
+        { value: "most_recent_run", label: "Most recent run" },
+        { value: "most_recent_completed_run", label: "Most recent completed run" },
+        { value: "custom_environment_variables", label: "Custom environment variables" },
+      ],
+      config: { valueFormat: "csv" },
       default: "",
       hint: "`environment`, `most_recent_run`, `most_recent_completed_run`, " +
         "`custom_environment_variables`.",

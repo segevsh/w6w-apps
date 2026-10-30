@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/business-unit-reviews-list-all.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-unit-reviews-list-all: first page has no pageToken, returns nextCursor", async () => {
+test("business-unit-reviews-list-all: first page has no pageToken, returns nextCursor", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -21,7 +22,7 @@ Deno.test("business-unit-reviews-list-all: first page has no pageToken, returns 
   assertEquals(out.nextCursor, "MjAxMy0wNS0wM1QxMDowMzo0MS4wMDBa");
 });
 
-Deno.test("business-unit-reviews-list-all: passes pageToken through on a subsequent call", async () => {
+test("business-unit-reviews-list-all: passes pageToken through on a subsequent call", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { reviews: [] } }]);
   const out = await action.execute({ businessUnitId: "bu1", pageToken: "cursor-1" }, ctx);
   assertEquals(queryOf(calls[0].url).pageToken, "cursor-1");

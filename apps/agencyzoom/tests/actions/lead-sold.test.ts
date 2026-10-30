@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import leadSold from "../../actions/lead-sold.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const PRODUCTS = [{ locationId: "A0A0070", isSold: true, carrierId: 91, premium: 34500 }];
 
-Deno.test("lead-sold: POSTs soldProducts (parsed) + keepOpen to /leads/{leadId}/sold", async () => {
+test("lead-sold: POSTs soldProducts (parsed) + keepOpen to /leads/{leadId}/sold", async () => {
   const { ctx, calls } = mockCtx([{ body: { customerId: 100, opportunities: [] } }]);
   const result = await leadSold.execute({ leadId: 9, soldProducts: PRODUCTS }, ctx);
 
@@ -14,19 +15,19 @@ Deno.test("lead-sold: POSTs soldProducts (parsed) + keepOpen to /leads/{leadId}/
   assertEquals(result, { customerId: 100, opportunities: [] });
 });
 
-Deno.test("lead-sold: accepts soldProducts as a JSON string (what a raw text field submits)", async () => {
+test("lead-sold: accepts soldProducts as a JSON string (what a raw text field submits)", async () => {
   const { ctx, calls } = mockCtx([{ body: { customerId: 100 } }]);
   await leadSold.execute({ leadId: 9, soldProducts: JSON.stringify(PRODUCTS) }, ctx);
   assertEquals(JSON.parse(calls[0].body!).soldProducts, PRODUCTS);
 });
 
-Deno.test("lead-sold: keepOpen defaults to false", async () => {
+test("lead-sold: keepOpen defaults to false", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await leadSold.execute({ leadId: 9, soldProducts: PRODUCTS }, ctx);
   assertEquals(JSON.parse(calls[0].body!).keepOpen, false);
 });
 
-Deno.test("lead-sold: malformed soldProducts JSON fails before any request is made", async () => {
+test("lead-sold: malformed soldProducts JSON fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await leadSold.execute({ leadId: 9, soldProducts: "{not json" }, ctx),
@@ -36,6 +37,6 @@ Deno.test("lead-sold: malformed soldProducts JSON fails before any request is ma
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lead-sold: is declared non-idempotent", () => {
+test("lead-sold: is declared non-idempotent", () => {
   assert(leadSold.idempotent === false);
 });

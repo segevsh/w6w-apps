@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockAdsCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/get-customer.ts";
 
 const OK = { status: 200, body: { results: [{ customer: { id: "1234567890" } }] } };
 
-Deno.test("get-customer: queries FROM customer with no WHERE clause", async () => {
+test("get-customer: queries FROM customer with no WHERE clause", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -16,7 +17,7 @@ Deno.test("get-customer: queries FROM customer with no WHERE clause", async () =
   assert(q.endsWith("LIMIT 1"));
 });
 
-Deno.test("get-customer: selects the account's identity and settings", async () => {
+test("get-customer: selects the account's identity and settings", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -32,14 +33,14 @@ Deno.test("get-customer: selects the account's identity and settings", async () 
   ) assert(q.includes(f), `missing ${f}`);
 });
 
-Deno.test("get-customer: appends extra fields to the SELECT list", async () => {
+test("get-customer: appends extra fields to the SELECT list", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ extraFields: "customer.optimization_score, metrics.clicks" }, ctx);
   const q = queryOf(calls[0]);
   assert(q.includes("customer.optimization_score, metrics.clicks FROM customer"));
 });
 
-Deno.test("get-customer: refuses an extraFields value that is not a field path", () => {
+test("get-customer: refuses an extraFields value that is not a field path", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(
     () => action.execute({ extraFields: "campaign.id FROM campaign" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("get-customer: refuses an extraFields value that is not a field path",
   );
 });
 
-Deno.test("get-customer: honours the customerId override", async () => {
+test("get-customer: honours the customerId override", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ customerId: "222-222-2222" }, ctx);
   assertEquals(

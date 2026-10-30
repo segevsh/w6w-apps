@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   formatAnalyticsError,
   organizationIdFrom,
@@ -7,7 +8,7 @@ import {
 } from "../../lib/client.ts";
 import { mockAnalyticsCtx, mockCtx } from "../_helpers.ts";
 
-Deno.test("formatAnalyticsError: uses the vendor's summary/errorCode/errorMessage when present", () => {
+test("formatAnalyticsError: uses the vendor's summary/errorCode/errorMessage when present", () => {
   const msg = formatAnalyticsError(
     400,
     "GET",
@@ -23,38 +24,38 @@ Deno.test("formatAnalyticsError: uses the vendor's summary/errorCode/errorMessag
   assert(msg.includes("You need to (re)login to perform this operation"));
 });
 
-Deno.test("formatAnalyticsError: falls back to the raw body when it is not the documented shape", () => {
+test("formatAnalyticsError: falls back to the raw body when it is not the documented shape", () => {
   const msg = formatAnalyticsError(500, "GET", "/x", "<html>upstream exploded</html>");
   assert(msg.includes("500"));
   assert(msg.includes("upstream exploded"));
 });
 
-Deno.test("organizationIdFrom: prefers an explicit input over the connection default", () => {
+test("organizationIdFrom: prefers an explicit input over the connection default", () => {
   const { ctx } = mockAnalyticsCtx([], "analyticsapi.zoho.com", "671712892");
   assertEquals(organizationIdFrom({ organizationId: "999" }, ctx), "999");
 });
 
-Deno.test("organizationIdFrom: falls back to the connection's recorded organizationId", () => {
+test("organizationIdFrom: falls back to the connection's recorded organizationId", () => {
   const { ctx } = mockAnalyticsCtx([], "analyticsapi.zoho.com", "671712892");
   assertEquals(organizationIdFrom({}, ctx), "671712892");
 });
 
-Deno.test("organizationIdFrom: throws a clear error when neither is available", () => {
+test("organizationIdFrom: throws a clear error when neither is available", () => {
   const { ctx } = mockCtx([]);
   assertThrows(() => organizationIdFrom({}, ctx), Error, "List Owned Workspaces");
 });
 
-Deno.test("parseJsonObject: parses a JSON string and passes through an object", () => {
+test("parseJsonObject: parses a JSON string and passes through an object", () => {
   assertEquals(parseJsonObject('{"a":1}', "columns"), { a: 1 });
   assertEquals(parseJsonObject({ a: 1 }, "columns"), { a: 1 });
 });
 
-Deno.test("parseJsonObject: rejects missing/empty/array input", () => {
+test("parseJsonObject: rejects missing/empty/array input", () => {
   assertThrows(() => parseJsonObject(undefined, "columns"), Error, "required");
   assertThrows(() => parseJsonObject([1, 2], "columns"), Error, "JSON object");
 });
 
-Deno.test("ZohoAnalyticsClient#request: encodes CONFIG into the query string and unwraps `data`", async () => {
+test("ZohoAnalyticsClient#request: encodes CONFIG into the query string and unwraps `data`", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     { body: { status: "success", summary: "Add row", data: { addedColumns: { a: "1" } } } },
   ]);
@@ -70,7 +71,7 @@ Deno.test("ZohoAnalyticsClient#request: encodes CONFIG into the query string and
   assertEquals(out, { addedColumns: { a: "1" } });
 });
 
-Deno.test("ZohoAnalyticsClient#request: sends no org header when none is given", async () => {
+test("ZohoAnalyticsClient#request: sends no org header when none is given", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     { body: { status: "success", summary: "ok", data: { workspaces: [] } } },
   ]);
@@ -78,7 +79,7 @@ Deno.test("ZohoAnalyticsClient#request: sends no org header when none is given",
   assertEquals(calls[0].headers["zanalytics-orgid"], undefined);
 });
 
-Deno.test("ZohoAnalyticsClient#request: throws the formatted error on a non-ok response", async () => {
+test("ZohoAnalyticsClient#request: throws the formatted error on a non-ok response", async () => {
   const { ctx } = mockAnalyticsCtx([
     {
       status: 401,
@@ -96,7 +97,7 @@ Deno.test("ZohoAnalyticsClient#request: throws the formatted error on a non-ok r
   );
 });
 
-Deno.test("ZohoAnalyticsClient#requestRaw: returns text content as-is for a text content type", async () => {
+test("ZohoAnalyticsClient#requestRaw: returns text content as-is for a text content type", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       status: 200,
@@ -114,7 +115,7 @@ Deno.test("ZohoAnalyticsClient#requestRaw: returns text content as-is for a text
   assertEquals(calls[0].headers["zanalytics-orgid"], "671712892");
 });
 
-Deno.test("ZohoAnalyticsClient#requestRaw: base64-encodes a binary content type", async () => {
+test("ZohoAnalyticsClient#requestRaw: base64-encodes a binary content type", async () => {
   const { ctx } = mockAnalyticsCtx([
     { status: 200, headers: { "content-type": "image/png" }, body: "\x89PNG\r\n" },
   ]);
@@ -126,7 +127,7 @@ Deno.test("ZohoAnalyticsClient#requestRaw: base64-encodes a binary content type"
   assert(out.content.length > 0);
 });
 
-Deno.test("ZohoAnalyticsClient#requestRaw: throws the formatted error on a non-ok response", async () => {
+test("ZohoAnalyticsClient#requestRaw: throws the formatted error on a non-ok response", async () => {
   const { ctx } = mockAnalyticsCtx([
     {
       status: 400,

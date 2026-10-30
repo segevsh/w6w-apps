@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { formatNeverBounceError, NeverBounceClient } from "../../lib/client.ts";
 
-Deno.test("formatNeverBounceError: includes the path and status, and the message when present", () => {
+test("formatNeverBounceError: includes the path and status, and the message when present", () => {
   const withMessage = formatNeverBounceError("/account/info", "auth_failure", "Invalid API Key");
   assert(withMessage.includes("/account/info"));
   assert(withMessage.includes("auth_failure"));
@@ -12,7 +13,7 @@ Deno.test("formatNeverBounceError: includes the path and status, and the message
   assert(withoutMessage.includes("general_failure"));
 });
 
-Deno.test("NeverBounceClient.request: builds the URL against the fixed host/version and query params", async () => {
+test("NeverBounceClient.request: builds the URL against the fixed host/version and query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", credits_info: {}, job_counts: {} } },
   ]);
@@ -26,7 +27,7 @@ Deno.test("NeverBounceClient.request: builds the URL against the fixed host/vers
   assertEquals(result.status, "success");
 });
 
-Deno.test("NeverBounceClient.request: sends a JSON body with content-type on POST", async () => {
+test("NeverBounceClient.request: sends a JSON body with content-type on POST", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", job_id: 1 } }]);
   const client = new NeverBounceClient(ctx);
   await client.request("/jobs/create", { method: "POST", body: { input_location: "supplied" } });
@@ -35,13 +36,13 @@ Deno.test("NeverBounceClient.request: sends a JSON body with content-type on POS
   assertEquals(JSON.parse(calls[0].body!), { input_location: "supplied" });
 });
 
-Deno.test("NeverBounceClient.request: throws on a non-2xx status with no parseable status field", async () => {
+test("NeverBounceClient.request: throws on a non-2xx status with no parseable status field", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const client = new NeverBounceClient(ctx);
   await assertRejects(() => client.request("/account/info"), Error, "500");
 });
 
-Deno.test("NeverBounceClient.request: throws on a documented non-success status even on HTTP 200", async () => {
+test("NeverBounceClient.request: throws on a documented non-success status even on HTTP 200", async () => {
   // `docs/error-handling`: "these error messages will be returned with a 200
   // level status code" — this is the case that catches a client which gates
   // on `res.ok` instead of the body's `status` field.
@@ -57,7 +58,7 @@ Deno.test("NeverBounceClient.request: throws on a documented non-success status 
   );
 });
 
-Deno.test("NeverBounceClient.downloadCsv: returns the raw text body on success", async () => {
+test("NeverBounceClient.downloadCsv: returns the raw text body on success", async () => {
   const csv = "id,email,email_status\n1,a@b.com,valid";
   const { ctx, calls } = mockCtx([{ body: csv, headers: { "content-type": "text/csv" } }]);
   const client = new NeverBounceClient(ctx);
@@ -69,13 +70,13 @@ Deno.test("NeverBounceClient.downloadCsv: returns the raw text body on success",
   assertEquals(result, csv);
 });
 
-Deno.test("NeverBounceClient.downloadCsv: throws when the body is JSON carrying a non-success status", async () => {
+test("NeverBounceClient.downloadCsv: throws when the body is JSON carrying a non-success status", async () => {
   const { ctx } = mockCtx([{ body: { status: "auth_failure", message: "Invalid API Key" } }]);
   const client = new NeverBounceClient(ctx);
   await assertRejects(() => client.downloadCsv({ job_id: 1 }), Error, "auth_failure");
 });
 
-Deno.test("NeverBounceClient.downloadCsv: omits undefined/empty query values", async () => {
+test("NeverBounceClient.downloadCsv: omits undefined/empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: "id,email\n" }]);
   const client = new NeverBounceClient(ctx);
   await client.downloadCsv({ job_id: 1, only_duplicates: undefined, valids: "" });

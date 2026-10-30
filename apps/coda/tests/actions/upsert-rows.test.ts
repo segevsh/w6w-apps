@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-rows.ts";
 
-Deno.test("upsert-rows: POSTs rows converted to cells, with keyColumns when supplied", async () => {
+test("upsert-rows: POSTs rows converted to cells, with keyColumns when supplied", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { requestId: "req-1", addedRowIds: [], updatedRowIds: ["row-1"] },
@@ -23,7 +24,7 @@ Deno.test("upsert-rows: POSTs rows converted to cells, with keyColumns when supp
   assertEquals(out.requestId, "req-1");
 });
 
-Deno.test("upsert-rows: omits keyColumns from the body when not supplied", async () => {
+test("upsert-rows: omits keyColumns from the body when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { requestId: "req-2" } }]);
   await action.execute({ docId: "doc-1", tableId: "grid-1", rows: [{ Name: "New" }] }, ctx);
   const sent = JSON.parse(calls[0].body ?? "{}");

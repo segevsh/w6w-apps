@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionList from "../../actions/session-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("session-list: passes through filters and pagination", async () => {
+test("session-list: passes through filters and pagination", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ sessions: [{ id: "s1" }], pagination: { totalItems: 1 } }),
   }]);
@@ -21,7 +22,7 @@ Deno.test("session-list: passes through filters and pagination", async () => {
   assertEquals(out.sessions.length, 1);
 });
 
-Deno.test("session-list: omits filters that were left empty", async () => {
+test("session-list: omits filters that were left empty", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ sessions: [], pagination: {} }) }]);
   await sessionList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

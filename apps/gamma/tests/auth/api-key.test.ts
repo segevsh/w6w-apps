@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import apiKey from "../../auth/api-key.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("api-key: sign stamps the x-api-key header and returns the request", async () => {
+test("api-key: sign stamps the x-api-key header and returns the request", async () => {
   const request: SignableRequest = {
     url: "https://public-api.gamma.app/v1.0/themes",
     method: "GET",
@@ -16,7 +17,7 @@ Deno.test("api-key: sign stamps the x-api-key header and returns the request", a
   assertEquals(out.headers["x-api-key"], "sk-gamma-abc123");
 });
 
-Deno.test("api-key: test() passes on a 200 from the probe", async () => {
+test("api-key: test() passes on a 200 from the probe", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], hasMore: false, nextCursor: null } }]);
   const out = await apiKey.test({ credential: { apiKey: "sk-gamma-abc123" } }, ctx);
 
@@ -30,7 +31,7 @@ Deno.test("api-key: test() passes on a 200 from the probe", async () => {
  * {message, statusCode} error body is what says this key is invalid, not the
  * bare 401.
  */
-Deno.test("api-key: test() fails on 401 and surfaces the vendor's own message", async () => {
+test("api-key: test() fails on 401 and surfaces the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Invalid API key.", 401) }]);
   const out = await apiKey.test({ credential: { apiKey: "bad-key" } }, ctx);
 
@@ -38,7 +39,7 @@ Deno.test("api-key: test() fails on 401 and surfaces the vendor's own message", 
   assertEquals(out.message, "Invalid API key.");
 });
 
-Deno.test("api-key: test() fails on 403 with a plan-access explanation", async () => {
+test("api-key: test() fails on 403 with a plan-access explanation", async () => {
   const { ctx } = mockCtx([{ status: 403, body: {} }]);
   const out = await apiKey.test({ credential: { apiKey: "k" } }, ctx);
 
@@ -48,14 +49,14 @@ Deno.test("api-key: test() fails on 403 with a plan-access explanation", async (
   }
 });
 
-Deno.test("api-key: test() fails fast when the credential is empty", async () => {
+test("api-key: test() fails fast when the credential is empty", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await apiKey.test({ credential: { apiKey: "" } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: the credential field is declared secret", () => {
+test("api-key: the credential field is declared secret", () => {
   for (const f of apiKey.fields ?? []) {
     assertEquals(f.type, "secret", `${f.key}: not type "secret"`);
   }

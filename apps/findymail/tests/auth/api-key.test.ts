@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 import type { HookContext } from "@w6w/types";
 
-Deno.test("auth: declares an apiKey method with a secret field and Bearer header", () => {
+test("auth: declares an apiKey method with a secret field and Bearer header", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.fields![0].type, "secret");
 });
 
-Deno.test("auth: sign stamps the Bearer token and nothing else", async () => {
+test("auth: sign stamps the Bearer token and nothing else", async () => {
   const req = { url: "https://app.findymail.com/api/credits", method: "GET", headers: {} } as never;
   const out = await auth.sign!(
     { request: req, credential: { apiKey: "tok" } } as never,
@@ -18,7 +19,7 @@ Deno.test("auth: sign stamps the Bearer token and nothing else", async () => {
   assertEquals((out as { headers: Record<string, string> }).headers["authorization"], "Bearer tok");
 });
 
-Deno.test("auth.test: a credits balance is a live key, and the probe is GET /api/credits", async () => {
+test("auth.test: a credits balance is a live key, and the probe is GET /api/credits", async () => {
   const { ctx, calls } = mockCtx([{ body: { credits: 150, verifier_credits: 100 } }]);
   const r = await auth.test!({ credential: { apiKey: "k" } }, ctx);
   assertEquals(r.ok, true);
@@ -26,19 +27,19 @@ Deno.test("auth.test: a credits balance is a live key, and the probe is GET /api
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("auth.test: Unauthenticated is rejected from the body message", async () => {
+test("auth.test: Unauthenticated is rejected from the body message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthenticated." } }]);
   const r = await auth.test!({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(r.ok, false);
   assert(r.message!.includes("Unauthenticated."));
 });
 
-Deno.test("auth.test: a paused subscription (423 error body) still proves the key", async () => {
+test("auth.test: a paused subscription (423 error body) still proves the key", async () => {
   const { ctx } = mockCtx([{ status: 423, body: { error: "Subscription is paused" } }]);
   assertEquals((await auth.test!({ credential: { apiKey: "k" } }, ctx)).ok, true);
 });
 
-Deno.test("auth.test: a 200 without a balance, a 5xx, an HTML 4xx, no key and a network error all fail", async () => {
+test("auth.test: a 200 without a balance, a 5xx, an HTML 4xx, no key and a network error all fail", async () => {
   const shape = mockCtx([{ body: { hello: "world" } }]);
   assert(
     (await auth.test!({ credential: { apiKey: "k" } }, shape.ctx)).message!.includes("no credits"),

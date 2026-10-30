@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,25 +16,25 @@ function summary(apiStatus = "operational", others = "operational") {
   };
 }
 
-Deno.test("service: probes the status host, unauthenticated, not the API host", () => {
+test("service: probes the status host, unauthenticated, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.granola.ai/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.granola.ai"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an operational API component reports ok", async () => {
+test("service: an operational API component reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: an incident on another product does not mark the API down", async () => {
+test("service: an incident on another product does not mark the API down", async () => {
   const { ctx } = mockCtx([{ body: summary("operational", "full_outage") }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: API component states map; full_outage is down", async () => {
+test("service: API component states map; full_outage is down", async () => {
   for (
     const [s, want] of [["degraded_performance", "degraded"], ["partial_outage", "degraded"], [
       "full_outage",
@@ -47,7 +48,7 @@ Deno.test("service: API component states map; full_outage is down", async () => 
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("service: a missing API component, bad status, or foreign page is unknown, never down", async () => {
+test("service: a missing API component, bad status, or foreign page is unknown, never down", async () => {
   const noApi = summary();
   noApi.components = noApi.components.filter((c) => c.name !== API_COMPONENT);
   assertEquals((await service.check!({}, mockCtx([{ body: noApi }]).ctx)).state, "unknown");

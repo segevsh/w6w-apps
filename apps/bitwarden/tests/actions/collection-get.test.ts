@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-get.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("collection-get: GETs the collection by id", async () => {
+test("collection-get: GETs the collection by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "collection",
@@ -25,7 +26,7 @@ Deno.test("collection-get: GETs the collection by id", async () => {
   assertEquals((result.groups as unknown[]).length, 1);
 });
 
-Deno.test("collection-get: rejects an id that is not a UUID before any request", async () => {
+test("collection-get: rejects an id that is not a UUID before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({

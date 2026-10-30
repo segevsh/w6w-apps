@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import oauth2 from "../../auth/oauth2.ts";
 
@@ -6,7 +7,7 @@ const cred = { accessToken: "at", projectId: "p1", location: "europe-west4" };
 const PROBE =
   "https://europe-west4-aiplatform.googleapis.com/v1/projects/p1/locations/europe-west4/endpoints?pageSize=1";
 
-Deno.test("oauth2: Google identity endpoints, offline access, cloud-platform scope", () => {
+test("oauth2: Google identity endpoints, offline access, cloud-platform scope", () => {
   assertEquals(oauth2.oauth2!.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
   assertEquals(oauth2.oauth2!.tokenUrl, "https://oauth2.googleapis.com/token");
   assertEquals(oauth2.oauth2!.extraAuthParams?.access_type, "offline");
@@ -14,7 +15,7 @@ Deno.test("oauth2: Google identity endpoints, offline access, cloud-platform sco
   assertEquals(oauth2.oauth2!.scopes, ["https://www.googleapis.com/auth/cloud-platform"]);
 });
 
-Deno.test("oauth2: signs with the bearer", async () => {
+test("oauth2: signs with the bearer", async () => {
   const request = {
     url: "https://aiplatform.googleapis.com/v1/x",
     method: "GET" as const,
@@ -24,14 +25,14 @@ Deno.test("oauth2: signs with the bearer", async () => {
   assertEquals(out.headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: test lists one endpoint in the connection's region", async () => {
+test("oauth2: test lists one endpoint in the connection's region", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   assertEquals(await oauth2.test!({ credential: cred } as never, ctx), { ok: true });
   assertEquals(calls[0].url, PROBE);
   assertEquals(calls[0].headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: the verdict comes from error.status / reason in the body, not the HTTP status", async () => {
+test("oauth2: the verdict comes from error.status / reason in the body, not the HTTP status", async () => {
   const cases: Array<[number, unknown, string]> = [
     [401, { error: { status: "UNAUTHENTICATED" } }, "UNAUTHENTICATED"],
     [
@@ -58,7 +59,7 @@ Deno.test("oauth2: the verdict comes from error.status / reason in the body, not
   }
 });
 
-Deno.test("oauth2: test needs a token and a project, and never echoes the token", async () => {
+test("oauth2: test needs a token and a project, and never echoes the token", async () => {
   const { ctx } = mockCtx();
   const a = await oauth2.test!({ credential: { projectId: "p" } } as never, ctx) as {
     message: string;
@@ -70,7 +71,7 @@ Deno.test("oauth2: test needs a token and a project, and never echoes the token"
   assert(b.message.includes("projectId") && !b.message.includes("SECRET"));
 });
 
-Deno.test("oauth2: afterConnect records project and defaults the location", () => {
+test("oauth2: afterConnect records project and defaults the location", () => {
   assertEquals(
     oauth2.afterConnect!({ credential: { projectId: " p1 " } } as never, mockCtx().ctx),
     {

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check, { componentId, COMPONENTS_URL, mapStatus } from "../../health/service.ts";
 
@@ -20,7 +21,7 @@ const region = (
   }],
 });
 
-Deno.test("service: is unsigned, app-scoped, and widens egress only to the status host", () => {
+test("service: is unsigned, app-scoped, and widens egress only to the status host", () => {
   assertEquals(check.kind, "service");
   // `credential` and `scope` are left at the kind's defaults — none / app.
   assertEquals(check.credential, undefined);
@@ -29,7 +30,7 @@ Deno.test("service: is unsigned, app-scoped, and widens egress only to the statu
   assertEquals(check.network?.allow, ["public-api.freshstatus.io"]);
 });
 
-Deno.test("service: calls the Freshstatus account behind updates.freshservice.com", async () => {
+test("service: calls the Freshstatus account behind updates.freshservice.com", async () => {
   const { ctx, calls } = mockCtx([{
     body: { components: [region("US EAST", [{ status: "OP" }])] },
   }]);
@@ -38,7 +39,7 @@ Deno.test("service: calls the Freshstatus account behind updates.freshservice.co
   assertEquals(calls[0].url.includes("account_id=3616"), true);
 });
 
-Deno.test("service: reports ok with one component per region", async () => {
+test("service: reports ok with one component per region", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -56,7 +57,7 @@ Deno.test("service: reports ok with one component per region", async () => {
   assertEquals(out.message, undefined);
 });
 
-Deno.test("service: honours ignore_overall_status, as Freshworks' own roll-up does", async () => {
+test("service: honours ignore_overall_status, as Freshworks' own roll-up does", async () => {
   // This is not hypothetical: all 36 MEA components sit at MO behind this
   // flag, so counting them would pin every connection at `down` forever.
   const { ctx } = mockCtx([{
@@ -73,7 +74,7 @@ Deno.test("service: honours ignore_overall_status, as Freshworks' own roll-up do
   assertEquals(Object.keys(out.components ?? {}), ["us-east"]);
 });
 
-Deno.test("service: a real outage is reported down, with the region named", async () => {
+test("service: a real outage is reported down, with the region named", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -92,7 +93,7 @@ Deno.test("service: a real outage is reported down, with the region named", asyn
   assertEquals(out.message, "affected regions: us-east, india-mumbai");
 });
 
-Deno.test("service: a broken status API is `unknown`, never `down`", async () => {
+test("service: a broken status API is `unknown`, never `down`", async () => {
   const bad = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await check.check!({}, bad.ctx)).state, "unknown");
 
@@ -103,7 +104,7 @@ Deno.test("service: a broken status API is `unknown`, never `down`", async () =>
   assertEquals((await check.check!({}, junk.ctx)).state, "unknown");
 });
 
-Deno.test("service: every region ignored means unknown, not a false ok", async () => {
+test("service: every region ignored means unknown, not a false ok", async () => {
   const { ctx } = mockCtx([{
     body: { components: [region("MEA", [{ status: "MO", ignore: true }])] },
   }]);
@@ -111,7 +112,7 @@ Deno.test("service: every region ignored means unknown, not a false ok", async (
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("mapStatus: Freshstatus' vocabulary, and unknown for anything new", () => {
+test("mapStatus: Freshstatus' vocabulary, and unknown for anything new", () => {
   assertEquals(mapStatus("OP"), "ok");
   assertEquals(mapStatus("PD"), "degraded");
   assertEquals(mapStatus("PO"), "degraded");
@@ -121,7 +122,7 @@ Deno.test("mapStatus: Freshstatus' vocabulary, and unknown for anything new", ()
   assertEquals(mapStatus(undefined), "unknown");
 });
 
-Deno.test("componentId: slugifies a region name into a stable selector", () => {
+test("componentId: slugifies a region name into a stable selector", () => {
   assertEquals(componentId("EU NORTH(STOCKHOLM)"), "eu-north-stockholm");
   assertEquals(componentId("MIDDLE EAST AND AFRICA (MEA)"), "middle-east-and-africa-mea");
 });

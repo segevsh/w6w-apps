@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapMonitorStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const ALL = {
   "Fetch API": "success",
 };
 
-Deno.test("service: all monitors operational is ok", async () => {
+test("service: all monitors operational is ok", async () => {
   const { ctx, calls } = mockCtx([{ body: page(ALL) }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -28,7 +29,7 @@ Deno.test("service: all monitors operational is ok", async () => {
   ]);
 });
 
-Deno.test("service: the Search or Fetch API monitor drives the verdict", async () => {
+test("service: the Search or Fetch API monitor drives the verdict", async () => {
   const down = await service.check!(
     {},
     mockCtx([{ body: page({ ...ALL, "Fetch API": "error" }) }]).ctx,
@@ -47,7 +48,7 @@ Deno.test("service: the Search or Fetch API monitor drives the verdict", async (
   assertEquals(deg.state, "degraded");
 });
 
-Deno.test("service: the dashboard and MCP monitors never drive the verdict", async () => {
+test("service: the dashboard and MCP monitors never drive the verdict", async () => {
   const r = await service.check!(
     {},
     mockCtx([{ body: page({ ...ALL, "Application": "error", "MCP Server": "error" }) }]).ctx,
@@ -56,7 +57,7 @@ Deno.test("service: the dashboard and MCP monitors never drive the verdict", asy
   assertEquals(r.components?.["application"]?.state, "degraded");
 });
 
-Deno.test("service: unknown when the page is not Linkup's, lacks the monitors, or is not JSON", async () => {
+test("service: unknown when the page is not Linkup's, lacks the monitors, or is not JSON", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ body: page(ALL, "Acme") }]).ctx)).state,
     "unknown",
@@ -78,7 +79,7 @@ Deno.test("service: unknown when the page is not Linkup's, lacks the monitors, o
   );
 });
 
-Deno.test("service: monitor status mapping", () => {
+test("service: monitor status mapping", () => {
   assertEquals(mapMonitorStatus("success"), "ok");
   assertEquals(mapMonitorStatus("error"), "down");
   assertEquals(mapMonitorStatus("degraded"), "degraded");

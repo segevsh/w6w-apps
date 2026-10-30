@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerUpdate from "../../actions/customer-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-update: PUTs to the COLLECTION — there is no /v3/customers/{id}", async () => {
+test("customer-update: PUTs to the COLLECTION — there is no /v3/customers/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: 12 }], meta: {} } }]);
   await customerUpdate.execute({ customers: [{ id: 12, company: "Acme" }] }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("customer-update: PUTs to the COLLECTION — there is no /v3/customers
   assertEquals(bodyOf(calls[0]), [{ id: 12, company: "Acme" }]);
 });
 
-Deno.test("customer-update: refuses an element with no id, and names the index", async () => {
+test("customer-update: refuses an element with no id, and names the index", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await customerUpdate.execute({ customers: [{ id: 1 }, { company: "Acme" }] }, ctx),
@@ -20,7 +21,7 @@ Deno.test("customer-update: refuses an element with no id, and names the index",
   );
 });
 
-Deno.test("customer-update: refuses a bare object and an over-long batch", async () => {
+test("customer-update: refuses a bare object and an over-long batch", async () => {
   await assertRejects(
     async () => await customerUpdate.execute({ customers: { id: 1 } }, mockCtx([]).ctx),
     Error,
@@ -34,6 +35,6 @@ Deno.test("customer-update: refuses a bare object and an over-long batch", async
   );
 });
 
-Deno.test("customer-update: a repeat of the same partial update is a no-op", () => {
+test("customer-update: a repeat of the same partial update is a no-op", () => {
   assertEquals(customerUpdate.idempotent, true);
 });

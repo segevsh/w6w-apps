@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/events-create.ts";
 
 const sample = { id: 41, object: "event", name: "Yoga Flow" };
 
-Deno.test("events-create: posts the documented body to /events", async () => {
+test("events-create: posts the documented body to /events", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: sample }]);
   const result = await action.execute!({
     starts_at: "2026-09-22T06:00:00Z",
@@ -38,7 +39,7 @@ Deno.test("events-create: posts the documented body to /events", async () => {
   assertEquals(result.id, 41);
 });
 
-Deno.test("events-create: drops the body fields the caller left unset", async () => {
+test("events-create: drops the body fields the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: sample }]);
   await action.execute!({
     starts_at: "2026-09-22T06:00:00Z",
@@ -61,13 +62,13 @@ Deno.test("events-create: drops the body fields the caller left unset", async ()
 });
 
 /** The form field is a string; the body field has to be a real array. */
-Deno.test("events-create: sends instructors as an array, not a string", async () => {
+test("events-create: sends instructors as an array, not a string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: sample }]);
   await action.execute!({ instructors: "5, 6" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!).instructors, [5, 6]);
 });
 
-Deno.test("events-create: declares the six required schedule fields", () => {
+test("events-create: declares the six required schedule fields", () => {
   assertEquals(action.type, "perform");
   for (const key of ["starts_at", "ends_at", "name", "venue", "offering_type", "instructors"]) {
     assertEquals(action.params!.find((p) => p.key === key)!.required, true, key);

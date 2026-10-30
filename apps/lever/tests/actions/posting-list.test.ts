@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/posting-list.ts";
 
@@ -17,7 +18,7 @@ const postings = {
 };
 
 /** Both published and internal are open roles. */
-Deno.test("posting-list: counts open roles as published plus internal", async () => {
+test("posting-list: counts open roles as published plus internal", async () => {
   const { ctx } = mockCtx([postings], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.openRoles, ["Engineer", "Quiet role"]);
@@ -25,14 +26,14 @@ Deno.test("posting-list: counts open roles as published plus internal", async ()
 });
 
 /** Postings have the same confidentiality default as opportunities. */
-Deno.test("posting-list: defaults confidentiality to all", async () => {
+test("posting-list: defaults confidentiality to all", async () => {
   const { ctx, calls } = mockCtx([postings], D);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("confidentiality"), "all");
 });
 
 /** `include` is exclusive, so it is only ever sent deliberately. */
-Deno.test("posting-list: only sends include when the description is wanted", async () => {
+test("posting-list: only sends include when the description is wanted", async () => {
   const without = mockCtx([postings], D);
   await action.execute({}, without.ctx);
   assertEquals(new URL(without.calls[0].url).searchParams.get("include"), null);
@@ -42,7 +43,7 @@ Deno.test("posting-list: only sends include when the description is wanted", asy
   assertEquals(new URL(withContent.calls[0].url).searchParams.get("include"), "content");
 });
 
-Deno.test("posting-list: the filters reach the query", async () => {
+test("posting-list: the filters reach the query", async () => {
   const { ctx, calls } = mockCtx([postings], D);
   await action.execute({ state: "published", team: "Engineering", location: "London" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -51,7 +52,7 @@ Deno.test("posting-list: the filters reach the query", async () => {
   assertEquals(q.get("location"), "London");
 });
 
-Deno.test("posting-list: reports the distinct teams hiring", async () => {
+test("posting-list: reports the distinct teams hiring", async () => {
   const { ctx } = mockCtx([postings], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.teams, ["Engineering", "Sales"]);

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-coin-market-chart-range.ts";
 
-Deno.test("get-coin-market-chart-range: calls the documented path with the mapped query", async () => {
+test("get-coin-market-chart-range: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { prices: [[1, 2]] } }]);
   const out = await action.execute!({
     id: "bitcoin",
@@ -20,7 +21,7 @@ Deno.test("get-coin-market-chart-range: calls the documented path with the mappe
   assert(out !== undefined);
 });
 
-Deno.test("get-coin-market-chart-range: a vendor error body becomes a readable error", async () => {
+test("get-coin-market-chart-range: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },
@@ -38,7 +39,7 @@ Deno.test("get-coin-market-chart-range: a vendor error body becomes a readable e
   );
 });
 
-Deno.test("get-coin-market-chart-range: required input is validated before any request", async () => {
+test("get-coin-market-chart-range: required input is validated before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

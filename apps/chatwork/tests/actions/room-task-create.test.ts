@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomTaskCreate from "../../actions/room-task-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-task-create: posts body, to_ids and the deadline fields", async () => {
+test("room-task-create: posts body, to_ids and the deadline fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { task_ids: [1, 3, 6] } }]);
   const out = await roomTaskCreate.execute({
     roomId: "5",
@@ -22,12 +23,12 @@ Deno.test("room-task-create: posts body, to_ids and the deadline fields", async 
   assertEquals(out, { task_ids: [1, 3, 6] });
 });
 
-Deno.test("room-task-create: one task ID comes back per assignee — response is plural", () => {
+test("room-task-create: one task ID comes back per assignee — response is plural", () => {
   const output = roomTaskCreate.output;
   const field = Array.isArray(output) ? output.find((o) => o.key === "task_ids") : undefined;
   assertEquals(field?.type, "array");
 });
 
-Deno.test("room-task-create: is not idempotent — retrying creates duplicate tasks", () => {
+test("room-task-create: is not idempotent — retrying creates duplicate tasks", () => {
   assertEquals(roomTaskCreate.idempotent, false);
 });

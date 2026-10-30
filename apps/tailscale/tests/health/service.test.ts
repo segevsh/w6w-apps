@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -23,14 +24,14 @@ const operational = [
 
 const run = (ctx: Parameters<NonNullable<typeof check.check>>[1]) => check.check!({}, ctx);
 
-Deno.test("service: an operational API is ok", async () => {
+test("service: an operational API is ok", async () => {
   const { ctx, calls } = mockCtx([summary(operational)]);
   const result = await run(ctx);
   assertEquals(calls[0].url, "https://status.tailscale.com/api/v2/summary.json");
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: a major outage of the API is down", async () => {
+test("service: a major outage of the API is down", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API (api.tailscale.com)", status: "major_outage" },
     ...operational.slice(1),
@@ -40,7 +41,7 @@ Deno.test("service: a major outage of the API is down", async () => {
   assert(/API unavailable/.test(result.message!), result.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API (api.tailscale.com)", status: "degraded_performance" },
     ...operational.slice(1),
@@ -52,7 +53,7 @@ Deno.test("service: degraded performance is degraded, not down", async () => {
  * The distinction this check exists for: the data plane is peer-to-peer, so a
  * coordination outage is not this app failing.
  */
-Deno.test("service: a coordination outage is degraded and named as the network's, not ours", async () => {
+test("service: a coordination outage is degraded and named as the network's, not ours", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API (api.tailscale.com)", status: "operational" },
     { name: "Coordination service", status: "major_outage" },
@@ -66,7 +67,7 @@ Deno.test("service: a coordination outage is degraded and named as the network's
 });
 
 /** A DERP outage takes out some connections and leaves most of the tailnet fine. */
-Deno.test("service: a DERP outage is reported alongside a healthy API", async () => {
+test("service: a DERP outage is reported alongside a healthy API", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API (api.tailscale.com)", status: "operational" },
     { name: "Coordination service", status: "operational" },
@@ -78,21 +79,21 @@ Deno.test("service: a DERP outage is reported alongside a healthy API", async ()
 });
 
 /** Statuspage component names are editable, so a rename is a check to fix. */
-Deno.test("service: a renamed API component is unknown rather than an outage", async () => {
+test("service: a renamed API component is unknown rather than an outage", async () => {
   const { ctx } = mockCtx([summary([{ name: "Tailscale API", status: "operational" }])]);
   const result = await run(ctx);
   assertEquals(result.state, "unknown");
   assert(/probably been renamed/.test(result.message!), result.message);
 });
 
-Deno.test("service: an unreachable or non-JSON status page is unknown", async () => {
+test("service: an unreachable or non-JSON status page is unknown", async () => {
   const down = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await run(down.ctx)).state, "unknown");
   const html = mockCtx([{ status: 200, body: "<html>" }]);
   assertEquals((await run(html.ctx)).state, "unknown");
 });
 
-Deno.test("service: is app-scoped, unauthenticated and fatal", () => {
+test("service: is app-scoped, unauthenticated and fatal", () => {
   assertEquals(check.scope, "app");
   assertEquals(check.credential, "none");
   assertEquals(check.severity, "fatal");
@@ -100,7 +101,7 @@ Deno.test("service: is app-scoped, unauthenticated and fatal", () => {
 });
 
 /** Measured: no rate-limit header of any kind. */
-Deno.test("quota: is a declared absence naming what binds instead", () => {
+test("quota: is a declared absence naming what binds instead", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assert(/no rate-limit headers/.test(quota.unavailable!.reason), quota.unavailable!.reason);

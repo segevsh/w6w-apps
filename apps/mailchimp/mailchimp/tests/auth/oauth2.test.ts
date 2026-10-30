@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Mailchimp's authorize/token endpoints", () => {
+test("oauth2: declares Mailchimp's authorize/token endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://login.mailchimp.com/oauth2/authorize");
@@ -10,7 +11,7 @@ Deno.test("oauth2: declares Mailchimp's authorize/token endpoints", () => {
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://us14.api.mailchimp.com/3.0/lists",
@@ -24,7 +25,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
+test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -32,7 +33,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure without a n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test uses cached datacenter from connection.display when present", async () => {
+test("oauth2: test uses cached datacenter from connection.display when present", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { health_status: "Ok" } }], {
     datacenter: "us14",
   });
@@ -45,7 +46,7 @@ Deno.test("oauth2: test uses cached datacenter from connection.display when pres
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test falls back to a metadata roundtrip when connection has no datacenter", async () => {
+test("oauth2: test falls back to a metadata roundtrip when connection has no datacenter", async () => {
   const { ctx, calls } = mockCtx(
     [
       { status: 200, body: { api_endpoint: "https://eu2.api.mailchimp.com" } },
@@ -62,14 +63,14 @@ Deno.test("oauth2: test falls back to a metadata roundtrip when connection has n
   assertEquals(new URL(calls[1].url).origin, "https://eu2.api.mailchimp.com");
 });
 
-Deno.test("oauth2: test surfaces the upstream status on non-2xx", async () => {
+test("oauth2: test surfaces the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }], { datacenter: "us14" });
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("oauth2: afterConnect hits metadata with `OAuth <token>` and stashes datacenter + account", async () => {
+test("oauth2: afterConnect hits metadata with `OAuth <token>` and stashes datacenter + account", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -96,7 +97,7 @@ Deno.test("oauth2: afterConnect hits metadata with `OAuth <token>` and stashes d
   assertEquals(calls[0].headers["authorization"], "OAuth acc-xyz");
 });
 
-Deno.test("oauth2: afterConnect returns {} when metadata call fails", async () => {
+test("oauth2: afterConnect returns {} when metadata call fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const result = await auth.afterConnect!(
     { credential: { accessToken: "acc-xyz" } },

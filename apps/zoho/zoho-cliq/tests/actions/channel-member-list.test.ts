@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-member-list.ts";
 
-Deno.test("channel-member-list: lists members with roles", async () => {
+test("channel-member-list: lists members with roles", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "members": [{ "user_id": "1", "user_role": "member" }] },
@@ -21,6 +22,6 @@ Deno.test("channel-member-list: lists members with roles", async () => {
   });
 });
 
-Deno.test("channel-member-list: is a read action", () => {
+test("channel-member-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

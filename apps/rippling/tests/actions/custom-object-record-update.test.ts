@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import customObjectRecordUpdate from "../../actions/custom-object-record-update.ts";
 
-Deno.test("custom-object-record-update: PATCHes .../records/<codr_id>/ and unwraps the data envelope", async () => {
+test("custom-object-record-update: PATCHes .../records/<codr_id>/ and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "r1", name: "New" } } }]);
   const out = await customObjectRecordUpdate.execute(
     { customObjectApiName: "asset", recordId: "r1", fields: { name: "New" } },
@@ -15,7 +16,7 @@ Deno.test("custom-object-record-update: PATCHes .../records/<codr_id>/ and unwra
   assertEquals(out, { id: "r1", name: "New" });
 });
 
-Deno.test("custom-object-record-update: requires api name, record id and a JSON object", async () => {
+test("custom-object-record-update: requires api name, record id and a JSON object", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

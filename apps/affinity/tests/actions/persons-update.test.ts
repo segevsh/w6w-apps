@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import personsUpdate from "../../actions/persons-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("persons-update: PUTs only the provided fields", async () => {
+test("persons-update: PUTs only the provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 860197 } }]);
   await personsUpdate.execute({ personId: 860197, firstName: "Allison" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("persons-update: PUTs only the provided fields", async () => {
   assertEquals(JSON.parse(calls[0].body!), { first_name: "Allison" });
 });
 
-Deno.test("persons-update: replaces emails (full list) when provided", async () => {
+test("persons-update: replaces emails (full list) when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 860197 } }]);
   await personsUpdate.execute(
     { personId: 860197, emails: "allison@affinity.co,allison@gmail.com" },

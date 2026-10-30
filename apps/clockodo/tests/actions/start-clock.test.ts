@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/start-clock.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("start-clock: POSTs /v2/clock with the given fields", async () => {
+test("start-clock: POSTs /v2/clock with the given fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { running: { id: 11 }, stopped: { id: 10 }, current_time: "t" },
   }]);
@@ -18,7 +19,7 @@ Deno.test("start-clock: POSTs /v2/clock with the given fields", async () => {
   assertEquals(out.stopped, { id: 10 });
 });
 
-Deno.test("start-clock: required ids are checked locally; a 409 surfaces", async () => {
+test("start-clock: required ids are checked locally; a 409 surfaces", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { customersId: 3 }, none.ctx), Error, "servicesId");
   assertEquals(none.calls.length, 0);

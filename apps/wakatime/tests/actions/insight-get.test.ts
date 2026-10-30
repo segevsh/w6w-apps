@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/insight-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("insight-get: GETs the documented path", async () => {
+test("insight-get: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { languages: [] } } }]);
   const out = await action.execute!({ insightType: "languages", range: "last_30_days" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -13,7 +14,7 @@ Deno.test("insight-get: GETs the documented path", async () => {
   assertEquals(out, { data: { languages: [] } });
 });
 
-Deno.test("insight-get: a vendor error reports status and message", async () => {
+test("insight-get: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({ insightType: "languages", range: "last_30_days" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rsvpAttendeeSearch from "../../actions/rsvp-attendee-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("rsvp-attendee-search: comma-joins the multiselect attending filter", async () => {
+test("rsvp-attendee-search: comma-joins the multiselect attending filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rsvps: [], pagination: {}, links: {} } }]);
 
   await rsvpAttendeeSearch.execute(
@@ -16,7 +17,7 @@ Deno.test("rsvp-attendee-search: comma-joins the multiselect attending filter", 
   assertEquals(q.attending, "going,maybe");
 });
 
-Deno.test("rsvp-attendee-search: a zero-match result is a plain empty array, not an error", async () => {
+test("rsvp-attendee-search: a zero-match result is a plain empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { rsvps: [] } }]);
   const out = await rsvpAttendeeSearch.execute({}, ctx) as { rsvps: unknown[] };
   assertEquals(out.rsvps.length, 0);

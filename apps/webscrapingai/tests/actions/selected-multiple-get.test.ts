@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/selected-multiple-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("selected-multiple-get: repeats the selectors key (never selectors[]) and counts results", async () => {
+test("selected-multiple-get: repeats the selectors key (never selectors[]) and counts results", async () => {
   const body = [["Example"], ["a", "b"], []];
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ url: "https://e.test", selectors: "h1\n p \n.x" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("selected-multiple-get: repeats the selectors key (never selectors[]) 
   assertEquals(u.searchParams.has("selectors[]"), false);
 });
 
-Deno.test("selected-multiple-get: accepts an array; empty selectors and a non-array body are errors", async () => {
+test("selected-multiple-get: accepts an array; empty selectors and a non-array body are errors", async () => {
   const { ctx, calls } = mockCtx([{ body: [["x"]] }]);
   await action.execute({ url: "https://e.test", selectors: ["h1"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("selectors"), ["h1"]);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-child-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("page-child-list: lists the children of one page", async () => {
+test("page-child-list: lists the children of one page", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ id: "2" }], _links: {} } }], {
     display,
   });
@@ -13,7 +14,7 @@ Deno.test("page-child-list: lists the children of one page", async () => {
   assertEquals(result, [{ id: "2" }]);
 });
 
-Deno.test("page-child-list: a blank id fails before any request", async () => {
+test("page-child-list: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`pageId` is required");
   assertEquals(calls.length, 0);

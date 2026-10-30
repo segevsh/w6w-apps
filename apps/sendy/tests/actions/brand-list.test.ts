@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/brand-list.ts";
 
 const conn = { display: { baseUrl: "https://example.com/sendy" } };
 
-Deno.test("brand-list: parses the documented JSON success shape, unparameterised", async () => {
+test("brand-list: parses the documented JSON success shape, unparameterised", async () => {
   const { ctx, calls } = mockCtx([{ body: JSON.stringify([{ id: "b1", name: "Acme" }]) }], conn);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://example.com/sendy/api/brands/get-brands.php");
@@ -12,7 +13,7 @@ Deno.test("brand-list: parses the documented JSON success shape, unparameterised
   assertEquals(action.params, []);
 });
 
-Deno.test("brand-list: a plain-text error is not silently parsed as JSON", async () => {
+test("brand-list: a plain-text error is not silently parsed as JSON", async () => {
   const { ctx } = mockCtx([{ body: "No brands found" }], conn);
   await assertRejects(
     async () => await action.execute({}, ctx),

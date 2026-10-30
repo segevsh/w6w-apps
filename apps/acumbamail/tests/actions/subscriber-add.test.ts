@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscriberAdd from "../../actions/subscriber-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-add: POST /api/1/addSubscriber/ with the documented form fields", async () => {
+test("subscriber-add: POST /api/1/addSubscriber/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await subscriberAdd.execute(
     {
@@ -32,7 +33,7 @@ Deno.test("subscriber-add: POST /api/1/addSubscriber/ with the documented form f
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("subscriber-add: a vendor error surfaces its status and body", async () => {
+test("subscriber-add: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await subscriberAdd.execute(
@@ -50,7 +51,7 @@ Deno.test("subscriber-add: a vendor error surfaces its status and body", async (
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("subscriber-add: an empty list_id fails before any request", async () => {
+test("subscriber-add: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -70,7 +71,7 @@ Deno.test("subscriber-add: an empty list_id fails before any request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscriber-add: unset optional fields are not sent", async () => {
+test("subscriber-add: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await subscriberAdd.execute(
     { "list_id": 7, "merge_fields": { "email": "a@b.co", "name": "Ann" } } as never,

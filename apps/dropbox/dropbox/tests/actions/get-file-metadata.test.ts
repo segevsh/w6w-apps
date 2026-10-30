@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-file-metadata.ts";
 
-Deno.test("get-file-metadata: POSTs /files/get_metadata with defaults", async () => {
+test("get-file-metadata: POSTs /files/get_metadata with defaults", async () => {
   const meta = { ".tag": "file", id: "id:1", name: "hello.txt" };
   const { ctx, calls } = mockCtx([{ body: meta }]);
   const result = await action.execute!({ path: "/hello.txt" }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZendeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-get-many.ts";
 
-Deno.test("ticket-get-many: uses Zendesk's page[size]/page[after] cursor params", async () => {
+test("ticket-get-many: uses Zendesk's page[size]/page[after] cursor params", async () => {
   const { ctx, calls } = mockZendeskCtx([{ body: { tickets: [] } }]);
   await action.execute({ pageSize: 50, cursor: "abc", sortBy: "updated_at" }, ctx);
   const q = new URL(calls[0].url).searchParams;

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-invitation-create.ts";
 
-Deno.test("organization-invitation-create: POSTs email + role to the org's invitations", async () => {
+test("organization-invitation-create: POSTs email + role to the org's invitations", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "orginv_1", status: "pending" } }]);
   await action.execute!({
     organizationId: "org_1",
@@ -16,7 +17,7 @@ Deno.test("organization-invitation-create: POSTs email + role to the org's invit
   });
 });
 
-Deno.test("organization-invitation-create: requires an email and a role", async () => {
+test("organization-invitation-create: requires an email and a role", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute!({ organizationId: "org_1" }, ctx),

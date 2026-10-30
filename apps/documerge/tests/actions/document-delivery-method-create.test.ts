@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentDeliveryMethodCreate from "../../actions/document-delivery-method-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-delivery-method-create: POST /api/documents/delivery-methods/{documentId}", async () => {
+test("document-delivery-method-create: POST /api/documents/delivery-methods/{documentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentDeliveryMethodCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("document-delivery-method-create: POST /api/documents/delivery-methods
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-delivery-method-create: settings given as a JSON string are parsed; a non-object is refused", async () => {
+test("document-delivery-method-create: settings given as a JSON string are parsed; a non-object is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   await documentDeliveryMethodCreate.execute(
     {
@@ -52,7 +53,7 @@ Deno.test("document-delivery-method-create: settings given as a JSON string are 
   );
 });
 
-Deno.test("document-delivery-method-create: a vendor error surfaces its own message", async () => {
+test("document-delivery-method-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -72,5 +73,5 @@ Deno.test("document-delivery-method-create: a vendor error surfaces its own mess
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-delivery-method-create: idempotency is declared as false", () =>
+test("document-delivery-method-create: idempotency is declared as false", () =>
   assertEquals(documentDeliveryMethodCreate.idempotent, false));

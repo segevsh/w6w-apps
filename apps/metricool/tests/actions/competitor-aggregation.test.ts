@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import aggregation from "../../actions/competitor-aggregation.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const M = {
   subject: "competitors",
 };
 
-Deno.test("competitor-aggregation: GET /v2/analytics/competitors/{id}/aggregation", async () => {
+test("competitor-aggregation: GET /v2/analytics/competitors/{id}/aggregation", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(900) }]);
   assertEquals(await aggregation.execute(M, ctx), { value: 900 });
   assertEquals(pathOf(calls[0].url), "/api/v2/analytics/competitors/77/aggregation");

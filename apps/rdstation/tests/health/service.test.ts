@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import service, { classifyEntry, STATUS_FEED_URL } from "../../health/service.ts";
 
@@ -19,7 +20,7 @@ function feedOf(entries: Array<{ title: string; status?: string }>) {
   };
 }
 
-Deno.test("service: a feed that itself failed is unknown, never down", async () => {
+test("service: a feed that itself failed is unknown, never down", async () => {
   const result = await service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "", error: "boom" } },
     {} as never,
@@ -28,7 +29,7 @@ Deno.test("service: a feed that itself failed is unknown, never down", async () 
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: the live vocabulary (Resolvido/Concluído) reads as closed", async () => {
+test("service: the live vocabulary (Resolvido/Concluído) reads as closed", async () => {
   const result = await service.check!(
     {
       feed: feedOf([
@@ -42,7 +43,7 @@ Deno.test("service: the live vocabulary (Resolvido/Concluído) reads as closed",
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: a still-open incident is degraded, and named", async () => {
+test("service: a still-open incident is degraded, and named", async () => {
   const result = await service.check!(
     {
       feed: feedOf([
@@ -57,7 +58,7 @@ Deno.test("service: a still-open incident is degraded, and named", async () => {
   assertEquals(result.message?.includes("Indisponibilidade RD Station CRM"), true);
 });
 
-Deno.test("service: an unfamiliar status word is unknown, not guessed open or closed", async () => {
+test("service: an unfamiliar status word is unknown, not guessed open or closed", async () => {
   const result = await service.check!(
     { feed: feedOf([{ title: "Something new", status: "Analisando" }]) },
     {} as never,
@@ -66,19 +67,19 @@ Deno.test("service: an unfamiliar status word is unknown, not guessed open or cl
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: an entry with no status marker at all is unknown", async () => {
+test("service: an entry with no status marker at all is unknown", async () => {
   const result = await service.check!({ feed: feedOf([{ title: "No marker" }]) }, {} as never);
 
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: an empty feed is ok — nothing is down", async () => {
+test("service: an empty feed is ok — nothing is down", async () => {
   const result = await service.check!({ feed: feedOf([]) }, {} as never);
 
   assertEquals(result.state, "ok");
 });
 
-Deno.test("classifyEntry: reads the one- and two-word forms, and only the body's marker", () => {
+test("classifyEntry: reads the one- and two-word forms, and only the body's marker", () => {
   const entry = (status?: string) =>
     feedOf([{ title: "Indisponibilidade RD Station CRM", status }]).latest[0];
 
@@ -90,7 +91,7 @@ Deno.test("classifyEntry: reads the one- and two-word forms, and only the body's
   assertEquals(classifyEntry(entry()), "unrecognised");
 });
 
-Deno.test("service: declares the feed, stays unsigned, informational, without widening egress", () => {
+test("service: declares the feed, stays unsigned, informational, without widening egress", () => {
   assertEquals(service.feed?.url, STATUS_FEED_URL);
   assertEquals(STATUS_FEED_URL, "https://status.rdstation.com/history.rss");
   assertEquals(service.kind, "service");

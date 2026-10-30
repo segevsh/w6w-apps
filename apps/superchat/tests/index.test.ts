@@ -1,7 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares 53 actions with unique kebab-case keys and typed kinds", () => {
+test("index: declares 53 actions with unique kebab-case keys and typed kinds", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 53);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -15,7 +17,7 @@ Deno.test("index: declares 53 actions with unique kebab-case keys and typed kind
   }
 });
 
-Deno.test("index: every perform action states whether it is idempotent", () => {
+test("index: every perform action states whether it is idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -26,14 +28,14 @@ Deno.test("index: every perform action states whether it is idempotent", () => {
   assertEquals(byKey.get("contact-delete")!.idempotent, true);
 });
 
-Deno.test("index: one auth method (api-key) and service + api + quota health checks", () => {
+test("index: one auth method (api-key) and service + api + quota health checks", () => {
   assertEquals(app.auth?.map((a) => a.key), ["api-key"]);
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["api", "quota", "service"]);
 });
 
-Deno.test("index: no action sets credentials itself", async () => {
+test("index: no action sets credentials itself", async () => {
   for (const key of app.actions.map((a) => a.key)) {
-    const src = await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url));
     assertEquals(/x-api-key|authorization/i.test(src), false, `${key} must not touch credentials`);
   }
 });

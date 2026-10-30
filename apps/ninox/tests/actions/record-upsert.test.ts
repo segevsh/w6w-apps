@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, envelope, errorBody, pathOf, WS } from "../_helpers.ts";
 import action from "../../actions/record-upsert.ts";
 
-Deno.test("record-upsert: POSTs matchField + records and returns both id lists", async () => {
+test("record-upsert: POSTs matchField + records and returns both id lists", async () => {
   const { ctx, calls } = connCtx([{ body: envelope({ createdIds: ["9"], updatedIds: ["3"] }) }]);
   const records = [{ email: "a@b.com", name: "A" }, { email: "c@d.com" }];
   const out = await action.execute(
@@ -18,7 +19,7 @@ Deno.test("record-upsert: POSTs matchField + records and returns both id lists",
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("record-upsert: a record missing the match value is rejected locally", async () => {
+test("record-upsert: a record missing the match value is rejected locally", async () => {
   const { ctx, calls } = connCtx();
   await assertRejects(
     async () =>
@@ -41,7 +42,7 @@ Deno.test("record-upsert: a record missing the match value is rejected locally",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-upsert: an ambiguous match (409) is an error", async () => {
+test("record-upsert: an ambiguous match (409) is an error", async () => {
   const { ctx } = connCtx([{ status: 409, body: errorBody("Ambiguous match") }]);
   await assertRejects(
     async () =>

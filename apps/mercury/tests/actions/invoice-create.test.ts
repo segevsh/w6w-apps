@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceCreate from "../../actions/invoice-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const BASE_INPUT = {
   useRealAccountNumber: false,
 };
 
-Deno.test("invoice-create: POSTs /ar/invoices with the required fields", async () => {
+test("invoice-create: POSTs /ar/invoices with the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "inv_new" } }]);
   await invoiceCreate.execute(BASE_INPUT, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v1/ar/invoices");
@@ -24,18 +25,18 @@ Deno.test("invoice-create: POSTs /ar/invoices with the required fields", async (
   assertEquals(body.ccEmails, []);
 });
 
-Deno.test("invoice-create: defaults sendEmailOption to DontSend, never emailing a real customer by accident", async () => {
+test("invoice-create: defaults sendEmailOption to DontSend, never emailing a real customer by accident", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await invoiceCreate.execute(BASE_INPUT, ctx);
   assertEquals(JSON.parse(calls[0].body!).sendEmailOption, "DontSend");
 });
 
-Deno.test("invoice-create: sendEmailNow true maps to SendNow", async () => {
+test("invoice-create: sendEmailNow true maps to SendNow", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await invoiceCreate.execute({ ...BASE_INPUT, sendEmailNow: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).sendEmailOption, "SendNow");
 });
 
-Deno.test("invoice-create: declares idempotent false — no vendor idempotency mechanism, and it can email the customer", () => {
+test("invoice-create: declares idempotent false — no vendor idempotency mechanism, and it can email the customer", () => {
   assertEquals(invoiceCreate.idempotent, false);
 });

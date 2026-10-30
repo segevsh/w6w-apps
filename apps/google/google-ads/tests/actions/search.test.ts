@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockAdsCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
 const OK = { status: 200, body: { results: [], fieldMask: "campaign.id" } };
 
-Deno.test("search: posts the raw GAQL verbatim to googleAds:search", async () => {
+test("search: posts the raw GAQL verbatim to googleAds:search", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   const query = "SELECT campaign.id, metrics.clicks FROM campaign WHERE segments.date DURING TODAY";
   await action.execute({ query }, ctx);
@@ -16,7 +17,7 @@ Deno.test("search: posts the raw GAQL verbatim to googleAds:search", async () =>
   assertEquals(bodyOf(calls[0]).query, query);
 });
 
-Deno.test("search: a customerId override redirects the call", async () => {
+test("search: a customerId override redirects the call", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute(
     { query: "SELECT campaign.id FROM campaign", customerId: "999-888-7777" },
@@ -28,7 +29,7 @@ Deno.test("search: a customerId override redirects the call", async () => {
   );
 });
 
-Deno.test("search: forwards pageToken, validateOnly and searchSettings", async () => {
+test("search: forwards pageToken, validateOnly and searchSettings", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({
     query: "SELECT campaign.id FROM campaign",
@@ -43,25 +44,25 @@ Deno.test("search: forwards pageToken, validateOnly and searchSettings", async (
   assertEquals(body.searchSettings, { returnTotalResultsCount: true, returnSummaryRow: true });
 });
 
-Deno.test("search: omits searchSettings entirely when neither flag is set", async () => {
+test("search: omits searchSettings entirely when neither flag is set", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ query: "SELECT campaign.id FROM campaign" }, ctx);
   assertEquals(bodyOf(calls[0]), { query: "SELECT campaign.id FROM campaign" });
 });
 
-Deno.test("search: never sends the deprecated pageSize", async () => {
+test("search: never sends the deprecated pageSize", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ query: "SELECT campaign.id FROM campaign" }, ctx);
   assert(!("pageSize" in bodyOf(calls[0])));
   assert(!action.params?.some((p) => p.key === "pageSize"));
 });
 
-Deno.test("search: is typed as a search action", () => {
+test("search: is typed as a search action", () => {
   assertEquals(action.type, "search");
   assertEquals(action.params?.find((p) => p.key === "query")?.required, true);
 });
 
-Deno.test("search: surfaces a GAQL error from Google", async () => {
+test("search: surfaces a GAQL error from Google", async () => {
   const { ctx } = mockAdsCtx([{
     status: 400,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberMove from "../../actions/subscriber-move.ts";
 import { created, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-move: builds a full self_link URL for the destination list", async () => {
+test("subscriber-move: builds a full self_link URL for the destination list", async () => {
   const { ctx, calls } = mockCtx([
     created("https://api.aweber.com/1.0/accounts/1/lists/9/subscribers/789"),
   ]);
@@ -23,6 +24,6 @@ Deno.test("subscriber-move: builds a full self_link URL for the destination list
   });
 });
 
-Deno.test("subscriber-move: is not marked idempotent", () => {
+test("subscriber-move: is not marked idempotent", () => {
   assertEquals(subscriberMove.idempotent, false);
 });

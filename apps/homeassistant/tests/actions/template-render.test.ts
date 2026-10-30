@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, text } from "./_shared.ts";
 import action from "../../actions/template-render.ts";
 
-Deno.test("template-render: posts the template and returns the text verbatim", async () => {
+test("template-render: posts the template and returns the text verbatim", async () => {
   const { ctx, calls } = mockCtx([text("4")], { display });
   const result = await action.execute!({
     template: "{{ states.light | selectattr('state','eq','on') | list | count }}",
@@ -16,7 +17,7 @@ Deno.test("template-render: posts the template and returns the text verbatim", a
 });
 
 /** The endpoint answers with rendered text, not a JSON document. */
-Deno.test("template-render: asks for text rather than JSON", async () => {
+test("template-render: asks for text rather than JSON", async () => {
   const { ctx, calls } = mockCtx([text("on")], { display });
   const result = await action.execute!({ template: "{{ states('light.kitchen') }}" }, ctx) as {
     result: string;
@@ -31,7 +32,7 @@ Deno.test("template-render: asks for text rather than JSON", async () => {
  * Home Assistant renders lists as Python repr with single quotes, which is not
  * valid JSON — and the error has to say so rather than "unexpected token".
  */
-Deno.test("template-render: a Python-repr list fails parsing with the actual fix", async () => {
+test("template-render: a Python-repr list fails parsing with the actual fix", async () => {
   const { ctx } = mockCtx([text("['a', 'b']")], { display });
   const error = await assertRejects(
     async () => await action.execute!({ template: "{{ ['a','b'] }}", parseJson: true }, ctx),
@@ -41,7 +42,7 @@ Deno.test("template-render: a Python-repr list fails parsing with the actual fix
   assert(/to_json/.test(error.message), error.message);
 });
 
-Deno.test("template-render: a to_json template parses cleanly", async () => {
+test("template-render: a to_json template parses cleanly", async () => {
   const { ctx } = mockCtx([text('["a","b"]')], { display });
   const result = await action.execute!({
     template: "{{ ['a','b'] | to_json }}",
@@ -50,7 +51,7 @@ Deno.test("template-render: a to_json template parses cleanly", async () => {
   assertEquals(result.parsed, ["a", "b"]);
 });
 
-Deno.test("template-render: parsing is opt-in", async () => {
+test("template-render: parsing is opt-in", async () => {
   const { ctx } = mockCtx([text("['a', 'b']")], { display });
   const result = await action.execute!({ template: "{{ ['a','b'] }}" }, ctx) as {
     result: string;
@@ -60,12 +61,12 @@ Deno.test("template-render: parsing is opt-in", async () => {
   assertEquals(result.parsed, undefined);
 });
 
-Deno.test("template-render: needs a template", async () => {
+test("template-render: needs a template", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`template` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("template-render: says it returns plain text", () => {
+test("template-render: says it returns plain text", () => {
   assert(/PLAIN TEXT/.test(action.description!), action.description);
 });

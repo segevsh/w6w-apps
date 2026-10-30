@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   asStringArray,
   compact,
@@ -12,7 +13,7 @@ import { API_ROOT, mockCtx, page, problem, queryOf } from "../_helpers.ts";
 
 // --- pure helpers -----------------------------------------------------------
 
-Deno.test("compact: drops blank values but keeps false and 0", () => {
+test("compact: drops blank values but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
@@ -24,14 +25,14 @@ Deno.test("compact: drops blank values but keeps false and 0", () => {
  * can be a list name with spaces in it. Escaping is what stops a name from
  * silently addressing a different path.
  */
-Deno.test("encodePathSegment: escapes a name and a phone number as one segment", () => {
+test("encodePathSegment: escapes a name and a phone number as one segment", () => {
   assertEquals(encodePathSegment("My First List"), "My%20First%20List");
   assertEquals(encodePathSegment("  +15551234567 "), "%2B15551234567");
   assertEquals(encodePathSegment("a/b"), "a%2Fb");
   assertEquals(encodePathSegment("507f1f77bcf86cd799439011"), "507f1f77bcf86cd799439011");
 });
 
-Deno.test("asStringArray: accepts an array or the comma-separated string typed by hand", () => {
+test("asStringArray: accepts an array or the comma-separated string typed by hand", () => {
   assertEquals(asStringArray(["a", "b"]), ["a", "b"]);
   assertEquals(asStringArray("a, b ,c"), ["a", "b", "c"]);
   assertEquals(asStringArray(""), undefined);
@@ -39,14 +40,14 @@ Deno.test("asStringArray: accepts an array or the comma-separated string typed b
   assertEquals(asStringArray(undefined), undefined);
 });
 
-Deno.test("parseProblem: reads a problem body and refuses anything else", () => {
+test("parseProblem: reads a problem body and refuses anything else", () => {
   assertEquals(parseProblem('{"errorCode":"X"}')?.errorCode, "X");
   assertEquals(parseProblem("<html>502</html>"), undefined);
   assertEquals(parseProblem("[1,2]"), undefined);
   assertEquals(parseProblem(""), undefined);
 });
 
-Deno.test("problemCode: prefers errorCode, falls back to code", () => {
+test("problemCode: prefers errorCode, falls back to code", () => {
   assertEquals(problemCode({ errorCode: "A", code: "B" }), "A");
   assertEquals(problemCode({ code: "B" }), "B");
   assertEquals(problemCode(undefined), undefined);
@@ -57,7 +58,7 @@ Deno.test("problemCode: prefers errorCode, falls back to code", () => {
  * 401 is a statement about the token, and both the missing and the invalid case
  * answer 401 (verified live).
  */
-Deno.test("formatSimpleTextingError: carries status, code, message and a 401 hint", () => {
+test("formatSimpleTextingError: carries status, code, message and a 401 hint", () => {
   const message = formatSimpleTextingError(
     401,
     "GET",
@@ -69,7 +70,7 @@ Deno.test("formatSimpleTextingError: carries status, code, message and a 401 hin
   assert(message.includes("reconnect"), message);
 });
 
-Deno.test("formatSimpleTextingError: keeps the raw body when it is not problem+json", () => {
+test("formatSimpleTextingError: keeps the raw body when it is not problem+json", () => {
   const message = formatSimpleTextingError(
     502,
     "POST",
@@ -82,7 +83,7 @@ Deno.test("formatSimpleTextingError: keeps the raw body when it is not problem+j
 
 // --- the client -------------------------------------------------------------
 
-Deno.test("client: GETs the versioned URL and skips blank query values", async () => {
+test("client: GETs the versioned URL and skips blank query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "owner@example.com" } }]);
   const body = await new SimpleTextingClient(ctx).json("/api/messages", {
     query: {
@@ -105,7 +106,7 @@ Deno.test("client: GETs the versioned URL and skips blank query values", async (
   assertEquals((body as { email: string }).email, "owner@example.com");
 });
 
-Deno.test("client: a body is JSON-encoded with a content-type, and GETs carry none", async () => {
+test("client: a body is JSON-encoded with a content-type, and GETs carry none", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "abc" } }]);
   await new SimpleTextingClient(ctx).json("/api/messages", {
     method: "POST",
@@ -117,7 +118,7 @@ Deno.test("client: a body is JSON-encoded with a content-type, and GETs carry no
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: page() normalises the envelope and keeps the vendor's totals", async () => {
+test("client: page() normalises the envelope and keeps the vendor's totals", async () => {
   const { ctx } = mockCtx([{ body: page([{ id: "a" }], { totalPages: 3, totalElements: 101 }) }]);
   const result = await new SimpleTextingClient(ctx).page<{ id: string }>("/api/contacts");
   assertEquals(result.content, [{ id: "a" }]);
@@ -125,14 +126,14 @@ Deno.test("client: page() normalises the envelope and keeps the vendor's totals"
   assertEquals(result.totalElements, 101);
 });
 
-Deno.test("client: page() tolerates a body with no content array", async () => {
+test("client: page() tolerates a body with no content array", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await new SimpleTextingClient(ctx).page("/api/webhooks");
   assertEquals(result.content, []);
   assertEquals(result.totalPages, undefined);
 });
 
-Deno.test("client: status() returns 204 without trying to parse a body", async () => {
+test("client: status() returns 204 without trying to parse a body", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const status = await new SimpleTextingClient(ctx).status("/api/contacts/1234567890", {
     method: "DELETE",
@@ -141,7 +142,7 @@ Deno.test("client: status() returns 204 without trying to parse a body", async (
 });
 
 /** The vendor's own `errorCode` is what a caller needs to see, not a bare status. */
-Deno.test("client: a failed request throws with the vendor's code in the message", async () => {
+test("client: a failed request throws with the vendor's code in the message", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: problem("ERR_AUTH_TOKEN_MISSING", "Auth token is missing") },
   ]);
@@ -152,7 +153,7 @@ Deno.test("client: a failed request throws with the vendor's code in the message
   );
 });
 
-Deno.test("client: no request carries a credential header — signing is the auth hook's job", async () => {
+test("client: no request carries a credential header — signing is the auth hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await new SimpleTextingClient(ctx).page("/api/phones");
   assertEquals(calls[0].headers["authorization"], undefined);

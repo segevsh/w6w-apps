@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastUpdate from "../../actions/broadcast-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * endpoints, updating a broadcast is a PUT that answers a plain 200 — not
  * the non-standard 209.
  */
-Deno.test("broadcast-update: PUTs and succeeds on a plain 200, not 209", async () => {
+test("broadcast-update: PUTs and succeeds on a plain 200, not 209", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { broadcast_id: "1", subject: "New" } }]);
   const out = await broadcastUpdate.execute(
     { accountId: "1", listId: "2", broadcastId: "1", subject: "New" },

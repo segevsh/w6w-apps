@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobInvoiceList from "../../actions/job-invoice-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-invoice-list: reads the unenveloped {invoices} shape", async () => {
+test("job-invoice-list: reads the unenveloped {invoices} shape", async () => {
   const { ctx, calls } = mockCtx([
     { body: { invoices: [{ id: "in1", amount: 25000, due_amount: 0 }] } },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-documents.ts";
 
-Deno.test("list-documents: GETs /document_cards with bracketed page/query filters", async () => {
+test("list-documents: GETs /document_cards with bracketed page/query filters", async () => {
   const body = { document_cards: [{ id: "doc-1" }], meta: { current_page: 1, total_pages: 1 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -28,7 +29,7 @@ Deno.test("list-documents: GETs /document_cards with bracketed page/query filter
   assertEquals(result, body);
 });
 
-Deno.test("list-documents: omits every filter when unset", async () => {
+test("list-documents: omits every filter when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { document_cards: [], meta: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

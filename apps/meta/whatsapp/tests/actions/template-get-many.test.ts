@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-get-many.ts";
 
-Deno.test("template-get-many: GETs /{wabaId}/message_templates with the filter and limit", async () => {
+test("template-get-many: GETs /{wabaId}/message_templates with the filter and limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ name: "hello_world", status: "APPROVED" }] },
   }]);
@@ -14,14 +15,14 @@ Deno.test("template-get-many: GETs /{wabaId}/message_templates with the filter a
   assertEquals(url.searchParams.get("limit"), "5");
 });
 
-Deno.test("template-get-many: omits the name filter when left blank", async () => {
+test("template-get-many: omits the name filter when left blank", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ name: "", limit: 25 }, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.searchParams.has("name"), false);
 });
 
-Deno.test("template-get-many: is a read action with no required params", () => {
+test("template-get-many: is a read action with no required params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.every((p) => !p.required), true);
 });

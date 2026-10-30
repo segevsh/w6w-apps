@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listSubscriberStatsGet from "../../actions/list-subscriber-stats-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-subscriber-stats-get: POST /api/1/getListSubsStats/ with the documented form fields", async () => {
+test("list-subscriber-stats-get: POST /api/1/getListSubsStats/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await listSubscriberStatsGet.execute(
     { "list_id": 7, "block_index": 2 } as never,
@@ -19,7 +20,7 @@ Deno.test("list-subscriber-stats-get: POST /api/1/getListSubsStats/ with the doc
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("list-subscriber-stats-get: a vendor error surfaces its status and body", async () => {
+test("list-subscriber-stats-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await listSubscriberStatsGet.execute({ "list_id": 7, "block_index": 2 } as never, ctx)
@@ -28,7 +29,7 @@ Deno.test("list-subscriber-stats-get: a vendor error surfaces its status and bod
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("list-subscriber-stats-get: an empty list_id fails before any request", async () => {
+test("list-subscriber-stats-get: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -39,7 +40,7 @@ Deno.test("list-subscriber-stats-get: an empty list_id fails before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-subscriber-stats-get: unset optional fields are not sent", async () => {
+test("list-subscriber-stats-get: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await listSubscriberStatsGet.execute({ "list_id": 7 } as never, ctx);
   assertEquals(formOf(calls[0]), { "list_id": "7" });

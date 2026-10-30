@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/quote-list.ts";
 
-Deno.test("quote-list: GETs /2.0/kb_offer with mapped query", async () => {
+test("quote-list: GETs /2.0/kb_offer with mapped query", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, document_nr: "AN-0001" }] }]);
   const result = await action.execute!({ orderBy: "id", limit: 10 }, ctx);
   const url = new URL(calls[0].url);

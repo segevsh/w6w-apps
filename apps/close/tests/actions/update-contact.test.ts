@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-contact.ts";
 
-Deno.test("update-contact: PUTs /contact/{id}/ with only the supplied fields", async () => {
+test("update-contact: PUTs /contact/{id}/ with only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "cont_1" } }]);
   await action.execute({ contactId: "cont_1", title: "CEO" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,13 +11,13 @@ Deno.test("update-contact: PUTs /contact/{id}/ with only the supplied fields", a
   assertEquals(JSON.parse(calls[0].body!), { title: "CEO" });
 });
 
-Deno.test("update-contact: can move a contact to another lead", async () => {
+test("update-contact: can move a contact to another lead", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ contactId: "cont_1", leadId: "lead_2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { lead_id: "lead_2" });
 });
 
-Deno.test("update-contact: warns at the form that list fields replace rather than merge", () => {
+test("update-contact: warns at the form that list fields replace rather than merge", () => {
   for (const key of ["emails", "phones", "urls"]) {
     const p = action.params?.find((p) => p.key === key)!;
     assert(/REPLACES/i.test(p.hint!), `${key} should warn about wholesale replacement`);

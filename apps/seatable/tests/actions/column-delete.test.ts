@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import columnDelete from "../../actions/column-delete.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("column-delete: DELETEs /columns/ with table_name and column", async () => {
+test("column-delete: DELETEs /columns/ with table_name and column", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await columnDelete.execute({ tableName: "T", column: "Age" }, ctx) as {
     success: boolean;

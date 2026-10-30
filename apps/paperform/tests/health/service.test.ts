@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -14,13 +15,13 @@ const summary = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-Deno.test("service: declares key/kind and the status host's own allowlist", () => {
+test("service: declares key/kind and the status host's own allowlist", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["paperform.statuspage.io"]);
 });
 
-Deno.test("service: ok when the indicator is none, and skips group rows", async () => {
+test("service: ok when the indicator is none, and skips group rows", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary() }]);
   const out = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -29,7 +30,7 @@ Deno.test("service: ok when the indicator is none, and skips group rows", async 
   assertEquals(Object.keys(out.components ?? {}).includes("api"), true);
 });
 
-Deno.test("service: degraded on a minor indicator", async () => {
+test("service: degraded on a minor indicator", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary({ status: { indicator: "minor", description: "Partial outage" } }),
@@ -38,7 +39,7 @@ Deno.test("service: degraded on a minor indicator", async () => {
   assertEquals(out.state, "degraded");
 });
 
-Deno.test("service: down on a critical indicator", async () => {
+test("service: down on a critical indicator", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary({ status: { indicator: "critical" } }),
@@ -47,13 +48,13 @@ Deno.test("service: down on a critical indicator", async () => {
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: unknown, never down, when the status page itself fails", async () => {
+test("service: unknown, never down, when the status page itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: unknown when the page no longer self-identifies as Paperform", async () => {
+test("service: unknown when the page no longer self-identifies as Paperform", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary({ page: { name: "Some Other Page" } }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/calendar-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("calendar-get: GETs the record by id with no body", async () => {
+test("calendar-get: GETs the record by id with no body", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "c1",
@@ -20,7 +21,7 @@ Deno.test("calendar-get: GETs the record by id with no body", async () => {
   assertEquals(JSON.stringify(out).includes("SECRET"), false);
 });
 
-Deno.test("calendar-get: percent-encodes the id and reports a 404 by code", async () => {
+test("calendar-get: percent-encodes the id and reports a 404 by code", async () => {
   const { ctx, calls } = mockCtx([{
     status: 404,
     body: { detail: "Not found.", code: "not_found" },

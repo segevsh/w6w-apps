@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,11 +12,11 @@ function summary(components: Array<{ name: string; status: string }>) {
   };
 }
 
-Deno.test("service: probes the real status.judge.me summary endpoint", () => {
+test("service: probes the real status.judge.me summary endpoint", () => {
   assertEquals(STATUS_URL, "https://status.judge.me/api/v2/summary.json");
 });
 
-Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -24,7 +25,7 @@ Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: ok when the tracked components are operational", async () => {
+test("service: ok when the tracked components are operational", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { name: "Judge.me Product Reviews - Admin", status: "operational" },
@@ -36,7 +37,7 @@ Deno.test("service: ok when the tracked components are operational", async () =>
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an unrelated component's outage never worsens the verdict", async () => {
+test("service: an unrelated component's outage never worsens the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { name: "Judge.me Product Reviews - Admin", status: "operational" },
@@ -48,7 +49,7 @@ Deno.test("service: an unrelated component's outage never worsens the verdict", 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: down when the Admin component is in a major outage", async () => {
+test("service: down when the Admin component is in a major outage", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { name: "Judge.me Product Reviews - Admin", status: "major_outage" },
@@ -59,13 +60,13 @@ Deno.test("service: down when the Admin component is in a major outage", async (
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: unknown when the status API itself fails", async () => {
+test("service: unknown when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: undefined }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the page no longer self-identifies as Judge.me's", async () => {
+test("service: unknown when the page no longer self-identifies as Judge.me's", async () => {
   const { ctx } = mockCtx([{
     body: { page: { url: "https://status.example.com" }, components: [] },
   }]);
@@ -73,7 +74,7 @@ Deno.test("service: unknown when the page no longer self-identifies as Judge.me'
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares app scope and no credential — a status host must never see one", () => {
+test("service: declares app scope and no credential — a status host must never see one", () => {
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.judge.me"]);

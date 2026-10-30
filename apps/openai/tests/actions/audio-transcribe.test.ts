@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audio-transcribe.ts";
 
 const AUDIO_B64 = "aGVsbG8=";
 
-Deno.test("audio-transcribe: POSTs multipart to /audio/transcriptions with defaults", async () => {
+test("audio-transcribe: POSTs multipart to /audio/transcriptions with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { text: "hi" } }]);
   await action.execute!({ file: AUDIO_B64 }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("audio-transcribe: POSTs multipart to /audio/transcriptions with defau
   assertEquals(file.type, "audio/mpeg");
 });
 
-Deno.test("audio-transcribe: forwards optional language/prompt/format", async () => {
+test("audio-transcribe: forwards optional language/prompt/format", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

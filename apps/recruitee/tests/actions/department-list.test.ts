@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import departmentList from "../../actions/department-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("department-list: lists company departments", async () => {
+test("department-list: lists company departments", async () => {
   const departments = [{ id: 1, name: "Engineering" }];
   const { ctx, calls } = mockCtx([{ status: 200, body: { departments } }]);
   const out = await departmentList.execute({}, ctx) as { departments: unknown };

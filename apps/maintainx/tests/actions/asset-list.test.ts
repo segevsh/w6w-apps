@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetList from "../../actions/asset-list.ts";
 import { mockCtx, pathOf, queryAll } from "../_helpers.ts";
 
-Deno.test("asset-list: GET /v1/assets with vendor filter names", async () => {
+test("asset-list: GET /v1/assets with vendor filter names", async () => {
   const { ctx, calls } = mockCtx([{
     body: { assets: [{ id: 1, name: "Pump" }], nextCursor: "n" },
   }]);

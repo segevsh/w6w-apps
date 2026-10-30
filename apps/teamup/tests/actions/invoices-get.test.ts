@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoices-get.ts";
 
 const sample = { id: 6, object: "invoice", status: "paid", is_credit_note: false };
 
-Deno.test("invoices-get: reads /invoices/6 by id", async () => {
+test("invoices-get: reads /invoices/6 by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 6 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -13,14 +14,14 @@ Deno.test("invoices-get: reads /invoices/6 by id", async () => {
   assertEquals(result.status, "paid");
 });
 
-Deno.test("invoices-get: unset filters are not sent", async () => {
+test("invoices-get: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 6 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals(calls[0].headers["teamup-provider-id"], undefined);
 });
 
-Deno.test("invoices-get: declares the invoice status vocabulary", () => {
+test("invoices-get: declares the invoice status vocabulary", () => {
   const fields = action.output as Array<{ key: string; label: string }>;
   const status = fields.find((f) => f.key === "status")!.label;
   for (

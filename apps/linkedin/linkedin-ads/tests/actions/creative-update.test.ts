@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import creativeUpdate from "../../actions/creative-update.ts";
 import { mockCtx, noContentResponse } from "../_helpers.ts";
 
-Deno.test("creative-update: PARTIAL_UPDATEs by the creative's full URN", async () => {
+test("creative-update: PARTIAL_UPDATEs by the creative's full URN", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await creativeUpdate.execute(
     { accountId: "520866471", creativeId: "119962155", intendedStatus: "ACTIVE" },
@@ -18,7 +19,7 @@ Deno.test("creative-update: PARTIAL_UPDATEs by the creative's full URN", async (
   assertEquals(result, { ok: true });
 });
 
-Deno.test("creative-update: rejects when nothing is set to change, without a request", async () => {
+test("creative-update: rejects when nothing is set to change, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await creativeUpdate.execute({ accountId: "1", creativeId: "2" }, ctx),

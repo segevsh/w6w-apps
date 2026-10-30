@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-time-offs.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
@@ -36,7 +37,7 @@ const samplePeriod = {
   },
 };
 
-Deno.test("list-time-offs: flattens the mixed wrapped/unwrapped TimeOffPeriod shape", async () => {
+test("list-time-offs: flattens the mixed wrapped/unwrapped TimeOffPeriod shape", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { success: true, metadata: { total_elements: 1 }, data: [samplePeriod] } },
   ]);
@@ -58,7 +59,7 @@ Deno.test("list-time-offs: flattens the mixed wrapped/unwrapped TimeOffPeriod sh
   assertEquals(period.employee.id, 4567);
 });
 
-Deno.test("list-time-offs: repeats employees[] and forwards the date range", async () => {
+test("list-time-offs: repeats employees[] and forwards the date range", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: [] } }]);
   await action.execute(
     { employeeIds: [1, 2], startDate: "2026-01-01", endDate: "2026-01-31" },

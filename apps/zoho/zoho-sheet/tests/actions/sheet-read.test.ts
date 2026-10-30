@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-read.ts";
 
-Deno.test("sheet-read: POSTs worksheet.content.get with bounds and options", async () => {
+test("sheet-read: POSTs worksheet.content.get with bounds and options", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {
@@ -33,7 +34,7 @@ Deno.test("sheet-read: POSTs worksheet.content.get with bounds and options", asy
   assertEquals(out.usedColumn, 9);
 });
 
-Deno.test("sheet-read: rejects with neither worksheetName nor worksheetId", async () => {
+test("sheet-read: rejects with neither worksheetName nor worksheetId", async () => {
   const { ctx, calls } = mockSheetCtx([]);
   await assertRejects(
     async () => await action.execute({ resourceId: "abc123" }, ctx),

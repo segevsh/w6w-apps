@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: POSTs /v1/projects with content-type set", async () => {
+test("project-create: POSTs /v1/projects with content-type set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   await projectCreate.execute({ name: "Launch", workspaceId: "ws1" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("project-create: POSTs /v1/projects with content-type set", async () =
  * rejects the pair with a 400 naming the expected stage count when they do not
  * match, which is why `stages` travels as structured JSON rather than as text.
  */
-Deno.test("project-create: stages are sent as a parsed JSON array", async () => {
+test("project-create: stages are sent as a parsed JSON array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await projectCreate.execute({
     name: "Launch",
@@ -34,7 +35,7 @@ Deno.test("project-create: stages are sent as a parsed JSON array", async () => 
   });
 });
 
-Deno.test("project-create: malformed stage JSON fails before a request is made", async () => {
+test("project-create: malformed stage JSON fails before a request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -46,7 +47,7 @@ Deno.test("project-create: malformed stage JSON fails before a request is made",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("project-create: labels are names, and priority is the four-value task list", () => {
+test("project-create: labels are names, and priority is the four-value task list", () => {
   const priority = projectCreate.params?.find((p) => p.key === "priority");
   const values = (priority?.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values, ["ASAP", "HIGH", "MEDIUM", "LOW"]);

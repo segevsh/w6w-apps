@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/action-class-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("action-class-create: full input maps to the documented request", async () => {
+test("action-class-create: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({
     "workspaceId": "id_workspaceId",
@@ -30,7 +31,7 @@ Deno.test("action-class-create: full input maps to the documented request", asyn
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("action-class-create: required input only maps to the documented request", async () => {
+test("action-class-create: required input only maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({
     "workspaceId": "id_workspaceId",
@@ -52,7 +53,7 @@ Deno.test("action-class-create: required input only maps to the documented reque
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("action-class-create: sends x-api-key never itself and no authorization header", async () => {
+test("action-class-create: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   await action.execute!(
     { "workspaceId": "id_workspaceId", "name": "sample-name", "type": "code" },
@@ -62,7 +63,7 @@ Deno.test("action-class-create: sends x-api-key never itself and no authorizatio
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("action-class-create: surfaces a Formbricks error body as a thrown error", async () => {
+test("action-class-create: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

@@ -10,7 +10,9 @@
  * The action set is discovered from disk, so an action added later with an
  * `organizationId` param fails here until it is wired too.
  */
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { ActionDefinition, Param } from "@w6w/types";
 import { resolveEventbriteFields } from "../../lib/fields.ts";
 
@@ -43,7 +45,7 @@ const WIRED = [
 
 async function loadActions(): Promise<Map<string, ActionDefinition>> {
   const byKey = new Map<string, ActionDefinition>();
-  for await (const entry of Deno.readDir(ACTION_DIR)) {
+  for await (const entry of denoReadDir(ACTION_DIR)) {
     if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
     const mod = await import(new URL(entry.name, ACTION_DIR).href);
     const action = mod.default as ActionDefinition | undefined;
@@ -57,7 +59,7 @@ const actions = await loadActions();
 const orgParam = (action: ActionDefinition): Param | undefined =>
   (action.params ?? []).find((p) => p.key === "organizationId");
 
-Deno.test("every wired action resolves its pickers through the shared hook", () => {
+test("every wired action resolves its pickers through the shared hook", () => {
   for (const key of WIRED) {
     const action = actions.get(key);
     assert(action, `actions/ is missing the ${key} action`);
@@ -68,7 +70,7 @@ Deno.test("every wired action resolves its pickers through the shared hook", () 
   }
 });
 
-Deno.test("organizationId params render as an allow-custom resolved picker", () => {
+test("organizationId params render as an allow-custom resolved picker", () => {
   for (const key of WIRED) {
     const action = actions.get(key);
     assert(action, `actions/ is missing the ${key} action`);
@@ -79,7 +81,7 @@ Deno.test("organizationId params render as an allow-custom resolved picker", () 
   }
 });
 
-Deno.test("every action declaring an organizationId param is wired", () => {
+test("every action declaring an organizationId param is wired", () => {
   const unwired = [...actions.values()]
     .filter((action) => orgParam(action) !== undefined)
     .map((action) => action.key)
@@ -105,7 +107,7 @@ const scopeWhen: Record<string, Array<[string, Record<string, unknown>]>> = {
   ],
 };
 
-Deno.test("scopeId is one cascading, resolved picker on the three list actions", () => {
+test("scopeId is one cascading, resolved picker on the three list actions", () => {
   for (const key of SCOPED) {
     const action = actions.get(key);
     assert(action, `actions/ is missing ${key}`);
@@ -123,7 +125,7 @@ Deno.test("scopeId is one cascading, resolved picker on the three list actions",
   }
 });
 
-Deno.test("list-events keeps organizationId declared as a hidden legacy alias", () => {
+test("list-events keeps organizationId declared as a hidden legacy alias", () => {
   const p = orgParam(actions.get("list-events")!);
   assert(p, "organizationId must stay declared so the runtime hands it to execute");
   assertEquals(p.label, "Organization ID (legacy)");

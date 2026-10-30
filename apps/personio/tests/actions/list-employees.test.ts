@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-employees.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
@@ -24,7 +25,7 @@ const sampleEmployee = {
   },
 };
 
-Deno.test("list-employees: builds the paginated request and flattens wrapped attributes", async () => {
+test("list-employees: builds the paginated request and flattens wrapped attributes", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -49,13 +50,13 @@ Deno.test("list-employees: builds the paginated request and flattens wrapped att
   assertEquals(out.totalElements, 1);
 });
 
-Deno.test("list-employees: repeats attributes[] for each requested attribute", async () => {
+test("list-employees: repeats attributes[] for each requested attribute", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: [] } }]);
   await action.execute({ attributes: ["first_name", "last_name"] }, ctx);
   assertEquals(queryAllOf(calls[0].url, "attributes[]"), ["first_name", "last_name"]);
 });
 
-Deno.test("list-employees: passes updatedSince through as updated_since", async () => {
+test("list-employees: passes updatedSince through as updated_since", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: [] } }]);
   await action.execute({ updatedSince: "2026-01-01T00:00:00" }, ctx);
   assertEquals(queryOf(calls[0].url).updated_since, "2026-01-01T00:00:00");

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { asObject, compact, formatLexwareError, LexwareClient } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("formatLexwareError: reads the legacy IssueList shape", () => {
+test("formatLexwareError: reads the legacy IssueList shape", () => {
   const msg = formatLexwareError(
     406,
     "POST",
@@ -18,7 +19,7 @@ Deno.test("formatLexwareError: reads the legacy IssueList shape", () => {
   assert(msg.includes("missing_entity (company.name)"), msg);
 });
 
-Deno.test("formatLexwareError: reads the regular shape with details, and 429 guidance", () => {
+test("formatLexwareError: reads the regular shape with details, and 429 guidance", () => {
   const reg = formatLexwareError(
     406,
     "POST",
@@ -38,13 +39,13 @@ Deno.test("formatLexwareError: reads the regular shape with details, and 429 gui
   assert(rl.includes("2 requests per second"), rl);
 });
 
-Deno.test("formatLexwareError: falls back to raw text for a non-JSON body", () => {
+test("formatLexwareError: falls back to raw text for a non-JSON body", () => {
   assert(
     formatLexwareError(502, "GET", "/v1/x", "<html>bad gateway</html>").includes("bad gateway"),
   );
 });
 
-Deno.test("compact keeps false and 0, drops empty values; asObject accepts objects and JSON strings", () => {
+test("compact keeps false and 0, drops empty values; asObject accepts objects and JSON strings", () => {
   assertEquals(compact({ a: false, b: 0, c: "", d: null, e: undefined, f: "x" }), {
     a: false,
     b: 0,
@@ -53,7 +54,7 @@ Deno.test("compact keeps false and 0, drops empty values; asObject accepts objec
   assertEquals(asObject('{"a":1}', "X"), { a: 1 });
 });
 
-Deno.test("LexwareClient.json: returns undefined on an empty body and throws on non-2xx", async () => {
+test("LexwareClient.json: returns undefined on an empty body and throws on non-2xx", async () => {
   const empty = mockCtx([{ status: 204 }]);
   assertEquals(
     await new LexwareClient(empty.ctx).json("/articles/x", { method: "DELETE" }),

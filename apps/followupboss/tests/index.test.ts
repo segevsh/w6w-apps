@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 26);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every param declares a label and a type", () => {
+test("index: every param declares a label and a type", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.label === "string" && p.label.length > 0, `${a.key}/${p.key}: no label`);
@@ -57,9 +59,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -85,7 +87,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
  * exactly the documentation that prevents the confusion, and the natural fix —
  * deleting the sentence — would leave a real violation just as invisible.
  */
-Deno.test("index: no action builds an X-System header — those belong to sign", async () => {
+test("index: no action builds an X-System header — those belong to sign", async () => {
   const asHeaderKey = /["'`]x-system(-key)?["'`]\s*[\]:]/i;
   for (const a of app.actions) {
     const src = await actionSource(a.key);
@@ -97,7 +99,7 @@ Deno.test("index: no action builds an X-System header — those belong to sign",
 });
 
 /** The pattern above must still catch a real violation. */
-Deno.test("index: the X-System guard would catch an actual header assignment", () => {
+test("index: the X-System guard would catch an actual header assignment", () => {
   const asHeaderKey = /["'`]x-system(-key)?["'`]\s*[\]:]/i;
   assert(asHeaderKey.test(`headers["X-System"] = name;`));
   assert(asHeaderKey.test(`{ "X-System-Key": key }`));
@@ -111,7 +113,7 @@ Deno.test("index: the X-System guard would catch an actual header assignment", (
  * action parameter — that would put credential material in the network-capable
  * worker and let two actions on one Connection disagree about who they are.
  */
-Deno.test("index: no action exposes the credential as a param", () => {
+test("index: no action exposes the credential as a param", () => {
   const banned = ["apikey", "apiKey", "systemkey", "systemKey", "systemname", "password", "token"];
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -134,13 +136,13 @@ Deno.test("index: no action exposes the credential as a param", () => {
  * The regex targets the path as it would be written, so `/identity` and
  * `/rateLimit/limits` do not trip it.
  */
-Deno.test("index: nothing in the app calls GET /me — it leaks the caller's API key", async () => {
+test("index: nothing in the app calls GET /me — it leaks the caller's API key", async () => {
   const dirs = ["actions", "auth", "health", "lib"];
   for (const dir of dirs) {
     const base = new URL(`../${dir}/`, import.meta.url);
-    for await (const entry of Deno.readDir(base)) {
+    for await (const entry of denoReadDir(base)) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-      const src = code(await Deno.readTextFile(new URL(entry.name, base)));
+      const src = code(await denoReadTextFile(new URL(entry.name, base)));
       assert(
         !/["'`]\/me["'`]|\/v1\/me\b|\$\{API_URL\}\/me\b/.test(src),
         `${dir}/${entry.name}: calls /me, which returns the caller's own apiKey`,
@@ -149,7 +151,7 @@ Deno.test("index: nothing in the app calls GET /me — it leaks the caller's API
   }
 });
 
-Deno.test("index: health checks cover service and quota, keyed and titled", () => {
+test("index: health checks cover service and quota, keyed and titled", () => {
   const keys = app.healthChecks.map((h) => h.key);
   assertEquals(keys.sort(), ["quota", "service"]);
   for (const h of app.healthChecks) {
@@ -171,7 +173,7 @@ Deno.test("index: health checks cover service and quota, keyed and titled", () =
  * but the guard stays, because the failure it catches is invisible until someone
  * downgrades a check to a declaration and does not know the rule.
  */
-Deno.test("index: any unavailable health check is informational", () => {
+test("index: any unavailable health check is informational", () => {
   for (const h of app.healthChecks) {
     if (!h.unavailable) continue;
     assertEquals(
@@ -188,7 +190,7 @@ Deno.test("index: any unavailable health check is informational", () => {
  * an unsigned posture, because a status host is exactly the host that must never
  * see a credential.
  */
-Deno.test("index: no signed health check declares its own network allowlist", () => {
+test("index: no signed health check declares its own network allowlist", () => {
   for (const h of app.healthChecks) {
     const posture = h.credential ?? (h.kind === "service" ? "none" : "signed");
     if (posture !== "signed") continue;

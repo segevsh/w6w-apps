@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/table-list.ts";
 
@@ -19,7 +20,7 @@ const row = (name: string, engine: string, parts: number, bytes = 1000) => ({
   parts,
 });
 
-Deno.test("table-list: reads system.tables joined to system.parts", async () => {
+test("table-list: reads system.tables joined to system.parts", async () => {
   const { ctx, calls } = mockCtx([tables([row("events", "MergeTree", 12)])], D);
   const result = await action.execute({ database: "default" }, ctx) as Record<string, unknown>;
   assert(/system\.tables/.test(calls[0].body!), calls[0].body!);
@@ -30,7 +31,7 @@ Deno.test("table-list: reads system.tables joined to system.parts", async () => 
 });
 
 /** System databases are noise unless asked for. */
-Deno.test("table-list: excludes the system databases when no database is named", async () => {
+test("table-list: excludes the system databases when no database is named", async () => {
   const { ctx, calls } = mockCtx([tables([])], D);
   await action.execute({ database: "" }, ctx);
   assert(/database NOT IN \('system'/.test(calls[0].body!), calls[0].body!);
@@ -41,7 +42,7 @@ Deno.test("table-list: excludes the system databases when no database is named",
 });
 
 /** Inserts outrunning merges is what a high part count means. */
-Deno.test("table-list: flags tables whose part count predicts TOO_MANY_PARTS", async () => {
+test("table-list: flags tables whose part count predicts TOO_MANY_PARTS", async () => {
   const { ctx, logs } = mockCtx([tables([
     row("events", "MergeTree", 900),
     row("users", "MergeTree", 4),
@@ -52,7 +53,7 @@ Deno.test("table-list: flags tables whose part count predicts TOO_MANY_PARTS", a
   assert(/inserts are outrunning merges/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("table-list: a healthy set of tables does not warn", async () => {
+test("table-list: a healthy set of tables does not warn", async () => {
   const { ctx, logs } = mockCtx([tables([row("events", "MergeTree", 4)])], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.highPartTables, []);
@@ -60,7 +61,7 @@ Deno.test("table-list: a healthy set of tables does not warn", async () => {
 });
 
 /** A "table" may be a view, a dictionary or a Kafka consumer. */
-Deno.test("table-list: reports the distinct engines", async () => {
+test("table-list: reports the distinct engines", async () => {
   const { ctx } = mockCtx([tables([
     row("events", "MergeTree", 1),
     row("events_mv", "MaterializedView", 0),
@@ -70,7 +71,7 @@ Deno.test("table-list: reports the distinct engines", async () => {
   assertEquals(result.engines, ["Dictionary", "MaterializedView", "MergeTree"]);
 });
 
-Deno.test("table-list: totals the rows and the compressed bytes", async () => {
+test("table-list: totals the rows and the compressed bytes", async () => {
   const { ctx } = mockCtx([tables([
     row("a", "MergeTree", 1, 5000),
     row("b", "MergeTree", 1, 3000),
@@ -80,7 +81,7 @@ Deno.test("table-list: totals the rows and the compressed bytes", async () => {
   assertEquals(result.totalBytes, 8000);
 });
 
-Deno.test("table-list: runs read-only", async () => {
+test("table-list: runs read-only", async () => {
   const { ctx, calls } = mockCtx([tables([])], D);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("readonly"), "1");

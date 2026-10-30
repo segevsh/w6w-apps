@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productUpdate from "../../actions/product-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("product-update: PUTs a partial product body and returns updateCount", async () => {
+test("product-update: PUTs a partial product body and returns updateCount", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   const out = await productUpdate.execute(
     { productId: "692730761", price: 12.5, enabled: true },
@@ -15,7 +16,7 @@ Deno.test("product-update: PUTs a partial product body and returns updateCount",
   assertEquals(out.updateCount, 1);
 });
 
-Deno.test("product-update: additional fields win over the typed ones", async () => {
+test("product-update: additional fields win over the typed ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await productUpdate.execute(
     { productId: "1", price: 10, extraFields: '{"price":99,"subtitle":"Sale"}' },
@@ -24,7 +25,7 @@ Deno.test("product-update: additional fields win over the typed ones", async () 
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { price: 99, subtitle: "Sale" });
 });
 
-Deno.test("product-update: the id is required and escaped", async () => {
+test("product-update: the id is required and escaped", async () => {
   assertEquals(productUpdate.params?.find((p) => p.key === "productId")?.required, true);
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await productUpdate.execute({ productId: " a b ", name: "x" }, ctx);

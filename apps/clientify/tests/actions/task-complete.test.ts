@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskComplete from "../../actions/task-complete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-complete: POST /v1/tasks/{taskId}/complete/", async () => {
+test("task-complete: POST /v1/tasks/{taskId}/complete/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "ok" } }]);
   const result = await taskComplete.execute({ taskId: "8" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,12 +14,12 @@ Deno.test("task-complete: POST /v1/tasks/{taskId}/complete/", async () => {
   assertEquals(result, { status: "ok" });
 });
 
-Deno.test("task-complete: declares type perform", () => {
+test("task-complete: declares type perform", () => {
   assertEquals(taskComplete.type, "perform");
   assertEquals(taskComplete.idempotent, true);
 });
 
-Deno.test("task-complete: surfaces the vendor error body", async () => {
+test("task-complete: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

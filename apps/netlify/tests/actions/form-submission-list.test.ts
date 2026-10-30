@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-submission-list.ts";
 
-Deno.test("form-submission-list: GETs /sites/{id}/submissions with pagination", async () => {
+test("form-submission-list: GETs /sites/{id}/submissions with pagination", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "sub1" }] }]);
   const result = await action.execute!({ siteId: "site1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("form-submission-list: GETs /sites/{id}/submissions with pagination", 
   assertEquals(result, [{ id: "sub1" }]);
 });
 
-Deno.test("form-submission-list: requires siteId", async () => {
+test("form-submission-list: requires siteId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "siteId");
 });

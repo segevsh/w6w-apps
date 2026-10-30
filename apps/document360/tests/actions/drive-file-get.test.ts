@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import driveFileGet from "../../actions/drive-file-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("drive-file-get: GETs the file under its folder", async () => {
+test("drive-file-get: GETs the file under its folder", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "x1", file_name: "a.png" }),
@@ -19,7 +20,7 @@ Deno.test("drive-file-get: GETs the file under its folder", async () => {
   assertEquals(out.file_name, "a.png");
 });
 
-Deno.test("drive-file-get: a vendor error surfaces its code and message", async () => {
+test("drive-file-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: signs as a bearer token, which is what the spec declares", async () => {
+test("api-key: signs as a bearer token, which is what the spec declares", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://search.example.com/stats",
@@ -15,13 +16,13 @@ Deno.test("api-key: signs as a bearer token, which is what the spec declares", a
 });
 
 /** A key is meaningless without the address of the instance it belongs to. */
-Deno.test("api-key: the instance URL is a required field beside the key", () => {
+test("api-key: the instance URL is a required field beside the key", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiKey", "baseUrl"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiKey"]);
 });
 
-Deno.test("api-key: test probes the keys endpoint on the given instance", async () => {
+test("api-key: test probes the keys endpoint on the given instance", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   assertEquals(
     await auth.test!(
@@ -38,7 +39,7 @@ Deno.test("api-key: test probes the keys endpoint on the given instance", async 
  * A scoped key that cannot list keys is doing exactly what it should. Failing
  * the connection over it would be wrong.
  */
-Deno.test("api-key: a 403 is a scoped key, not a bad one", async () => {
+test("api-key: a 403 is a scoped key, not a bad one", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { code: "invalid_api_key" } }]);
   assertEquals(
     await auth.test!({ credential: { apiKey: "k", baseUrl: "https://x.com" } } as never, ctx),
@@ -46,7 +47,7 @@ Deno.test("api-key: a 403 is a scoped key, not a bad one", async () => {
   );
 });
 
-Deno.test("api-key: a 401 is a bad key, and other statuses report themselves", async () => {
+test("api-key: a 401 is a bad key, and other statuses report themselves", async () => {
   const bad = mockCtx([{ status: 401, body: {} }]);
   assertEquals(
     await auth.test!({ credential: { apiKey: "k", baseUrl: "https://x.com" } } as never, bad.ctx),
@@ -59,7 +60,7 @@ Deno.test("api-key: a 401 is a bad key, and other statuses report themselves", a
   );
 });
 
-Deno.test("api-key: a missing field fails before any network call", async () => {
+test("api-key: a missing field fails before any network call", async () => {
   const noKey = mockCtx([]);
   assertEquals(await auth.test!({ credential: { baseUrl: "https://x.com" } } as never, noKey.ctx), {
     ok: false,
@@ -73,7 +74,7 @@ Deno.test("api-key: a missing field fails before any network call", async () => 
   assertEquals(noKey.calls.length + noUrl.calls.length, 0);
 });
 
-Deno.test("api-key: a malformed URL is reported, not thrown at the host", async () => {
+test("api-key: a malformed URL is reported, not thrown at the host", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!(
     { credential: { apiKey: "k", baseUrl: "http://" } } as never,
@@ -84,7 +85,7 @@ Deno.test("api-key: a malformed URL is reported, not thrown at the host", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect records the URL, index and engine, never the key", async () => {
+test("api-key: afterConnect records the URL, index and engine, never the key", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { pkgVersion: "1.15.2" } }]);
   const display = await auth.afterConnect!(
     {
@@ -100,7 +101,7 @@ Deno.test("api-key: afterConnect records the URL, index and engine, never the ke
   assert(!JSON.stringify(display).includes("supersecret"), "the credential leaked into display");
 });
 
-Deno.test("api-key: a failed version lookup still connects", async () => {
+test("api-key: a failed version lookup still connects", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals(
     await auth.afterConnect!(

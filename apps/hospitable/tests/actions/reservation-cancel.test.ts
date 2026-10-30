@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import reservationCancel from "../../actions/reservation-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reservation-cancel: POST .../cancel with initiated_by", async () => {
+test("reservation-cancel: POST .../cancel with initiated_by", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "r1" } } }]);
   await reservationCancel.execute({ uuid: "r1", initiated_by: "guest" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,7 +15,7 @@ Deno.test("reservation-cancel: POST .../cancel with initiated_by", async () => {
   assertEquals(reservationCancel.idempotent, false);
 });
 
-Deno.test("reservation-cancel: validation errors carry the field messages", async () => {
+test("reservation-cancel: validation errors carry the field messages", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { message: "The given data was invalid.", errors: { check_in: ["Dates unavailable."] } },

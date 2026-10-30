@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/company-list.ts";
 
-Deno.test("company-list: GETs /companies with a type filter", async () => {
+test("company-list: GETs /companies with a type filter", async () => {
   const { ctx, calls } = mockMocoCtx([{
     body: [{ id: 1, type: "customer", name: "Beispiel AG" }],
     headers: {
@@ -24,7 +25,7 @@ Deno.test("company-list: GETs /companies with a type filter", async () => {
   });
 });
 
-Deno.test("company-list: an empty type filter is omitted, not sent as ''", async () => {
+test("company-list: an empty type filter is omitted, not sent as ''", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: [] }]);
   await action.execute({ type: "" }, ctx);
   const url = new URL(calls[0].url);

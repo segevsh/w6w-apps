@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateDocument from "../../actions/update-document.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("update-document: PUTs only the given fields", async () => {
+test("update-document: PUTs only the given fields", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { name: "CUST-0001", status: "Closed" } } },
   ], conn);
@@ -18,7 +19,7 @@ Deno.test("update-document: PUTs only the given fields", async () => {
   assertEquals(result, { document: { name: "CUST-0001", status: "Closed" } });
 });
 
-Deno.test("update-document: refuses a non-object Values", async () => {
+test("update-document: refuses a non-object Values", async () => {
   const { ctx } = mockCtx([], conn);
   const err = await assertRejects(
     async () =>
@@ -28,6 +29,6 @@ Deno.test("update-document: refuses a non-object Values", async () => {
   assert(err.message.includes("must be a JSON object"), err.message);
 });
 
-Deno.test("update-document: writing the same values twice is safe", () => {
+test("update-document: writing the same values twice is safe", () => {
   assertEquals(updateDocument.idempotent, true);
 });

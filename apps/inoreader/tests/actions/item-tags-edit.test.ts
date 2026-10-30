@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import edit from "../../actions/item-tags-edit.ts";
 import { mockCtx, pathOf, queryAll, queryOf, text } from "../_helpers.ts";
 
-Deno.test("item-tags-edit: repeats i per item and sends a and r", async () => {
+test("item-tags-edit: repeats i per item and sends a and r", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   const out = await edit.execute({
     itemIds: "12345678, 12345679\n12345680",
@@ -17,7 +18,7 @@ Deno.test("item-tags-edit: repeats i per item and sends a and r", async () => {
   assertEquals(out, { ok: true, itemCount: 3 });
 });
 
-Deno.test("item-tags-edit: needs items and at least one tag; caps at 100 items", async () => {
+test("item-tags-edit: needs items and at least one tag; caps at 100 items", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await edit.execute({ itemIds: " ", addTag: "t" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("item-tags-edit: needs items and at least one tag; caps at 100 items",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-tags-edit: a 200 without OK is a failure", async () => {
+test("item-tags-edit: a 200 without OK is a failure", async () => {
   const { ctx } = mockCtx([text("Error=Invalid item")]);
   await assertRejects(
     async () => await edit.execute({ itemIds: "1", addTag: "t" }, ctx),

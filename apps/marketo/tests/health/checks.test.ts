@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import instance from "../../health/instance.ts";
 import service from "../../health/service.ts";
@@ -6,7 +7,7 @@ import quota from "../../health/quota.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("instance: an unsigned Marketo 601/602 auth-error envelope is a pass, not an outage", async () => {
+test("instance: an unsigned Marketo 601/602 auth-error envelope is a pass, not an outage", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: false, errors: [{ code: "601", message: "Unauthorized" }] } },
   ], conn);
@@ -19,12 +20,12 @@ Deno.test("instance: an unsigned Marketo 601/602 auth-error envelope is a pass, 
   assertEquals(instance.credential, "context");
 });
 
-Deno.test("instance: success:true (auth disabled entirely) is also a pass", async () => {
+test("instance: success:true (auth disabled entirely) is also a pass", async () => {
   const { ctx } = mockCtx([{ body: { success: true, result: [] } }], conn);
   assertEquals((await instance.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("instance: an unreachable pod is down", async () => {
+test("instance: an unreachable pod is down", async () => {
   const { ctx } = mockCtx([], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "down");
@@ -32,7 +33,7 @@ Deno.test("instance: an unreachable pod is down", async () => {
 });
 
 /** A 610 "resource not found" means something answered but not at this path. */
-Deno.test("instance: a 610 error code is diagnosed as a wrong REST base URL", async () => {
+test("instance: a 610 error code is diagnosed as a wrong REST base URL", async () => {
   const { ctx } = mockCtx([
     {
       body: { success: false, errors: [{ code: "610", message: "Requested resource not found" }] },
@@ -44,13 +45,13 @@ Deno.test("instance: a 610 error code is diagnosed as a wrong REST base URL", as
 });
 
 /** HTML (a login page, a reverse proxy) is not Marketo's documented envelope. */
-Deno.test("instance: a non-JSON response is degraded, not down", async () => {
+test("instance: a non-JSON response is degraded, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>nope</html>" }], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("instance: a connection with no REST base URL is unknown, not down", async () => {
+test("instance: a connection with no REST base URL is unknown, not down", async () => {
   const { ctx } = mockCtx([], { display: {} });
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -58,7 +59,7 @@ Deno.test("instance: a connection with no REST base URL is unknown, not down", a
 });
 
 /** No reachable, trustworthy vendor status feed exists for a per-pod SaaS like Marketo. */
-Deno.test("service: is a declared absence, and explains why", () => {
+test("service: is a declared absence, and explains why", () => {
   assertEquals(service.check, undefined);
   assertEquals(service.severity, "informational");
   const reason = service.unavailable!.reason;
@@ -67,7 +68,7 @@ Deno.test("service: is a declared absence, and explains why", () => {
 });
 
 /** Marketo's usage endpoint reports a count, never the ceiling itself. */
-Deno.test("quota: is a declared absence, and explains why", () => {
+test("quota: is a declared absence, and explains why", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   const reason = quota.unavailable!.reason;

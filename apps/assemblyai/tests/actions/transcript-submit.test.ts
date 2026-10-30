@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transcriptSubmit from "../../actions/transcript-submit.ts";
 import { hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const RESPONSE = { id: "t1", status: "queued", audio_url: "https://x/a.mp3" };
 
-Deno.test("transcript-submit: POSTs audio_url and passes through flag params", async () => {
+test("transcript-submit: POSTs audio_url and passes through flag params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await transcriptSubmit.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("transcript-submit: POSTs audio_url and passes through flag params", a
   assertEquals(out.id, "t1");
 });
 
-Deno.test("transcript-submit: omits unset optional flags rather than sending false/null", async () => {
+test("transcript-submit: omits unset optional flags rather than sending false/null", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await transcriptSubmit.execute({ audioUrl: "https://x/a.mp3" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -40,13 +41,13 @@ Deno.test("transcript-submit: omits unset optional flags rather than sending fal
   assertEquals(body.audio_url, "https://x/a.mp3");
 });
 
-Deno.test("transcript-submit: region 'eu' routes to the EU host", async () => {
+test("transcript-submit: region 'eu' routes to the EU host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await transcriptSubmit.execute({ audioUrl: "https://x/a.mp3", region: "eu" }, ctx);
   assertEquals(hostOf(calls[0].url), "api.eu.assemblyai.com");
 });
 
-Deno.test("transcript-submit: is declared non-idempotent with a required audioUrl param", () => {
+test("transcript-submit: is declared non-idempotent with a required audioUrl param", () => {
   assertEquals(transcriptSubmit.idempotent, false);
   const audioUrlParam = transcriptSubmit.params?.find((p) => p.key === "audioUrl");
   assertEquals(audioUrlParam?.required, true);

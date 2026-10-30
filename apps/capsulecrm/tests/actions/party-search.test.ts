@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/party-search.ts";
 
-Deno.test("party-search: GETs /parties/search?q=...", async () => {
+test("party-search: GETs /parties/search?q=...", async () => {
   const { ctx, calls } = mockCtx([{ body: { parties: [{ id: 1 }] } }]);
   const out = await action.execute({ q: "Spacey" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("party-search: GETs /parties/search?q=...", async () => {
   assertEquals(out, { parties: [{ id: 1 }], nextPage: undefined });
 });
 
-Deno.test("party-search: supports paging and embed alongside q", async () => {
+test("party-search: supports paging and embed alongside q", async () => {
   const { ctx, calls } = mockCtx([{ body: { parties: [] } }]);
   await action.execute({ q: "Acme", page: 2, perPage: 10, embed: ["tags"] }, ctx);
   const url = new URL(calls[0].url);

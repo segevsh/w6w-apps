@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: sends the required title and languages, omitting unset fields", async () => {
+test("task-create: sends the required title and languages, omitting unset fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { task_id: 492, title: "Voicemail", status: "created" },
   }]);
@@ -18,7 +19,7 @@ Deno.test("task-create: sends the required title and languages, omitting unset f
   });
 });
 
-Deno.test("task-create: forwards optional keys, due date and auto-close flags", async () => {
+test("task-create: forwards optional keys, due date and auto-close flags", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskCreate.execute(
     {
@@ -37,6 +38,6 @@ Deno.test("task-create: forwards optional keys, due date and auto-close flags", 
   assertEquals(body.auto_close_task, true);
 });
 
-Deno.test("task-create: is not idempotent", () => {
+test("task-create: is not idempotent", () => {
   assertEquals(taskCreate.idempotent, false);
 });

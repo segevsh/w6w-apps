@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-list: GETs /task/ with nothing when nothing is asked for", async () => {
+test("task-list: GETs /task/ with nothing when nothing is asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ task_id: 5 }] }]);
   assertEquals(await taskList.execute({}, ctx), { tasks: [{ task_id: 5 }] });
   assertEquals(pathOf(calls[0].url), "/task/");
@@ -15,7 +16,7 @@ Deno.test("task-list: GETs /task/ with nothing when nothing is asked for", async
  * everything, so the param must carry no default and both booleans must be
  * expressible.
  */
-Deno.test("task-list: completed is tri-state, and absence is the third state", async () => {
+test("task-list: completed is tri-state, and absence is the third state", async () => {
   const param = taskList.params!.find((p) => p.key === "completed")!;
   assertEquals(param.default, undefined);
 
@@ -32,7 +33,7 @@ Deno.test("task-list: completed is tri-state, and absence is the third state", a
   assertEquals(queryOf(both.calls[0].url).completed, undefined);
 });
 
-Deno.test("task-list: list filters join with a semicolon, Podio's documented form", async () => {
+test("task-list: list filters join with a semicolon, Podio's documented form", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await taskList.execute({
     responsible: ["1", "2"],
@@ -47,7 +48,7 @@ Deno.test("task-list: list filters join with a semicolon, Podio's documented for
   assertEquals(query.reference, "item:9;item:10");
 });
 
-Deno.test("task-list: every documented scalar filter maps to its snake_case name", async () => {
+test("task-list: every documented scalar filter maps to its snake_case name", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await taskList.execute({
     externalId: "x-1",
@@ -80,13 +81,13 @@ Deno.test("task-list: every documented scalar filter maps to its snake_case name
  * workflow reading them gets undefined with no error, so the option has to be
  * reachable and its hint has to say what it does.
  */
-Deno.test("task-list: the detail level is exposed, with what the default omits spelled out", () => {
+test("task-list: the detail level is exposed, with what the default omits spelled out", () => {
   const view = taskList.params!.find((p) => p.key === "view")!;
   assertEquals(view.validation?.enum, ["full"]);
   assertEquals(view.hint!.includes("omits them without saying so"), true);
 });
 
-Deno.test("task-list: an empty body yields an empty list", async () => {
+test("task-list: an empty body yields an empty list", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await taskList.execute({}, ctx), { tasks: [] });
 });

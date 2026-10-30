@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/list-collections.ts";
 
@@ -15,7 +16,7 @@ const collections = [
   },
 ];
 
-Deno.test("list-collections: GETs the site's collection list and returns the bare array", async () => {
+test("list-collections: GETs the site's collection list and returns the bare array", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: collections }]);
   const result = await action.execute!({ siteName: "abc1234d" }, ctx) as typeof collections;
 
@@ -31,7 +32,7 @@ Deno.test("list-collections: GETs the site's collection list and returns the bar
  * one, and they do not use the pagination envelope — a check that keys off
  * `total_responses` would be wrong here.
  */
-Deno.test("list-collections: no pagination envelope is expected or unwrapped", async () => {
+test("list-collections: no pagination envelope is expected or unwrapped", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: collections }]);
   const result = await action.execute!({ siteName: "abc" }, ctx);
   assertEquals(Array.isArray(result), true);
@@ -39,7 +40,7 @@ Deno.test("list-collections: no pagination envelope is expected or unwrapped", a
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("list-collections: surfaces Duda's error body on a 400", async () => {
+test("list-collections: surfaces Duda's error body on a 400", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 400,
     body: { error_code: "ResourceNotExist", message: "Site with alias 'abc' doesn't exist" },

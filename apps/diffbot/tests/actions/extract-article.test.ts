@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/extract-article.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { ARTICLE_DOC } from "../_fixtures.ts";
 
-Deno.test("extract-article: GETs /v3/article with the url and shapes the objects", async () => {
+test("extract-article: GETs /v3/article with the url and shapes the objects", async () => {
   const { ctx, calls } = mockCtx([{ body: ARTICLE_DOC }]);
   const out = await run(action, { url: "https://example.com/x", fields: "links, meta" }, ctx);
   const u = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("extract-article: GETs /v3/article with the url and shapes the objects
   assertEquals(out.humanLanguage, "en");
 });
 
-Deno.test("extract-article: no objects gives a null object; an error body or a 4xx throws", async () => {
+test("extract-article: no objects gives a null object; an error body or a 4xx throws", async () => {
   const empty = mockCtx([{ body: { request: {}, objects: [] } }]);
   const out = await run(action, { url: "https://e.com" }, empty.ctx);
   assertEquals(out.count, 0);
@@ -42,7 +43,7 @@ Deno.test("extract-article: no objects gives a null object; an error body or a 4
   assert(err.message.includes("Incorrect token"));
 });
 
-Deno.test("extract-article: forwards its own parameters, omits unset ones", async () => {
+test("extract-article: forwards its own parameters, omits unset ones", async () => {
   const { ctx, calls } = mockCtx([{ body: ARTICLE_DOC }]);
   await run(action, {
     url: "https://e.com",

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/transcript-search.ts";
 
 const OK = { data: { transcripts: [{ id: "t1" }] } };
 
-Deno.test("transcript-search: sends filters as variables", async () => {
+test("transcript-search: sends filters as variables", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({
     keyword: "pricing",
@@ -22,7 +23,7 @@ Deno.test("transcript-search: sends filters as variables", async () => {
   });
 });
 
-Deno.test("transcript-search: pagination is inlined as integer literals, not variables", async () => {
+test("transcript-search: pagination is inlined as integer literals, not variables", async () => {
   // Fireflies' docs disagree with themselves on Int vs Float for these; an
   // integer literal is valid input for either.
   const { ctx, calls } = mockCtx([{ body: OK }]);
@@ -34,7 +35,7 @@ Deno.test("transcript-search: pagination is inlined as integer literals, not var
   assertEquals(variables, {});
 });
 
-Deno.test("transcript-search: comma-separated people become arrays", async () => {
+test("transcript-search: comma-separated people become arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ organizers: "a@x.com, b@x.com", participants: "c@x.com" }, ctx);
   const { variables } = sent(calls[0]);
@@ -42,7 +43,7 @@ Deno.test("transcript-search: comma-separated people become arrays", async () =>
   assertEquals(variables.participants, ["c@x.com"]);
 });
 
-Deno.test("transcript-search: exposes no deprecated arguments", async () => {
+test("transcript-search: exposes no deprecated arguments", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({}, ctx);
   const { query } = sent(calls[0]);
@@ -54,7 +55,7 @@ Deno.test("transcript-search: exposes no deprecated arguments", async () => {
   assertEquals(action.params!.some((p) => p.key === "title"), false);
 });
 
-Deno.test("transcript-search: summaries are opt-in for a list", async () => {
+test("transcript-search: summaries are opt-in for a list", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }, { body: OK }]);
   await action.execute({}, ctx);
   assert(!sent(calls[0]).query.includes("summary {"));

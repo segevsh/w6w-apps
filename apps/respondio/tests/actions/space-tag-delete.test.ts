@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import spaceTagDelete from "../../actions/space-tag-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-tag-delete: DELETEs /space/tag with {name}", async () => {
+test("space-tag-delete: DELETEs /space/tag with {name}", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 200, message: "deleted" } }]);
   await spaceTagDelete.execute({ name: "Old Tag" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("space-tag-delete: DELETEs /space/tag with {name}", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Old Tag" });
 });
 
-Deno.test("space-tag-delete: an empty name is refused before any request", async () => {
+test("space-tag-delete: an empty name is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await spaceTagDelete.execute({ name: "" }, ctx),
@@ -21,6 +22,6 @@ Deno.test("space-tag-delete: an empty name is refused before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("space-tag-delete: is declared idempotent", () => {
+test("space-tag-delete: is declared idempotent", () => {
   assertEquals(spaceTagDelete.idempotent, true);
 });

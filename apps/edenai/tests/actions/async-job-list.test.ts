@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import list from "../../actions/async-job-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("async-job-list: sends filters and page, returns the page envelope", async () => {
+test("async-job-list: sends filters and page, returns the page envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       items: [{ public_id: "j1", status: "success" }],
@@ -29,7 +30,7 @@ Deno.test("async-job-list: sends filters and page, returns the page envelope", a
   assertEquals((out.items as unknown[]).length, 1);
 });
 
-Deno.test("async-job-list: defaults to page 1 and 20 per page, not the vendor's 100", async () => {
+test("async-job-list: defaults to page 1 and 20 per page, not the vendor's 100", async () => {
   const { ctx, calls } = mockCtx([{
     body: { items: [], total: 0, page: 1, limit: 20, total_pages: 0 },
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import leadUpsert from "../../actions/lead-upsert.ts";
 import { dataEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("lead-upsert: posts to /v2/leads/upsert with the filter in the query", async () => {
+test("lead-upsert: posts to /v2/leads/upsert with the filter in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await leadUpsert.execute({ filterEmail: "mark@example.com", status: "New" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("lead-upsert: posts to /v2/leads/upsert with the filter in the query",
   assertEquals(body.data.status, "New");
 });
 
-Deno.test("lead-upsert: refuses to run with no filter", async () => {
+test("lead-upsert: refuses to run with no filter", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await leadUpsert.execute({ status: "New" }, ctx),

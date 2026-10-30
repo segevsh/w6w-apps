@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-stream-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const page = (n: number, extra: Record<string, unknown> = {}) =>
     (_, i) => (i === n - 1 ? { _id: String(i), ...extra } : { _id: String(i) }),
   );
 
-Deno.test("candidate-stream-list: a full page offers the next skip", async () => {
+test("candidate-stream-list: a full page offers the next skip", async () => {
   const { ctx, calls } = mockCtx([{ body: page(50) }]);
   const out = await action.execute!({ ...base, skip: 50 }, ctx);
   assertEquals(
@@ -21,12 +22,12 @@ Deno.test("candidate-stream-list: a full page offers the next skip", async () =>
   assertEquals((out as Rec).nextSkip, 100);
 });
 
-Deno.test("candidate-stream-list: the first_activity record ends paging even on a full page", async () => {
+test("candidate-stream-list: the first_activity record ends paging even on a full page", async () => {
   const { ctx } = mockCtx([{ body: page(50, { first_activity: true }) }]);
   assertEquals("nextSkip" in ((await action.execute!(base, ctx)) as Rec), false);
 });
 
-Deno.test("candidate-stream-list: a short page has no next skip", async () => {
+test("candidate-stream-list: a short page has no next skip", async () => {
   const { ctx } = mockCtx([{ body: page(3) }]);
   const out = await action.execute!(base, ctx);
   assertEquals("nextSkip" in (out as Rec), false);

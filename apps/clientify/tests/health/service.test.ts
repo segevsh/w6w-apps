@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { isV1Api, mapResourceStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -27,13 +28,13 @@ const run = async (body: unknown, status = 200) => {
   return { r, calls };
 };
 
-Deno.test("service: unsigned, app-scoped, own status host in the per-hook allowlist", () => {
+test("service: unsigned, app-scoped, own status host in the per-hook allowlist", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.clientify.com"] });
   assertEquals(STATUS_URL, "https://status.clientify.com/index.json");
 });
 
-Deno.test("service: V1 components operational -> ok, fetches the index.json", async () => {
+test("service: V1 components operational -> ok, fetches the index.json", async () => {
   const { r, calls } = await run(page([
     ["API V1 Principal", "operational"],
     ["API V1 Secundaria", "operational"],
@@ -44,7 +45,7 @@ Deno.test("service: V1 components operational -> ok, fetches the index.json", as
   assertEquals(Object.keys(r.components ?? {}).length, 3);
 });
 
-Deno.test("service: a V1 outage drives the verdict; the worst V1 component wins", async () => {
+test("service: a V1 outage drives the verdict; the worst V1 component wins", async () => {
   const { r } = await run(page([
     ["API V1 Principal", "operational"],
     ["API V1 Secundaria", "downtime"],
@@ -53,7 +54,7 @@ Deno.test("service: a V1 outage drives the verdict; the worst V1 component wins"
   assertEquals(r.message?.includes("API V1 Secundaria (downtime)"), true);
 });
 
-Deno.test("service: an outage elsewhere (V2, forms) does not move the verdict, shown capped at degraded", async () => {
+test("service: an outage elsewhere (V2, forms) does not move the verdict, shown capped at degraded", async () => {
   const { r } = await run(page([
     ["API V1 Principal", "operational"],
     ["API V1 Secundaria", "operational"],
@@ -64,24 +65,24 @@ Deno.test("service: an outage elsewhere (V2, forms) does not move the verdict, s
   assertEquals(r.components?.["api-v2"].state, "degraded");
 });
 
-Deno.test("service: no V1 component -> unknown, never ok", async () => {
+test("service: no V1 component -> unknown, never ok", async () => {
   const { r } = await run(page([["API V2", "operational"]]));
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("service: a page that is not Clientify's -> unknown", async () => {
+test("service: a page that is not Clientify's -> unknown", async () => {
   const body = page([["API V1 Principal", "operational"]], "Other");
   body.data.attributes.company_url = "https://other.test";
   body.data.attributes.custom_domain = "status.other.test";
   assertEquals((await run(body)).r.state, "unknown");
 });
 
-Deno.test("service: HTTP error or non-document body -> unknown", async () => {
+test("service: HTTP error or non-document body -> unknown", async () => {
   assertEquals((await run({}, 500)).r.state, "unknown");
   assertEquals((await run({ hello: 1 })).r.state, "unknown");
 });
 
-Deno.test("service: status mapping and V1 matcher", () => {
+test("service: status mapping and V1 matcher", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import smsSend from "../../actions/sms-send.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sms-send: POST /api/1/sendSMS/ with the documented form fields", async () => {
+test("sms-send: POST /api/1/sendSMS/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await smsSend.execute(
     { "messages": [{ "recipient": "+34600000000", "body": "hi", "sender": "Acme" }] } as never,
@@ -21,7 +22,7 @@ Deno.test("sms-send: POST /api/1/sendSMS/ with the documented form fields", asyn
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("sms-send: a vendor error surfaces its status and body", async () => {
+test("sms-send: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await smsSend.execute(

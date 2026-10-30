@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-bulk-emails.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("send-bulk-emails: shapes messages (camelCase or vendor form) and returns reference ids", async () => {
+test("send-bulk-emails: shapes messages (camelCase or vendor form) and returns reference ids", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, message: "ok", data: { reference_ids: ["r1", "r2"] } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("send-bulk-emails: shapes messages (camelCase or vendor form) and retu
   assertEquals(out.referenceIds, ["r1", "r2"]);
 });
 
-Deno.test("send-bulk-emails: validates locally (no messages, >500, no body source, bad template)", async () => {
+test("send-bulk-emails: validates locally (no messages, >500, no body source, bad template)", async () => {
   const { ctx, calls } = mockCtx();
   const m = { fromAddress: "m@d.com", to: "a@x.com" };
   await assertRejects(

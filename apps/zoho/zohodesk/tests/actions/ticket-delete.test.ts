@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-delete.ts";
 
-Deno.test("ticket-delete: POSTs /tickets/moveToTrash with a single-element ticketIds array", async () => {
+test("ticket-delete: POSTs /tickets/moveToTrash with a single-element ticketIds array", async () => {
   const { ctx, calls } = mockDeskCtx([{ status: 204 }]);
   const out = await action.execute({ recordId: "42" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,6 +13,6 @@ Deno.test("ticket-delete: POSTs /tickets/moveToTrash with a single-element ticke
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("ticket-delete: is idempotent", () => {
+test("ticket-delete: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

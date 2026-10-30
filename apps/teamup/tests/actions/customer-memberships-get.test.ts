@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-memberships-get.ts";
 
@@ -9,7 +10,7 @@ const sample = {
   cancellation_reason: "upgraded",
 };
 
-Deno.test("customer-memberships-get: reads /customer_memberships/7 by id", async () => {
+test("customer-memberships-get: reads /customer_memberships/7 by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 7 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -19,14 +20,14 @@ Deno.test("customer-memberships-get: reads /customer_memberships/7 by id", async
   assertEquals(result.cancellation_reason, "upgraded");
 });
 
-Deno.test("customer-memberships-get: unset filters are not sent", async () => {
+test("customer-memberships-get: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 7 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals(calls[0].headers["teamup-provider-id"], undefined);
 });
 
-Deno.test("customer-memberships-get: declares the status and cancellation-reason vocabularies", () => {
+test("customer-memberships-get: declares the status and cancellation-reason vocabularies", () => {
   const fields = action.output as Array<{ key: string; label: string }>;
   const status = fields.find((f) => f.key === "status")!.label;
   for (const value of ["active", "hold", "completed", "cancelled"]) {

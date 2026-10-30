@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-upload.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("create-upload: sends the documented request and maps the answer", async () => {
+test("create-upload: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "uploadUrl": "https://s3.test/u",
@@ -23,7 +24,7 @@ Deno.test("create-upload: sends the documented request and maps the answer", asy
   });
 });
 
-Deno.test("create-upload: a 401 surfaces Runway's error text", async () => {
+test("create-upload: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

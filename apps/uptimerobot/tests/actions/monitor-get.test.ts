@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/monitor-get.ts";
 
-Deno.test("monitor-get: POSTs /getMonitors with monitors=<id> and unwraps the single result", async () => {
+test("monitor-get: POSTs /getMonitors with monitors=<id> and unwraps the single result", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       stat: "ok",
@@ -17,7 +18,7 @@ Deno.test("monitor-get: POSTs /getMonitors with monitors=<id> and unwraps the si
   assertEquals(out.id, 777749809);
 });
 
-Deno.test("monitor-get: throws when UptimeRobot returns no matching monitor", async () => {
+test("monitor-get: throws when UptimeRobot returns no matching monitor", async () => {
   const { ctx } = mockCtx([{ body: { stat: "ok", monitors: [] } }]);
   await assertRejects(async () => await action.execute({ monitorId: "999" }, ctx), Error, "999");
 });

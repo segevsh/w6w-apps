@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import vendorList from "../../actions/vendor-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const BASE = {};
 
-Deno.test("vendor-list: GET /vendors sends only the page defaults and flattens the envelope", async () => {
+test("vendor-list: GET /vendors sends only the page defaults and flattens the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }, { id: 2 }], "next-abc", 2) }]);
   const out = await vendorList.execute({ ...BASE, size: 25, includeTotalCount: true }, ctx) as {
     items: unknown[];
@@ -24,7 +25,7 @@ Deno.test("vendor-list: GET /vendors sends only the page defaults and flattens t
   assertEquals(out.totalCount, 2);
 });
 
-Deno.test("vendor-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
+test("vendor-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   const out = await vendorList.execute({
     ...BASE,
@@ -48,7 +49,7 @@ Deno.test("vendor-list: filters and expand go out under their wire names; a curs
   assertEquals(out.nextCursor, null);
 });
 
-Deno.test("vendor-list: a 403 names the permission problem and keeps Drata's message", async () => {
+test("vendor-list: a 403 names the permission problem and keeps Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden resource", 5) }]);
   const err = await assertRejects(
     () => Promise.resolve(vendorList.execute({ ...BASE }, ctx)),

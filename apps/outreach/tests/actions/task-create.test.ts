@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs a manual task for a prospect and owner", async () => {
+test("task-create: POSTs a manual task for a prospect and owner", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("task", 8) }]);
   await taskCreate.execute({
     action: "call",
@@ -25,7 +26,7 @@ Deno.test("task-create: POSTs a manual task for a prospect and owner", async () 
   });
 });
 
-Deno.test("task-create: action choices match Outreach's documented values", () => {
+test("task-create: action choices match Outreach's documented values", () => {
   const action = taskCreate.params!.find((p) => p.key === "action")!;
   const values = (action.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values, ["action_item", "call", "email", "in_person"]);

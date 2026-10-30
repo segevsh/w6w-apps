@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-head.ts";
 
-Deno.test("object-head: HEADs the object and returns metadata", async () => {
+test("object-head: HEADs the object and returns metadata", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -27,13 +28,13 @@ Deno.test("object-head: HEADs the object and returns metadata", async () => {
   });
 });
 
-Deno.test("object-head: reports exists:false on 404 without throwing", async () => {
+test("object-head: reports exists:false on 404 without throwing", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const result = await action.execute!({ bucket: "b", key: "missing.txt" }, ctx);
   assertEquals(result, { exists: false });
 });
 
-Deno.test("object-head: other non-2xx statuses still throw", async () => {
+test("object-head: other non-2xx statuses still throw", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ bucket: "b", key: "a.txt" }, ctx)),
@@ -42,7 +43,7 @@ Deno.test("object-head: other non-2xx statuses still throw", async () => {
   );
 });
 
-Deno.test("object-head: missing params reject", async () => {
+test("object-head: missing params reject", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ bucket: "", key: "a" }, ctx)),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-get-many.ts";
 
-Deno.test("workspace-get-many: GETs /workspaces with search and paging", async () => {
+test("workspace-get-many: GETs /workspaces with search and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], total_items: 0 } }]);
   await action.execute({ search: "team", page: 1, pageSize: 20 }, ctx);
 

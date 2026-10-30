@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordingGet from "../../actions/recording-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recording-get: GET /api/v1/recording/r%2F1 on the workspace host", async () => {
+test("recording-get: GET /api/v1/recording/r%2F1 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { recording: { id: "r/1", title: "Standup" } },
@@ -18,7 +19,7 @@ Deno.test("recording-get: GET /api/v1/recording/r%2F1 on the workspace host", as
   assertEquals((out as { id: string }).id, "r/1");
 });
 
-Deno.test("recording-get: a Fellow error surfaces its detail and status", async () => {
+test("recording-get: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(recordingGet.execute({ recordingId: "r/1" }, ctx)),

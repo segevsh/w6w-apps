@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import computerDelete from "../../actions/computer-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("computer-delete: DELETE /computers/{set} returns affected ids", async () => {
+test("computer-delete: DELETE /computers/{set} returns affected ids", async () => {
   const { ctx, calls } = mockCtx([{ body: [1, 2, 3] }]);
   const out = await computerDelete.execute({ computerIds: "1,2,3" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("computer-delete: DELETE /computers/{set} returns affected ids", async
   assertEquals(out, { deleted: [1, 2, 3] });
 });
 
-Deno.test("computer-delete: empty ids never builds the delete-everything form", async () => {
+test("computer-delete: empty ids never builds the delete-everything form", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await computerDelete.execute({ computerIds: "" }, ctx),

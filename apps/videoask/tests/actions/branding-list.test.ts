@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import brandingList from "../../actions/branding-list.ts";
 import { mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("branding-list: GETs /brandings and unwraps the page envelope", async () => {
+test("branding-list: GETs /brandings and unwraps the page envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ branding_id: "b1", name: "Brand 1" }], { count: 1 }),
   }]);

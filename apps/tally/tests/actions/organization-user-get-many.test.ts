@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-user-get-many.ts";
 
-Deno.test("organization-user-get-many: GETs the members as a bare array", async () => {
+test("organization-user-get-many: GETs the members as a bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "u1" }, { id: "u2" }] }]);
   const result = await action.execute({ organizationId: "org1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("organization-user-get-many: GETs the members as a bare array", async 
   assertEquals(result.count, 2);
 });
 
-Deno.test("organization-user-get-many: tolerates a non-array body", async () => {
+test("organization-user-get-many: tolerates a non-array body", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await action.execute({ organizationId: "org1" }, ctx), { items: [], count: 0 });
 });

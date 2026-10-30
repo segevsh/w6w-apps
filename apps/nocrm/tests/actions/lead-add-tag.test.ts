@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/lead-add-tag.ts";
 
-Deno.test("lead-add-tag: GETs the Simplified API route with the tag as a query param", async () => {
+test("lead-add-tag: GETs the Simplified API route with the tag as a query param", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: { id: 145676 } }]);
   const lead = await action.execute({ leadId: "145676", tag: "ProductA" }, ctx);
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/simple/leads/145676/add_tag?tag=ProductA");
@@ -10,12 +11,12 @@ Deno.test("lead-add-tag: GETs the Simplified API route with the tag as a query p
   assertEquals(lead, { id: 145676 });
 });
 
-Deno.test("lead-add-tag: is a `perform` action named for its effect, not its verb", () => {
+test("lead-add-tag: is a `perform` action named for its effect, not its verb", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("lead-add-tag: the Simplified API's own refusal is surfaced", async () => {
+test("lead-add-tag: the Simplified API's own refusal is surfaced", async () => {
   // The document: failing to pass X-API-KEY "will result in a 401 error status".
   const { ctx } = mockNocrmCtx([{
     status: 401,

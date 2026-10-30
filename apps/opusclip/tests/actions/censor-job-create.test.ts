@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import censorJobCreate from "../../actions/censor-job-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("censor-job-create: POSTs projectId/clipId with no envelope on the response", async () => {
+test("censor-job-create: POSTs projectId/clipId with no envelope on the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { jobId: "j1", message: "queued" } }]);
   const out = await censorJobCreate.execute({ projectId: "P1", clipId: "C1" }, ctx) as {
     jobId: string;
@@ -13,7 +14,7 @@ Deno.test("censor-job-create: POSTs projectId/clipId with no envelope on the res
   assertEquals(out.jobId, "j1");
 });
 
-Deno.test("censor-job-create: nests beepSound under options only when provided", async () => {
+test("censor-job-create: nests beepSound under options only when provided", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { jobId: "j1" } },
     { status: 201, body: { jobId: "j2" } },
@@ -25,6 +26,6 @@ Deno.test("censor-job-create: nests beepSound under options only when provided",
   assertEquals("options" in JSON.parse(calls[1].body!), false);
 });
 
-Deno.test("censor-job-create: is declared non-idempotent", () => {
+test("censor-job-create: is declared non-idempotent", () => {
   assertEquals(censorJobCreate.idempotent, false);
 });

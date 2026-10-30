@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSupabaseCtx } from "../_helpers.ts";
 import action from "../../actions/rows-delete.ts";
 
-Deno.test("rows-delete: DELETEs with the filter in the query string", async () => {
+test("rows-delete: DELETEs with the filter in the query string", async () => {
   const { ctx, calls } = mockSupabaseCtx([{ body: [{ id: 5 }] }]);
   const out = await action.execute({ table: "todos", filters: "id=eq.5" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("rows-delete: DELETEs with the filter in the query string", async () =
   assertEquals(out, { rows: [{ id: 5 }] });
 });
 
-Deno.test("rows-delete: refuses a blank filter without making a request", async () => {
+test("rows-delete: refuses a blank filter without making a request", async () => {
   const { ctx, calls } = mockSupabaseCtx([]);
   await assertRejects(
     async () => await action.execute!({ table: "todos", filters: "" }, ctx),

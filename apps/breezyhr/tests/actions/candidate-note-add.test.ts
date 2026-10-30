@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-note-add.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("candidate-note-add: POSTs the note body to the stream", async () => {
+test("candidate-note-add: POSTs the note body to the stream", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "s1", type: "companyNotePosted" } }]);
   const out = await action.execute!(
     { companyId: "c1", positionId: "p1", candidateId: "k1", body: "call back" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Help Scout's fixed authorize/token endpoints", () => {
+test("oauth2: declares Help Scout's fixed authorize/token endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   // Unlike Zendesk, Help Scout has no per-account host — same host for every
@@ -16,7 +17,7 @@ Deno.test("oauth2: declares Help Scout's fixed authorize/token endpoints", () =>
   assertEquals(auth.fields, undefined);
 });
 
-Deno.test("oauth2: sign sets the Bearer header", async () => {
+test("oauth2: sign sets the Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.helpscout.net/v2/conversations",
@@ -27,7 +28,7 @@ Deno.test("oauth2: sign sets the Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test refuses a missing token without a request", async () => {
+test("oauth2: test refuses a missing token without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -36,14 +37,14 @@ Deno.test("oauth2: test refuses a missing token without a request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes GET /v2/users/me, Bearer-signed itself", async () => {
+test("oauth2: test probes GET /v2/users/me, Bearer-signed itself", async () => {
   const ok = mockCtx([{ body: { id: 1 } }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ok.ctx), { ok: true });
   assertEquals(ok.calls[0].url, "https://api.helpscout.net/v2/users/me");
   assertEquals(ok.calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test surfaces a non-2xx status", async () => {
+test("oauth2: test surfaces a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   assertEquals(await auth.test({ credential: { accessToken: "bad" } }, ctx), {
     ok: false,
@@ -51,7 +52,7 @@ Deno.test("oauth2: test surfaces a non-2xx status", async () => {
   });
 });
 
-Deno.test("oauth2: afterConnect records the user for connectionLabel", async () => {
+test("oauth2: afterConnect records the user for connectionLabel", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: 4, firstName: "Vernon", lastName: "Bear", email: "bear@acme.com" },
   }]);
@@ -62,7 +63,7 @@ Deno.test("oauth2: afterConnect records the user for connectionLabel", async () 
   assertEquals(calls[0].url, "https://api.helpscout.net/v2/users/me");
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when the probe fails", async () => {
+test("oauth2: afterConnect degrades to {} when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(out, {});

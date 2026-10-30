@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-group-interests.ts";
 
-Deno.test("list-group-interests: GETs /lists/{listId}/interest-categories/{categoryId}/interests", async () => {
+test("list-group-interests: GETs /lists/{listId}/interest-categories/{categoryId}/interests", async () => {
   const { ctx, calls } = mockCtx([{ body: { interests: [], total_items: 0 } }]);
   await action.execute!(
     { listId: "abc", categoryId: "cat-1", count: 10, offset: 5 },

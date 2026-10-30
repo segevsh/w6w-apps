@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import browserSessionCreate from "../../actions/browser-session-create.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("browser-session-create: POSTs /v1/browser_sessions with snake_case body", async () => {
+test("browser-session-create: POSTs /v1/browser_sessions with snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { browser_session_id: "pbs_1" } }]);
   const out = await browserSessionCreate.execute({
     url: "https://example.com",
@@ -25,7 +26,7 @@ Deno.test("browser-session-create: POSTs /v1/browser_sessions with snake_case bo
   });
 });
 
-Deno.test("browser-session-create: empty input sends an empty JSON object", async () => {
+test("browser-session-create: empty input sends an empty JSON object", async () => {
   const { ctx, calls } = mockCtx([{ body: { browser_session_id: "pbs_2" } }]);
   await browserSessionCreate.execute({}, ctx);
   assertEquals(jsonBody(calls[0]), {});

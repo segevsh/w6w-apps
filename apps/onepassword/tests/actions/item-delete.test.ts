@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ok } from "./_shared.ts";
 import action from "../../actions/item-delete.ts";
 
-Deno.test("item-delete: archives once the id is typed twice", async () => {
+test("item-delete: archives once the id is typed twice", async () => {
   const { ctx, calls, logs } = mockCtx([ok({})], { display });
   const result = await action.execute!({
     vaultId: "v1",
@@ -18,7 +19,7 @@ Deno.test("item-delete: archives once the id is typed twice", async () => {
 });
 
 /** A wrong id deletes somebody else's credential, and nothing notices for hours. */
-Deno.test("item-delete: a mismatched confirmation refuses, and nothing is sent", async () => {
+test("item-delete: a mismatched confirmation refuses, and nothing is sent", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ vaultId: "v1", itemId: "i1", confirmItemId: "i2" }, ctx),
@@ -29,7 +30,7 @@ Deno.test("item-delete: a mismatched confirmation refuses, and nothing is sent",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-delete: a missing confirmation refuses", async () => {
+test("item-delete: a missing confirmation refuses", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ vaultId: "v1", itemId: "i1" }, ctx),
@@ -39,7 +40,7 @@ Deno.test("item-delete: a missing confirmation refuses", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-delete: needs a vault and an item", async () => {
+test("item-delete: needs a vault and an item", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ itemId: "i1", confirmItemId: "i1" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("item-delete: needs a vault and an item", async () => {
   );
 });
 
-Deno.test("item-delete: an Events connection is refused", async () => {
+test("item-delete: an Events connection is refused", async () => {
   const { ctx } = mockCtx([], { display: eventsDisplay });
   await assertRejects(
     async () => await action.execute!({ vaultId: "v1", itemId: "i1", confirmItemId: "i1" }, ctx),
@@ -58,7 +59,7 @@ Deno.test("item-delete: an Events connection is refused", async () => {
 });
 
 /** Archived is recoverable; the credential itself is not revoked. */
-Deno.test("item-delete: says what deletion does and does not do", () => {
+test("item-delete: says what deletion does and does not do", () => {
   assert(
     /Archive, where an administrator can restore/.test(action.description!),
     action.description,

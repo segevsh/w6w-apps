@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-screen-note.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const base = { projectId: "p1", screenId: "s1", noteId: "n1" };
 
-Deno.test("update-screen-note: PATCHes status, color and position", async () => {
+test("update-screen-note: PATCHes status, color and position", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute(
     { ...base, status: "resolved", color: "peach", x: 0.2, y: 0.3 },
@@ -20,7 +21,7 @@ Deno.test("update-screen-note: PATCHes status, color and position", async () => 
   });
 });
 
-Deno.test("update-screen-note: nothing set, a bad status, a half position and a bad color are refused", async () => {
+test("update-screen-note: nothing set, a bad status, a half position and a bad color are refused", async () => {
   const { ctx, calls } = mockCtx();
   for (
     const [patch, msg] of [
@@ -35,7 +36,7 @@ Deno.test("update-screen-note: nothing set, a bad status, a half position and a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-screen-note: a 404 is thrown with the vendor message", async () => {
+test("update-screen-note: a 404 is thrown with the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Note not found" } }]);
   await assertRejects(
     async () => await action.execute({ ...base, status: "open" }, ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listOpenings from "../../actions/list-openings.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-openings: calls GET /v3/openings", async () => {
+test("list-openings: calls GET /v3/openings", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listOpenings.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/openings");
@@ -13,13 +14,13 @@ Deno.test("list-openings: calls GET /v3/openings", async () => {
  * primary key, `opening_id` matches the customer-facing label ("ENG-12"). They
  * are sent as different parameters and must not be collapsed.
  */
-Deno.test("list-openings: the label filter and the primary-key filter are separate parameters", async () => {
+test("list-openings: the label filter and the primary-key filter are separate parameters", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listOpenings.execute({ openingId: "ENG-12", ids: "500" }, ctx);
   assertEquals(queryOf(calls[0].url), { opening_id: "ENG-12", ids: "500" });
 });
 
-Deno.test("list-openings: maps its parent and state filters", async () => {
+test("list-openings: maps its parent and state filters", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listOpenings.execute({
     jobIds: "1",
@@ -39,7 +40,7 @@ Deno.test("list-openings: maps its parent and state filters", async () => {
   });
 });
 
-Deno.test("list-openings: a cursor rejects the open filter it already carries", () => {
+test("list-openings: a cursor rejects the open filter it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(() => listOpenings.execute({ cursor: "N", open: true }, ctx), Error);
   assert(err.message.includes("open"), err.message);

@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "./_assert.ts";
 import { csv, csvInts, errorText, nextPageFromLink, seg } from "../lib/client.ts";
 
-Deno.test("client.nextPageFromLink: picks the next relation only", () => {
+test("client.nextPageFromLink: picks the next relation only", () => {
   const link = '<https://uscreen.io/publisher_api/v1/customers?page=2>; rel="next", ' +
     '<https://uscreen.io/publisher_api/v1/customers?page=9>; rel="last"';
   assertEquals(nextPageFromLink(link), 2);
@@ -9,7 +10,7 @@ Deno.test("client.nextPageFromLink: picks the next relation only", () => {
   assertEquals(nextPageFromLink(null), null);
 });
 
-Deno.test("client.errorText: reads both error shapes", () => {
+test("client.errorText: reads both error shapes", () => {
   assertEquals(errorText({ message: "Not Found" }), "Not Found");
   assertEquals(
     errorText({ email: ["has already been taken"], password: ["is too short"] }),
@@ -18,7 +19,7 @@ Deno.test("client.errorText: reads both error shapes", () => {
   assertEquals(errorText([1]), undefined);
 });
 
-Deno.test("client: seg encodes emails; csv helpers trim and validate", () => {
+test("client: seg encodes emails; csv helpers trim and validate", () => {
   assertEquals(seg(" a+b@c.co "), "a%2Bb%40c.co");
   assertEquals(csv("a, b\n c,"), ["a", "b", "c"]);
   assertEquals(csvInts("1, 2"), [1, 2]);

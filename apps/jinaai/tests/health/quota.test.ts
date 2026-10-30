@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { LOW_REQUESTS_THRESHOLD, LOW_TOKENS_THRESHOLD } from "../../health/quota.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: unknown when Jina AI sends neither rate-limit header", async () => {
+test("quota: unknown when Jina AI sends neither rate-limit header", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const report = await quota.check!({}, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("quota: unknown when Jina AI sends neither rate-limit header", async (
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: ok with comfortable headroom on both buckets", async () => {
+test("quota: ok with comfortable headroom on both buckets", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {
@@ -28,7 +29,7 @@ Deno.test("quota: ok with comfortable headroom on both buckets", async () => {
   ]);
 });
 
-Deno.test("quota: degraded when remaining requests is at/under the low threshold", async () => {
+test("quota: degraded when remaining requests is at/under the low threshold", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {
@@ -40,7 +41,7 @@ Deno.test("quota: degraded when remaining requests is at/under the low threshold
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: degraded when remaining tokens is at/under the low threshold", async () => {
+test("quota: degraded when remaining tokens is at/under the low threshold", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {

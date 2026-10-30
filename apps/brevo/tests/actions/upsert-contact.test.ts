@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-contact.ts";
 
-Deno.test("upsert-contact: POSTs /v3/contacts with updateEnabled: true", async () => {
+test("upsert-contact: POSTs /v3/contacts with updateEnabled: true", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ email: "ada@x.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("upsert-contact: POSTs /v3/contacts with updateEnabled: true", async (
   assertEquals(result, { success: true });
 });
 
-Deno.test("upsert-contact: forwards attributes and listIds", async () => {
+test("upsert-contact: forwards attributes and listIds", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!(
     { email: "ada@x.com", attributes: { FIRSTNAME: "Ada" }, listIds: [5] },

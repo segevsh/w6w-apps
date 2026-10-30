@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockBooqableCtx, mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: is an informational, connection-scoped, signed quota check", () => {
+test("quota: is an informational, connection-scoped, signed quota check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.covers, ["*"]);
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reads restrictions.api_monthly_calls and api_usage_count", async () => {
+test("quota: reads restrictions.api_monthly_calls and api_usage_count", async () => {
   const { ctx, calls } = mockBooqableCtx([{
     body: {
       data: {
@@ -39,7 +40,7 @@ Deno.test("quota: reads restrictions.api_monthly_calls and api_usage_count", asy
   assertEquals(url.searchParams.get("fields[companies]"), "subscription");
 });
 
-Deno.test("quota: degraded under 10% headroom, down at zero", async () => {
+test("quota: degraded under 10% headroom, down at zero", async () => {
   const low = mockBooqableCtx([{
     body: {
       data: {
@@ -63,12 +64,12 @@ Deno.test("quota: degraded under 10% headroom, down at zero", async () => {
   assertEquals((await quota.check!({}, none.ctx)).state, "down");
 });
 
-Deno.test("quota: unknown when the response carries no usable numbers", async () => {
+test("quota: unknown when the response carries no usable numbers", async () => {
   const { ctx } = mockBooqableCtx([{ body: { data: { attributes: {} } } }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: unknown when the connection records no company slug", async () => {
+test("quota: unknown when the connection records no company slug", async () => {
   const { ctx } = mockCtx();
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import raindropDelete from "../../actions/raindrop-delete.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("raindrop-delete: DELETEs the singular path", async () => {
+test("raindrop-delete: DELETEs the singular path", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   const out = await raindropDelete.execute({ raindropId: 373777232 }, ctx) as { result: boolean };
 
@@ -17,13 +18,13 @@ Deno.test("raindrop-delete: DELETEs the singular path", async () => {
  * Saying so in the description is the only thing this action can do about it,
  * which makes the wording load-bearing rather than decorative.
  */
-Deno.test("raindrop-delete: the description states the Trash-then-permanent behaviour", () => {
+test("raindrop-delete: the description states the Trash-then-permanent behaviour", () => {
   const description = raindropDelete.description ?? "";
   assert(/Trash/.test(description), description);
   assert(/ALREADY in Trash/i.test(description), description);
   assert(/permanent/i.test(description), description);
 });
 
-Deno.test("raindrop-delete: is idempotent", () => {
+test("raindrop-delete: is idempotent", () => {
   assertEquals(raindropDelete.idempotent, true);
 });

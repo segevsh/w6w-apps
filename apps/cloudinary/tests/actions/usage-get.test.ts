@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/usage-get.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
 /** The hourly allowance is only visible in the headers. */
-Deno.test("usage-get: merges the rate-limit headers into the body", async () => {
+test("usage-get: merges the rate-limit headers into the body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { plan: "Free", credits: { usage: 3.5, limit: 25 } },
@@ -26,7 +27,7 @@ Deno.test("usage-get: merges the rate-limit headers into the body", async () => 
   assertEquals(new URL(calls[0].url).pathname, "/v1_1/acme/usage");
 });
 
-Deno.test("usage-get: a past date goes on the query string", async () => {
+test("usage-get: a past date goes on the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ date: "1-8-2026" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("date"), "1-8-2026");

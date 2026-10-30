@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-sheets.ts";
 
-Deno.test("list-sheets: GET /v4/spreadsheets/{id} with fields mask, returns tab properties", async () => {
+test("list-sheets: GET /v4/spreadsheets/{id} with fields mask, returns tab properties", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       sheets: [

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import taskDelete from "../../actions/task-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-delete: DELETE /v2/tasks/{id}; an empty body still returns an object", async () => {
+test("task-delete: DELETE /v2/tasks/{id}; an empty body still returns an object", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await taskDelete.execute({ id: "k1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("task-delete: DELETE /v2/tasks/{id}; an empty body still returns an ob
   assertEquals(taskDelete.idempotent, true);
 });
 
-Deno.test("task actions: a forbidden answer is reported from the body", async () => {
+test("task actions: a forbidden answer is reported from the body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "This action is unauthorized." } }]);
   let message = "";
   try {

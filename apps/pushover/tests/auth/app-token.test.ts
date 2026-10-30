@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import appToken, {
   endpointTakesUser,
   injectCredential,
@@ -23,7 +24,7 @@ function signWith(request: SignableRequest): SignableRequest {
   ) as SignableRequest;
 }
 
-Deno.test("auth: declares two secret fields, because the credential is a pair", () => {
+test("auth: declares two secret fields, because the credential is a pair", () => {
   assertEquals(appToken.key, "app-token");
   // `custom`, not `apiKey` or `bearer`: the credential rides in the request
   // body, which no header-placement block describes.
@@ -33,7 +34,7 @@ Deno.test("auth: declares two secret fields, because the credential is a pair", 
   assertEquals(fields.every((f) => f.type === "secret"), true, "both halves are private");
 });
 
-Deno.test("KEY_PATTERN: 30 letters and digits, as the vendor documents", () => {
+test("KEY_PATTERN: 30 letters and digits, as the vendor documents", () => {
   assert(KEY_PATTERN.test(TOKEN));
   assert(KEY_PATTERN.test(USER));
   assertEquals(TOKEN.length, 30);
@@ -46,14 +47,14 @@ Deno.test("KEY_PATTERN: 30 letters and digits, as the vendor documents", () => {
  * recipient's key from them keeps it off requests that have no business
  * carrying it.
  */
-Deno.test("endpointTakesUser: only the recipient-addressing endpoints get the user key", () => {
+test("endpointTakesUser: only the recipient-addressing endpoints get the user key", () => {
   assertEquals(endpointTakesUser("https://api.pushover.net/1/messages.json"), true);
   assertEquals(endpointTakesUser("https://api.pushover.net/1/users/validate.json"), true);
   assertEquals(endpointTakesUser("https://api.pushover.net/1/sounds.json"), false);
   assertEquals(endpointTakesUser("https://api.pushover.net/1/apps/limits.json"), false);
 });
 
-Deno.test("injectCredential: adds token and user to a form-encoded body", () => {
+test("injectCredential: adds token and user to a form-encoded body", () => {
   const out = injectCredential("message=hi", { token: TOKEN, user: USER }, true);
   const params = new URLSearchParams(out);
   assertEquals(params.get("message"), "hi");
@@ -65,7 +66,7 @@ Deno.test("injectCredential: adds token and user to a form-encoded body", () => 
  * An action may name a different recipient. The Connection's key is the
  * *default*, not an override of a deliberate choice.
  */
-Deno.test("injectCredential: an action's explicit user survives, the token never does", () => {
+test("injectCredential: an action's explicit user survives, the token never does", () => {
   const out = injectCredential("message=hi&user=OTHERKEY", { token: TOKEN, user: USER }, true);
   const params = new URLSearchParams(out);
   assertEquals(params.get("user"), "OTHERKEY");
@@ -76,7 +77,7 @@ Deno.test("injectCredential: an action's explicit user survives, the token never
   assertEquals(new URLSearchParams(forced).get("token"), TOKEN);
 });
 
-Deno.test("injectCredential: strips the user key for application-scoped endpoints", () => {
+test("injectCredential: strips the user key for application-scoped endpoints", () => {
   const out = injectCredential("user=LEAKED", { token: TOKEN, user: USER }, false);
   const params = new URLSearchParams(out);
   assertEquals(params.get("user"), null);
@@ -87,7 +88,7 @@ Deno.test("injectCredential: strips the user key for application-scoped endpoint
  * The mechanism that makes this app possible: `sign` rewrites the BODY, not a
  * header, because that is where Pushover takes its credentials.
  */
-Deno.test("sign: injects into the body of a POST and sets the form content-type", () => {
+test("sign: injects into the body of a POST and sets the form content-type", () => {
   const signed = signWith({
     url: "https://api.pushover.net/1/messages.json",
     method: "POST",
@@ -102,7 +103,7 @@ Deno.test("sign: injects into the body of a POST and sets the form content-type"
 });
 
 /** A GET carries its parameters in the query string, so `sign` has to look there. */
-Deno.test("sign: injects into the query string of a GET, leaving the body alone", () => {
+test("sign: injects into the query string of a GET, leaving the body alone", () => {
   const signed = signWith({
     url: "https://api.pushover.net/1/sounds.json",
     method: "GET",
@@ -117,7 +118,7 @@ Deno.test("sign: injects into the query string of a GET, leaving the body alone"
   assertEquals(signed.body, null);
 });
 
-Deno.test("sign: an empty POST body still gets the credential", () => {
+test("sign: an empty POST body still gets the credential", () => {
   const signed = signWith({
     url: "https://api.pushover.net/1/messages.json",
     method: "POST",
@@ -132,7 +133,7 @@ Deno.test("sign: an empty POST body still gets the credential", () => {
  * of the credential — the application-scoped ones would let a wrong user key
  * through.
  */
-Deno.test("test: probes users/validate, the only endpoint that checks both halves", async () => {
+test("test: probes users/validate, the only endpoint that checks both halves", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ devices: ["iphone", "desktop"] }) }]);
   const result = await appToken.test!(
     { credential: { token: TOKEN, user: USER } } as never,
@@ -147,7 +148,7 @@ Deno.test("test: probes users/validate, the only endpoint that checks both halve
   assertEquals(sent.get("user"), USER);
 });
 
-Deno.test("test: rejects a malformed key without making a request", async () => {
+test("test: rejects a malformed key without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const badToken = await appToken.test!(
     { credential: { token: "short", user: USER } } as never,
@@ -169,7 +170,7 @@ Deno.test("test: rejects a malformed key without making a request", async () => 
  * "Which of the two did I paste wrong?" is the only question worth answering at
  * connect time, and Pushover marks the offending field by name.
  */
-Deno.test("test: names which half was rejected", async () => {
+test("test: names which half was rejected", async () => {
   const badToken = mockCtx([{
     status: 400,
     body: failure(["application token is invalid"], { token: "invalid" }),
@@ -197,14 +198,14 @@ Deno.test("test: names which half was rejected", async () => {
  * A key with no active device is valid and delivers nothing — which is exactly
  * what the vendor says this endpoint exists to catch.
  */
-Deno.test("test: a valid key with no active device is not usable", async () => {
+test("test: a valid key with no active device is not usable", async () => {
   const { ctx } = mockCtx([{ body: ok({ devices: [] }) }]);
   const result = await appToken.test!({ credential: { token: TOKEN, user: USER } } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("no active device"), result.message);
 });
 
-Deno.test("afterConnect: records the device count and nothing else", async () => {
+test("afterConnect: records the device count and nothing else", async () => {
   const { ctx } = mockCtx([{ body: ok({ devices: ["iphone", "work-laptop"] }) }]);
   const display = await appToken.afterConnect!(
     { credential: { token: TOKEN, user: USER } } as never,
@@ -218,7 +219,7 @@ Deno.test("afterConnect: records the device count and nothing else", async () =>
  * wherever the Connection is. A count answers the useful question without
  * listing them — and neither key may ever appear.
  */
-Deno.test("afterConnect: publishes no device names and neither credential", async () => {
+test("afterConnect: publishes no device names and neither credential", async () => {
   const { ctx } = mockCtx([{ body: ok({ devices: ["ada-iphone"] }) }]);
   const display = await appToken.afterConnect!(
     { credential: { token: TOKEN, user: USER } } as never,
@@ -230,7 +231,7 @@ Deno.test("afterConnect: publishes no device names and neither credential", asyn
   assert(!json.includes(USER), "republished the user key");
 });
 
-Deno.test("afterConnect: a failed lookup publishes nothing rather than guessing", async () => {
+test("afterConnect: a failed lookup publishes nothing rather than guessing", async () => {
   const { ctx } = mockCtx([{ status: 400, body: failure(["nope"]) }]);
   assertEquals(
     await appToken.afterConnect!({ credential: { token: TOKEN, user: USER } } as never, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-share-user.ts";
 
-Deno.test("recording-share-user: PUTs user_id in the body against /users (no id in path)", async () => {
+test("recording-share-user: PUTs user_id in the body against /users (no id in path)", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const result = await action.execute({ recordingId: "r1", userId: "u1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("recording-share-user: PUTs user_id in the body against /users (no id 
   assertEquals(result, { success: true });
 });
 
-Deno.test("recording-share-user: is an idempotent perform action", () => {
+test("recording-share-user: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingCreate from "../../actions/booking-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("booking-create: POST /bookings sends a JSON:API document of attributes", async () => {
+test("booking-create: POST /bookings sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "bookings", "attributes": { "name": "x" } } },
@@ -48,7 +49,7 @@ Deno.test("booking-create: POST /bookings sends a JSON:API document of attribute
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("booking-create: a vendor error surfaces its status, title and detail", async () => {
+test("booking-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -67,7 +68,7 @@ Deno.test("booking-create: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("booking-create: declares perform and idempotent=false", () => {
+test("booking-create: declares perform and idempotent=false", () => {
   assertEquals(bookingCreate.type, "perform");
   assertEquals(bookingCreate.idempotent, false);
   assertEquals(bookingCreate.key, "booking-create");

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import extract from "../../actions/extract.ts";
 import { mockCtx, pathOf, rejection } from "../_helpers.ts";
 
-Deno.test("extract: splits URLs and returns failed_results untouched", async () => {
+test("extract: splits URLs and returns failed_results untouched", async () => {
   const body = {
     results: [{ url: "https://a.com", raw_content: "x" }],
     failed_results: [{ url: "https://b.com", error: "Failed to retrieve content" }],
@@ -21,7 +22,7 @@ Deno.test("extract: splits URLs and returns failed_results untouched", async () 
   });
 });
 
-Deno.test("extract: refuses an empty list and more than 20 URLs before any request", async () => {
+test("extract: refuses an empty list and more than 20 URLs before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await rejection(() => extract.execute({ urls: " " }, ctx));
   const many = Array.from({ length: 21 }, (_, i) => `https://e.com/${i}`).join(",");

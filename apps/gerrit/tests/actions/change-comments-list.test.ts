@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-comments-list.ts";
 
@@ -32,7 +33,7 @@ const comments = {
 };
 
 /** The response is an object keyed by path, not a list. */
-Deno.test("change-comments-list: flattens the by-file object into comments", async () => {
+test("change-comments-list: flattens the by-file object into comments", async () => {
   const { ctx, calls } = mockCtx([comments], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/a/changes/620421/comments");
@@ -41,14 +42,14 @@ Deno.test("change-comments-list: flattens the by-file object into comments", asy
 });
 
 /** Gerrit reviews the commit message as a file. */
-Deno.test("change-comments-list: counts comments on the commit message separately", async () => {
+test("change-comments-list: counts comments on the commit message separately", async () => {
   const { ctx } = mockCtx([comments], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(result.onCommitMessage, 1);
 });
 
 /** Unresolved threads block a submit on many projects. */
-Deno.test("change-comments-list: filters to unresolved on request", async () => {
+test("change-comments-list: filters to unresolved on request", async () => {
   const { ctx } = mockCtx([comments], D);
   const result = await action.execute({ changeId: "620421", unresolvedOnly: true }, ctx) as Record<
     string,
@@ -58,7 +59,7 @@ Deno.test("change-comments-list: filters to unresolved on request", async () => 
   assertEquals(result.unresolvedCount, 1);
 });
 
-Deno.test("change-comments-list: reports authors and the newest patch set", async () => {
+test("change-comments-list: reports authors and the newest patch set", async () => {
   const { ctx } = mockCtx([comments], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(result.authors, ["ada", "grace"]);
@@ -66,13 +67,13 @@ Deno.test("change-comments-list: reports authors and the newest patch set", asyn
 });
 
 /** The comments are somebody's review. */
-Deno.test("change-comments-list: logs counts, never the comment text", async () => {
+test("change-comments-list: logs counts, never the comment text", async () => {
   const { ctx, logs } = mockCtx([comments], D);
   await action.execute({ changeId: "620421" }, ctx);
   assert(!/why\?/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("change-comments-list: refuses a bare Change-Id", async () => {
+test("change-comments-list: refuses a bare Change-Id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ changeId: "I" + "a".repeat(40) }, ctx),

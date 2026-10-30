@@ -1,17 +1,18 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { formatError, pageQuery, seg, SuperchatClient } from "../../lib/client.ts";
 import { REDACTED, redactWebhook } from "../../lib/redact.ts";
 import { dropUndefined } from "../../lib/body.ts";
 
-Deno.test("client: base URL is /v1.0 and never carries credentials", async () => {
+test("client: base URL is /v1.0 and never carries credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new SuperchatClient(ctx).request("/me");
   assertEquals(calls[0].url, "https://api.superchat.com/v1.0/me");
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("client: array query values repeat the key; empty values are dropped", async () => {
+test("client: array query values repeat the key; empty values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new SuperchatClient(ctx).request("/x", {
     query: { ids: ["a", "b"], skip: "", none: undefined, n: 0 },
@@ -19,12 +20,12 @@ Deno.test("client: array query values repeat the key; empty values are dropped",
   assertEquals(new URL(calls[0].url).search, "?ids=a&ids=b&n=0");
 });
 
-Deno.test("client: an empty success body returns null", async () => {
+test("client: an empty success body returns null", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: {} }]);
   assertEquals(await new SuperchatClient(ctx).request("/x"), null);
 });
 
-Deno.test("client: errors name the status; auth failures with empty bodies are explained", async () => {
+test("client: errors name the status; auth failures with empty bodies are explained", async () => {
   for (
     const [status, text] of [[401, "no API key"], [403, "rejected"], [429, "rate limit"]] as const
   ) {
@@ -34,7 +35,7 @@ Deno.test("client: errors name the status; auth failures with empty bodies are e
   }
 });
 
-Deno.test("formatError: reads the {errors:[{title,detail}]} envelope, else the raw text", () => {
+test("formatError: reads the {errors:[{title,detail}]} envelope, else the raw text", () => {
   const body = JSON.stringify({
     errors: [{ title: "Bad", detail: "no handle", status_code: 400 }],
   });
@@ -42,12 +43,12 @@ Deno.test("formatError: reads the {errors:[{title,detail}]} envelope, else the r
   assertEquals(formatError(502, "Bad Gateway", "oops"), "502 Bad Gateway — oops");
 });
 
-Deno.test("client: a 200 that is not JSON throws instead of returning text", async () => {
+test("client: a 200 that is not JSON throws instead of returning text", async () => {
   const { ctx } = mockCtx([{ body: "<html>", headers: {} }]);
   await assertRejects(() => new SuperchatClient(ctx).request("/x"), Error, "not JSON");
 });
 
-Deno.test("seg and pageQuery: encode ids, refuse empty ids and after+before together", () => {
+test("seg and pageQuery: encode ids, refuse empty ids and after+before together", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
   assert(seg(" x ") === "x");
   try {
@@ -65,14 +66,14 @@ Deno.test("seg and pageQuery: encode ids, refuse empty ids and after+before toge
   }
 });
 
-Deno.test("redactWebhook: blanks a present secret, leaves null/absent alone", () => {
+test("redactWebhook: blanks a present secret, leaves null/absent alone", () => {
   assertEquals(redactWebhook({ id: "w", secret: "s" }), { id: "w", secret: REDACTED });
   assertEquals(redactWebhook({ id: "w", secret: null }), { id: "w", secret: null });
   assertEquals(redactWebhook({ id: "w" }), { id: "w" });
   assertEquals(redactWebhook(null), null);
 });
 
-Deno.test("dropUndefined: removes undefined but keeps null and falsy values", () => {
+test("dropUndefined: removes undefined but keeps null and falsy values", () => {
   assertEquals(dropUndefined<Record<string, unknown>>({ a: undefined, b: null, c: 0, d: "" }), {
     b: null,
     c: 0,

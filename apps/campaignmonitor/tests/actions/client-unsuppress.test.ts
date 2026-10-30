@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import clientUnsuppress from "../../actions/client-unsuppress.ts";
 import { API_PATH, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 /** PUT, not DELETE, and the address travels in the query string. */
-Deno.test("client-unsuppress: PUTs with the address in the query string", async () => {
+test("client-unsuppress: PUTs with the address in the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await clientUnsuppress.execute({ clientId: "cid", email: "a@example.com" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -17,7 +18,7 @@ Deno.test("client-unsuppress: PUTs with the address in the query string", async 
  * The retry story: a second call is answered 176. The action is idempotent in
  * effect but not silent, and the code must reach the caller.
  */
-Deno.test("client-unsuppress: surfaces code 176 verbatim on a repeat", async () => {
+test("client-unsuppress: surfaces code 176 verbatim on a repeat", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: errorBody(176, "Email address not in suppression list") },
   ]);
@@ -29,6 +30,6 @@ Deno.test("client-unsuppress: surfaces code 176 verbatim on a repeat", async () 
   assert(err.message.includes("not in suppression list"), err.message);
 });
 
-Deno.test("client-unsuppress: is declared idempotent", () => {
+test("client-unsuppress: is declared idempotent", () => {
   assertEquals(clientUnsuppress.idempotent, true);
 });

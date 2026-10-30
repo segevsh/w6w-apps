@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/create-person.ts";
 
-Deno.test("create-person: POSTs to /people with the snake_case body Copper documents", async () => {
+test("create-person: POSTs to /people with the snake_case body Copper documents", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 27140448 } }]);
   await action.execute({
     name: "My Contact",
@@ -39,13 +40,13 @@ Deno.test("create-person: POSTs to /people with the snake_case body Copper docum
   });
 });
 
-Deno.test("create-person: sends only name when nothing else is supplied", async () => {
+test("create-person: sends only name when nothing else is supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({ name: "Solo" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Solo" });
 });
 
-Deno.test("create-person: is a non-idempotent perform requiring only a name", () => {
+test("create-person: is a non-idempotent perform requiring only a name", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals(param(action, "name").required, true);
@@ -53,7 +54,7 @@ Deno.test("create-person: is a non-idempotent perform requiring only a name", ()
   assertEquals(required, ["name"]);
 });
 
-Deno.test("create-person: custom fields are an ARRAY of definition-id/value pairs", () => {
+test("create-person: custom fields are an ARRAY of definition-id/value pairs", () => {
   const p = param(action, "customFields");
   assertEquals(p.type, "json");
   assert(p.hint?.includes("custom_field_definition_id"));

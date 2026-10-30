@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/alert-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("alert-update: full input maps to PATCH /v1/alerts/{id}", async () => {
+test("alert-update: full input maps to PATCH /v1/alerts/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -106,7 +107,7 @@ Deno.test("alert-update: full input maps to PATCH /v1/alerts/{id}", async () => 
   });
 });
 
-Deno.test("alert-update: required input only maps to PATCH /v1/alerts/{id}", async () => {
+test("alert-update: required input only maps to PATCH /v1/alerts/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -145,7 +146,7 @@ Deno.test("alert-update: required input only maps to PATCH /v1/alerts/{id}", asy
   });
 });
 
-Deno.test("alert-update: an API error rejects with the vendor's title and detail", async () => {
+test("alert-update: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

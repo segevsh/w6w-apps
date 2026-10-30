@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deployment-rollback.ts";
 
-Deno.test("deployment-rollback: the reason is a query param, per Vercel's schema", async () => {
+test("deployment-rollback: the reason is a query param, per Vercel's schema", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], { display: {} });
   const result = await action.execute!({
     projectId: "prj_1",
@@ -17,7 +18,7 @@ Deno.test("deployment-rollback: the reason is a query param, per Vercel's schema
   assertEquals(result, { projectId: "prj_1", deploymentId: "dpl_old", requested: true });
 });
 
-Deno.test("deployment-rollback: both ids are required before any request", async () => {
+test("deployment-rollback: both ids are required before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ projectId: "prj_1" }, ctx),

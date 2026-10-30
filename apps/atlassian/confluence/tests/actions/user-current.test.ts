@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-current.ts";
 
-Deno.test("user-current: calls v1's whoami — v2 only has the bulk lookup", async () => {
+test("user-current: calls v1's whoami — v2 only has the bulk lookup", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { accountId: "acc1", displayName: "Ann" } }],
     {
@@ -15,7 +16,7 @@ Deno.test("user-current: calls v1's whoami — v2 only has the bulk lookup", asy
   assertEquals(result, { accountId: "acc1", displayName: "Ann" });
 });
 
-Deno.test("user-current: an OAuth connection reaches it through the gateway", async () => {
+test("user-current: an OAuth connection reaches it through the gateway", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { cloudId: "cid" } });
   await action.execute!({}, ctx);
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/salesorder-get.ts";
 
-Deno.test("salesorder-get: GETs /salesorders/{id} and unwraps the singular `salesorder`", async () => {
+test("salesorder-get: GETs /salesorders/{id} and unwraps the singular `salesorder`", async () => {
   const { ctx, calls } = mockInventoryCtx([
     {
       body: {

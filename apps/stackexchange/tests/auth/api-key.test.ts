@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const BAD_KEY = {
   error_message: "`key` doesn't match a known application",
 };
 
-Deno.test("sign: sets the key query parameter and keeps the rest", async () => {
+test("sign: sets the key query parameter and keeps the rest", async () => {
   const req = await apiKey.sign!({
     request: {
       url: "https://api.stackexchange.com/2.3/info?site=stackoverflow",
@@ -23,13 +24,13 @@ Deno.test("sign: sets the key query parameter and keeps the rest", async () => {
   assertEquals(url.searchParams.get("site"), "stackoverflow");
 });
 
-Deno.test("test: a 200 wrapper with site statistics passes, and the key is sent", async () => {
+test("test: a 200 wrapper with site statistics passes, and the key is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: INFO }]);
   assertEquals(await apiKey.test!({ credential: { apiKey: "abc(" } } as never, ctx), { ok: true });
   assertEquals(new URL(calls[0].url).searchParams.get("key"), "abc(");
 });
 
-Deno.test("test: a rejected key is read from the body, not the status", async () => {
+test("test: a rejected key is read from the body, not the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: BAD_KEY }]);
   const r = await apiKey.test!({ credential: { apiKey: "nope" } } as never, ctx);
   assertEquals(r.ok, false);
@@ -37,7 +38,7 @@ Deno.test("test: a rejected key is read from the body, not the status", async ()
   assert(r.message?.includes("stackapps.com"));
 });
 
-Deno.test("test: a 400 not about the key is reported without blaming the key", async () => {
+test("test: a 400 not about the key is reported without blaming the key", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error_id: 400, error_name: "bad_parameter", error_message: "site" },
@@ -47,7 +48,7 @@ Deno.test("test: a 400 not about the key is reported without blaming the key", a
   assert(!r.message?.includes("stackapps.com"));
 });
 
-Deno.test("test: HTML 200, empty body and missing key all fail", async () => {
+test("test: HTML 200, empty body and missing key all fail", async () => {
   const html = await apiKey.test!(
     { credential: { apiKey: "k" } } as never,
     mockCtx([{ body: "<html></html>", headers: { "content-type": "text/html" } }]).ctx,
@@ -62,7 +63,7 @@ Deno.test("test: HTML 200, empty body and missing key all fail", async () => {
   assertEquals(none.ok, false);
 });
 
-Deno.test("test: a network failure is reported", async () => {
+test("test: a network failure is reported", async () => {
   const ctx = mockCtx().ctx;
   ctx.fetch = (() => Promise.reject(new Error("boom"))) as unknown as typeof fetch;
   const r = await apiKey.test!({ credential: { apiKey: "k" } } as never, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberRemoveGroup from "../../actions/subscriber-remove-group.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-remove-group: DELETEs /v2/subscribers/groups/{groupId}", async () => {
+test("subscriber-remove-group: DELETEs /v2/subscribers/groups/{groupId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, message: "Removed tag" } }]);
   await subscriberRemoveGroup.execute({ groupId: "g1", subscribers: ["a@b.com"] }, ctx);
 

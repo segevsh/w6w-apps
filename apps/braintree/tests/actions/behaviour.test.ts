@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import charge from "../../actions/transaction-charge.ts";
 import capture from "../../actions/transaction-capture.ts";
 import refund from "../../actions/transaction-refund.ts";
@@ -11,7 +12,7 @@ import idFromLegacy from "../../actions/id-from-legacy.ts";
 import clientToken from "../../actions/client-token-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("charge: apiRequestKey defaults to the invocation id so a retry cannot double-charge", async () => {
+test("charge: apiRequestKey defaults to the invocation id so a retry cannot double-charge", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { chargePaymentMethod: { transaction: { id: "t" } } } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("charge: apiRequestKey defaults to the invocation id so a retry cannot
   assertEquals(JSON.parse(calls[0].body!).variables.input.apiRequestKey, "inv-42");
 });
 
-Deno.test("charge: an explicit apiRequestKey beats the invocation id", async () => {
+test("charge: an explicit apiRequestKey beats the invocation id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { chargePaymentMethod: { transaction: { id: "t" } } } },
   }]);
@@ -29,7 +30,7 @@ Deno.test("charge: an explicit apiRequestKey beats the invocation id", async () 
   assertEquals(JSON.parse(calls[0].body!).variables.input.apiRequestKey, "mine");
 });
 
-Deno.test("charge: no key at all is sent when there is neither input nor invocation", async () => {
+test("charge: no key at all is sent when there is neither input nor invocation", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { chargePaymentMethod: { transaction: { id: "t" } } } },
   }]);
@@ -37,7 +38,7 @@ Deno.test("charge: no key at all is sent when there is neither input nor invocat
   assert(!("apiRequestKey" in JSON.parse(calls[0].body!).variables.input));
 });
 
-Deno.test("charge: a numeric amount is sent as a string, never a JSON number", async () => {
+test("charge: a numeric amount is sent as a string, never a JSON number", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { chargePaymentMethod: { transaction: { id: "t" } } } },
   }]);
@@ -45,7 +46,7 @@ Deno.test("charge: a numeric amount is sent as a string, never a JSON number", a
   assertEquals(JSON.parse(calls[0].body!).variables.input.transaction.amount, "10");
 });
 
-Deno.test("charge: a null payload with no errors is reported, not returned as success", async () => {
+test("charge: a null payload with no errors is reported, not returned as success", async () => {
   const { ctx } = mockCtx([{ body: { data: { chargePaymentMethod: null } } }]);
   await assertRejects(
     async () => await charge.execute!({ paymentMethodId: "pm", amount: "1.00" }, ctx),
@@ -54,7 +55,7 @@ Deno.test("charge: a null payload with no errors is reported, not returned as su
   );
 });
 
-Deno.test("charge: partial data next to an errors array is still a failure", async () => {
+test("charge: partial data next to an errors array is still a failure", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: { chargePaymentMethod: { transaction: { id: "t" } } },
@@ -68,7 +69,7 @@ Deno.test("charge: partial data next to an errors array is still a failure", asy
   );
 });
 
-Deno.test("charge: a non-JSON body is an error naming the HTTP status", async () => {
+test("charge: a non-JSON body is an error naming the HTTP status", async () => {
   const { ctx } = mockCtx([{
     status: 502,
     body: "<html>bad gateway</html>",
@@ -81,7 +82,7 @@ Deno.test("charge: a non-JSON body is an error naming the HTTP status", async ()
   );
 });
 
-Deno.test("capture: with no amount, no transaction options are sent (full capture)", async () => {
+test("capture: with no amount, no transaction options are sent (full capture)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { captureTransaction: { transaction: { id: "t" } } } },
   }]);
@@ -89,7 +90,7 @@ Deno.test("capture: with no amount, no transaction options are sent (full captur
   assertEquals(JSON.parse(calls[0].body!).variables.input, { transactionId: "tx1" });
 });
 
-Deno.test("refund: with no amount, no refund options are sent (full refund)", async () => {
+test("refund: with no amount, no refund options are sent (full refund)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { refundTransaction: { refund: { id: "r" } } } },
   }]);
@@ -97,7 +98,7 @@ Deno.test("refund: with no amount, no refund options are sent (full refund)", as
   assertEquals(JSON.parse(calls[0].body!).variables.input, { transactionId: "tx1" });
 });
 
-Deno.test("reverse: a Transaction reversal is reported as a void", async () => {
+test("reverse: a Transaction reversal is reported as a void", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -114,7 +115,7 @@ Deno.test("reverse: a Transaction reversal is reported as a void", async () => {
   });
 });
 
-Deno.test("get actions: a node that is not the requested type is a clear not-found", async () => {
+test("get actions: a node that is not the requested type is a clear not-found", async () => {
   for (
     const [action, input, what] of [
       [txGet, { transactionId: "x" }, "transaction"],
@@ -131,7 +132,7 @@ Deno.test("get actions: a node that is not the requested type is a clear not-fou
   }
 });
 
-Deno.test("customer-search: an unset filter is never sent as an empty object", async () => {
+test("customer-search: an unset filter is never sent as an empty object", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { customers: { edges: [], pageInfo: { hasNextPage: false, endCursor: null } } } },
   }]);
@@ -140,7 +141,7 @@ Deno.test("customer-search: an unset filter is never sent as an empty object", a
   assertEquals(out, { customers: [], hasNextPage: false, endCursor: null });
 });
 
-Deno.test("id-from-legacy: rejects more than 50 ids and an empty list before calling the API", async () => {
+test("id-from-legacy: rejects more than 50 ids and an empty list before calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -158,7 +159,7 @@ Deno.test("id-from-legacy: rejects more than 50 ids and an empty list before cal
   assertEquals(calls.length, 0);
 });
 
-Deno.test("id-from-legacy: accepts a JSON array in text form", async () => {
+test("id-from-legacy: accepts a JSON array in text form", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { idsFromLegacyIds: ["g1"] } } }]);
   await idFromLegacy.execute!({ legacyIds: '["a1"]', type: "CUSTOMER" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.input.ids, [{
@@ -167,7 +168,7 @@ Deno.test("id-from-legacy: accepts a JSON array in text form", async () => {
   }]);
 });
 
-Deno.test("client-token-create: with no scoping, an empty input is sent", async () => {
+test("client-token-create: with no scoping, an empty input is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { createClientToken: { clientToken: "t" } } } }]);
   await clientToken.execute!({}, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables, { input: {} });

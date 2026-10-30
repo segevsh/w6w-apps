@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/business-profile-update.ts";
 
-Deno.test("business-profile-update: POSTs only the fields that were set", async () => {
+test("business-profile-update: POSTs only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await action.execute({ about: "We sell widgets.", vertical: "RETAIL" }, ctx);
   assertEquals(out, { success: true });
@@ -13,7 +14,7 @@ Deno.test("business-profile-update: POSTs only the fields that were set", async 
   });
 });
 
-Deno.test("business-profile-update: splits a comma-separated websites field", async () => {
+test("business-profile-update: splits a comma-separated websites field", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute({ websites: "https://example.com, https://shop.example.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).websites, [
@@ -22,7 +23,7 @@ Deno.test("business-profile-update: splits a comma-separated websites field", as
   ]);
 });
 
-Deno.test("business-profile-update: is an idempotent perform action", () => {
+test("business-profile-update: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagRecordAdd from "../../actions/tag-record-add.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-record-add: POST /v3/tags/t-1/records with the documented wrapped body", async () => {
+test("tag-record-add: POST /v3/tags/t-1/records with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ tagUuid: "t-1" }]) }]);
   const out = await tagRecordAdd.execute({ "uuid": "t-1", "records": "u1, u2" }, ctx);
 
@@ -13,12 +14,12 @@ Deno.test("tag-record-add: POST /v3/tags/t-1/records with the documented wrapped
   assertEquals(out, [{ tagUuid: "t-1" }]);
 });
 
-Deno.test("tag-record-add: is a perform action marked idempotent=true", () => {
+test("tag-record-add: is a perform action marked idempotent=true", () => {
   assertEquals(tagRecordAdd.type, "perform");
   assertEquals(tagRecordAdd.idempotent, true);
 });
 
-Deno.test("tag-record-add: an empty record list is refused before any request", async () => {
+test("tag-record-add: an empty record list is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -30,13 +31,13 @@ Deno.test("tag-record-add: an empty record list is refused before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tag-record-add: accepts a multiselect array as well as a string", async () => {
+test("tag-record-add: accepts a multiselect array as well as a string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await tagRecordAdd.execute({ uuid: "t-1", records: ["a", "b"] }, ctx);
   assertEquals(bodyOf(calls[0]), { data: [{ uuid: "a" }, { uuid: "b" }] });
 });
 
-Deno.test("tag-record-add: an HTTP error becomes a readable Raisely error", async () => {
+test("tag-record-add: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

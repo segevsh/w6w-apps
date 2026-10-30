@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFormsiteCtx } from "../_helpers.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 
 const B = "https://fs3.formsite.com/api/v2/acme";
 
-Deno.test("webhook-create: POSTs event, url and handshake key", async () => {
+test("webhook-create: POSTs event, url and handshake key", async () => {
   const hook = { event: "result_completed", url: "https://h", handshake_key: "K" };
   const { ctx, calls } = mockFormsiteCtx([{ body: { webhook: hook } }]);
   const out = await webhookCreate.execute(
@@ -17,7 +18,7 @@ Deno.test("webhook-create: POSTs event, url and handshake key", async () => {
   assertEquals(out, { webhook: hook });
 });
 
-Deno.test("webhook-create: omits a blank handshake key", async () => {
+test("webhook-create: omits a blank handshake key", async () => {
   const { ctx, calls } = mockFormsiteCtx([{ body: {} }]);
   const out = await webhookCreate.execute(
     { formDir: "f1", url: "https://h", handshakeKey: "" },

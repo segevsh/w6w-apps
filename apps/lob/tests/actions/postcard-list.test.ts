@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postcardList from "../../actions/postcard-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("postcard-list: GETs /postcards and flattens the page", async () => {
+test("postcard-list: GETs /postcards and flattens the page", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "list",
@@ -23,7 +24,7 @@ Deno.test("postcard-list: GETs /postcards and flattens the page", async () => {
   assertEquals("totalCount" in out, false);
 });
 
-Deno.test("postcard-list: cursor, total count and filters are serialized in Lob's bracket form", async () => {
+test("postcard-list: cursor, total count and filters are serialized in Lob's bracket form", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], count: 0, total_count: 7 } }]);
   const out = await postcardList.execute({
     after: "ABC",
@@ -39,7 +40,7 @@ Deno.test("postcard-list: cursor, total count and filters are serialized in Lob'
   assertEquals(out.totalCount, 7);
 });
 
-Deno.test("postcard-list: refuses both cursors at once", async () => {
+test("postcard-list: refuses both cursors at once", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await postcardList.execute({ after: "a", before: "b" }, ctx),
@@ -49,7 +50,7 @@ Deno.test("postcard-list: refuses both cursors at once", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("postcard-list: surfaces Lob's error code", async () => {
+test("postcard-list: surfaces Lob's error code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_key", "Your API key is not valid.", 401),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import subfolderList from "../../actions/subfolder-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subfolder-list: calls GET /modern/folders/f1/subfolders with the version header", async () => {
+test("subfolder-list: calls GET /modern/folders/f1/subfolders with the version header", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ "id": 1, "cursor": "cur1" }, { "id": 2, "cursor": "cur2" }],
   }]);
@@ -24,7 +25,7 @@ Deno.test("subfolder-list: calls GET /modern/folders/f1/subfolders with the vers
   assertEquals((out.items as unknown[]).length, 2);
 });
 
-Deno.test("subfolder-list: surfaces a Wistia error with its code", async () => {
+test("subfolder-list: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },

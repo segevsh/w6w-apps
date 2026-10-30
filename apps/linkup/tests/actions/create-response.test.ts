@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createResponse from "../../actions/create-response.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const RESP = { object: "response", output_text: "hello", model: "linkup-standard" };
 
-Deno.test("create-response: plain-text input", async () => {
+test("create-response: plain-text input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESP }]);
   const out = await createResponse.execute({
     input: "What is X?",
@@ -21,7 +22,7 @@ Deno.test("create-response: plain-text input", async () => {
   assertEquals(createResponse.idempotent, false);
 });
 
-Deno.test("create-response: message array and text format", async () => {
+test("create-response: message array and text format", async () => {
   const { ctx, calls } = mockCtx([{ body: RESP }, { body: RESP }]);
   const messages = [{ role: "user", content: "hi" }];
   await createResponse.execute({
@@ -38,7 +39,7 @@ Deno.test("create-response: message array and text format", async () => {
   assertEquals(JSON.parse(calls[1].body!).text, { format: "text" });
 });
 
-Deno.test("create-response: validation", async () => {
+test("create-response: validation", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await createResponse.execute({ input: "q", model: "gpt" }, ctx),

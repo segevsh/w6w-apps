@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import mailboxGet from "../../actions/mailbox-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("mailbox-get: GET /rest/v2/mailboxes/{id}", async () => {
+test("mailbox-get: GET /rest/v2/mailboxes/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -26,7 +27,7 @@ Deno.test("mailbox-get: GET /rest/v2/mailboxes/{id}", async () => {
   assertEquals(out.type, "SMTP");
 });
 
-Deno.test("mailbox-get: rejects an empty id", async () => {
+test("mailbox-get: rejects an empty id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await mailboxGet.execute({ "mailbox_id": "" } as never, ctx),

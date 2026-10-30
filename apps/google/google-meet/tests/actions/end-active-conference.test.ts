@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/end-active-conference.ts";
 
-Deno.test("end-active-conference: POSTs to the custom-method path with no body", async () => {
+test("end-active-conference: POSTs to the custom-method path with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const result = await action.execute!({ name: "spaces/abc" }, ctx);
   assertEquals(result, {});
@@ -13,7 +14,7 @@ Deno.test("end-active-conference: POSTs to the custom-method path with no body",
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("end-active-conference: is declared idempotent", () => {
+test("end-active-conference: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
   assertEquals(action.type, "perform");
 });

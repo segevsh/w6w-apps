@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import monitorCreate from "../../actions/monitor-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
 const MONITOR = { id: "m1", name: "Monitor Products", status: "active", createdAt: 1 };
 
-Deno.test("monitor-create: POSTs the full body, sending `schedule` not the deprecated `schedules`", async () => {
+test("monitor-create: POSTs the full body, sending `schedule` not the deprecated `schedules`", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("monitor", MONITOR) }]);
   const out = await monitorCreate.execute({
     robotId: "r1",
@@ -26,7 +27,7 @@ Deno.test("monitor-create: POSTs the full body, sending `schedule` not the depre
   assertEquals(out.id, "m1");
 });
 
-Deno.test("monitor-create: missing inputParameters fails before any request is made", async () => {
+test("monitor-create: missing inputParameters fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -44,11 +45,11 @@ Deno.test("monitor-create: missing inputParameters fails before any request is m
   assertEquals(calls.length, 0);
 });
 
-Deno.test("monitor-create: is declared non-idempotent — each call adds a new monitor", () => {
+test("monitor-create: is declared non-idempotent — each call adds a new monitor", () => {
   assertEquals(monitorCreate.idempotent, false);
 });
 
-Deno.test("monitor-create: inputParameters is required in the param declaration", () => {
+test("monitor-create: inputParameters is required in the param declaration", () => {
   const p = monitorCreate.params?.find((p) => p.key === "inputParameters");
   assertEquals(p?.required, true);
 });

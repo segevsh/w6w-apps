@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deploy-release.ts";
 
-Deno.test("deploy-release: metadata", () => {
+test("deploy-release: metadata", () => {
   assertEquals(action.key, "deploy-release");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -15,7 +16,7 @@ Deno.test("deploy-release: metadata", () => {
   ]);
 });
 
-Deno.test("deploy-release: calls POST /releases/bltr/deploy on the NA host", async () => {
+test("deploy-release: calls POST /releases/bltr/deploy on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Your deploy request is in progress." } }]);
   const out = await action.execute({
     "releaseUid": "bltr",
@@ -33,7 +34,7 @@ Deno.test("deploy-release: calls POST /releases/bltr/deploy on the NA host", asy
   assertEquals(out, { "notice": "Your deploy request is in progress." });
 });
 
-Deno.test("deploy-release: uses the connection's regional host", async () => {
+test("deploy-release: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Your deploy request is in progress." } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -45,7 +46,7 @@ Deno.test("deploy-release: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/releases/bltr/deploy");
 });
 
-Deno.test("deploy-release: sends the branch header only when a branch is given", async () => {
+test("deploy-release: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Your deploy request is in progress." } }, {
     body: { "notice": "Your deploy request is in progress." },
   }]);
@@ -64,7 +65,7 @@ Deno.test("deploy-release: sends the branch header only when a branch is given",
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("deploy-release: rejects without `releaseUid` and makes no request", async () => {
+test("deploy-release: rejects without `releaseUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -76,7 +77,7 @@ Deno.test("deploy-release: rejects without `releaseUid` and makes no request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("deploy-release: surfaces Contentstack's own error body", async () => {
+test("deploy-release: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

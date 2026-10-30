@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactBulkDelete from "../../actions/contact-bulk-delete.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-bulk-delete: DELETEs /api/v2/contacts with contact_ids as phone numbers", async () => {
+test("contact-bulk-delete: DELETEs /api/v2/contacts with contact_ids as phone numbers", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", amount: 2 } }]);
   await contactBulkDelete.execute({ contactIds: ["+1", "+2"] }, ctx);
 

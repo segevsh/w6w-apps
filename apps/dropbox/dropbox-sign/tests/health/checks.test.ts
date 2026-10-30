@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -17,7 +18,7 @@ const OPERATIONAL = {
   ],
 };
 
-Deno.test("service: probes Dropbox Sign's own status page, not Dropbox's", async () => {
+test("service: probes Dropbox Sign's own status page, not Dropbox's", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: OPERATIONAL }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.hellosign.com/api/v2/components.json");
@@ -26,7 +27,7 @@ Deno.test("service: probes Dropbox Sign's own status page, not Dropbox's", async
   assert(!JSON.stringify(service).includes("status.dropbox.com"));
 });
 
-Deno.test("service: all watched components operational is ok", async () => {
+test("service: all watched components operational is ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: OPERATIONAL }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -34,7 +35,7 @@ Deno.test("service: all watched components operational is ok", async () => {
 });
 
 /** A major outage on a signing component is this app's outage. */
-Deno.test("service: a signing outage is down, and names the component", async () => {
+test("service: a signing outage is down, and names the component", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -49,7 +50,7 @@ Deno.test("service: a signing outage is down, and names the component", async ()
   assert(report.message!.includes("Send signature requests"), report.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { components: [component("Send signature requests", "degraded_performance")] },
@@ -61,7 +62,7 @@ Deno.test("service: degraded performance is degraded, not down", async () => {
  * The group literally named "API" holds only the outbound-callback component.
  * Watching it would report green while sending was down.
  */
-Deno.test("service: the callbacks component is NOT what this app watches", async () => {
+test("service: the callbacks component is NOT what this app watches", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -77,7 +78,7 @@ Deno.test("service: the callbacks component is NOT what this app watches", async
   assertEquals(report.components!["api-callbacks-from-dropbox-sign"], undefined);
 });
 
-Deno.test("service: a fax outage is not this app's outage", async () => {
+test("service: a fax outage is not this app's outage", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -90,7 +91,7 @@ Deno.test("service: a fax outage is not this app's outage", async () => {
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: the group rows are skipped — their status is a roll-up", async () => {
+test("service: the group rows are skipped — their status is a roll-up", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -103,7 +104,7 @@ Deno.test("service: the group rows are skipped — their status is a roll-up", a
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failed = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, failed.ctx)).state, "unknown");
 
@@ -119,7 +120,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assert(report.message!.includes("no longer names"), report.message);
 });
 
-Deno.test("quota: reads the account endpoint, signed, once", async () => {
+test("quota: reads the account endpoint, signed, once", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { account: { quotas: { documents_left: 500 } } },
@@ -132,7 +133,7 @@ Deno.test("quota: reads the account endpoint, signed, once", async () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: reports plan headroom and the hourly rate together", async () => {
+test("quota: reports plan headroom and the hourly rate together", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: {
@@ -153,7 +154,7 @@ Deno.test("quota: reports plan headroom and the hourly rate together", async () 
 });
 
 /** An unlimited plan reports null, and null is not zero. */
-Deno.test("quota: a null quota means no ceiling, not exhausted", async () => {
+test("quota: a null quota means no ceiling, not exhausted", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { account: { quotas: { documents_left: null, api_signature_requests_left: null } } },
@@ -164,7 +165,7 @@ Deno.test("quota: a null quota means no ceiling, not exhausted", async () => {
   assert(report.message!.includes("no metered quota"), report.message);
 });
 
-Deno.test("quota: zero left is down, and a small number is degraded", async () => {
+test("quota: zero left is down, and a small number is degraded", async () => {
   const empty = mockCtx([{ status: 200, body: { account: { quotas: { documents_left: 0 } } } }]);
   assertEquals((await quota.check!({}, empty.ctx)).state, "down");
 
@@ -172,7 +173,7 @@ Deno.test("quota: zero left is down, and a small number is degraded", async () =
   assertEquals((await quota.check!({}, low.ctx)).state, "degraded");
 });
 
-Deno.test("quota: a rate limit almost spent is degraded even with plan quota left", async () => {
+test("quota: a rate limit almost spent is degraded even with plan quota left", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: {
@@ -185,7 +186,7 @@ Deno.test("quota: a rate limit almost spent is degraded even with plan quota lef
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: an unusable credential is unknown, never down", async () => {
+test("quota: an unusable credential is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

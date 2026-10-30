@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import service, { STATUS_HOST } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -13,7 +14,7 @@ const SUMMARY = {
   ],
 };
 
-Deno.test("service: reports ok with per-component detail on a healthy summary", async () => {
+test("service: reports ok with per-component detail on a healthy summary", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -27,14 +28,14 @@ Deno.test("service: reports ok with per-component detail on a healthy summary", 
   assertEquals(out.components?.["quo-api"].state, "ok");
 });
 
-Deno.test("service: a component in major_outage reports down, group headers are skipped", async () => {
+test("service: a component in major_outage reports down, group headers are skipped", async () => {
   const { ctx } = mockCtx([{ status: 200, body: SUMMARY }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.components?.["voicemail"].state, "down");
   assertEquals("group-header" in (out.components ?? {}), false);
 });
 
-Deno.test("service: maps the page-level indicator, not just components", async () => {
+test("service: maps the page-level indicator, not just components", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: { indicator: "critical" }, components: [] },
@@ -43,13 +44,13 @@ Deno.test("service: maps the page-level indicator, not just components", async (
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: a network failure reports unknown", async () => {
+test("service: a network failure reports unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("boom")),
     log: () => {},
@@ -59,7 +60,7 @@ Deno.test("service: a network failure reports unknown", async () => {
   assertEquals(out.message?.includes("boom"), true);
 });
 
-Deno.test("service: is app-scoped and needs no credential", () => {
+test("service: is app-scoped and needs no credential", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, [STATUS_HOST]);
 });

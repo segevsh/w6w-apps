@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadsList from "../../actions/leads-list.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("leads-list defaults leads_per_page to 25 and drops unset filters", async () => {
+test("leads-list defaults leads_per_page to 25 and drops unset filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { page_number: 1, leads_per_page: 25, total_pages: 1, total_leads: 0, leads: [] },
@@ -18,7 +19,7 @@ Deno.test("leads-list defaults leads_per_page to 25 and drops unset filters", as
   assertEquals(queryOf(calls[0].url), { leads_per_page: "25" });
 });
 
-Deno.test("leads-list forwards every filter as documented query params", async () => {
+test("leads-list forwards every filter as documented query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leads: [] } }]);
   await leadsList.execute({
     leadsPerPage: 100,

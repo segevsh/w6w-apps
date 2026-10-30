@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-analytics-get.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("message-analytics-get: repeats message_ids once per id", async () => {
+test("message-analytics-get: repeats message_ids once per id", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "results": [] } }]);
   const result = await action.execute!({ "messageIds": ["m_1", "m_2"] } as never, ctx);
   const expected: Array<
@@ -31,7 +32,7 @@ Deno.test("message-analytics-get: repeats message_ids once per id", async () => 
   assertEquals(result, { "results": [] });
 });
 
-Deno.test("message-analytics-get: an empty list throws", async () => {
+test("message-analytics-get: an empty list throws", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "messageIds": [] } as never, ctx),

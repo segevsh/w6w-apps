@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-create.ts";
 
@@ -19,7 +20,7 @@ const base = {
 };
 
 /** A 202 is a droplet that exists and does not work yet. */
-Deno.test("droplet-create: reports the droplet as not ready", async () => {
+test("droplet-create: reports the droplet as not ready", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "POST");
@@ -31,7 +32,7 @@ Deno.test("droplet-create: reports the droplet as not ready", async () => {
 });
 
 /** Without a key, a root password is emailed in plain text. */
-Deno.test("droplet-create: no SSH key needs an acknowledgement, and says what happens", async () => {
+test("droplet-create: no SSH key needs an acknowledgement, and says what happens", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -45,7 +46,7 @@ Deno.test("droplet-create: no SSH key needs an acknowledgement, and says what ha
   assertEquals(calls.length, 0);
 });
 
-Deno.test("droplet-create: an acknowledged password droplet warns", async () => {
+test("droplet-create: an acknowledged password droplet warns", async () => {
   const { ctx, logs } = mockCtx([created]);
   const result = await action.execute(
     { ...base, sshKeys: "", confirmNoSshKeys: true },
@@ -57,7 +58,7 @@ Deno.test("droplet-create: an acknowledged password droplet warns", async () => 
 });
 
 /** Free, and off by default in the API. */
-Deno.test("droplet-create: monitoring defaults on and backups default off", async () => {
+test("droplet-create: monitoring defaults on and backups default off", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute(base, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -66,7 +67,7 @@ Deno.test("droplet-create: monitoring defaults on and backups default off", asyn
   assertEquals(action.params!.find((p) => p.key === "monitoring")!.default, true);
 });
 
-Deno.test("droplet-create: a numeric image is sent as a number", async () => {
+test("droplet-create: a numeric image is sent as a number", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({ ...base, image: "123456789" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).image, 123456789);
@@ -76,7 +77,7 @@ Deno.test("droplet-create: a numeric image is sent as a number", async () => {
   assertEquals(JSON.parse(slug.calls[0].body!).image, "ubuntu-24-04-x64");
 });
 
-Deno.test("droplet-create: SSH keys and tags are sent as arrays", async () => {
+test("droplet-create: SSH keys and tags are sent as arrays", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({ ...base, sshKeys: "12345, ab:cd", tags: "web, prod" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -84,7 +85,7 @@ Deno.test("droplet-create: SSH keys and tags are sent as arrays", async () => {
   assertEquals(body.tags, ["web", "prod"]);
 });
 
-Deno.test("droplet-create: every required field is checked", async () => {
+test("droplet-create: every required field is checked", async () => {
   for (const field of ["name", "region", "size", "image"]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -99,7 +100,7 @@ Deno.test("droplet-create: every required field is checked", async () => {
 });
 
 /** Cloud-init is readable from the droplet's own metadata service. */
-Deno.test("droplet-create: says user data is not a place for secrets", () => {
+test("droplet-create: says user data is not a place for secrets", () => {
   const userData = action.params!.find((p) => p.key === "userData")!;
   assert(/not a place for secrets/.test(userData.hint!), userData.hint);
   assertEquals(action.idempotent, false);

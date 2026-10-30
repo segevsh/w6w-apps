@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 31;
 
-Deno.test("index: exports actions, one auth method and three health checks", () => {
+test("index: exports actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "api-key");
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case, with a description and execute", () => {
+test("index: every action key is unique and kebab-case, with a description and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const a of app.actions) {
@@ -22,7 +23,7 @@ Deno.test("index: every action key is unique and kebab-case, with a description 
   }
 });
 
-Deno.test("index: every perform action states idempotency; reads do not", () => {
+test("index: every perform action states idempotency; reads do not", () => {
   for (const a of app.actions) {
     if (a.type === "perform") {
       assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent unset`);
@@ -32,7 +33,7 @@ Deno.test("index: every perform action states idempotency; reads do not", () => 
   }
 });
 
-Deno.test("index: the two sends are the only non-idempotent calls that spend credit", () => {
+test("index: the two sends are the only non-idempotent calls that spend credit", () => {
   const nonIdem = app.actions.filter((a) => a.type === "perform" && !a.idempotent).map((a) =>
     a.key
   );
@@ -42,7 +43,7 @@ Deno.test("index: the two sends are the only non-idempotent calls that spend cre
   );
 });
 
-Deno.test("index: service is a feed check; api is unsigned; quota is signed and informational", () => {
+test("index: service is a feed check; api is unsigned; quota is signed and informational", () => {
   const by = (k: string) => app.healthChecks.find((h) => h.key === k)!;
   assertEquals(by("service").feed?.url, "https://status.seven.io/history.atom");
   assertEquals(by("api").credential, "none");

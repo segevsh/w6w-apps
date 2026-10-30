@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/lead-delete.ts";
 
-Deno.test("lead-delete: DELETEs /leads/{id}", async () => {
+test("lead-delete: DELETEs /leads/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ id: 1 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/leads/1");
@@ -10,6 +11,6 @@ Deno.test("lead-delete: DELETEs /leads/{id}", async () => {
   assertEquals(result, { data: undefined });
 });
 
-Deno.test("lead-delete: is marked idempotent", () => {
+test("lead-delete: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

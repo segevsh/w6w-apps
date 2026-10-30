@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_BASE,
@@ -13,11 +14,11 @@ import {
 } from "../../lib/client.ts";
 import { bodyFromParams } from "../../lib/params.ts";
 
-Deno.test("client: base is the one documented host under /api/v1", () => {
+test("client: base is the one documented host under /api/v1", () => {
   assertEquals(API_BASE, "https://www.signwell.com/api/v1");
 });
 
-Deno.test("client: request sends json, never an auth header, and drops unset query values", async () => {
+test("client: request sends json, never an auth header, and drops unset query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await new SignWellClient(ctx).request("/x", {
     method: "POST",
@@ -31,12 +32,12 @@ Deno.test("client: request sends json, never an auth header, and drops unset que
   assertEquals(calls[0].body, '{"z":1}');
 });
 
-Deno.test("client: an empty 204 body resolves to undefined", async () => {
+test("client: an empty 204 body resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new SignWellClient(ctx).request("/x", { method: "DELETE" }), undefined);
 });
 
-Deno.test("client: the three documented error shapes are each read from the body", () => {
+test("client: the three documented error shapes are each read from the body", () => {
   const meta = JSON.stringify({
     message: "Not found",
     meta: { error: "record_not_found", message: "gone" },
@@ -56,7 +57,7 @@ Deno.test("client: the three documented error shapes are each read from the body
   assertEquals(formatSignWellError(500, "GET", "/me", "x".repeat(700)).length < 700, true);
 });
 
-Deno.test("client: errorCode and isErrorEnvelope classify from the body", () => {
+test("client: errorCode and isErrorEnvelope classify from the body", () => {
   assertEquals(
     errorCode({ meta: { error: "api_key_unauthorized_error" } }),
     "api_key_unauthorized_error",
@@ -70,7 +71,7 @@ Deno.test("client: errorCode and isErrorEnvelope classify from the body", () => 
   assertEquals(isErrorEnvelope("x"), false);
 });
 
-Deno.test("client: json helpers accept text or live values and reject bad text", () => {
+test("client: json helpers accept text or live values and reject bad text", () => {
   assertEquals(asJson('{"a":1}', "f"), { a: 1 });
   assertEquals(asJson([1], "f"), [1]);
   assertEquals(asJsonOptional(undefined, "f"), undefined);
@@ -87,7 +88,7 @@ Deno.test("client: json helpers accept text or live values and reject bad text",
   assertThrows(() => requireId(undefined), Error, "`id` is required");
 });
 
-Deno.test("params: bodyFromParams parses json, coerces numbers, keeps false and 0, drops unset", () => {
+test("params: bodyFromParams parses json, coerces numbers, keeps false and 0, drops unset", () => {
   const body = bodyFromParams(
     { a: "[1]", n: "5", z: 0, f: false, s: "", u: undefined, extra: "ignored" },
     [

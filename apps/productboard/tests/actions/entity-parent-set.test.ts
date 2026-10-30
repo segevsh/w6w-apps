@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/entity-parent-set.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
 /** The only PUT in the Entities surface — an entity has at most one parent. */
-Deno.test("entity-parent-set: PUTs the parent sub-path", async () => {
+test("entity-parent-set: PUTs the parent sub-path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ type: "parent" }) }]);
   const out = await action.execute({ entityId: "e-1", targetId: "p-1" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -17,7 +18,7 @@ Deno.test("entity-parent-set: PUTs the parent sub-path", async () => {
  * the vendor's schema puts an `EntityType` at the data level and gives `target`
  * only an `id`.
  */
-Deno.test("entity-parent-set: the target type goes beside target, never inside it", async () => {
+test("entity-parent-set: the target type goes beside target, never inside it", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await action.execute({ entityId: "e-1", targetId: "p-1", targetType: "component" }, ctx);
   assertEquals(bodyOf(calls[0]), {
@@ -25,6 +26,6 @@ Deno.test("entity-parent-set: the target type goes beside target, never inside i
   });
 });
 
-Deno.test("entity-parent-set: is idempotent — re-setting the same parent is a no-op", () => {
+test("entity-parent-set: is idempotent — re-setting the same parent is a no-op", () => {
   assertEquals(action.idempotent, true);
 });

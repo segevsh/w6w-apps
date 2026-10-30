@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getStatistics from "../../actions/get-statistics.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => getStatistics.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("get-statistics: declares a read action with a description, params and output", () => {
+test("get-statistics: declares a read action with a description, params and output", () => {
   assertEquals(getStatistics.key, "get-statistics");
   assertEquals(getStatistics.type, "read");
   assert((getStatistics.description ?? "").length > 0);
@@ -19,7 +20,7 @@ Deno.test("get-statistics: declares a read action with a description, params and
   assertEquals(getStatistics.idempotent, undefined);
 });
 
-Deno.test("get-statistics: sends the documented request and returns the documented shape", async () => {
+test("get-statistics: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "balance": 900,
@@ -89,7 +90,7 @@ Deno.test("get-statistics: sends the documented request and returns the document
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("get-statistics: a SOLAPI error body is thrown with its code and message", async () => {
+test("get-statistics: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

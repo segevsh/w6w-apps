@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/frame-create.ts";
 
-Deno.test("frame-create: creates the container other items get parented into", async () => {
+test("frame-create: creates the container other items get parented into", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "f1" } }], { display: {} });
   await action.execute!({ boardId: "b1", title: "Sprint 12", width: 800, height: 600 }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v2/boards/b1/frames");

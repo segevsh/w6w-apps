@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import imageCreateTemplate from "../../actions/image-create-template.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-create-template: POSTs /image/{template_id} (latest) with template_values", async () => {
+test("image-create-template: POSTs /image/{template_id} (latest) with template_values", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i3", url: "https://hcti.io/v1/image/i3" } }]);
   const out = await imageCreateTemplate.execute({
     template_id: "t-abc",
@@ -16,7 +17,7 @@ Deno.test("image-create-template: POSTs /image/{template_id} (latest) with templ
   assertEquals(out, { id: "i3", url: "https://hcti.io/v1/image/i3" });
 });
 
-Deno.test("image-create-template: a version pins the route and values may arrive as a string", async () => {
+test("image-create-template: a version pins the route and values may arrive as a string", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i4", url: "u" } }]);
   await imageCreateTemplate.execute({
     template_id: "t-abc",
@@ -27,7 +28,7 @@ Deno.test("image-create-template: a version pins the route and values may arrive
   assertEquals(JSON.parse(calls[0].body!), { template_values: { n: 1 } });
 });
 
-Deno.test("image-create-template: rejects missing id and empty/non-object values without a request", async () => {
+test("image-create-template: rejects missing id and empty/non-object values without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const run = (input: Record<string, unknown>) =>
     assertRejects(
@@ -41,6 +42,6 @@ Deno.test("image-create-template: rejects missing id and empty/non-object values
   assertEquals(calls.length, 0);
 });
 
-Deno.test("image-create-template: not declared idempotent", () => {
+test("image-create-template: not declared idempotent", () => {
   assertEquals(imageCreateTemplate.idempotent, false);
 });

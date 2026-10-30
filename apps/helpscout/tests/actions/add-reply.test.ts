@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-reply.ts";
 
-Deno.test("add-reply: POSTs /conversations/{id}/reply and reads the id off Resource-ID", async () => {
+test("add-reply: POSTs /conversations/{id}/reply and reads the id off Resource-ID", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "resource-id": "567" } }]);
   const out = await action.execute({
     conversationId: 123,
@@ -19,7 +20,7 @@ Deno.test("add-reply: POSTs /conversations/{id}/reply and reads the id off Resou
   assertEquals(out, { id: 567 });
 });
 
-Deno.test("add-reply: draft/status/cc/bcc are forwarded when set", async () => {
+test("add-reply: draft/status/cc/bcc are forwarded when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: {} }]);
   await action.execute({
     conversationId: 1,

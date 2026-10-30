@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import orderList from "../../actions/order-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("order-list: GETs the v2 path and returns the BARE array", async () => {
+test("order-list: GETs the v2 path and returns the BARE array", async () => {
   // v2 has no {data, meta} envelope. Unwrapping `data` here would return
   // undefined the day BigCommerce added one, and returns nothing useful today.
   const { ctx, calls } = mockCtx([{ body: [{ id: 100 }, { id: 101 }] }]);
@@ -13,12 +14,12 @@ Deno.test("order-list: GETs the v2 path and returns the BARE array", async () =>
   assertEquals(out, { orders: [{ id: 100 }, { id: 101 }] });
 });
 
-Deno.test("order-list: a 204 means no matching orders, not a broken response", async () => {
+test("order-list: a 204 means no matching orders, not a broken response", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await orderList.execute({}, ctx), { orders: [] });
 });
 
-Deno.test("order-list: filters map to the v2 snake_case names", async () => {
+test("order-list: filters map to the v2 snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await orderList.execute({
     customerId: 5,
@@ -41,7 +42,7 @@ Deno.test("order-list: filters map to the v2 snake_case names", async () => {
   });
 });
 
-Deno.test("order-list: says out loud that v2 gives no page count", () => {
+test("order-list: says out loud that v2 gives no page count", () => {
   const limit = orderList.params?.find((p) => p.key === "limit");
   assert(limit?.hint?.includes("NO page count"), limit?.hint);
   assertEquals(limit?.default, 50);

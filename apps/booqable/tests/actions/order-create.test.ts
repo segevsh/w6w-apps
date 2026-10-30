@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/order-create.ts";
 
-Deno.test("order-create: POSTs a JSON:API document with starts_at/stops_at", async () => {
+test("order-create: POSTs a JSON:API document with starts_at/stops_at", async () => {
   const { ctx, calls } = mockBooqableCtx([{ status: 201, body: { data: { id: "o1" } } }]);
   await action.execute({
     startsAt: "2026-09-25T14:40:01.000000+00:00",

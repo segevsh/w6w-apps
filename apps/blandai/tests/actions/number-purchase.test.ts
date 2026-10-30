@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import numberPurchase from "../../actions/number-purchase.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("number-purchase: posts to /numbers/purchase (outside /v1) with area_code/country_code", async () => {
+test("number-purchase: posts to /numbers/purchase (outside /v1) with area_code/country_code", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { phone_number: "+14155551234" } }]);
   const out = await numberPurchase.execute({ areaCode: "415", countryCode: "US" }, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("number-purchase: posts to /numbers/purchase (outside /v1) with area_c
   assertEquals((out.result as { phone_number: string }).phone_number, "+14155551234");
 });
 
-Deno.test("number-purchase: an exact phone_number overrides area_code", async () => {
+test("number-purchase: an exact phone_number overrides area_code", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await numberPurchase.execute(
     { areaCode: "415", countryCode: "US", phoneNumber: "+12223334444" },
@@ -25,6 +26,6 @@ Deno.test("number-purchase: an exact phone_number overrides area_code", async ()
   assertEquals("area_code" in body, false);
 });
 
-Deno.test("number-purchase: is declared not idempotent", () => {
+test("number-purchase: is declared not idempotent", () => {
   assertEquals(numberPurchase.idempotent, false);
 });

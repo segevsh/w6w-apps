@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voiceList from "../../actions/voice-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("voice-list: fetches /v1/voices and unwraps voices", async () => {
+test("voice-list: fetches /v1/voices and unwraps voices", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { voices: [{ id: "v-1", name: "maya" }] },
@@ -12,7 +13,7 @@ Deno.test("voice-list: fetches /v1/voices and unwraps voices", async () => {
   assertEquals(out.voices, [{ id: "v-1", name: "maya" }]);
 });
 
-Deno.test("voice-list: defaults to an empty array", async () => {
+test("voice-list: defaults to an empty array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await voiceList.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out.voices, []);

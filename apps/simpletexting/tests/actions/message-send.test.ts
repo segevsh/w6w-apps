@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
 const SENT = { id: "507f191e810c19729de860ea", credits: 1 };
 
-Deno.test("message-send: POSTs the required trio and returns the id and credits", async () => {
+test("message-send: POSTs the required trio and returns the id and credits", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: SENT }]);
   const result = await messageSend.execute(
     { contactPhone: "1234567890", mode: "AUTO", text: "Hello!" },
@@ -22,7 +23,7 @@ Deno.test("message-send: POSTs the required trio and returns the id and credits"
  * `credits` is documented as "Actual credits amount. Can be negative" — a
  * refund. It is returned as the vendor sent it, not clamped.
  */
-Deno.test("message-send: a negative credit figure is a refund, not an error", async () => {
+test("message-send: a negative credit figure is a refund, not an error", async () => {
   const { ctx } = mockCtx([{ status: 201, body: { id: "abc", credits: -3 } }]);
   const result = await messageSend.execute(
     { contactPhone: "1234567890", mode: "AUTO", text: "Hello!" },
@@ -31,7 +32,7 @@ Deno.test("message-send: a negative credit figure is a refund, not an error", as
   assertEquals(result.credits, -3);
 });
 
-Deno.test("message-send: blank optionals are left out of the body entirely", async () => {
+test("message-send: blank optionals are left out of the body entirely", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: SENT }]);
   await messageSend.execute(
     {
@@ -48,7 +49,7 @@ Deno.test("message-send: blank optionals are left out of the body entirely", asy
   assertEquals(Object.keys(body).sort(), ["contactPhone", "mode", "text"]);
 });
 
-Deno.test("message-send: media items are sent as the array the vendor accepts", async () => {
+test("message-send: media items are sent as the array the vendor accepts", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: SENT }]);
   await messageSend.execute(
     {
@@ -65,7 +66,7 @@ Deno.test("message-send: media items are sent as the array the vendor accepts", 
   ]);
 });
 
-Deno.test("message-send: the mode param carries the schema's enum and its documented default", () => {
+test("message-send: the mode param carries the schema's enum and its documented default", () => {
   const mode = messageSend.params!.find((p) => p.key === "mode");
   assertEquals(mode?.default, "AUTO");
   assertEquals(mode?.required, true);
@@ -80,11 +81,11 @@ Deno.test("message-send: the mode param carries the schema's enum and its docume
  * No idempotency key exists on this endpoint, so a retry is a second SMS to a
  * real phone and a second charge. The declaration must stay `false`.
  */
-Deno.test("message-send: is not idempotent, because a retry texts a person twice", () => {
+test("message-send: is not idempotent, because a retry texts a person twice", () => {
   assertEquals(messageSend.idempotent, false);
 });
 
-Deno.test("message-send: a rejected send surfaces the vendor's own code", async () => {
+test("message-send: a rejected send surfaces the vendor's own code", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -102,7 +103,7 @@ Deno.test("message-send: a rejected send surfaces the vendor's own code", async 
   );
 });
 
-Deno.test("message-send: never touches the credential", async () => {
+test("message-send: never touches the credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: SENT }]);
   await messageSend.execute({ contactPhone: "1234567890", mode: "AUTO", text: "Hi" }, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

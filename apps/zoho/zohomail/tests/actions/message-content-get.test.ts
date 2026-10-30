@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageContentGet from "../../actions/message-content-get.ts";
 import { envelope, mockCtx, pathOf, queryOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-content-get: fetches the message content", async () => {
+test("message-content-get: fetches the message content", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m1", content: "<div>Hello</div>" }) }],
     usConnection({ accountId: "acc-1" }),
@@ -14,7 +15,7 @@ Deno.test("message-content-get: fetches the message content", async () => {
   assertEquals(out, { messageId: "m1", content: "<div>Hello</div>" });
 });
 
-Deno.test("message-content-get: passes includeBlockContent through", async () => {
+test("message-content-get: passes includeBlockContent through", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m1", content: "" }) }],
     usConnection(),
@@ -26,7 +27,7 @@ Deno.test("message-content-get: passes includeBlockContent through", async () =>
   assertEquals(queryOf(calls[0].url), { includeBlockContent: "true" });
 });
 
-Deno.test("message-content-get: throws when the response carries no content", async () => {
+test("message-content-get: throws when the response carries no content", async () => {
   const { ctx } = mockCtx(
     [{ body: { status: { code: 200, description: "success" } } }],
     usConnection(),

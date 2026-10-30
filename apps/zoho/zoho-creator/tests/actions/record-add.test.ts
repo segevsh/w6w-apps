@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/record-add.ts";
 
-Deno.test("record-add: not idempotent", () => {
+test("record-add: not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("record-add: POSTs /data/<owner>/<app>/form/<form> with data + result switches", async () => {
+test("record-add: POSTs /data/<owner>/<app>/form/<form> with data + result switches", async () => {
   const { ctx, calls } = mockCreatorCtx([
     {
       body: {
@@ -45,7 +46,7 @@ Deno.test("record-add: POSTs /data/<owner>/<app>/form/<form> with data + result 
   });
 });
 
-Deno.test("record-add: accepts data as a JSON string param", async () => {
+test("record-add: accepts data as a JSON string param", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { result: [{ code: 3000, data: { ID: "1" } }], code: 3000 } },
   ]);
@@ -61,7 +62,7 @@ Deno.test("record-add: accepts data as a JSON string param", async () => {
   assertEquals(JSON.parse(calls[0].body!).data, { Email: "a@b.com" });
 });
 
-Deno.test("record-add: passes a per-record failure through in results rather than throwing", async () => {
+test("record-add: passes a per-record failure through in results rather than throwing", async () => {
   const { ctx } = mockCreatorCtx([
     {
       body: { result: [{ code: 3001, data: { ID: "1" }, error: ["Failed to add."] }], code: 3000 },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sequence-recipient-add.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sequence-recipient-add: POST /sequences/s1/recipients", async () => {
+test("sequence-recipient-add: POST /sequences/s1/recipients", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ email: "a@x.com", status: "added" }] }]);
   const out = await action.execute!(
     { sequenceId: "s1", recipients: "a@x.com, b@x.com", scheduledAt: "false" } as never,

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import lookupCnam from "../../actions/lookup-cnam.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "number": "4917612345678" } as Parameters<typeof lookupCnam.execute>[0];
 
-Deno.test("lookup-cnam: GET /api/lookup/cnam with the documented fields", async () => {
+test("lookup-cnam: GET /api/lookup/cnam with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": "true", "code": "100", "name": "GERMANY" },
   }]);
@@ -20,14 +21,14 @@ Deno.test("lookup-cnam: GET /api/lookup/cnam with the documented fields", async 
   assertEquals(out.name, "GERMANY");
 });
 
-Deno.test("lookup-cnam: declares type read-or-search and every required param", () => {
+test("lookup-cnam: declares type read-or-search and every required param", () => {
   const required = (lookupCnam.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["number"]);
   assert(["read", "search", "perform"].includes(lookupCnam.type));
   assertEquals(lookupCnam.type === "perform", false);
 });
 
-Deno.test("lookup-cnam: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("lookup-cnam: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("lookup-cnam: a refused key (bare code 900 in an HTTP 200) is thrown, 
   assert(message.includes("900") && message.includes("authentication failed"), message);
 });
 
-Deno.test("lookup-cnam: a miss answers only {code: 600} and is thrown, not returned as a name", async () => {
+test("lookup-cnam: a miss answers only {code: 600} and is thrown, not returned as a name", async () => {
   const { ctx } = mockCtx([{ body: { code: "600" } }]);
   let message = "";
   try {

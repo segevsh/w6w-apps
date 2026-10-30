@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/domain-verify.ts";
 
@@ -6,7 +7,7 @@ import action from "../../actions/domain-verify.ts";
  * The call asks Resend to re-check DNS; it does not answer whether that
  * succeeded. The response is `{ object, id }`.
  */
-Deno.test("domain-verify: POSTs the re-check and returns Resend's ack", async () => {
+test("domain-verify: POSTs the re-check and returns Resend's ack", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { object: "domain", id: "d_1" } }], {
     display: {},
   });
@@ -16,7 +17,7 @@ Deno.test("domain-verify: POSTs the re-check and returns Resend's ack", async ()
   assertEquals(result, { object: "domain", id: "d_1" });
 });
 
-Deno.test("domain-verify: a blank id fails before any request", async () => {
+test("domain-verify: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`domainId`");
   assertEquals(calls.length, 0);

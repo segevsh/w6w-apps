@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/template-create-document.ts";
 
-Deno.test(
+test(
   "template-create-document: urlencoded POST with data= plus a sibling is_quicksend field",
   async () => {
     const { ctx, calls } = mockSignCtx([
@@ -41,7 +42,7 @@ Deno.test(
   },
 );
 
-Deno.test("template-create-document: isQuickSend defaults to true", async () => {
+test("template-create-document: isQuickSend defaults to true", async () => {
   const { ctx, calls } = mockSignCtx([
     { body: { code: 0, status: "success", requests: { request_id: "r1" } } },
   ]);

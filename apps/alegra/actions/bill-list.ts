@@ -70,7 +70,12 @@ const billList: ActionDefinition<Input> = {
     {
       "key": "status",
       "label": "Status",
-      "type": "string",
+      "type": "select",
+      placeholder: "Select…",
+      options: [{ "value": "open", "label": "open" }, { "value": "closed", "label": "closed" }, {
+        "value": "void",
+        "label": "void",
+      }],
       "hint": "open, closed or void.",
     },
     {

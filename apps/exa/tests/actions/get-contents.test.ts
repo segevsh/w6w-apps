@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-contents.ts";
 
-Deno.test("get-contents: POSTs /contents with urls, and content options flattened at the TOP level (not nested)", async () => {
+test("get-contents: POSTs /contents with urls, and content options flattened at the TOP level (not nested)", async () => {
   const body = { requestId: "r1", results: [], statuses: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -22,7 +23,7 @@ Deno.test("get-contents: POSTs /contents with urls, and content options flattene
   assertEquals(result, body);
 });
 
-Deno.test("get-contents: supports multiple urls in one call", async () => {
+test("get-contents: supports multiple urls in one call", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: "r1", results: [] } }]);
   await action.execute!({ urls: ["https://a", "https://b"] }, ctx);
   const sent = JSON.parse(calls[0].body!);

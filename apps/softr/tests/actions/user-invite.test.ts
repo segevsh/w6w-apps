@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userInvite from "../../actions/user-invite.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-invite: POSTs /users/{email}/invite", async () => {
+test("user-invite: POSTs /users/{email}/invite", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userInvite.execute({ domain: "yourdomain.com", email: "user@softr.io" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("user-invite: POSTs /users/{email}/invite", async () => {
 });
 
 /** Sending an invite email is not free of side effects, so it is not idempotent. */
-Deno.test("user-invite: is explicitly not idempotent", () => {
+test("user-invite: is explicitly not idempotent", () => {
   assertEquals(userInvite.idempotent, false);
 });

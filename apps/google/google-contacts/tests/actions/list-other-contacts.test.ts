@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-other-contacts.ts";
 
-Deno.test("list-other-contacts: GETs /otherContacts with the required readMask", async () => {
+test("list-other-contacts: GETs /otherContacts with the required readMask", async () => {
   const { ctx, calls } = mockCtx([{ body: { otherContacts: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-other-contacts: GETs /otherContacts with the required readMask",
   assertEquals(url.searchParams.get("readMask"), "names,emailAddresses,phoneNumbers");
 });
 
-Deno.test("list-other-contacts: offers only the five fields this resource exposes", () => {
+test("list-other-contacts: offers only the five fields this resource exposes", () => {
   const readMask = action.params?.find((p) => p.key === "readMask");
   assertEquals(
     (readMask?.options as Array<{ value: string }>).map((o) => o.value),
@@ -19,7 +20,7 @@ Deno.test("list-other-contacts: offers only the five fields this resource expose
   assertEquals(readMask?.required, true);
 });
 
-Deno.test("list-other-contacts: forwards paging and sync params", async () => {
+test("list-other-contacts: forwards paging and sync params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     readMask: ["names", "photos"],
@@ -41,7 +42,7 @@ Deno.test("list-other-contacts: forwards paging and sync params", async () => {
   ]);
 });
 
-Deno.test("list-other-contacts: an explicit false is sent; an unset boolean is omitted", async () => {
+test("list-other-contacts: an explicit false is sent; an unset boolean is omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute({ requestSyncToken: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("requestSyncToken"), "false");

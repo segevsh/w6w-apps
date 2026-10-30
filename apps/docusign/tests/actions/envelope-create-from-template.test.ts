@@ -1,10 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { ACCOUNT_BASE, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/envelope-create-from-template.ts";
 
 const ROLES = '[{"roleName":"Signer","email":"a@b.com","name":"A B"}]';
 
-Deno.test("envelope-create-from-template: POSTs templateId + templateRoles to /envelopes", async () => {
+test("envelope-create-from-template: POSTs templateId + templateRoles to /envelopes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { envelopeId: "e1" } }]);
   await action.execute({ templateId: "t1", templateRoles: ROLES }, ctx);
 
@@ -17,14 +18,14 @@ Deno.test("envelope-create-from-template: POSTs templateId + templateRoles to /e
   });
 });
 
-Deno.test("envelope-create-from-template: emailSubject is optional — the template supplies one", () => {
+test("envelope-create-from-template: emailSubject is optional — the template supplies one", () => {
   const subject = action.params?.find((p) => p.key === "emailSubject");
   assertEquals(subject?.required, undefined);
   assertEquals(action.params?.find((p) => p.key === "templateId")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "templateRoles")?.required, true);
 });
 
-Deno.test("envelope-create-from-template: sends the overrides when supplied", async () => {
+test("envelope-create-from-template: sends the overrides when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     templateId: "t1",
@@ -41,7 +42,7 @@ Deno.test("envelope-create-from-template: sends the overrides when supplied", as
   assertEquals(body.customFields, { textCustomFields: [] });
 });
 
-Deno.test("envelope-create-from-template: rejects a non-array templateRoles", () => {
+test("envelope-create-from-template: rejects a non-array templateRoles", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => action.execute({ templateId: "t1", templateRoles: "{}" }, ctx),
@@ -50,7 +51,7 @@ Deno.test("envelope-create-from-template: rejects a non-array templateRoles", ()
   );
 });
 
-Deno.test("envelope-create-from-template: is a non-idempotent perform", () => {
+test("envelope-create-from-template: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

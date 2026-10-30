@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import thresholdInfo from "../../actions/threshold-info.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("threshold-info: maps the three figures and computes the remainder", async () => {
+test("threshold-info: maps the three figures and computes the remainder", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       externalRequestThreshold: 10000,

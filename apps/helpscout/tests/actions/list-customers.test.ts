@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-customers.ts";
 
-Deno.test("list-customers: GETs /customers with the filter params mapped", async () => {
+test("list-customers: GETs /customers with the filter params mapped", async () => {
   const { ctx, calls } = mockCtx([{
     body: { _embedded: { customers: [{ id: 1, firstName: "Vernon" }] } },
   }]);
@@ -15,7 +16,7 @@ Deno.test("list-customers: GETs /customers with the filter params mapped", async
   assertEquals(out, { customers: [{ id: 1, firstName: "Vernon" }] });
 });
 
-Deno.test("list-customers: returns an empty array when _embedded is absent", async () => {
+test("list-customers: returns an empty array when _embedded is absent", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await action.execute({}, ctx), { customers: [] });
 });

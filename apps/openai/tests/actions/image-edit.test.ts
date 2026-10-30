@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/image-edit.ts";
 
 // base64("hello")
 const PNG_B64 = "aGVsbG8=";
 
-Deno.test("image-edit: POSTs multipart to /images/edits with image + prompt", async () => {
+test("image-edit: POSTs multipart to /images/edits with image + prompt", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ image: PNG_B64, prompt: "make it blue" }, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("image-edit: POSTs multipart to /images/edits with image + prompt", as
   assertEquals(image.type, "image/png");
 });
 
-Deno.test("image-edit: includes mask + user when provided", async () => {
+test("image-edit: includes mask + user when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

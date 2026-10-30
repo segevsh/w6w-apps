@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/find-email-by-linkedin.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("find-email-by-linkedin: POSTs the profile URL", async () => {
+test("find-email-by-linkedin: POSTs the profile URL", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -25,7 +26,7 @@ Deno.test("find-email-by-linkedin: POSTs the profile URL", async () => {
   });
 });
 
-Deno.test("find-email-by-linkedin: forwards the webhook URL", async () => {
+test("find-email-by-linkedin: forwards the webhook URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute!(
     { "linkedin_url": "johndoe", "webhook_url": "https://x.test/hook" } as never,

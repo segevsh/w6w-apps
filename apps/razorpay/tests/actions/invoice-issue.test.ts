@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceIssue from "../../actions/invoice-issue.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-issue: posts to /invoices/{id}/issue", async () => {
+test("invoice-issue: posts to /invoices/{id}/issue", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "inv_1", status: "issued", short_url: "https://rzp.io/i/1" },
   }]);

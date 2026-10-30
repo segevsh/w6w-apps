@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockCtx, pathOf, recordBody } from "../_helpers.ts";
 
-Deno.test("contact-update: requires the contact id and is idempotent", () => {
+test("contact-update: requires the contact id and is idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assertEquals(action.params!.filter((p) => p.required).map((p) => p.key), ["id"]);
 });
 
-Deno.test("contact-update: PATCHes /customers/{id} with only the fields set", async () => {
+test("contact-update: PATCHes /customers/{id} with only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ body: recordBody({ id: 12, last_name: "New" }) }]);
   const out = await action.execute({ id: 12, lastName: "New", doNotSms: false }, ctx) as {
     record: { last_name: string };
@@ -19,7 +20,7 @@ Deno.test("contact-update: PATCHes /customers/{id} with only the fields set", as
   assertEquals(out.record.last_name, "New");
 });
 
-Deno.test("contact-update: refuses an update with nothing to change, before any request", async () => {
+test("contact-update: refuses an update with nothing to change, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ id: 12 }, ctx),
@@ -29,7 +30,7 @@ Deno.test("contact-update: refuses an update with nothing to change, before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-update: a 404 HTML page is not parsed as an API answer", async () => {
+test("contact-update: a 404 HTML page is not parsed as an API answer", async () => {
   const { ctx } = mockCtx([
     { status: 404, headers: { "content-type": "text/html" }, body: "<html></html>" },
   ]);

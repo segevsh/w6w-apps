@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { buildPersonBody } from "../../lib/person.ts";
 
-Deno.test("buildPersonBody: drops unset fields", () => {
+test("buildPersonBody: drops unset fields", () => {
   assertEquals(buildPersonBody({ fullName: "Ada Lovelace" }), { fullName: "Ada Lovelace" });
 });
 
-Deno.test("buildPersonBody: passes arrays through untouched", () => {
+test("buildPersonBody: passes arrays through untouched", () => {
   const body = buildPersonBody({
     fullName: "Ada",
     emails: ["ada@example.com"],
@@ -18,7 +19,7 @@ Deno.test("buildPersonBody: passes arrays through untouched", () => {
   });
 });
 
-Deno.test("buildPersonBody: passes customFields through untouched", () => {
+test("buildPersonBody: passes customFields through untouched", () => {
   const body = buildPersonBody({ customFields: { Role: ["Investor"] } });
   assertEquals(body, { customFields: { Role: ["Investor"] } });
 });

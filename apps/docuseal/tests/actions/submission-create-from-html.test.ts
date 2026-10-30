@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-create-from-html.ts";
 
-Deno.test("submission-create-from-html: sends the parsed documents and submitters", async () => {
+test("submission-create-from-html: sends the parsed documents and submitters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute!({
     documents: '[{"name":"A","html":"<p>A</p>"}]',

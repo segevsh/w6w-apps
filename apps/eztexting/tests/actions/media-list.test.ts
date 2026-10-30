@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mediaList from "../../actions/media-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("media-list: calls GET /media-files and returns the documented shape", async () => {
+test("media-list: calls GET /media-files and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "5", url: "https://x/y.png" }]) }]);
   const result = await mediaList.execute({ "size": "10" } as never, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("media-list: calls GET /media-files and returns the documented shape",
   });
 });
 
-Deno.test("media-list: carries no credential — auth is the sign hook's job", async () => {
+test("media-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "5", url: "https://x/y.png" }]) }]);
   await mediaList.execute({ "size": "10" } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

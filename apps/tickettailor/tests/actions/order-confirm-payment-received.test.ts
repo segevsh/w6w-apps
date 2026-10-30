@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderConfirmPaymentReceived from "../../actions/order-confirm-payment-received.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-confirm-payment-received: POSTs the optional transaction id", async () => {
+test("order-confirm-payment-received: POSTs the optional transaction id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "or_1", object: "order", payment_received: "true" } },
   ]);

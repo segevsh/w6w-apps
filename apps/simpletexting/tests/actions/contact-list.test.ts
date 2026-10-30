@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const CONTACT = {
   updateSource: "PUBLIC_API",
 };
 
-Deno.test("contact-list: reads the contacts page and returns its rows", async () => {
+test("contact-list: reads the contacts page and returns its rows", async () => {
   const { ctx, calls } = mockCtx([{ body: page([CONTACT], { totalElements: 1 }) }]);
   const result = await contactList.execute({}, ctx) as { content: unknown[] };
 
@@ -22,7 +23,7 @@ Deno.test("contact-list: reads the contacts page and returns its rows", async ()
   assertEquals(result.content, [CONTACT]);
 });
 
-Deno.test("contact-list: forwards since and direction verbatim", async () => {
+test("contact-list: forwards since and direction verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactList.execute(
     { since: "2021-04-28T23:20:08.489Z", direction: "ASC", page: 1, size: 2 },
@@ -42,14 +43,14 @@ Deno.test("contact-list: forwards since and direction verbatim", async () => {
  * the value is passed through rather than normalised — and the param is a plain
  * string for exactly that reason.
  */
-Deno.test("contact-list: direction is a passthrough string, not a picker the server might reject", () => {
+test("contact-list: direction is a passthrough string, not a picker the server might reject", () => {
   const direction = contactList.params!.find((p) => p.key === "direction");
   assertEquals(direction?.type, "string");
   assertEquals(direction?.default, undefined);
   assertEquals(direction?.hint?.includes("ASC/DESC"), true);
 });
 
-Deno.test("contact-list: is a search action grouped under contact", () => {
+test("contact-list: is a search action grouped under contact", () => {
   assertEquals(contactList.type, "search");
   assertEquals(contactList.resource, "contact");
 });

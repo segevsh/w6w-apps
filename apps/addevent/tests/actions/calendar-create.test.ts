@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import calendarCreate from "../../actions/calendar-create.ts";
 import { mockCtx, pathOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("calendar-create: POSTs the mapped body and returns the created calendar", async () => {
+test("calendar-create: POSTs the mapped body and returns the created calendar", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "cal-1", title: "Product launches", timezone: "UTC" } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("calendar-create: POSTs the mapped body and returns the created calend
   assertEquals(out.id, "cal-1");
 });
 
-Deno.test("calendar-create: a 400 validation error surfaces the field-level reasons", async () => {
+test("calendar-create: a 400 validation error surfaces the field-level reasons", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,

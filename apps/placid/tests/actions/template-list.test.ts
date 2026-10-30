@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateList from "../../actions/template-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("template-list: filters go in the query and the page is folded", async () => {
+test("template-list: filters go in the query and the page is folded", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ uuid: "t1" }],

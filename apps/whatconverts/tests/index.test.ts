@@ -1,18 +1,19 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("app declares exactly one auth method (basic)", () => {
+test("app declares exactly one auth method (basic)", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "basic");
   assertEquals(app.auth?.[0].type, "basic");
 });
 
-Deno.test("app declares one health check (service)", () => {
+test("app declares one health check (service)", () => {
   assertEquals(app.healthChecks?.length, 1);
   assertEquals(app.healthChecks?.[0].key, "service");
 });
 
-Deno.test("every action has a unique kebab-case key", () => {
+test("every action has a unique kebab-case key", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
   for (const key of keys) {
@@ -20,7 +21,7 @@ Deno.test("every action has a unique kebab-case key", () => {
   }
 });
 
-Deno.test("every action declares a type, title and params array", () => {
+test("every action declares a type, title and params array", () => {
   for (const action of app.actions) {
     assertExists(action.title, `${action.key} missing title`);
     assertEquals(["read", "search", "perform"].includes(action.type), true, action.key);
@@ -28,7 +29,7 @@ Deno.test("every action declares a type, title and params array", () => {
   }
 });
 
-Deno.test("every perform action declares idempotent explicitly", () => {
+test("every perform action declares idempotent explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assertEquals(typeof action.idempotent, "boolean", `${action.key} missing idempotent flag`);
@@ -36,7 +37,7 @@ Deno.test("every perform action declares idempotent explicitly", () => {
   }
 });
 
-Deno.test("app covers the documented WhatConverts resources", () => {
+test("app covers the documented WhatConverts resources", () => {
   const keys = new Set(app.actions.map((a) => a.key));
   for (
     const key of [

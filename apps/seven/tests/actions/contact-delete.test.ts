@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const INPUT = { "id": 12454414 } as Parameters<typeof contactDelete.execute>[0];
 
-Deno.test("contact-delete: DELETE /api/contacts/12454414 with the documented fields", async () => {
+test("contact-delete: DELETE /api/contacts/12454414 with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: {}, body: "" }]);
   const out = await contactDelete.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -18,14 +19,14 @@ Deno.test("contact-delete: DELETE /api/contacts/12454414 with the documented fie
   assertEquals(out.deleted, true);
 });
 
-Deno.test("contact-delete: declares type perform and every required param", () => {
+test("contact-delete: declares type perform and every required param", () => {
   const required = (contactDelete.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["id"]);
   assert(["read", "search", "perform"].includes(contactDelete.type));
   assertEquals(contactDelete.type, "perform");
 });
 
-Deno.test("contact-delete: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("contact-delete: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

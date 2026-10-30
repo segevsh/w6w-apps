@@ -18,7 +18,12 @@ const action: ActionDefinition = {
     {
       key: "states",
       label: "Duty states",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "0", label: "Off duty" }, { value: "1", label: "Idle" }, {
+        value: "2",
+        label: "Active",
+      }],
+      config: { valueFormat: "csv" },
       default: "",
       hint: "Comma-separated: 0 off-duty, 1 idle, 2 active.",
     },

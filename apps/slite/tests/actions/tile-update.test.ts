@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tileUpdate from "../../actions/tile-update.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("tile-update: PUT /v1/notes/n1/tiles/t1 with the documented parameters", async () => {
+test("tile-update: PUT /v1/notes/n1/tiles/t1 with the documented parameters", async () => {
   const response = { url: "https://x.slite.com/n1#t1" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await tileUpdate.execute({
@@ -26,7 +27,7 @@ Deno.test("tile-update: PUT /v1/notes/n1/tiles/t1 with the documented parameters
   assertEquals(out, response);
 });
 
-Deno.test("tile-update: a vendor error surfaces its own message and id", async () => {
+test("tile-update: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -46,7 +47,7 @@ Deno.test("tile-update: a vendor error surfaces its own message and id", async (
   );
 });
 
-Deno.test("tile-update: a malformed colour, or a colour without a label, is refused", async () => {
+test("tile-update: a malformed colour, or a colour without a label, is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

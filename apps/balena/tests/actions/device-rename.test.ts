@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-rename.ts";
 
@@ -12,7 +13,7 @@ const device = {
 const noDuplicates = { status: 200, body: { d: [] } };
 const ok = { status: 200, body: {} };
 
-Deno.test("device-rename: patches the device by uuid", async () => {
+test("device-rename: patches the device by uuid", async () => {
   const { ctx, calls } = mockCtx([device, noDuplicates, ok]);
   const result = await action.execute({ uuid: UUID, name: "berlin-01" }, ctx) as Record<
     string,
@@ -26,7 +27,7 @@ Deno.test("device-rename: patches the device by uuid", async () => {
 });
 
 /** balena permits duplicates and every name lookup then returns both. */
-Deno.test("device-rename: refuses a name already used in the same fleet", async () => {
+test("device-rename: refuses a name already used in the same fleet", async () => {
   const { ctx, calls } = mockCtx([
     device,
     { status: 200, body: { d: [{ uuid: "b".repeat(32) }] } },
@@ -39,7 +40,7 @@ Deno.test("device-rename: refuses a name already used in the same fleet", async 
   assertEquals(calls.length, 2, "it must not patch before refusing");
 });
 
-Deno.test("device-rename: allowDuplicate lets it through and reports the clash", async () => {
+test("device-rename: allowDuplicate lets it through and reports the clash", async () => {
   const other = "b".repeat(32);
   const { ctx } = mockCtx([device, { status: 200, body: { d: [{ uuid: other }] } }, ok]);
   const result = await action.execute(
@@ -50,7 +51,7 @@ Deno.test("device-rename: allowDuplicate lets it through and reports the clash",
 });
 
 /** The device itself carrying the name is not a duplicate. */
-Deno.test("device-rename: renaming a device to its own name is not a clash", async () => {
+test("device-rename: renaming a device to its own name is not a clash", async () => {
   const { ctx } = mockCtx([device, { status: 200, body: { d: [{ uuid: UUID }] } }, ok]);
   const result = await action.execute({ uuid: UUID, name: "winter-sunset" }, ctx) as Record<
     string,
@@ -60,7 +61,7 @@ Deno.test("device-rename: renaming a device to its own name is not a clash", asy
   assertEquals(result.changed, false);
 });
 
-Deno.test("device-rename: requires a name", async () => {
+test("device-rename: requires a name", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ uuid: UUID }, ctx), Error, "`name`");
 });

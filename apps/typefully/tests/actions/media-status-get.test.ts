@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mediaStatusGet from "../../actions/media-status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-status-get: fetches the media's processing status", async () => {
+test("media-status-get: fetches the media's processing status", async () => {
   const { ctx, calls } = mockCtx([{
     body: { media_id: "id", file_name: "photo.jpg", status: "ready" },
   }]);

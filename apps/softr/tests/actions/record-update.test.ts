@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordUpdate from "../../actions/record-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-update: PATCHes {fields} to .../records/{recordId}", async () => {
+test("record-update: PATCHes {fields} to .../records/{recordId}", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "rec1", tableId: "tbl1", fields: { Name: "Acme Inc." } }) },
   ]);
@@ -18,6 +19,6 @@ Deno.test("record-update: PATCHes {fields} to .../records/{recordId}", async () 
 });
 
 /** Reapplying the same field values leaves the record in the same state. */
-Deno.test("record-update: is marked idempotent", () => {
+test("record-update: is marked idempotent", () => {
   assertEquals(recordUpdate.idempotent, true);
 });

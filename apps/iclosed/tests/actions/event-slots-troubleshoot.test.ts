@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSlotsTroubleshoot from "../../actions/event-slots-troubleshoot.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("event-slots-troubleshoot: sends every input as query", async () => {
+test("event-slots-troubleshoot: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await eventSlotsTroubleshoot.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("event-slots-troubleshoot: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("event-slots-troubleshoot: omits every unset optional", async () => {
+test("event-slots-troubleshoot: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await eventSlotsTroubleshoot.execute(
     { "linkPrefix": "x-linkPrefix", "date": "x-date", "timezone": "x-timezone" } as never,
@@ -43,7 +44,7 @@ Deno.test("event-slots-troubleshoot: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("event-slots-troubleshoot: declares a read-only shape", () => {
+test("event-slots-troubleshoot: declares a read-only shape", () => {
   assertEquals(eventSlotsTroubleshoot.type, "read");
   assertEquals(eventSlotsTroubleshoot.idempotent, undefined);
   assertEquals(eventSlotsTroubleshoot.params!.filter((p) => p.required).map((p) => p.key), [

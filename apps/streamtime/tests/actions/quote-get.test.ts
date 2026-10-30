@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteGet from "../../actions/quote-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-get: reads GET /v2/quotes/{id}", async () => {
+test("quote-get: reads GET /v2/quotes/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 201, quoteName: "Website Redesign", quoteCurrencyTotalAmountExTax: 5000 } },
   ]);
@@ -13,6 +14,6 @@ Deno.test("quote-get: reads GET /v2/quotes/{id}", async () => {
 });
 
 /** There is no `GET /quotes` list on this API. */
-Deno.test("quote-get: the hint points at search, because there is no list route", () => {
+test("quote-get: the hint points at search, because there is no list route", () => {
   assertEquals(/search over `quotes`/.test(quoteGet.params?.[0].hint ?? ""), true);
 });

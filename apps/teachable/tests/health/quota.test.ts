@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { QUOTA_URL, readRateLimitHeaders } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: reads the same cheap probe as the auth check, signed, on the app's own host", () => {
+test("quota: reads the same cheap probe as the auth check, signed, on the app's own host", () => {
   assertEquals(QUOTA_URL, "https://developers.teachable.com/v1/courses?per=1");
   assertEquals(quota.credential, "signed");
   // A signed check must not widen egress — that pairing is banned by the spec.
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: headroom well above the warning threshold reports ok", async () => {
+test("quota: headroom well above the warning threshold reports ok", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { courses: [] },
@@ -33,7 +34,7 @@ Deno.test("quota: headroom well above the warning threshold reports ok", async (
   }]);
 });
 
-Deno.test("quota: remaining at or below the warning fraction reports degraded and names itself", async () => {
+test("quota: remaining at or below the warning fraction reports degraded and names itself", async () => {
   const { ctx } = mockCtx([
     {
       body: { courses: [] },
@@ -54,7 +55,7 @@ Deno.test("quota: remaining at or below the warning fraction reports degraded an
  * A live 429 IS the headroom answer, not a generic failure — this check reads
  * it directly rather than throwing, unlike an ordinary action.
  */
-Deno.test("quota: a live 429 reports down", async () => {
+test("quota: a live 429 reports down", async () => {
   const { ctx } = mockCtx([
     {
       status: 429,
@@ -78,7 +79,7 @@ Deno.test("quota: a live 429 reports down", async () => {
  * behaviour when an ordinary 200 does not carry them, rather than a fabricated
  * `ok`.
  */
-Deno.test("quota: headers absent on a 200 reports unknown, not ok", async () => {
+test("quota: headers absent on a 200 reports unknown, not ok", async () => {
   const { ctx } = mockCtx([{ body: { courses: [] } }]);
   const report = await quota.check!({}, ctx);
 
@@ -86,7 +87,7 @@ Deno.test("quota: headers absent on a 200 reports unknown, not ok", async () => 
   assert(/did not send RateLimit-\* headers/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("readRateLimitHeaders: parses the three headers, tolerating any subset being absent", () => {
+test("readRateLimitHeaders: parses the three headers, tolerating any subset being absent", () => {
   const headers = new Headers({ "ratelimit-limit": "100", "ratelimit-remaining": "42" });
   assertEquals(readRateLimitHeaders(headers), {
     limit: 100,

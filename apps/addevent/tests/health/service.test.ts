@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const REAL_SUMMARY = {
   status: { indicator: "none", description: "All Systems Operational" },
 };
 
-Deno.test("service: all-operational summary reports ok with every component", async () => {
+test("service: all-operational summary reports ok with every component", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: REAL_SUMMARY }]);
   const report = await service.check!({}, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v2/summary.json");
@@ -24,7 +25,7 @@ Deno.test("service: all-operational summary reports ok with every component", as
   assertEquals(report.components?.["3dfhm69wv905"].state, "ok");
 });
 
-Deno.test("service: a major outage on the API component reports down via the page indicator", async () => {
+test("service: a major outage on the API component reports down via the page indicator", async () => {
   const degraded = {
     ...REAL_SUMMARY,
     components: [
@@ -41,13 +42,13 @@ Deno.test("service: a major outage on the API component reports down via the pag
   assertEquals(report.message?.includes("AddEvent API (major_outage)"), true, report.message);
 });
 
-Deno.test("service: an unreachable status page reports unknown, never down", async () => {
+test("service: an unreachable status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: undefined }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an unparsable body reports unknown", async () => {
+test("service: an unparsable body reports unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -63,7 +64,7 @@ Deno.test("service: an unparsable body reports unknown", async () => {
  * page's own `page.url` instead of AddEvent's, it must be caught rather than reported
  * as a genuine AddEvent status.
  */
-Deno.test("service: a page that no longer self-identifies as AddEvent's reports unknown", async () => {
+test("service: a page that no longer self-identifies as AddEvent's reports unknown", async () => {
   const wrongPage = {
     ...REAL_SUMMARY,
     page: { ...REAL_SUMMARY.page, url: "https://example.instatus.com" },
@@ -73,7 +74,7 @@ Deno.test("service: a page that no longer self-identifies as AddEvent's reports 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -82,7 +83,7 @@ Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: covers the documented page-level indicator vocabulary", () => {
+test("mapIndicator: covers the documented page-level indicator vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -91,7 +92,7 @@ Deno.test("mapIndicator: covers the documented page-level indicator vocabulary",
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: unsigned and app-scoped, widening egress to the status host only", () => {
+test("service: unsigned and app-scoped, widening egress to the status host only", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["addevent.statuspage.io"]);

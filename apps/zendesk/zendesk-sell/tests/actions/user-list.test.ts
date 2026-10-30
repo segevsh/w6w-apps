@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: fetches /v2/users with filters mapped", async () => {
+test("user-list: fetches /v2/users with filters mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 2, name: "Mark Johnson" }]) }]);
   const out = await userList.execute({ role: "user", status: "active", confirmed: true }, ctx) as {
     items: unknown[];

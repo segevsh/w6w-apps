@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import instance from "../../health/instance.ts";
 import quota from "../../health/quota.ts";
 
 const conn = { display: { baseUrl: "https://sign.example.com" } };
 
-Deno.test("instance: probes this connection's own /api/health, unsigned", async () => {
+test("instance: probes this connection's own /api/health, unsigned", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "ok", checks: { database: { status: "ok" }, certificate: { status: "ok" } } },
@@ -21,7 +22,7 @@ Deno.test("instance: probes this connection's own /api/health, unsigned", async 
  * The certificate check is the one worth surfacing: signing breaks while
  * everything else looks healthy.
  */
-Deno.test("instance: a failing certificate check is down, and named", async () => {
+test("instance: a failing certificate check is down, and named", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -36,14 +37,14 @@ Deno.test("instance: a failing certificate check is down, and named", async () =
   assertEquals(report.components!.database.state, "ok");
 });
 
-Deno.test("instance: an unreachable server is down", async () => {
+test("instance: an unreachable server is down", async () => {
   const { ctx } = mockCtx([], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message!.includes("unreachable"), report.message);
 });
 
-Deno.test("instance: a non-200 is down, and an odd shape is degraded", async () => {
+test("instance: a non-200 is down, and an odd shape is degraded", async () => {
   const bad = mockCtx([{ status: 502, body: "" }], conn);
   assertEquals((await instance.check!({}, bad.ctx)).state, "down");
 
@@ -51,7 +52,7 @@ Deno.test("instance: a non-200 is down, and an odd shape is degraded", async () 
   assertEquals((await instance.check!({}, odd.ctx)).state, "degraded");
 });
 
-Deno.test("instance: a healthy instance with no sub-checks still reports ok", async () => {
+test("instance: a healthy instance with no sub-checks still reports ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { status: "ok" } }], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -59,7 +60,7 @@ Deno.test("instance: a healthy instance with no sub-checks still reports ok", as
 });
 
 /** The headers arrive on every response, including errors. */
-Deno.test("quota: reads the rate-limit headers Documenso sends", async () => {
+test("quota: reads the rate-limit headers Documenso sends", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     headers: {
@@ -79,14 +80,14 @@ Deno.test("quota: reads the rate-limit headers Documenso sends", async () => {
 });
 
 /** A self-hosted instance may not rate limit at all. */
-Deno.test("quota: no headers is unknown, and says why", async () => {
+test("quota: no headers is unknown, and says why", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] } }], conn);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("may not rate limit at all"), report.message);
 });
 
-Deno.test("quota: a low or spent allowance is degraded, never down", async () => {
+test("quota: a low or spent allowance is degraded, never down", async () => {
   for (const remaining of ["0", "50"]) {
     const { ctx } = mockCtx([{
       status: 200,
@@ -102,7 +103,7 @@ Deno.test("quota: a low or spent allowance is degraded, never down", async () =>
 });
 
 /** The headers come back even on an error, so a 4xx is still readable. */
-Deno.test("quota: a failure with headers is still read; one without is unknown", async () => {
+test("quota: a failure with headers is still read; one without is unknown", async () => {
   const withHeaders = mockCtx([{
     status: 400,
     headers: { "x-ratelimit-limit": "1000", "x-ratelimit-remaining": "998" },

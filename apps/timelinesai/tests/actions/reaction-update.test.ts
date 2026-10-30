@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import reactionUpdate from "../../actions/reaction-update.ts";
 
-Deno.test("reaction-update: patches the reaction", async () => {
+test("reaction-update: patches the reaction", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "message_uid": "m-1" } } }]);
   const out = await reactionUpdate.execute!(
     { "messageUid": "m-1", "reaction": "👍" } as never,
@@ -20,7 +21,7 @@ Deno.test("reaction-update: patches the reaction", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("reaction-update: refuses an empty path id before the network", async () => {
+test("reaction-update: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await reactionUpdate.execute!({ "messageUid": "" } as never, ctx);
@@ -29,7 +30,7 @@ Deno.test("reaction-update: refuses an empty path id before the network", async 
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("reaction-update: surfaces a vendor error envelope", async () => {
+test("reaction-update: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

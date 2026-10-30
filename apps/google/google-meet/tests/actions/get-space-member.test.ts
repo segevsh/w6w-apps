@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-space-member.ts";
 
-Deno.test("get-space-member: GETs the member by resource name", async () => {
+test("get-space-member: GETs the member by resource name", async () => {
   const { ctx, calls } = mockCtx([
     { body: { name: "spaces/abc/members/m1", email: "a@b.com", role: "COHOST" } },
   ]);

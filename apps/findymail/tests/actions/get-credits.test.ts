@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-credits.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-credits: GETs /api/credits", async () => {
+test("get-credits: GETs /api/credits", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "credits": 150, "verifier_credits": 100 },

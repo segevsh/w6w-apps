@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPardotCtx } from "../_helpers.ts";
 import action from "../../actions/prospect-get.ts";
 
-Deno.test("prospect-get: GETs /prospects/<id> with the default fields", async () => {
+test("prospect-get: GETs /prospects/<id> with the default fields", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { id: 101 } }]);
   const out = await action.execute({ id: 101 }, ctx);
   const url = new URL(calls[0].url);
@@ -12,13 +13,13 @@ Deno.test("prospect-get: GETs /prospects/<id> with the default fields", async ()
   assertEquals(out, { id: 101 });
 });
 
-Deno.test("prospect-get: honours a caller field list", async () => {
+test("prospect-get: honours a caller field list", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: {} }]);
   await action.execute({ id: 101, fields: "id,campaign.name" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("fields"), "id,campaign.name");
 });
 
-Deno.test("prospect-get: refuses a non-numeric id before any request", async () => {
+test("prospect-get: refuses a non-numeric id before any request", async () => {
   const { ctx, calls } = mockPardotCtx([]);
   await assertRejects(
     async () => await action.execute({ id: "1/../2" as unknown as number }, ctx),

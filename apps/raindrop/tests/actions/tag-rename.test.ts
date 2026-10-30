@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tagRename from "../../actions/tag-rename.ts";
 import { bodyOf, mockCtx, okBody, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { bodyOf, mockCtx, okBody, pathOf } from "../_helpers.ts";
  * they are one endpoint and one body, and the only difference is how many
  * strings are in `tags`. A single tag renames it.
  */
-Deno.test("tag-rename: one tag is a rename", async () => {
+test("tag-rename: one tag is a rename", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   const out = await tagRename.execute({ tags: "reading", replace: "to-read" }, ctx) as {
     result: boolean;
@@ -21,21 +22,21 @@ Deno.test("tag-rename: one tag is a rename", async () => {
   assertEquals(out.result, true);
 });
 
-Deno.test("tag-rename: several tags is a merge, through the identical request", async () => {
+test("tag-rename: several tags is a merge, through the identical request", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await tagRename.execute({ tags: "reading, to-read, later", replace: "queue" }, ctx);
 
   assertEquals(bodyOf(calls[0]), { tags: ["reading", "to-read", "later"], replace: "queue" });
 });
 
-Deno.test("tag-rename: a collection scopes the rename to that collection's bookmarks", async () => {
+test("tag-rename: a collection scopes the rename to that collection's bookmarks", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await tagRename.execute({ tags: "a", replace: "b", collectionId: 8492393 }, ctx);
 
   assertEquals(pathOf(calls[0].url), "/rest/v1/tags/8492393");
 });
 
-Deno.test("tag-rename: refuses an empty tag list or an empty new name", async () => {
+test("tag-rename: refuses an empty tag list or an empty new name", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(tagRename.execute({ tags: "", replace: "b" }, ctx)),
@@ -48,6 +49,6 @@ Deno.test("tag-rename: refuses an empty tag list or an empty new name", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tag-rename: is idempotent", () => {
+test("tag-rename: is idempotent", () => {
   assertEquals(tagRename.idempotent, true);
 });

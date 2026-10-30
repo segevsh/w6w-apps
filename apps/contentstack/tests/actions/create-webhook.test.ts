@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-webhook.ts";
 
-Deno.test("create-webhook: metadata", () => {
+test("create-webhook: metadata", () => {
   assertEquals(action.key, "create-webhook");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("create-webhook: metadata", () => {
   ]);
 });
 
-Deno.test("create-webhook: calls POST /webhooks on the NA host", async () => {
+test("create-webhook: calls POST /webhooks on the NA host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "The webhook was created successfully.", "webhook": { "uid": "bltw" } },
   }]);
@@ -43,7 +44,7 @@ Deno.test("create-webhook: calls POST /webhooks on the NA host", async () => {
   });
 });
 
-Deno.test("create-webhook: uses the connection's regional host", async () => {
+test("create-webhook: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "The webhook was created successfully.", "webhook": { "uid": "bltw" } },
   }], {
@@ -58,7 +59,7 @@ Deno.test("create-webhook: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/webhooks");
 });
 
-Deno.test("create-webhook: rejects without `name` and makes no request", async () => {
+test("create-webhook: rejects without `name` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -74,7 +75,7 @@ Deno.test("create-webhook: rejects without `name` and makes no request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-webhook: surfaces Contentstack's own error body", async () => {
+test("create-webhook: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

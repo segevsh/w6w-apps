@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookmarksAdd from "../../actions/bookmarks-add.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-add: sends url/title and the documented defaults", async () => {
+test("bookmarks-add: sends url/title and the documented defaults", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ type: "bookmark", bookmark_id: 1, url: "https://example.com/a" }]),
   }]);
@@ -18,7 +19,7 @@ Deno.test("bookmarks-add: sends url/title and the documented defaults", async ()
   assertEquals(result, { type: "bookmark", bookmark_id: 1, url: "https://example.com/a" });
 });
 
-Deno.test("bookmarks-add: resolveFinalUrl:false and archived:true flip the documented flags", async () => {
+test("bookmarks-add: resolveFinalUrl:false and archived:true flip the documented flags", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "bookmark", bookmark_id: 1 }]) }]);
   await bookmarksAdd.execute(
     { url: "https://example.com/a", resolveFinalUrl: false, archived: true },
@@ -28,7 +29,7 @@ Deno.test("bookmarks-add: resolveFinalUrl:false and archived:true flip the docum
   assertEquals(bodyOf(calls[0]).archived, "1");
 });
 
-Deno.test("bookmarks-add: tags are serialized to Instapaper's [{name: ...}] wire format", async () => {
+test("bookmarks-add: tags are serialized to Instapaper's [{name: ...}] wire format", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "bookmark", bookmark_id: 1 }]) }]);
   await bookmarksAdd.execute({ url: "https://example.com/a", tags: ["reading", "later"] }, ctx);
   assertEquals(
@@ -37,13 +38,13 @@ Deno.test("bookmarks-add: tags are serialized to Instapaper's [{name: ...}] wire
   );
 });
 
-Deno.test("bookmarks-add: an empty tags list sends no tags field at all", async () => {
+test("bookmarks-add: an empty tags list sends no tags field at all", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "bookmark", bookmark_id: 1 }]) }]);
   await bookmarksAdd.execute({ url: "https://example.com/a", tags: [] }, ctx);
   assertEquals("tags" in bodyOf(calls[0]), false);
 });
 
-Deno.test("bookmarks-add: content and isPrivateFromSource pass through for the documented private-bookmark case", async () => {
+test("bookmarks-add: content and isPrivateFromSource pass through for the documented private-bookmark case", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "bookmark", bookmark_id: 1 }]) }]);
   await bookmarksAdd.execute(
     { content: "<p>hi</p>", isPrivateFromSource: "email" },
@@ -53,7 +54,7 @@ Deno.test("bookmarks-add: content and isPrivateFromSource pass through for the d
   assertEquals(bodyOf(calls[0]).is_private_from_source, "email");
 });
 
-Deno.test("bookmarks-add: throws if Instapaper returns no bookmark", async () => {
+test("bookmarks-add: throws if Instapaper returns no bookmark", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
   await assertRejects(
     async () => await bookmarksAdd.execute({ url: "https://example.com/a" }, ctx),
@@ -62,6 +63,6 @@ Deno.test("bookmarks-add: throws if Instapaper returns no bookmark", async () =>
   );
 });
 
-Deno.test("bookmarks-add: is not marked idempotent — a repeat call re-tops an existing bookmark", () => {
+test("bookmarks-add: is not marked idempotent — a repeat call re-tops an existing bookmark", () => {
   assertEquals(bookmarksAdd.idempotent, false);
 });

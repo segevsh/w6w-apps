@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import listSegmentColors from "../../actions/list-segment-colors.ts";
 
-Deno.test("list-segment-colors: GET /v1/segments/colors, a bare array with no paging", async () => {
+test("list-segment-colors: GET /v1/segments/colors, a bare array with no paging", async () => {
   const colors = ["#B7D4C7", "#E5D4C0", "#D9C5B2"];
   const { ctx, calls } = mockCtx([{ body: colors }]);
   const out = await listSegmentColors.execute({}, ctx);

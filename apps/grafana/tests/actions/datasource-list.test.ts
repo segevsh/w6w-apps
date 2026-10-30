@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/datasource-list.ts";
 
 const display = { endpoint: "https://example.grafana.net" };
 
-Deno.test("datasource-list: GETs /datasources", async () => {
+test("datasource-list: GETs /datasources", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "ds1", name: "Prometheus" }] }], { display });
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");

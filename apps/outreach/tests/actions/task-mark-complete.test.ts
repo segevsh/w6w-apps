@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskMarkComplete from "../../actions/task-mark-complete.ts";
 import { mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("task-mark-complete: POST /tasks/{id}/actions/markComplete with actionParams in the query", async () => {
+test("task-mark-complete: POST /tasks/{id}/actions/markComplete with actionParams in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: single("task", 6, { state: "complete" }) }]);
   await taskMarkComplete.execute({
     id: 6,
@@ -19,7 +20,7 @@ Deno.test("task-mark-complete: POST /tasks/{id}/actions/markComplete with action
   });
 });
 
-Deno.test("task-mark-complete: with no options the query string is empty", async () => {
+test("task-mark-complete: with no options the query string is empty", async () => {
   const { ctx, calls } = mockCtx([{ body: single("task", 6) }]);
   await taskMarkComplete.execute({ id: 6 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");

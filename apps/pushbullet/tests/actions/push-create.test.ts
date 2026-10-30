@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pushCreate from "../../actions/push-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("push-create: POSTs a note push with a JSON body", async () => {
+test("push-create: POSTs a note push with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { iden: "p1", type: "note" } }]);
   const out = await pushCreate.execute(
     { type: "note", title: "Hi", body: "there" },
@@ -16,7 +17,7 @@ Deno.test("push-create: POSTs a note push with a JSON body", async () => {
   assertEquals(out.iden, "p1");
 });
 
-Deno.test("push-create: omits target fields that were not supplied", async () => {
+test("push-create: omits target fields that were not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "p2" } }]);
   await pushCreate.execute({ type: "link", url: "https://example.com" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -25,11 +26,11 @@ Deno.test("push-create: omits target fields that were not supplied", async () =>
   assertEquals("channel_tag" in body, false);
 });
 
-Deno.test("push-create: is declared non-idempotent — guid is optional", () => {
+test("push-create: is declared non-idempotent — guid is optional", () => {
   assertEquals(pushCreate.idempotent, false);
 });
 
-Deno.test("push-create: maps camelCase target fields to their wire names", async () => {
+test("push-create: maps camelCase target fields to their wire names", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "p3" } }]);
   await pushCreate.execute(
     {

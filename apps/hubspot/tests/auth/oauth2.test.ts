@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the HubSpot authorize/token endpoints", () => {
+test("oauth2: declares the HubSpot authorize/token endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://app.hubspot.com/oauth/authorize");
@@ -10,7 +11,7 @@ Deno.test("oauth2: declares the HubSpot authorize/token endpoints", () => {
   assert(auth.oauth2?.scopes?.includes("crm.objects.contacts.read"));
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -21,13 +22,13 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer at-xyz");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure", async () => {
+test("oauth2: test with missing accessToken reports the failure", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
 });
 
-Deno.test("oauth2: test issues GET /account-info/v3/details with Bearer token", async () => {
+test("oauth2: test issues GET /account-info/v3/details with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: { accessToken: "at-xyz" } }, ctx);
   assertEquals(result.ok, true);

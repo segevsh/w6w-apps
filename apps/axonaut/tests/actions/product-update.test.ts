@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import productUpdate from "../../actions/product-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -23,7 +24,7 @@ const INPUT = {
   "disabled": true,
 };
 
-Deno.test("product-update: PATCH /api/v2/products/42 with the documented query, header and body", async () => {
+test("product-update: PATCH /api/v2/products/42 with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await productUpdate.execute(INPUT as never, ctx);
 
@@ -61,13 +62,13 @@ Deno.test("product-update: PATCH /api/v2/products/42 with the documented query, 
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("product-update: an Axonaut error surfaces its message and status", async () => {
+test("product-update: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await productUpdate.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("product-update: invalid JSON in custom_fields is rejected before any request", async () => {
+test("product-update: invalid JSON in custom_fields is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await (productUpdate.execute({

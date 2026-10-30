@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shape-create.ts";
 
-Deno.test("shape-create: builds createShape with the type and page", async () => {
+test("shape-create: builds createShape with the type and page", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ createShape: { objectId: "s1" } }] } }]);
   await action.execute({ presentationId: "p1", pageObjectId: "g1", shapeType: "TEXT_BOX" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("shape-create: builds createShape with the type and page", async () =>
   });
 });
 
-Deno.test("shape-create: matches Google's own sample shape for a placed text box", async () => {
+test("shape-create: matches Google's own sample shape for a placed text box", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -39,7 +40,7 @@ Deno.test("shape-create: matches Google's own sample shape for a placed text box
   });
 });
 
-Deno.test("shape-create: accepts a shape type outside the curated dropdown", async () => {
+test("shape-create: accepts a shape type outside the curated dropdown", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { presentationId: "p1", pageObjectId: "g1", shapeType: "FLOW_CHART_MAGNETIC_DRUM" },
@@ -51,7 +52,7 @@ Deno.test("shape-create: accepts a shape type outside the curated dropdown", asy
   );
 });
 
-Deno.test("shape-create: never offers TYPE_UNSPECIFIED or CUSTOM", () => {
+test("shape-create: never offers TYPE_UNSPECIFIED or CUSTOM", () => {
   const shapeType = (action.params ?? []).find((p) => p.key === "shapeType");
   const values = (shapeType?.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values.includes("TYPE_UNSPECIFIED"), false);

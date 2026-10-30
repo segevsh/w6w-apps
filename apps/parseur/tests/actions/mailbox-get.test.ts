@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import mailboxGet from "../../actions/mailbox-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailbox-get: GETs /parser/{id}", async () => {
+test("mailbox-get: GETs /parser/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, name: "Invoices" } }]);
   const out = await mailboxGet.execute({ mailboxId: "42" }, ctx) as { id: number };
 
@@ -10,7 +11,7 @@ Deno.test("mailbox-get: GETs /parser/{id}", async () => {
   assertEquals(out.id, 42);
 });
 
-Deno.test("mailbox-get: a 404 surfaces the vendor's non_field_errors message", async () => {
+test("mailbox-get: a 404 surfaces the vendor's non_field_errors message", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("No Parser matches the given query.") },
   ]);

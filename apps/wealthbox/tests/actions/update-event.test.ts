@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-event.ts";
 
-Deno.test("update-event: requires eventId, title, startsAt and endsAt", () => {
+test("update-event: requires eventId, title, startsAt and endsAt", () => {
   // Wealthbox's docs mark title/starts_at/ends_at required on update too.
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
@@ -13,7 +14,7 @@ Deno.test("update-event: requires eventId, title, startsAt and endsAt", () => {
   assert(required.includes("endsAt"));
 });
 
-Deno.test("update-event: PUTs /events/{id} with the mapped body", async () => {
+test("update-event: PUTs /events/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({
     eventId: 1,

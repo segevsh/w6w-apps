@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createDeal from "../../actions/create-deal.ts";
 import { bodyOf, envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-deal: POST /deals with snake_case body", async () => {
+test("create-deal: POST /deals with snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ deal: { id: "d1" } }) }]);
   const out = await createDeal.execute({
     contactId: "c1",
@@ -29,13 +30,13 @@ Deno.test("create-deal: POST /deals with snake_case body", async () => {
   assertEquals(out.deal, { id: "d1" });
 });
 
-Deno.test("create-deal: name and contact are required params; action is not idempotent", () => {
+test("create-deal: name and contact are required params; action is not idempotent", () => {
   const required = createDeal.params!.filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["contactId", "name"]);
   assertEquals(createDeal.idempotent, false);
 });
 
-Deno.test("create-deal: a vendor 422/400 is surfaced", async () => {
+test("create-deal: a vendor 422/400 is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("invalid_request_data", "x") }]);
   await assertRejects(
     () => Promise.resolve(createDeal.execute({ contactId: "c", name: "n" }, ctx)),

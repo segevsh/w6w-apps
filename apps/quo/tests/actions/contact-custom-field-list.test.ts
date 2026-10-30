@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCustomFieldList from "../../actions/contact-custom-field-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-custom-field-list: GETs /v1/contact-custom-fields", async () => {
+test("contact-custom-field-list: GETs /v1/contact-custom-fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ key: "k", name: "n", type: "string" }] },
@@ -12,7 +13,7 @@ Deno.test("contact-custom-field-list: GETs /v1/contact-custom-fields", async () 
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("contact-custom-field-list: is a search action with no params", () => {
+test("contact-custom-field-list: is a search action with no params", () => {
   assertEquals(contactCustomFieldList.type, "search");
   assertEquals(contactCustomFieldList.params, []);
 });

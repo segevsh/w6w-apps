@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: POSTs /search with the query and default type omitted when unset", async () => {
+test("search: POSTs /search with the query and default type omitted when unset", async () => {
   const body = { requestId: "r1", results: [{ id: "https://x", title: "X", url: "https://x" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ query: "LLM capabilities" }, ctx);
@@ -17,7 +18,7 @@ Deno.test("search: POSTs /search with the query and default type omitted when un
   assertEquals(result, body);
 });
 
-Deno.test("search: forwards search mode, filters, and domain lists", async () => {
+test("search: forwards search mode, filters, and domain lists", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: "r1", results: [] } }]);
   await action.execute!(
     {
@@ -42,7 +43,7 @@ Deno.test("search: forwards search mode, filters, and domain lists", async () =>
   assertEquals(sent.userLocation, "US");
 });
 
-Deno.test("search: nests text/highlights/summary/maxAgeHours under `contents` (never top-level)", async () => {
+test("search: nests text/highlights/summary/maxAgeHours under `contents` (never top-level)", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: "r1", results: [] } }]);
   await action.execute!(
     { query: "x", text: true, highlights: true, maxAgeHours: 0 },

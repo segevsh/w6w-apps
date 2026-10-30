@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import inboxDelete from "../../actions/inbox-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inbox-delete: sends DELETE /inboxes/{id} and reports { deleted: true }", async () => {
+test("inbox-delete: sends DELETE /inboxes/{id} and reports { deleted: true }", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await inboxDelete.execute({ inboxId: "in_1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("inbox-delete: sends DELETE /inboxes/{id} and reports { deleted: true 
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("inbox-delete: marked idempotent — a retry has nothing left to delete twice", () => {
+test("inbox-delete: marked idempotent — a retry has nothing left to delete twice", () => {
   assertEquals(inboxDelete.idempotent, true);
   assertEquals(inboxDelete.type, "perform");
 });

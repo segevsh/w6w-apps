@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/set-entry-workflow-stage.ts";
 
-Deno.test("set-entry-workflow-stage: metadata", () => {
+test("set-entry-workflow-stage: metadata", () => {
   assertEquals(action.key, "set-entry-workflow-stage");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -16,7 +17,7 @@ Deno.test("set-entry-workflow-stage: metadata", () => {
   ]);
 });
 
-Deno.test("set-entry-workflow-stage: calls POST /content_types/blog/entries/blt9/workflow on the NA host", async () => {
+test("set-entry-workflow-stage: calls POST /content_types/blog/entries/blt9/workflow on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Entry stage updated." } }]);
   const out = await action.execute({
     "contentTypeUid": "blog",
@@ -39,7 +40,7 @@ Deno.test("set-entry-workflow-stage: calls POST /content_types/blog/entries/blt9
   assertEquals(out, { "notice": "Entry stage updated." });
 });
 
-Deno.test("set-entry-workflow-stage: uses the connection's regional host", async () => {
+test("set-entry-workflow-stage: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Entry stage updated." } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -56,7 +57,7 @@ Deno.test("set-entry-workflow-stage: uses the connection's regional host", async
   );
 });
 
-Deno.test("set-entry-workflow-stage: rejects without `contentTypeUid` and makes no request", async () => {
+test("set-entry-workflow-stage: rejects without `contentTypeUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -73,7 +74,7 @@ Deno.test("set-entry-workflow-stage: rejects without `contentTypeUid` and makes 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("set-entry-workflow-stage: surfaces Contentstack's own error body", async () => {
+test("set-entry-workflow-stage: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

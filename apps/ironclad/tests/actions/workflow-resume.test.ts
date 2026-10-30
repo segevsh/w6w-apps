@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import workflowResume from "../../actions/workflow-resume.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workflow-resume: POST /workflows/{id}/resume with a comment, 204 handled", async () => {
+test("workflow-resume: POST /workflows/{id}/resume with a comment, 204 handled", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await workflowResume.execute(
     { workflowId: "w1", message: "because", addUsersToWorkflow: true },
@@ -16,7 +17,7 @@ Deno.test("workflow-resume: POST /workflows/{id}/resume with a comment, 204 hand
   assertEquals(out, { workflowId: "w1", resumed: true });
 });
 
-Deno.test("workflow-resume: a wrong-state failure keeps its code", async () => {
+test("workflow-resume: a wrong-state failure keeps its code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { code: "INVALID_STATE", message: "workflow is not in a state that allows this" },

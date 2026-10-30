@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-update.ts";
 
-Deno.test("channel-update: updates name and config", async () => {
+test("channel-update: updates name and config", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "data": { "name": "#New" } } }]);
   const out = await action.execute(
     { "channelId": "O1", "name": "New", "config": { "reply_mode": "threads" } } as never,
@@ -22,7 +23,7 @@ Deno.test("channel-update: updates name and config", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "channel": { "name": "#New" } });
 });
 
-Deno.test("channel-update: rejects an empty update", async () => {
+test("channel-update: rejects an empty update", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "channelId": "O1" } as never, ctx)),
@@ -32,7 +33,7 @@ Deno.test("channel-update: rejects an empty update", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-update: idempotent is declared as true", () => {
+test("channel-update: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

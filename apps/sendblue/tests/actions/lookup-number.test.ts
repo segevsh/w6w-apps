@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import lookupNumber from "../../actions/lookup-number.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("lookup-number: GETs /api/evaluate-service with the number as a query param", async () => {
+test("lookup-number: GETs /api/evaluate-service with the number as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { number: "+1", service: "iMessage" } }]);
   const out = await lookupNumber.execute({ number: "+1" }, ctx) as Record<string, unknown>;
 

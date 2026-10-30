@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-search.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-search: sends POST /contacts/search and returns the vendor body", async () => {
+test("contact-search: sends POST /contacts/search and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { count: 0, pageSize: 10, pageStartIndex: 0, items: [] },
   }]);
@@ -31,7 +32,7 @@ Deno.test("contact-search: sends POST /contacts/search and returns the vendor bo
   assertEquals(out, { count: 0, pageSize: 10, pageStartIndex: 0, items: [] });
 });
 
-Deno.test("contact-search: a vendor error surfaces its title and status", async () => {
+test("contact-search: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>

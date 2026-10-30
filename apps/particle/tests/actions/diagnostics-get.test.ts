@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/diagnostics-get.ts";
 
@@ -20,7 +21,7 @@ const vitals = (overrides: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("diagnostics-get: reads the last reported vitals", async () => {
+test("diagnostics-get: reads the last reported vitals", async () => {
   const { ctx, calls } = mockCtx([vitals()]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, `https://api.particle.io/v1/diagnostics/${ID}/last`);
@@ -31,14 +32,14 @@ Deno.test("diagnostics-get: reads the last reported vitals", async () => {
 });
 
 /** A firmware leak shows as free memory falling between reports. */
-Deno.test("diagnostics-get: computes free memory from used and total", async () => {
+test("diagnostics-get: computes free memory from used and total", async () => {
   const { ctx } = mockCtx([vitals()]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.freeMemory, 120000);
 });
 
 /** A device at the edge of coverage reconnects constantly. */
-Deno.test("diagnostics-get: a weak signal is warned about", async () => {
+test("diagnostics-get: a weak signal is warned about", async () => {
   const { ctx, logs } = mockCtx([vitals({ network: { signal: { strength: 12, quality: 8 } } })]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.signalStrength, 12);
@@ -51,14 +52,14 @@ Deno.test("diagnostics-get: a weak signal is warned about", async () => {
 });
 
 /** These are the LAST reported values, so the timestamp is the key field. */
-Deno.test("diagnostics-get: returns when the device last reported", async () => {
+test("diagnostics-get: returns when the device last reported", async () => {
   const { ctx } = mockCtx([vitals()]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.updatedAt, "2026-08-19T09:55:00Z");
   assert(/LAST reported values/.test(action.description!), action.description);
 });
 
-Deno.test("diagnostics-get: a sparse payload does not throw", async () => {
+test("diagnostics-get: a sparse payload does not throw", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { diagnostics: { updated_at: "x" } } }]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.signalStrength, undefined);

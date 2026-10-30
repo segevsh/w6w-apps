@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-get: GET /invoices/{id} flattens the resource", async () => {
+test("invoice-get: GET /invoices/{id} flattens the resource", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "invoices", "attributes": { "name": "x" } } },
@@ -23,7 +24,7 @@ Deno.test("invoice-get: GET /invoices/{id} flattens the resource", async () => {
   assertEquals(out.name, "x");
 });
 
-Deno.test("invoice-get: an id cannot change the path", async () => {
+test("invoice-get: an id cannot change the path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "invoices", "attributes": { "name": "x" } } },
@@ -33,7 +34,7 @@ Deno.test("invoice-get: an id cannot change the path", async () => {
   assertEquals(pathOf(calls[0].url), "/api/v2/invoices/4%2F..%2Fx");
 });
 
-Deno.test("invoice-get: a vendor error surfaces its status, title and detail", async () => {
+test("invoice-get: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -46,7 +47,7 @@ Deno.test("invoice-get: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("invoice-get: declares read", () => {
+test("invoice-get: declares read", () => {
   assertEquals(invoiceGet.type, "read");
   assertEquals(invoiceGet.idempotent, undefined);
   assertEquals(invoiceGet.key, "invoice-get");

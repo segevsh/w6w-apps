@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import governanceLimitsGet from "../../actions/governance-limits-get.ts";
 import { BASE, mockCtx, nsError, run } from "../_helpers.ts";
 
-Deno.test("governance-limits-get: integrationSpecific carries all four fields", async () => {
+test("governance-limits-get: integrationSpecific carries all four fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       accountConcurrencyLimit: 5,
@@ -21,7 +22,7 @@ Deno.test("governance-limits-get: integrationSpecific carries all four fields", 
   });
 });
 
-Deno.test("governance-limits-get: accountLimit has no integration figure", async () => {
+test("governance-limits-get: accountLimit has no integration figure", async () => {
   const { ctx } = mockCtx([{
     body: {
       accountConcurrencyLimit: 5,
@@ -34,7 +35,7 @@ Deno.test("governance-limits-get: accountLimit has no integration figure", async
   assertEquals(out.integrationLimitType, "accountLimit");
 });
 
-Deno.test("governance-limits-get: a non-admin refusal is raised", async () => {
+test("governance-limits-get: a non-admin refusal is raised", async () => {
   const { ctx } = mockCtx([nsError(403, "INSUFFICIENT_PERMISSION", "Admins only.")]);
   await assertRejects(async () => await run(governanceLimitsGet, {}, ctx), Error, "Admins only.");
 });

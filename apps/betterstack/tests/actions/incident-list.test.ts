@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import incidentList from "../../actions/incident-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("incident-list: GET /api/v3/incidents", async () => {
+test("incident-list: GET /api/v3/incidents", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -37,7 +38,7 @@ Deno.test("incident-list: GET /api/v3/incidents", async () => {
   assertEquals((out.items as Array<Record<string, unknown>>)[0].name, "uptime homepage");
 });
 
-Deno.test("incident-list: puts no credential on the request (sign owns that)", async () => {
+test("incident-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -58,7 +59,7 @@ Deno.test("incident-list: puts no credential on the request (sign owns that)", a
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("incident-list: a vendor error surfaces its own message", async () => {
+test("incident-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await incidentList.execute({ "resolved": "false", "monitor_id": "2", "per_page": 10 }, ctx)

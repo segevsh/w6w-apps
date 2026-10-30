@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagRecordRemove from "../../actions/tag-record-remove.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-record-remove: DELETE /v3/tags/t-1/records/u1 with the documented wrapped body", async () => {
+test("tag-record-remove: DELETE /v3/tags/t-1/records/u1 with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ tagUuid: "t-1" }]) }]);
   const out = await tagRecordRemove.execute({ "uuid": "t-1", "recordUuid": "u1" }, ctx);
 
@@ -13,12 +14,12 @@ Deno.test("tag-record-remove: DELETE /v3/tags/t-1/records/u1 with the documented
   assertEquals(out, [{ tagUuid: "t-1" }]);
 });
 
-Deno.test("tag-record-remove: is a perform action marked idempotent=true", () => {
+test("tag-record-remove: is a perform action marked idempotent=true", () => {
   assertEquals(tagRecordRemove.type, "perform");
   assertEquals(tagRecordRemove.idempotent, true);
 });
 
-Deno.test("tag-record-remove: an HTTP error becomes a readable Raisely error", async () => {
+test("tag-record-remove: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

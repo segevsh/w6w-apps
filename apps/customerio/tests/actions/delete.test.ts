@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete.ts";
 
-Deno.test("delete: DELETEs /customers/:id with no body", async () => {
+test("delete: DELETEs /customers/:id with no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ personId: "u1" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("delete: DELETEs /customers/:id with no body", async () => {
   assertEquals(result, { success: true });
 });
 
-Deno.test("delete: rejects a blank personId", async () => {
+test("delete: rejects a blank personId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ personId: "" }, ctx),
@@ -22,7 +23,7 @@ Deno.test("delete: rejects a blank personId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete: uses the eu host when the connection's region is eu", async () => {
+test("delete: uses the eu host when the connection's region is eu", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     connection: { display: { region: "eu" } },
   });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import clientCredentials from "../../auth/client-credentials.ts";
 import oauth2 from "../../auth/oauth2.ts";
@@ -8,7 +9,7 @@ const token = {
   body: { access_token: "tok", expires_in: 3600, token_type: "Bearer" },
 };
 
-Deno.test("client-credentials: exchange posts the grant to login.sellsy.com", async () => {
+test("client-credentials: exchange posts the grant to login.sellsy.com", async () => {
   const { ctx, calls } = mockCtx([token]);
   const cred = await clientCredentials.exchange!(
     { fields: { clientId: "id", clientSecret: "sec" } } as never,
@@ -27,7 +28,7 @@ Deno.test("client-credentials: exchange posts the grant to login.sellsy.com", as
   assert(left > 3400_000 && left <= 3540_000, `expiresAt headroom ${left}`);
 });
 
-Deno.test("client-credentials: exchange needs both fields", async () => {
+test("client-credentials: exchange needs both fields", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>
@@ -37,7 +38,7 @@ Deno.test("client-credentials: exchange needs both fields", async () => {
   );
 });
 
-Deno.test("client-credentials: a refused grant explains the personal-client rule", async () => {
+test("client-credentials: a refused grant explains the personal-client rule", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "invalid_client", error_description: "Client authentication failed" },
@@ -52,7 +53,7 @@ Deno.test("client-credentials: a refused grant explains the personal-client rule
   );
 });
 
-Deno.test("client-credentials: refresh repeats the grant with the stored id and secret", async () => {
+test("client-credentials: refresh repeats the grant with the stored id and secret", async () => {
   const { ctx, calls } = mockCtx([token]);
   await clientCredentials.refresh!(
     { credential: { clientId: "id", clientSecret: "sec", accessToken: "old" } } as never,
@@ -62,7 +63,7 @@ Deno.test("client-credentials: refresh repeats the grant with the stored id and 
 });
 
 for (const auth of [clientCredentials, oauth2]) {
-  Deno.test(`${auth.key}: sign stamps a Bearer header`, async () => {
+  test(`${auth.key}: sign stamps a Bearer header`, async () => {
     const req = {
       url: "https://api.sellsy.com/v2/quotas",
       method: "GET",
@@ -76,7 +77,7 @@ for (const auth of [clientCredentials, oauth2]) {
     assertEquals((out as typeof req).headers["authorization"], "Bearer tok");
   });
 
-  Deno.test(`${auth.key}: test passes on 200 from /quotas`, async () => {
+  test(`${auth.key}: test passes on 200 from /quotas`, async () => {
     const { ctx, calls } = mockCtx([{ status: 200, body: { pipelines: { limit: 5, used: 1 } } }]);
     const r = await auth.test({ credential: { accessToken: "tok" } } as never, ctx);
     assertEquals(r.ok, true);
@@ -84,7 +85,7 @@ for (const auth of [clientCredentials, oauth2]) {
     assertEquals(calls[0].headers["authorization"], "Bearer tok");
   });
 
-  Deno.test(`${auth.key}: test fails on the vendor's 401 envelope, passes on a 403 scope refusal`, async () => {
+  test(`${auth.key}: test fails on the vendor's 401 envelope, passes on a 403 scope refusal`, async () => {
     const { ctx } = mockCtx([
       { status: 401, body: { error: { code: 401, message: "Token expired" } } },
       { status: 403, body: { error: { code: 403, message: "Forbidden" } } },
@@ -97,14 +98,14 @@ for (const auth of [clientCredentials, oauth2]) {
     assert(noScope.message!.includes("accounts.read"));
   });
 
-  Deno.test(`${auth.key}: test with no token never calls the API`, async () => {
+  test(`${auth.key}: test with no token never calls the API`, async () => {
     const { ctx, calls } = mockCtx([]);
     assertEquals((await auth.test({ credential: {} } as never, ctx)).ok, false);
     assertEquals(calls.length, 0);
   });
 }
 
-Deno.test("oauth2: authorization-code flow against login.sellsy.com with PKCE", () => {
+test("oauth2: authorization-code flow against login.sellsy.com with PKCE", () => {
   assertEquals(oauth2.oauth2!.authorizationUrl, "https://login.sellsy.com/oauth2/authorization");
   assertEquals(oauth2.oauth2!.tokenUrl, "https://login.sellsy.com/oauth2/access-tokens");
   assertEquals(oauth2.oauth2!.pkce, true);

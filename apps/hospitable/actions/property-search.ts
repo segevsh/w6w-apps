@@ -57,7 +57,9 @@ const propertySearch: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "listings", label: "Listings" }, { value: "details", label: "Details" }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated related resources. Allowed: listings (needs listing:read), details.",
     },
   ],

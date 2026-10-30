@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recipientList from "../../actions/recipient-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const PAGE = {
   size: 20,
 };
 
-Deno.test("recipient-list: GETs /accounts and unwraps the paged envelope's content as items", async () => {
+test("recipient-list: GETs /accounts and unwraps the paged envelope's content as items", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await recipientList.execute({}, ctx) as {
     items: unknown[];
@@ -22,7 +23,7 @@ Deno.test("recipient-list: GETs /accounts and unwraps the paged envelope's conte
   assertEquals(out.seekPositionForNext, 2);
 });
 
-Deno.test("recipient-list: passes filters and the seek cursor through as query params", async () => {
+test("recipient-list: passes filters and the seek cursor through as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await recipientList.execute({ currency: "USD", active: false, seekPosition: 7, size: 5 }, ctx);
   assertEquals(queryOf(calls[0].url), {
@@ -33,7 +34,7 @@ Deno.test("recipient-list: passes filters and the seek cursor through as query p
   });
 });
 
-Deno.test("recipient-list: an empty content array wraps to an empty items array", async () => {
+test("recipient-list: an empty content array wraps to an empty items array", async () => {
   const { ctx } = mockCtx([{ body: { content: [] } }]);
   const out = await recipientList.execute({}, ctx) as { items: unknown[] };
   assertEquals(out.items, []);

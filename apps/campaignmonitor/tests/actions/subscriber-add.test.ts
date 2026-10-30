@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberAdd from "../../actions/subscriber-add.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-add: POSTs to /subscribers/{listid}.json", async () => {
+test("subscriber-add: POSTs to /subscribers/{listid}.json", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("new@example.com") }]);
   const out = await subscriberAdd.execute(
     { listId: "lid", email: "new@example.com", consentToTrack: "Yes" },
@@ -14,7 +15,7 @@ Deno.test("subscriber-add: POSTs to /subscribers/{listid}.json", async () => {
   assertEquals(out, { EmailAddress: "new@example.com" });
 });
 
-Deno.test("subscriber-add: Resubscribe defaults OFF, matching the API", async () => {
+test("subscriber-add: Resubscribe defaults OFF, matching the API", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("a@b.com") }]);
   await subscriberAdd.execute({ listId: "lid", email: "a@b.com", consentToTrack: "Yes" }, ctx);
   const body = bodyOf(calls[0]);
@@ -22,7 +23,7 @@ Deno.test("subscriber-add: Resubscribe defaults OFF, matching the API", async ()
   assertEquals(body.RestartSubscriptionBasedAutoresponders, false);
 });
 
-Deno.test("subscriber-add: sends consent, mobile number and custom fields", async () => {
+test("subscriber-add: sends consent, mobile number and custom fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("a@b.com") }]);
   await subscriberAdd.execute({
     listId: "lid",
@@ -44,7 +45,7 @@ Deno.test("subscriber-add: sends consent, mobile number and custom fields", asyn
   assertEquals(body.Resubscribe, true);
 });
 
-Deno.test("subscriber-add: accepts custom fields typed as a JSON string", async () => {
+test("subscriber-add: accepts custom fields typed as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("a@b.com") }]);
   await subscriberAdd.execute({
     listId: "lid",
@@ -56,6 +57,6 @@ Deno.test("subscriber-add: accepts custom fields typed as a JSON string", async 
 });
 
 /** An upsert keyed on the address, and the welcome mail goes to new subscribers only. */
-Deno.test("subscriber-add: is declared idempotent", () => {
+test("subscriber-add: is declared idempotent", () => {
   assertEquals(subscriberAdd.idempotent, true);
 });

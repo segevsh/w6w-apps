@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-create.ts";
 
@@ -8,7 +9,7 @@ const created = {
 };
 
 /** The careful end of every choice, because the other end is easy to ask for. */
-Deno.test("key-create: defaults to single-use, ephemeral and not preauthorized", async () => {
+test("key-create: defaults to single-use, ephemeral and not preauthorized", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({ description: "ci-runner", tags: "tag:ci" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("key-create: defaults to single-use, ephemeral and not preauthorized",
 });
 
 /** The secret is returned once and never again. */
-Deno.test("key-create: returns the key and never logs it", async () => {
+test("key-create: returns the key and never logs it", async () => {
   const { ctx, logs } = mockCtx([created]);
   const result = await action.execute({ description: "ci", tags: "tag:ci" }, ctx) as Record<
     string,
@@ -37,7 +38,7 @@ Deno.test("key-create: returns the key and never logs it", async () => {
   assert(/k9/.test(logged), logged);
 });
 
-Deno.test("key-create: warns when a key is both reusable and preauthorized", async () => {
+test("key-create: warns when a key is both reusable and preauthorized", async () => {
   const { ctx, logs } = mockCtx([created]);
   await action.execute(
     { description: "shared", tags: "tag:ci", reusable: true, preauthorized: true },
@@ -50,7 +51,7 @@ Deno.test("key-create: warns when a key is both reusable and preauthorized", asy
 });
 
 /** A key with no tags creates devices owned by the person who made it. */
-Deno.test("key-create: notes an untagged key, and omits the tags field entirely", async () => {
+test("key-create: notes an untagged key, and omits the tags field entirely", async () => {
   const { ctx, calls, logs } = mockCtx([created]);
   await action.execute({ description: "untagged" }, ctx);
   const create = (JSON.parse(calls[0].body!) as {
@@ -60,7 +61,7 @@ Deno.test("key-create: notes an untagged key, and omits the tags field entirely"
   assert(logs.some((l) => /ACL rules written against a tag will not apply/.test(l.message)));
 });
 
-Deno.test("key-create: enforces Tailscale's 90-day cap and its 50-character description", async () => {
+test("key-create: enforces Tailscale's 90-day cap and its 50-character description", async () => {
   const { ctx, calls } = mockCtx([]);
   const long = await assertRejects(
     async () => await action.execute({ description: "x".repeat(51) }, ctx),
@@ -76,13 +77,13 @@ Deno.test("key-create: enforces Tailscale's 90-day cap and its 50-character desc
   assertEquals(calls.length, 0);
 });
 
-Deno.test("key-create: requires a description, since it is the only audit label", async () => {
+test("key-create: requires a description, since it is the only audit label", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute({}, ctx), Error);
   assert(/only label anyone auditing/.test(err.message), err.message);
 });
 
-Deno.test("key-create: refuses unprefixed tags", async () => {
+test("key-create: refuses unprefixed tags", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ description: "ci", tags: "ci" }, ctx),
@@ -92,7 +93,7 @@ Deno.test("key-create: refuses unprefixed tags", async () => {
 });
 
 /** Each call mints a new secret. */
-Deno.test("key-create: is not idempotent", () => {
+test("key-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
   assert(/RETURNED ONCE/.test(action.description!), action.description);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { QUOTA_URL, readRateLimit, WARN_FRACTION } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 import type { HealthQuota, HealthReport } from "@w6w/types";
@@ -10,7 +11,7 @@ function userBody(used: number, size: number) {
 const find = (report: HealthReport, id: string): HealthQuota | undefined =>
   report.quota?.find((q) => q.id === id);
 
-Deno.test("quota: reads the same /user endpoint as the credential probe", async () => {
+test("quota: reads the same /user endpoint as the credential probe", async () => {
   const { ctx, calls } = mockCtx([{ body: userBody(1, 100) }]);
   await quota.check!({}, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("quota: reads the same /user endpoint as the credential probe", async 
  * (`RateLimit-Remaining`) while its 429 example prints `X-RateLimit-Remaining`.
  * Both are read rather than picking one and being wrong half the time.
  */
-Deno.test("quota: accepts both documented spellings of the remaining header", () => {
+test("quota: accepts both documented spellings of the remaining header", () => {
   const vendorTable = readRateLimit(
     new Headers({ "X-RateLimit-Limit": "120", "RateLimit-Remaining": "119" }),
   );
@@ -41,19 +42,19 @@ Deno.test("quota: accepts both documented spellings of the remaining header", ()
  * milliseconds would put every reset in January 1970 and make `resetAt` quietly
  * useless — the vendor's own example value is the one used here.
  */
-Deno.test("quota: the reset header is seconds, not milliseconds", () => {
+test("quota: the reset header is seconds, not milliseconds", () => {
   const reading = readRateLimit(new Headers({ "X-RateLimit-Reset": "1392321600" }));
   assertEquals(reading.resetAt, new Date(1392321600 * 1000).toISOString());
   assertEquals(reading.resetAt, "2014-02-13T20:00:00.000Z");
 });
 
-Deno.test("quota: absent or unparseable headers produce no reading, not a zero", () => {
+test("quota: absent or unparseable headers produce no reading, not a zero", () => {
   assertEquals(readRateLimit(new Headers()), {});
   assertEquals(readRateLimit(new Headers({ "X-RateLimit-Limit": "" })), {});
   assertEquals(readRateLimit(new Headers({ "X-RateLimit-Limit": "lots" })), {});
 });
 
-Deno.test("quota: a healthy account reports both dimensions as ok", async () => {
+test("quota: a healthy account reports both dimensions as ok", async () => {
   const { ctx } = mockCtx([{
     body: userBody(1_000_000, 10_000_000_000),
     headers: {
@@ -82,7 +83,7 @@ Deno.test("quota: a healthy account reports both dimensions as ok", async () => 
  * absence must be reported as an absence, never fabricated and never silently
  * treated as healthy.
  */
-Deno.test("quota: missing rate-limit headers are stated, not fabricated", async () => {
+test("quota: missing rate-limit headers are stated, not fabricated", async () => {
   const { ctx } = mockCtx([{ body: userBody(1, 100) }]);
   const report = await quota.check!({}, ctx) as HealthReport;
 
@@ -92,7 +93,7 @@ Deno.test("quota: missing rate-limit headers are stated, not fabricated", async 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("quota: a nearly-full file allowance is degraded, a full one is down", async () => {
+test("quota: a nearly-full file allowance is degraded, a full one is down", async () => {
   const warn = mockCtx([{ body: userBody(95, 100) }]);
   const full = mockCtx([{ body: userBody(100, 100) }]);
 
@@ -105,7 +106,7 @@ Deno.test("quota: a nearly-full file allowance is degraded, a full one is down",
  * The rate window is one minute wide and recovers on its own, so an exhausted
  * request budget is a queue, not an outage — never worse than `degraded`.
  */
-Deno.test("quota: an exhausted request budget is degraded, never down", async () => {
+test("quota: an exhausted request budget is degraded, never down", async () => {
   const { ctx } = mockCtx([{
     body: userBody(1, 100),
     headers: {
@@ -124,7 +125,7 @@ Deno.test("quota: an exhausted request budget is degraded, never down", async ()
  * A missing or non-positive allowance is "not published", not "exhausted".
  * Reading it the other way would report a whole class of accounts as full.
  */
-Deno.test("quota: a zero file allowance is skipped rather than scored as full", async () => {
+test("quota: a zero file allowance is skipped rather than scored as full", async () => {
   const { ctx } = mockCtx([{ body: userBody(0, 0) }]);
   const report = await quota.check!({}, ctx) as HealthReport;
 
@@ -134,7 +135,7 @@ Deno.test("quota: a zero file allowance is skipped rather than scored as full", 
 });
 
 /** Failing to read a quota is not evidence of a low quota. */
-Deno.test("quota: a non-2xx and a result:false body both report unknown", async () => {
+test("quota: a non-2xx and a result:false body both report unknown", async () => {
   const failed = mockCtx([{ status: 500, body: "" }]);
   const flagged = mockCtx([{ body: { result: false, errorMessage: "nope" } }]);
 
@@ -142,7 +143,7 @@ Deno.test("quota: a non-2xx and a result:false body both report unknown", async 
   assertEquals((await quota.check!({}, flagged.ctx) as HealthReport).state, "unknown");
 });
 
-Deno.test("quota: is a signed, per-connection check that widens no egress", () => {
+test("quota: is a signed, per-connection check that widens no egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");

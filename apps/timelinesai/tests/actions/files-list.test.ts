@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import filesList from "../../actions/files-list.ts";
 
-Deno.test("files-list: filters by filename", async () => {
+test("files-list: filters by filename", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": [] } }]);
   const out = await filesList.execute!({ "filename": ".pdf" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("files-list: filters by filename", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("files-list: surfaces a vendor error envelope", async () => {
+test("files-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

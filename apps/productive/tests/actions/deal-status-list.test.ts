@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import dealStatusList from "../../actions/deal-status-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-status-list: GET /deal_statuses with every filter, sort, include and page serialised", async () => {
+test("deal-status-list: GET /deal_statuses with every filter, sort, include and page serialised", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -44,7 +45,7 @@ Deno.test("deal-status-list: GET /deal_statuses with every filter, sort, include
   assertEquals((out.items as Record<string, unknown>[])[0].name, "x");
 });
 
-Deno.test("deal-status-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
+test("deal-status-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -66,13 +67,13 @@ Deno.test("deal-status-list: a next link becomes nextCursor, and the cursor is s
   assertEquals(queryOf(calls[1].url), { "page[after]": "abc123" });
 });
 
-Deno.test("deal-status-list: a raw filter object is merged with the typed filters", async () => {
+test("deal-status-list: a raw filter object is merged with the typed filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await dealStatusList.execute({ filter: '{"name": {"contains": "x"}, "id": [1, 2]}' }, ctx);
   assertEquals(queryOf(calls[0].url), { "filter[name][contains]": "x", "filter[id]": "1,2" });
 });
 
-Deno.test("deal-status-list: a vendor error surfaces its status, title and detail", async () => {
+test("deal-status-list: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -85,7 +86,7 @@ Deno.test("deal-status-list: a vendor error surfaces its status, title and detai
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("deal-status-list: declares search", () => {
+test("deal-status-list: declares search", () => {
   assertEquals(dealStatusList.type, "search");
   assertEquals(dealStatusList.idempotent, undefined);
   assertEquals(dealStatusList.key, "deal-status-list");

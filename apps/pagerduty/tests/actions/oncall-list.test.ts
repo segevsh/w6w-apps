@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/oncall-list.ts";
 
-Deno.test("oncall-list: fetches the first page by default", async () => {
+test("oncall-list: fetches the first page by default", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { oncalls: [{ user: { id: "U1" } }], more: false } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("oncall-list: fetches the first page by default", async () => {
   assertEquals(result, [{ user: { id: "U1" } }]);
 });
 
-Deno.test("oncall-list: filters map to bracketed array query params, earliest to a bare flag", async () => {
+test("oncall-list: filters map to bracketed array query params, earliest to a bare flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { oncalls: [], more: false } }]);
   await action.execute!(
     { scheduleIds: "SCH1,SCH2", escalationPolicyIds: "EP1", userIds: "U1", earliest: true },

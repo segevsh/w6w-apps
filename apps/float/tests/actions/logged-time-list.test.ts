@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import loggedTimeList from "../../actions/logged-time-list.ts";
 import { asListResult, mockCtx, paginationHeaders, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("logged-time-list - GETs /logged-time", async () => {
+test("logged-time-list - GETs /logged-time", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

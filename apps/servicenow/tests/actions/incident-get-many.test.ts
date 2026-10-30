@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/incident-get-many.ts";
 
-Deno.test("incident-get-many: GETs /table/incident with pagination params", async () => {
+test("incident-get-many: GETs /table/incident with pagination params", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: [] } }]);
   await action.execute({ limit: 25, offset: 50 }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("incident-get-many: GETs /table/incident with pagination params", asyn
   );
 });
 
-Deno.test("incident-get-many: forwards an encoded query", async () => {
+test("incident-get-many: forwards an encoded query", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: [] } }]);
   await action.execute({ query: "active=true^priority=1" }, ctx);
   const url = new URL(calls[0].url);

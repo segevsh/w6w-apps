@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/transcript-get.ts";
 
 const OK = { data: { transcript: { id: "t1", title: "Weekly sync" } } };
 
-Deno.test("transcript-get: queries by id and includes the summary by default", async () => {
+test("transcript-get: queries by id and includes the summary by default", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ transcriptId: "t1" }, ctx);
   const { query, variables } = sent(calls[0]);
@@ -13,7 +14,7 @@ Deno.test("transcript-get: queries by id and includes the summary by default", a
   assertEquals(variables, { transcriptId: "t1" });
 });
 
-Deno.test("transcript-get: omits the paid-plan field groups unless asked", async () => {
+test("transcript-get: omits the paid-plan field groups unless asked", async () => {
   // `audio_url`, `video_url` and `analytics` all require Pro or higher, so
   // including them by default would fail this read for every Free-plan
   // connection.
@@ -26,7 +27,7 @@ Deno.test("transcript-get: omits the paid-plan field groups unless asked", async
   assert(!query.includes("sentences {"));
 });
 
-Deno.test("transcript-get: opt-ins add exactly the groups requested", async () => {
+test("transcript-get: opt-ins add exactly the groups requested", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({
     transcriptId: "t1",
@@ -40,7 +41,7 @@ Deno.test("transcript-get: opt-ins add exactly the groups requested", async () =
   assert(query.includes("analytics {"));
 });
 
-Deno.test("transcript-get: the summary can be turned off", async () => {
+test("transcript-get: the summary can be turned off", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ transcriptId: "t1", includeSummary: false }, ctx);
   assert(!sent(calls[0]).query.includes("summary {"));

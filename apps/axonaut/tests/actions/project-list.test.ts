@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "page": 2, "name": "Site", "number": "PRJ-1" };
 
-Deno.test("project-list: GET /api/v2/projects with the documented query, header and body", async () => {
+test("project-list: GET /api/v2/projects with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await projectList.execute(INPUT as never, ctx);
 
@@ -22,13 +23,13 @@ Deno.test("project-list: GET /api/v2/projects with the documented query, header 
   assertEquals(out, { items: [{ id: 1 }, { id: 2 }], count: 2, page: 2, nextPage: 3 });
 });
 
-Deno.test("project-list: an Axonaut error surfaces its message and status", async () => {
+test("project-list: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await projectList.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("project-list: an empty page ends the list and the first page is the default", async () => {
+test("project-list: an empty page ends the list and the first page is the default", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await projectList.execute({} as never, ctx);
   assertEquals(calls[0].headers["page"], undefined);

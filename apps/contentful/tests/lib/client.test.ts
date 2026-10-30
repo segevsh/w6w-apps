@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { applySearchExtras, ContentfulClient, resolveScope } from "../../lib/client.ts";
 
-Deno.test("client: defaults to CDN base", async () => {
+test("client: defaults to CDN base", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const client = new ContentfulClient(ctx);
   await client.request("/spaces/x/environments/master/entries");
@@ -11,7 +12,7 @@ Deno.test("client: defaults to CDN base", async () => {
   assertEquals(url.pathname, "/spaces/x/environments/master/entries");
 });
 
-Deno.test("client: routes to preview + management bases when requested", async () => {
+test("client: routes to preview + management bases when requested", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new ContentfulClient(ctx);
   await client.request("/spaces/x/entries", { base: "preview" });
@@ -20,14 +21,14 @@ Deno.test("client: routes to preview + management bases when requested", async (
   assertEquals(new URL(calls[1].url).origin, "https://api.contentful.com");
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new ContentfulClient(ctx);
   const result = await client.request("/spaces/x/entries/e");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"sys":{"id":"NotFound"}}' },
   ]);
@@ -40,7 +41,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/spaces/x/entries/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new ContentfulClient(ctx);
   await client.request("/x", {
@@ -53,7 +54,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON-encodes body and defaults content-type to management vendor mime", async () => {
+test("client: JSON-encodes body and defaults content-type to management vendor mime", async () => {
   const { ctx, calls } = mockCtx([{ body: { sys: { id: "e" } } }]);
   const client = new ContentfulClient(ctx);
   await client.request("/spaces/x/entries", {
@@ -66,7 +67,7 @@ Deno.test("client: JSON-encodes body and defaults content-type to management ven
   assertEquals(calls[0].body, '{"fields":{"title":{"en-US":"Hi"}}}');
 });
 
-Deno.test("client: caller-supplied headers merge with defaults", async () => {
+test("client: caller-supplied headers merge with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new ContentfulClient(ctx);
   await client.request("/x", {
@@ -80,7 +81,7 @@ Deno.test("client: caller-supplied headers merge with defaults", async () => {
   assertEquals(calls[0].headers["content-type"], "custom/type");
 });
 
-Deno.test("resolveScope: prefers params over connection display", () => {
+test("resolveScope: prefers params over connection display", () => {
   const { ctx } = mockCtx([], {
     connection: {
       display: { space: { id: "conn-space" }, environment: { id: "staging" } },
@@ -92,19 +93,19 @@ Deno.test("resolveScope: prefers params over connection display", () => {
   );
 });
 
-Deno.test("resolveScope: falls back to connection display, defaults env to master", () => {
+test("resolveScope: falls back to connection display, defaults env to master", () => {
   const { ctx } = mockCtx([], {
     connection: { display: { space: { id: "conn-space" } } },
   });
   assertEquals(resolveScope({}, ctx), { spaceId: "conn-space", environmentId: "master" });
 });
 
-Deno.test("resolveScope: throws when no spaceId is available anywhere", () => {
+test("resolveScope: throws when no spaceId is available anywhere", () => {
   const { ctx } = mockCtx();
   assertThrows(() => resolveScope({}, ctx), Error, "missing `spaceId`");
 });
 
-Deno.test("applySearchExtras: unpacks `attribute=value` into proper query keys", () => {
+test("applySearchExtras: unpacks `attribute=value` into proper query keys", () => {
   const qs: Record<string, string | number | boolean | undefined | null> = {};
   applySearchExtras(qs, {
     equal: "fields.title=hello",
@@ -128,7 +129,7 @@ Deno.test("applySearchExtras: unpacks `attribute=value` into proper query keys",
   assertEquals(qs.content_type, "post");
 });
 
-Deno.test("applySearchExtras: ignores malformed strings without an `=`", () => {
+test("applySearchExtras: ignores malformed strings without an `=`", () => {
   const qs: Record<string, string | number | boolean | undefined | null> = {};
   applySearchExtras(qs, { equal: "no-equals-sign", notEqual: undefined });
   assertEquals(Object.keys(qs).length, 0);

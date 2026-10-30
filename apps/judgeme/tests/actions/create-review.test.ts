@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import createReview from "../../actions/create-review.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-review: requires no auth and no connection", () => {
+test("create-review: requires no auth and no connection", () => {
   assertEquals(createReview.requiresAuth, false);
   assertEquals(createReview.idempotent, false);
 });
 
-Deno.test("create-review: posts shop_domain/platform in the body, not as auth", async () => {
+test("create-review: posts shop_domain/platform in the body, not as auth", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await createReview.execute({
     shopDomain: "example.myshopify.com",
@@ -30,7 +31,7 @@ Deno.test("create-review: posts shop_domain/platform in the body, not as auth", 
   assert(!("id" in sent), "unset productExternalId must not be sent");
 });
 
-Deno.test("create-review: forwards optional product id, cf answers and picture urls", async () => {
+test("create-review: forwards optional product id, cf answers and picture urls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await createReview.execute({
     shopDomain: "example.myshopify.com",

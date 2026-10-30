@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postCreateCompany from "../../actions/post-create-company.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("post-create-company: sends every input, unwraps data and credits", async () => {
+test("post-create-company: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -33,7 +34,7 @@ Deno.test("post-create-company: sends every input, unwraps data and credits", as
   });
 });
 
-Deno.test("post-create-company: omits optional inputs that were not given", async () => {
+test("post-create-company: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -50,7 +51,7 @@ Deno.test("post-create-company: omits optional inputs that were not given", asyn
   });
 });
 
-Deno.test("post-create-company: an error envelope is thrown with the vendor code", async () => {
+test("post-create-company: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

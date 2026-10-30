@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import api from "../../health/api.ts";
 
 const URL_UNDER_TEST = "https://api.hostaway.com/v1/users?limit=1";
 
-Deno.test("api: probes the documented users endpoint with the credential posture that signs it", async () => {
+test("api: probes the documented users endpoint with the credential posture that signs it", async () => {
   assertEquals(api.key, "api");
   assertEquals(api.kind, "dependency");
   assertEquals(api.scope, "connection");
@@ -20,7 +21,7 @@ Deno.test("api: probes the documented users endpoint with the credential posture
   assertEquals(report.state, "ok");
 });
 
-Deno.test("api: classifies from the body's status field, not the HTTP status", async () => {
+test("api: classifies from the body's status field, not the HTTP status", async () => {
   // 200 + status "fail" is still a failure.
   const failing = mockCtx([{
     status: 200,
@@ -36,7 +37,7 @@ Deno.test("api: classifies from the body's status field, not the HTTP status", a
   assertEquals(okReport.state, "ok");
 });
 
-Deno.test("api: reports the 429 rate-limit headers as a quota reading, retry-at as a timestamp", async () => {
+test("api: reports the 429 rate-limit headers as a quota reading, retry-at as a timestamp", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: "fail", message: "You have exceeded the rate limits" },
@@ -58,7 +59,7 @@ Deno.test("api: reports the 429 rate-limit headers as a quota reading, retry-at 
   assertEquals(report.quota?.[0]?.resetAt, new Date(1_700_000_000 * 1000).toISOString());
 });
 
-Deno.test("api: a 429 with no envelope still yields the documented quota reading", async () => {
+test("api: a 429 with no envelope still yields the documented quota reading", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: "Too many requests",
@@ -80,27 +81,27 @@ Deno.test("api: a 429 with no envelope still yields the documented quota reading
   assertEquals(quota?.resetAt, new Date(1_700_000_000 * 1000).toISOString());
 });
 
-Deno.test("api: a 5xx without Hostaway's envelope is down", async () => {
+test("api: a 5xx without Hostaway's envelope is down", async () => {
   const { ctx } = mockCtx([{ status: 503, statusText: "Service Unavailable", body: "<html>502" }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message?.includes("503"));
 });
 
-Deno.test("api: an unreachable host is down, with the host named", async () => {
+test("api: an unreachable host is down, with the host named", async () => {
   const { ctx } = mockCtx([]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message?.includes("api.hostaway.com"));
 });
 
-Deno.test("api: an unrecognised non-envelope response is degraded, not ok", async () => {
+test("api: an unrecognised non-envelope response is degraded, not ok", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("api: the report never carries credential material", async () => {
+test("api: the report never carries credential material", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: "fail", message: "The resource owner or authorization server denied" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pathwayCreate from "../../actions/pathway-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pathway-create: posts to /v1/pathway/create and returns the new id", async () => {
+test("pathway-create: posts to /v1/pathway/create and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "success", pathway_id: "p-new" },
@@ -15,12 +16,12 @@ Deno.test("pathway-create: posts to /v1/pathway/create and returns the new id", 
   assertEquals(out.pathwayId, "p-new");
 });
 
-Deno.test("pathway-create: includes description when provided", async () => {
+test("pathway-create: includes description when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success", pathway_id: "p-1" } }]);
   await pathwayCreate.execute({ name: "N", description: "D" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "N", description: "D" });
 });
 
-Deno.test("pathway-create: is declared not idempotent", () => {
+test("pathway-create: is declared not idempotent", () => {
   assertEquals(pathwayCreate.idempotent, false);
 });

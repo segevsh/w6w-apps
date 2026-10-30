@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timerStart from "../../actions/timer-start.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timer-start: POST /timers with the documented query and body", async () => {
+test("timer-start: POST /timers with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timerStart.execute({
     "task": "ev:9876543210",
@@ -28,7 +29,7 @@ Deno.test("timer-start: POST /timers with the documented query and body", async 
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timer-start: an Everhour error surfaces its message and status", async () => {
+test("timer-start: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -45,7 +46,7 @@ Deno.test("timer-start: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timer-start: declares perform and idempotent=false", () => {
+test("timer-start: declares perform and idempotent=false", () => {
   assertEquals(timerStart.type, "perform");
   assertEquals(timerStart.idempotent, false);
 });

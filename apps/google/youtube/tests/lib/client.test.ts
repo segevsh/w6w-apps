@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, csv, normalizePart, partParam, PARTS, YouTubeClient } from "../../lib/client.ts";
 
-Deno.test("client: targets youtube.googleapis.com, not the generic Google front door", () => {
+test("client: targets youtube.googleapis.com, not the generic Google front door", () => {
   assertEquals(API_URL, "https://youtube.googleapis.com/youtube/v3");
   const host = new URL(API_URL).hostname;
   assertEquals(host, "youtube.googleapis.com");
@@ -10,25 +11,25 @@ Deno.test("client: targets youtube.googleapis.com, not the generic Google front 
   assert(host !== "www.googleapis.com");
 });
 
-Deno.test("normalizePart: accepts a multiselect array and joins with commas", () => {
+test("normalizePart: accepts a multiselect array and joins with commas", () => {
   assertEquals(normalizePart(["snippet", "statistics"]), "snippet,statistics");
 });
 
-Deno.test("normalizePart: accepts a hand-typed comma string", () => {
+test("normalizePart: accepts a hand-typed comma string", () => {
   assertEquals(normalizePart("snippet,contentDetails"), "snippet,contentDetails");
 });
 
-Deno.test("normalizePart: trims whitespace and drops empty entries", () => {
+test("normalizePart: trims whitespace and drops empty entries", () => {
   assertEquals(normalizePart(" snippet , , contentDetails "), "snippet,contentDetails");
   assertEquals(normalizePart(["snippet", "", "  ", "status"]), "snippet,status");
 });
 
-Deno.test("normalizePart: de-duplicates while preserving the caller's order", () => {
+test("normalizePart: de-duplicates while preserving the caller's order", () => {
   assertEquals(normalizePart(["status", "snippet", "status"]), "status,snippet");
   assertEquals(normalizePart("snippet,snippet"), "snippet");
 });
 
-Deno.test("normalizePart: throws rather than sending a request the API will reject", () => {
+test("normalizePart: throws rather than sending a request the API will reject", () => {
   // `part` is required on nearly every endpoint; failing here names the problem.
   for (const empty of ["", "   ", ",,", [], ["", " "]] as Array<string | string[]>) {
     assertThrows(() => normalizePart(empty), Error, "`part` is required");
@@ -36,7 +37,7 @@ Deno.test("normalizePart: throws rather than sending a request the API will reje
   assertThrows(() => normalizePart(undefined), Error, "`part` is required");
 });
 
-Deno.test("partParam: builds a required multiselect from the documented value set", () => {
+test("partParam: builds a required multiselect from the documented value set", () => {
   const p = partParam("video", "snippet,statistics");
   assertEquals(p.key, "part");
   assertEquals(p.type, "multiselect");
@@ -46,7 +47,7 @@ Deno.test("partParam: builds a required multiselect from the documented value se
   assertEquals(values, [...PARTS.video]);
 });
 
-Deno.test("PARTS: excludes etag and kind, which are response fields and not parts", () => {
+test("PARTS: excludes etag and kind, which are response fields and not parts", () => {
   for (const [resource, parts] of Object.entries(PARTS)) {
     assert(!parts.includes("etag" as never), `${resource} lists etag as a part`);
     assert(!parts.includes("kind" as never), `${resource} lists kind as a part`);
@@ -55,7 +56,7 @@ Deno.test("PARTS: excludes etag and kind, which are response fields and not part
   }
 });
 
-Deno.test("PARTS: matches the documented value sets", () => {
+test("PARTS: matches the documented value sets", () => {
   // Verified against developers.google.com/youtube/v3/docs/<resource>/list.
   assertEquals([...PARTS.searchResult].sort(), ["id", "snippet"]);
   assertEquals([...PARTS.comment].sort(), ["id", "snippet"]);
@@ -106,7 +107,7 @@ Deno.test("PARTS: matches the documented value sets", () => {
   ]);
 });
 
-Deno.test("csv: joins arrays, trims, drops empties, returns undefined when nothing is left", () => {
+test("csv: joins arrays, trims, drops empties, returns undefined when nothing is left", () => {
   assertEquals(csv(["a", "b"]), "a,b");
   assertEquals(csv(" a , b "), "a,b");
   assertEquals(csv([]), undefined);
@@ -114,7 +115,7 @@ Deno.test("csv: joins arrays, trims, drops empties, returns undefined when nothi
   assertEquals(csv(undefined), undefined);
 });
 
-Deno.test("client: serialises part onto the query string", async () => {
+test("client: serialises part onto the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await new YouTubeClient(ctx).request("/videos", { part: ["snippet", "statistics"] });
   const url = new URL(calls[0].url);
@@ -122,7 +123,7 @@ Deno.test("client: serialises part onto the query string", async () => {
   assertEquals(url.searchParams.get("part"), "snippet,statistics");
 });
 
-Deno.test("client: omits undefined, null and empty query values", async () => {
+test("client: omits undefined, null and empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new YouTubeClient(ctx).request("/videos", {
     part: "id",
@@ -135,7 +136,7 @@ Deno.test("client: omits undefined, null and empty query values", async () => {
   assertEquals(p.get("f"), "0");
 });
 
-Deno.test("client: JSON-encodes a body and sets content-type", async () => {
+test("client: JSON-encodes a body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x" } }]);
   await new YouTubeClient(ctx).request("/playlists", {
     method: "POST",
@@ -147,21 +148,21 @@ Deno.test("client: JSON-encodes a body and sets content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { snippet: { title: "t" } });
 });
 
-Deno.test("client: never sets an Authorization header — sign owns the credential", async () => {
+test("client: never sets an Authorization header — sign owns the credential", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new YouTubeClient(ctx).request("/videos", { part: "id" });
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(new URL(calls[0].url).searchParams.get("key"), null);
 });
 
-Deno.test("client: returns undefined for a 204 and for an empty 200", async () => {
+test("client: returns undefined for a 204 and for an empty 200", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new YouTubeClient(ctx);
   assertEquals(await client.request("/videos", { method: "DELETE" }), undefined);
   assertEquals(await client.request("/videos", { method: "DELETE" }), undefined);
 });
 
-Deno.test("client: throws with status, method, path and body on a failure", async () => {
+test("client: throws with status, method, path and body on a failure", async () => {
   const { ctx } = mockCtx([{ status: 403, statusText: "Forbidden", body: "quotaExceeded" }]);
   const err = await new YouTubeClient(ctx)
     .request("/search", { part: "snippet" })

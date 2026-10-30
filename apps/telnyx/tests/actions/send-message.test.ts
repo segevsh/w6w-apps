@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs JSON to /messages and unwraps the data envelope", async () => {
+test("send-message: POSTs JSON to /messages and unwraps the data envelope", async () => {
   const data = { id: "msg1", type: "SMS", to: [{ phone_number: "+2", status: "queued" }] };
   const { ctx, calls } = mockCtx([{ body: { data } }]);
 
@@ -23,7 +24,7 @@ Deno.test("send-message: POSTs JSON to /messages and unwraps the data envelope",
   assertEquals(result, data);
 });
 
-Deno.test("send-message: sends via a Messaging Profile with no From", async () => {
+test("send-message: sends via a Messaging Profile with no From", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ messagingProfileId: "MP1", to: "+2", text: "hi" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");
@@ -31,7 +32,7 @@ Deno.test("send-message: sends via a Messaging Profile with no From", async () =
   assertEquals(body.from, undefined);
 });
 
-Deno.test("send-message: requires a sender — from or messagingProfileId", async () => {
+test("send-message: requires a sender — from or messagingProfileId", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -44,7 +45,7 @@ Deno.test("send-message: requires a sender — from or messagingProfileId", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-message: media URLs are sent as a media_urls array, blanks dropped", async () => {
+test("send-message: media URLs are sent as a media_urls array, blanks dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!(
     { from: "+1", to: "+2", text: "look", mediaUrls: ["https://x/a.jpg", "", "  "] },
@@ -54,14 +55,14 @@ Deno.test("send-message: media URLs are sent as a media_urls array, blanks dropp
   assertEquals(body.media_urls, ["https://x/a.jpg"]);
 });
 
-Deno.test("send-message: media_urls is omitted entirely when no media is given", async () => {
+test("send-message: media_urls is omitted entirely when no media is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ from: "+1", to: "+2", text: "x" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");
   assertEquals("media_urls" in body, false);
 });
 
-Deno.test("send-message: sendAt is normalized to an ISO 8601 string", async () => {
+test("send-message: sendAt is normalized to an ISO 8601 string", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!(
     { from: "+1", to: "+2", text: "later", sendAt: "2026-09-01T10:00:00Z" },
@@ -71,7 +72,7 @@ Deno.test("send-message: sendAt is normalized to an ISO 8601 string", async () =
   assertEquals(body.send_at, "2026-09-01T10:00:00.000Z");
 });
 
-Deno.test("send-message: passes through type, encoding and webhook fields", async () => {
+test("send-message: passes through type, encoding and webhook fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!(
     {

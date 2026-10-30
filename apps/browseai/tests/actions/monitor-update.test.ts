@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import monitorUpdate from "../../actions/monitor-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("monitor-update: PATCHes only the fields that were set", async () => {
+test("monitor-update: PATCHes only the fields that were set", async () => {
   const monitor = { id: "m1", name: "Watch", status: "paused" };
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("monitor", monitor) }]);
   const out = await monitorUpdate.execute(
@@ -16,7 +17,7 @@ Deno.test("monitor-update: PATCHes only the fields that were set", async () => {
   assertEquals(out.status, "paused");
 });
 
-Deno.test("monitor-update: an inputParameters override is parsed and included", async () => {
+test("monitor-update: an inputParameters override is parsed and included", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("monitor", { id: "m1" }) }]);
   await monitorUpdate.execute(
     { robotId: "r1", monitorId: "m1", inputParameters: { limit: 5 } },
@@ -25,6 +26,6 @@ Deno.test("monitor-update: an inputParameters override is parsed and included", 
   assertEquals(JSON.parse(calls[0].body!), { inputParameters: { limit: 5 } });
 });
 
-Deno.test("monitor-update: is declared idempotent — the same body always lands on the same state", () => {
+test("monitor-update: is declared idempotent — the same body always lands on the same state", () => {
   assertEquals(monitorUpdate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
+test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -12,7 +13,7 @@ Deno.test("service: mapComponentStatus covers the documented Statuspage vocabula
   assertEquals(mapComponentStatus("something_new"), "unknown");
 });
 
-Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
+test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -21,19 +22,19 @@ Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () =
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id over the name", () => {
+test("service: componentKey prefers the vendor id over the name", () => {
   assertEquals(componentKey({ id: "abc123", name: "API" }, 0), "abc123");
 });
 
-Deno.test("service: componentKey falls back to a name slug when id is absent", () => {
+test("service: componentKey falls back to a name slug when id is absent", () => {
   assertEquals(componentKey({ name: "United States API" }, 2), "united-states-api-2");
 });
 
-Deno.test("service: componentKey falls back to an index when both are absent", () => {
+test("service: componentKey falls back to an index when both are absent", () => {
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: reports ok with per-component detail on a healthy page", async () => {
+test("service: reports ok with per-component detail on a healthy page", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -55,7 +56,7 @@ Deno.test("service: reports ok with per-component detail on a healthy page", asy
   assertEquals(Object.keys(report.components ?? {}).sort(), ["api-ca", "api-us"]);
 });
 
-Deno.test("service: reports degraded and names the affected component", async () => {
+test("service: reports degraded and names the affected component", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -69,13 +70,13 @@ Deno.test("service: reports degraded and names the affected component", async ()
   assertEquals(/API \(partial_outage\)|API: partial_outage/.test(report.message ?? ""), true);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "gateway error" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -85,7 +86,7 @@ Deno.test("service: an unreadable body is unknown", async () => {
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Bland's is unknown", async () => {
+test("service: a page that no longer self-identifies as Bland's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -98,7 +99,7 @@ Deno.test("service: a page that no longer self-identifies as Bland's is unknown"
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: no components at all is unknown", async () => {
+test("service: no components at all is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -111,7 +112,7 @@ Deno.test("service: no components at all is unknown", async () => {
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is unsigned and declares its own network allowlist", () => {
+test("service: is unsigned and declares its own network allowlist", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.bland.ai"]);
 });

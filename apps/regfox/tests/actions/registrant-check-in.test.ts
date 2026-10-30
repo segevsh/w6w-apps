@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/registrant-check-in.ts";
 import { envelope, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("registrant-check-in: by id posts a numeric id and the date", async () => {
+test("registrant-check-in: by id posts a numeric id and the date", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 17492, date: "2026-05-02T22:32:22Z" }) }]);
   const out = await exec(action, { id: "17492", date: "2026-05-02T22:32:22Z" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,13 +13,13 @@ Deno.test("registrant-check-in: by id posts a numeric id and the date", async ()
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("registrant-check-in: by display id sends displayId and no date", async () => {
+test("registrant-check-in: by display id sends displayId and no date", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ displayId: "01BP" }) }]);
   await exec(action, { displayId: "01BP" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { displayId: "01BP" });
 });
 
-Deno.test("registrant-check-in: both or neither identifier is refused before any request", async () => {
+test("registrant-check-in: both or neither identifier is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err1 = await assertRejects(() => exec(action, { id: "1", displayId: "x" }, ctx));
   assert((err1 as Error).message.includes("exactly one"));

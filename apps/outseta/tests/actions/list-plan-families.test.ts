@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-plan-families.ts";
 
-Deno.test("list-plan-families: identity", () => {
+test("list-plan-families: identity", () => {
   assertEquals(action.key, "list-plan-families");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "billing");
 });
 
-Deno.test("list-plan-families: sends GET /api/v1/billing/planfamilies", async () => {
+test("list-plan-families: sends GET /api/v1/billing/planfamilies", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { metadata: { limit: 25, offset: 0, total: 1 }, items: [{ Uid: "x1" }] },
@@ -25,7 +26,7 @@ Deno.test("list-plan-families: sends GET /api/v1/billing/planfamilies", async ()
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-plan-families: a failure names the status and the request", async () => {
+test("list-plan-families: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({} as never, connected(ctx));

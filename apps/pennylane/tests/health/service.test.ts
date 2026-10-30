@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   API_COMPONENT_NAME,
@@ -58,14 +59,14 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: the status URL is Pennylane's own claimed Statuspage", () => {
+test("service: the status URL is Pennylane's own claimed Statuspage", () => {
   assertEquals(STATUS_URL, "https://status.pennylane.com/api/v2/summary.json");
   assertEquals(STATUS_HOST, "status.pennylane.com");
   assertEquals(API_COMPONENT_ID, "nm672smys1j9");
   assertEquals(API_COMPONENT_NAME, "API (app.pennylane.com/api)");
 });
 
-Deno.test("service: component statuses map to the Statuspage vocabulary", () => {
+test("service: component statuses map to the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -74,7 +75,7 @@ Deno.test("service: component statuses map to the Statuspage vocabulary", () => 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: the page indicator maps separately from a component's status", () => {
+test("service: the page indicator maps separately from a component's status", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -83,7 +84,7 @@ Deno.test("service: the page indicator maps separately from a component's status
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: the API component is found by id, then by exact name", () => {
+test("service: the API component is found by id, then by exact name", () => {
   const byId = findApiComponent([
     { id: "other", name: "Renamed", status: "major_outage" },
     { id: API_COMPONENT_ID, name: "API (app.pennylane.com/api)", status: "operational" },
@@ -102,7 +103,7 @@ Deno.test("service: the API component is found by id, then by exact name", () =>
   );
 });
 
-Deno.test("service: a fully operational page is ok, with every component reported as detail", async () => {
+test("service: a fully operational page is ok, with every component reported as detail", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -117,7 +118,7 @@ Deno.test("service: a fully operational page is ok, with every component reporte
   assertEquals(report.ttlSeconds, 60);
 });
 
-Deno.test("service: an API outage is the verdict", async () => {
+test("service: an API outage is the verdict", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -136,7 +137,7 @@ Deno.test("service: an API outage is the verdict", async () => {
   assert(report.message?.includes("API (app.pennylane.com/api): major_outage"), report.message);
 });
 
-Deno.test("service: a degraded API reads degraded and is named in the message", async () => {
+test("service: a degraded API reads degraded and is named in the message", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -154,7 +155,7 @@ Deno.test("service: a degraded API reads degraded and is named in the message", 
   assert(report.message?.includes("1 open incident(s)"), report.message);
 });
 
-Deno.test("service: a worse page indicator escalates the verdict, never the reverse", async () => {
+test("service: a worse page indicator escalates the verdict, never the reverse", async () => {
   // The API component is healthy but Pennylane's own roll-up says critical —
   // something this component does not model is badly wrong, so caution wins.
   const { ctx } = mockCtx([
@@ -175,7 +176,7 @@ Deno.test("service: a worse page indicator escalates the verdict, never the reve
   assert(report.message?.includes("escalated from the roll-up"), report.message);
 });
 
-Deno.test("service: a minor page indicator degrades a healthy API reading", async () => {
+test("service: a minor page indicator degrades a healthy API reading", async () => {
   const { ctx } = mockCtx([
     { body: summary({ status: { indicator: "minor", description: "Degraded Performance" } }) },
   ]);
@@ -183,7 +184,7 @@ Deno.test("service: a minor page indicator degrades a healthy API reading", asyn
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failing = mockCtx([{ status: 503, body: undefined }]);
   assertEquals((await service.check!({}, failing.ctx)).state, "unknown");
 
@@ -191,7 +192,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, unreadable.ctx)).state, "unknown");
 });
 
-Deno.test("service: a status page that is no longer Pennylane's is unknown", async () => {
+test("service: a status page that is no longer Pennylane's is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { name: "Other", url: "https://status.example.com" } }) },
   ]);
@@ -201,7 +202,7 @@ Deno.test("service: a status page that is no longer Pennylane's is unknown", asy
   assert(report.message?.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: a page without the API component is unknown, not ok", async () => {
+test("service: a page without the API component is unknown, not ok", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -217,7 +218,7 @@ Deno.test("service: a page without the API component is unknown, not ok", async 
   assert(report.message?.includes("API (app.pennylane.com/api)"), report.message);
 });
 
-Deno.test("service: the probe is unsigned, app-scoped and only reaches the status host", () => {
+test("service: the probe is unsigned, app-scoped and only reaches the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

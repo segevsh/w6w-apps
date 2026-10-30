@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import invoiceCreate from "../../actions/invoice-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-create: posts to /invoices, parsing a JSON-string lineItems param", async () => {
+test("invoice-create: posts to /invoices, parsing a JSON-string lineItems param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "inv_1", status: "draft" } }]);
   await invoiceCreate.execute(
     {
@@ -21,7 +22,7 @@ Deno.test("invoice-create: posts to /invoices, parsing a JSON-string lineItems p
   });
 });
 
-Deno.test("invoice-create: also accepts lineItems already parsed (an array, not a string)", async () => {
+test("invoice-create: also accepts lineItems already parsed (an array, not a string)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "inv_2" } }]);
   await invoiceCreate.execute(
     { type: "link", lineItems: [{ name: "Widget", amount: 100 }] },
@@ -31,7 +32,7 @@ Deno.test("invoice-create: also accepts lineItems already parsed (an array, not 
   assertEquals(JSON.parse(calls[0].body!).line_items, [{ name: "Widget", amount: 100 }]);
 });
 
-Deno.test("invoice-create: builds an inline customer object only from name/email/contact, never both with customerId conflated", async () => {
+test("invoice-create: builds an inline customer object only from name/email/contact, never both with customerId conflated", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "inv_3" } }]);
   await invoiceCreate.execute(
     { type: "invoice", customerName: "Aisha", customerEmail: "a@example.com" },
@@ -43,7 +44,7 @@ Deno.test("invoice-create: builds an inline customer object only from name/email
   assertEquals("customer_id" in body, false);
 });
 
-Deno.test("invoice-create: an unparseable lineItems string throws rather than silently sending garbage", async () => {
+test("invoice-create: an unparseable lineItems string throws rather than silently sending garbage", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(invoiceCreate.execute({ type: "invoice", lineItems: "{not json" }, ctx)),

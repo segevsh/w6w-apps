@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/task-update.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-update: patches by id", async () => {
+test("task-update: patches by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { tasks: { id: "t1", state: "closed" } } }]);
   const out = await action.execute({ id: "t1", state: "closed" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/tasks/t1");
@@ -10,7 +11,7 @@ Deno.test("task-update: patches by id", async () => {
   assertEquals(out, { id: "t1", state: "closed" });
 });
 
-Deno.test("task-update: requires id", async () => {
+test("task-update: requires id", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ id: "" }, ctx));
 });

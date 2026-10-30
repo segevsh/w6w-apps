@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import viewLead from "../../actions/view-lead.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("view-lead: POSTs the id and returns the vendor's <result> children generically", async () => {
+test("view-lead: POSTs the id and returns the vendor's <result> children generically", async () => {
   const { ctx, calls } = mockCtx([{
     body: okResponse("<id>MQ==</id><firstname>Ada</firstname><status>Client</status>"),
   }]);
@@ -16,7 +17,7 @@ Deno.test("view-lead: POSTs the id and returns the vendor's <result> children ge
   assert(out.raw.startsWith("<?xml"), out.raw);
 });
 
-Deno.test("view-lead: a missing record is the vendor's own error, not an empty result", async () => {
+test("view-lead: a missing record is the vendor's own error, not an empty result", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4413, "Incorrect Client ID") }]);
   await assertRejects(
     async () => {

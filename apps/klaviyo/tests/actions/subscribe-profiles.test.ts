@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscribe-profiles.ts";
 
-Deno.test("subscribe-profiles: POSTs a bulk-create-job with list relationship and consent", async () => {
+test("subscribe-profiles: POSTs a bulk-create-job with list relationship and consent", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { id: "job-1" } } }]);
   await action.execute!(
     {

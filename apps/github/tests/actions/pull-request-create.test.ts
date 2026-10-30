@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pull-request-create.ts";
 
-Deno.test("pull-request-create: POSTs /repos/{owner}/{repo}/pulls with head/base/title", async () => {
+test("pull-request-create: POSTs /repos/{owner}/{repo}/pulls with head/base/title", async () => {
   const { ctx, calls } = mockCtx([{ body: { number: 42 } }]);
   await action.execute(
     { owner: "acme", repository: "api", title: "Add feature", head: "feat", base: "main" },
@@ -13,7 +14,7 @@ Deno.test("pull-request-create: POSTs /repos/{owner}/{repo}/pulls with head/base
   assertEquals(JSON.parse(calls[0].body!), { title: "Add feature", head: "feat", base: "main" });
 });
 
-Deno.test("pull-request-create: forwards body, draft and maintainerCanModify", async () => {
+test("pull-request-create: forwards body, draft and maintainerCanModify", async () => {
   const { ctx, calls } = mockCtx([{ body: { number: 42 } }]);
   await action.execute(
     {
@@ -34,6 +35,6 @@ Deno.test("pull-request-create: forwards body, draft and maintainerCanModify", a
   assertEquals(body.maintainer_can_modify, false);
 });
 
-Deno.test("pull-request-create: is not idempotent — a retry opens a duplicate", () => {
+test("pull-request-create: is not idempotent — a retry opens a duplicate", () => {
   assertEquals(action.idempotent, false);
 });

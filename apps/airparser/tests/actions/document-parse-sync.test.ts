@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentParseSync from "../../actions/document-parse-sync.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-parse-sync: posts multipart to upload-sync and returns the parsed body", async () => {
+test("document-parse-sync: posts multipart to upload-sync and returns the parsed body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -31,13 +32,13 @@ Deno.test("document-parse-sync: posts multipart to upload-sync and returns the p
   assertEquals(result.json?.invoice_number, "INV-001");
 });
 
-Deno.test("document-parse-sync: omits the meta field entirely when not provided", async () => {
+test("document-parse-sync: omits the meta field entirely when not provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { doc_id: "d1" } }]);
   await documentParseSync.execute({ inboxId: "in_1", file: new Blob(["x"]) }, ctx);
   assertEquals(calls[0].form?.has("meta"), false);
 });
 
-Deno.test("document-parse-sync: a timeout response carries parsing_in_progress true with null fields", async () => {
+test("document-parse-sync: a timeout response carries parsing_in_progress true with null fields", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -61,13 +62,13 @@ Deno.test("document-parse-sync: a timeout response carries parsing_in_progress t
   assertEquals(result.json, null);
 });
 
-Deno.test("document-parse-sync: URL-encodes the inbox id", async () => {
+test("document-parse-sync: URL-encodes the inbox id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { doc_id: "d1" } }]);
   await documentParseSync.execute({ inboxId: "in/1 with space", file: new Blob(["x"]) }, ctx);
   assertEquals(pathOf(calls[0].url), "/inboxes/in%2F1%20with%20space/upload-sync");
 });
 
-Deno.test("document-parse-sync: declared not idempotent — every call bills a new parse", () => {
+test("document-parse-sync: declared not idempotent — every call bills a new parse", () => {
   assertEquals(documentParseSync.idempotent, false);
   assertEquals(documentParseSync.type, "perform");
 });

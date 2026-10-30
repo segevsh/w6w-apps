@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   EnchargeClient,
@@ -10,7 +11,7 @@ import {
 import { peopleQuery, personRef, personRefs } from "../../lib/people.ts";
 import { errBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("client: encodeId, jsonValue and buildQuery", () => {
+test("client: encodeId, jsonValue and buildQuery", () => {
   assertEquals(encodeId("a b/c"), "a%20b%2Fc");
   assertEquals(jsonValue('{"a":1}'), { a: 1 });
   assertEquals(jsonValue("  "), undefined);
@@ -24,7 +25,7 @@ Deno.test("client: encodeId, jsonValue and buildQuery", () => {
   );
 });
 
-Deno.test("client: errorText and errorCode read both envelopes and never the stack", () => {
+test("client: errorText and errorCode read both envelopes and never the stack", () => {
   assertEquals(errorText({ error: { message: "m", stack: "secret trace" } }), "m");
   assertEquals(errorText({ error: "plain" }), "plain");
   assertEquals(errorText({ nope: 1 }), undefined);
@@ -33,7 +34,7 @@ Deno.test("client: errorText and errorCode read both envelopes and never the sta
   assertEquals(errorCode({ error: "x" }), undefined);
 });
 
-Deno.test("client: a failure message omits stack and markdown and names the path", async () => {
+test("client: a failure message omits stack and markdown and names the path", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { message: "bad", stack: "at secret.ts:1", markdown: "<p>bad</p>" } },
@@ -42,7 +43,7 @@ Deno.test("client: a failure message omits stack and markdown and names the path
   assertEquals(err.message, "Encharge GET /v1/x failed: HTTP 400 — bad");
 });
 
-Deno.test("client: a non-JSON failure quotes the body; success shapes are normalised", async () => {
+test("client: a non-JSON failure quotes the body; success shapes are normalised", async () => {
   const html = mockCtx([{ status: 404, body: "<pre>Cannot GET /v1/tags</pre>", headers: {} }]);
   await assertRejects(
     () => new EnchargeClient(html.ctx).request("GET", "/tags"),
@@ -56,7 +57,7 @@ Deno.test("client: a non-JSON failure quotes the body; success shapes are normal
   assertEquals(await c.request("GET", "/x"), { a: 1 });
 });
 
-Deno.test("people: personRef trims, personRefs resolves and peopleQuery indexes", () => {
+test("people: personRef trims, personRefs resolves and peopleQuery indexes", () => {
   assertEquals(personRef({ email: " a@x.com ", userId: "" }), { email: "a@x.com" });
   assertEquals(personRefs({ email: "a@x.com" }), [{ email: "a@x.com" }]);
   assertEquals(peopleQuery([{ email: "a" }, { id: "i", userId: "u" }]), [

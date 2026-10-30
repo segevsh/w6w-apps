@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deals-info.ts";
 
-Deno.test("deals-info: POSTs deals.info with {id} and returns the deal", async () => {
+test("deals-info: POSTs deals.info with {id} and returns the deal", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "d1", title: "Big deal" } },

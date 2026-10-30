@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactListRemoveContact from "../../actions/contact-list-remove-contact.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-list-remove-contact: DELETEs the membership path and returns the status", async () => {
+test("contact-list-remove-contact: DELETEs the membership path and returns the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await contactListRemoveContact.execute(
     { listIdOrName: "My First List", contactPhoneOrId: "1234567890" },
@@ -17,6 +18,6 @@ Deno.test("contact-list-remove-contact: DELETEs the membership path and returns 
   assertEquals(result.status, 204);
 });
 
-Deno.test("contact-list-remove-contact: declared idempotent — the membership stays gone on a retry", () => {
+test("contact-list-remove-contact: declared idempotent — the membership stays gone on a retry", () => {
   assertEquals(contactListRemoveContact.idempotent, true);
 });

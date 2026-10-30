@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-create.ts";
 
-Deno.test("document-create: POSTs files and recipients (json text or objects) to /documents", async () => {
+test("document-create: POSTs files and recipients (json text or objects) to /documents", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "d1", status: "Sent" } }]);
   const out = await action.execute!({
     files: [{ name: "a.pdf", file_url: "https://x.test/a.pdf" }],
@@ -25,14 +26,14 @@ Deno.test("document-create: POSTs files and recipients (json text or objects) to
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-create: files and recipients are required before any request", async () => {
+test("document-create: files and recipients are required before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ recipients: [] }, ctx), Error, "`files`");
   await assertRejects(async () => await action.execute!({ files: [] }, ctx), Error, "`recipients`");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("document-create: a 422 surfaces SignWell's field errors", async () => {
+test("document-create: a 422 surfaces SignWell's field errors", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: { recipients: ["is invalid"] } } }]);
   const err = await assertRejects(async () =>
     await action.execute!({ files: [], recipients: [] }, ctx)

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const CAMPAIGN = {
   type: "IMMEDIATELY",
 };
 
-Deno.test("campaign-list: reads the campaigns page and returns its rows", async () => {
+test("campaign-list: reads the campaigns page and returns its rows", async () => {
   const { ctx, calls } = mockCtx([{ body: page([CAMPAIGN], { totalElements: 1 }) }]);
   const result = await campaignList.execute({}, ctx) as { content: unknown[] };
 
@@ -22,7 +23,7 @@ Deno.test("campaign-list: reads the campaigns page and returns its rows", async 
  * The endpoint's own description: omitting `type` returns only immediate
  * campaigns. `ALL` is the value that surfaces scheduled and recurring ones too.
  */
-Deno.test("campaign-list: forwards type, state and the date range verbatim", async () => {
+test("campaign-list: forwards type, state and the date range verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await campaignList.execute(
     {
@@ -43,7 +44,7 @@ Deno.test("campaign-list: forwards type, state and the date range verbatim", asy
   });
 });
 
-Deno.test("campaign-list: type defaults to blank, which the vendor reads as immediate-only", () => {
+test("campaign-list: type defaults to blank, which the vendor reads as immediate-only", () => {
   const type = campaignList.params!.find((p) => p.key === "type");
   assertEquals(type?.default, undefined);
   assertEquals(type?.hint?.includes("immediate"), true);

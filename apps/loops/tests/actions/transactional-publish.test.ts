@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/transactional-publish.ts";
 
 /** The missing step between editing a template and being able to send it. */
-Deno.test("transactional-publish: POSTs the publish path", async () => {
+test("transactional-publish: POSTs the publish path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }]);
   await action.execute!({ transactionalId: "t1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("transactional-publish: POSTs the publish path", async () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("transactional-publish: a blank id fails before any request", async () => {
+test("transactional-publish: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`transactionalId`");
   assertEquals(calls.length, 0);

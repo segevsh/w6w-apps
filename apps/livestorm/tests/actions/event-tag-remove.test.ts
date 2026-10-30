@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventTagRemove from "../../actions/event-tag-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-tag-remove: DELETEs with a tags body, returns 204", async () => {
+test("event-tag-remove: DELETEs with a tags body, returns 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const result = await eventTagRemove.execute({ id: "e1", title: "launch" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/env-delete.ts";
 
-Deno.test("env-delete: DELETEs the variable and reports it", async () => {
+test("env-delete: DELETEs the variable and reports it", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], { display: {} });
   const result = await action.execute!({ projectId: "my-app", envId: "env_1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("env-delete: DELETEs the variable and reports it", async () => {
   assertEquals(result, { id: "env_1", deleted: true });
 });
 
-Deno.test("env-delete: both ids are required before any request", async () => {
+test("env-delete: both ids are required before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ projectId: "my-app" }, ctx),

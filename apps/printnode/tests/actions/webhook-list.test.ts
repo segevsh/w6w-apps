@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: GET /webhooks and the secret is stripped", async () => {
+test("webhook-list: GET /webhooks and the secret is stripped", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ webhookId: 11, url: "http://x", secret: "password", messages: ["*"] }],
   }]);
@@ -12,7 +13,7 @@ Deno.test("webhook-list: GET /webhooks and the secret is stripped", async () => 
   assertEquals(JSON.stringify(out).includes("password"), false);
 });
 
-Deno.test("webhook-list: empty account", async () => {
+test("webhook-list: empty account", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   assertEquals(await webhookList.execute({}, ctx), { items: [], count: 0 });
 });

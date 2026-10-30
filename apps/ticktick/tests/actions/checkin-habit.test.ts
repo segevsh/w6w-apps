@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/checkin-habit.ts";
 
-Deno.test("checkin-habit: POSTs /habit/{id}/checkin with the stamp as an integer", async () => {
+test("checkin-habit: POSTs /habit/{id}/checkin with the stamp as an integer", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { habitId: "habit-1", year: 2026, checkins: [{ stamp: 20260407 }] },
@@ -14,13 +15,13 @@ Deno.test("checkin-habit: POSTs /habit/{id}/checkin with the stamp as an integer
   assertEquals((out as { year: number }).year, 2026);
 });
 
-Deno.test("checkin-habit: the stamp is a number on the wire, not a date string", async () => {
+test("checkin-habit: the stamp is a number on the wire, not a date string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ habitId: "habit-1", stamp: 20260407 }, ctx);
   assertEquals(typeof JSON.parse(calls[0].body!).stamp, "number");
 });
 
-Deno.test("checkin-habit: time and opTime ARE converted — they are timestamps, not stamps", async () => {
+test("checkin-habit: time and opTime ARE converted — they are timestamps, not stamps", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     habitId: "habit-1",
@@ -34,7 +35,7 @@ Deno.test("checkin-habit: time and opTime ARE converted — they are timestamps,
   assertEquals(body.opTime, "2026-04-07T08:05:00+0200");
 });
 
-Deno.test("checkin-habit: idempotent — the stamp is the key, so re-posting amends", () => {
+test("checkin-habit: idempotent — the stamp is the key, so re-posting amends", () => {
   assertEquals(action.idempotent, true);
   const stamp = action.params!.find((p) => p.key === "stamp")!;
   assert(stamp.required);

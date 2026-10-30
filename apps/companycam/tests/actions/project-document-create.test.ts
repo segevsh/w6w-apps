@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import projectDocumentCreate from "../../actions/project-document-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
  * why this endpoint is reachable from the sandbox and a multipart upload would
  * not be.
  */
-Deno.test("project-document-create: sends base64 text in a nested JSON body", async () => {
+test("project-document-create: sends base64 text in a nested JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "115" } }]);
   await projectDocumentCreate.execute({
     projectId: "1",
@@ -21,7 +22,7 @@ Deno.test("project-document-create: sends base64 text in a nested JSON body", as
   assertEquals(bodyOf(calls[0]), { document: { name: "test.txt", attachment: "VGVzdAo=" } });
 });
 
-Deno.test("project-document-create: states the 30 MB limit and the base64 overhead", () => {
+test("project-document-create: states the 30 MB limit and the base64 overhead", () => {
   const attachment = projectDocumentCreate.params!.find((p) => p.key === "attachment")!;
   assert(/30 MB/.test(attachment.hint!), attachment.hint);
   assert(/third larger/.test(attachment.hint!), attachment.hint);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/queue-get-issues.ts";
 
-Deno.test("queue-get-issues: GETs the issues in a specific queue", async () => {
+test("queue-get-issues: GETs the issues in a specific queue", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({ serviceDeskId: "10", queueId: "5" }, ctx);
   assertEquals(

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activity-list.ts";
 
@@ -20,7 +21,7 @@ const activities = {
   },
 };
 
-Deno.test("activity-list: reads the organisation's activity", async () => {
+test("activity-list: reads the organisation's activity", async () => {
   const { ctx, calls } = mockCtx([activities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assert(calls[0].url.endsWith("/activities"), calls[0].url);
@@ -28,7 +29,7 @@ Deno.test("activity-list: reads the organisation's activity", async () => {
   assertEquals(result.types, ["SERVICE_CREATED", "SERVICE_DELETED"]);
 });
 
-Deno.test("activity-list: the date window is passed through", async () => {
+test("activity-list: the date window is passed through", async () => {
   const { ctx, calls } = mockCtx([activities], D);
   await action.execute({ fromDate: "2026-08-01T00:00:00Z", toDate: "2026-08-19T00:00:00Z" }, ctx);
   const url = new URL(calls[0].url);
@@ -36,7 +37,7 @@ Deno.test("activity-list: the date window is passed through", async () => {
   assertEquals(url.searchParams.get("to_date"), "2026-08-19T00:00:00Z");
 });
 
-Deno.test("activity-list: newest first, so latest is the first entry", async () => {
+test("activity-list: newest first, so latest is the first entry", async () => {
   const { ctx } = mockCtx([activities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals((result.latest as Record<string, unknown>).type, "SERVICE_DELETED");
@@ -44,12 +45,12 @@ Deno.test("activity-list: newest first, so latest is the first entry", async () 
 });
 
 /** Every automation sharing one key is indistinguishable here. */
-Deno.test("activity-list: says actions are attributed to the key", () => {
+test("activity-list: says actions are attributed to the key", () => {
   assert(/attributed to the KEY/.test(action.description!), action.description);
   assert(/one key per automation/.test(action.description!), action.description);
 });
 
-Deno.test("activity-list: logs a count, not who did what", async () => {
+test("activity-list: logs a count, not who did what", async () => {
   const { ctx, logs } = mockCtx([activities], D);
   await action.execute({}, ctx);
   assertEquals(logs[0].data, { count: 2 });

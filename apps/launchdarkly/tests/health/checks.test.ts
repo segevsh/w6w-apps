@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -19,14 +20,14 @@ const OPERATIONAL = {
   ],
 };
 
-Deno.test("service: probes the status page unsigned, with the host declared", async () => {
+test("service: probes the status page unsigned, with the host declared", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: OPERATIONAL }], conn);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.launchdarkly.com/api/v2/components.json");
   assertEquals(service.network!.allow, ["status.launchdarkly.com"]);
 });
 
-Deno.test("service: reads the five management components", async () => {
+test("service: reads the five management components", async () => {
   const { ctx } = mockCtx([{ status: 200, body: OPERATIONAL }], conn);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -44,7 +45,7 @@ Deno.test("service: reads the five management components", async () => {
  * which no action here touches — watching them would report the wrong outage
  * and miss the right one.
  */
-Deno.test("service: the streaming and polling APIs are NOT what this app watches", async () => {
+test("service: the streaming and polling APIs are NOT what this app watches", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -61,7 +62,7 @@ Deno.test("service: the streaming and polling APIs are NOT what this app watches
   assertEquals(report.components!["server-side-streaming-api"], undefined);
 });
 
-Deno.test("service: an outage on flag targeting is down, and names it", async () => {
+test("service: an outage on flag targeting is down, and names it", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -76,7 +77,7 @@ Deno.test("service: an outage on flag targeting is down, and names it", async ()
   assert(report.message!.includes("Flag targeting"), report.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { components: [component("Authentication", "degraded_performance")] },
@@ -84,7 +85,7 @@ Deno.test("service: degraded performance is degraded, not down", async () => {
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failed = mockCtx([{ status: 503, body: "" }], conn);
   assertEquals((await service.check!({}, failed.ctx)).state, "unknown");
 
@@ -98,7 +99,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
 });
 
 /** The headers are documented in prose but declared on no response. */
-Deno.test("quota: reports the global pair when LaunchDarkly sends it", async () => {
+test("quota: reports the global pair when LaunchDarkly sends it", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     headers: {
@@ -118,14 +119,14 @@ Deno.test("quota: reports the global pair when LaunchDarkly sends it", async () 
   assertEquals(bucket.resetAt, new Date(1787061262429).toISOString());
 });
 
-Deno.test("quota: says so plainly when the headers are absent", async () => {
+test("quota: says so plainly when the headers are absent", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { items: [] } }], conn);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message!.includes("no global rate-limit headers"), report.message);
 });
 
-Deno.test("quota: the route pair is context, never the verdict", async () => {
+test("quota: the route pair is context, never the verdict", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: {
@@ -141,7 +142,7 @@ Deno.test("quota: the route pair is context, never the verdict", async () => {
   assertEquals(report.quota!.find((q) => q.id === "route-per-10s")!.remaining, 1);
 });
 
-Deno.test("quota: a low or spent global allowance is degraded, never down", async () => {
+test("quota: a low or spent global allowance is degraded, never down", async () => {
   for (const remaining of ["0", "5"]) {
     const { ctx } = mockCtx([{
       status: 200,
@@ -157,7 +158,7 @@ Deno.test("quota: a low or spent global allowance is degraded, never down", asyn
   }
 });
 
-Deno.test("quota: an unusable credential is unknown", async () => {
+test("quota: an unusable credential is unknown", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }], conn);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });

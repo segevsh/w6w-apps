@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tableViewsList from "../../actions/table-views-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("table-views-list: calls GET .../tables/{tableId}/views", async () => {
+test("table-views-list: calls GET .../tables/{tableId}/views", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: "view1", name: "Grid view" }]) }]);
   const out = await tableViewsList.execute({ databaseId: "db1", tableId: "tbl1" }, ctx) as {
     data: unknown[];

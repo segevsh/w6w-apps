@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemUserCreate from "../../actions/job-item-user-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-user-create: schedules the user on the item", async () => {
+test("job-item-user-create: schedules the user on the item", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, userId: 42 } }]);
   await jobItemUserCreate.execute({ jobItemId: 88, userId: 42, totalPlannedMinutes: 240 }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("job-item-user-create: schedules the user on the item", async () => {
   assertEquals(bodyOf(calls[0]), { userId: 42, totalPlannedMinutes: 240 });
 });
 
-Deno.test("job-item-user-create: the planned-minutes caveat is in the hint", () => {
+test("job-item-user-create: the planned-minutes caveat is in the hint", () => {
   const param = (jobItemUserCreate.params ?? []).find((p) => p.key === "totalPlannedMinutes");
   assertEquals(/allocates time by person/.test(param?.hint ?? ""), true);
   assertEquals(param?.validation, { integer: true, min: 0 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-submit.ts";
 
-Deno.test("post-submit: submits a self post with title and text", async () => {
+test("post-submit: submits a self post with title and text", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       json: { errors: [], data: { id: "1", name: "t3_1", url: "https://reddit.com/r/test/1" } },
@@ -21,7 +22,7 @@ Deno.test("post-submit: submits a self post with title and text", async () => {
   assertEquals(out, { id: "1", name: "t3_1", url: "https://reddit.com/r/test/1" });
 });
 
-Deno.test("post-submit: submits a link post with url and resubmit", async () => {
+test("post-submit: submits a link post with url and resubmit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { json: { errors: [], data: { id: "2", name: "t3_2", url: "https://example.com" } } },
   }]);
@@ -35,7 +36,7 @@ Deno.test("post-submit: submits a link post with url and resubmit", async () => 
   assertEquals(body.get("text"), null);
 });
 
-Deno.test("post-submit: throws when kind is self without text", async () => {
+test("post-submit: throws when kind is self without text", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => {
@@ -46,7 +47,7 @@ Deno.test("post-submit: throws when kind is self without text", async () => {
   );
 });
 
-Deno.test("post-submit: throws when kind is link without url", async () => {
+test("post-submit: throws when kind is link without url", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => {
@@ -57,6 +58,6 @@ Deno.test("post-submit: throws when kind is link without url", async () => {
   );
 });
 
-Deno.test("post-submit: is not idempotent", () => {
+test("post-submit: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

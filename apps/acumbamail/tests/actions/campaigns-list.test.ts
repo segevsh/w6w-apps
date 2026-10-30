@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignsList from "../../actions/campaigns-list.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaigns-list: POST /api/1/getCampaigns/ with the documented form fields", async () => {
+test("campaigns-list: POST /api/1/getCampaigns/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await campaignsList.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("campaigns-list: POST /api/1/getCampaigns/ with the documented form fi
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("campaigns-list: a vendor error surfaces its status and body", async () => {
+test("campaigns-list: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await campaignsList.execute(
@@ -49,7 +50,7 @@ Deno.test("campaigns-list: a vendor error surfaces its status and body", async (
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("campaigns-list: unset optional fields are not sent", async () => {
+test("campaigns-list: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await campaignsList.execute({} as never, ctx);
   assertEquals(formOf(calls[0]), {});

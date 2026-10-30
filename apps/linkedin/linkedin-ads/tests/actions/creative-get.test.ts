@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creativeGet from "../../actions/creative-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("creative-get: addresses the creative by its full URN, percent-encoded in the path", async () => {
+test("creative-get: addresses the creative by its full URN, percent-encoded in the path", async () => {
   const body = { id: "urn:li:sponsoredCreative:119962155", intendedStatus: "DRAFT" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await creativeGet.execute(
@@ -17,7 +18,7 @@ Deno.test("creative-get: addresses the creative by its full URN, percent-encoded
   assertEquals(result, body);
 });
 
-Deno.test("creative-get: also accepts a full URN as input without double-prefixing", async () => {
+test("creative-get: also accepts a full URN as input without double-prefixing", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await creativeGet.execute(
     { accountId: "1", creativeId: "urn:li:sponsoredCreative:119962155" },

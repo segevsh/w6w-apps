@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import chatDelete from "../../actions/chat-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("chat-delete: DELETEs /v2/chats/{iden}", async () => {
+test("chat-delete: DELETEs /v2/chats/{iden}", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await chatDelete.execute({ iden: "c1" }, ctx) as { deleted: boolean };
 
@@ -11,6 +12,6 @@ Deno.test("chat-delete: DELETEs /v2/chats/{iden}", async () => {
   assertEquals(out.deleted, true);
 });
 
-Deno.test("chat-delete: is declared idempotent", () => {
+test("chat-delete: is declared idempotent", () => {
   assertEquals(chatDelete.idempotent, true);
 });

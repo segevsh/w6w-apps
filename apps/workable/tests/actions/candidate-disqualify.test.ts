@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockWorkableCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-disqualify.ts";
 
-Deno.test("candidate-disqualify: POSTs /candidates/:id/disqualify and returns the status", async () => {
+test("candidate-disqualify: POSTs /candidates/:id/disqualify and returns the status", async () => {
   const { ctx, calls } = mockWorkableCtx([{ status: 200, body: " " }]);
   const out = await action.execute({
     id: "c1",
@@ -21,7 +22,7 @@ Deno.test("candidate-disqualify: POSTs /candidates/:id/disqualify and returns th
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("candidate-disqualify: withdrew: false survives compact() (it is not treated as unset)", async () => {
+test("candidate-disqualify: withdrew: false survives compact() (it is not treated as unset)", async () => {
   const { ctx, calls } = mockWorkableCtx([{ status: 200, body: " " }]);
   await action.execute({ id: "c1", memberId: "m1", withdrew: false }, ctx);
   assertEquals("withdrew" in JSON.parse(calls[0].body!), true);

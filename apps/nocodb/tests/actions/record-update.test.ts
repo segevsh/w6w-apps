@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-update.ts";
 
 const D = { display: { host: "https://nocodb.internal" } };
 
 /** The id travels in the body, which is what makes this a bulk endpoint. */
-Deno.test("record-update: patches with the ids in the body", async () => {
+test("record-update: patches with the ids in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ Id: 1 }, { Id: 2 }] }], D);
   const result = await action.execute({
     tableId: "mtbl1",
@@ -19,7 +20,7 @@ Deno.test("record-update: patches with the ids in the body", async () => {
 });
 
 /** An update with no id is an error NocoDB reports as a missing field. */
-Deno.test("record-update: refuses records with no primary key", async () => {
+test("record-update: refuses records with no primary key", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", records: '[{"Status":"Done"}]' }, ctx),
@@ -31,7 +32,7 @@ Deno.test("record-update: refuses records with no primary key", async () => {
 });
 
 /** A base built on an existing database may key on something else. */
-Deno.test("record-update: honours a different primary key column", async () => {
+test("record-update: honours a different primary key column", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ sku: "A1" }] }], D);
   const result = await action.execute({
     tableId: "mtbl1",
@@ -44,7 +45,7 @@ Deno.test("record-update: honours a different primary key column", async () => {
 });
 
 /** Clearing a field means sending null, not omitting it. */
-Deno.test("record-update: names the fields explicitly set to null", async () => {
+test("record-update: names the fields explicitly set to null", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ Id: 1 }] }], D);
   const result = await action.execute({
     tableId: "mtbl1",
@@ -53,7 +54,7 @@ Deno.test("record-update: names the fields explicitly set to null", async () => 
   assertEquals(result.clearedFields, ["Assignee"]);
 });
 
-Deno.test("record-update: says there is no conditional update", () => {
+test("record-update: says there is no conditional update", () => {
   assert(/concurrent writes race silently/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

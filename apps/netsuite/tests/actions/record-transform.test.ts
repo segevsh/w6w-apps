@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordTransform from "../../actions/record-transform.ts";
 import { BASE, created, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("record-transform: POSTs to /<from>/<id>/!transform/<to> and returns the new id", async () => {
+test("record-transform: POSTs to /<from>/<id>/!transform/<to> and returns the new id", async () => {
   const { ctx, calls } = mockCtx([created("invoice", "5001")]);
   const out = await run(
     recordTransform,
@@ -15,7 +16,7 @@ Deno.test("record-transform: POSTs to /<from>/<id>/!transform/<to> and returns t
   assertEquals(out.id, "5001");
 });
 
-Deno.test("record-transform: field overrides become the body", async () => {
+test("record-transform: field overrides become the body", async () => {
   const { ctx, calls } = mockCtx([created("creditMemo", "9")]);
   await run(recordTransform, {
     fromType: "invoice",
@@ -26,7 +27,7 @@ Deno.test("record-transform: field overrides become the body", async () => {
   assertEquals(calls[0].body, '{"toBeEmailed":false}');
 });
 
-Deno.test("record-transform: the target type is validated too", async () => {
+test("record-transform: the target type is validated too", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await run(recordTransform, { fromType: "salesOrder", id: "3", toType: "x/y" }, ctx),

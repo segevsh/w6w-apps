@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/broadcast-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("broadcast-list: is a read action that declares the shared pagination params", () => {
+test("broadcast-list: is a read action that declares the shared pagination params", () => {
   assertEquals(action.key, "broadcast-list");
   assertEquals(action.type, "read");
   const keys = action.params!.map((p) => p.key);
@@ -10,7 +11,7 @@ Deno.test("broadcast-list: is a read action that declares the shared pagination 
   assertEquals(keys.includes("q"), true);
 });
 
-Deno.test("broadcast-list: GETs /api/v2/broadcasts and folds the data/pagination envelope", async () => {
+test("broadcast-list: GETs /api/v2/broadcasts and folds the data/pagination envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: listBody([{ id: 1 }, { id: 2 }], { page: 1, per_page: 20, total: 2, total_pages: 1 }) },
   ]);
@@ -23,7 +24,7 @@ Deno.test("broadcast-list: GETs /api/v2/broadcasts and folds the data/pagination
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("broadcast-list: maps its inputs onto Simplero's snake_case / bracketed query keys", async () => {
+test("broadcast-list: maps its inputs onto Simplero's snake_case / bracketed query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody([]) }]);
   await action.execute(
     { ...{ state: "delivered", listId: 9 }, page: 2, perPage: 50, after: 100 },
@@ -37,13 +38,13 @@ Deno.test("broadcast-list: maps its inputs onto Simplero's snake_case / brackete
   });
 });
 
-Deno.test("broadcast-list: sends the free-text search as q", async () => {
+test("broadcast-list: sends the free-text search as q", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody([]) }]);
   await action.execute({ q: "anna" }, ctx);
   assertEquals(queryOf(calls[0].url), { q: "anna" });
 });
 
-Deno.test("broadcast-list: hasMore is true while pages remain", async () => {
+test("broadcast-list: hasMore is true while pages remain", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody([{ id: 1 }], {
@@ -61,7 +62,7 @@ Deno.test("broadcast-list: hasMore is true while pages remain", async () => {
   assertEquals(out.totalPages, 3);
 });
 
-Deno.test("broadcast-list: under cursor paging a full page means more may follow", async () => {
+test("broadcast-list: under cursor paging a full page means more may follow", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody([{ id: 5 }, { id: 6 }], {
@@ -79,12 +80,12 @@ Deno.test("broadcast-list: under cursor paging a full page means more may follow
   assertEquals(out.page, null);
 });
 
-Deno.test("broadcast-list: a Bad API key 401 surfaces Simplero's own message", async () => {
+test("broadcast-list: a Bad API key 401 surfaces Simplero's own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Bad API key" } }]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "Bad API key");
 });
 
-Deno.test("broadcast-list: a 200 whose body is not a data array is an error", async () => {
+test("broadcast-list: a 200 whose body is not a data array is an error", async () => {
   const { ctx } = mockCtx([{ body: { nope: true } }]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "no `data` array");
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accessToken, {
   authHeaders,
   explainProbeFailure,
@@ -6,7 +7,7 @@ import accessToken, {
 } from "../../auth/access-token.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("access-token: sign stamps the bearer header and nothing else", () => {
+test("access-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     url: "https://api.companycam.com/v2/projects",
     method: "GET",
@@ -22,7 +23,7 @@ Deno.test("access-token: sign stamps the bearer header and nothing else", () => 
   assertEquals(Object.keys(signed.headers), ["authorization"]);
 });
 
-Deno.test("access-token: the token never appears in a URL", () => {
+test("access-token: the token never appears in a URL", () => {
   const request = {
     url: "https://api.companycam.com/v2/projects",
     method: "GET",
@@ -37,11 +38,11 @@ Deno.test("access-token: the token never appears in a URL", () => {
   assert(!request.url.includes("tok_live"), "the credential leaked into the URL");
 });
 
-Deno.test("access-token: authHeaders is the one place the wire format is built", () => {
+test("access-token: authHeaders is the one place the wire format is built", () => {
   assertEquals(authHeaders({ accessToken: "abc" }), { authorization: "Bearer abc" });
 });
 
-Deno.test("access-token: test probes /users/current, not a webhook read", async () => {
+test("access-token: test probes /users/current, not a webhook read", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", email_address: "a@b.com" } }]);
   assertEquals(await accessToken.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/v2/users/current");
@@ -49,14 +50,14 @@ Deno.test("access-token: test probes /users/current, not a webhook read", async 
   assertEquals(PROBE_PATH, "/users/current");
 });
 
-Deno.test("access-token: a missing credential fails before any request", async () => {
+test("access-token: a missing credential fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await accessToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: a 401 names both causes rather than guessing one", async () => {
+test("access-token: a 401 names both causes rather than guessing one", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthorized") }]);
   const result = await accessToken.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
@@ -67,18 +68,18 @@ Deno.test("access-token: a 401 names both causes rather than guessing one", asyn
   assert(!result.message!.includes("bad"), "the probe echoed the credential");
 });
 
-Deno.test("access-token: an HTML answer is reported as never reaching the API", () => {
+test("access-token: an HTML answer is reported as never reaching the API", () => {
   const message = explainProbeFailure(200, "text/html; charset=utf-8", "<html>Sign in</html>");
   assert(/did not reach/.test(message), message);
 });
 
-Deno.test("access-token: a 403 blames the plan, not the token", () => {
+test("access-token: a 403 blames the plan, not the token", () => {
   const message = explainProbeFailure(403, "application/json", '{"errors":["Forbidden"]}');
   assert(/403/.test(message));
   assert(/Pro, Premium or Elite/.test(message), message);
 });
 
-Deno.test("access-token: afterConnect publishes the email and drops the rest", async () => {
+test("access-token: afterConnect publishes the email and drops the rest", async () => {
   const { ctx } = mockCtx([{
     body: {
       id: "9",
@@ -104,12 +105,12 @@ Deno.test("access-token: afterConnect publishes the email and drops the rest", a
   assert(!serialised.includes("profile_image"), "the profile image was published");
 });
 
-Deno.test("access-token: a failed afterConnect is silent, not fatal", async () => {
+test("access-token: a failed afterConnect is silent, not fatal", async () => {
   const { ctx } = mockCtx([{ status: 500, body: errorBody("boom") }]);
   assertEquals(await accessToken.afterConnect!({ credential: { accessToken: "t" } }, ctx), {});
 });
 
-Deno.test("access-token: the credential field is a secret", () => {
+test("access-token: the credential field is a secret", () => {
   assertEquals(accessToken.key, "access-token");
   assertEquals(accessToken.type, "bearer");
   assertEquals(accessToken.fields?.length, 1);

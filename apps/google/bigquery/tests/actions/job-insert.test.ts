@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-insert.ts";
 
 const display = { projectId: "p1" };
 
-Deno.test("job-insert: posts the configuration as given", async () => {
+test("job-insert: posts the configuration as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "p1:j1" } }], { display });
   await action.execute!({
     configuration: '{"query":{"query":"SELECT 1","useLegacySql":false}}',
@@ -14,7 +15,7 @@ Deno.test("job-insert: posts the configuration as given", async () => {
 });
 
 /** BigQuery takes exactly one job type; naming both beats a vague 400. */
-Deno.test("job-insert: refuses a configuration with two job types", async () => {
+test("job-insert: refuses a configuration with two job types", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ configuration: '{"query":{},"load":{}}' }, ctx),
@@ -24,7 +25,7 @@ Deno.test("job-insert: refuses a configuration with two job types", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-insert: refuses a configuration with no job type", async () => {
+test("job-insert: refuses a configuration with no job type", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ configuration: '{"nope":{}}' }, ctx),
@@ -35,7 +36,7 @@ Deno.test("job-insert: refuses a configuration with no job type", async () => {
 });
 
 /** A supplied job id is what makes a retry re-attach instead of double-running. */
-Deno.test("job-insert: the opt-in derives a job id from the invocation", async () => {
+test("job-insert: the opt-in derives a job id from the invocation", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   (ctx as { invocation?: unknown }).invocation = { invocationId: "inv-1:2" };
   await action.execute!({
@@ -48,6 +49,6 @@ Deno.test("job-insert: the opt-in derives a job id from the invocation", async (
   assertEquals(ref.projectId, "p1");
 });
 
-Deno.test("job-insert: is honestly non-idempotent", () => {
+test("job-insert: is honestly non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

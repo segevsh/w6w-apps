@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formRestore from "../../actions/form-restore.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-restore: POSTs to /forms/{formId}/restore", async () => {
+test("form-restore: POSTs to /forms/{formId}/restore", async () => {
   const { ctx, calls } = mockCtx([{ body: { form_id: "f1" } }]);
   await formRestore.execute({ formId: "f1", folderId: "folder-1" }, ctx);
   assertEquals(calls[0].method, "POST");

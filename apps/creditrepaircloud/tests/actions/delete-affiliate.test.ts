@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deleteAffiliate from "../../actions/delete-affiliate.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("delete-affiliate: wraps the id in <affiliate> and POSTs to deleteRecord", async () => {
+test("delete-affiliate: wraps the id in <affiliate> and POSTs to deleteRecord", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   const out = await deleteAffiliate.execute({ id: "Ag==" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("delete-affiliate: wraps the id in <affiliate> and POSTs to deleteReco
   assertEquals(out.result, null);
 });
 
-Deno.test("delete-affiliate: a second delete surfaces the vendor's 4417", async () => {
+test("delete-affiliate: a second delete surfaces the vendor's 4417", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4417, "Incorrect Affiliate ID") }]);
   await assertRejects(
     async () => {

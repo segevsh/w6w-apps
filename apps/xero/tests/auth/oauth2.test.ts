@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, mockXeroCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: asks for offline_access so scheduled runs keep working", () => {
+test("oauth2: asks for offline_access so scheduled runs keep working", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://login.xero.com/identity/connect/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://identity.xero.com/connect/token");
   assertEquals(auth.oauth2?.revokeUrl, "https://identity.xero.com/connect/revocation");
@@ -14,7 +15,7 @@ Deno.test("oauth2: asks for offline_access so scheduled runs keep working", () =
   assert(auth.oauth2?.scopes?.includes("accounting.settings"));
 });
 
-Deno.test("sign: stamps Authorization and Xero-tenant-id from the connection's display", async () => {
+test("sign: stamps Authorization and Xero-tenant-id from the connection's display", async () => {
   const { ctx } = mockXeroCtx([], { tenantId: "tenant-1" });
   const request = { url: "https://api.xero.com/api.xro/2.0/Contacts", method: "GET", headers: {} };
   const signed = await auth.sign!({ request, credential: { accessToken: "tok" } }, ctx);
@@ -22,7 +23,7 @@ Deno.test("sign: stamps Authorization and Xero-tenant-id from the connection's d
   assertEquals(signed.headers["xero-tenant-id"], "tenant-1");
 });
 
-Deno.test("sign: omits the tenant header when the connection has none yet", async () => {
+test("sign: omits the tenant header when the connection has none yet", async () => {
   const { ctx } = mockCtx();
   const request = { url: "https://api.xero.com/connections", method: "GET", headers: {} };
   const signed = await auth.sign!({ request, credential: { accessToken: "tok" } }, ctx);
@@ -30,7 +31,7 @@ Deno.test("sign: omits the tenant header when the connection has none yet", asyn
   assertEquals("xero-tenant-id" in signed.headers, false);
 });
 
-Deno.test("oauth2: test rejects a token that reaches no Xero organisation", async () => {
+test("oauth2: test rejects a token that reaches no Xero organisation", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), {
     ok: false,
@@ -40,12 +41,12 @@ Deno.test("oauth2: test rejects a token that reaches no Xero organisation", asyn
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test accepts a token with at least one accessible organisation", async () => {
+test("oauth2: test accepts a token with at least one accessible organisation", async () => {
   const { ctx } = mockCtx([{ body: [{ tenantId: "t1", tenantName: "Acme" }] }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
 });
 
-Deno.test("oauth2: afterConnect resolves the FIRST tenant the client needs", async () => {
+test("oauth2: afterConnect resolves the FIRST tenant the client needs", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { tenantId: "t1", tenantName: "Acme Ltd", tenantType: "ORGANISATION" },
@@ -64,7 +65,7 @@ Deno.test("oauth2: afterConnect resolves the FIRST tenant the client needs", asy
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when no organisation is accessible", async () => {
+test("oauth2: afterConnect degrades to {} when no organisation is accessible", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx), {});
 });

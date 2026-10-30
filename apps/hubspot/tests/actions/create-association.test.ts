@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-association.ts";
 
-Deno.test("create-association: PUTs the v4 default-label association endpoint", async () => {
+test("create-association: PUTs the v4 default-label association endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

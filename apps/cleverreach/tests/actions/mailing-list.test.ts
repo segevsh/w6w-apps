@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/mailing-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("mailing-list: calls GET /v3/mailings with filters", async () => {
+test("mailing-list: calls GET /v3/mailings with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "m1", name: "Spring" }] }]);
   const out = await action.execute({
     state: "finished",
@@ -26,7 +27,7 @@ Deno.test("mailing-list: calls GET /v3/mailings with filters", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("mailing-list: keeps the documented limit ceiling for a non-all state", async () => {
+test("mailing-list: keeps the documented limit ceiling for a non-all state", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ state: "draft", limit: 500 }, ctx),

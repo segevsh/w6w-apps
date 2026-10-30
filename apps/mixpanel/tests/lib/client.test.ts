@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { hostFor, MixpanelClient, normalizeRegion, queryDate } from "../../lib/client.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
 /** Three host families, three regions each — nine hosts, all verified live. */
-Deno.test("hostFor: each plane has its own host family", () => {
+test("hostFor: each plane has its own host family", () => {
   assertEquals(hostFor("query", "us"), "https://mixpanel.com");
   assertEquals(hostFor("ingest", "us"), "https://api.mixpanel.com");
   assertEquals(hostFor("export", "us"), "https://data.mixpanel.com");
@@ -19,32 +20,32 @@ Deno.test("hostFor: each plane has its own host family", () => {
   assertEquals(hostFor("export", "in"), "https://data-in.mixpanel.com");
 });
 
-Deno.test("normalizeRegion: anything unrecognised falls back to us", () => {
+test("normalizeRegion: anything unrecognised falls back to us", () => {
   assertEquals(normalizeRegion("EU"), "eu");
   assertEquals(normalizeRegion("mars"), "us");
   assertEquals(normalizeRegion(undefined), "us");
 });
 
 /** One service account can reach many projects, so every call names one. */
-Deno.test("client: project_id is appended to every request", async () => {
+test("client: project_id is appended to every request", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await new MixpanelClient(ctx).request("/api/query/segmentation");
   assertEquals(new URL(calls[0].url).searchParams.get("project_id"), "123");
 });
 
-Deno.test("client: routes that carry the project in the path skip the parameter", async () => {
+test("client: routes that carry the project in the path skip the parameter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await new MixpanelClient(ctx).request("/api/app/projects/123/schemas", { noProjectId: true });
   assertEquals(new URL(calls[0].url).searchParams.get("project_id"), null);
 });
 
-Deno.test("client: a connection with no project id fails with a fixable message", () => {
+test("client: a connection with no project id fails with a fixable message", () => {
   const { ctx } = mockCtx([], { display: { region: "us" } });
   assertThrows(() => new MixpanelClient(ctx), Error, "project id");
 });
 
 /** The Query API sends no rate-limit headers; a 429 is the whole signal. */
-Deno.test("client: a 429 explains the sixty-an-hour limit", async () => {
+test("client: a 429 explains the sixty-an-hour limit", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { error: "too many requests" } }], conn);
   const err = await assertRejects(
     async () => await new MixpanelClient(ctx).request("/api/query/segmentation"),
@@ -53,7 +54,7 @@ Deno.test("client: a 429 explains the sixty-an-hour limit", async () => {
 });
 
 /** strict=1 reports per-record failures; the first one is the useful part. */
-Deno.test("client: an import failure surfaces the first failed record", async () => {
+test("client: an import failure surfaces the first failed record", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -76,7 +77,7 @@ Deno.test("client: an import failure surfaces the first failed record", async ()
 });
 
 /** The export API answers JSONL — JSON.parse on the whole body would fail. */
-Deno.test("client: requestJsonl parses one object per line", async () => {
+test("client: requestJsonl parses one object per line", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: '{"event":"a","properties":{"time":1}}\n{"event":"b","properties":{"time":2}}\n',
@@ -88,7 +89,7 @@ Deno.test("client: requestJsonl parses one object per line", async () => {
   assertEquals(new URL(calls[0].url).host, "data.mixpanel.com");
 });
 
-Deno.test("client: a non-JSON line in an export is reported, not swallowed", async () => {
+test("client: a non-JSON line in an export is reported, not swallowed", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "{}\nnot json\n" }], conn);
   await assertRejects(
     async () => await new MixpanelClient(ctx).requestJsonl("/api/2.0/export", { plane: "export" }),
@@ -97,7 +98,7 @@ Deno.test("client: a non-JSON line in an export is reported, not swallowed", asy
   );
 });
 
-Deno.test("queryDate: accepts yyyy-mm-dd, truncates an ISO timestamp, rejects rubbish", () => {
+test("queryDate: accepts yyyy-mm-dd, truncates an ISO timestamp, rejects rubbish", () => {
   assertEquals(queryDate("2026-08-18", "fromDate"), "2026-08-18");
   assertEquals(queryDate("2026-08-18T13:45:00Z", "fromDate"), "2026-08-18");
   assertEquals(queryDate("", "fromDate"), undefined);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-templated-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("send-templated-email: posts template_id and template_data to /emails/template", async () => {
+test("send-templated-email: posts template_id and template_data to /emails/template", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, message: "ok", data: { reference_id: "b".repeat(24) } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("send-templated-email: posts template_id and template_data to /emails/
   assertEquals(out.referenceId, "b".repeat(24));
 });
 
-Deno.test("send-templated-email: template_data is omitted when unset; a bad id throws", async () => {
+test("send-templated-email: template_data is omitted when unset; a bad id throws", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { reference_id: "c".repeat(24) } },
   }]);

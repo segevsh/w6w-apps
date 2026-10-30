@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobCreate from "../../actions/job-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-create: POSTs the required fields", async () => {
+test("job-create: POSTs the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { jnid: "j1" } }]);
   await jobCreate.execute({
     name: "Kenny G's Roof",
@@ -19,7 +20,7 @@ Deno.test("job-create: POSTs the required fields", async () => {
   });
 });
 
-Deno.test("job-create: primary_contact_jnid becomes the nested primary.id JobNimbus expects", async () => {
+test("job-create: primary_contact_jnid becomes the nested primary.id JobNimbus expects", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await jobCreate.execute({
     name: "Kenny G's Roof",
@@ -33,6 +34,6 @@ Deno.test("job-create: primary_contact_jnid becomes the nested primary.id JobNim
   assertEquals("primary_contact_jnid" in body, false);
 });
 
-Deno.test("job-create: is not marked idempotent", () => {
+test("job-create: is not marked idempotent", () => {
   assertEquals(jobCreate.idempotent, false);
 });

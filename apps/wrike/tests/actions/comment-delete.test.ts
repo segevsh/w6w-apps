@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentDelete from "../../actions/comment-delete.ts";
 import { mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-delete: DELETEs /comments/{commentId}", async () => {
+test("comment-delete: DELETEs /comments/{commentId}", async () => {
   const { ctx, calls } = mockWrikeCtx([{ status: 200, body: {} }]);
   const out = await commentDelete.execute({ commentId: "C1" }, ctx) as { status: number };
   assertEquals(calls[0].method, "DELETE");

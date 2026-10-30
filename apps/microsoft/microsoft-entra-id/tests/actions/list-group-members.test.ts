@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-group-members.ts";
 
-Deno.test("list-group-members: GETs /groups/{id}/members", async () => {
+test("list-group-members: GETs /groups/{id}/members", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [{ id: "u1" }] } }]);
   const out = await action.execute({ groupId: "g1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/groups/g1/members");
@@ -10,7 +11,7 @@ Deno.test("list-group-members: GETs /groups/{id}/members", async () => {
   assertEquals(out.value.length, 1);
 });
 
-Deno.test("list-group-members: a member type adds the OData cast and switches advanced on", async () => {
+test("list-group-members: a member type adds the OData cast and switches advanced on", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ groupId: "g1", memberType: "user" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/groups/g1/members/microsoft.graph.user");
@@ -18,13 +19,13 @@ Deno.test("list-group-members: a member type adds the OData cast and switches ad
   assertEquals(new URL(calls[0].url).searchParams.get("$count"), "true");
 });
 
-Deno.test("list-group-members: 'all' means no cast", async () => {
+test("list-group-members: 'all' means no cast", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ groupId: "g1", memberType: "all" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/groups/g1/members");
 });
 
-Deno.test("list-group-members: an unsupported cast is Graph's 400 Request_UnsupportedQuery", async () => {
+test("list-group-members: an unsupported cast is Graph's 400 Request_UnsupportedQuery", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { code: "Request_UnsupportedQuery", message: "unsupported" } },
@@ -36,6 +37,6 @@ Deno.test("list-group-members: an unsupported cast is Graph's 400 Request_Unsupp
   );
 });
 
-Deno.test("list-group-members: offers no $orderby (the reference does not list it)", () => {
+test("list-group-members: offers no $orderby (the reference does not list it)", () => {
   assert(!action.params!.some((p) => p.key === "orderby"));
 });

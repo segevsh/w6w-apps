@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-calendar-view.ts";
 
-Deno.test("list-calendar-view: GETs the default calendar's view with the required range", async () => {
+test("list-calendar-view: GETs the default calendar's view with the required range", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [{ id: "e1" }] } }]);
   const out = await action.execute({
     startDateTime: "2026-08-01T00:00:00-07:00",
@@ -17,7 +18,7 @@ Deno.test("list-calendar-view: GETs the default calendar's view with the require
   assertEquals(out.value.length, 1);
 });
 
-Deno.test("list-calendar-view: uses the plural per-calendar form when scoped", async () => {
+test("list-calendar-view: uses the plural per-calendar form when scoped", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({
     calendarId: "cal-1",
@@ -27,7 +28,7 @@ Deno.test("list-calendar-view: uses the plural per-calendar form when scoped", a
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/calendars/cal-1/calendarView");
 });
 
-Deno.test("list-calendar-view: the range params are not OData `$` parameters", async () => {
+test("list-calendar-view: the range params are not OData `$` parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({
     startDateTime: "2026-08-01T00:00:00Z",
@@ -38,12 +39,12 @@ Deno.test("list-calendar-view: the range params are not OData `$` parameters", a
   assertEquals(params.get("startDateTime"), "2026-08-01T00:00:00Z");
 });
 
-Deno.test("list-calendar-view: declares both range bounds required", () => {
+test("list-calendar-view: declares both range bounds required", () => {
   assertEquals(action.params?.find((p) => p.key === "startDateTime")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "endDateTime")?.required, true);
 });
 
-Deno.test("list-calendar-view: follows nextLink across pages", async () => {
+test("list-calendar-view: follows nextLink across pages", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/calendar/calendarView?$skip=50";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },

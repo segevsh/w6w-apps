@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectDelete from "../../actions/prospect-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("prospect-delete: DELETE /prospects/{id} and report deleted on 204", async () => {
+test("prospect-delete: DELETE /prospects/{id} and report deleted on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await prospectDelete.execute({ id: 5 }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("prospect-delete: DELETE /prospects/{id} and report deleted on 204", a
   assertEquals(out, { deleted: true, id: 5 });
 });
 
-Deno.test("prospect-delete: id 0 is refused before any request", async () => {
+test("prospect-delete: id 0 is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await prospectDelete.execute({ id: 0 }, ctx),
@@ -22,7 +23,7 @@ Deno.test("prospect-delete: id 0 is refused before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("prospect-delete: a 422 is reported with its pointer", async () => {
+test("prospect-delete: a 422 is reported with its pointer", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

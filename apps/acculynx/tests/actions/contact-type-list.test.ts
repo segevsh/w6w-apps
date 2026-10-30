@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-type-list.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-type-list: sends GET /contacts/contact-types and returns the vendor body", async () => {
+test("contact-type-list: sends GET /contacts/contact-types and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       count: 2,
@@ -26,7 +27,7 @@ Deno.test("contact-type-list: sends GET /contacts/contact-types and returns the 
   });
 });
 
-Deno.test("contact-type-list: a vendor error surfaces its title and status", async () => {
+test("contact-type-list: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ startIndex: 1 } as never, ctx),

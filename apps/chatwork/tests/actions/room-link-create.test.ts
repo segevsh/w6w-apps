@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomLinkCreate from "../../actions/room-link-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-link-create: POSTs the given fields", async () => {
+test("room-link-create: POSTs the given fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { public: true, url: "https://x", need_acceptance: false },
   }]);
@@ -22,7 +23,7 @@ Deno.test("room-link-create: POSTs the given fields", async () => {
   assertEquals(out, { public: true, url: "https://x", need_acceptance: false });
 });
 
-Deno.test("room-link-create: needAcceptance defaults to the vendor's own default (omitted)", async () => {
+test("room-link-create: needAcceptance defaults to the vendor's own default (omitted)", async () => {
   const { ctx, calls } = mockCtx([{ body: { public: true } }]);
   await roomLinkCreate.execute({ roomId: "5" }, ctx);
   assertEquals(formOf(calls[0]), {});

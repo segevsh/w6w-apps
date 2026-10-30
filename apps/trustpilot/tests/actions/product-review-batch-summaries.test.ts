@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/product-review-batch-summaries.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("product-review-batch-summaries: POSTs a parsed SKU array and returns items", async () => {
+test("product-review-batch-summaries: POSTs a parsed SKU array and returns items", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -24,7 +25,7 @@ Deno.test("product-review-batch-summaries: POSTs a parsed SKU array and returns 
   assertEquals(out.items[0].sku, "ABCD-1234");
 });
 
-Deno.test("product-review-batch-summaries: rejects when no SKU survives parsing", async () => {
+test("product-review-batch-summaries: rejects when no SKU survives parsing", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ businessUnitId: "bu1", skus: "  ,  \n " }, ctx),

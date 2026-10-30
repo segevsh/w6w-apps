@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-copy.ts";
 
-Deno.test("file-copy: POSTs /files/{id}/copy with body + all-drives flags", async () => {
+test("file-copy: POSTs /files/{id}/copy with body + all-drives flags", async () => {
   const body = { id: "new-1", name: "Copy of Report" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(

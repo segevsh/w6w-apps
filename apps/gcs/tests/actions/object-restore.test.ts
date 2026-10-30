@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-restore.ts";
 
@@ -7,7 +8,7 @@ const restored = {
   body: { name: "logs/a.log", generation: "1700000000009999", size: "1024" },
 };
 
-Deno.test("object-restore: posts to the restore path with the generation", async () => {
+test("object-restore: posts to the restore path with the generation", async () => {
   const { ctx, calls } = mockCtx([restored]);
   const result = await action.execute(
     { bucket: "uploads", object: "logs/a.log", generation: "1700000000000001" },
@@ -21,7 +22,7 @@ Deno.test("object-restore: posts to the restore path with the generation", async
 });
 
 /** There is nothing to restore without naming which version. */
-Deno.test("object-restore: the generation is required, and says which listing shows it", async () => {
+test("object-restore: the generation is required, and says which listing shows it", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -36,7 +37,7 @@ Deno.test("object-restore: the generation is required, and says which listing sh
 });
 
 /** A restore is additive: nothing is displaced. */
-Deno.test("object-restore: the restored copy gets a NEW generation", async () => {
+test("object-restore: the restored copy gets a NEW generation", async () => {
   const { ctx } = mockCtx([restored]);
   const result = await action.execute(
     { bucket: "uploads", object: "logs/a.log", generation: "1700000000000001" },
@@ -48,7 +49,7 @@ Deno.test("object-restore: the restored copy gets a NEW generation", async () =>
   assert(/becomes a new current version/.test(action.description!), action.description);
 });
 
-Deno.test("object-restore: the ACL can be carried over", async () => {
+test("object-restore: the ACL can be carried over", async () => {
   const { ctx, calls } = mockCtx([restored]);
   await action.execute({
     bucket: "uploads",
@@ -67,7 +68,7 @@ Deno.test("object-restore: the ACL can be carried over", async () => {
 });
 
 /** Outside the window there is nothing to bring back. */
-Deno.test("object-restore: a generation that no longer exists surfaces the 404", async () => {
+test("object-restore: a generation that no longer exists surfaces the 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: { message: "No such object" } } }]);
   let message = "";
   try {
@@ -78,7 +79,7 @@ Deno.test("object-restore: a generation that no longer exists surfaces the 404",
   assert(/404/.test(message), message);
 });
 
-Deno.test("object-restore: logs which generation it restored from", async () => {
+test("object-restore: logs which generation it restored from", async () => {
   const { ctx, logs } = mockCtx([restored]);
   await action.execute(
     { bucket: "uploads", object: "logs/a.log", generation: "1700000000000001" },

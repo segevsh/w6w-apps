@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keyGet from "../../actions/key-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("key-get: reads a key including translations by default", async () => {
+test("key-get: reads a key including translations by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { key_id: 331223, translations: [] } }]);
   const out = await keyGet.execute({ projectId: "p1", keyId: 331223 }, ctx);
   assertEquals(pathOf(calls[0].url), "/api2/projects/p1/keys/331223");
@@ -10,7 +11,7 @@ Deno.test("key-get: reads a key including translations by default", async () => 
   assertEquals(out, { key_id: 331223, translations: [] });
 });
 
-Deno.test("key-get: can turn off translations and add comments/screenshots", async () => {
+test("key-get: can turn off translations and add comments/screenshots", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await keyGet.execute(
     {

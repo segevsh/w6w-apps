@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ function summary(apiStatus: string): Record<string, unknown> {
   };
 }
 
-Deno.test("service: calls the real Statuspage summary endpoint", async () => {
+test("service: calls the real Statuspage summary endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   await service.check!({}, ctx);
 
@@ -20,26 +21,26 @@ Deno.test("service: calls the real Statuspage summary endpoint", async () => {
   assertEquals(pathOf(calls[0].url), "/api/v2/summary.json");
 });
 
-Deno.test("service: operational -> ok", async () => {
+test("service: operational -> ok", async () => {
   const { ctx } = mockCtx([{ body: summary("operational") }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: major_outage -> down", async () => {
+test("service: major_outage -> down", async () => {
   const { ctx } = mockCtx([{ body: summary("major_outage") }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: degraded_performance -> degraded, with a message", async () => {
+test("service: degraded_performance -> degraded, with a message", async () => {
   const { ctx } = mockCtx([{ body: summary("degraded_performance") }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "degraded");
   assertEquals(out.message?.includes("API"), true);
 });
 
-Deno.test("service: only reads the API component, not the page's worst component", async () => {
+test("service: only reads the API component, not the page's worst component", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -55,7 +56,7 @@ Deno.test("service: only reads the API component, not the page's worst component
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: a non-ok status response is unknown, not down", async () => {
+test("service: a non-ok status response is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: undefined }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import intlVerify from "../../actions/intl-verify.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("intl-verify: sends the split fields plus the country", async () => {
+test("intl-verify: sends the split fields plus the country", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "intl_ver_1", deliverability: "deliverable" } }]);
   const out = await intlVerify.execute({
     country: "GB",
@@ -22,7 +23,7 @@ Deno.test("intl-verify: sends the split fields plus the country", async () => {
   assertEquals(out.deliverability, "deliverable");
 });
 
-Deno.test("intl-verify: free-form address and output language header", async () => {
+test("intl-verify: free-form address and output language header", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "intl_ver_2" } }]);
   await intlVerify.execute({
     country: "DE",
@@ -33,7 +34,7 @@ Deno.test("intl-verify: free-form address and output language header", async () 
   assertEquals(calls[0].headers["x-lang-output"], "native");
 });
 
-Deno.test("intl-verify: mixing free-form and fields is refused", async () => {
+test("intl-verify: mixing free-form and fields is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await intlVerify.execute({ country: "GB", address: "x", city: "y" }, ctx),
@@ -43,7 +44,7 @@ Deno.test("intl-verify: mixing free-form and fields is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("intl-verify: no address at all is refused", async () => {
+test("intl-verify: no address at all is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await intlVerify.execute({ country: "GB" }, ctx),
@@ -52,7 +53,7 @@ Deno.test("intl-verify: no address at all is refused", async () => {
   );
 });
 
-Deno.test("intl-verify: a rejected request surfaces Lob's code", async () => {
+test("intl-verify: a rejected request surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "country is invalid", 422) }]);
   await assertRejects(
     async () => await intlVerify.execute({ country: "ZZ", primaryLine: "x" }, ctx),

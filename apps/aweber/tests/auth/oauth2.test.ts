@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2, { authHeaders, PROBE_PATH } from "../../auth/oauth2.ts";
 import { authError, endpointError, entries, mockCtx, pathOf } from "../_helpers.ts";
 
 const TOKEN = "unitTestFixtureAccessTokenNotReal00000";
 
-Deno.test("oauth2: sign stamps the bearer header and nothing else", () => {
+test("oauth2: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.aweber.com/1.0/accounts",
@@ -20,15 +21,15 @@ Deno.test("oauth2: sign stamps the bearer header and nothing else", () => {
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("oauth2: authHeaders is the single source of the wire format", () => {
+test("oauth2: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ accessToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("oauth2: the probe is /accounts", () => {
+test("oauth2: the probe is /accounts", () => {
   assertEquals(PROBE_PATH, "/accounts");
 });
 
-Deno.test("oauth2: test passes when /accounts answers", async () => {
+test("oauth2: test passes when /accounts answers", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ id: 123 }]) }]);
   const result = await oauth2.test({ credential: { accessToken: TOKEN } }, ctx);
 
@@ -37,7 +38,7 @@ Deno.test("oauth2: test passes when /accounts answers", async () => {
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("oauth2: test fails with no token, without making a request", async () => {
+test("oauth2: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await oauth2.test({ credential: {} }, ctx);
 
@@ -50,7 +51,7 @@ Deno.test("oauth2: test fails with no token, without making a request", async ()
  * revoked token answers with, and is a different shape than every other
  * error in this API. Distinguishing it is the whole point of this test.
  */
-Deno.test("oauth2: an invalid/expired token is reported distinctly (RFC 6750 shape)", async () => {
+test("oauth2: an invalid/expired token is reported distinctly (RFC 6750 shape)", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -69,7 +70,7 @@ Deno.test("oauth2: an invalid/expired token is reported distinctly (RFC 6750 sha
  * or rate limit, all with the identical `type: "ForbiddenError"`. The probe
  * must not claim more certainty than the vendor's own response carries.
  */
-Deno.test("oauth2: a 403 is reported as ambiguous, not as a specific cause", async () => {
+test("oauth2: a 403 is reported as ambiguous, not as a specific cause", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: endpointError("ForbiddenError", "Rate Limit Error") },
   ]);
@@ -80,7 +81,7 @@ Deno.test("oauth2: a 403 is reported as ambiguous, not as a specific cause", asy
   assert(/scope|suspended|rate limit/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2: a 500 is reported as an HTTP failure", async () => {
+test("oauth2: a 500 is reported as an HTTP failure", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await oauth2.test({ credential: { accessToken: TOKEN } }, ctx);
 
@@ -88,7 +89,7 @@ Deno.test("oauth2: a 500 is reported as an HTTP failure", async () => {
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2: afterConnect publishes the first account's id", async () => {
+test("oauth2: afterConnect publishes the first account's id", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ id: 12345 }]) }]);
   const display = await oauth2.afterConnect!({ credential: { accessToken: TOKEN } }, ctx);
 
@@ -96,7 +97,7 @@ Deno.test("oauth2: afterConnect publishes the first account's id", async () => {
   assertEquals(display, { account: { id: 12345 } });
 });
 
-Deno.test("oauth2: afterConnect stays silent when the read fails or is empty", async () => {
+test("oauth2: afterConnect stays silent when the read fails or is empty", async () => {
   const { ctx: ctxFail } = mockCtx([{ status: 403, body: endpointError("ForbiddenError", "no") }]);
   assertEquals(await oauth2.afterConnect!({ credential: { accessToken: TOKEN } }, ctxFail), {});
 
@@ -104,7 +105,7 @@ Deno.test("oauth2: afterConnect stays silent when the read fails or is empty", a
   assertEquals(await oauth2.afterConnect!({ credential: { accessToken: TOKEN } }, ctxEmpty), {});
 });
 
-Deno.test("oauth2: declares the authorization-code flow against auth.aweber.com", () => {
+test("oauth2: declares the authorization-code flow against auth.aweber.com", () => {
   assertEquals(oauth2.type, "oauth2");
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://auth.aweber.com/oauth2/authorize");
   assertEquals(oauth2.oauth2?.tokenUrl, "https://auth.aweber.com/oauth2/token");

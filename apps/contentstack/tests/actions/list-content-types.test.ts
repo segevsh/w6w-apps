@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-content-types.ts";
 
-Deno.test("list-content-types: metadata", () => {
+test("list-content-types: metadata", () => {
   assertEquals(action.key, "list-content-types");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("list-content-types: metadata", () => {
   ]);
 });
 
-Deno.test("list-content-types: calls GET /content_types on the NA host", async () => {
+test("list-content-types: calls GET /content_types on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "content_types": [{ "uid": "blog" }], "count": 1 } }]);
   const out = await action.execute({ "includeCount": true, "limit": 10 }, ctx);
   assertEquals(calls.length, 1);
@@ -29,7 +30,7 @@ Deno.test("list-content-types: calls GET /content_types on the NA host", async (
   assertEquals(out, { "content_types": [{ "uid": "blog" }], "count": 1 });
 });
 
-Deno.test("list-content-types: uses the connection's regional host", async () => {
+test("list-content-types: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "content_types": [{ "uid": "blog" }], "count": 1 } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -40,7 +41,7 @@ Deno.test("list-content-types: uses the connection's regional host", async () =>
   );
 });
 
-Deno.test("list-content-types: sends the branch header only when a branch is given", async () => {
+test("list-content-types: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "content_types": [{ "uid": "blog" }], "count": 1 } }, {
     body: { "content_types": [{ "uid": "blog" }], "count": 1 },
   }]);
@@ -50,7 +51,7 @@ Deno.test("list-content-types: sends the branch header only when a branch is giv
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("list-content-types: surfaces Contentstack's own error body", async () => {
+test("list-content-types: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

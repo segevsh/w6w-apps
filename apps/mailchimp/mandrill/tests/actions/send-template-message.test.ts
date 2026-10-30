@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-template-message.ts";
 
-Deno.test("send-template-message: POSTs /messages/send-template.json with template_name and message.to", async () => {
+test("send-template-message: POSTs /messages/send-template.json with template_name and message.to", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ email: "bob@x.com", status: "sent" }] }]);
   await action.execute!(
     { templateName: "welcome-email", to: "bob@x.com" },
@@ -17,7 +18,7 @@ Deno.test("send-template-message: POSTs /messages/send-template.json with templa
   assertEquals(body.async, false);
 });
 
-Deno.test("send-template-message: forwards template content, merge vars, and merge language", async () => {
+test("send-template-message: forwards template content, merge vars, and merge language", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     {
@@ -39,7 +40,7 @@ Deno.test("send-template-message: forwards template content, merge vars, and mer
   ]);
 });
 
-Deno.test("send-template-message: overrides from/subject only when provided", async () => {
+test("send-template-message: overrides from/subject only when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     { templateName: "t", to: "bob@x.com", fromEmail: "ada@x.com", subject: "Custom" },

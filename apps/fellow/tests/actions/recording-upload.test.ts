@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordingUpload from "../../actions/recording-upload.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recording-upload: POST /api/v1/recordings/upload on the workspace host", async () => {
+test("recording-upload: POST /api/v1/recordings/upload on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { recording_id: "r9" } }]);
   const out = await recordingUpload.execute({
     url: "https://x.test/a.mp3",
@@ -26,7 +27,7 @@ Deno.test("recording-upload: POST /api/v1/recordings/upload on the workspace hos
   assertEquals((out as { recording_id: string }).recording_id, "r9");
 });
 
-Deno.test("recording-upload: a Fellow error surfaces its detail and status", async () => {
+test("recording-upload: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () =>

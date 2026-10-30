@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import usZipLookup from "../../actions/us-zip-lookup.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("us-zip-lookup: POSTs the zip and returns the cities", async () => {
+test("us-zip-lookup: POSTs the zip and returns the cities", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "us_zip_1",
@@ -18,7 +19,7 @@ Deno.test("us-zip-lookup: POSTs the zip and returns the cities", async () => {
   assertEquals(out.cities.length, 1);
 });
 
-Deno.test("us-zip-lookup: a malformed zip surfaces Lob's validation code", async () => {
+test("us-zip-lookup: a malformed zip surfaces Lob's validation code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid", "zip_code is invalid", 422),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarCreate from "../../actions/webinar-create.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("webinar-create: posts to /organizers/{organizerKey}/webinars with the given body", async () => {
+test("webinar-create: posts to /organizers/{organizerKey}/webinars with the given body", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ body: { webinarKey: "1" } }], "org-1");
   const out = await webinarCreate.execute({
     subject: "Launch",
@@ -18,7 +19,7 @@ Deno.test("webinar-create: posts to /organizers/{organizerKey}/webinars with the
   assertEquals(out, { webinarKey: "1" });
 });
 
-Deno.test("webinar-create: an explicit organizerKey param overrides the connection's", async () => {
+test("webinar-create: an explicit organizerKey param overrides the connection's", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ body: { webinarKey: "1" } }],
     "org-from-connection",

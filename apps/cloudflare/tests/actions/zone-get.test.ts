@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { cfOk, mockCtx } from "../_helpers.ts";
 import action from "../../actions/zone-get.ts";
 
-Deno.test("zone-get: GETs /zones/{id}", async () => {
+test("zone-get: GETs /zones/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: cfOk({ id: "z1", name: "example.com" }) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("zone-get: GETs /zones/{id}", async () => {
   assertEquals(result, { id: "z1", name: "example.com" });
 });
 
-Deno.test("zone-get: missing zoneId rejects", async () => {
+test("zone-get: missing zoneId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "" }, ctx),
@@ -22,7 +23,7 @@ Deno.test("zone-get: missing zoneId rejects", async () => {
   );
 });
 
-Deno.test("zone-get: non-2xx propagates as Error", async () => {
+test("zone-get: non-2xx propagates as Error", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: { success: false, errors: [{ code: 1001, message: "not found" }] } },
   ]);

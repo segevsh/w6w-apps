@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import chatList from "../../actions/chat-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("chat-list: GETs /v2/chats", async () => {
+test("chat-list: GETs /v2/chats", async () => {
   const { ctx, calls } = mockCtx([{ body: { chats: [{ iden: "c1" }] } }]);
   const out = await chatList.execute({}, ctx) as { chats: unknown[] };
 

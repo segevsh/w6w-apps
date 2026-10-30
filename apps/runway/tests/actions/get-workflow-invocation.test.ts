@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-workflow-invocation.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-workflow-invocation: sends the documented request and maps the answer", async () => {
+test("get-workflow-invocation: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "id": "inv-1",
@@ -29,7 +30,7 @@ Deno.test("get-workflow-invocation: sends the documented request and maps the an
   });
 });
 
-Deno.test("get-workflow-invocation: a 401 surfaces Runway's error text", async () => {
+test("get-workflow-invocation: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import membershipResume from "../../actions/membership-resume.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("membership-resume: POSTs with no body", async () => {
+test("membership-resume: POSTs with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "mem_1", status: "active" } }]);
   await membershipResume.execute({ membershipId: "mem_1" }, ctx);
 

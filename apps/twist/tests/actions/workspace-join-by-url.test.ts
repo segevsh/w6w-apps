@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceJoinByUrl from "../../actions/workspace-join-by-url.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-join-by-url: POST /api/v3/url_join/join_workspace with every documented parameter", async () => {
+test("workspace-join-by-url: POST /api/v3/url_join/join_workspace with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await workspaceJoinByUrl.execute(
     { "urlInviteCode": "sample urlInviteCode" },
@@ -17,7 +18,7 @@ Deno.test("workspace-join-by-url: POST /api/v3/url_join/join_workspace with ever
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("workspace-join-by-url: sends a form body, never a query string", async () => {
+test("workspace-join-by-url: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceJoinByUrl.execute({ "urlInviteCode": "sample urlInviteCode" }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("workspace-join-by-url: sends a form body, never a query string", asyn
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("workspace-join-by-url: is declared idempotent", () => {
+test("workspace-join-by-url: is declared idempotent", () => {
   assertEquals(workspaceJoinByUrl.idempotent, true);
 });
 
-Deno.test("workspace-join-by-url: sends no credential of its own", async () => {
+test("workspace-join-by-url: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceJoinByUrl.execute({ "urlInviteCode": "sample urlInviteCode" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("workspace-join-by-url: surfaces Twist's error body", async () => {
+test("workspace-join-by-url: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

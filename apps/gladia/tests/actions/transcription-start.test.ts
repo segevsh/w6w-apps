@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transcription-start.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
 
 const created = { id: "j1", result_url: "https://api.gladia.io/v2/pre-recorded/j1" };
 
-Deno.test("transcription-start: minimal call posts only audio_url to /v2/pre-recorded", async () => {
+test("transcription-start: minimal call posts only audio_url to /v2/pre-recorded", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   const out = await action.execute({ audioUrl: "https://x.test/a.mp3" }, ctx);
   assertEquals(out, created);
@@ -15,7 +16,7 @@ Deno.test("transcription-start: minimal call posts only audio_url to /v2/pre-rec
   assertEquals("x-gladia-key" in calls[0].headers, false);
 });
 
-Deno.test("transcription-start: maps every feature to its boolean + config pair", async () => {
+test("transcription-start: maps every feature to its boolean + config pair", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   await action.execute({
     audioUrl: "u",
@@ -69,7 +70,7 @@ Deno.test("transcription-start: maps every feature to its boolean + config pair"
   });
 });
 
-Deno.test("transcription-start: switched-off features send nothing; additionalOptions merges last", async () => {
+test("transcription-start: switched-off features send nothing; additionalOptions merges last", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   await action.execute({
     audioUrl: "u",
@@ -81,7 +82,7 @@ Deno.test("transcription-start: switched-off features send nothing; additionalOp
   assertEquals(JSON.parse(calls[0].body!), { audio_url: "override", display_mode: true });
 });
 
-Deno.test("transcription-start: a 422 surfaces the vendor message and request_id", async () => {
+test("transcription-start: a 422 surfaces the vendor message and request_id", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody(422, "Invalid parameter") }]);
   const err = await assertRejects(async () => await action.execute({ audioUrl: "u" }, ctx), Error);
   assertEquals(err.message.includes("422"), true);
@@ -89,7 +90,7 @@ Deno.test("transcription-start: a 422 surfaces the vendor message and request_id
   assertEquals(err.message.includes("G-abc"), true);
 });
 
-Deno.test("transcription-start: declared non-idempotent perform", () => {
+test("transcription-start: declared non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

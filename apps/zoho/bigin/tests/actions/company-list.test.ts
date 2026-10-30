@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBiginCtx } from "../_helpers.ts";
 import action from "../../actions/company-list.ts";
 
-Deno.test("company-list: GETs /bigin/v2/Accounts with the documented query parameters", async () => {
+test("company-list: GETs /bigin/v2/Accounts with the documented query parameters", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [{ id: "1" }], info: { count: 1 } } }]);
   await action.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("company-list: GETs /bigin/v2/Accounts with the documented query param
   assertEquals(url.searchParams.get("sort_order"), "desc");
 });
 
-Deno.test("company-list: posts the cursor parameters for paging past 2000 records", async () => {
+test("company-list: posts the cursor parameters for paging past 2000 records", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }]);
   await action.execute({ fields: "id", page_token: "tok", cvid: "view-1" }, ctx);
   const url = new URL(calls[0].url);

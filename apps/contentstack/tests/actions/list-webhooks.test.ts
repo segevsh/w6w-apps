@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-webhooks.ts";
 
-Deno.test("list-webhooks: metadata", () => {
+test("list-webhooks: metadata", () => {
   assertEquals(action.key, "list-webhooks");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), []);
 });
 
-Deno.test("list-webhooks: calls GET /webhooks on the NA host", async () => {
+test("list-webhooks: calls GET /webhooks on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "webhooks": [{ "uid": "bltw" }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("list-webhooks: calls GET /webhooks on the NA host", async () => {
   assertEquals(out, { "webhooks": [{ "uid": "bltw" }] });
 });
 
-Deno.test("list-webhooks: uses the connection's regional host", async () => {
+test("list-webhooks: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "webhooks": [{ "uid": "bltw" }] } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -28,7 +29,7 @@ Deno.test("list-webhooks: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/webhooks");
 });
 
-Deno.test("list-webhooks: surfaces Contentstack's own error body", async () => {
+test("list-webhooks: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

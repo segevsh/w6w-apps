@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import searchGifs from "../../actions/search-gifs.ts";
 import {
   API_ROOT,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("search-gifs: calls GET /v1/gifs/search and unwraps data + pagination", async () => {
+test("search-gifs: calls GET /v1/gifs/search and unwraps data + pagination", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([gif()], { pagination: PAGINATION_FIXTURE }) },
   ]);
@@ -27,7 +28,7 @@ Deno.test("search-gifs: calls GET /v1/gifs/search and unwraps data + pagination"
   assertEquals(out.pagination, PAGINATION_FIXTURE);
 });
 
-Deno.test("search-gifs: every optional param reaches the query string", async () => {
+test("search-gifs: every optional param reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await searchGifs.execute(
     { q: "cat", limit: 10, offset: 20, rating: "pg-13", lang: "en_US" },
@@ -43,13 +44,13 @@ Deno.test("search-gifs: every optional param reaches the query string", async ()
   });
 });
 
-Deno.test("search-gifs: the action never sends the credential itself", async () => {
+test("search-gifs: the action never sends the credential itself", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await searchGifs.execute({ q: "cat" }, ctx);
   assertEquals(Object.keys(queryOf(calls[0].url)).includes("api_key"), false);
 });
 
-Deno.test("search-gifs: q is required and capped at GIPHY's 50-character limit", () => {
+test("search-gifs: q is required and capped at GIPHY's 50-character limit", () => {
   const q = searchGifs.params?.find((p) => p.key === "q");
   assertEquals(q?.required, true);
   assertEquals(q?.validation?.maxLength, 50);
@@ -58,13 +59,13 @@ Deno.test("search-gifs: q is required and capped at GIPHY's 50-character limit",
   assertEquals(searchGifs.params?.find((p) => p.key === "limit")?.default, 25);
 });
 
-Deno.test("search-gifs: an empty result set is passed through as an empty array", async () => {
+test("search-gifs: an empty result set is passed through as an empty array", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
   const out = await searchGifs.execute({ q: "nothing at all" }, ctx) as { data: unknown[] };
   assertEquals(out.data, []);
 });
 
-Deno.test("search-gifs: a non-200 meta.status throws, carrying GIPHY's message", async () => {
+test("search-gifs: a non-200 meta.status throws, carrying GIPHY's message", async () => {
   const { ctx } = mockCtx([
     { status: 429, body: { data: [], meta: { status: 429, msg: "Too Many Requests" } } },
   ]);
@@ -79,7 +80,7 @@ Deno.test("search-gifs: a non-200 meta.status throws, carrying GIPHY's message",
   assertEquals(message.includes("/v1/gifs/search"), true, message);
 });
 
-Deno.test("search-gifs: the path is the documented one", async () => {
+test("search-gifs: the path is the documented one", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await searchGifs.execute({ q: "x" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/gifs/search");

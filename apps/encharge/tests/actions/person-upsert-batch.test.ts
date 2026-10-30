@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import batch from "../../actions/person-upsert-batch.ts";
 import { errBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof batch.execute>[1], input: Record<string, unknown>) =>
   batch.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("person-upsert-batch: declares an idempotent perform action", () => {
+test("person-upsert-batch: declares an idempotent perform action", () => {
   assertEquals(batch.key, "person-upsert-batch");
   assertEquals(batch.type, "perform");
   assertEquals(batch.idempotent, true);
@@ -13,7 +14,7 @@ Deno.test("person-upsert-batch: declares an idempotent perform action", () => {
   assert(Array.isArray(batch.output) && batch.output.length > 0);
 });
 
-Deno.test("person-upsert-batch: POSTs the array, trimming identifiers and keeping other fields", async () => {
+test("person-upsert-batch: POSTs the array, trimming identifiers and keeping other fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [{}, {}] } }]);
   await run(ctx, {
     people: JSON.stringify([{ email: " a@x.com ", plan: "pro" }, { userId: "42" }]),
@@ -23,7 +24,7 @@ Deno.test("person-upsert-batch: POSTs the array, trimming identifiers and keepin
   assertEquals(JSON.parse(calls[0].body!), [{ email: "a@x.com", plan: "pro" }, { userId: "42" }]);
 });
 
-Deno.test("person-upsert-batch: rejects an empty, non-array or identifier-less batch", async () => {
+test("person-upsert-batch: rejects an empty, non-array or identifier-less batch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => run(ctx, { people: "[]" }), Error, "non-empty");
   await assertRejects(() => run(ctx, { people: "{}" }), Error, "non-empty");
@@ -32,7 +33,7 @@ Deno.test("person-upsert-batch: rejects an empty, non-array or identifier-less b
   assertEquals(calls.length, 0);
 });
 
-Deno.test("person-upsert-batch: an Encharge failure is thrown with its message", async () => {
+test("person-upsert-batch: an Encharge failure is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errBody("bad person") }]);
   await assertRejects(() => run(ctx, { people: '[{"email":"a@x.com"}]' }), Error, "bad person");
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapAggregateState,
   mapResourceStatus,
@@ -26,7 +27,7 @@ const PAGE = {
   ],
 };
 
-Deno.test("service: mapResourceStatus() covers Better Stack's vocabulary", () => {
+test("service: mapResourceStatus() covers Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("resolved"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
@@ -37,32 +38,32 @@ Deno.test("service: mapResourceStatus() covers Better Stack's vocabulary", () =>
   assertEquals(mapResourceStatus("something-new"), "unknown");
 });
 
-Deno.test("service: mapAggregateState() mirrors the resource vocabulary", () => {
+test("service: mapAggregateState() mirrors the resource vocabulary", () => {
   assertEquals(mapAggregateState("operational"), "ok");
   assertEquals(mapAggregateState("downtime"), "down");
 });
 
-Deno.test("service: resourceKey() slugifies the public name, falling back to id", () => {
+test("service: resourceKey() slugifies the public name, falling back to id", () => {
   assertEquals(resourceKey({ attributes: { public_name: "API" } }, 0), "api");
   assertEquals(resourceKey({ attributes: { public_name: "US East" } }, 0), "us-east");
   assertEquals(resourceKey({ id: "9" }, 0), "9");
   assertEquals(resourceKey({}, 4), "resource-4");
 });
 
-Deno.test("service: check() reports ok with all components operational", async () => {
+test("service: check() reports ok with all components operational", async () => {
   const { ctx } = mockCtx([{ status: 200, body: PAGE }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
   assertEquals(Object.keys(out.components ?? {}).length, 2);
 });
 
-Deno.test("service: check() only counts status_page_resource entries, not sections", async () => {
+test("service: check() only counts status_page_resource entries, not sections", async () => {
   const { ctx } = mockCtx([{ status: 200, body: PAGE }]);
   const out = await service.check!({}, ctx);
   assertEquals(Object.keys(out.components ?? {}), ["webinterface", "api"]);
 });
 
-Deno.test("service: check() trusts the page's own aggregate_state over a local fold", async () => {
+test("service: check() trusts the page's own aggregate_state over a local fold", async () => {
   const degradedPage = {
     ...PAGE,
     data: { ...PAGE.data, attributes: { ...PAGE.data.attributes, aggregate_state: "downtime" } },
@@ -74,7 +75,7 @@ Deno.test("service: check() trusts the page's own aggregate_state over a local f
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: check() reports a degraded component by name", async () => {
+test("service: check() reports a degraded component by name", async () => {
   const degraded = {
     data: { ...PAGE.data, attributes: { ...PAGE.data.attributes, aggregate_state: "degraded" } },
     included: [
@@ -92,13 +93,13 @@ Deno.test("service: check() reports a degraded component by name", async () => {
   assertEquals(out.message?.includes("API (degraded)"), true);
 });
 
-Deno.test("service: check() reports unknown, never down, on a broken status page", async () => {
+test("service: check() reports unknown, never down, on a broken status page", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: check() reports unknown when the page no longer self-identifies", async () => {
+test("service: check() reports unknown when the page no longer self-identifies", async () => {
   const wrongPage = {
     data: { attributes: { company_name: "Somebody Else", aggregate_state: "operational" } },
     included: PAGE.included,
@@ -108,7 +109,7 @@ Deno.test("service: check() reports unknown when the page no longer self-identif
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: check() reports unknown on an unparseable body", async () => {
+test("service: check() reports unknown on an unparseable body", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -118,7 +119,7 @@ Deno.test("service: check() reports unknown on an unparseable body", async () =>
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: declares its own status.cloudconvert.com allowlist, not the app-level one", () => {
+test("service: declares its own status.cloudconvert.com allowlist, not the app-level one", () => {
   assertEquals(service.network?.allow, ["status.cloudconvert.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");

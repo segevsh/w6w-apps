@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   mapIndicator,
@@ -6,7 +7,7 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
+test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -15,7 +16,7 @@ Deno.test("service: mapComponentStatus covers the documented Statuspage vocabula
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
+test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -23,7 +24,7 @@ Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () =
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: an all-operational page with a healthy Public API reports ok", async () => {
+test("service: an all-operational page with a healthy Public API reports ok", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -42,7 +43,7 @@ Deno.test("service: an all-operational page with a healthy Public API reports ok
   assertEquals(report.components?.[PUBLIC_API_COMPONENT_ID].state, "ok");
 });
 
-Deno.test("service: a major outage on the Public API component reports down even if the page indicator lags", async () => {
+test("service: a major outage on the Public API component reports down even if the page indicator lags", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -61,7 +62,7 @@ Deno.test("service: a major outage on the Public API component reports down even
   assertEquals(report.components?.[PUBLIC_API_COMPONENT_ID].state, "down");
 });
 
-Deno.test("service: an incident elsewhere on the page (not Public API) does not report down via the component reading", async () => {
+test("service: an incident elsewhere on the page (not Public API) does not report down via the component reading", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -79,13 +80,13 @@ Deno.test("service: an incident elsewhere on the page (not Public API) does not 
   assertEquals(report.components?.[PUBLIC_API_COMPONENT_ID].state, "ok");
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Personio's is unknown", async () => {
+test("service: a page that no longer self-identifies as Personio's is unknown", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { page: { url: "https://status.someoneelse.com" }, components: [] } },
   ]);
@@ -93,7 +94,7 @@ Deno.test("service: a page that no longer self-identifies as Personio's is unkno
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is unsigned and app-scoped, and only widens egress to its own status host", () => {
+test("service: is unsigned and app-scoped, and only widens egress to its own status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["status.personio.de"]);

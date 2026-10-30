@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-url.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
 /** This action makes no API call at all. */
-Deno.test("asset-url: builds the URL locally, with no request", async () => {
+test("asset-url: builds the URL locally, with no request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const out = await action.execute!({
     publicId: "products/hero",
@@ -19,7 +20,7 @@ Deno.test("asset-url: builds the URL locally, with no request", async () => {
 });
 
 /** The version segment is what makes a URL immutable. */
-Deno.test("asset-url: the version segment is normalised to v<number>", async () => {
+test("asset-url: the version segment is normalised to v<number>", async () => {
   const { ctx } = mockCtx([], conn);
   const a = await action.execute!({ publicId: "hero", version: "1712345678" }, ctx) as {
     url: string;
@@ -31,14 +32,14 @@ Deno.test("asset-url: the version segment is normalised to v<number>", async () 
   assertEquals(a.url, b.url);
 });
 
-Deno.test("asset-url: a format extension is appended, dot or no dot", async () => {
+test("asset-url: a format extension is appended, dot or no dot", async () => {
   const { ctx } = mockCtx([], conn);
   const out = await action.execute!({ publicId: "hero", format: ".webp" }, ctx) as { url: string };
   assertEquals(out.url, "https://res.cloudinary.com/acme/image/upload/hero.webp");
 });
 
 /** A signed URL needs the API secret, which only the auth hook may touch. */
-Deno.test("asset-url: refuses private and authenticated assets", async () => {
+test("asset-url: refuses private and authenticated assets", async () => {
   const { ctx } = mockCtx([], conn);
   for (const type of ["private", "authenticated"]) {
     await assertRejects(
@@ -49,7 +50,7 @@ Deno.test("asset-url: refuses private and authenticated assets", async () => {
   }
 });
 
-Deno.test("asset-url: a connection with no cloud name cannot build a URL", async () => {
+test("asset-url: a connection with no cloud name cannot build a URL", async () => {
   const { ctx } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ publicId: "hero" }, ctx),
@@ -58,7 +59,7 @@ Deno.test("asset-url: a connection with no cloud name cannot build a URL", async
   );
 });
 
-Deno.test("asset-url: only publicly deliverable types are offered", () => {
+test("asset-url: only publicly deliverable types are offered", () => {
   const p = (action.params as Array<{ key: string; options?: Array<{ value: string }> }>)
     .find((p) => p.key === "type")!;
   const values = p.options!.map((o) => o.value);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-delete.ts";
 
@@ -7,7 +8,7 @@ const droplet = (volumes: string[]) => ({
   body: { droplet: { id: 3164444, name: "web-1", volume_ids: volumes } },
 });
 
-Deno.test("droplet-delete: reads the droplet, then destroys it", async () => {
+test("droplet-delete: reads the droplet, then destroys it", async () => {
   const { ctx, calls } = mockCtx([droplet([]), { status: 204 }]);
   const result = await action.execute(
     { dropletId: "3164444", confirmName: "web-1" },
@@ -19,7 +20,7 @@ Deno.test("droplet-delete: reads the droplet, then destroys it", async () => {
 });
 
 /** The most common way a DigitalOcean bill grows without anybody adding. */
-Deno.test("droplet-delete: attached volumes must be acknowledged, and are named", async () => {
+test("droplet-delete: attached volumes must be acknowledged, and are named", async () => {
   const { ctx, calls } = mockCtx([droplet(["vol-a", "vol-b"])]);
   let message = "";
   try {
@@ -33,7 +34,7 @@ Deno.test("droplet-delete: attached volumes must be acknowledged, and are named"
   assertEquals(calls.length, 1, "nothing was destroyed");
 });
 
-Deno.test("droplet-delete: the acknowledgement must match exactly", async () => {
+test("droplet-delete: the acknowledgement must match exactly", async () => {
   const { ctx, calls } = mockCtx([droplet(["vol-a", "vol-b"]), { status: 204 }]);
   const result = await action.execute({
     dropletId: "3164444",
@@ -44,7 +45,7 @@ Deno.test("droplet-delete: the acknowledgement must match exactly", async () => 
   assertEquals(result.orphanedVolumeIds, ["vol-a", "vol-b"]);
 });
 
-Deno.test("droplet-delete: the name must be typed back", async () => {
+test("droplet-delete: the name must be typed back", async () => {
   for (const confirm of [undefined, "", "3164444", "WEB-1"]) {
     const { ctx, calls } = mockCtx([droplet([])]);
     let message = "";
@@ -58,7 +59,7 @@ Deno.test("droplet-delete: the name must be typed back", async () => {
   }
 });
 
-Deno.test("droplet-delete: warns when volumes survive", async () => {
+test("droplet-delete: warns when volumes survive", async () => {
   const { ctx, logs } = mockCtx([droplet(["vol-a"]), { status: 204 }]);
   await action.execute({
     dropletId: "3164444",
@@ -69,7 +70,7 @@ Deno.test("droplet-delete: warns when volumes survive", async () => {
   assert(/volumes survive and keep billing/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("droplet-delete: says what it does not destroy", () => {
+test("droplet-delete: says what it does not destroy", () => {
   assert(
     /VOLUMES, SNAPSHOTS and RESERVED IP survive/.test(action.description!),
     action.description,

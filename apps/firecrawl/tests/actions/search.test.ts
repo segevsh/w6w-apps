@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import search from "../../actions/search.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("search: POSTs the query and unwraps {success, data}", async () => {
+test("search: POSTs the query and unwraps {success, data}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ web: [{ title: "Firecrawl", url: "https://firecrawl.dev" }] }),
@@ -13,19 +14,19 @@ Deno.test("search: POSTs the query and unwraps {success, data}", async () => {
   assertEquals(out.web[0], { title: "Firecrawl", url: "https://firecrawl.dev" });
 });
 
-Deno.test("search: sources are wrapped into the vendor's {type} objects", async () => {
+test("search: sources are wrapped into the vendor's {type} objects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   await search.execute({ query: "x", sources: ["web", "news"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).sources, [{ type: "web" }, { type: "news" }]);
 });
 
-Deno.test("search: no scrapeOptions sent when no formats requested", async () => {
+test("search: no scrapeOptions sent when no formats requested", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   await search.execute({ query: "x" }, ctx);
   assertEquals("scrapeOptions" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("search: formats are nested under scrapeOptions", async () => {
+test("search: formats are nested under scrapeOptions", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   await search.execute({ query: "x", formats: "markdown" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).scrapeOptions, { formats: [{ type: "markdown" }] });

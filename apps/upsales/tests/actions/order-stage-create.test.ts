@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import orderStageCreate from "../../actions/order-stage-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("order-stage-create: POSTs /orderstages with the mapped body", async () => {
+test("order-stage-create: POSTs /orderstages with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await orderStageCreate.execute({ "name": "Prospect 3", "probability": 75 }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("order-stage-create: POSTs /orderstages with the mapped body", async (
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("order-stage-create: the free-form fields object is merged and typed params win", async () => {
+test("order-stage-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await orderStageCreate.execute(
     { "name": "Prospect 3", "fields": { "extraKey": { "a": 1 }, "name": "SHOULD-LOSE" } } as never,
@@ -25,7 +26,7 @@ Deno.test("order-stage-create: the free-form fields object is merged and typed p
   assertEquals(sent["name"], "Prospect 3");
 });
 
-Deno.test("order-stage-create: fields may be a JSON string", async () => {
+test("order-stage-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await orderStageCreate.execute(
     { "name": "Prospect 3", "fields": '{"extraKey":1}' } as never,
@@ -34,7 +35,7 @@ Deno.test("order-stage-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("order-stage-create: invalid fields JSON is refused before any request", async () => {
+test("order-stage-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await orderStageCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -44,12 +45,12 @@ Deno.test("order-stage-create: invalid fields JSON is refused before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("order-stage-create: required params are declared", () => {
+test("order-stage-create: required params are declared", () => {
   const required = (orderStageCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["name"]);
 });
 
-Deno.test("order-stage-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("order-stage-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -62,7 +63,7 @@ Deno.test("order-stage-create: a rejected key surfaces Upsales' plain-text Unaut
   );
 });
 
-Deno.test("order-stage-create: a JSON error envelope surfaces the vendor key", async () => {
+test("order-stage-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

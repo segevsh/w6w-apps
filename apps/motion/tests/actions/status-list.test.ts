@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import statusList from "../../actions/status-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * paginated collections. Running it through the envelope reader would return an
  * empty list forever.
  */
-Deno.test("status-list: reads a bare array and wraps it as items", async () => {
+test("status-list: reads a bare array and wraps it as items", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [
@@ -29,7 +30,7 @@ Deno.test("status-list: reads a bare array and wraps it as items", async () => {
   });
 });
 
-Deno.test("status-list: an empty body reads as an empty list", async () => {
+test("status-list: an empty body reads as an empty list", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await statusList.execute({}, ctx), { items: [] });
 });

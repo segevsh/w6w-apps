@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import credentialList from "../../actions/credential-list.ts";
 
-Deno.test("credential-list: query mapping, wraps the array", async () => {
+test("credential-list: query mapping, wraps the array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ credential_id: "cred_1", name: "Gmail" }] }]);
   const out = await credentialList.execute({
     page: 1,

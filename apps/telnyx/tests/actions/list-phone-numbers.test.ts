@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-phone-numbers.ts";
 
-Deno.test("list-phone-numbers: GETs /phone_numbers and returns the full data+meta envelope", async () => {
+test("list-phone-numbers: GETs /phone_numbers and returns the full data+meta envelope", async () => {
   const body = { data: [{ id: "n1", phone_number: "+1" }], meta: { total_results: 1 } };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -15,7 +16,7 @@ Deno.test("list-phone-numbers: GETs /phone_numbers and returns the full data+met
   assertEquals(result, body);
 });
 
-Deno.test("list-phone-numbers: encodes pagination and filters using deepObject bracket keys", async () => {
+test("list-phone-numbers: encodes pagination and filters using deepObject bracket keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], meta: {} } }]);
   await action.execute!(
     { pageSize: 50, pageNumber: 2, status: "active", phoneNumber: "415" },
@@ -28,7 +29,7 @@ Deno.test("list-phone-numbers: encodes pagination and filters using deepObject b
   assertEquals(url.searchParams.get("filter[phone_number]"), "415");
 });
 
-Deno.test("list-phone-numbers: omits unset filters rather than sending empty params", async () => {
+test("list-phone-numbers: omits unset filters rather than sending empty params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], meta: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

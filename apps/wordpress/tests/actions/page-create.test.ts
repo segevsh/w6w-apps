@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-create.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("page-create: POSTs /pages with only the required title", async () => {
+test("page-create: POSTs /pages with only the required title", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }], { display });
   await action.execute!({ title: "About" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("page-create: POSTs /pages with only the required title", async () => 
   assertEquals(JSON.parse(calls[0].body!), { title: "About" });
 });
 
-Deno.test("page-create: maps camelCase optional inputs to snake_case body keys", async () => {
+test("page-create: maps camelCase optional inputs to snake_case body keys", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!(
     {

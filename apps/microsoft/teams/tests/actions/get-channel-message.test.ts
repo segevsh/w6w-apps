@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-channel-message.ts";
 
 const CHANNEL = "19:4a95f7d8db4c4e7fae857bcebe0623e6@thread.tacv2";
 
-Deno.test("get-channel-message: GETs the root message when no reply id is given", async () => {
+test("get-channel-message: GETs the root message when no reply id is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1614618259349", replyToId: null } }]);
   const out = await action.execute({
     teamId: "t1",
@@ -19,7 +20,7 @@ Deno.test("get-channel-message: GETs the root message when no reply id is given"
   assertEquals(out.id, "1614618259349");
 });
 
-Deno.test("get-channel-message: switches to the nested replies path when a reply id is given", async () => {
+test("get-channel-message: switches to the nested replies path when a reply id is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1613671348387", replyToId: "1612509044972" } }]);
   await action.execute({
     teamId: "t1",
@@ -34,7 +35,7 @@ Deno.test("get-channel-message: switches to the nested replies path when a reply
   );
 });
 
-Deno.test("get-channel-message: sends no query parameters — the endpoint supports no OData", async () => {
+test("get-channel-message: sends no query parameters — the endpoint supports no OData", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ teamId: "t1", channelId: CHANNEL, messageId: "1" }, ctx);
   assertEquals([...new URL(calls[0].url).searchParams.keys()], []);

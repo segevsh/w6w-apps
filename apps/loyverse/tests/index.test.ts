@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 21 actions, two auth methods and two health checks", () => {
+test("index: exports 21 actions, two auth methods and two health checks", () => {
   assertEquals(app.actions.length, 21);
   assertEquals(app.auth.map((a) => a.key), ["access-token", "oauth2"]);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case with type, description, execute, output", () => {
+test("index: action keys are unique kebab-case with type, description, execute, output", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -20,7 +21,7 @@ Deno.test("index: action keys are unique kebab-case with type, description, exec
   }
 });
 
-Deno.test("index: every perform action states idempotency; create-or-update ones are false", () => {
+test("index: every perform action states idempotency; create-or-update ones are false", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -29,7 +30,7 @@ Deno.test("index: every perform action states idempotency; create-or-update ones
   }
 });
 
-Deno.test("index: both health checks declare informational unavailable/service posture", () => {
+test("index: both health checks declare informational unavailable/service posture", () => {
   const quota = app.healthChecks.find((h) => h.key === "quota")!;
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason);

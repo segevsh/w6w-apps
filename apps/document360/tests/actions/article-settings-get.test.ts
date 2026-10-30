@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleSettingsGet from "../../actions/article-settings-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-settings-get: GETs the settings", async () => {
+test("article-settings-get: GETs the settings", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ slug: "hi", seo_title: "Hi" }),
@@ -17,7 +18,7 @@ Deno.test("article-settings-get: GETs the settings", async () => {
   assertEquals(out.slug, "hi");
 });
 
-Deno.test("article-settings-get: a vendor error surfaces its code and message", async () => {
+test("article-settings-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

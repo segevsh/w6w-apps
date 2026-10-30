@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articlesSearch from "../../actions/articles-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("articles-search: posts the raw query JSON as the body, unwrapped", async () => {
+test("articles-search: posts the raw query JSON as the body, unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ body: { searchTime: 1, items: [] } }]);
   const query = {
     layers: [{ type: "matches", salience: "about", parts: [{ text: "ransomware" }] }],
@@ -19,6 +20,6 @@ Deno.test("articles-search: posts the raw query JSON as the body, unwrapped", as
   assertEquals(q.unreadOnly, "true");
 });
 
-Deno.test("articles-search: type is search, not read", () => {
+test("articles-search: type is search, not read", () => {
   assertEquals(articlesSearch.type, "search");
 });

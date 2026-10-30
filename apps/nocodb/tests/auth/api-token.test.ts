@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
@@ -9,14 +10,14 @@ const bases = {
   headers: { "x-ratelimit-limit": "60", "x-ratelimit-remaining": "58" },
 };
 
-Deno.test("api-token: signs with the xc-token header", () => {
+test("api-token: signs with the xc-token header", () => {
   const request = { url: "https://x", headers: {} as Record<string, string> };
   const signed = auth.sign!({ request, credential } as never, mockCtx([]).ctx) as typeof request;
   assertEquals(signed.headers["xc-token"], "tok");
   assertEquals(signed.headers["xc-auth"], undefined, "the session header is the one that expires");
 });
 
-Deno.test("api-token: exchange normalises the host once", () => {
+test("api-token: exchange normalises the host once", () => {
   const stored = auth.exchange!(
     { fields: { host: "nocodb.internal/api/v2", token: "tok" } },
     mockCtx([]).ctx,
@@ -30,7 +31,7 @@ Deno.test("api-token: exchange normalises the host once", () => {
 });
 
 /** /api/v1/health needs no credential, so it cannot test one. */
-Deno.test("api-token: tests against an authenticated endpoint, not health", async () => {
+test("api-token: tests against an authenticated endpoint, not health", async () => {
   const { ctx, calls } = mockCtx([bases]);
   const result = await auth.test!({ credential } as never, ctx);
   assertEquals(calls[0].url, "https://nocodb.internal/api/v2/meta/bases");
@@ -40,13 +41,13 @@ Deno.test("api-token: tests against an authenticated endpoint, not health", asyn
 });
 
 /** The budget is small enough to be worth reporting at connect time. */
-Deno.test("api-token: the test reports the rate limit it saw", async () => {
+test("api-token: the test reports the rate limit it saw", async () => {
   const { ctx } = mockCtx([bases]);
   const result = await auth.test!({ credential } as never, ctx);
   assert(/60 requests a minute \(58 left/.test(result.message!), result.message);
 });
 
-Deno.test("api-token: a rejected token explains the two headers", async () => {
+test("api-token: a rejected token explains the two headers", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "ERR_AUTHENTICATION_REQUIRED", message: "Invalid token" },
@@ -56,7 +57,7 @@ Deno.test("api-token: a rejected token explains the two headers", async () => {
   assert(/`xc-auth` and expires/.test(result.message!), result.message);
 });
 
-Deno.test("api-token: an unreachable host fails rather than throwing", async () => {
+test("api-token: an unreachable host fails rather than throwing", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -67,7 +68,7 @@ Deno.test("api-token: an unreachable host fails rather than throwing", async () 
 });
 
 /** The info endpoint is unauthenticated and carries the version. */
-Deno.test("api-token: afterConnect records the version and edition, never the token", async () => {
+test("api-token: afterConnect records the version and edition, never the token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { version: "0.111.4", ee: true } }]);
   const display = await auth.afterConnect!({ credential }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://nocodb.internal/api/v2/meta/nocodb/info");
@@ -77,7 +78,7 @@ Deno.test("api-token: afterConnect records the version and edition, never the to
   assert(!JSON.stringify(display).includes('"tok"'), JSON.stringify(display));
 });
 
-Deno.test("api-token: afterConnect survives an instance that will not answer", async () => {
+test("api-token: afterConnect survives an instance that will not answer", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -87,7 +88,7 @@ Deno.test("api-token: afterConnect survives an instance that will not answer", a
   assertEquals(display.edition, "open source");
 });
 
-Deno.test("api-token: is declared as an xc-token header key", () => {
+test("api-token: is declared as an xc-token header key", () => {
   assertEquals(auth.apiKey, { in: "header", name: "xc-token" });
   assert(/EXPIRES/.test(auth.description!), auth.description);
 });

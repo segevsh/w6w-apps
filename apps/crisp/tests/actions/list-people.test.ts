@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listPeople from "../../actions/list-people.ts";
 
-Deno.test("list-people: builds the paged URL with sort + search params", async () => {
+test("list-people: builds the paged URL with sort + search params", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: [] } }], "site_1");
   await listPeople.execute({
     pageNumber: 3,
@@ -19,7 +20,7 @@ Deno.test("list-people: builds the paged URL with sort + search params", async (
   assertEquals(url.searchParams.get("search_text"), "acme");
 });
 
-Deno.test("list-people: search action, defaults page to 1", () => {
+test("list-people: search action, defaults page to 1", () => {
   assertEquals(listPeople.type, "search");
   assertEquals(listPeople.params?.find((p) => p.key === "pageNumber")?.default, 1);
 });

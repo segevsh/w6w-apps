@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestSendInvites from "../../actions/guest-send-invites.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("guest-send-invites: posts event_id, guests and optional message", async () => {
+test("guest-send-invites: posts event_id, guests and optional message", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await guestSendInvites.execute(
     { eventId: "evt-1", guests: [{ email: "a@b.com" }], message: "Hope to see you!" },

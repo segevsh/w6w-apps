@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import researchGet from "../../actions/research-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("research-get: GET /v1/research/:id", async () => {
+test("research-get: GET /v1/research/:id", async () => {
   const task = {
     id: "r1",
     status: "completed",

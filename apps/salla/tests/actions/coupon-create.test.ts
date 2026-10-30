@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/coupon-create.ts";
 
@@ -19,7 +20,7 @@ const input = {
   "additionalFields": { "extra_field": "x" },
 } as never;
 
-Deno.test("coupon-create: POST /coupons", async () => {
+test("coupon-create: POST /coupons", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "status": 201, "success": true, "data": { "id": 1 } },
@@ -51,7 +52,7 @@ Deno.test("coupon-create: POST /coupons", async () => {
   assertEquals(result, { "status": 201, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("coupon-create: sends only the fields that were set", async () => {
+test("coupon-create: sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!(
     {
@@ -74,7 +75,7 @@ Deno.test("coupon-create: sends only the fields that were set", async () => {
   });
 });
 
-Deno.test("coupon-create: a Salla error envelope throws with its message", async () => {
+test("coupon-create: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

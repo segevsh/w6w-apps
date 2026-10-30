@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   asFlag,
@@ -10,7 +11,7 @@ import {
   unwrapResult,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL against api.hostaway.com/v1 and never sets Authorization", async () => {
+test("client: builds the URL against api.hostaway.com/v1 and never sets Authorization", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", result: { id: 40160 } } }]);
   await new HostawayClient(ctx).request("/listings/40160");
   assertEquals(calls[0].url, "https://api.hostaway.com/v1/listings/40160");
@@ -18,7 +19,7 @@ Deno.test("client: builds the URL against api.hostaway.com/v1 and never sets Aut
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: drops undefined/null/empty query values and keeps 0 and false", async () => {
+test("client: drops undefined/null/empty query values and keeps 0 and false", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", result: [] } }]);
   await new HostawayClient(ctx).request("/listings", {
     query: { limit: 0, offset: undefined, city: null, country: "", match: "beach" },
@@ -31,7 +32,7 @@ Deno.test("client: drops undefined/null/empty query values and keeps 0 and false
   assertEquals(url.searchParams.has("country"), false);
 });
 
-Deno.test("client: serializes array query params as repeated key[] (the docs' own convention)", async () => {
+test("client: serializes array query params as repeated key[] (the docs' own convention)", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", result: [] } }]);
   await new HostawayClient(ctx).request("/reviews", {
     query: { listingMapIds: [1, 2], statuses: ["awaiting", "published"], limit: 10 },
@@ -42,7 +43,7 @@ Deno.test("client: serializes array query params as repeated key[] (the docs' ow
   assertEquals(url.searchParams.get("limit"), "10");
 });
 
-Deno.test("client: unwraps the documented envelope's result", async () => {
+test("client: unwraps the documented envelope's result", async () => {
   const { ctx } = mockCtx([{
     body: { status: "success", result: { id: 13, guestName: "Andrew" }, count: 1, page: 1 },
   }]);
@@ -52,12 +53,12 @@ Deno.test("client: unwraps the documented envelope's result", async () => {
   );
 });
 
-Deno.test("client: passes a bare body straight through when there is no envelope", async () => {
+test("client: passes a bare body straight through when there is no envelope", async () => {
   const { ctx } = mockCtx([{ body: { id: 1, name: "Cable TV" } }]);
   assertEquals(await new HostawayClient(ctx).request("/amenities"), { id: 1, name: "Cable TV" });
 });
 
-Deno.test("client: requestPage keeps the envelope's paging metadata beside the array", async () => {
+test("client: requestPage keeps the envelope's paging metadata beside the array", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: "success",
@@ -78,13 +79,13 @@ Deno.test("client: requestPage keeps the envelope's paging metadata beside the a
   assertEquals(page.offset, 0);
 });
 
-Deno.test("client: requestPage tolerates an envelope with no result array", async () => {
+test("client: requestPage tolerates an envelope with no result array", async () => {
   const { ctx } = mockCtx([{ body: { status: "success", result: null } }]);
   const page = await new HostawayClient(ctx).requestPage("/tasks");
   assertEquals(page.items, []);
 });
 
-Deno.test('client: classifies a 200 carrying status "fail" as a failure — the vendor\'s own discriminator', async () => {
+test('client: classifies a 200 carrying status "fail" as a failure — the vendor\'s own discriminator', async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -100,7 +101,7 @@ Deno.test('client: classifies a 200 carrying status "fail" as a failure — the 
   );
 });
 
-Deno.test("client: reads the failure text from `result` (as the docs' Standard Response says)", async () => {
+test("client: reads the failure text from `result` (as the docs' Standard Response says)", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { status: "fail", result: 'The "images" parameter is required' },
@@ -112,7 +113,7 @@ Deno.test("client: reads the failure text from `result` (as the docs' Standard R
   );
 });
 
-Deno.test("client: reads the failure text from `message` too (what the live 403 envelope uses)", async () => {
+test("client: reads the failure text from `message` too (what the live 403 envelope uses)", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {
@@ -127,7 +128,7 @@ Deno.test("client: reads the failure text from `message` too (what the live 403 
   );
 });
 
-Deno.test("client: a non-2xx without an envelope is still an error, with the HTTP status named", async () => {
+test("client: a non-2xx without an envelope is still an error, with the HTTP status named", async () => {
   const { ctx } = mockCtx([{ status: 502, statusText: "Bad Gateway", body: "<html>nginx" }]);
   await assertRejects(
     () => new HostawayClient(ctx).request("/listings"),
@@ -136,7 +137,7 @@ Deno.test("client: a non-2xx without an envelope is still an error, with the HTT
   );
 });
 
-Deno.test("client: a fail envelope never masks the message behind the HTTP text", async () => {
+test("client: a fail envelope never masks the message behind the HTTP text", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: "fail", message: "Too many requests" },
@@ -148,14 +149,14 @@ Deno.test("client: a fail envelope never masks the message behind the HTTP text"
   );
 });
 
-Deno.test("client: sends a JSON body with content-type application/json", async () => {
+test("client: sends a JSON body with content-type application/json", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", result: { id: 1 } } }]);
   await new HostawayClient(ctx).request("/tasks", { method: "POST", body: { title: "Clean" } });
   assertEquals(calls[0].headers["content-type"], "application/json");
   assertEquals(calls[0].body, '{"title":"Clean"}');
 });
 
-Deno.test("client: requestText returns the CSV verbatim and still classifies a JSON failure", async () => {
+test("client: requestText returns the CSV verbatim and still classifies a JSON failure", async () => {
   const { ctx, calls } = mockCtx([{ body: "a,b\n1,2\n", headers: { "content-type": "text/csv" } }]);
   const csv = await new HostawayClient(ctx).requestText("/finance/report/standard", {
     method: "POST",
@@ -176,7 +177,7 @@ Deno.test("client: requestText returns the CSV verbatim and still classifies a J
   );
 });
 
-Deno.test("client: requestForm sends multipart with no hand-set content-type", async () => {
+test("client: requestForm sends multipart with no hand-set content-type", async () => {
   // The docs' curl example for this endpoint uses `--form` (multipart), and the PHP
   // example passes CURLOPT_POSTFIELDS as an array — php-curl only ever multipart-encodes
   // that shape. So this must NOT be application/x-www-form-urlencoded, and the boundary
@@ -203,14 +204,14 @@ Deno.test("client: requestForm sends multipart with no hand-set content-type", a
   );
 });
 
-Deno.test("compact: drops unset values, keeps false and 0", () => {
+test("compact: drops unset values, keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: 0, c: false, d: undefined, e: null, f: "" }),
     { a: 1, b: 0, c: false },
   );
 });
 
-Deno.test("asNumber / asText / asFlag: Hostaway's documented 0/1 boolean posture", () => {
+test("asNumber / asText / asFlag: Hostaway's documented 0/1 boolean posture", () => {
   assertEquals(asNumber("40160"), 40160);
   assertEquals(asNumber(0), 0);
   assertEquals(asNumber(""), undefined);
@@ -223,7 +224,7 @@ Deno.test("asNumber / asText / asFlag: Hostaway's documented 0/1 boolean posture
   assertEquals(asFlag(undefined), undefined);
 });
 
-Deno.test("unwrapResult: strips only a real envelope", () => {
+test("unwrapResult: strips only a real envelope", () => {
   assertEquals(unwrapResult({ status: "success", result: [1, 2] }), [1, 2]);
   assertEquals(unwrapResult({ status: "success" }), { status: "success" });
   assertEquals(unwrapResult("plain"), "plain");

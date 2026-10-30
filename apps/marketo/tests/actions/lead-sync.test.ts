@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-sync.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("lead-sync: POSTs to /rest/v1/leads.json with default action/lookupField", async () => {
+test("lead-sync: POSTs to /rest/v1/leads.json with default action/lookupField", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1, status: "created" }] } },
   ], conn);
@@ -18,7 +19,7 @@ Deno.test("lead-sync: POSTs to /rest/v1/leads.json with default action/lookupFie
   assertEquals(out, { id: 1, status: "created" });
 });
 
-Deno.test("lead-sync: honors an explicit action and lookupField", async () => {
+test("lead-sync: honors an explicit action and lookupField", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, result: [{ id: 1, status: "updated" }] },
   }], conn);
@@ -29,14 +30,14 @@ Deno.test("lead-sync: honors an explicit action and lookupField", async () => {
   assertEquals(body.input, [{ id: 1, firstName: "Jim" }]);
 });
 
-Deno.test("lead-sync: otherFields merges arbitrary field aliases", async () => {
+test("lead-sync: otherFields merges arbitrary field aliases", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, result: [{}] } }], conn);
   await action.execute!({ email: "a@b.com", otherFields: '{"company": "Acme"}' }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.input[0].company, "Acme");
 });
 
-Deno.test("lead-sync: rejects invalid otherFields JSON", async () => {
+test("lead-sync: rejects invalid otherFields JSON", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -47,7 +48,7 @@ Deno.test("lead-sync: rejects invalid otherFields JSON", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("lead-sync: requires at least one lead field", async () => {
+test("lead-sync: requires at least one lead field", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -58,6 +59,6 @@ Deno.test("lead-sync: requires at least one lead field", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("lead-sync: idempotent is false — Marketo's own docs warn of duplicates on concurrent retries", () => {
+test("lead-sync: idempotent is false — Marketo's own docs warn of duplicates on concurrent retries", () => {
   assertEquals(action.idempotent, false);
 });

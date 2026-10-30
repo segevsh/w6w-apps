@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentUpdate from "../../actions/payment-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-update: patches only the fields given", async () => {
+test("payment-update: patches only the fields given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "tr_1", status: "open" } }]);
   await paymentUpdate.execute({ paymentId: "tr_1", description: "New description" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("payment-update: patches only the fields given", async () => {
   assertEquals(JSON.parse(calls[0].body!), { description: "New description" });
 });
 
-Deno.test("payment-update: is idempotent — an update overwrites the same fields", () => {
+test("payment-update: is idempotent — an update overwrites the same fields", () => {
   assertEquals(paymentUpdate.idempotent, true);
 });

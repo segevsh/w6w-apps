@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   ACCOUNT_MANAGEMENT_URL,
@@ -7,7 +8,7 @@ import {
   locationName,
 } from "../../lib/client.ts";
 
-Deno.test("client: joins baseUrl + path and returns parsed JSON", async () => {
+test("client: joins baseUrl + path and returns parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { accounts: [{ name: "accounts/1" }] } }]);
   const client = new GoogleBusinessProfileClient(ctx);
   const result = await client.request<{ accounts: unknown[] }>(
@@ -19,7 +20,7 @@ Deno.test("client: joins baseUrl + path and returns parsed JSON", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/v1/accounts");
 });
 
-Deno.test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
+test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new GoogleBusinessProfileClient(ctx);
   await client.request(ACCOUNT_MANAGEMENT_URL, "/x", {
@@ -34,7 +35,7 @@ Deno.test("client: skips undefined/null/empty query params, keeps zeros and fals
   assertEquals(params.get("f"), "keep");
 });
 
-Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
+test("client: JSON-encodes bodies and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "accounts/1" } }]);
   const client = new GoogleBusinessProfileClient(ctx);
   await client.request(ACCOUNT_MANAGEMENT_URL, "/accounts/1", {
@@ -46,7 +47,7 @@ Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
   assertEquals(calls[0].body, `{"accountName":"New name"}`);
 });
 
-Deno.test("client: throws with status + detail on non-2xx", async () => {
+test("client: throws with status + detail on non-2xx", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -60,26 +61,26 @@ Deno.test("client: throws with status + detail on non-2xx", async () => {
   );
 });
 
-Deno.test("client: returns undefined for 204 No Content", async () => {
+test("client: returns undefined for 204 No Content", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const client = new GoogleBusinessProfileClient(ctx);
   const result = await client.request<void>(ACCOUNT_MANAGEMENT_URL, "/x", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: returns undefined for a genuinely empty 200 body", async () => {
+test("client: returns undefined for a genuinely empty 200 body", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   const client = new GoogleBusinessProfileClient(ctx);
   const result = await client.request(ACCOUNT_MANAGEMENT_URL, "/x");
   assertEquals(result, undefined);
 });
 
-Deno.test("accountName: forgiving of an already-prefixed id", () => {
+test("accountName: forgiving of an already-prefixed id", () => {
   assertEquals(accountName("123"), "accounts/123");
   assertEquals(accountName("accounts/123"), "accounts/123");
 });
 
-Deno.test("locationName: forgiving of an already-prefixed id", () => {
+test("locationName: forgiving of an already-prefixed id", () => {
   assertEquals(locationName("456"), "locations/456");
   assertEquals(locationName("locations/456"), "locations/456");
 });

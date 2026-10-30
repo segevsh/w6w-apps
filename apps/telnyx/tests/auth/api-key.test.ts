@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import apiKey from "../../auth/api-key.ts";
 
 const CRED = { apiKey: "KEY0123456789abcdef" };
 
-Deno.test("auth: declares a bearer method with a single secret field", () => {
+test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "bearer");
   assertEquals(apiKey.fields?.length, 1);
@@ -13,7 +14,7 @@ Deno.test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(apiKey.fields?.[0].required, true);
 });
 
-Deno.test("sign: stamps `Authorization: Bearer <key>` onto the request and returns it", () => {
+test("sign: stamps `Authorization: Bearer <key>` onto the request and returns it", () => {
   const request = {
     url: "https://api.telnyx.com/v2/messages",
     headers: {} as Record<string, string>,
@@ -26,7 +27,7 @@ Deno.test("sign: stamps `Authorization: Bearer <key>` onto the request and retur
 });
 
 /** `sign` is the only hook handed the credential, and it must not do network I/O. */
-Deno.test("sign: makes no network call", () => {
+test("sign: makes no network call", () => {
   const { ctx, calls } = mockCtx([]);
   apiKey.sign!(
     {
@@ -38,7 +39,7 @@ Deno.test("sign: makes no network call", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: probes GET /phone_numbers/slim with the bearer header", async () => {
+test("test: probes GET /phone_numbers/slim with the bearer header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: { total_results: 0 } } }]);
   const result = await apiKey.test({ credential: CRED } as never, ctx);
   assertEquals(result, { ok: true });
@@ -49,7 +50,7 @@ Deno.test("test: probes GET /phone_numbers/slim with the bearer header", async (
   assertEquals(calls[0].headers["authorization"], `Bearer ${CRED.apiKey}`);
 });
 
-Deno.test("test: succeeds even when the account owns zero numbers", async () => {
+test("test: succeeds even when the account owns zero numbers", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [], meta: { total_results: 0 } } }]);
   assertEquals(await apiKey.test({ credential: CRED } as never, ctx), { ok: true });
 });
@@ -60,7 +61,7 @@ Deno.test("test: succeeds even when the account owns zero numbers", async () => 
  * `{"errors":[{"code":"10009","title":"Authentication failed", ...}]}`.
  * `test` reads this structure rather than trusting a specific HTTP status.
  */
-Deno.test("test: fails on a 401 and surfaces the vendor's structured error", async () => {
+test("test: fails on a 401 and surfaces the vendor's structured error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -78,7 +79,7 @@ Deno.test("test: fails on a 401 and surfaces the vendor's structured error", asy
   assert(result.message!.includes("Authentication failed"), result.message);
 });
 
-Deno.test("test: does not classify from status code alone — reads the body even on other 4xx", async () => {
+test("test: does not classify from status code alone — reads the body even on other 4xx", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { errors: [{ code: "99999", title: "Forbidden", detail: "Scope missing." }] },
@@ -88,13 +89,13 @@ Deno.test("test: does not classify from status code alone — reads the body eve
   assert(result.message!.includes("Scope missing"), result.message);
 });
 
-Deno.test("test: falls back to the bare status when the body carries no errors array", async () => {
+test("test: falls back to the bare status when the body carries no errors array", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await apiKey.test({ credential: CRED } as never, ctx);
   assertEquals(result, { ok: false, message: "Telnyx returned 500" });
 });
 
-Deno.test("test: does not echo the credential back in its result", async () => {
+test("test: does not echo the credential back in its result", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errors: [{ code: "10009", title: "Authentication failed", detail: "bad" }] },

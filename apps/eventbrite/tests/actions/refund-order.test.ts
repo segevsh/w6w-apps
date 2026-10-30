@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/refund-order.ts";
 
-Deno.test("refund-order: POSTs refund body with snake_case fields", async () => {
+test("refund-order: POSTs refund body with snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({
     orderId: "o/1",
@@ -25,7 +26,7 @@ Deno.test("refund-order: POSTs refund body with snake_case fields", async () => 
   });
 });
 
-Deno.test("refund-order: empty body when only id", async () => {
+test("refund-order: empty body when only id", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({ orderId: "o1" }, ctx);
   assertEquals(calls.length, 1);

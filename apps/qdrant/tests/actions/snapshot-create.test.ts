@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/snapshot-create.ts";
@@ -13,7 +14,7 @@ const snapshot = ok({
  * A snapshot that has not finished is not a backup, and the reason to take one
  * is usually that something destructive comes next.
  */
-Deno.test("snapshot-create: waits for the snapshot by default", async () => {
+test("snapshot-create: waits for the snapshot by default", async () => {
   const { ctx, calls } = mockCtx([snapshot], { display });
   const result = await action.execute!({ collection: "docs" }, ctx) as { name: string };
   assertEquals(
@@ -25,13 +26,13 @@ Deno.test("snapshot-create: waits for the snapshot by default", async () => {
   assertEquals(result.name, "docs-2026-08-18.snapshot");
 });
 
-Deno.test("snapshot-create: waiting can be turned off for a very large collection", async () => {
+test("snapshot-create: waiting can be turned off for a very large collection", async () => {
   const { ctx, calls } = mockCtx([snapshot], { display });
   await action.execute!({ collection: "docs", wait: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("wait"), "false");
 });
 
-Deno.test("snapshot-create: logs the name and size, which is what a retention job needs", async () => {
+test("snapshot-create: logs the name and size, which is what a retention job needs", async () => {
   const { ctx, logs } = mockCtx([snapshot], { display });
   await action.execute!({ collection: "docs" }, ctx);
   assertEquals(logs[0].data, {
@@ -41,7 +42,7 @@ Deno.test("snapshot-create: logs the name and size, which is what a retention jo
   });
 });
 
-Deno.test("snapshot-create: needs a collection", async () => {
+test("snapshot-create: needs a collection", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "collection");
   assertEquals(calls.length, 0);
@@ -52,7 +53,7 @@ Deno.test("snapshot-create: needs a collection", async () => {
  * lands on the node, which protects against a bad delete and not against
  * losing the volume.
  */
-Deno.test("snapshot-create: is declared non-idempotent and says where the file lands", () => {
+test("snapshot-create: is declared non-idempotent and says where the file lands", () => {
   assertEquals(action.idempotent, false);
   assert(/Stored on the node/.test(action.description!), action.description);
 });

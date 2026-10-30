@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockWorkableCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-create.ts";
 
-Deno.test("candidate-create: POSTs /jobs/:shortcode/candidates with the sourced+candidate envelope", async () => {
+test("candidate-create: POSTs /jobs/:shortcode/candidates with the sourced+candidate envelope", async () => {
   const { ctx, calls } = mockWorkableCtx([{ status: 201, body: { status: "created" } }]);
   await action.execute({
     shortcode: "GROOV005",
@@ -17,19 +18,19 @@ Deno.test("candidate-create: POSTs /jobs/:shortcode/candidates with the sourced+
   });
 });
 
-Deno.test("candidate-create: sourced defaults to true (Workable's own documented default)", async () => {
+test("candidate-create: sourced defaults to true (Workable's own documented default)", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: {} }]);
   await action.execute({ shortcode: "J", email: "a@b.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).sourced, true);
 });
 
-Deno.test("candidate-create: sourced: false is honored, not treated as unset", async () => {
+test("candidate-create: sourced: false is honored, not treated as unset", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: {} }]);
   await action.execute({ shortcode: "J", email: "a@b.com", sourced: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).sourced, false);
 });
 
-Deno.test("candidate-create: the stage override travels as a query param, not in the body", async () => {
+test("candidate-create: the stage override travels as a query param, not in the body", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: {} }]);
   await action.execute({ shortcode: "J", email: "a@b.com", stage: "phone-screen" }, ctx);
   assertEquals(

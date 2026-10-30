@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import photoCommentCreate from "../../actions/photo-comment-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("photo-comment-create: nests the content and honours the impersonation header", async () => {
+test("photo-comment-create: nests the content and honours the impersonation header", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1" } }]);
   await photoCommentCreate.execute(
     { photoId: "9", content: "Fixed", actAs: "crew@example.com" },

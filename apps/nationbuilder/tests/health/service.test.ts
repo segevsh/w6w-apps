@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 
-Deno.test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -11,7 +12,7 @@ Deno.test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: maps the page-level roll-up", () => {
+test("mapIndicator: maps the page-level roll-up", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -20,13 +21,13 @@ Deno.test("mapIndicator: maps the page-level roll-up", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor's id, falls back to a name slug", () => {
+test("componentKey: prefers the vendor's id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "abc123" }, 0), "abc123");
   assertEquals(componentKey({ name: "API" }, 2), "api-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: all-operational reports ok and names the API component", async () => {
+test("service: all-operational reports ok and names the API component", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       page: { name: "NationBuilder", url: "https://status.nationbuilder.com" },
@@ -41,7 +42,7 @@ Deno.test("service: all-operational reports ok and names the API component", asy
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("service: a degraded API component is surfaced by name", async () => {
+test("service: a degraded API component is surfaced by name", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { name: "NationBuilder", url: "https://status.nationbuilder.com" },
@@ -54,7 +55,7 @@ Deno.test("service: a degraded API component is surfaced by name", async () => {
   assertEquals(report.components?.c1.state, "degraded");
 });
 
-Deno.test("service: group rows are skipped so they never double-count", async () => {
+test("service: group rows are skipped so they never double-count", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { name: "NationBuilder" },
@@ -69,12 +70,12 @@ Deno.test("service: group rows are skipped so they never double-count", async ()
   assertEquals(Object.keys(report.components ?? {}), ["c1"]);
 });
 
-Deno.test("service: an unreadable body is unknown, not down", async () => {
+test("service: an unreadable body is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as NationBuilder's is unknown", async () => {
+test("service: a page that no longer self-identifies as NationBuilder's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { name: "Someone Else", url: "https://status.example.com" },
@@ -87,7 +88,7 @@ Deno.test("service: a page that no longer self-identifies as NationBuilder's is 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is scoped app-wide, unsigned, and only reaches the status host", () => {
+test("service: is scoped app-wide, unsigned, and only reaches the status host", () => {
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.nationbuilder.com"]);

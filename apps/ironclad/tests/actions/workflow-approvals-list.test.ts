@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workflowApprovalsList from "../../actions/workflow-approvals-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workflow-approvals-list: GET /workflows/{id}/approvals", async () => {
+test("workflow-approvals-list: GET /workflows/{id}/approvals", async () => {
   const { ctx, calls } = mockCtx([{ body: { workflowId: "w1", approvalGroups: [] } }]);
   const out = await workflowApprovalsList.execute({ workflowId: "w1" }, ctx) as {
     approvalGroups: unknown[];

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -29,24 +30,24 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("health/service: reads summary.json on the vendor's status host", async () => {
+test("health/service: reads summary.json on the vendor's status host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(calls[0].url, "https://status.productboard.com/api/v2/summary.json");
 });
 
-Deno.test("health/service: the status host is on the CHECK's allowlist, unsigned", () => {
+test("health/service: the status host is on the CHECK's allowlist, unsigned", () => {
   assertEquals(service.network?.allow, ["status.productboard.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("health/service: it covers the component that carries the API", () => {
+test("health/service: it covers the component that carries the API", () => {
   assertEquals(API_COMPONENT_ID, "x5zhztnyv1dd");
   assert(service.covers!.includes(`component:${API_COMPONENT_ID}`));
 });
 
-Deno.test("health/service: an operational page reports ok and every non-group component", async () => {
+test("health/service: an operational page reports ok and every non-group component", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -58,7 +59,7 @@ Deno.test("health/service: an operational page reports ok and every non-group co
   ]);
 });
 
-Deno.test("health/service: the page indicator is the verdict, not the worst component", async () => {
+test("health/service: the page indicator is the verdict, not the worst component", async () => {
   // An external dependency is down but Productboard's own roll-up says fine.
   const { ctx } = mockCtx([{
     body: summary({
@@ -75,26 +76,26 @@ Deno.test("health/service: the page indicator is the verdict, not the worst comp
   assert(out.message!.includes("SendGrid"), out.message);
 });
 
-Deno.test("health/service: a critical indicator is down, a minor one degraded", async () => {
+test("health/service: a critical indicator is down, a minor one degraded", async () => {
   for (const [indicator, expected] of [["critical", "down"], ["minor", "degraded"]] as const) {
     const { ctx } = mockCtx([{ body: summary({ status: { indicator } }) }]);
     assertEquals((await service.check!({}, ctx)).state, expected);
   }
 });
 
-Deno.test("health/service: a broken status page is unknown, never down", async () => {
+test("health/service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message!.includes("500"), out.message);
 });
 
-Deno.test("health/service: an unreadable body is unknown", async () => {
+test("health/service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("health/service: a page that stops self-identifying as Productboard's is unknown", async () => {
+test("health/service: a page that stops self-identifying as Productboard's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { id: "x", name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -103,12 +104,12 @@ Deno.test("health/service: a page that stops self-identifying as Productboard's 
   assert(out.message!.includes("self-identifies"), out.message);
 });
 
-Deno.test("health/service: a page with no components is unknown, not vacuously ok", async () => {
+test("health/service: a page with no components is unknown, not vacuously ok", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("health/service: open incidents and maintenance windows are surfaced", async () => {
+test("health/service: open incidents and maintenance windows are surfaced", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       incidents: [{ name: "Elevated errors", status: "investigating" }],
@@ -121,7 +122,7 @@ Deno.test("health/service: open incidents and maintenance windows are surfaced",
   assert(out.message!.includes("1 scheduled maintenance window(s)"), out.message);
 });
 
-Deno.test("health/service: the Statuspage vocabularies map as documented", () => {
+test("health/service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -137,7 +138,7 @@ Deno.test("health/service: the Statuspage vocabularies map as documented", () =>
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("health/service: componentKey prefers the vendor id and slugs a nameless fallback", () => {
+test("health/service: componentKey prefers the vendor id and slugs a nameless fallback", () => {
   assertEquals(componentKey({ id: "abc", name: "X" }, 0), "abc");
   assertEquals(
     componentKey({ name: "MCP, APIs and Integrations" }, 3),

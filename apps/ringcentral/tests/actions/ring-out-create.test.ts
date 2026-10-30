@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ringOutCreate from "../../actions/ring-out-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ring-out-create: posts from/to (and drops an unset callerId)", async () => {
+test("ring-out-create: posts from/to (and drops an unset callerId)", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "ro1", status: { callStatus: "InProgress" } } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("ring-out-create: posts from/to (and drops an unset callerId)", async 
   assertEquals(out.id, "ro1");
 });
 
-Deno.test("ring-out-create: an explicit callerId is nested the same way as from/to", async () => {
+test("ring-out-create: an explicit callerId is nested the same way as from/to", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ro2" } }]);
   await ringOutCreate.execute(
     { from: "+15550000000", to: "+15550000001", callerId: "+15550000002", playPrompt: true },
@@ -32,6 +33,6 @@ Deno.test("ring-out-create: an explicit callerId is nested the same way as from/
   assertEquals(body.playPrompt, true);
 });
 
-Deno.test("ring-out-create: is not idempotent — no idempotency key is documented", () => {
+test("ring-out-create: is not idempotent — no idempotency key is documented", () => {
   assertEquals(ringOutCreate.idempotent, false);
 });

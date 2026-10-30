@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderList from "../../actions/order-list.ts";
 import orderGet from "../../actions/order-get.ts";
 import orderInvoice from "../../actions/order-invoice.ts";
 import orderRefund from "../../actions/order-refund.ts";
 import { envelope, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("order-list: store_id, user_email and order_number filters all survive", async () => {
+test("order-list: store_id, user_email and order_number filters all survive", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await orderList.execute({ storeId: "1", userEmail: "a@b.com", orderNumber: 42 }, ctx);
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("order-list: store_id, user_email and order_number filters all survive
   assertEquals(url.searchParams.get("filter[order_number]"), "42");
 });
 
-Deno.test("order-get: GET /v1/orders/:id", async () => {
+test("order-get: GET /v1/orders/:id", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", type: "orders" }) }]);
   await orderGet.execute({ orderId: "1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/orders/1");
@@ -25,7 +26,7 @@ Deno.test("order-get: GET /v1/orders/:id", async () => {
  * parameters on a POST rather than a JSON:API body — pinned here so a future
  * "fix" that moves them into the body doesn't silently break the call.
  */
-Deno.test("order-invoice: POST with billing fields as query params, no JSON body", async () => {
+test("order-invoice: POST with billing fields as query params, no JSON body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { meta: { urls: { download_invoice: "https://example.com/invoice.pdf" } } } },
   ]);
@@ -49,7 +50,7 @@ Deno.test("order-invoice: POST with billing fields as query params, no JSON body
   assertEquals(url.searchParams.get("zip_code"), "12345");
 });
 
-Deno.test("order-refund: full refund omits amount from the JSON:API body", async () => {
+test("order-refund: full refund omits amount from the JSON:API body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", type: "orders" }) }]);
   await orderRefund.execute({ orderId: "1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/orders/1/refund");
@@ -57,7 +58,7 @@ Deno.test("order-refund: full refund omits amount from the JSON:API body", async
   assertEquals(body.data, { type: "orders", id: "1", attributes: {} });
 });
 
-Deno.test("order-refund: a partial refund sends the amount in cents", async () => {
+test("order-refund: a partial refund sends the amount in cents", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", type: "orders" }) }]);
   await orderRefund.execute({ orderId: "1", amount: 500 }, ctx);
   const body = JSON.parse(calls[0].body!);

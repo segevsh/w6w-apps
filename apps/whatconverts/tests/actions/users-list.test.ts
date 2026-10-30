@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usersList from "../../actions/users-list.ts";
 import { API_ROOT, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("users-list defaults users_per_page to 25", async () => {
+test("users-list defaults users_per_page to 25", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { users: [] } }]);
   await usersList.execute({}, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/users?users_per_page=25`);
 });
 
-Deno.test("users-list forwards ordering, date range and user_type filters", async () => {
+test("users-list forwards ordering, date range and user_type filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { users: [] } }]);
   await usersList.execute({
     usersPerPage: 50,

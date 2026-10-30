@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-create.ts";
 
-Deno.test("sheet-create: batchUpdate/addSheet with title + hex→rgb tab color", async () => {
+test("sheet-create: batchUpdate/addSheet with title + hex→rgb tab color", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   await action.execute({
     spreadsheetId: "ss-1",

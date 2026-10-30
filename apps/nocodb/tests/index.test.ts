@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 13 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 13 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 13);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,26 +23,26 @@ Deno.test("index: exports 13 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Only creating makes new rows each time. */
-Deno.test("index: only creating records is non-idempotent", () => {
+test("index: only creating records is non-idempotent", () => {
   assertEquals(app.actions.filter((a) => a.idempotent === false).map((a) => a.key), [
     "record-create",
   ]);
 });
 
-Deno.test("index: exports the auth method and all three health checks", () => {
+test("index: exports the auth method and all three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-token"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "instance", "quota"]);
 });
 
 /** Every NocoDB deployment is its own host. */
-Deno.test("index: the manifest admits an instance can be anywhere", () => {
+test("index: the manifest admits an instance can be anywhere", () => {
   assertEquals(manifest.w6w.network.allow, ["*"]);
   assertEquals(manifest.w6w.id, "io.w6w.nocodb");
   assertEquals(manifest.w6w.categories, ["spreadsheets", "databases"]);
@@ -50,9 +52,9 @@ Deno.test("index: the manifest admits an instance can be anywhere", () => {
  * A `where` with spaces returns 200 and no rows, so both actions that take one
  * must check before sending rather than trusting the response.
  */
-Deno.test("index: every action taking a filter validates it first", async () => {
+test("index: every action taking a filter validates it first", async () => {
   for (const name of ["record-list", "record-count"]) {
-    const src = await Deno.readTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
     assert(/assertWhere\(/.test(src), `${name} does not validate its filter`);
   }
 });
@@ -61,9 +63,9 @@ Deno.test("index: every action taking a filter validates it first", async () => 
  * Sixty requests a minute means the bulk endpoints are not an optimisation,
  * they are the only way an import finishes.
  */
-Deno.test("index: the write actions send one request for many records", async () => {
+test("index: the write actions send one request for many records", async () => {
   for (const name of ["record-create", "record-update"]) {
-    const src = await Deno.readTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
     assert(
       /records\.length === 1 \? records\[0\] : records/.test(src),
       `${name} does not send an array in one request`,
@@ -72,7 +74,7 @@ Deno.test("index: the write actions send one request for many records", async ()
 });
 
 /** Deletion is final, and NocoDB's API has no undo. */
-Deno.test("index: deleting requires a confirmation", () => {
+test("index: deleting requires a confirmation", () => {
   const remove = app.actions.find((a) => a.key === "record-delete")!;
   const confirm = (remove.params as Array<{ key: string; required?: boolean }>).find((p) =>
     p.key === "confirm"
@@ -94,17 +96,17 @@ const code = (src: string) =>
 
 const sources = async function* () {
   for (const dir of ["actions", "health", "lib"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.name.endsWith(".ts")) continue;
       yield {
         name: `${dir}/${entry.name}`,
-        src: code(await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
+        src: code(await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
       };
     }
   }
 };
 
-Deno.test("index: nothing reaches the network except through ctx.fetch", async () => {
+test("index: nothing reaches the network except through ctx.fetch", async () => {
   for await (const { name, src } of sources()) {
     assert(!/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")), `${name} calls global fetch`);
     assert(!/\bDeno\./.test(src), `${name} touches Deno.*`);
@@ -113,10 +115,10 @@ Deno.test("index: nothing reaches the network except through ctx.fetch", async (
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/xc-token|xc-auth/i.test(src), `${entry.name} sets a NocoDB credential header`);
     assert(!/authorization/i.test(src), `${entry.name} sets an authorization header`);
     assert(
@@ -127,10 +129,10 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
 });
 
 /** Rows are the customer's data, and some tables hold personal information. */
-Deno.test("index: no action logs a record's values", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action logs a record's values", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
     for (const call of logs) {
       const object = call.slice(call.indexOf("{"));
@@ -146,7 +148,7 @@ Deno.test("index: no action logs a record's values", async () => {
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/lead-convert.ts";
 
-Deno.test("lead-convert: POSTs to /Leads/{id}/actions/convert with a Deals block by default", async () => {
+test("lead-convert: POSTs to /Leads/{id}/actions/convert with a Deals block by default", async () => {
   const { ctx, calls } = mockZohoCtx([
     {
       body: {
@@ -32,7 +33,7 @@ Deno.test("lead-convert: POSTs to /Leads/{id}/actions/convert with a Deals block
   });
 });
 
-Deno.test("lead-convert: omits Deals when createDeal is off, merges into an existing Contact", async () => {
+test("lead-convert: omits Deals when createDeal is off, merges into an existing Contact", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: {} }] } },
   ]);
@@ -50,6 +51,6 @@ Deno.test("lead-convert: omits Deals when createDeal is off, merges into an exis
   assertEquals(body.data[0].overwrite, true);
 });
 
-Deno.test("lead-convert: not idempotent — a converted Lead cannot be converted twice", () => {
+test("lead-convert: not idempotent — a converted Lead cannot be converted twice", () => {
   assertEquals(action.idempotent, false);
 });

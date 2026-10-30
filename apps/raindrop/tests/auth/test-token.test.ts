@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import testToken, { authHeaders } from "../../auth/test-token.ts";
 import { BAD_TOKEN_BODY, mockCtx, pathOf, queryOf, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
 const TOKEN = "11111111-2222-3333-4444-unitTestFixtureNotReal";
 
-Deno.test("test-token: sign stamps the bearer header and nothing else", () => {
+test("test-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.raindrop.io/rest/v1/collections",
@@ -22,11 +23,11 @@ Deno.test("test-token: sign stamps the bearer header and nothing else", () => {
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("test-token: authHeaders is the single source of the wire format", () => {
+test("test-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ testToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("test-token: test passes when /user answers with a user", async () => {
+test("test-token: test passes when /user answers with a user", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: true, user: { _id: 32 } } }]);
   const result = await testToken.test({ credential: { testToken: TOKEN } }, ctx);
 
@@ -36,7 +37,7 @@ Deno.test("test-token: test passes when /user answers with a user", async () => 
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("test-token: test fails with no token, without making a request", async () => {
+test("test-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await testToken.test({ credential: {} }, ctx);
 
@@ -50,7 +51,7 @@ Deno.test("test-token: test fails with no token, without making a request", asyn
  * on the pure function, asserted here through the real hook so that a future
  * refactor cannot quietly stop calling it.
  */
-Deno.test("test-token: the two 401 bodies produce two different messages", async () => {
+test("test-token: the two 401 bodies produce two different messages", async () => {
   const missing = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const rejected = mockCtx([{ status: 401, body: BAD_TOKEN_BODY }]);
 
@@ -64,7 +65,7 @@ Deno.test("test-token: the two 401 bodies produce two different messages", async
 });
 
 /** No probe message may echo the credential it was handed. */
-Deno.test("test-token: a failure message never contains the token", async () => {
+test("test-token: a failure message never contains the token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: BAD_TOKEN_BODY }]);
   const result = await testToken.test({ credential: { testToken: TOKEN } }, ctx);
 
@@ -76,7 +77,7 @@ Deno.test("test-token: a failure message never contains the token", async () => 
  * groups and linked-account flags come back on the same response and must not
  * reach the connection label, which is rendered in lists, logs and previews.
  */
-Deno.test("test-token: afterConnect publishes the name and drops the email", async () => {
+test("test-token: afterConnect publishes the name and drops the email", async () => {
   const { ctx } = mockCtx([{
     body: {
       result: true,
@@ -96,7 +97,7 @@ Deno.test("test-token: afterConnect publishes the name and drops the email", asy
 });
 
 /** A missing label must not fail a Connection whose token `test` already passed. */
-Deno.test("test-token: afterConnect is silent on failure", async () => {
+test("test-token: afterConnect is silent on failure", async () => {
   const failing = mockCtx([{ status: 500, body: { result: false } }]);
   assertEquals(
     await testToken.afterConnect!({ credential: { testToken: TOKEN } }, failing.ctx),
@@ -110,7 +111,7 @@ Deno.test("test-token: afterConnect is silent on failure", async () => {
   );
 });
 
-Deno.test("test-token: the credential field is a secret and the token's limits are stated", () => {
+test("test-token: the credential field is a secret and the token's limits are stated", () => {
   assertEquals(testToken.type, "bearer");
   const field = testToken.fields?.[0];
   assertEquals(field?.key, "testToken");

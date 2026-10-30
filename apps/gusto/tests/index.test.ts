@@ -1,11 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as { w6w: { id: string; categories: string[]; network: { allow: string[] } } };
 
-Deno.test("index: exports 23 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 23 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 23);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -17,13 +19,13 @@ Deno.test("index: exports 23 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
-Deno.test("index: the actions that duplicate on a retry say so", () => {
+test("index: the actions that duplicate on a retry say so", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, ["department-create", "employee-create", "employee-terminate"]);
 });
@@ -33,7 +35,7 @@ Deno.test("index: the actions that duplicate on a retry say so", () => {
  * caller-supplied version — an action that re-read and forced the write would
  * be overwriting a change nobody saw.
  */
-Deno.test("index: every write takes a version rather than fetching one", () => {
+test("index: every write takes a version rather than fetching one", () => {
   for (const key of ["employee-update", "department-people-add"]) {
     const action = app.actions.find((a) => a.key === key)!;
     const version = (action.params as Array<{ key: string; required?: boolean }>)
@@ -44,10 +46,10 @@ Deno.test("index: every write takes a version rather than fetching one", () => {
 });
 
 /** Payroll damage is somebody not being paid. The narrowing is deliberate. */
-Deno.test("index: no action submits or approves a payroll", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action submits or approves a payroll", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
     assert(!/\/submit|\/calculate|\/prepare/.test(code), `${entry.name} touches a payroll write`);
   }
@@ -58,10 +60,10 @@ Deno.test("index: no action submits or approves a payroll", async () => {
  * asked for. Prose *about* them is the point — what must not exist is a field
  * that puts one on the wire.
  */
-Deno.test("index: no action puts an SSN or bank details on the wire", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action puts an SSN or bank details on the wire", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     const code = src
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/\/\/.*$/gm, "")
@@ -80,7 +82,7 @@ Deno.test("index: no action puts an SSN or bank details on the wire", async () =
 });
 
 /** Terminating a person and creating a department are different weights. */
-Deno.test("index: terminating requires an explicit confirmation", () => {
+test("index: terminating requires an explicit confirmation", () => {
   const action = app.actions.find((a) => a.key === "employee-terminate")!;
   const confirm = (action.params as Array<{ key: string; required?: boolean }>)
     .find((p) => p.key === "confirm");
@@ -92,8 +94,8 @@ Deno.test("index: terminating requires an explicit confirmation", () => {
  * Measured 2026-08-18: without the header Gusto serves a version deprecated in
  * July 2024.
  */
-Deno.test("index: the API version is pinned in exactly one place", async () => {
-  const client = await Deno.readTextFile(new URL("../lib/client.ts", import.meta.url));
+test("index: the API version is pinned in exactly one place", async () => {
+  const client = await denoReadTextFile(new URL("../lib/client.ts", import.meta.url));
   assert(/API_VERSION = "2026-06-15"/.test(client), "the version is not pinned");
   assert(
     /"x-gusto-api-version": API_VERSION/.test(client),
@@ -101,15 +103,15 @@ Deno.test("index: the API version is pinned in exactly one place", async () => {
   );
 });
 
-Deno.test("index: the egress allowlist names both environments", () => {
+test("index: the egress allowlist names both environments", () => {
   assertEquals(manifest.w6w.network.allow, ["api.gusto.com", "api.gusto-demo.com"]);
 });
 
-Deno.test("index: nothing calls a host outside the allowlist", async () => {
+test("index: nothing calls a host outside the allowlist", async () => {
   for (const dir of ["actions", "auth", "lib"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.name.endsWith(".ts")) continue;
-      const src = await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
+      const src = await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
       const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
       for (const m of code.matchAll(/https:\/\/([a-z0-9.-]+)/g)) {
         assert(
@@ -121,12 +123,12 @@ Deno.test("index: nothing calls a host outside the allowlist", async () => {
   }
 });
 
-Deno.test("index: two auth methods and two declared health checks", () => {
+test("index: two auth methods and two declared health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["oauth2", "oauth2-demo"]);
   assertEquals(app.healthChecks!.map((h) => h.key).sort(), ["api-version", "service"]);
 });
 
-Deno.test("index: the manifest's categories are in the controlled vocabulary", () => {
+test("index: the manifest's categories are in the controlled vocabulary", () => {
   assertEquals(manifest.w6w.id, "io.w6w.gusto");
   assertEquals(manifest.w6w.categories, ["hr", "finance", "productivity"]);
 });

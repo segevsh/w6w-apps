@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-screen-comment.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-screen-comment: POSTs the trimmed content to the note's comments", async () => {
+test("create-screen-comment: POSTs the trimmed content to the note's comments", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }]);
   const out = await action.execute(
     { projectId: "p1", screenId: "s1", noteId: "n1", content: " Looks good " },
@@ -15,7 +16,7 @@ Deno.test("create-screen-comment: POSTs the trimmed content to the note's commen
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-screen-comment: empty content is refused; a 422 is thrown", async () => {
+test("create-screen-comment: empty content is refused; a 422 is thrown", async () => {
   await assertRejects(
     async () =>
       await action.execute(

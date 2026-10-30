@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-automation-start.ts";
 import { actionBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-automation-start: is a non-idempotent perform action on the contact id", () => {
+test("contact-automation-start: is a non-idempotent perform action on the contact id", () => {
   assertEquals(action.key, "contact-automation-start");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -10,7 +11,7 @@ Deno.test("contact-automation-start: is a non-idempotent perform action on the c
   assertEquals(action.params![0].required, true);
 });
 
-Deno.test("contact-automation-start: POSTs /customers/11/actions/start_automation with the mapped body", async () => {
+test("contact-automation-start: POSTs /customers/11/actions/start_automation with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: actionBody(true, "done") }]);
   const out = await action.execute({ id: 11, automationId: 8 }, ctx);
   assertEquals(calls.length, 1);
@@ -21,7 +22,7 @@ Deno.test("contact-automation-start: POSTs /customers/11/actions/start_automatio
   assertEquals(out, { success: true, message: "done" });
 });
 
-Deno.test("contact-automation-start: HTTP 200 with success:false is a failure, not a result", async () => {
+test("contact-automation-start: HTTP 200 with success:false is a failure, not a result", async () => {
   const { ctx } = mockCtx([{ body: actionBody(false, "Contact not found") }]);
   await assertRejects(
     async () => await action.execute({ id: 11, automationId: 8 }, ctx),
@@ -30,7 +31,7 @@ Deno.test("contact-automation-start: HTTP 200 with success:false is a failure, n
   );
 });
 
-Deno.test("contact-automation-start: a 422 surfaces the errors array", async () => {
+test("contact-automation-start: a 422 surfaces the errors array", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: ["bad one", "bad two"] } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, automationId: 8 }, ctx),
@@ -39,7 +40,7 @@ Deno.test("contact-automation-start: a 422 surfaces the errors array", async () 
   );
 });
 
-Deno.test("contact-automation-start: a 200 without a success flag is an error", async () => {
+test("contact-automation-start: a 200 without a success flag is an error", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, automationId: 8 }, ctx),

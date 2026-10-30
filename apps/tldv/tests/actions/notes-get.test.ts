@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/notes-get.ts";
 
@@ -10,7 +11,7 @@ const NOTES = {
   topics: [{ id: "t1", order: 0, title: "Roadmap", summary: "Discussed roadmap" }],
 };
 
-Deno.test("notes-get: hits GET /meetings/{meetingId}/notes and returns the notes verbatim", async () => {
+test("notes-get: hits GET /meetings/{meetingId}/notes and returns the notes verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: NOTES }]);
   const out = await action.execute({ meetingId: "m1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1alpha1/meetings/m1/notes");

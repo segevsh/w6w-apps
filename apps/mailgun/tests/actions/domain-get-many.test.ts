@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/domain-get-many.ts";
 
-Deno.test("domain-get-many: GETs /v4/domains with limit/skip/state", async () => {
+test("domain-get-many: GETs /v4/domains with limit/skip/state", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ limit: 10, skip: 5, state: "active" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("domain-get-many: GETs /v4/domains with limit/skip/state", async () =>
   assertEquals(url.searchParams.get("state"), "active");
 });
 
-Deno.test("domain-get-many: omits state when not provided", async () => {
+test("domain-get-many: omits state when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

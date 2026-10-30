@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fetchPage from "../../actions/fetch.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("fetch: posts only what is set and returns the page fields", async () => {
+test("fetch: posts only what is set and returns the page fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { markdown: "# hi", favicon: "https://f/i.ico", images: [{ alt: "a", url: "u" }] },
   }]);
@@ -23,7 +24,7 @@ Deno.test("fetch: posts only what is set and returns the page fields", async () 
   });
 });
 
-Deno.test("fetch: a schema goes as an object, with instructions", async () => {
+test("fetch: a schema goes as an object, with instructions", async () => {
   const { ctx, calls } = mockCtx([{ body: { markdown: "", favicon: "", data: { a: 1 } } }]);
   const out = await fetchPage.execute({
     url: "https://e.com",
@@ -38,7 +39,7 @@ Deno.test("fetch: a schema goes as an object, with instructions", async () => {
   assertEquals(body.includeRawContent, true);
 });
 
-Deno.test("fetch: validation and vendor errors", async () => {
+test("fetch: validation and vendor errors", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { statusCode: 400, error: { code: "BAD_REQUEST", message: "unreachable" } },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -18,13 +19,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes status.bird.com, unsigned, with widened egress", () => {
+test("service: probes status.bird.com, unsigned, with widened egress", () => {
   assertEquals(service.network?.allow, ["status.bird.com"]);
   assertEquals(service.credential ?? "none", "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: an all-operational page reports ok for both watched components", async () => {
+test("service: an all-operational page reports ok for both watched components", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("service: an all-operational page reports ok for both watched componen
  * unified product) are NOT this app's surface and must never leak into the
  * report — including staying green when they are down.
  */
-Deno.test("service: unrelated components are excluded even when they are down", async () => {
+test("service: unrelated components are excluded even when they are down", async () => {
   const body = summary();
   (body.components as Array<{ status: string }>)[2].status = "major_outage"; // SMS - API V1
   (body.components as Array<{ status: string }>)[3].status = "major_outage"; // Messaging - API
@@ -50,7 +51,7 @@ Deno.test("service: unrelated components are excluded even when they are down", 
   assertEquals(Object.keys(report.components ?? {}).sort(), ["sms-api", "voice-api"]);
 });
 
-Deno.test("service: a degraded SMS - API component reports degraded", async () => {
+test("service: a degraded SMS - API component reports degraded", async () => {
   const body = summary();
   (body.components as Array<{ status: string }>)[0].status = "partial_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -60,7 +61,7 @@ Deno.test("service: a degraded SMS - API component reports degraded", async () =
   assertEquals(report.components?.["sms-api"].state, "degraded");
 });
 
-Deno.test("service: a major outage on Voice - API reports down", async () => {
+test("service: a major outage on Voice - API reports down", async () => {
   const body = summary();
   (body.components as Array<{ status: string }>)[1].status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -68,18 +69,18 @@ Deno.test("service: a major outage on Voice - API reports down", async () => {
 });
 
 /** A broken status page says nothing about MessageBird — never `down`. */
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** If the page reshuffles component names, fall back to the page indicator rather than silence. */
-Deno.test("service: falls back to the page indicator when the watched components are gone", async () => {
+test("service: falls back to the page indicator when the watched components are gone", async () => {
   const body = summary({
     components: [{ id: "x", name: "Something Else", status: "operational" }],
   });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-domain.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-domain: POSTs the name and maps subdomain fields to snake_case", async () => {
+test("create-domain: POSTs the name and maps subdomain fields to snake_case", async () => {
   const resp = { data: { id: "dle1krod2jvn8gwm", name: "testname.com", is_verified: false } };
   const { ctx, calls } = mockCtx([{ status: 201, body: resp }]);
   const out = await exec(action, {
@@ -22,10 +23,10 @@ Deno.test("create-domain: POSTs the name and maps subdomain fields to snake_case
   assertEquals(out, resp);
 });
 
-Deno.test("create-domain: omits the optional subdomains when unset", async () => {
+test("create-domain: omits the optional subdomains when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await exec(action, { name: "a.com" }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "a.com" });
 });
 
-Deno.test("create-domain: is non-idempotent", () => assertEquals(action.idempotent, false));
+test("create-domain: is non-idempotent", () => assertEquals(action.idempotent, false));

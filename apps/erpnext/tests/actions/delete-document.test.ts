@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import deleteDocument from "../../actions/delete-document.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("delete-document: DELETEs by doctype and name once confirmed", async () => {
+test("delete-document: DELETEs by doctype and name once confirmed", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { message: "ok" } }], conn);
   const result = await deleteDocument.execute(
     { doctype: "ToDo", name: "abc123", confirm: true },
@@ -15,7 +16,7 @@ Deno.test("delete-document: DELETEs by doctype and name once confirmed", async (
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("delete-document: refuses without confirm, before any request", async () => {
+test("delete-document: refuses without confirm, before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const err = await assertRejects(
     async () =>
@@ -26,11 +27,11 @@ Deno.test("delete-document: refuses without confirm, before any request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete-document: an end state that looks idempotent still is not", () => {
+test("delete-document: an end state that looks idempotent still is not", () => {
   assertEquals(deleteDocument.idempotent, false);
 });
 
-Deno.test("delete-document: the confirm param is required", () => {
+test("delete-document: the confirm param is required", () => {
   const confirm = (deleteDocument.params as Array<{ key: string; required?: boolean }>)
     .find((p) => p.key === "confirm");
   assert(confirm, "delete-document has no confirmation flag");

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
 
-Deno.test("quota: reports ok headroom from x-rate-limit-* headers", async () => {
+test("quota: reports ok headroom from x-rate-limit-* headers", async () => {
   const { ctx } = mockCtx([{
     body: { data: { id: "1" } },
     headers: {
@@ -19,7 +20,7 @@ Deno.test("quota: reports ok headroom from x-rate-limit-* headers", async () => 
   assertEquals(report.quota?.[0].limit, 75);
 });
 
-Deno.test("quota: reports down when remaining is exhausted", async () => {
+test("quota: reports down when remaining is exhausted", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: {},
@@ -34,7 +35,7 @@ Deno.test("quota: reports down when remaining is exhausted", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: reports unknown when the rate-limit headers are absent", async () => {
+test("quota: reports unknown when the rate-limit headers are absent", async () => {
   const { ctx } = mockCtx([{
     body: { data: { id: "1" } },
     headers: { "content-type": "application/json" },
@@ -43,7 +44,7 @@ Deno.test("quota: reports unknown when the rate-limit headers are absent", async
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares absence rather than guessing at an undocumented endpoint", () => {
+test("service: declares absence rather than guessing at an undocumented endpoint", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
   assertEquals(typeof service.unavailable?.reason, "string");

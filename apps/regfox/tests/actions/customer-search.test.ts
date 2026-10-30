@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/customer-search.ts";
 import { envelope, exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-search: sends product, its filters and paging, returns items and the cursor", async () => {
+test("customer-search: sends product, its filters and paging, returns items and the cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ id: 1 }, { id: 2 }], { totalResults: 7, startingAfter: 2, hasMore: true }),
   }]);
@@ -30,12 +31,12 @@ Deno.test("customer-search: sends product, its filters and paging, returns items
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("customer-search: declares a required product and is a search action", () => {
+test("customer-search: declares a required product and is a search action", () => {
   assertEquals(action.type, "search");
   assert(action.params!.find((p) => p.key === "product")?.required);
 });
 
-Deno.test("customer-search: an error envelope throws with the vendor's text", async () => {
+test("customer-search: an error envelope throws with the vendor's text", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { responseCode: 404, error: { code: 4404, description: "invalid apiKey" } },

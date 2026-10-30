@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/lead-source-list.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("lead-source-list: sends GET /company-settings/leads/lead-sources and returns the vendor body", async () => {
+test("lead-source-list: sends GET /company-settings/leads/lead-sources and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { count: 1, pageSize: 50, pageStartIndex: 0, items: [{ id: "ls1", name: "Web" }] },
   }]);
@@ -21,7 +22,7 @@ Deno.test("lead-source-list: sends GET /company-settings/leads/lead-sources and 
   });
 });
 
-Deno.test("lead-source-list: a vendor error surfaces its title and status", async () => {
+test("lead-source-list: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ pageSize: 50 } as never, ctx),

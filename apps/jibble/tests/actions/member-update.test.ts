@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import memberUpdate from "../../actions/member-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("member-update: PATCHes People(id) and reports ok on 204", async () => {
+test("member-update: PATCHes People(id) and reports ok on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await memberUpdate.execute({ personId: "p1", fullName: "New Name" }, ctx) as {
     ok: boolean;
@@ -13,7 +14,7 @@ Deno.test("member-update: PATCHes People(id) and reports ok on 204", async () =>
   assertEquals(out.ok, true);
 });
 
-Deno.test("member-update: refuses an empty update", async () => {
+test("member-update: refuses an empty update", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(memberUpdate.execute({ personId: "p1" }, ctx)),

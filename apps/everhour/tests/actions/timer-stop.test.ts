@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timerStop from "../../actions/timer-stop.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timer-stop: DELETE /timers/current with the documented query and body", async () => {
+test("timer-stop: DELETE /timers/current with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timerStop.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("timer-stop: DELETE /timers/current with the documented query and body
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timer-stop: an Everhour error surfaces its message and status", async () => {
+test("timer-stop: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timerStop.execute({}, ctx)),
@@ -30,7 +31,7 @@ Deno.test("timer-stop: an Everhour error surfaces its message and status", async
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timer-stop: declares perform and idempotent=true", () => {
+test("timer-stop: declares perform and idempotent=true", () => {
   assertEquals(timerStop.type, "perform");
   assertEquals(timerStop.idempotent, true);
 });

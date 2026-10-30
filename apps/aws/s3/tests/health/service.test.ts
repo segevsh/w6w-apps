@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -15,7 +16,7 @@ function utf16beWithBom(text: string): ArrayBuffer {
   return bytes.buffer;
 }
 
-Deno.test("service: reports ok with no components when the feed has no S3 events", async () => {
+test("service: reports ok with no components when the feed has no S3 events", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: utf16beWithBom("[]"), headers: {} }]);
   const report = await service.check!({}, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("service: reports ok with no components when the feed has no S3 events
   assertEquals(report.components, {});
 });
 
-Deno.test("service: decodes UTF-16BE-with-BOM and ignores non-S3 events", async () => {
+test("service: decodes UTF-16BE-with-BOM and ignores non-S3 events", async () => {
   const events = [
     {
       service: "directconnect-ap-south-1",
@@ -43,7 +44,7 @@ Deno.test("service: decodes UTF-16BE-with-BOM and ignores non-S3 events", async 
   assertEquals(report.components, { "eu-west-1": { state: "ok", message: "resolved issue" } });
 });
 
-Deno.test("service: an open S3 event reports degraded with a per-region component", async () => {
+test("service: an open S3 event reports degraded with a per-region component", async () => {
   const events = [
     {
       service: "s3-us-east-1",
@@ -64,13 +65,13 @@ Deno.test("service: an open S3 event reports degraded with a per-region componen
   assertEquals(report.message?.includes("N. Virginia"), true);
 });
 
-Deno.test("service: a non-ok status reports unknown, not down", async () => {
+test("service: a non-ok status reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: utf16beWithBom("[]"), headers: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unparseable bytes report unknown rather than throwing", async () => {
+test("service: unparseable bytes report unknown rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: new ArrayBuffer(4), headers: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

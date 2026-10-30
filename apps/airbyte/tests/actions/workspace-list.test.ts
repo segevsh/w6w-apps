@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-list.ts";
 
 const D = { display: { host: "https://api.airbyte.com" } };
 
-Deno.test("workspace-list: reports a single workspace as the usual case", async () => {
+test("workspace-list: reports a single workspace as the usual case", async () => {
   const { ctx, calls, logs } = mockCtx([{
     status: 200,
     body: { data: [{ workspaceId: "w1", name: "Default" }] },
@@ -16,7 +17,7 @@ Deno.test("workspace-list: reports a single workspace as the usual case", async 
 });
 
 /** An application carries its creator's permissions, often broadly. */
-Deno.test("workspace-list: notes when the application reaches several workspaces", async () => {
+test("workspace-list: notes when the application reaches several workspaces", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { data: [{ workspaceId: "w1" }, { workspaceId: "w2" }] },
@@ -29,7 +30,7 @@ Deno.test("workspace-list: notes when the application reaches several workspaces
   );
 });
 
-Deno.test("workspace-list: paging is clamped", async () => {
+test("workspace-list: paging is clamped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], D);
   await action.execute({ limit: 9999 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "1000");

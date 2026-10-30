@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-list.ts";
 
-Deno.test("sheet-list: POSTs worksheet.list to /api/v2/<resource_id>", async () => {
+test("sheet-list: POSTs worksheet.list to /api/v2/<resource_id>", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {

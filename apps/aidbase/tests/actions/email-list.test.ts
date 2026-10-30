@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailList from "../../actions/email-list.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,14 +9,14 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => emailList.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("email-list: declares a read action with a description, params and output", () => {
+test("email-list: declares a read action with a description, params and output", () => {
   assertEquals(emailList.key, "email-list");
   assertEquals(emailList.type, "read");
   assert((emailList.description ?? "").length > 0);
   assert(Array.isArray(emailList.output) && emailList.output.length > 0);
 });
 
-Deno.test("email-list: sends the documented request and returns the documented shape", async () => {
+test("email-list: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -47,7 +48,7 @@ Deno.test("email-list: sends the documented request and returns the documented s
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("email-list: an Aidbase failure body is thrown with its message", async () => {
+test("email-list: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

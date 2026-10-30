@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-update.ts";
 
-Deno.test("file-update: PATCHes metadata only when no content is supplied", async () => {
+test("file-update: PATCHes metadata only when no content is supplied", async () => {
   const body = { id: "f-1", name: "Renamed" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ fileId: "f-1", name: "Renamed", starred: true }, ctx);

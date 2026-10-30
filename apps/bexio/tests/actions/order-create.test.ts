@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-create.ts";
 
-Deno.test("order-create: POSTs to /2.0/kb_order with mapped body", async () => {
+test("order-create: POSTs to /2.0/kb_order with mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, document_nr: "AU-0001" } }]);
   const result = await action.execute!({ contactId: 14, userId: 1, title: "Follow-up order" }, ctx);
   const url = new URL(calls[0].url);

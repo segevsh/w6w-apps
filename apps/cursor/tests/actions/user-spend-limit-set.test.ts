@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userSpendLimitSet from "../../actions/user-spend-limit-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-spend-limit-set: sets a limit", async () => {
+test("user-spend-limit-set: sets a limit", async () => {
   const { ctx, calls } = mockCtx([
     { body: { outcome: "success", message: "Spend limit set to $100 for user a@co.com" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("user-spend-limit-set: sets a limit", async () => {
   assertEquals(out.outcome, "success");
 });
 
-Deno.test("user-spend-limit-set: an unset limit is sent as null (removes it)", async () => {
+test("user-spend-limit-set: an unset limit is sent as null (removes it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { outcome: "success", message: "cleared" } }]);
   await userSpendLimitSet.execute({
     userEmail: "a@co.com",
@@ -24,7 +25,7 @@ Deno.test("user-spend-limit-set: an unset limit is sent as null (removes it)", a
   assertEquals(JSON.parse(calls[0].body!), { userEmail: "a@co.com", spendLimitDollars: null });
 });
 
-Deno.test("user-spend-limit-set: a zero limit is preserved, not treated as unset", async () => {
+test("user-spend-limit-set: a zero limit is preserved, not treated as unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { outcome: "success", message: "set to $0" } }]);
   await userSpendLimitSet.execute({ userEmail: "a@co.com", spendLimitDollars: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).spendLimitDollars, 0);

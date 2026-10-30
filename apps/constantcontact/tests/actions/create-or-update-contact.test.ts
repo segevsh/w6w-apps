@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-or-update-contact.ts";
 
-Deno.test("create-or-update-contact: POSTs /v3/contacts/sign_up_form", async () => {
+test("create-or-update-contact: POSTs /v3/contacts/sign_up_form", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { contact_id: "c1", action: "created" } }]);
   const out = await action.execute!({
     emailAddress: "a@b.test",
@@ -13,7 +14,7 @@ Deno.test("create-or-update-contact: POSTs /v3/contacts/sign_up_form", async () 
   assertEquals(out, { contact_id: "c1", action: "created" });
 });
 
-Deno.test("create-or-update-contact: sends email_address as a flat string, not an object", async () => {
+test("create-or-update-contact: sends email_address as a flat string, not an object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ emailAddress: "a@b.test", listMemberships: ["l1"] }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -21,7 +22,7 @@ Deno.test("create-or-update-contact: sends email_address as a flat string, not a
   assertEquals(body.list_memberships, ["l1"]);
 });
 
-Deno.test("create-or-update-contact: sends a single street_address object and one phone_number", async () => {
+test("create-or-update-contact: sends a single street_address object and one phone_number", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     emailAddress: "a@b.test",
@@ -36,7 +37,7 @@ Deno.test("create-or-update-contact: sends a single street_address object and on
   assertEquals("street_addresses" in body, false);
 });
 
-Deno.test("create-or-update-contact: maps the remaining optional fields", async () => {
+test("create-or-update-contact: maps the remaining optional fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     emailAddress: "a@b.test",
@@ -61,7 +62,7 @@ Deno.test("create-or-update-contact: maps the remaining optional fields", async 
   assertEquals(body.custom_fields, [{ custom_field_id: "f1", value: "x" }]);
 });
 
-Deno.test("create-or-update-contact: sends only the two required keys when nothing else is given", async () => {
+test("create-or-update-contact: sends only the two required keys when nothing else is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ emailAddress: "a@b.test", listMemberships: ["l1"] }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), [
@@ -70,6 +71,6 @@ Deno.test("create-or-update-contact: sends only the two required keys when nothi
   ]);
 });
 
-Deno.test("create-or-update-contact: is idempotent — the upsert replays cleanly", () => {
+test("create-or-update-contact: is idempotent — the upsert replays cleanly", () => {
   assertEquals(action.idempotent, true);
 });

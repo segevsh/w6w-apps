@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldCreate from "../../actions/field-create.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-create: POST /customers/42/fields/age/ with the documented query and body", async () => {
+test("field-create: POST /customers/42/fields/age/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "field": { "name": "age", "type": "integer", "value": 31 } },
@@ -31,7 +32,7 @@ Deno.test("field-create: POST /customers/42/fields/age/ with the documented quer
   assertEquals(out, { "name": "age", "type": "integer", "value": 31 });
 });
 
-Deno.test("field-create: a Landbot error surfaces its status and message", async () => {
+test("field-create: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -53,7 +54,7 @@ Deno.test("field-create: a Landbot error surfaces its status and message", async
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("field-create: declares perform", () => {
+test("field-create: declares perform", () => {
   assertEquals(fieldCreate.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

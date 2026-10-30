@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import create from "../../actions/data-record-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("data-record-create: POSTs { data, memberId } to the records path", async () => {
+test("data-record-create: POSTs { data, memberId } to the records path", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec_1", tableKey: "products" } }]);
   const out = await create.execute(
     { tableKey: "products", data: { name: "W", price: 29.99 }, memberId: "mem_1" },
@@ -17,7 +18,7 @@ Deno.test("data-record-create: POSTs { data, memberId } to the records path", as
   assertEquals(out.id, "rec_1");
 });
 
-Deno.test("data-record-create: memberId is omitted when unset; data is required", async () => {
+test("data-record-create: memberId is omitted when unset; data is required", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec_1" } }]);
   await create.execute({ tableKey: "t", data: '{"a":1}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { data: { a: 1 } });

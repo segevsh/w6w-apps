@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import secretKey, { authHeaders, keyMode, PROBE_PATH } from "../../auth/secret-key.ts";
 import { errorBody, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
 const KEY = "sk_test_unitTestFixtureNotARealKey000000";
 
-Deno.test("secret-key: sign stamps the bearer header and leaves the URL alone", () => {
+test("secret-key: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.paystack.co/transaction",
@@ -19,14 +20,14 @@ Deno.test("secret-key: sign stamps the bearer header and leaves the URL alone", 
   assertEquals(authHeaders({ secretKey: KEY }), { authorization: `Bearer ${KEY}` });
 });
 
-Deno.test("secret-key: declared as a bearer method with one secret field", () => {
+test("secret-key: declared as a bearer method with one secret field", () => {
   assertEquals(secretKey.type, "bearer");
   assertEquals(secretKey.key, "secret-key");
   assertEquals(secretKey.fields?.map((f) => [f.key, f.type]), [["secretKey", "secret"]]);
   assertEquals(PROBE_PATH, "/transaction");
 });
 
-Deno.test("secret-key: test passes on a 200 envelope and probes /transaction?perPage=1", async () => {
+test("secret-key: test passes on a 200 envelope and probes /transaction?perPage=1", async () => {
   const { ctx, calls } = mockCtx([{ body: ok([], { total: 0 }) }]);
   assertEquals(await secretKey.test({ credential: { secretKey: KEY } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/transaction");
@@ -34,7 +35,7 @@ Deno.test("secret-key: test passes on a 200 envelope and probes /transaction?per
   assertEquals(calls[0].headers.authorization, `Bearer ${KEY}`);
 });
 
-Deno.test("secret-key: a missing key or a public key fails without a request", async () => {
+test("secret-key: a missing key or a public key fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const none = await secretKey.test({ credential: {} }, ctx);
   assertEquals(none.ok, false);
@@ -44,7 +45,7 @@ Deno.test("secret-key: a missing key or a public key fails without a request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("secret-key: classifies a rejection from the body's code, not the status", async () => {
+test("secret-key: classifies a rejection from the body's code, not the status", async () => {
   // 401 with the vendor's invalid_Key code -> rejected key.
   const a = mockCtx([{ status: 401, body: errorBody("Invalid key") }]);
   const r1 = await secretKey.test({ credential: { secretKey: KEY } }, a.ctx);
@@ -68,14 +69,14 @@ Deno.test("secret-key: classifies a rejection from the body's code, not the stat
   );
 });
 
-Deno.test("secret-key: an unrecognised failure reports the status", async () => {
+test("secret-key: an unrecognised failure reports the status", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "bad gateway" }]);
   const result = await secretKey.test({ credential: { secretKey: KEY } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("HTTP 502"));
 });
 
-Deno.test("secret-key: afterConnect labels the mode from the key prefix, with no request", () => {
+test("secret-key: afterConnect labels the mode from the key prefix, with no request", () => {
   assertEquals(keyMode("sk_test_x"), "test");
   assertEquals(keyMode("sk_live_x"), "live");
   assertEquals(keyMode("nope"), undefined);

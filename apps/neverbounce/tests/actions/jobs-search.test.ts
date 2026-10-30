@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsSearch from "../../actions/jobs-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-search: sends only the provided filters as query params", async () => {
+test("jobs-search: sends only the provided filters as query params", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { status: "success", total_results: 0, total_pages: 0, results: [], execution_time: 1 },
@@ -19,7 +20,7 @@ Deno.test("jobs-search: sends only the provided filters as query params", async 
   assertEquals(url.searchParams.has("filename"), false);
 });
 
-Deno.test("jobs-search: returns the results envelope", async () => {
+test("jobs-search: returns the results envelope", async () => {
   const body = {
     status: "success",
     total_results: 1,

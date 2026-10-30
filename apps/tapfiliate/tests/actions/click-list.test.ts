@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clickList from "../../actions/click-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("click-list: maps filters to their documented snake_case names", async () => {
+test("click-list: maps filters to their documented snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee" }] }]);
   const out = await clickList.execute(
     {

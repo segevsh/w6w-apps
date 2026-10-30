@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display } from "./_shared.ts";
 import action from "../../actions/test-entity-deactivate.ts";
 
 const ok = { status: 200, body: {} };
 
-Deno.test("test-entity-deactivate: posts the reason and a default expiry", async () => {
+test("test-entity-deactivate: posts the reason and a default expiry", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({
     testId: "t1",
@@ -23,7 +24,7 @@ Deno.test("test-entity-deactivate: posts the reason and a default expiry", async
  * An indefinite exception outlives the situation that justified it and stops
  * appearing in any report.
  */
-Deno.test("test-entity-deactivate: an indefinite exclusion is warned about", async () => {
+test("test-entity-deactivate: an indefinite exclusion is warned about", async () => {
   const { ctx, calls, logs } = mockCtx([ok], { display });
   await action.execute!({ testId: "t1", entityId: "e1", reason: "x", expiresInDays: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).deactivateUntilDate, undefined);
@@ -33,7 +34,7 @@ Deno.test("test-entity-deactivate: an indefinite exclusion is warned about", asy
 });
 
 /** The reason goes in the audit trail and is what an auditor reads. */
-Deno.test("test-entity-deactivate: refuses without a reason, and says why", async () => {
+test("test-entity-deactivate: refuses without a reason, and says why", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ testId: "t1", entityId: "e1", reason: "  " }, ctx),
@@ -43,7 +44,7 @@ Deno.test("test-entity-deactivate: refuses without a reason, and says why", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test-entity-deactivate: needs both ids", async () => {
+test("test-entity-deactivate: needs both ids", async () => {
   const noTest = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "e1", reason: "x" }, noTest.ctx),
@@ -59,6 +60,6 @@ Deno.test("test-entity-deactivate: needs both ids", async () => {
 });
 
 /** It does not fix anything — the test goes green and the condition stays. */
-Deno.test("test-entity-deactivate: says plainly that it fixes nothing", () => {
+test("test-entity-deactivate: says plainly that it fixes nothing", () => {
   assert(/does not fix anything/.test(action.description!), action.description);
 });

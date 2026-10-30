@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import analyticsGet from "../../actions/analytics-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("analytics-get: builds pivot/timeGranularity/dateRange and a campaigns facet", async () => {
+test("analytics-get: builds pivot/timeGranularity/dateRange and a campaigns facet", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("analytics-get: builds pivot/timeGranularity/dateRange and a campaigns
   assertEquals(q.campaigns, "List(urn:li:sponsoredCampaign:1234567)");
 });
 
-Deno.test("analytics-get: an end date adds end to the dateRange", async () => {
+test("analytics-get: an end date adds end to the dateRange", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     {
@@ -42,7 +43,7 @@ Deno.test("analytics-get: an end date adds end to the dateRange", async () => {
   );
 });
 
-Deno.test("analytics-get: fields always includes dateRange and pivotValues alongside the chosen metrics", async () => {
+test("analytics-get: fields always includes dateRange and pivotValues alongside the chosen metrics", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     {
@@ -57,7 +58,7 @@ Deno.test("analytics-get: fields always includes dateRange and pivotValues along
   assertEquals(queryOf(calls[0].url).fields, "dateRange,pivotValues,impressions,clicks");
 });
 
-Deno.test("analytics-get: with no fields chosen, fields is omitted (LinkedIn's own impressions+clicks default applies)", async () => {
+test("analytics-get: with no fields chosen, fields is omitted (LinkedIn's own impressions+clicks default applies)", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     { facetType: "accounts", facetIds: "1", dateStart: "2024-01-01", timeGranularity: "ALL" },
@@ -66,7 +67,7 @@ Deno.test("analytics-get: with no fields chosen, fields is omitted (LinkedIn's o
   assertEquals("fields" in queryOf(calls[0].url), false);
 });
 
-Deno.test("analytics-get: multiple comma-separated facet ids all become URNs in one List()", async () => {
+test("analytics-get: multiple comma-separated facet ids all become URNs in one List()", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     {
@@ -83,7 +84,7 @@ Deno.test("analytics-get: multiple comma-separated facet ids all become URNs in 
   );
 });
 
-Deno.test("analytics-get: shares are passed through as already-typed URNs, not re-prefixed", async () => {
+test("analytics-get: shares are passed through as already-typed URNs, not re-prefixed", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGet.execute(
     {
@@ -97,7 +98,7 @@ Deno.test("analytics-get: shares are passed through as already-typed URNs, not r
   assertEquals(queryOf(calls[0].url).shares, "List(urn:li:share:1)");
 });
 
-Deno.test("analytics-get: rejects an empty facet id list, without a request", async () => {
+test("analytics-get: rejects an empty facet id list, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

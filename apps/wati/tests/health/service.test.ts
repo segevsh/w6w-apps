@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -12,7 +13,7 @@ function rss(items: Array<{ title: string; pubDate: string }>): string {
   return `<?xml version="1.0"?><rss version="2.0"><channel>${body}</channel></rss>`;
 }
 
-Deno.test('service: reports ok from the newest "Wati API" item', async () => {
+test('service: reports ok from the newest "Wati API" item', async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: RSS_HEADERS,
@@ -25,7 +26,7 @@ Deno.test('service: reports ok from the newest "Wati API" item', async () => {
   assertEquals(out.state, "ok");
 });
 
-Deno.test('service: reads the NEWEST "Wati API" entry even when an older one shares a guid-batch with other components', async () => {
+test('service: reads the NEWEST "Wati API" entry even when an older one shares a guid-batch with other components', async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: RSS_HEADERS,
@@ -40,7 +41,7 @@ Deno.test('service: reads the NEWEST "Wati API" entry even when an older one sha
   assert(out.message?.includes("Wati API"), out.message);
 });
 
-Deno.test('service: unknown when the "Wati API" component is no longer published', async () => {
+test('service: unknown when the "Wati API" component is no longer published', async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: RSS_HEADERS,
@@ -50,13 +51,13 @@ Deno.test('service: unknown when the "Wati API" component is no longer published
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: unknown when status.wati.io is unreachable", async () => {
+test("service: unknown when status.wati.io is unreachable", async () => {
   const { ctx } = mockCtx([]); // empty queue — mockCtx throws on the fetch attempt
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: unknown on a non-2xx from the status host", async () => {
+test("service: unknown on a non-2xx from the status host", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

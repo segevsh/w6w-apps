@@ -1,7 +1,8 @@
-import { assertEquals, assertNotEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertNotEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 10 actions with unique kebab-case keys", () => {
+test("index: exports 10 actions with unique kebab-case keys", () => {
   assertEquals(app.actions.length, 10);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -10,7 +11,7 @@ Deno.test("index: exports 10 actions with unique kebab-case keys", () => {
   }
 });
 
-Deno.test("index: every action has execute, type and title", () => {
+test("index: every action has execute, type and title", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.execute, "function");
     assertNotEquals(action.type, undefined);
@@ -18,7 +19,7 @@ Deno.test("index: every action has execute, type and title", () => {
   }
 });
 
-Deno.test("index: exactly one auth method, personal-access-token, requiring test", () => {
+test("index: exactly one auth method, personal-access-token, requiring test", () => {
   assertEquals(app.auth?.length, 1);
   const [auth] = app.auth!;
   assertEquals(auth.key, "personal-access-token");
@@ -27,7 +28,7 @@ Deno.test("index: exactly one auth method, personal-access-token, requiring test
   assertEquals(typeof auth.sign, "function");
 });
 
-Deno.test("index: declares service + quota health checks with unique keys", () => {
+test("index: declares service + quota health checks with unique keys", () => {
   assertEquals(app.healthChecks?.length, 2);
   const keys = app.healthChecks!.map((h) => h.key);
   assertEquals(new Set(keys).size, keys.length);

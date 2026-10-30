@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
 
 const run = (ctx: ReturnType<typeof mockCtx>["ctx"]) => api.check!({} as never, ctx);
 
-Deno.test("api: is unsigned, app-scoped, and probes only the API host", async () => {
+test("api: is unsigned, app-scoped, and probes only the API host", async () => {
   assertEquals(api.credential, "none");
   assertEquals(api.scope, "app");
   assertEquals(api.kind, "dependency");
@@ -22,12 +23,12 @@ Deno.test("api: is unsigned, app-scoped, and probes only the API host", async ()
   assertEquals(calls[0].headers["x-fareharbor-api-app"], undefined);
 });
 
-Deno.test("api: a schema-correct key-missing envelope is a PASS, not an outage", async () => {
+test("api: a schema-correct key-missing envelope is a PASS, not an outage", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody(400, "key-missing", "keys required") }]);
   assertEquals((await run(ctx)).state, "ok");
 });
 
-Deno.test("api: an HTML page is down, even at 200", async () => {
+test("api: an HTML page is down, even at 200", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -35,7 +36,7 @@ Deno.test("api: an HTML page is down, even at 200", async () => {
   assertEquals((await run(ctx)).state, "down");
 });
 
-Deno.test("api: a 5xx JSON body is down, an unrecognised JSON body is unknown", async () => {
+test("api: a 5xx JSON body is down, an unrecognised JSON body is unknown", async () => {
   const five = mockCtx([{ status: 503, body: { error: "x" } }]);
   assertEquals((await run(five.ctx)).state, "down");
   const odd = mockCtx([{ body: { hello: "world" } }]);

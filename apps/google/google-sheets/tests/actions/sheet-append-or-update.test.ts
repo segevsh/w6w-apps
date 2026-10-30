@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-append-or-update.ts";
 
-Deno.test("sheet-append-or-update: updates matched rows and appends the rest", async () => {
+test("sheet-append-or-update: updates matched rows and appends the rest", async () => {
   const { ctx, calls } = mockCtx([
     // 1. GET whole sheet — headers + two existing rows.
     {

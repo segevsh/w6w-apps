@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import keyCodes from "../../actions/update-booking-key-codes.ts";
 
-Deno.test("update-booking-key-codes: PUTs {rooms} and returns the echo", async () => {
+test("update-booking-key-codes: PUTs {rooms} and returns the echo", async () => {
   const rooms = [{ room_type_id: 6, key_code: "4821" }];
   const { ctx, calls } = mockCtx([{ body: { rooms } }]);
   const out = await keyCodes.execute({ bookingId: 3, rooms }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clickCreate from "../../actions/click-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("click-create: posts referral_code and optional tracking fields", async () => {
+test("click-create: posts referral_code and optional tracking fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ab885a1c-8ad9-11ea-bc55-0242ac130003" } }]);
   const out = await clickCreate.execute(
     {

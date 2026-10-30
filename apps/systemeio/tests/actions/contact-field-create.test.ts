@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactFieldCreate from "../../actions/contact-field-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-field-create: POSTs {fieldName, slug} to /api/contact_fields", async () => {
+test("contact-field-create: POSTs {fieldName, slug} to /api/contact_fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { slug: "vip_since", fieldName: "VIP since" },

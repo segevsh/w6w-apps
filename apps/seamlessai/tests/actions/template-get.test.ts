@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-get.ts";
 
 const RESPONSE = { "success": true, "data": { "templateId": 4 } };
 
-Deno.test("template-get: calls GET /api/client/v2/templates/{id} and returns the vendor body", async () => {
+test("template-get: calls GET /api/client/v2/templates/{id} and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "id": "4", "type": "email" }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("template-get: calls GET /api/client/v2/templates/{id} and returns the
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("template-get: sends nothing for fields left unset", async () => {
+test("template-get: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "4" }, ctx);
   const url = new URL(calls[0].url);
@@ -26,13 +27,13 @@ Deno.test("template-get: sends nothing for fields left unset", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("template-get: refuses a missing id before any request", async () => {
+test("template-get: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("template-get: surfaces the vendor's error body", async () => {
+test("template-get: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/checkout-session-create.ts";
 
 const base = { priceId: "price_1", successUrl: "https://x.test/done" };
 
-Deno.test("checkout-session-create: posts a subscription session with a nested line item", async () => {
+test("checkout-session-create: posts a subscription session with a nested line item", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "cs_1", url: "https://checkout.stripe.com/c/x" },
   }]);
@@ -17,20 +18,20 @@ Deno.test("checkout-session-create: posts a subscription session with a nested l
   assertEquals(body.get("success_url"), "https://x.test/done");
 });
 
-Deno.test("checkout-session-create: mode defaults to subscription when unset", async () => {
+test("checkout-session-create: mode defaults to subscription when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...base }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).get("mode"), "subscription");
 });
 
-Deno.test("checkout-session-create: clientReferenceId rides through verbatim", async () => {
+test("checkout-session-create: clientReferenceId rides through verbatim", async () => {
   // The only field tying the payment back to our own account record.
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...base, clientReferenceId: "acct_42" }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).get("client_reference_id"), "acct_42");
 });
 
-Deno.test("checkout-session-create: a trial nests under subscription_data", async () => {
+test("checkout-session-create: a trial nests under subscription_data", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...base, trialPeriodDays: 14 }, ctx);
   assertEquals(
@@ -39,7 +40,7 @@ Deno.test("checkout-session-create: a trial nests under subscription_data", asyn
   );
 });
 
-Deno.test("checkout-session-create: a trial is DROPPED in payment mode, never sent", async () => {
+test("checkout-session-create: a trial is DROPPED in payment mode, never sent", async () => {
   // subscription_data is meaningless for a one-off and Stripe 400s on it.
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...base, mode: "payment", trialPeriodDays: 14 }, ctx);
@@ -49,7 +50,7 @@ Deno.test("checkout-session-create: a trial is DROPPED in payment mode, never se
   );
 });
 
-Deno.test("checkout-session-create: customerId and customerEmail together is a named refusal", () => {
+test("checkout-session-create: customerId and customerEmail together is a named refusal", () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const err = assertThrows(
     () => action.execute({ ...base, customerId: "cus_1", customerEmail: "a@b.test" }, ctx),
@@ -60,7 +61,7 @@ Deno.test("checkout-session-create: customerId and customerEmail together is a n
   assert(err.message.includes("customerEmail"), err.message);
 });
 
-Deno.test("checkout-session-create: either field alone is accepted", async () => {
+test("checkout-session-create: either field alone is accepted", async () => {
   const a = mockCtx([{ body: {} }]);
   await action.execute({ ...base, customerId: "cus_1" }, a.ctx);
   assertEquals(new URLSearchParams(a.calls[0].body!).get("customer"), "cus_1");
@@ -70,7 +71,7 @@ Deno.test("checkout-session-create: either field alone is accepted", async () =>
   assertEquals(new URLSearchParams(b.calls[0].body!).get("customer_email"), "a@b.test");
 });
 
-Deno.test("checkout-session-create: blank strings count as absent, not as a conflict", async () => {
+test("checkout-session-create: blank strings count as absent, not as a conflict", async () => {
   // "" arrives from an untouched optional form field; treating it as a value
   // would make the mutual-exclusion check fire on a form nobody filled in.
   const { ctx, calls } = mockCtx([{ body: {} }]);
@@ -78,7 +79,7 @@ Deno.test("checkout-session-create: blank strings count as absent, not as a conf
   assertEquals(new URLSearchParams(calls[0].body!).get("customer"), "cus_1");
 });
 
-Deno.test("checkout-session-create: exposes the hosted url as an output field", () => {
+test("checkout-session-create: exposes the hosted url as an output field", () => {
   // The whole point of the action — a caller with no `url` has nowhere to send
   // the customer.
   // `Output` is a union — a static field list OR a DynamicOutput resolver.

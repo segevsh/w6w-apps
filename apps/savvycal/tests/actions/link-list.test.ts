@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkList from "../../actions/link-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("link-list: GET /v1/links with paging and state", async () => {
+test("link-list: GET /v1/links with paging and state", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "link_1" }], "c2") }]);
   const out = await linkList.execute({ limit: 10, after: "c1", state: "active" }, ctx) as {
     metadata: { after: string };

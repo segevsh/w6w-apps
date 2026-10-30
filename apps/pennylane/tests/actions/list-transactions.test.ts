@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-transactions.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: null,
 };
 
-Deno.test("list-transactions: GETs /transactions", async () => {
+test("list-transactions: GETs /transactions", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("list-transactions: GETs /transactions", async () => {
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-transactions: filters on a date range", async () => {
+test("list-transactions: filters on a date range", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     filter: [

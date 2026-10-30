@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /api/webhooks with form_id and webhook_url in the query", async () => {
+test("webhook-create: POST /api/webhooks with form_id and webhook_url in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 9 } } }]);
   const out = await webhookCreate.execute(
     { form: "kyir3qrg", webhook_url: "https://example.com/hook?a=1&b=2" },
@@ -19,7 +20,7 @@ Deno.test("webhook-create: POST /api/webhooks with form_id and webhook_url in th
   assertEquals(webhookCreate.idempotent, false);
 });
 
-Deno.test("webhook-create: 422 field errors are flattened into the message", async () => {
+test("webhook-create: 422 field errors are flattened into the message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("The given data was invalid.", { webhook_url: ["must be https"] }),

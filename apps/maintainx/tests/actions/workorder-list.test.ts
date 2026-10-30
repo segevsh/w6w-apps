@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workorderList from "../../actions/workorder-list.ts";
 import { mockCtx, pathOf, queryAll } from "../_helpers.ts";
 
-Deno.test("workorder-list: GET /v1/workorders, returns workOrders and nextCursor", async () => {
+test("workorder-list: GET /v1/workorders, returns workOrders and nextCursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { workOrders: [{ id: 1, title: "Fix" }], nextCursor: "abc", nextPageUrl: "x" },
   }]);
@@ -12,7 +13,7 @@ Deno.test("workorder-list: GET /v1/workorders, returns workOrders and nextCursor
   assertEquals(out, { workOrders: [{ id: 1, title: "Fix" }], nextCursor: "abc" });
 });
 
-Deno.test("workorder-list: filters map to the vendor's names, arrays as repeated keys", async () => {
+test("workorder-list: filters map to the vendor's names, arrays as repeated keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { workOrders: [], nextCursor: null } }]);
   await workorderList.execute({
     statuses: ["OPEN", "IN_PROGRESS"],
@@ -38,7 +39,7 @@ Deno.test("workorder-list: filters map to the vendor's names, arrays as repeated
   assertEquals(calls[0].headers["x-organization-id"], "9");
 });
 
-Deno.test("workorder-list: a non-numeric asset id fails before any request", async () => {
+test("workorder-list: a non-numeric asset id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(workorderList.execute({ assets: "x" }, ctx)),

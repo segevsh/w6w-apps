@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-verify-remove.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-verify-remove: POSTs list_id to /email_verify/list/remove; ignore_result only when asked", async () => {
+test("bulk-verify-remove: POSTs list_id to /email_verify/list/remove; ignore_result only when asked", async () => {
   const resp = {
     body: { status: "success", data: { name: "n.csv", source: "upload", created_on: "d" } },
   };
@@ -16,7 +17,7 @@ Deno.test("bulk-verify-remove: POSTs list_id to /email_verify/list/remove; ignor
   assertEquals(JSON.parse(forced.calls[0].body!), { list_id: "l1", ignore_result: true });
 });
 
-Deno.test("bulk-verify-remove: blank list ID and a vendor refusal throw", async () => {
+test("bulk-verify-remove: blank list ID and a vendor refusal throw", async () => {
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "listId is required");
   const denied = mockCtx([{
     status: 400,

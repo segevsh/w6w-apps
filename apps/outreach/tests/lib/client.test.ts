@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   describeError,
   errorCode,
@@ -12,7 +13,7 @@ import {
 import { filterQuery } from "../../lib/factory.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("client: every request carries the JSON:API media type, even a read", async () => {
+test("client: every request carries the JSON:API media type, even a read", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new OutreachClient(ctx).send("GET", "/prospects");
   assertEquals(calls[0].headers["content-type"], "application/vnd.api+json");
@@ -20,18 +21,18 @@ Deno.test("client: every request carries the JSON:API media type, even a read", 
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: empty and undefined query values are dropped", async () => {
+test("client: empty and undefined query values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new OutreachClient(ctx).send("GET", "/x", { query: { a: "1", b: "", c: undefined, d: 0 } });
   assertEquals(queryOf(calls[0].url), { a: "1", d: "0" });
 });
 
-Deno.test("client: a 204 yields null", async () => {
+test("client: a 204 yields null", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new OutreachClient(ctx).send("DELETE", "/prospects/1"), null);
 });
 
-Deno.test("client: JSON:API error becomes OutreachError with status and code", async () => {
+test("client: JSON:API error becomes OutreachError with status and code", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: {
@@ -47,7 +48,7 @@ Deno.test("client: JSON:API error becomes OutreachError with status and code", a
   assertEquals(err.code, "rateLimitExceeded");
 });
 
-Deno.test("client: the gateway's bare {error, description} shape is understood too", async () => {
+test("client: the gateway's bare {error, description} shape is understood too", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Invalid JWT token.", description: "The JWT token could not be decoded." },
@@ -59,7 +60,7 @@ Deno.test("client: the gateway's bare {error, description} shape is understood t
   );
 });
 
-Deno.test("client: a non-JSON error body still yields the status", async () => {
+test("client: a non-JSON error body still yields the status", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>Bad gateway</html>" }]);
   await assertRejects(
     () => new OutreachClient(ctx).send("GET", "/prospects"),
@@ -68,7 +69,7 @@ Deno.test("client: a non-JSON error body still yields the status", async () => {
   );
 });
 
-Deno.test("describeError / errorCode: both shapes and neither", () => {
+test("describeError / errorCode: both shapes and neither", () => {
   assertEquals(errorCode({ errors: [{ id: "x" }] }), "x");
   assertEquals(errorCode({ error: "y" }), undefined);
   assertEquals(describeError(500, null), "Outreach returned HTTP 500");
@@ -85,7 +86,7 @@ Deno.test("describeError / errorCode: both shapes and neither", () => {
   );
 });
 
-Deno.test("nextCursor: reads page[after] from links.next, undefined at the end", () => {
+test("nextCursor: reads page[after] from links.next, undefined at the end", () => {
   assertEquals(
     nextCursor({
       next: "https://api.outreach.io/api/v2/prospects?page[size]=50&page[after]=eyJjbiI6I",
@@ -97,7 +98,7 @@ Deno.test("nextCursor: reads page[after] from links.next, undefined at the end",
   assertEquals(nextCursor(undefined), undefined);
 });
 
-Deno.test("requireId: accepts positive integers and digit strings only", () => {
+test("requireId: accepts positive integers and digit strings only", () => {
   assertEquals(requireId(7), 7);
   assertEquals(requireId("12"), 12);
   for (const bad of [0, -3, 1.5, "1/../2", "", null, undefined, "abc"]) {
@@ -111,11 +112,11 @@ Deno.test("requireId: accepts positive integers and digit strings only", () => {
   }
 });
 
-Deno.test("relationship: builds a to-one identifier with an integer id", () => {
+test("relationship: builds a to-one identifier with an integer id", () => {
   assertEquals(relationship("account", "5"), { data: { type: "account", id: 5 } });
 });
 
-Deno.test("stripWebhookSecrets: scrubs a collection and a single resource, nothing else", () => {
+test("stripWebhookSecrets: scrubs a collection and a single resource, nothing else", () => {
   const list = stripWebhookSecrets({
     data: [
       { attributes: { url: "u", secret: "a", cleanupToken: "b" } },
@@ -130,7 +131,7 @@ Deno.test("stripWebhookSecrets: scrubs a collection and a single resource, nothi
   assertEquals(stripWebhookSecrets(null), null);
 });
 
-Deno.test("filterQuery: scalars, lists, nested relationship filters, junk", () => {
+test("filterQuery: scalars, lists, nested relationship filters, junk", () => {
   assertEquals(
     filterQuery({ a: "1", b: [1, 2], c: { id: 3 }, d: null, e: false }),
     { "filter[a]": "1", "filter[b]": "1,2", "filter[c][id]": "3", "filter[e]": "false" },

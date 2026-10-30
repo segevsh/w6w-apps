@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import listUsers from "../../actions/list-users.ts";
 
-Deno.test("list-users: GETs /users and offers only the three wire roles", async () => {
+test("list-users: GETs /users and offers only the three wire roles", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "users" }, users: [{ id: 1 }] },
@@ -14,7 +15,7 @@ Deno.test("list-users: GETs /users and offers only the three wire roles", async 
   assertEquals(optionValues(listUsers, "role"), ["Agent", "Broker", "Lender"]);
 });
 
-Deno.test("list-users: explains that Owner vs Admin is isOwner, not a role", () => {
+test("list-users: explains that Owner vs Admin is isOwner, not a role", () => {
   assert(/isOwner/.test(listUsers.description!), listUsers.description);
   assert(param(listUsers, "fields").hint?.includes("Calling information"));
 });

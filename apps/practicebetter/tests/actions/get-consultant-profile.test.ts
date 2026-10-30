@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-consultant-profile.ts";
 import { API_ROOT, mockCtx, queryOf, urlOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const profile = {
   company: { id: "co-1", name: "Whole Health" },
 };
 
-Deno.test("get-consultant-profile: reads /consultant/profile", async () => {
+test("get-consultant-profile: reads /consultant/profile", async () => {
   const { ctx, calls } = mockCtx([{ body: profile }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -18,7 +19,7 @@ Deno.test("get-consultant-profile: reads /consultant/profile", async () => {
   assertEquals(result, profile);
 });
 
-Deno.test("get-consultant-profile: as_consultant is sent only when supplied", async () => {
+test("get-consultant-profile: as_consultant is sent only when supplied", async () => {
   const bare = mockCtx([{ body: profile }]);
   await action.execute({}, bare.ctx);
   assertEquals(new URL(bare.calls[0].url).search, "");
@@ -28,7 +29,7 @@ Deno.test("get-consultant-profile: as_consultant is sent only when supplied", as
   assertEquals(queryOf(scoped.calls[0].url).as_consultant, "con-2");
 });
 
-Deno.test("get-consultant-profile: output surfaces the identity and authority fields", () => {
+test("get-consultant-profile: output surfaces the identity and authority fields", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "consultant");
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), [

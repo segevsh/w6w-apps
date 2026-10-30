@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   asIds,
   asRecords,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { connCtx, WS } from "../_helpers.ts";
 
-Deno.test("client: buildUrl scopes to the workspace and drops unset query values", () => {
+test("client: buildUrl scopes to the workspace and drops unset query values", () => {
   const client = new NinoxClient(connCtx().ctx);
   assertEquals(
     client.buildUrl("/modules", { limit: 5, offset: undefined, filter: "" }),
@@ -18,12 +19,12 @@ Deno.test("client: buildUrl scopes to the workspace and drops unset query values
   );
 });
 
-Deno.test("client: resolveWorkspaceId trims and refuses a missing id", () => {
+test("client: resolveWorkspaceId trims and refuses a missing id", () => {
   assertEquals(resolveWorkspaceId({ display: { workspaceId: ` ${WS} ` } } as never), WS);
   assertThrows(() => resolveWorkspaceId(undefined), Error, "no workspace id");
 });
 
-Deno.test("client: list defaults hasMore to false and tolerates a missing page_info", async () => {
+test("client: list defaults hasMore to false and tolerates a missing page_info", async () => {
   const { ctx } = connCtx([{ body: { data: [1, 2] } }]);
   assertEquals(await new NinoxClient(ctx).list("/modules"), {
     items: [1, 2],
@@ -33,7 +34,7 @@ Deno.test("client: list defaults hasMore to false and tolerates a missing page_i
   });
 });
 
-Deno.test("client: errorMessage prefers the envelope, trims text, and hides HTML", () => {
+test("client: errorMessage prefers the envelope, trims text, and hides HTML", () => {
   assertEquals(errorMessage(400, '{"error":{"message":"bad"}}'), "Ninox returned HTTP 400: bad");
   assertEquals(
     errorMessage(401, "Workspace orchestrator error"),
@@ -42,7 +43,7 @@ Deno.test("client: errorMessage prefers the envelope, trims text, and hides HTML
   assertEquals(errorMessage(502, "<html>x</html>"), "Ninox returned HTTP 502");
 });
 
-Deno.test("client: asIds, asRecords, csv and seg", () => {
+test("client: asIds, asRecords, csv and seg", () => {
   assertEquals(asIds("1, 2 3"), [1, 2, 3]);
   assertEquals(asIds([4, "5"]), [4, 5]);
   assertThrows(() => asIds("1.5"), Error, "not a record id");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import labelList from "../../actions/label-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("label-list: calls GET /labels, forwarding slim", async () => {
+test("label-list: calls GET /labels, forwarding slim", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await labelList.execute({ slim: true }, ctx);
 

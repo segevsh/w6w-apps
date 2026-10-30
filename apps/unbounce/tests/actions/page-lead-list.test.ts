@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pageLeadList from "../../actions/page-lead-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("page-lead-list: calls GET /pages/{id}/leads with no count param", async () => {
+test("page-lead-list: calls GET /pages/{id}/leads with no count param", async () => {
   const { ctx, calls } = mockCtx([{ body: { leads: [] } }]);
   await pageLeadList.execute({ pageId: "p1", sortOrder: "desc", limit: 10 }, ctx);
 

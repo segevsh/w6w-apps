@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { API_ROOT, bodyOf, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs the body to the contact's path and returns the id", async () => {
+test("contact-update: PUTs the body to the contact's path and returns the id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "507f1f77bcf86cd799439011" } }]);
   const result = await contactUpdate.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("contact-update: PUTs the body to the contact's path and returns the i
  * grow membership instead of replacing it, and `false` has to survive to the
  * wire for it to work.
  */
-Deno.test("contact-update: listsReplacement=false reaches the query string", async () => {
+test("contact-update: listsReplacement=false reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x" } }]);
   await contactUpdate.execute(
     { contactIdOrNumber: "3051234567", listIds: ["My First List"], listsReplacement: false },
@@ -41,7 +42,7 @@ Deno.test("contact-update: listsReplacement=false reaches the query string", asy
 });
 
 /** A PUT with nothing but the id is a no-op request, and refused before any call. */
-Deno.test("contact-update: an empty body is refused before the request", async () => {
+test("contact-update: an empty body is refused before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -58,13 +59,13 @@ Deno.test("contact-update: an empty body is refused before the request", async (
  * `upsert` defaults to true on a PUT: an unknown phone number is CREATED rather
  * than rejected. That is a sharp edge worth a visible param.
  */
-Deno.test("contact-update: upsert defaults on, and the hint says so", () => {
+test("contact-update: upsert defaults on, and the hint says so", () => {
   const upsert = contactUpdate.params!.find((p) => p.key === "upsert");
   assertEquals(upsert?.default, true);
   assertEquals(upsert?.hint?.includes("creates a contact"), true);
 });
 
-Deno.test("contact-update: is idempotent — the same body twice is the same state", () => {
+test("contact-update: is idempotent — the same body twice is the same state", () => {
   assertEquals(contactUpdate.idempotent, true);
   assertEquals(contactUpdate.type, "perform");
 });

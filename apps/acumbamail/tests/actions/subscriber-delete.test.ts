@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscriberDelete from "../../actions/subscriber-delete.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-delete: POST /api/1/deleteSubscriber/ with the documented form fields", async () => {
+test("subscriber-delete: POST /api/1/deleteSubscriber/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const out = await subscriberDelete.execute({ "list_id": 7, "email": "a@b.co" } as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("subscriber-delete: POST /api/1/deleteSubscriber/ with the documented 
   assertEquals(out, { ok: true });
 });
 
-Deno.test("subscriber-delete: a vendor error surfaces its status and body", async () => {
+test("subscriber-delete: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await subscriberDelete.execute({ "list_id": 7, "email": "a@b.co" } as never, ctx)
@@ -25,7 +26,7 @@ Deno.test("subscriber-delete: a vendor error surfaces its status and body", asyn
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("subscriber-delete: an empty list_id fails before any request", async () => {
+test("subscriber-delete: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

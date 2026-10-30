@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceGet from "../../actions/workspace-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-get: GETs /workspaces/current with no params", async () => {
+test("workspace-get: GETs /workspaces/current with no params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1", name: "Acme" } }]);
   const out = await workspaceGet.execute({}, ctx) as { name: string };
 

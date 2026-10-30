@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-site-revoke.ts";
 import { actionBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-site-revoke: is a non-idempotent perform action on the contact id", () => {
+test("contact-site-revoke: is a non-idempotent perform action on the contact id", () => {
   assertEquals(action.key, "contact-site-revoke");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -10,7 +11,7 @@ Deno.test("contact-site-revoke: is a non-idempotent perform action on the contac
   assertEquals(action.params![0].required, true);
 });
 
-Deno.test("contact-site-revoke: POSTs /customers/11/actions/site_revoke with the mapped body", async () => {
+test("contact-site-revoke: POSTs /customers/11/actions/site_revoke with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: actionBody(true, "done") }]);
   const out = await action.execute({ id: 11, siteId: 6 }, ctx);
   assertEquals(calls.length, 1);
@@ -21,7 +22,7 @@ Deno.test("contact-site-revoke: POSTs /customers/11/actions/site_revoke with the
   assertEquals(out, { success: true, message: "done" });
 });
 
-Deno.test("contact-site-revoke: HTTP 200 with success:false is a failure, not a result", async () => {
+test("contact-site-revoke: HTTP 200 with success:false is a failure, not a result", async () => {
   const { ctx } = mockCtx([{ body: actionBody(false, "Contact not found") }]);
   await assertRejects(
     async () => await action.execute({ id: 11, siteId: 6 }, ctx),
@@ -30,7 +31,7 @@ Deno.test("contact-site-revoke: HTTP 200 with success:false is a failure, not a 
   );
 });
 
-Deno.test("contact-site-revoke: a 422 surfaces the errors array", async () => {
+test("contact-site-revoke: a 422 surfaces the errors array", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: ["bad one", "bad two"] } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, siteId: 6 }, ctx),
@@ -39,7 +40,7 @@ Deno.test("contact-site-revoke: a 422 surfaces the errors array", async () => {
   );
 });
 
-Deno.test("contact-site-revoke: a 200 without a success flag is an error", async () => {
+test("contact-site-revoke: a 200 without a success flag is an error", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, siteId: 6 }, ctx),

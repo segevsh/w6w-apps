@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteSearch from "../../actions/note-search.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-search: GET /v1/search-notes with the documented parameters", async () => {
+test("note-search: GET /v1/search-notes with the documented parameters", async () => {
   const response = { hits: [{ id: "n1", highlight: "" }], nbPages: 3, page: 2 };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteSearch.execute({
@@ -31,7 +32,7 @@ Deno.test("note-search: GET /v1/search-notes with the documented parameters", as
   assertEquals(out, response);
 });
 
-Deno.test("note-search: a vendor error surfaces its own message and id", async () => {
+test("note-search: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),

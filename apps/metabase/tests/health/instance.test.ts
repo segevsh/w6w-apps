@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import instance from "../../health/instance.ts";
 import { mockMetabaseCtx, SITE_URL } from "../_helpers.ts";
 
-Deno.test("instance: probes /api/health unauthenticated on the connection's own host", async () => {
+test("instance: probes /api/health unauthenticated on the connection's own host", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ status: 200, body: { status: "ok" } }]);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -22,7 +23,7 @@ Deno.test("instance: probes /api/health unauthenticated on the connection's own 
  * booting — transient by construction. Reporting a rolling restart as an outage
  * is how a health check trains people to ignore it.
  */
-Deno.test("instance: a booting Metabase is degraded with its progress, not down", async () => {
+test("instance: a booting Metabase is degraded with its progress, not down", async () => {
   const { ctx } = mockMetabaseCtx([{
     status: 503,
     body: { status: "initializing", progress: 0.4 },
@@ -37,7 +38,7 @@ Deno.test("instance: a booting Metabase is degraded with its progress, not down"
  * The other 503, from the same handler: the app-db branch. Metabase is serving
  * but cannot reach its own application database, which is a real outage.
  */
-Deno.test("instance: a 503 that is not 'initializing' is down", async () => {
+test("instance: a 503 that is not 'initializing' is down", async () => {
   const { ctx } = mockMetabaseCtx([{
     status: 503,
     body: { status: "Unable to get app-db connection" },
@@ -47,7 +48,7 @@ Deno.test("instance: a 503 that is not 'initializing' is down", async () => {
   assert(report.message!.includes("app-db"));
 });
 
-Deno.test("instance: a 404 means this URL is not a Metabase", async () => {
+test("instance: a 404 means this URL is not a Metabase", async () => {
   const { ctx } = mockMetabaseCtx([{ status: 404, body: "not found" }]);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "down");
@@ -59,7 +60,7 @@ Deno.test("instance: a 404 means this URL is not a Metabase", async () => {
  * Metabase itself leaves open. The instance may be perfectly healthy — this
  * check simply cannot see it, and `unknown` is the honest answer.
  */
-Deno.test("instance: a 401/403 in front of Metabase is unknown, not down", async () => {
+test("instance: a 401/403 in front of Metabase is unknown, not down", async () => {
   for (const status of [401, 403]) {
     const { ctx } = mockMetabaseCtx([{ status, body: "denied" }]);
     const report = await instance.check!({}, ctx);
@@ -68,7 +69,7 @@ Deno.test("instance: a 401/403 in front of Metabase is unknown, not down", async
   }
 });
 
-Deno.test("instance: a 500 is down", async () => {
+test("instance: a 500 is down", async () => {
   const { ctx } = mockMetabaseCtx([{ status: 500, body: "boom" }]);
   assertEquals((await instance.check!({}, ctx)).state, "down");
 });
@@ -77,7 +78,7 @@ Deno.test("instance: a 500 is down", async () => {
  * The parked-page case. Something answered 200 on this origin, but it is not
  * Metabase's health payload — so it is not evidence the instance is up.
  */
-Deno.test("instance: a 200 that is not the health payload is degraded, not ok", async () => {
+test("instance: a 200 that is not the health payload is degraded, not ok", async () => {
   const { ctx } = mockMetabaseCtx([{
     status: 200,
     body: "<html>Coming soon</html>",
@@ -94,7 +95,7 @@ Deno.test("instance: a 200 that is not the health payload is degraded, not ok", 
  * most common way for a Metabase to be down. It is caught and reported as
  * `down` instead. Verified against a closed port on a live run.
  */
-Deno.test("instance: an unreachable host is down, not a swallowed exception", async () => {
+test("instance: an unreachable host is down, not a swallowed exception", async () => {
   const { ctx } = mockMetabaseCtx([]);
   (ctx as { fetch: unknown }).fetch = () => {
     return Promise.reject(new TypeError("tcp connect error: Connection refused (os error 111)"));
@@ -105,7 +106,7 @@ Deno.test("instance: an unreachable host is down, not a swallowed exception", as
   assert(report.message!.includes("Connection refused"));
 });
 
-Deno.test("instance: no site URL on the connection is unknown, and makes no call", async () => {
+test("instance: no site URL on the connection is unknown, and makes no call", async () => {
   const { ctx, calls } = mockMetabaseCtx([]);
   (ctx as { connection?: unknown }).connection = { display: {} };
   const report = await instance.check!({}, ctx);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/delete-fields.ts";
 
 const body = (raw: string | null) => JSON.parse(raw!);
 
-Deno.test("delete-fields: DELETEs /fields with the id list in the body", async () => {
+test("delete-fields: DELETEs /fields with the id list in the body", async () => {
   // There is no DELETE /fields/{id}; deletion is always a batch.
   const { ctx, calls } = mockQbCtx([{ body: { deletedFieldIds: [6, 7], errors: [] } }]);
   const out = await action.execute({ tableId: "bck1", fieldIds: [6, 7] }, ctx);
@@ -16,7 +17,7 @@ Deno.test("delete-fields: DELETEs /fields with the id list in the body", async (
   assertEquals(out.deletedFieldIds, [6, 7]);
 });
 
-Deno.test("delete-fields: a 200 carrying `errors` is a partial success and is logged", async () => {
+test("delete-fields: a 200 carrying `errors` is a partial success and is logged", async () => {
   const { ctx, logs } = mockQbCtx([{
     body: { deletedFieldIds: [6], errors: ["Error found with fid: 7"] },
   }]);
@@ -27,7 +28,7 @@ Deno.test("delete-fields: a 200 carrying `errors` is a partial success and is lo
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("delete-fields: rejects an empty or non-array id list without calling", async () => {
+test("delete-fields: rejects an empty or non-array id list without calling", async () => {
   for (const fieldIds of [[], "[]", '"nope"']) {
     const { ctx, calls } = mockQbCtx([]);
     await assertRejects(
@@ -38,6 +39,6 @@ Deno.test("delete-fields: rejects an empty or non-array id list without calling"
   }
 });
 
-Deno.test("delete-fields: is named plural, matching the batch-only API", () => {
+test("delete-fields: is named plural, matching the batch-only API", () => {
   assert(action.key.endsWith("fields"));
 });

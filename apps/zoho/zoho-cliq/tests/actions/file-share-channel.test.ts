@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/file-share-channel.ts";
 
-Deno.test("file-share-channel: uploads by unique name as a bot", async () => {
+test("file-share-channel: uploads by unique name as a bot", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     { "channelUniqueName": "marketing", "file": "aGVsbG8=", "botUniqueName": "b1" } as never,
@@ -19,7 +20,7 @@ Deno.test("file-share-channel: uploads by unique name as a bot", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("file-share-channel: needs a channel id or unique name", async () => {
+test("file-share-channel: needs a channel id or unique name", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "file": "aGk=" } as never, ctx)),
@@ -29,7 +30,7 @@ Deno.test("file-share-channel: needs a channel id or unique name", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("file-share-channel: idempotent is declared as false", () => {
+test("file-share-channel: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

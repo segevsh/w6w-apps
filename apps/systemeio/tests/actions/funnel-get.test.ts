@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import funnelGet from "../../actions/funnel-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("funnel-get: fetches /api/funnels/{id}", async () => {
+test("funnel-get: fetches /api/funnels/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "Launch", isActive: true } }]);
   const out = await funnelGet.execute({ id: "1" }, ctx);
 

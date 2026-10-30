@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action, { normalizeRequests } from "../../actions/bulk-enrich-persons.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("bulk-enrich-persons: POSTs {requests} and counts the 200 entries", async () => {
+test("bulk-enrich-persons: POSTs {requests} and counts the 200 entries", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { status: 200, likelihood: 9, data: { id: "a" }, metadata: { row: 1 } },
@@ -30,7 +31,7 @@ Deno.test("bulk-enrich-persons: POSTs {requests} and counts the 200 entries", as
   assertEquals(out.matches, 1);
 });
 
-Deno.test("bulk-enrich-persons: refuses an empty, oversized or malformed request list", async () => {
+test("bulk-enrich-persons: refuses an empty, oversized or malformed request list", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ requests: "[]" } as never, ctx),

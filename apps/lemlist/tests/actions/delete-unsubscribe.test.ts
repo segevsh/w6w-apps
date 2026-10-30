@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import deleteUnsubscribe from "../../actions/delete-unsubscribe.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-unsubscribe: DELETEs the v2 variables route", async () => {
+test("delete-unsubscribe: DELETEs the v2 variables route", async () => {
   const { ctx, calls } = mockCtx([{ body: "Variable subscribed" }]);
   await deleteUnsubscribe.execute!({ value: "john.doe@example.com" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,12 +13,12 @@ Deno.test("delete-unsubscribe: DELETEs the v2 variables route", async () => {
   );
 });
 
-Deno.test("delete-unsubscribe: returns lemlist's bare-string confirmation, not a parse error", async () => {
+test("delete-unsubscribe: returns lemlist's bare-string confirmation, not a parse error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "Variable subscribed" }]);
   assertEquals(await deleteUnsubscribe.execute!({ value: "a@b.com" }, ctx), "Variable subscribed");
 });
 
-Deno.test("delete-unsubscribe: surfaces the 409 for a protected lead/abuse opt-out", async () => {
+test("delete-unsubscribe: surfaces the 409 for a protected lead/abuse opt-out", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     statusText: "Conflict",
@@ -30,7 +31,7 @@ Deno.test("delete-unsubscribe: surfaces the 409 for a protected lead/abuse opt-o
   assert(err.message.includes("protected"));
 });
 
-Deno.test("delete-unsubscribe: surfaces the 400 for a value that was never unsubscribed", async () => {
+test("delete-unsubscribe: surfaces the 400 for a value that was never unsubscribed", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: "Variable not found in unsubscribe list",

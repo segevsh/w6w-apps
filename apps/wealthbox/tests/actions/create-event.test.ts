@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event.ts";
 
-Deno.test("create-event: is a non-idempotent perform requiring title/startsAt/endsAt", () => {
+test("create-event: is a non-idempotent perform requiring title/startsAt/endsAt", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const required = (action.params ?? []).filter((p) => p.required).map((p) => p.key);
@@ -11,7 +12,7 @@ Deno.test("create-event: is a non-idempotent perform requiring title/startsAt/en
   assert(required.includes("endsAt"));
 });
 
-Deno.test("create-event: POSTs /events with the mapped body", async () => {
+test("create-event: POSTs /events with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({
     title: "Client Meeting",
@@ -31,7 +32,7 @@ Deno.test("create-event: POSTs /events with the mapped body", async () => {
   });
 });
 
-Deno.test("create-event: merges additionalProperties", async () => {
+test("create-event: merges additionalProperties", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     title: "x",

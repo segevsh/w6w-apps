@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx, text } from "../_helpers.ts";
 
@@ -7,13 +8,13 @@ const run = async (status: number, body: string) => {
   return { report: await api.check!({}, ctx), calls };
 };
 
-Deno.test("api: unsigned dependency check on the API host", () => {
+test("api: unsigned dependency check on the API host", () => {
   assertEquals(api.credential, "none");
   assertEquals(api.kind, "dependency");
   assertEquals(api.scope, "app");
 });
 
-Deno.test("api: the 403 'AppId required' refusal is a pass, and the call carries no auth", async () => {
+test("api: the 403 'AppId required' refusal is a pass, and the call carries no auth", async () => {
   const { report, calls } = await run(
     403,
     "AppId required! Contact app developer. See https://inoreader.dev",
@@ -23,16 +24,16 @@ Deno.test("api: the 403 'AppId required' refusal is a pass, and the call carries
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api: the 401 'OAuth token not found' refusal is a pass", async () => {
+test("api: the 401 'OAuth token not found' refusal is a pass", async () => {
   assertEquals((await run(401, "OAuth token not found or invalid.")).report.state, "ok");
 });
 
-Deno.test("api: a 403 HTML challenge page is unknown, not a pass", async () => {
+test("api: a 403 HTML challenge page is unknown, not a pass", async () => {
   const { report } = await run(403, "<!DOCTYPE html><html>Just a moment... AppId required</html>");
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("api: 5xx is down; an unexpected unsigned 200 is unknown", async () => {
+test("api: 5xx is down; an unexpected unsigned 200 is unknown", async () => {
   assertEquals((await run(503, "")).report.state, "down");
   assertEquals((await run(200, "{}")).report.state, "unknown");
 });

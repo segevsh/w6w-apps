@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobList from "../../actions/job-list.ts";
 import { listPage, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-list: hits /jobs and returns {count, results}", async () => {
+test("job-list: hits /jobs and returns {count, results}", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ jnid: "j1" }]) }]);
   const out = await jobList.execute({}, ctx);
 

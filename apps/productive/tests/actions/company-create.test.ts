@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import companyCreate from "../../actions/company-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-create: POST /companies sends a JSON:API document of attributes", async () => {
+test("company-create: POST /companies sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "companies", "attributes": { "name": "x" } } },
@@ -50,7 +51,7 @@ Deno.test("company-create: POST /companies sends a JSON:API document of attribut
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("company-create: a vendor error surfaces its status, title and detail", async () => {
+test("company-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -63,7 +64,7 @@ Deno.test("company-create: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("company-create: declares perform and idempotent=false", () => {
+test("company-create: declares perform and idempotent=false", () => {
   assertEquals(companyCreate.type, "perform");
   assertEquals(companyCreate.idempotent, false);
   assertEquals(companyCreate.key, "company-create");

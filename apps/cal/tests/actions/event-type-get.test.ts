@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-type-get.ts";
 
-Deno.test("event-type-get: GETs /event-types/{id} with cal-api-version 2024-06-14", async () => {
+test("event-type-get: GETs /event-types/{id} with cal-api-version 2024-06-14", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 42 } } }]);
   const result = await action.execute({ eventTypeId: 42 }, ctx);
   const url = new URL(calls[0].url);

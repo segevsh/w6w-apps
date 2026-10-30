@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import site from "../../health/site.ts";
 
-Deno.test("site: is an unsigned, connection-scoped dependency check", () => {
+test("site: is an unsigned, connection-scoped dependency check", () => {
   assertEquals(site.kind, "dependency");
   assertEquals(site.scope, "connection");
   assertEquals(site.credential, "context");
@@ -11,7 +12,7 @@ Deno.test("site: is an unsigned, connection-scoped dependency check", () => {
   assertEquals(site.network, undefined);
 });
 
-Deno.test("site: RUNNING is ok, and the probe is unauthenticated", async () => {
+test("site: RUNNING is ok, and the probe is unauthenticated", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { state: "RUNNING" } }], {
     display: { site: "acme" },
   });
@@ -21,7 +22,7 @@ Deno.test("site: RUNNING is ok, and the probe is unauthenticated", async () => {
   assertEquals(result.state, "ok");
 });
 
-Deno.test("site: an OAuth connection's resolved site URL is used when there is no site name", async () => {
+test("site: an OAuth connection's resolved site URL is used when there is no site name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { state: "MAINTENANCE" } }], {
     display: { cloudId: "cid", siteUrl: "https://acme.atlassian.net/" },
   });
@@ -30,14 +31,14 @@ Deno.test("site: an OAuth connection's resolved site URL is used when there is n
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("site: a site that does not answer is down", async () => {
+test("site: a site that does not answer is down", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }], { display: { site: "acme" } });
   const result = await site.check!({} as never, ctx) as { state: string; message: string };
   assertEquals(result.state, "down");
   assert(result.message.includes("404"), result.message);
 });
 
-Deno.test("site: a connection with no site yet reports unknown, not down", async () => {
+test("site: a connection with no site yet reports unknown, not down", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   const result = await site.check!({} as never, ctx) as { state: string; message: string };
   assertEquals(result.state, "unknown");

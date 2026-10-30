@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeCreate from "../../actions/route-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-create: POST /api/routes", async () => {
+test("route-create: POST /api/routes", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeCreate.execute(
     {
@@ -31,13 +32,13 @@ Deno.test("route-create: POST /api/routes", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("route-create: unset optional fields are not sent", async () => {
+test("route-create: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   await routeCreate.execute({ "name": "Onboarding pack" } as never, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), ["name"]);
 });
 
-Deno.test("route-create: a vendor error surfaces its own message", async () => {
+test("route-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -61,5 +62,5 @@ Deno.test("route-create: a vendor error surfaces its own message", async () => {
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("route-create: idempotency is declared as false", () =>
+test("route-create: idempotency is declared as false", () =>
   assertEquals(routeCreate.idempotent, false));

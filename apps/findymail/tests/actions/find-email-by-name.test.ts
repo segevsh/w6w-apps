@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/find-email-by-name.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("find-email-by-name: POSTs name and domain", async () => {
+test("find-email-by-name: POSTs name and domain", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -26,7 +27,7 @@ Deno.test("find-email-by-name: POSTs name and domain", async () => {
   });
 });
 
-Deno.test("find-email-by-name: forwards the webhook URL", async () => {
+test("find-email-by-name: forwards the webhook URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "status": "queued" } }]);
   const out = await action.execute!(
     { "name": "John Doe", "domain": "website.com", "webhook_url": "https://x.test/hook" } as never,
@@ -47,7 +48,7 @@ Deno.test("find-email-by-name: forwards the webhook URL", async () => {
   assertEquals(out, { "status": "queued" });
 });
 
-Deno.test("find-email-by-name: surfaces a 423 paused-subscription error", async () => {
+test("find-email-by-name: surfaces a 423 paused-subscription error", async () => {
   const { ctx } = mockCtx([{ status: 423, body: { "error": "Subscription is paused" } }]);
   const err = await assertRejects(async () =>
     await action.execute!({ "name": "A", "domain": "b.com" } as never, ctx)

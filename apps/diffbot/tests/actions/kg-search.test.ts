@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/kg-search.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { DQL_RESPONSE } from "../_fixtures.ts";
 
-Deno.test("kg-search: POSTs the DQL query as JSON to kg.diffbot.com and unwraps entities", async () => {
+test("kg-search: POSTs the DQL query as JSON to kg.diffbot.com and unwraps entities", async () => {
   const { ctx, calls } = mockCtx([{ body: DQL_RESPONSE }]);
   const out = await run(action, {
     query: 'type:Organization locations.city.name:"San Francisco"',
@@ -27,7 +28,7 @@ Deno.test("kg-search: POSTs the DQL query as JSON to kg.diffbot.com and unwraps 
   ]);
 });
 
-Deno.test("kg-search: an empty result is zero hits, not an error; a parse error throws with the message", async () => {
+test("kg-search: an empty result is zero hits, not an error; a parse error throws with the message", async () => {
   const none = mockCtx([{ body: { version: 3, hits: 0, results: 0, data: [] } }]);
   const out = await run(action, { query: "type:Organization name:zzz" }, none.ctx);
   assertEquals(out.hits, 0);
@@ -40,7 +41,7 @@ Deno.test("kg-search: an empty result is zero hits, not an error; a parse error 
   await assertRejects(() => run(action, { query: "type::x" }, bad.ctx), Error, "Encountered");
 });
 
-Deno.test("kg-search: optional flags are sent only when set", async () => {
+test("kg-search: optional flags are sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: DQL_RESPONSE }]);
   await run(action, { query: "q", from: 5, jsonmode: "extended", nonCanonicalFacts: true }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api, { PROBE_URL } from "../../health/api.ts";
 import { mockCtx, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
-Deno.test("api: probes the API host unsigned", async () => {
+test("api: probes the API host unsigned", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   await api.check!({}, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("api: probes the API host unsigned", async () => {
  * has proved DNS, TLS, the edge, the router and the auth guard are all serving.
  * Judging by the status code would report Motion permanently down.
  */
-Deno.test("api: an unauthenticated 401 is a pass", async () => {
+test("api: an unauthenticated 401 is a pass", async () => {
   const { ctx } = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const report = await api.check!({}, ctx);
 
@@ -30,7 +31,7 @@ Deno.test("api: an unauthenticated 401 is a pass", async () => {
  * know, so a 404 here means the route the credential probe depends on is gone —
  * not that the endpoint moved.
  */
-Deno.test("api: a 404 is down, because the router no longer knows the route", async () => {
+test("api: a 404 is down, because the router no longer knows the route", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: { message: "Cannot GET /v1/users/me", statusCode: 404 } },
   ]);
@@ -40,14 +41,14 @@ Deno.test("api: a 404 is down, because the router no longer knows the route", as
   assert((report.message ?? "").includes("router"), report.message);
 });
 
-Deno.test("api: a throttle still proves the API is answering", async () => {
+test("api: a throttle still proves the API is answering", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { message: "Too Many Requests" } }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "ok");
   assert((report.message ?? "").includes("429"), report.message);
 });
 
-Deno.test("api: a 5xx and a non-JSON body are both down", async () => {
+test("api: a 5xx and a non-JSON body are both down", async () => {
   const server = mockCtx([{ status: 502, body: { message: "Bad Gateway" } }]);
   assertEquals((await api.check!({}, server.ctx)).state, "down");
 
@@ -58,13 +59,13 @@ Deno.test("api: a 5xx and a non-JSON body are both down", async () => {
 });
 
 /** An unexpected 200 to an unsigned read is not evidence of an outage either way. */
-Deno.test("api: an unexpected status reports unknown, not a guess", async () => {
+test("api: an unexpected status reports unknown, not a guess", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "u1" } }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("api: is an unsigned app-scoped dependency check that widens no egress", () => {
+test("api: is an unsigned app-scoped dependency check that widens no egress", () => {
   assertEquals(api.kind, "dependency");
   assertEquals(api.scope, "app");
   assertEquals(api.credential, "none");

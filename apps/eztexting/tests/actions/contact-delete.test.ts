@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-delete: calls DELETE /contacts/2125551234 and returns the documented shape", async () => {
+test("contact-delete: calls DELETE /contacts/2125551234 and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const result = await contactDelete.execute({ "phoneNumber": "2125551234" } as never, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("contact-delete: calls DELETE /contacts/2125551234 and returns the doc
   assertEquals(result, { "phoneNumber": "2125551234", "status": 200 });
 });
 
-Deno.test("contact-delete: carries no credential — auth is the sign hook's job", async () => {
+test("contact-delete: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   await contactDelete.execute({ "phoneNumber": "2125551234" } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

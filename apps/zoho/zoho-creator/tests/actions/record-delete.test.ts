@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/record-delete.ts";
 
-Deno.test("record-delete: idempotent", () => {
+test("record-delete: idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("record-delete: DELETEs /data/<owner>/<app>/report/<report> with a criteria body", async () => {
+test("record-delete: DELETEs /data/<owner>/<app>/report/<report> with a criteria body", async () => {
   const { ctx, calls } = mockCreatorCtx([
     {
       body: {
@@ -36,7 +37,7 @@ Deno.test("record-delete: DELETEs /data/<owner>/<app>/report/<report> with a cri
   ]);
 });
 
-Deno.test("record-delete: passes a mixed success/failure result array through as-is", async () => {
+test("record-delete: passes a mixed success/failure result array through as-is", async () => {
   const { ctx } = mockCreatorCtx([
     {
       body: {

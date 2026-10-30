@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockActiveCampaignCtx } from "../_helpers.ts";
 import action from "../../actions/create-contact.ts";
 
-Deno.test("create-contact: POSTs /contacts wrapped in a `contact` envelope", async () => {
+test("create-contact: POSTs /contacts wrapped in a `contact` envelope", async () => {
   const body = { contact: { id: "1" } };
   const { ctx, calls } = mockActiveCampaignCtx([{ body }]);
   const result = await action.execute(
@@ -18,7 +19,7 @@ Deno.test("create-contact: POSTs /contacts wrapped in a `contact` envelope", asy
   assertEquals(result, body);
 });
 
-Deno.test("create-contact: drops unset fields rather than sending nulls", async () => {
+test("create-contact: drops unset fields rather than sending nulls", async () => {
   const { ctx, calls } = mockActiveCampaignCtx([{ body: { contact: {} } }]);
   await action.execute({ email: "a@b.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { contact: { email: "a@b.com" } });

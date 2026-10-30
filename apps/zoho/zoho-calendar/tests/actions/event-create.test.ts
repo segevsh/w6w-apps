@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/event-create.ts";
 
-Deno.test("event-create: POSTs .../events with eventdata as a query param", async () => {
+test("event-create: POSTs .../events with eventdata as a query param", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { events: [{ uid: "e1", etag: "1" }] } }]);
   const out = await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("event-create: POSTs .../events with eventdata as a query param", asyn
   assertEquals(out, { uid: "e1", etag: "1" });
 });
 
-Deno.test("event-create: nests timezone under dateandtime, not top-level", async () => {
+test("event-create: nests timezone under dateandtime, not top-level", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { events: [{ uid: "e1" }] } }]);
   await action.execute(
     {
@@ -41,7 +42,7 @@ Deno.test("event-create: nests timezone under dateandtime, not top-level", async
   assertEquals(sent.timezone, undefined);
 });
 
-Deno.test("event-create: rejects without start/end reaching the network", async () => {
+test("event-create: rejects without start/end reaching the network", async () => {
   const { ctx, calls } = mockCalendarCtx([]);
   await assertRejects(() => Promise.resolve(action.execute({ calendarUid: "cal1" } as never, ctx)));
   assertEquals(calls.length, 0);

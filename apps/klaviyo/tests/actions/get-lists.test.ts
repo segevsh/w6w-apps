@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-lists.ts";
 
-Deno.test("get-lists: GETs /lists/ with filter passthrough", async () => {
+test("get-lists: GETs /lists/ with filter passthrough", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ filter: 'equals(name,"VIPs")' }, ctx);
   const url = new URL(calls[0].url);

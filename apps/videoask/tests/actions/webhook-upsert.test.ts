@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookUpsert from "../../actions/webhook-upsert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-upsert: PUTs to the form/tag path with event_types and headers", async () => {
+test("webhook-upsert: PUTs to the form/tag path with event_types and headers", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "https://example.com/hook" } }]);
   await webhookUpsert.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("webhook-upsert: PUTs to the form/tag path with event_types and header
   });
 });
 
-Deno.test("webhook-upsert: headers is optional and omitted, not sent as null/undefined", async () => {
+test("webhook-upsert: headers is optional and omitted, not sent as null/undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookUpsert.execute(
     { formId: "f1", webhookTag: "t1", url: "https://example.com", eventTypes: ["form_response"] },

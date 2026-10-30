@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getUniversalAccount from "../../actions/get-universal-account.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-universal-account: returns usage and NEVER the api_key the vendor echoes", async () => {
+test("get-universal-account: returns usage and NEVER the api_key the vendor echoes", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: 3,
@@ -24,7 +25,7 @@ Deno.test("get-universal-account: returns usage and NEVER the api_key the vendor
   assertEquals("apiKey" in out || "api_key" in out, false);
 });
 
-Deno.test("get-universal-account: a 403 throws", async () => {
+test("get-universal-account: a 403 throws", async () => {
   const bad = mockCtx([{ status: 403, body: { detail: "Not a Universal Credits account" } }]);
   await assertRejects(() => run(getUniversalAccount, {}, bad.ctx), Error, "Universal Credits");
 });

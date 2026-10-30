@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarList from "../../actions/webinar-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webinar-list: hits GET /webinars with translated snake_case query params", async () => {
+test("webinar-list: hits GET /webinars with translated snake_case query params", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -35,7 +36,7 @@ Deno.test("webinar-list: hits GET /webinars with translated snake_case query par
   assertEquals(out.totalPages, 1);
 });
 
-Deno.test("webinar-list: defaults to an empty array when the account has none", async () => {
+test("webinar-list: defaults to an empty array when the account has none", async () => {
   const { ctx } = mockCtx([{ body: { total_count: 0, pages: {} } }]);
   const out = await webinarList.execute({}, ctx) as { webinars: unknown[] };
   assertEquals(out.webinars, []);

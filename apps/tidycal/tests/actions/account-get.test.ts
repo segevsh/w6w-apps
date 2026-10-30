@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const USER = {
 };
 
 /** `GET /me` answers the bare `User`, not `{"data": …}`. */
-Deno.test("account-get: calls GET /api/me and returns the bare entity", async () => {
+test("account-get: calls GET /api/me and returns the bare entity", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   const out = await accountGet.execute({}, ctx) as typeof USER;
 
@@ -27,7 +28,7 @@ Deno.test("account-get: calls GET /api/me and returns the bare entity", async ()
  * is the endpoint the health probe reads, so what it is expected to contain is
  * worth pinning.
  */
-Deno.test("account-get: declares exactly TidyCal's seven User fields", () => {
+test("account-get: declares exactly TidyCal's seven User fields", () => {
   const keys = (accountGet.output as Array<{ key: string }>).map((o) => o.key).sort();
   assertEquals(keys, Object.keys(USER).sort());
 });

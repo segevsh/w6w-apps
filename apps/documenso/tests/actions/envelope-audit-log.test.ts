@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/envelope-audit-log.ts";
 
 const conn = { display: {} };
 
 /** The audit trail is what makes a signature defensible. */
-Deno.test("envelope-audit-log: reads the paged audit trail", async () => {
+test("envelope-audit-log: reads the paged audit trail", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { data: [{ type: "DOCUMENT_OPENED" }] } }],
     conn,
@@ -15,7 +16,7 @@ Deno.test("envelope-audit-log: reads the paged audit trail", async () => {
   assert(action.description!.includes("evidence"), action.description);
 });
 
-Deno.test("envelope-audit-log: a blank id fails before any request", async () => {
+test("envelope-audit-log: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`envelopeId`");
   assertEquals(calls.length, 0);

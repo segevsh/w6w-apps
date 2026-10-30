@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timezoneList from "../../actions/timezone-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timezone-list: GETs the bare array and wraps it under items", async () => {
+test("timezone-list: GETs the bare array and wraps it under items", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: [{ name: "Pacific/Midway", utc_offset: -39600 }] },
   ]);
@@ -12,6 +13,6 @@ Deno.test("timezone-list: GETs the bare array and wraps it under items", async (
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("timezone-list: does not require auth", () => {
+test("timezone-list: does not require auth", () => {
   assertEquals(timezoneList.requiresAuth, false);
 });

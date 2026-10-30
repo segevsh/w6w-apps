@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import assignmentCreate from "../../actions/assignment-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("assignment-create: POST /resource-planner/assignments with the documented query and body", async () => {
+test("assignment-create: POST /resource-planner/assignments with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await assignmentCreate.execute({
     "project": "as:9",
@@ -34,7 +35,7 @@ Deno.test("assignment-create: POST /resource-planner/assignments with the docume
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("assignment-create: an Everhour error surfaces its message and status", async () => {
+test("assignment-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -54,7 +55,7 @@ Deno.test("assignment-create: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("assignment-create: declares perform and idempotent=false", () => {
+test("assignment-create: declares perform and idempotent=false", () => {
   assertEquals(assignmentCreate.type, "perform");
   assertEquals(assignmentCreate.idempotent, false);
 });

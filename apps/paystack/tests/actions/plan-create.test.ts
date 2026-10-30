@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/plan-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("plan-create: POSTs the plan, keeping an explicit false/0", async () => {
+test("plan-create: POSTs the plan, keeping an explicit false/0", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ plan_code: "PLN_1" }) }]);
   const out = await action.execute({
     name: "Gold",
@@ -22,7 +23,7 @@ Deno.test("plan-create: POSTs the plan, keeping an explicit false/0", async () =
   });
 });
 
-Deno.test("plan-create: validates name, amount and interval locally", async () => {
+test("plan-create: validates name, amount and interval locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ name: "", amount: 1, interval: "daily" }, ctx),

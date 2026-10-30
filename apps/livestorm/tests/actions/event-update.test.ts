@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventUpdate from "../../actions/event-update.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("event-update: PATCHes only the set fields", async () => {
+test("event-update: PATCHes only the set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: single("events", "e1", { title: "New" }) }]);
   const result = await eventUpdate.execute({ id: "e1", title: "New" }, ctx);
 

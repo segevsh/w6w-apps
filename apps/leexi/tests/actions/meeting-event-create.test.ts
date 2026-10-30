@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/meeting-event-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("meeting-event-create: full input maps to POST /meeting_events", async () => {
+test("meeting-event-create: full input maps to POST /meeting_events", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -41,7 +42,7 @@ Deno.test("meeting-event-create: full input maps to POST /meeting_events", async
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("meeting-event-create: required input only maps to POST /meeting_events", async () => {
+test("meeting-event-create: required input only maps to POST /meeting_events", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -69,7 +70,7 @@ Deno.test("meeting-event-create: required input only maps to POST /meeting_event
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("meeting-event-create: sends no authorization header of its own", async () => {
+test("meeting-event-create: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({
     "meeting_url": "sample-meeting_url",
@@ -88,7 +89,7 @@ Deno.test("meeting-event-create: sends no authorization header of its own", asyn
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("meeting-event-create: surfaces a JSON error body as a thrown error", async () => {
+test("meeting-event-create: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -111,7 +112,7 @@ Deno.test("meeting-event-create: surfaces a JSON error body as a thrown error", 
   );
 });
 
-Deno.test("meeting-event-create: an empty 401 body still reads as an auth failure", async () => {
+test("meeting-event-create: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -134,7 +135,7 @@ Deno.test("meeting-event-create: an empty 401 body still reads as an auth failur
   );
 });
 
-Deno.test("meeting-event-create: declares type, params and output", () => {
+test("meeting-event-create: declares type, params and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.key, "meeting-event-create");
   assert(Array.isArray(action.output) && action.output.length > 0);

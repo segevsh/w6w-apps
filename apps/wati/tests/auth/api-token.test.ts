@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: signs with a literal `Bearer <token>` Authorization header", async () => {
+test("api-token: signs with a literal `Bearer <token>` Authorization header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://live-mt-server.wati.io/12345/api/ext/v3/account/credits",
@@ -13,17 +14,17 @@ Deno.test("api-token: signs with a literal `Bearer <token>` Authorization header
   assertEquals(out.headers["authorization"], "Bearer abc123");
 });
 
-Deno.test("api-token: baseUrl and apiToken are both required; apiToken is a secret field", () => {
+test("api-token: baseUrl and apiToken are both required; apiToken is a secret field", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiToken", "baseUrl"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiToken"]);
 });
 
-Deno.test("api-token: apiKey config uses a header with a Bearer prefix", () => {
+test("api-token: apiKey config uses a header with a Bearer prefix", () => {
   assertEquals(auth.apiKey, { in: "header", name: "Authorization", prefix: "Bearer " });
 });
 
-Deno.test("api-token: test succeeds on a 200 with a credit balance body", async () => {
+test("api-token: test succeeds on a 200 with a credit balance body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { credit: 42.5, welcome_credit: 0 } }]);
   const out = await auth.test(
     {
@@ -39,7 +40,7 @@ Deno.test("api-token: test succeeds on a 200 with a credit balance body", async 
   assertEquals(calls[0].headers["authorization"], "Bearer t1");
 });
 
-Deno.test("api-token: a structured Wati error fails with the vendor's own code/message", async () => {
+test("api-token: a structured Wati error fails with the vendor's own code/message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {
@@ -57,7 +58,7 @@ Deno.test("api-token: a structured Wati error fails with the vendor's own code/m
   assert(out.message.includes("required scope"), out.message);
 });
 
-Deno.test("api-token: a bodyless 401 fails without crashing (documented as bodyless)", async () => {
+test("api-token: a bodyless 401 fails without crashing (documented as bodyless)", async () => {
   const { ctx } = mockCtx([{ status: 401, body: undefined, headers: {} }]);
   const out = await auth.test(
     { credential: { apiToken: "bad", baseUrl: "https://live-mt-server.wati.io/12345" } } as never,
@@ -67,7 +68,7 @@ Deno.test("api-token: a bodyless 401 fails without crashing (documented as bodyl
   assert(out.message.includes("401"), out.message);
 });
 
-Deno.test("api-token: missing fields fail before any network call", async () => {
+test("api-token: missing fields fail before any network call", async () => {
   const noToken = mockCtx([]);
   assertEquals(
     await auth.test({ credential: { baseUrl: "https://x.wati.io/1" } } as never, noToken.ctx),
@@ -81,7 +82,7 @@ Deno.test("api-token: missing fields fail before any network call", async () => 
   assertEquals(noToken.calls.length + noBaseUrl.calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect persists the normalised baseUrl, never the token", async () => {
+test("api-token: afterConnect persists the normalised baseUrl, never the token", async () => {
   const display = await auth.afterConnect!(
     {
       credential: {

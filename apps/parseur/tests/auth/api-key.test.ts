@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders } from "../../auth/api-key.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const KEY = "unitTestFixtureNotARealParseurKey00000";
 
-Deno.test("api-key: sign stamps the bare key — no Token or Bearer prefix", () => {
+test("api-key: sign stamps the bare key — no Token or Bearer prefix", () => {
   const request = {
     method: "GET",
     url: "https://api.parseur.com/parser",
@@ -20,11 +21,11 @@ Deno.test("api-key: sign stamps the bare key — no Token or Bearer prefix", () 
   assert(!/^Bearer\s/.test(signed.headers.authorization));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { authorization: KEY });
 });
 
-Deno.test("api-key: test passes when GET / answers ok", async () => {
+test("api-key: test passes when GET / answers ok", async () => {
   const { ctx, calls } = mockCtx([{ body: { document: "...", parser: "..." } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -33,7 +34,7 @@ Deno.test("api-key: test passes when GET / answers ok", async () => {
   assertEquals(calls[0].headers.authorization, KEY);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 
@@ -41,7 +42,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test('api-key: "Not authenticated" is reported as the credential never arriving', async () => {
+test('api-key: "Not authenticated" is reported as the credential never arriving', async () => {
   const { ctx } = mockCtx([{ status: 403, body: { non_field_errors: "Not authenticated" } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -49,7 +50,7 @@ Deno.test('api-key: "Not authenticated" is reported as the credential never arri
   assert(/received no key/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test('api-key: "Authentication failed" is reported as a rejected key', async () => {
+test('api-key: "Authentication failed" is reported as a rejected key', async () => {
   const { ctx } = mockCtx([{ status: 403, body: { non_field_errors: "Authentication failed" } }]);
   const result = await apiKey.test({ credential: { apiKey: "garbage" } }, ctx);
 
@@ -57,7 +58,7 @@ Deno.test('api-key: "Authentication failed" is reported as a rejected key', asyn
   assert(/rejected the key/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: an unrecognised failure is reported as a bare HTTP status", async () => {
+test("api-key: an unrecognised failure is reported as a bare HTTP status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -65,6 +66,6 @@ Deno.test("api-key: an unrecognised failure is reported as a bare HTTP status", 
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: has no afterConnect — there is no whoami endpoint to call", () => {
+test("api-key: has no afterConnect — there is no whoami endpoint to call", () => {
   assertEquals(apiKey.afterConnect, undefined);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeOffTypeDelete from "../../actions/time-off-type-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-off-type-delete: DELETE /resource-planner/time-off-types/{typeId} with the documented query and body", async () => {
+test("time-off-type-delete: DELETE /resource-planner/time-off-types/{typeId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await timeOffTypeDelete.execute({ "typeId": 16539 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("time-off-type-delete: DELETE /resource-planner/time-off-types/{typeId
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("time-off-type-delete: an Everhour error surfaces its message and status", async () => {
+test("time-off-type-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timeOffTypeDelete.execute({ "typeId": 16539 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("time-off-type-delete: an Everhour error surfaces its message and stat
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("time-off-type-delete: declares perform and idempotent=true", () => {
+test("time-off-type-delete: declares perform and idempotent=true", () => {
   assertEquals(timeOffTypeDelete.type, "perform");
   assertEquals(timeOffTypeDelete.idempotent, true);
 });

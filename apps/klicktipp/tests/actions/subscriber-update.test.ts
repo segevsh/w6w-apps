@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscriber-update.ts";
 
-Deno.test("subscriber-update: PUTs only the keys given", async () => {
+test("subscriber-update: PUTs only the keys given", async () => {
   const { ctx, calls } = mockCtx([{ body: [true] }]);
   const out = await action.execute({ subscriberId: "42", newEmail: "n@example.com" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,7 +12,7 @@ Deno.test("subscriber-update: PUTs only the keys given", async () => {
   assertEquals(out, { success: true });
 });
 
-Deno.test("subscriber-update: refuses an empty update", async () => {
+test("subscriber-update: refuses an empty update", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ subscriberId: "42" }, ctx),
@@ -21,7 +22,7 @@ Deno.test("subscriber-update: refuses an empty update", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscriber-update: error 10 carries its subcode", async () => {
+test("subscriber-update: error 10 carries its subcode", async () => {
   const { ctx } = mockCtx([{ status: 406, body: { error: 10, code: 9 } }]);
   await assertRejects(
     async () => await action.execute({ subscriberId: "42", newSmsNumber: "+49170" }, ctx),
@@ -30,7 +31,7 @@ Deno.test("subscriber-update: error 10 carries its subcode", async () => {
   );
 });
 
-Deno.test("subscriber-update: a 200 that is not [true] is a failure", async () => {
+test("subscriber-update: a 200 that is not [true] is a failure", async () => {
   const { ctx } = mockCtx([{ body: [false] }]);
   await assertRejects(
     async () => await action.execute({ subscriberId: "42", newEmail: "n@example.com" }, ctx),

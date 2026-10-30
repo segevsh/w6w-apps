@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import lifecycleHistoryList from "../../actions/lifecycle-history-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("lifecycle-history-list: GETs /v1/people/{id}/lifecycle", async () => {
+test("lifecycle-history-list: GETs /v1/people/{id}/lifecycle", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [{ id: 1 }] } }, { body: { values: [] } }]);
   const out = await lifecycleHistoryList.execute({ employeeId: "42" }, ctx) as {
     values: unknown[];
@@ -15,7 +16,7 @@ Deno.test("lifecycle-history-list: GETs /v1/people/{id}/lifecycle", async () => 
   assertEquals(queryOf(calls[1].url), { includeArchived: "true" });
 });
 
-Deno.test("lifecycle-history-list: a 403 points at the missing permission", async () => {
+test("lifecycle-history-list: a 403 points at the missing permission", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "forbidden" } }]);
   let message = "";
   try {

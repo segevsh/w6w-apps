@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import invoiceList from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: returns the invoices connection", async () => {
+test("invoice-list: returns the invoices connection", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -23,7 +24,7 @@ Deno.test("invoice-list: returns the invoices connection", async () => {
   assertEquals(body.variables.status, "SENT");
 });
 
-Deno.test("invoice-list: filters by customerId", async () => {
+test("invoice-list: filters by customerId", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { invoices: { edges: [], pageInfo: {} } } } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("invoice-list: filters by customerId", async () => {
   assertEquals(body.variables.customerId, "c1");
 });
 
-Deno.test("invoice-list: type/resource metadata", () => {
+test("invoice-list: type/resource metadata", () => {
   assertEquals(invoiceList.type, "search");
   assertEquals(invoiceList.resource, "invoice");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-event.ts";
 
-Deno.test("update-event: PATCHes /calendars/{id}/events/{eventId}", async () => {
+test("update-event: PATCHes /calendars/{id}/events/{eventId}", async () => {
   const updated = { id: "evt-1", summary: "Renamed" };
   const { ctx, calls } = mockCtx([{ body: updated }]);
   const result = await action.execute!({
@@ -17,7 +18,7 @@ Deno.test("update-event: PATCHes /calendars/{id}/events/{eventId}", async () => 
   assertEquals(result, updated);
 });
 
-Deno.test("update-event: sends only supplied fields", async () => {
+test("update-event: sends only supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -28,7 +29,7 @@ Deno.test("update-event: sends only supplied fields", async () => {
   assertEquals(body, { location: "HQ" });
 });
 
-Deno.test("update-event: wraps start/end with timeZone when supplied", async () => {
+test("update-event: wraps start/end with timeZone when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -42,7 +43,7 @@ Deno.test("update-event: wraps start/end with timeZone when supplied", async () 
   assertEquals(body.end, { dateTime: "2026-07-01T10:00:00Z", timeZone: "UTC" });
 });
 
-Deno.test("update-event: allDay switches start/end to date-only", async () => {
+test("update-event: allDay switches start/end to date-only", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -56,7 +57,7 @@ Deno.test("update-event: allDay switches start/end to date-only", async () => {
   assertEquals(body.end, { date: "2026-07-02" });
 });
 
-Deno.test("update-event: forwards sendUpdates as a query param", async () => {
+test("update-event: forwards sendUpdates as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -67,7 +68,7 @@ Deno.test("update-event: forwards sendUpdates as a query param", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("sendUpdates"), "all");
 });
 
-Deno.test("update-event: useDefaultReminders=false sends the overrides", async () => {
+test("update-event: useDefaultReminders=false sends the overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -82,7 +83,7 @@ Deno.test("update-event: useDefaultReminders=false sends the overrides", async (
   });
 });
 
-Deno.test("update-event: reminders param renders as a group/repeat list, not a scalar or JSON stopgap", () => {
+test("update-event: reminders param renders as a group/repeat list, not a scalar or JSON stopgap", () => {
   const reminders = action.params?.find((p) => p.key === "reminders");
   assertEquals(reminders?.type, "group");
   assertEquals(reminders?.repeat, true);
@@ -91,7 +92,7 @@ Deno.test("update-event: reminders param renders as a group/repeat list, not a s
   assertEquals(reminders?.children?.find((c) => c.key === "minutes")?.type, "number");
 });
 
-Deno.test("update-event: useDefaultReminders=false with no reminders sends undefined overrides", async () => {
+test("update-event: useDefaultReminders=false with no reminders sends undefined overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -103,7 +104,7 @@ Deno.test("update-event: useDefaultReminders=false with no reminders sends undef
   assertEquals(body.reminders.overrides, undefined);
 });
 
-Deno.test("update-event: attachments map into body and flip supportsAttachments query", async () => {
+test("update-event: attachments map into body and flip supportsAttachments query", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -117,7 +118,7 @@ Deno.test("update-event: attachments map into body and flip supportsAttachments 
   assertEquals(new URL(calls[0].url).searchParams.get("supportsAttachments"), "true");
 });
 
-Deno.test("update-event: no attachments omits supportsAttachments query", async () => {
+test("update-event: no attachments omits supportsAttachments query", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "primary",
@@ -127,7 +128,7 @@ Deno.test("update-event: no attachments omits supportsAttachments query", async 
   assertEquals(new URL(calls[0].url).searchParams.get("supportsAttachments"), null);
 });
 
-Deno.test("update-event: encodes email calendar IDs", async () => {
+test("update-event: encodes email calendar IDs", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     calendarId: "team@example.com",

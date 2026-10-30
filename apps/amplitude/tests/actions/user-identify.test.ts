@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/user-identify.ts";
 
 /** The only form-encoded endpoint in the API. */
-Deno.test("user-identify: sends form-encoded JSON to /identify", async () => {
+test("user-identify: sends form-encoded JSON to /identify", async () => {
   const { ctx, calls } = mockCtx([ok("success")], { display });
   await action.execute!({
     userId: "user-1071",
@@ -19,7 +20,7 @@ Deno.test("user-identify: sends form-encoded JSON to /identify", async () => {
 });
 
 /** Short ids identify nobody, because Amplitude removes them. */
-Deno.test("user-identify: a short id is refused before sending", async () => {
+test("user-identify: a short id is refused before sending", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ userId: "42", userProperties: '{"a":1}' }, ctx),
@@ -30,7 +31,7 @@ Deno.test("user-identify: a short id is refused before sending", async () => {
 });
 
 /** `$setOnce` keeps a first value; a plain object is `$set` and rewrites it. */
-Deno.test("user-identify: property operations are reported so $set vs $setOnce is visible", async () => {
+test("user-identify: property operations are reported so $set vs $setOnce is visible", async () => {
   const { ctx } = mockCtx([ok("success")], { display });
   const result = await action.execute!({
     userId: "user-1071",
@@ -39,7 +40,7 @@ Deno.test("user-identify: property operations are reported so $set vs $setOnce i
   assertEquals(result.operations.sort(), ["$add", "$setOnce"]);
 });
 
-Deno.test("user-identify: a plain object has no operations", async () => {
+test("user-identify: a plain object has no operations", async () => {
   const { ctx } = mockCtx([ok("success")], { display });
   const result = await action.execute!({
     userId: "user-1071",
@@ -48,14 +49,14 @@ Deno.test("user-identify: a plain object has no operations", async () => {
   assertEquals(result.operations, []);
 });
 
-Deno.test("user-identify: a device id alone is enough", async () => {
+test("user-identify: a device id alone is enough", async () => {
   const { ctx, calls } = mockCtx([ok("success")], { display });
   await action.execute!({ deviceId: "device-abc", userProperties: '{"a":1}' }, ctx);
   const form = new URLSearchParams(calls[0].body!);
   assertEquals(JSON.parse(form.get("identification")!)[0].device_id, "device-abc");
 });
 
-Deno.test("user-identify: needs an identifier and some properties", async () => {
+test("user-identify: needs an identifier and some properties", async () => {
   const noId = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ userProperties: '{"a":1}' }, noId.ctx),
@@ -72,7 +73,7 @@ Deno.test("user-identify: needs an identifier and some properties", async () => 
 });
 
 /** User properties are the caller's data. */
-Deno.test("user-identify: logs the count and operations, never the values", async () => {
+test("user-identify: logs the count and operations, never the values", async () => {
   const { ctx, logs } = mockCtx([ok("success")], { display });
   await action.execute!({
     userId: "user-1071",
@@ -82,6 +83,6 @@ Deno.test("user-identify: logs the count and operations, never the values", asyn
   assertEquals(logs[0].data, { propertyCount: 1, operations: [] });
 });
 
-Deno.test("user-identify: recommends $setOnce for first values", () => {
+test("user-identify: recommends $setOnce for first values", () => {
   assert(/\$setOnce/.test(action.description!), action.description);
 });

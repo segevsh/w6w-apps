@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activate-bounce.ts";
 
-Deno.test("activate-bounce: PUTs /bounces/{id}/activate", async () => {
+test("activate-bounce: PUTs /bounces/{id}/activate", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { Message: "OK", Bounce: { ID: 42, Inactive: false } },
@@ -13,7 +14,7 @@ Deno.test("activate-bounce: PUTs /bounces/{id}/activate", async () => {
   assertEquals(calls[0].method, "PUT");
 });
 
-Deno.test("activate-bounce: throws without a bounceId", async () => {
+test("activate-bounce: throws without a bounceId", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ bounceId: "" }, ctx)),
@@ -22,6 +23,6 @@ Deno.test("activate-bounce: throws without a bounceId", async () => {
   );
 });
 
-Deno.test("activate-bounce: is declared idempotent", () => {
+test("activate-bounce: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

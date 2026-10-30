@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contentUnpublish from "../../actions/content-unpublish.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("content-unpublish: sends POST /contents/${seg(input.contentId)}/visibility/unpublish", async () => {
+test("content-unpublish: sends POST /contents/${seg(input.contentId)}/visibility/unpublish", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1 } }]);
   const out = await contentUnpublish.execute({ "contentId": "1" } as never, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("content-unpublish: sends POST /contents/${seg(input.contentId)}/visib
   assertEquals(out, { "id": 1 });
 });
 
-Deno.test("content-unpublish: a 422 surfaces the vendor's message", async () => {
+test("content-unpublish: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () => contentUnpublish.execute({ "contentId": "1" } as never, ctx) as Promise<unknown>,

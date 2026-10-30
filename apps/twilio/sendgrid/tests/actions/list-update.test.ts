@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-update.ts";
 
-Deno.test("list-update: PATCH /marketing/lists/{id} with { name }", async () => {
+test("list-update: PATCH /marketing/lists/{id} with { name }", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "list-1", name: "Renamed" } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("list-update: PATCH /marketing/lists/{id} with { name }", async () => 
   assertEquals(result, { id: "list-1", name: "Renamed" });
 });
 
-Deno.test("list-update: missing listId rejects", async () => {
+test("list-update: missing listId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ listId: "", name: "x" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("list-update: missing listId rejects", async () => {
   );
 });
 
-Deno.test("list-update: missing name rejects", async () => {
+test("list-update: missing name rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ listId: "l", name: "" }, ctx),

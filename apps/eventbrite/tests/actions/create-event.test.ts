@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event.ts";
 
-Deno.test("create-event: POSTs wrapped event with nested name/start/end", async () => {
+test("create-event: POSTs wrapped event with nested name/start/end", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!(
     {
@@ -35,7 +36,7 @@ Deno.test("create-event: POSTs wrapped event with nested name/start/end", async 
   });
 });
 
-Deno.test("create-event: extra deep-merges into event", async () => {
+test("create-event: extra deep-merges into event", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

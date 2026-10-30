@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   MESSAGING_API_GROUP_NAME,
@@ -52,13 +53,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host, unsigned", () => {
+test("service: probes the status host, not the API host, unsigned", () => {
   assertEquals(STATUS_URL, "https://api.line-status.info/api/v2/summary.json");
   assertEquals(service.network?.allow, ["api.line-status.info"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an all-operational Messaging API group reports ok", async () => {
+test("service: an all-operational Messaging API group reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -70,7 +71,7 @@ Deno.test("service: an all-operational Messaging API group reports ok", async ()
  * The finding that shapes this check: the page also carries LINE Login and LIFF, which must never
  * affect this app's verdict.
  */
-Deno.test("service: only the Messaging API group's own two components are scored", async () => {
+test("service: only the Messaging API group's own two components are scored", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -80,7 +81,7 @@ Deno.test("service: only the Messaging API group's own two components are scored
   assertEquals("psvht6kdtpdz" in (report.components ?? {}), false);
 });
 
-Deno.test("service: an outage on LINE Login does not affect this app's verdict", async () => {
+test("service: an outage on LINE Login does not affect this app's verdict", async () => {
   const body = summary();
   (body.components[3] as { status: string }).status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -89,7 +90,7 @@ Deno.test("service: an outage on LINE Login does not affect this app's verdict",
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage on the Messaging API's own API component is reported", async () => {
+test("service: an outage on the Messaging API's own API component is reported", async () => {
   const body = summary();
   (body.components[1] as { status: string }).status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -101,17 +102,17 @@ Deno.test("service: an outage on the Messaging API's own API component is report
   assert(/API \(major_outage\)/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that stops self-identifying as LINE's reports unknown", async () => {
+test("service: a page that stops self-identifying as LINE's reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({ page: { id: "x", name: "Somebody Else", url: "https://status.other.com" } }),
@@ -123,7 +124,7 @@ Deno.test("service: a page that stops self-identifying as LINE's reports unknown
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page that drops the Messaging API group reports unknown", async () => {
+test("service: a page that drops the Messaging API group reports unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
 
@@ -131,7 +132,7 @@ Deno.test("service: a page that drops the Messaging API group reports unknown", 
   assert(report.message?.includes(MESSAGING_API_GROUP_NAME), report.message);
 });
 
-Deno.test("service: Statuspage's component vocabulary maps to the four health states", () => {
+test("service: Statuspage's component vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");

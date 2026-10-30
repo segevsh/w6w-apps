@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("user-create: POSTs /users with all required fields snake_cased", async () => {
+test("user-create: POSTs /users with all required fields snake_cased", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }], { display });
   await action.execute!(
     {
@@ -29,7 +30,7 @@ Deno.test("user-create: POSTs /users with all required fields snake_cased", asyn
   });
 });
 
-Deno.test("user-create: adds optional fields when supplied", async () => {
+test("user-create: adds optional fields when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!(
     {

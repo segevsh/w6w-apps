@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-env-set.ts";
 
@@ -9,7 +10,7 @@ const existing = { status: 200, body: { d: [{ id: 10, value: "info" }] } };
 const fleetHas = { status: 200, body: { d: [{ value: "warn" }] } };
 const ok = { status: 200, body: {} };
 
-Deno.test("device-env-set: creates a variable that does not exist", async () => {
+test("device-env-set: creates a variable that does not exist", async () => {
   const { ctx, calls } = mockCtx([device, none, none, ok]);
   const result = await action.execute(
     { uuid: UUID, name: "LOG_LEVEL", value: "debug" },
@@ -21,7 +22,7 @@ Deno.test("device-env-set: creates a variable that does not exist", async () => 
   assertEquals(result.action, "created");
 });
 
-Deno.test("device-env-set: patches an existing variable by its id", async () => {
+test("device-env-set: patches an existing variable by its id", async () => {
   const { ctx, calls } = mockCtx([device, existing, none, ok]);
   const result = await action.execute(
     { uuid: UUID, name: "LOG_LEVEL", value: "debug" },
@@ -33,7 +34,7 @@ Deno.test("device-env-set: patches an existing variable by its id", async () => 
 });
 
 /** Every change recreates the container. */
-Deno.test("device-env-set: an unchanged value writes nothing and restarts nothing", async () => {
+test("device-env-set: an unchanged value writes nothing and restarts nothing", async () => {
   const { ctx, calls, logs } = mockCtx([device, existing, none]);
   const result = await action.execute(
     { uuid: UUID, name: "LOG_LEVEL", value: "info" },
@@ -45,7 +46,7 @@ Deno.test("device-env-set: an unchanged value writes nothing and restarts nothin
   assertEquals(logs.length, 0);
 });
 
-Deno.test("device-env-set: warns that a change recreates the container", async () => {
+test("device-env-set: warns that a change recreates the container", async () => {
   const { ctx, logs } = mockCtx([device, none, none, ok]);
   await action.execute({ uuid: UUID, name: "LOG_LEVEL", value: "debug" }, ctx);
   assert(
@@ -55,7 +56,7 @@ Deno.test("device-env-set: warns that a change recreates the container", async (
 });
 
 /** Removing restores the fleet's value; setting "" shadows it with an empty string. */
-Deno.test("device-env-set: removing deletes the row and reports the inherited value", async () => {
+test("device-env-set: removing deletes the row and reports the inherited value", async () => {
   const { ctx, calls, logs } = mockCtx([device, existing, fleetHas, ok]);
   const result = await action.execute(
     { uuid: UUID, name: "LOG_LEVEL", remove: true },
@@ -67,7 +68,7 @@ Deno.test("device-env-set: removing deletes the row and reports the inherited va
   assert(logs.some((l) => /inherits its fleet's value/.test(l.message)), JSON.stringify(logs));
 });
 
-Deno.test("device-env-set: removing something that is not there changes nothing", async () => {
+test("device-env-set: removing something that is not there changes nothing", async () => {
   const { ctx, calls } = mockCtx([device, none, none]);
   const result = await action.execute({ uuid: UUID, name: "NOPE", remove: true }, ctx) as Record<
     string,
@@ -78,7 +79,7 @@ Deno.test("device-env-set: removing something that is not there changes nothing"
 });
 
 /** An empty string is a real value, and it shadows the fleet. */
-Deno.test("device-env-set: setting an empty string still shadows the fleet's value", async () => {
+test("device-env-set: setting an empty string still shadows the fleet's value", async () => {
   const { ctx, calls } = mockCtx([device, none, fleetHas, ok]);
   const result = await action.execute({ uuid: UUID, name: "LOG_LEVEL", value: "" }, ctx) as Record<
     string,
@@ -89,7 +90,7 @@ Deno.test("device-env-set: setting an empty string still shadows the fleet's val
   assertEquals(result.action, "created");
 });
 
-Deno.test("device-env-set: requires a name", async () => {
+test("device-env-set: requires a name", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ uuid: UUID }, ctx), Error, "`name`");
 });

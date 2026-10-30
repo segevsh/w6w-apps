@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowSummarizeContent from "../../actions/window-summarize-content.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-summarize-content: prompt is optional", async () => {
+test("window-summarize-content: prompt is optional", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope("A short summary.") }]);
   const out = await windowSummarizeContent.execute({ sessionId: "s1", windowId: "w1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("window-summarize-content: prompt is optional", async () => {
   assertEquals((out as { modelResponse: string }).modelResponse, "A short summary.");
 });
 
-Deno.test("window-summarize-content: an optional prompt is sent when given", async () => {
+test("window-summarize-content: an optional prompt is sent when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope("A short summary.") }]);
   await windowSummarizeContent.execute(
     { sessionId: "s1", windowId: "w1", prompt: "Keep it to two sentences." },

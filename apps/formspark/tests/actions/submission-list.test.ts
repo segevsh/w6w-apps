@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionList from "../../actions/submission-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("submission-list: GET /forms/{id}/submissions with paging and search", async () => {
+test("submission-list: GET /forms/{id}/submissions with paging and search", async () => {
   const sub = { id: "sub_1", formId: "f1", data: { email: "a@b.c" }, createdAt: "x" };
   const { ctx, calls } = mockCtx([{ body: page([sub], { hasMore: true, nextCursor: "n" }) }]);
   const out = await submissionList.execute(

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { nextCursor, searchAction } from "../../lib/repos.ts";
 import modelSearch from "../../actions/model-search.ts";
@@ -8,7 +9,7 @@ import modelGet from "../../actions/model-get.ts";
  * Reading the cursor off the requested URL returns the page just fetched, so a
  * paging loop asks for page one forever while looking like it works.
  */
-Deno.test("nextCursor: comes out of the Link header, not the request", () => {
+test("nextCursor: comes out of the Link header, not the request", () => {
   assertEquals(
     nextCursor('<https://huggingface.co/api/models?cursor=ZmFrZQ%3D%3D&limit=20>; rel="next"'),
     "ZmFrZQ==",
@@ -21,13 +22,13 @@ Deno.test("nextCursor: comes out of the Link header, not the request", () => {
   );
 });
 
-Deno.test("nextCursor: the last page has no Link header, which is how paging ends", () => {
+test("nextCursor: the last page has no Link header, which is how paging ends", () => {
   assertEquals(nextCursor(null), undefined);
   assertEquals(nextCursor('<https://x/api/models>; rel="prev"'), undefined);
   assertEquals(nextCursor("garbage"), undefined);
 });
 
-Deno.test("search: the three kinds hit their own endpoint and sort sensibly", async () => {
+test("search: the three kinds hit their own endpoint and sort sensibly", async () => {
   for (
     const [kind, sort] of [["models", "downloads"], ["datasets", "downloads"], ["spaces", "likes"]]
   ) {
@@ -40,7 +41,7 @@ Deno.test("search: the three kinds hit their own endpoint and sort sensibly", as
 });
 
 /** Nobody downloads a running application. */
-Deno.test("search: Spaces are not offered a downloads sort at all", () => {
+test("search: Spaces are not offered a downloads sort at all", () => {
   const spaces = searchAction({ kind: "spaces", key: "k", title: "t", description: "d" });
   const options = spaces.params!.find((p) => p.key === "sort")!.options as Array<
     { value: string }
@@ -48,7 +49,7 @@ Deno.test("search: Spaces are not offered a downloads sort at all", () => {
   assertEquals(options.some((option) => option.value === "downloads"), false);
 });
 
-Deno.test("search: tags are sent as one comma-joined filter", async () => {
+test("search: tags are sent as one comma-joined filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await modelSearch.execute({ filter: "pytorch, en", search: "whisper" }, ctx);
   const url = new URL(calls[0].url);
@@ -57,7 +58,7 @@ Deno.test("search: tags are sent as one comma-joined filter", async () => {
 });
 
 /** Without the task filter a search returns fine-tunes of what was wanted. */
-Deno.test("search: the model variant sends pipeline_tag, the others have no such param", async () => {
+test("search: the model variant sends pipeline_tag, the others have no such param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await modelSearch.execute({ pipelineTag: "text-generation" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("pipeline_tag"), "text-generation");
@@ -66,7 +67,7 @@ Deno.test("search: the model variant sends pipeline_tag, the others have no such
   assertEquals(datasets.params!.some((p) => p.key === "pipelineTag"), false);
 });
 
-Deno.test("search: reports how many results cannot be downloaded", async () => {
+test("search: reports how many results cannot be downloaded", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: [
@@ -82,7 +83,7 @@ Deno.test("search: reports how many results cannot be downloaded", async () => {
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("search: the cursor comes back off the Link header", async () => {
+test("search: the cursor comes back off the Link header", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [],
@@ -95,13 +96,13 @@ Deno.test("search: the cursor comes back off the Link header", async () => {
   assertEquals(result.cursor, "NEXT");
 });
 
-Deno.test("search: a body that is not a list yields no results rather than throwing", async () => {
+test("search: a body that is not a list yields no results rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { error: "nope" } }]);
   const result = await modelSearch.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
 });
 
-Deno.test("detail: a revision goes down the /revision/ path", async () => {
+test("detail: a revision goes down the /revision/ path", async () => {
   const plain = mockCtx([{ status: 200, body: { id: "openai-community/gpt2" } }]);
   await modelGet.execute({ id: "openai-community/gpt2" }, plain.ctx);
   assertEquals(plain.calls[0].url, "https://huggingface.co/api/models/openai-community/gpt2");
@@ -114,7 +115,7 @@ Deno.test("detail: a revision goes down the /revision/ path", async () => {
   );
 });
 
-Deno.test("detail: reports the canonical id, the gate and the pin", async () => {
+test("detail: reports the canonical id, the gate and the pin", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -141,7 +142,7 @@ Deno.test("detail: reports the canonical id, the gate and the pin", async () => 
  * A stored id that has been renamed keeps working, silently, until the day the
  * redirect is what breaks — this is the only thing that says so.
  */
-Deno.test("detail: a rename is reported and the canonical id is returned", async () => {
+test("detail: a rename is reported and the canonical id is returned", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { id: "openai-community/gpt2" } }]);
   const inner = ctx.fetch;
   ctx.fetch = (async (input: string, init?: RequestInit) => {
@@ -159,7 +160,7 @@ Deno.test("detail: a rename is reported and the canonical id is returned", async
   assert(/renamed/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("detail: the id hint and revision hint say what moves", () => {
+test("detail: the id hint and revision hint say what moves", () => {
   const id = modelGet.params!.find((p) => p.key === "id")!;
   assert(/redirects/.test(id.hint!), id.hint);
   const revision = modelGet.params!.find((p) => p.key === "revision")!;

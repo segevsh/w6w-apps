@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationList from "../../actions/conversation-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-list: sends every documented filter with the vendor's wire names", async () => {
+test("conversation-list: sends every documented filter with the vendor's wire names", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ contact_id: "c1" }], { count: 1 }) }]);
   const out = await conversationList.execute(
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagRemove from "../../actions/tag-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-remove: calls DELETE /1/objects/tagByName as JSON, defaulting to Contact", async () => {
+test("tag-remove: calls DELETE /1/objects/tagByName as JSON, defaulting to Contact", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0 } }]);
   await tagRemove.execute({ ids: "2", tagNames: "Blue,Yellow" }, ctx);
 

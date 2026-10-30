@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-reservation.ts";
 
-Deno.test("update-reservation: PUTs only the supplied fields and never listingMapId", async () => {
+test("update-reservation: PUTs only the supplied fields and never listingMapId", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 117277 })]);
   await action.execute(
     { reservationId: 117277, phone: "+75125551212", forceOverbooking: 1 },
@@ -14,7 +15,7 @@ Deno.test("update-reservation: PUTs only the supplied fields and never listingMa
   assertEquals(JSON.parse(calls[0].body!), { phone: "+75125551212" });
 });
 
-Deno.test("update-reservation: refuses an empty update instead of sending a bare PUT", async () => {
+test("update-reservation: refuses an empty update instead of sending a bare PUT", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ reservationId: 1 }, ctx)),

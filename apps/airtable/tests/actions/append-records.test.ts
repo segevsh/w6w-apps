@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/append-records.ts";
 
-Deno.test("append-records: POSTs a records[] batch", async () => {
+test("append-records: POSTs a records[] batch", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {
@@ -18,7 +19,7 @@ Deno.test("append-records: POSTs a records[] batch", async () => {
   assertEquals(body.typecast, false);
 });
 
-Deno.test("append-records: forwards typecast=true", async () => {
+test("append-records: forwards typecast=true", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     { baseId: "appABC", table: "Users", records: [{ fields: {} }], typecast: true },

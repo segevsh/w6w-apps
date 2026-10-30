@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { envelope, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const KEY = "unit-test-fixture-not-a-real-key-00000000";
 
-Deno.test("api-key: sign stamps the apikey header and nothing else", () => {
+test("api-key: sign stamps the apikey header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://developers.teachable.com/v1/courses",
@@ -21,15 +22,15 @@ Deno.test("api-key: sign stamps the apikey header and nothing else", () => {
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { apikey: KEY });
 });
 
-Deno.test("api-key: the probe is /courses", () => {
+test("api-key: the probe is /courses", () => {
   assertEquals(PROBE_PATH, "/courses");
 });
 
-Deno.test("api-key: test passes when the courses endpoint answers", async () => {
+test("api-key: test passes when the courses endpoint answers", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("courses", []) }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("api-key: test passes when the courses endpoint answers", async () => 
   assertEquals(calls[0].headers.apikey, KEY);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 
@@ -52,7 +53,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
  * request" vs "wrong key") and this is the file most likely to collapse them
  * back into one generic message.
  */
-Deno.test("api-key: a missing header is reported as never having arrived", async () => {
+test("api-key: a missing header is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("No API key found in request") },
   ]);
@@ -62,7 +63,7 @@ Deno.test("api-key: a missing header is reported as never having arrived", async
   assert(/received no apiKey header/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: an invalid key is reported as a rejected key, not a missing one", async () => {
+test("api-key: an invalid key is reported as a rejected key, not a missing one", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("Invalid authentication credentials") },
   ]);
@@ -73,7 +74,7 @@ Deno.test("api-key: an invalid key is reported as a rejected key, not a missing 
   assert(!/received no apiKey/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -82,7 +83,7 @@ Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential probl
 });
 
 /** `message` can be an array of validation lines, not just a string — the ErrorResponse `oneOf`. */
-Deno.test("api-key: an array-shaped error message is flattened, not dropped", async () => {
+test("api-key: an array-shaped error message is flattened, not dropped", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody(["Invalid authentication credentials", "try again"]) },
   ]);
@@ -92,7 +93,7 @@ Deno.test("api-key: an array-shaped error message is flattened, not dropped", as
   assert(/try again/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: afterConnect publishes a course name for the connection label", async () => {
+test("api-key: afterConnect publishes a course name for the connection label", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("courses", [{ id: 1, name: "Intro to Painting" }]) },
   ]);
@@ -102,14 +103,14 @@ Deno.test("api-key: afterConnect publishes a course name for the connection labe
   assertEquals(display, { schoolExample: "Intro to Painting" });
 });
 
-Deno.test("api-key: afterConnect falls back when the school has no courses yet", async () => {
+test("api-key: afterConnect falls back when the school has no courses yet", async () => {
   const { ctx } = mockCtx([{ body: envelope("courses", []) }]);
   const display = await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx);
 
   assertEquals(display, { schoolExample: "connected" });
 });
 
-Deno.test("api-key: afterConnect stays silent when the probe fails", async () => {
+test("api-key: afterConnect stays silent when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Invalid authentication credentials") }]);
   assertEquals(await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx), {});
 });

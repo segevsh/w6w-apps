@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import projectChecklistCreate from "../../actions/project-checklist-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-checklist-create: posts the template id", async () => {
+test("project-checklist-create: posts the template id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1", is_populating: true } }]);
   const checklist = await projectChecklistCreate.execute(
     { projectId: "1", checklistTemplateId: "4156" },
@@ -14,7 +15,7 @@ Deno.test("project-checklist-create: posts the template id", async () => {
   assertEquals(checklist.is_populating, true);
 });
 
-Deno.test("project-checklist-create: says a template is the only way to create one", () => {
+test("project-checklist-create: says a template is the only way to create one", () => {
   const template = projectChecklistCreate.params!.find((p) => p.key === "checklistTemplateId")!;
   assertEquals(template.required, true);
   assert(/cannot be defined inline/.test(template.hint!), template.hint);

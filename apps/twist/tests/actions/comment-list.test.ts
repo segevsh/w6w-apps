@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import commentList from "../../actions/comment-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-list: GET /api/v3/comments/get with every documented parameter", async () => {
+test("comment-list: GET /api/v3/comments/get with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await commentList.execute({
     "threadId": 100,
@@ -32,14 +33,14 @@ Deno.test("comment-list: GET /api/v3/comments/get with every documented paramete
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("comment-list: omits optional parameters that are not set", async () => {
+test("comment-list: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await commentList.execute({ "threadId": 100 }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "thread_id": "100" });
 });
 
-Deno.test("comment-list: sends no credential of its own", async () => {
+test("comment-list: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await commentList.execute({
     "threadId": 100,
@@ -55,7 +56,7 @@ Deno.test("comment-list: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("comment-list: surfaces Twist's error body", async () => {
+test("comment-list: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

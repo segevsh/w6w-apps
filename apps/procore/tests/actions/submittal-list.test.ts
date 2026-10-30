@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submittal-list.ts";
 
-Deno.test("submittal-list: GETs /rest/v1.0/projects/8/submittals and returns a page with the Link marker", async () => {
+test("submittal-list: GETs /rest/v1.0/projects/8/submittals and returns a page with the Link marker", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: 1 }],
     headers: {
@@ -25,7 +26,7 @@ Deno.test("submittal-list: GETs /rest/v1.0/projects/8/submittals and returns a p
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("submittal-list: omits unset filters and reports the last page", async () => {
+test("submittal-list: omits unset filters and reports the last page", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await action.execute!({ "companyId": 5, "projectId": 8 }, ctx) as {
     hasMore: boolean;

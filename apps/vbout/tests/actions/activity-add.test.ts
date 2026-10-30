@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import activityAdd from "../../actions/activity-add.ts";
 import { bodyOf, errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("activity-add: POSTs emailmarketing/addactivity.json with the documented parameters", async () => {
+test("activity-add: POSTs emailmarketing/addactivity.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope([]) }]);
   const out = await activityAdd.execute(
     { "id": "3", "description": "description-value", "datetime": "2026-10-06 14:30" } as never,
@@ -21,7 +22,7 @@ Deno.test("activity-add: POSTs emailmarketing/addactivity.json with the document
   assertEquals(out, { "ok": true, "data": [] });
 });
 
-Deno.test("activity-add: sends a form-encoded body, not a query string", async () => {
+test("activity-add: sends a form-encoded body, not a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope([]) }]);
   await activityAdd.execute(
     { "id": "3", "description": "description-value", "datetime": "2026-10-06 14:30" } as never,
@@ -31,11 +32,11 @@ Deno.test("activity-add: sends a form-encoded body, not a query string", async (
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("activity-add: is declared non-idempotent", () => {
+test("activity-add: is declared non-idempotent", () => {
   assertEquals(activityAdd.idempotent, false);
 });
 
-Deno.test("activity-add: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("activity-add: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

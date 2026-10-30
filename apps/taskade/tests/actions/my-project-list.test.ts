@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/my-project-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("my-project-list: calls GET /me/projects", async () => {
+test("my-project-list: calls GET /me/projects", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }, { id: "x2" }] } }]);
   const out = await action.execute!({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("my-project-list: calls GET /me/projects", async () => {
   assertEquals(out.count, 2);
 });
 
-Deno.test("my-project-list: a failure envelope is an error", async () => {
+test("my-project-list: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

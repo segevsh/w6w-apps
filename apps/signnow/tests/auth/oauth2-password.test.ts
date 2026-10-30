@@ -1,9 +1,10 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import oauth2Password from "../../auth/oauth2-password.ts";
 import { hostOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("exchange: mints a token via grant_type=password with HTTP Basic", async () => {
+test("exchange: mints a token via grant_type=password with HTTP Basic", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "tok-1", refresh_token: "ref-1", expires_in: 3600 } },
   ]);
@@ -32,7 +33,7 @@ Deno.test("exchange: mints a token via grant_type=password with HTTP Basic", asy
   assertEquals(credential.apiHost, "api.signnow.com");
 });
 
-Deno.test("exchange: throws with SignNow's own error when the token request fails", async () => {
+test("exchange: throws with SignNow's own error when the token request fails", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "invalid_client" } }]);
   let threw = false;
   try {
@@ -52,7 +53,7 @@ Deno.test("exchange: throws with SignNow's own error when the token request fail
   assertEquals(threw, true);
 });
 
-Deno.test("exchange: rejects missing fields before making a request", async () => {
+test("exchange: rejects missing fields before making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -64,7 +65,7 @@ Deno.test("exchange: rejects missing fields before making a request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("refresh: renews via grant_type=refresh_token, keeping the old refresh token if none reissued", async () => {
+test("refresh: renews via grant_type=refresh_token, keeping the old refresh token if none reissued", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "tok-2" } }]);
   const credential = await oauth2Password.refresh!({
     credential: {
@@ -83,7 +84,7 @@ Deno.test("refresh: renews via grant_type=refresh_token, keeping the old refresh
   assertEquals(credential.refreshToken, "ref-1");
 });
 
-Deno.test("refresh: throws when the connection has no refresh token", async () => {
+test("refresh: throws when the connection has no refresh token", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -102,7 +103,7 @@ Deno.test("refresh: throws when the connection has no refresh token", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sign: stamps a Bearer authorization header", () => {
+test("sign: stamps a Bearer authorization header", () => {
   const request: SignableRequest = {
     url: "https://api.signnow.com/user",
     method: "GET",
@@ -115,7 +116,7 @@ Deno.test("sign: stamps a Bearer authorization header", () => {
   assertEquals(signed.headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("test: ok when GET /user succeeds", async () => {
+test("test: ok when GET /user succeeds", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "user-1" } }]);
   const result = await oauth2Password.test(
     { credential: { apiHost: "api.signnow.com", accessToken: "tok-1" } },
@@ -126,7 +127,7 @@ Deno.test("test: ok when GET /user succeeds", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("test: never calls GET /oauth2/token — that endpoint echoes the caller's own token", async () => {
+test("test: never calls GET /oauth2/token — that endpoint echoes the caller's own token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "user-1" } }]);
   await oauth2Password.test(
     { credential: { apiHost: "api.signnow.com", accessToken: "tok-1" } },
@@ -137,7 +138,7 @@ Deno.test("test: never calls GET /oauth2/token — that endpoint echoes the call
   }
 });
 
-Deno.test("test: classifies failure from the response body's `error`, not the (400) status", async () => {
+test("test: classifies failure from the response body's `error`, not the (400) status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "invalid_token", code: 1537 } }]);
   const result = await oauth2Password.test(
     { credential: { apiHost: "api.signnow.com", accessToken: "bogus" } },
@@ -147,14 +148,14 @@ Deno.test("test: classifies failure from the response body's `error`, not the (4
   assertStringIncludes(result.message ?? "", "invalid_token");
 });
 
-Deno.test("test: fails locally when the credential has no accessToken, without a network call", async () => {
+test("test: fails locally when the credential has no accessToken, without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await oauth2Password.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: records apiHost and the account's own profile fields", async () => {
+test("afterConnect: records apiHost and the account's own profile fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -171,7 +172,7 @@ Deno.test("afterConnect: records apiHost and the account's own profile fields", 
   assertEquals(hostOf(calls[0]), "api-eval.signnow.com");
 });
 
-Deno.test("afterConnect: does not fail the connection when the profile read fails", async () => {
+test("afterConnect: does not fail the connection when the profile read fails", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "invalid_token" } }]);
   const display = await oauth2Password.afterConnect!({
     credential: { apiHost: "api.signnow.com", accessToken: "bogus" },
@@ -180,7 +181,7 @@ Deno.test("afterConnect: does not fail the connection when the profile read fail
   assertEquals(display.userId, undefined);
 });
 
-Deno.test("exchange: apiHost select controls which host is used", async () => {
+test("exchange: apiHost select controls which host is used", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "tok-1" } }]);
   await oauth2Password.exchange!({
     fields: {

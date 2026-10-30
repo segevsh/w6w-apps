@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -31,14 +32,14 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("health/service: probes the status host, not the API host", () => {
+test("health/service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.bigcommerce.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.bigcommerce.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("health/service: maps the Statuspage vocabulary", () => {
+test("health/service: maps the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -53,13 +54,13 @@ Deno.test("health/service: maps the Statuspage vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("health/service: componentKey prefers the vendor id", () => {
+test("health/service: componentKey prefers the vendor id", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({ name: "API & Webhooks" }, 3), "api-webhooks-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("health/service: all-clear reports ok and drops the group rows", async () => {
+test("health/service: all-clear reports ok and drops the group rows", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -71,7 +72,7 @@ Deno.test("health/service: all-clear reports ok and drops the group rows", async
   assertEquals(report.components?.[API_COMPONENT_ID].message, "API & Webhooks");
 });
 
-Deno.test("health/service: the page indicator is the verdict, not the components", async () => {
+test("health/service: the page indicator is the verdict, not the components", async () => {
   // Stripe is down but BigCommerce says `none`. Deriving the verdict from the
   // component list would report BigCommerce down for someone else's outage.
   const { ctx } = mockCtx([{
@@ -88,7 +89,7 @@ Deno.test("health/service: the page indicator is the verdict, not the components
   assert(report.message?.includes("Stripe (major_outage)"), report.message);
 });
 
-Deno.test("health/service: a real BigCommerce incident degrades the verdict", async () => {
+test("health/service: a real BigCommerce incident degrades the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "major", description: "Partial System Outage" },
@@ -101,14 +102,14 @@ Deno.test("health/service: a real BigCommerce incident degrades the verdict", as
   assert(report.message?.includes("1 open incident(s)"), report.message);
 });
 
-Deno.test("health/service: a broken status page is `unknown`, never `down`", async () => {
+test("health/service: a broken status page is `unknown`, never `down`", async () => {
   for (const response of [{ status: 500, body: "" }, { body: "not json" }]) {
     const { ctx } = mockCtx([response]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("health/service: a page that stops self-identifying is `unknown`", async () => {
+test("health/service: a page that stops self-identifying is `unknown`", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Something Else", url: "https://status.example.com" } }),
   }]);
@@ -117,7 +118,7 @@ Deno.test("health/service: a page that stops self-identifying is `unknown`", asy
   assert(report.message?.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("health/service: an empty component list is `unknown`", async () => {
+test("health/service: an empty component list is `unknown`", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

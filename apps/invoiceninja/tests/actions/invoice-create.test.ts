@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
-Deno.test("invoice-create: POSTs /invoices with client_id and parsed line items", async () => {
+test("invoice-create: POSTs /invoices with client_id and parsed line items", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "inv1" } }]);
   await action.execute(
     {
@@ -19,7 +20,7 @@ Deno.test("invoice-create: POSTs /invoices with client_id and parsed line items"
   assertEquals(body.number, "INV-0001");
 });
 
-Deno.test("invoice-create: unset line items becomes an empty array", async () => {
+test("invoice-create: unset line items becomes an empty array", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "inv1" } }]);
   await action.execute({ clientId: "cl1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).line_items, []);

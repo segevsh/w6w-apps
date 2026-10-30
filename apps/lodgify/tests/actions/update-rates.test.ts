@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import updateRates from "../../actions/update-rates.ts";
 
-Deno.test("update-rates: POSTs property_id, room_type_id and the rates as written", async () => {
+test("update-rates: POSTs property_id, room_type_id and the rates as written", async () => {
   const { ctx, calls } = mockCtx([{ body: true }]);
   const rates = [{ is_default: false, start_date: "2026-12-20", price_per_day: 180 }];
   const out = await updateRates.execute({
@@ -15,7 +16,7 @@ Deno.test("update-rates: POSTs property_id, room_type_id and the rates as writte
   assertEquals(out, { ok: true });
 });
 
-Deno.test("update-rates: a `false` answer is an error, and bad JSON is refused before any call", async () => {
+test("update-rates: a `false` answer is an error, and bad JSON is refused before any call", async () => {
   const { ctx, calls } = mockCtx([{ body: false }]);
   await assertRejects(
     () =>

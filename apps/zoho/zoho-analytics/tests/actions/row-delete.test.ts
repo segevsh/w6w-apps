@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/row-delete.ts";
 
-Deno.test("row-delete: marked idempotent", () => {
+test("row-delete: marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("row-delete: DELETEs with CONFIG.criteria and the org header", async () => {
+test("row-delete: DELETEs with CONFIG.criteria and the org header", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     { body: { status: "success", summary: "Delete row", data: { deletedRows: 27 } } },
   ]);
@@ -27,7 +28,7 @@ Deno.test("row-delete: DELETEs with CONFIG.criteria and the org header", async (
   assertEquals(out, { deletedRows: 27 });
 });
 
-Deno.test("row-delete: deleteAllRows is sent through when set", async () => {
+test("row-delete: deleteAllRows is sent through when set", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     { body: { status: "success", summary: "Delete row", data: { deletedRows: 100 } } },
   ]);

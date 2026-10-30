@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobList from "../../actions/job-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-list: calls GET /job.json with $filter/$sort/cursor", async () => {
+test("job-list: calls GET /job.json with $filter/$sort/cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uuid: "j1" }], headers: { "x-next-cursor": "n1" } }]);
   const out = await jobList.execute({
     filter: "status eq 'Work Order'",
@@ -20,7 +21,7 @@ Deno.test("job-list: calls GET /job.json with $filter/$sort/cursor", async () =>
   assertEquals(out.nextCursor, "n1");
 });
 
-Deno.test("job-list: omits unset query params rather than sending them empty", async () => {
+test("job-list: omits unset query params rather than sending them empty", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await jobList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

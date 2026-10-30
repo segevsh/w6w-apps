@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-scheduled-emails.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-scheduled-emails: maps the page envelope and hasMore", async () => {
+test("list-scheduled-emails: maps the page envelope and hasMore", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       success: true,
@@ -30,7 +31,7 @@ Deno.test("list-scheduled-emails: maps the page envelope and hasMore", async () 
   });
 });
 
-Deno.test("list-scheduled-emails: an app-scoped key without a domain is the vendor's 400", async () => {
+test("list-scheduled-emails: an app-scoped key without a domain is the vendor's 400", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { data: null, success: false, message: "must provide a linked domain." },

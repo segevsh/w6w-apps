@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: GET /users/query with filters, returns the full envelope", async () => {
+test("user-list: GET /users/query with filters, returns the full envelope", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "u1" }, { id: "u2" }]),
@@ -21,7 +22,7 @@ Deno.test("user-list: GET /users/query with filters, returns the full envelope",
   assertEquals((result as { meta: { totalItems: number } }).meta.totalItems, 2);
 });
 
-Deno.test("user-list: no filters given sends no query params", async () => {
+test("user-list: no filters given sends no query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([]) }]);
   await userList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

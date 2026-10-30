@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   BreezyClient,
   buildQuery,
@@ -11,12 +12,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: skips unset and empty values", () => {
+test("buildQuery: skips unset and empty values", () => {
   assertEquals(buildQuery({ a: 1, b: "", c: undefined, d: null, e: false }), "?a=1&e=false");
   assertEquals(buildQuery(undefined), "");
 });
 
-Deno.test("strList / jsonValue / compact helpers", () => {
+test("strList / jsonValue / compact helpers", () => {
   assertEquals(strList(" a, ,b "), ["a", "b"]);
   assertEquals(strList([]), undefined);
   assertEquals(jsonValue('{"a":1}'), { a: 1 });
@@ -26,16 +27,16 @@ Deno.test("strList / jsonValue / compact helpers", () => {
   assertEquals(compactOrUndefined({ a: undefined }), undefined);
 });
 
-Deno.test("errorText: type and message, falling back to the raw text", () => {
+test("errorText: type and message, falling back to the raw text", () => {
   assertEquals(errorText({ error: { type: "t", message: "m" } }), "t: m");
   assertEquals(errorText(undefined, "  <html>boom "), "<html>boom");
 });
 
-Deno.test("path builders percent-encode every segment", () => {
+test("path builders percent-encode every segment", () => {
   assertEquals(candidate("c/1", "p 2", "k"), "/company/c%2F1/position/p%202/candidate/k");
 });
 
-Deno.test("client: an empty 204 body is {} and a non-JSON failure keeps the raw text", async () => {
+test("client: an empty 204 body is {} and a non-JSON failure keeps the raw text", async () => {
   const ok = new BreezyClient(mockCtx([{ status: 204 }]).ctx);
   assertEquals(await ok.request("PUT", "/x"), {});
   const bad = new BreezyClient(mockCtx([{ status: 502, body: "bad gateway" }]).ctx);

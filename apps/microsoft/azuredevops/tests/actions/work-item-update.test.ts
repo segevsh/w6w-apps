@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/work-item-update.ts";
 
 const updated = one({ id: 101, rev: 4 });
 
-Deno.test("work-item-update: PATCHes a patch document with the right content type", async () => {
+test("work-item-update: PATCHes a patch document with the right content type", async () => {
   const { ctx, calls } = mockCtx([updated], { display });
   await action.execute!({ project: "P", workItemId: "101", state: "Resolved" }, ctx);
   assertEquals(
@@ -20,7 +21,7 @@ Deno.test("work-item-update: PATCHes a patch document with the right content typ
 });
 
 /** Setting History appends a comment rather than overwriting. */
-Deno.test("work-item-update: a comment goes through System.History", async () => {
+test("work-item-update: a comment goes through System.History", async () => {
   const { ctx, calls } = mockCtx([updated], { display });
   await action.execute!({
     project: "P",
@@ -32,7 +33,7 @@ Deno.test("work-item-update: a comment goes through System.History", async () =>
   assert(patch.some((op) => op.path === "/fields/System.History"), JSON.stringify(patch));
 });
 
-Deno.test("work-item-update: an empty update is refused rather than sent", async () => {
+test("work-item-update: an empty update is refused rather than sent", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ project: "P", workItemId: "101" }, ctx),
@@ -42,7 +43,7 @@ Deno.test("work-item-update: an empty update is refused rather than sent", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("work-item-update: needs a project and an id", async () => {
+test("work-item-update: needs a project and an id", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ project: "P", title: "x" }, ctx),
@@ -52,7 +53,7 @@ Deno.test("work-item-update: needs a project and an id", async () => {
 });
 
 /** The values may be anything; the field names are the useful, safe half. */
-Deno.test("work-item-update: logs which fields changed, not their values", async () => {
+test("work-item-update: logs which fields changed, not their values", async () => {
   const { ctx, logs } = mockCtx([updated], { display });
   await action.execute!({
     project: "P",
@@ -65,7 +66,7 @@ Deno.test("work-item-update: logs which fields changed, not their values", async
 });
 
 /** Skipping the process rules from an automation is how a board goes wrong. */
-Deno.test("work-item-update: deliberately offers no bypassRules", () => {
+test("work-item-update: deliberately offers no bypassRules", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(!keys.includes("bypassRules"), keys.join(","));
 });

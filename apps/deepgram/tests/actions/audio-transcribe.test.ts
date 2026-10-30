@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audio-transcribe.ts";
 
@@ -12,7 +13,7 @@ const transcript = {
 };
 
 /** Deepgram fetches the media itself — nothing passes through the workflow. */
-Deno.test("audio-transcribe: posts the URL and pulls the plain transcript out", async () => {
+test("audio-transcribe: posts the URL and pulls the plain transcript out", async () => {
   const { ctx, calls } = mockCtx([transcript], { display });
   const result = await action.execute!({ url: "https://example.com/a.mp3" }, ctx) as {
     transcript: string;
@@ -26,7 +27,7 @@ Deno.test("audio-transcribe: posts the URL and pulls the plain transcript out", 
   assertEquals(result.pending, false);
 });
 
-Deno.test("audio-transcribe: sensible formatting defaults reach the query", async () => {
+test("audio-transcribe: sensible formatting defaults reach the query", async () => {
   const { ctx, calls } = mockCtx([transcript], { display });
   await action.execute!({ url: "https://x/a.mp3" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -36,7 +37,7 @@ Deno.test("audio-transcribe: sensible formatting defaults reach the query", asyn
 });
 
 /** Repeated keys, not a joined string. */
-Deno.test("audio-transcribe: key terms and redaction are sent as repeated keys", async () => {
+test("audio-transcribe: key terms and redaction are sent as repeated keys", async () => {
   const { ctx, calls } = mockCtx([transcript], { display });
   await action.execute!({
     url: "https://x/a.mp3",
@@ -52,7 +53,7 @@ Deno.test("audio-transcribe: key terms and redaction are sent as repeated keys",
  * A callback turns this asynchronous: nothing has been transcribed when it
  * returns, so claiming otherwise would be a lie.
  */
-Deno.test("audio-transcribe: a callback returns pending with the request id", async () => {
+test("audio-transcribe: a callback returns pending with the request id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { request_id: "req_2" } }], { display });
   const result = await action.execute!({
     url: "https://x/a.mp3",
@@ -65,7 +66,7 @@ Deno.test("audio-transcribe: a callback returns pending with the request id", as
 });
 
 /** Whether submitted audio trains Deepgram's models is a decision, not a default. */
-Deno.test("audio-transcribe: the model-improvement opt-out is off unless asked for", async () => {
+test("audio-transcribe: the model-improvement opt-out is off unless asked for", async () => {
   const off = mockCtx([transcript], { display });
   await action.execute!({ url: "https://x/a.mp3" }, off.ctx);
   assertEquals(new URL(off.calls[0].url).searchParams.get("mip_opt_out"), null);
@@ -80,14 +81,14 @@ Deno.test("audio-transcribe: the model-improvement opt-out is off unless asked f
 });
 
 /** The transcript is the caller's content and never reaches a log. */
-Deno.test("audio-transcribe: logs the request id and duration, not the words", async () => {
+test("audio-transcribe: logs the request id and duration, not the words", async () => {
   const { ctx, logs } = mockCtx([transcript], { display });
   await action.execute!({ url: "https://x/a.mp3" }, ctx);
   assert(!JSON.stringify(logs).includes("hello there"), JSON.stringify(logs));
   assertEquals(logs[0].data, { requestId: "req_1", seconds: 12.5 });
 });
 
-Deno.test("audio-transcribe: needs a URL, and says it never uploads", async () => {
+test("audio-transcribe: needs a URL, and says it never uploads", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "never by upload");
   assertEquals(calls.length, 0);

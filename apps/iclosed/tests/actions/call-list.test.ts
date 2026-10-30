@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("call-list: sends every input as query", async () => {
+test("call-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await callList.execute({
     "ids": "x-ids",
@@ -62,7 +63,7 @@ Deno.test("call-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("call-list: omits every unset optional", async () => {
+test("call-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await callList.execute({} as never, ctx);
 
@@ -71,7 +72,7 @@ Deno.test("call-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("call-list: declares a read-only shape", () => {
+test("call-list: declares a read-only shape", () => {
   assertEquals(callList.type, "read");
   assertEquals(callList.idempotent, undefined);
   assertEquals(callList.params!.filter((p) => p.required).map((p) => p.key), []);

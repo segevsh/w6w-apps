@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealUpdate from "../../actions/deal-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("deal-update: PATCHes /opportunities/{opportunity_id}", async () => {
+test("deal-update: PATCHes /opportunities/{opportunity_id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { opportunity: { id: "d1", amount: "5000" } } }]);
   const out = await dealUpdate.execute({ opportunity_id: "d1", amount: "5000" }, ctx) as {
     deal: { amount: string };
@@ -12,6 +13,6 @@ Deno.test("deal-update: PATCHes /opportunities/{opportunity_id}", async () => {
   assertEquals(out.deal.amount, "5000");
 });
 
-Deno.test("deal-update: idempotent", () => {
+test("deal-update: idempotent", () => {
   assertEquals(dealUpdate.idempotent, true);
 });

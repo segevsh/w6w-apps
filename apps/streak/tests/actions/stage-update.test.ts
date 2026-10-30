@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import stageUpdate from "../../actions/stage-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("stage-update: POSTs a JSON body", async () => {
+test("stage-update: POSTs a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "Renamed", key: "5001" } }]);
   await stageUpdate.execute({ pipelineKey: "p1", stageKey: "5001", name: "Renamed" }, ctx);
   assertEquals(calls[0].method, "POST");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import methodListAll from "../../actions/method-list-all.ts";
 import { list, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("method-list-all: fetches /methods/all", async () => {
+test("method-list-all: fetches /methods/all", async () => {
   const { ctx, calls } = mockCtx([{
     body: list("methods", [{ id: "ideal", status: "activated" }]),
   }]);

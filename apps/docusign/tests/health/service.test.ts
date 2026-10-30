@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -28,7 +29,7 @@ const OPERATIONAL = summary("none", "All Systems Operational", [
   { id: "4", name: "NA11", status: "operational", group_id: "g-clm" },
 ]);
 
-Deno.test("service: declares an unsigned, app-scoped probe with its own egress widening", () => {
+test("service: declares an unsigned, app-scoped probe with its own egress widening", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, undefined); // defaults to "app"
   assertEquals(service.credential, undefined); // defaults to "none"
@@ -36,7 +37,7 @@ Deno.test("service: declares an unsigned, app-scoped probe with its own egress w
   assertEquals(service.covers, ["*"]);
 });
 
-Deno.test("service: reads the Statuspage summary and reports ok", async () => {
+test("service: reads the Statuspage summary and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: OPERATIONAL }]);
   const report = await service.check!({}, ctx);
 
@@ -45,7 +46,7 @@ Deno.test("service: reads the Statuspage summary and reports ok", async () => {
   assertEquals(report.message?.includes("All Systems Operational"), true);
 });
 
-Deno.test("service: reports only the eSignature group, namespaced per region", async () => {
+test("service: reports only the eSignature group, namespaced per region", async () => {
   const { ctx } = mockCtx([{ body: OPERATIONAL }]);
   const report = await service.check!({}, ctx);
   assertEquals(Object.keys(report.components ?? {}).sort(), [
@@ -55,7 +56,7 @@ Deno.test("service: reports only the eSignature group, namespaced per region", a
   ]);
 });
 
-Deno.test("service: a CLM outage does not mark the eSignature app down", async () => {
+test("service: a CLM outage does not mark the eSignature app down", async () => {
   const { ctx } = mockCtx([{
     body: summary("major", "Partial System Outage", [
       ...GROUPS,
@@ -69,7 +70,7 @@ Deno.test("service: a CLM outage does not mark the eSignature app down", async (
   assertEquals(report.message?.includes("Partial System Outage"), true);
 });
 
-Deno.test("service: an eSignature region outage is reported as down", async () => {
+test("service: an eSignature region outage is reported as down", async () => {
   const { ctx } = mockCtx([{
     body: summary("major", "Partial System Outage", [
       ...GROUPS,
@@ -83,7 +84,7 @@ Deno.test("service: an eSignature region outage is reported as down", async () =
   assertEquals(report.components?.["esignature/eu"].state, "ok");
 });
 
-Deno.test("service: degraded performance in one region degrades, not downs", async () => {
+test("service: degraded performance in one region degrades, not downs", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", "Degraded Performance", [
       ...GROUPS,
@@ -94,7 +95,7 @@ Deno.test("service: degraded performance in one region degrades, not downs", asy
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: falls back to the page rollup if the eSignature group disappears", async () => {
+test("service: falls back to the page rollup if the eSignature group disappears", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", "Degraded Performance", [
       { id: "g-clm", name: "CLM", group: true },
@@ -106,14 +107,14 @@ Deno.test("service: falls back to the page rollup if the eSignature group disapp
   assertEquals(report.message?.includes("no eSignature component group"), true);
 });
 
-Deno.test("service: a status page that is itself broken reports unknown, never down", async () => {
+test("service: a status page that is itself broken reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertEquals(report.message?.includes("503"), true);
 });
 
-Deno.test("service: an unrecognised component status is unknown, not ok", async () => {
+test("service: an unrecognised component status is unknown, not ok", async () => {
   const { ctx } = mockCtx([{
     body: summary("none", "All Systems Operational", [
       ...GROUPS,

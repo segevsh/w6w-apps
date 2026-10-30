@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import action from "../../actions/create-activity.ts";
 
-Deno.test("create-activity: POSTs to /activities with the documented nested body", async () => {
+test("create-activity: POSTs to /activities with the documented nested body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 3064242278 } }]);
   await action.execute({
     parentType: "person",
@@ -18,11 +19,11 @@ Deno.test("create-activity: POSTs to /activities with the documented nested body
   });
 });
 
-Deno.test("create-activity: defaults the type id to 0, Copper's hard-coded Note", () => {
+test("create-activity: defaults the type id to 0, Copper's hard-coded Note", () => {
   assertEquals(param(action, "activityTypeId").default, 0);
 });
 
-Deno.test("create-activity: the category is always `user` — system activities are read-only", async () => {
+test("create-activity: the category is always `user` — system activities are read-only", async () => {
   for (const id of [0, 190711, 191400]) {
     const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
     await action.execute(
@@ -37,7 +38,7 @@ Deno.test("create-activity: the category is always `user` — system activities 
   assert(!keys.some((k) => /category/i.test(k)));
 });
 
-Deno.test("create-activity: forwards an explicit activity date and user id", async () => {
+test("create-activity: forwards an explicit activity date and user id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     parentType: "company",
@@ -56,7 +57,7 @@ Deno.test("create-activity: forwards an explicit activity date and user id", asy
   });
 });
 
-Deno.test("create-activity: requires a parent and details, and is not idempotent", () => {
+test("create-activity: requires a parent and details, and is not idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals(

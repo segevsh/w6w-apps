@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/project-create-from-template.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("project-create-from-template: calls POST /projects/from-template", async () => {
+test("project-create-from-template: calls POST /projects/from-template", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: { id: "x1" } } }]);
   const out = await action.execute!(
     { "folderId": "folderId-1", "templateId": "templateId-1" },
@@ -15,7 +16,7 @@ Deno.test("project-create-from-template: calls POST /projects/from-template", as
   assertEquals(typeof JSON.parse(calls[0].body!), "object");
 });
 
-Deno.test("project-create-from-template: a failure envelope is an error", async () => {
+test("project-create-from-template: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

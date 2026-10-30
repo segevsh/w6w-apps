@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-datapoints.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-datapoints: maps points and forwards sort/count/page/per", async () => {
+test("list-datapoints: maps points and forwards sort/count/page/per", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: "1", timestamp: 5, daystamp: "20090213", value: 7, comment: "", requestid: "a" }],
   }]);
@@ -16,7 +17,7 @@ Deno.test("list-datapoints: maps points and forwards sort/count/page/per", async
   assertEquals(out.datapoints[0].daystamp, "20090213");
 });
 
-Deno.test("list-datapoints: count=0 is kept; errors throw", async () => {
+test("list-datapoints: count=0 is kept; errors throw", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await run(action, { slug: "w", count: 0 }, ctx);
   assertEquals(

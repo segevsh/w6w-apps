@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import branchesList from "../../actions/branches-list.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("branches-list: reads GET /v2/branches and names the array", async () => {
+test("branches-list: reads GET /v2/branches and names the array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Head Office" }] }]);
   const result = await branchesList.execute({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("branches-list: reads GET /v2/branches and names the array", async () 
 });
 
 /** The route documents no query parameter at all, so it sends none. */
-Deno.test("branches-list: sends no query string", async () => {
+test("branches-list: sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await branchesList.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

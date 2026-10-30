@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, envelope, errorBody, pathOf, WS } from "../_helpers.ts";
 import action from "../../actions/field-get.ts";
 
-Deno.test("field-get: GETs one field", async () => {
+test("field-get: GETs one field", async () => {
   const { ctx, calls } = connCtx([{ body: envelope({ name: "email", type: "string" }) }]);
   const out = await action.execute(
     { moduleName: "crm", tableName: "contacts", fieldName: "email" },
@@ -15,7 +16,7 @@ Deno.test("field-get: GETs one field", async () => {
   );
 });
 
-Deno.test("field-get: a 404 surfaces the vendor message", async () => {
+test("field-get: a 404 surfaces the vendor message", async () => {
   const { ctx } = connCtx([{ status: 404, body: errorBody("Field not found") }]);
   await assertRejects(
     async () =>

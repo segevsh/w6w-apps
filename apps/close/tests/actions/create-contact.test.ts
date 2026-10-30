@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-contact.ts";
 
-Deno.test("create-contact: requires a lead id, because contacts cannot stand alone", () => {
+test("create-contact: requires a lead id, because contacts cannot stand alone", () => {
   assertEquals(action.params?.find((p) => p.key === "leadId")?.required, true);
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-contact: POSTs /contact/ with typed emails and phones", async () => {
+test("create-contact: POSTs /contact/ with typed emails and phones", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "cont_1" } }]);
   await action.execute({
     leadId: "lead_1",
@@ -26,7 +27,7 @@ Deno.test("create-contact: POSTs /contact/ with typed emails and phones", async 
   });
 });
 
-Deno.test("create-contact: flattens custom fields", async () => {
+test("create-contact: flattens custom fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ leadId: "lead_1", customFields: { cf_a: "x" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!)["custom.cf_a"], "x");

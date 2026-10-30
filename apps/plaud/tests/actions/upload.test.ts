@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import presign from "../../actions/upload-presign.ts";
 import complete from "../../actions/upload-complete.ts";
@@ -6,7 +7,7 @@ import complete from "../../actions/upload-complete.ts";
 const D = { display: { region: "us" } };
 const BASE = "https://platform-us.plaud.ai/developer/api/open/partner/files/upload";
 
-Deno.test("upload-presign: POSTs snake_case, maps the PascalCase answer", async () => {
+test("upload-presign: POSTs snake_case, maps the PascalCase answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       FileId: "file_1",
@@ -29,7 +30,7 @@ Deno.test("upload-presign: POSTs snake_case, maps the PascalCase answer", async 
   });
 });
 
-Deno.test("upload-presign: rejects a bad size or type before any request", async () => {
+test("upload-presign: rejects a bad size or type before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     () => Promise.resolve(presign.execute({ filesize: 0, filetype: "mp3" }, ctx)),
@@ -44,7 +45,7 @@ Deno.test("upload-presign: rejects a bad size or type before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("upload-complete: sends part_list with PascalCase keys, accepting JSON text or camelCase", async () => {
+test("upload-complete: sends part_list with PascalCase keys, accepting JSON text or camelCase", async () => {
   const { ctx, calls } = mockCtx([{
     body: { FileId: "file_1", FileType: "mp3", DownloadUrl: "https://s3/dl", FileMd5: "abc" },
   }], D);
@@ -71,7 +72,7 @@ Deno.test("upload-complete: sends part_list with PascalCase keys, accepting JSON
   });
 });
 
-Deno.test("upload-complete: omits file_md5 when unset, and validates parts", async () => {
+test("upload-complete: omits file_md5 when unset, and validates parts", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], D);
   await complete.execute({
     fileId: "f",

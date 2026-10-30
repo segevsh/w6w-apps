@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 29 uniquely-keyed kebab-case actions", () => {
+test("index: exports 29 uniquely-keyed kebab-case actions", () => {
   assertEquals(app.actions.length, 29);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const k of keys) assert(/^[a-z]+(-[a-z]+)+$/.test(k), k);
 });
 
-Deno.test("index: every action is complete; writes are not idempotent, reads are not performs", () => {
+test("index: every action is complete; writes are not idempotent, reads are not performs", () => {
   for (const a of app.actions) {
     assert(a.type, `${a.key} type`);
     assert(a.description, `${a.key} description`);
@@ -21,7 +22,7 @@ Deno.test("index: every action is complete; writes are not idempotent, reads are
   }
 });
 
-Deno.test("index: one apiKey auth with both tokens and the three health checks", () => {
+test("index: one apiKey auth with both tokens and the three health checks", () => {
   assertEquals(app.auth.map((a) => a.key), ["api-key"]);
   assertEquals(app.auth[0].type, "apiKey");
   assertEquals(app.auth[0].fields?.map((f) => f.key), ["appSecretToken", "agreementGrantToken"]);

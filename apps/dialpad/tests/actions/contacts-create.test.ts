@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactsCreate from "../../actions/contacts-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contacts-create: POSTs /contacts and splits comma lists", async () => {
+test("contacts-create: POSTs /contacts and splits comma lists", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "1" } }]);
   await contactsCreate.execute(
     { firstName: "Jane", lastName: "Doe", phones: "+14155550100, +14155550101" },
@@ -14,6 +15,6 @@ Deno.test("contacts-create: POSTs /contacts and splits comma lists", async () =>
   assertEquals(body.phones, ["+14155550100", "+14155550101"]);
 });
 
-Deno.test("contacts-create: declared non-idempotent", () => {
+test("contacts-create: declared non-idempotent", () => {
   assertEquals(contactsCreate.idempotent, false);
 });

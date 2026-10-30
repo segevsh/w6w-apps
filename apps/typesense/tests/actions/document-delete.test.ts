@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-delete.ts";
 
 const D = { display: { host: "https://search.internal:8108" } };
 
-Deno.test("document-delete: deleting by id hits the document endpoint", async () => {
+test("document-delete: deleting by id hits the document endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "1" } }], D);
   const result = await action.execute({ collection: "products", id: "1" }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("document-delete: deleting by id hits the document endpoint", async ()
 });
 
 /** The dry run the API does not offer. */
-Deno.test("document-delete: counts a filter's matches before deleting", async () => {
+test("document-delete: counts a filter's matches before deleting", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { found: 12 } },
     { status: 200, body: { num_deleted: 12 } },
@@ -35,7 +36,7 @@ Deno.test("document-delete: counts a filter's matches before deleting", async ()
 });
 
 /** A filter matching everything empties the collection and reports success. */
-Deno.test("document-delete: refuses past the limit, before deleting anything", async () => {
+test("document-delete: refuses past the limit, before deleting anything", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { found: 40000 } }], D);
   const err = await assertRejects(
     async () => await action.execute({ collection: "products", filterBy: "id:!=nothing" }, ctx),
@@ -46,7 +47,7 @@ Deno.test("document-delete: refuses past the limit, before deleting anything", a
   assertEquals(calls.length, 1, "it must not delete");
 });
 
-Deno.test("document-delete: a raised limit lets it through", async () => {
+test("document-delete: a raised limit lets it through", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { found: 40000 } },
     { status: 200, body: { num_deleted: 40000 } },
@@ -59,7 +60,7 @@ Deno.test("document-delete: a raised limit lets it through", async () => {
   assertEquals(result.deleted, 40000);
 });
 
-Deno.test("document-delete: a filter matching nothing deletes nothing", async () => {
+test("document-delete: a filter matching nothing deletes nothing", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { found: 0 } }], D);
   const result = await action.execute(
     { collection: "products", filterBy: "in_stock:false" },
@@ -69,7 +70,7 @@ Deno.test("document-delete: a filter matching nothing deletes nothing", async ()
   assertEquals(calls.length, 1, "there is nothing to delete");
 });
 
-Deno.test("document-delete: an id and a filter together are refused", async () => {
+test("document-delete: an id and a filter together are refused", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ collection: "products" }, ctx),
@@ -85,7 +86,7 @@ Deno.test("document-delete: an id and a filter together are refused", async () =
 });
 
 /** A search index reflects a source somewhere else. */
-Deno.test("document-delete: warns that a re-index brings them back", async () => {
+test("document-delete: warns that a re-index brings them back", async () => {
   const { ctx, logs } = mockCtx([
     { status: 200, body: { found: 5 } },
     { status: 200, body: { num_deleted: 5 } },

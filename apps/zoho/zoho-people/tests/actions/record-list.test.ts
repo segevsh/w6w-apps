@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/record-list.ts";
 
@@ -12,7 +13,7 @@ const body = {
   },
 };
 
-Deno.test("record-list: sends sIndex/limit/search params and flattens records", async () => {
+test("record-list: sends sIndex/limit/search params and flattens records", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body }]);
   const out = await action.execute({
     formLinkName: "employee",
@@ -33,13 +34,13 @@ Deno.test("record-list: sends sIndex/limit/search params and flattens records", 
   assertEquals(out.records[0], { recordId: "759", FirstName: "John", EmployeeID: "HRM02" });
 });
 
-Deno.test("record-list: omits unset params", async () => {
+test("record-list: omits unset params", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body }]);
   await action.execute({ formLinkName: "leave" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("record-list: rejects limit > 200 and searchColumn without value", async () => {
+test("record-list: rejects limit > 200 and searchColumn without value", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ formLinkName: "employee", limit: 201 }, ctx) as Promise<unknown>,

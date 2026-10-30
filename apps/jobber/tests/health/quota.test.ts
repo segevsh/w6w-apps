@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/quota.ts";
 
@@ -13,7 +14,7 @@ const cost = (currentlyAvailable: number, maximumAvailable = 10000, restoreRate 
   },
 });
 
-Deno.test("quota: informational, signed, and declares no extra egress", () => {
+test("quota: informational, signed, and declares no extra egress", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   // Defaults for this kind — scope: connection, credential: signed. A signed
@@ -21,7 +22,7 @@ Deno.test("quota: informational, signed, and declares no extra egress", () => {
   assertEquals(check.network, undefined);
 });
 
-Deno.test("quota: probes the API endpoint with the pinned version header, unsigned by hand", async () => {
+test("quota: probes the API endpoint with the pinned version header, unsigned by hand", async () => {
   const { ctx, calls } = mockCtx([{ body: cost(9953) }]);
   await check.check!({}, ctx);
   assertEquals(calls[0].url, "https://api.getjobber.com/api/graphql");
@@ -30,7 +31,7 @@ Deno.test("quota: probes the API endpoint with the pinned version header, unsign
   assertEquals(JSON.parse(calls[0].body!).query, "{ account { id } }");
 });
 
-Deno.test("quota: reads the leaky bucket off extensions.cost.throttleStatus", async () => {
+test("quota: reads the leaky bucket off extensions.cost.throttleStatus", async () => {
   const { ctx } = mockCtx([{ body: cost(9953) }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -43,7 +44,7 @@ Deno.test("quota: reads the leaky bucket off extensions.cost.throttleStatus", as
   }]);
 });
 
-Deno.test("quota: resetAt projects when the bucket refills at the advertised rate", async () => {
+test("quota: resetAt projects when the bucket refills at the advertised rate", async () => {
   const { ctx } = mockCtx([{ body: cost(9000, 10000, 500) }]);
   const before = Date.now();
   const report = await check.check!({}, ctx);
@@ -55,13 +56,13 @@ Deno.test("quota: resetAt projects when the bucket refills at the advertised rat
   );
 });
 
-Deno.test("quota: a full bucket has no reset instant", async () => {
+test("quota: a full bucket has no reset instant", async () => {
   const { ctx } = mockCtx([{ body: cost(10000) }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.quota![0].resetAt, undefined);
 });
 
-Deno.test("quota: below a tenth of the ceiling is degraded, empty is down", async () => {
+test("quota: below a tenth of the ceiling is degraded, empty is down", async () => {
   const low = mockCtx([{ body: cost(500) }]);
   assertEquals((await check.check!({}, low.ctx)).state, "degraded");
 
@@ -69,7 +70,7 @@ Deno.test("quota: below a tenth of the ceiling is degraded, empty is down", asyn
   assertEquals((await check.check!({}, empty.ctx)).state, "down");
 });
 
-Deno.test("quota: a THROTTLED probe still reports the reading it came back with", async () => {
+test("quota: a THROTTLED probe still reports the reading it came back with", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -89,7 +90,7 @@ Deno.test("quota: a THROTTLED probe still reports the reading it came back with"
   assert(report.message!.includes("throttled"));
 });
 
-Deno.test("quota: a response with no cost block is unknown, not a fabricated bucket", async () => {
+test("quota: a response with no cost block is unknown, not a fabricated bucket", async () => {
   const { ctx } = mockCtx([{ body: { data: { account: { id: "a1" } } } }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -97,7 +98,7 @@ Deno.test("quota: a response with no cost block is unknown, not a fabricated buc
   assert(report.message!.includes("extensions.cost.throttleStatus"));
 });
 
-Deno.test("quota: a rejected probe is unknown, not down", async () => {
+test("quota: a rejected probe is unknown, not down", async () => {
   const { ctx } = mockCtx([{
     body: { errors: [{ message: "hidden because you are unauthenticated" }] },
   }]);
@@ -106,12 +107,12 @@ Deno.test("quota: a rejected probe is unknown, not down", async () => {
   assert(report.message!.includes("unauthenticated"));
 });
 
-Deno.test("quota: an HTTP failure with no cost block is unknown", async () => {
+test("quota: an HTTP failure with no cost block is unknown", async () => {
   const { ctx } = mockCtx([{ status: 502, body: {} }]);
   assertEquals((await check.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: does not report the 2500-requests-per-5-minutes limiter it cannot read", async () => {
+test("quota: does not report the 2500-requests-per-5-minutes limiter it cannot read", async () => {
   const { ctx } = mockCtx([{ body: cost(9953) }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.quota!.length, 1);

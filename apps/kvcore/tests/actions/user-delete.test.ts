@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userDelete from "../../actions/user-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-delete: DELETEs /user/{id} with no body when no reassignment is given", async () => {
+test("user-delete: DELETEs /user/{id} with no body when no reassignment is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { message: "User Jane Doe has been successfully deleted" },
   }]);
@@ -13,7 +14,7 @@ Deno.test("user-delete: DELETEs /user/{id} with no body when no reassignment is 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("user-delete: with a reassignment target, sends it as the body", async () => {
+test("user-delete: with a reassignment target, sends it as the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await userDelete.execute({ user_id: "1", assign_to_agent_id: "2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { assign_to_agent_id: "2" });

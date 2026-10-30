@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/bot-token.ts";
 
-Deno.test("bot-token: collects exactly one secret field", () => {
+test("bot-token: collects exactly one secret field", () => {
   assertEquals(auth.key, "bot-token");
   assertEquals(auth.type, "bearer");
   assertEquals(auth.fields?.length, 1);
@@ -11,7 +12,7 @@ Deno.test("bot-token: collects exactly one secret field", () => {
   assert(auth.fields![0].required);
 });
 
-Deno.test("bot-token: sign substitutes the token into the URL path", async () => {
+test("bot-token: sign substitutes the token into the URL path", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.telegram.org/bot{token}/sendMessage",
@@ -24,7 +25,7 @@ Deno.test("bot-token: sign substitutes the token into the URL path", async () =>
   assertEquals("authorization" in out.headers, false);
 });
 
-Deno.test("bot-token: sign leaves a URL without the placeholder untouched", async () => {
+test("bot-token: sign leaves a URL without the placeholder untouched", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.telegram.org/getMe",
@@ -35,7 +36,7 @@ Deno.test("bot-token: sign leaves a URL without the placeholder untouched", asyn
   assertEquals(out.url, "https://api.telegram.org/getMe");
 });
 
-Deno.test("bot-token: test rejects an empty credential without touching the network", async () => {
+test("bot-token: test rejects an empty credential without touching the network", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -44,7 +45,7 @@ Deno.test("bot-token: test rejects an empty credential without touching the netw
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bot-token: test calls getMe and reports Telegram's own description on failure", async () => {
+test("bot-token: test calls getMe and reports Telegram's own description on failure", async () => {
   const ok = mockCtx([{ body: { ok: true, result: { id: 1, username: "acme_bot" } } }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, ok.ctx), { ok: true });
   assertEquals(ok.calls[0].url, "https://api.telegram.org/bott/getMe");
@@ -56,7 +57,7 @@ Deno.test("bot-token: test calls getMe and reports Telegram's own description on
   });
 });
 
-Deno.test("bot-token: afterConnect labels the connection with the bot identity", async () => {
+test("bot-token: afterConnect labels the connection with the bot identity", async () => {
   const { ctx, calls } = mockCtx([
     { body: { ok: true, result: { id: 42, username: "acme_bot", first_name: "Acme" } } },
   ]);
@@ -67,7 +68,7 @@ Deno.test("bot-token: afterConnect labels the connection with the bot identity",
   assertEquals(calls[0].url, "https://api.telegram.org/bot{token}/getMe");
 });
 
-Deno.test("bot-token: afterConnect degrades to {} when getMe fails", async () => {
+test("bot-token: afterConnect degrades to {} when getMe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {});
 });

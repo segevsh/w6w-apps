@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { CORE_GROUP_ID, PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import api from "../../health/api.ts";
@@ -19,7 +20,7 @@ function summary(core: string, other: string) {
   };
 }
 
-Deno.test("service: all operational is ok and calls the status summary only", async () => {
+test("service: all operational is ok and calls the status summary only", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary("operational", "operational") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -27,14 +28,14 @@ Deno.test("service: all operational is ok and calls the status summary only", as
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: a degraded core component degrades the verdict and is named", async () => {
+test("service: a degraded core component degrades the verdict and is named", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("degraded_performance", "operational") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "degraded");
   assert(report.message!.includes("Dispatch"), report.message);
 });
 
-Deno.test("service: a non-core outage (SMS) is detail, not the verdict", async () => {
+test("service: a non-core outage (SMS) is detail, not the verdict", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("operational", "major_outage") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -42,12 +43,12 @@ Deno.test("service: a non-core outage (SMS) is detail, not the verdict", async (
   assert(report.message!.includes("non-core"));
 });
 
-Deno.test("service: a core major outage is down", async () => {
+test("service: a core major outage is down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("major_outage", "operational") }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: a page with another id, a 5xx, or no core group is unknown — never down", async () => {
+test("service: a page with another id, a 5xx, or no core group is unknown — never down", async () => {
   const other = summary("operational", "operational");
   other.page = { ...page, id: "zzz" };
   assertEquals(
@@ -68,7 +69,7 @@ Deno.test("service: a page with another id, a 5xx, or no core group is unknown �
 
 const problem = { type: "t", title: "Application key not present", status: 401, traceId: "x" };
 
-Deno.test("api: a schema-correct unsigned 401 is a pass, against the production host", async () => {
+test("api: a schema-correct unsigned 401 is a pass, against the production host", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: problem }], {
     display: { tenantId: "42", environment: "production" },
   });
@@ -79,7 +80,7 @@ Deno.test("api: a schema-correct unsigned 401 is a pass, against the production 
   assertEquals(api.credential, "context");
 });
 
-Deno.test("api: the integration connection probes the integration host", async () => {
+test("api: the integration connection probes the integration host", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: problem }], {
     display: { tenantId: "42", environment: "integration" },
   });
@@ -87,7 +88,7 @@ Deno.test("api: the integration connection probes the integration host", async (
   assert(calls[0].url.startsWith("https://api-integration.servicetitan.io/"));
 });
 
-Deno.test("api: 5xx is down, a redirect is down, an HTML 200 is unknown", async () => {
+test("api: 5xx is down, a redirect is down, an HTML 200 is unknown", async () => {
   const conn = { display: { tenantId: "42" } };
   assertEquals(
     (await api.check!({}, mockCtx([{ status: 502, body: "bad" }], conn).ctx)).state,
@@ -103,7 +104,7 @@ Deno.test("api: 5xx is down, a redirect is down, an HTML 200 is unknown", async 
   );
 });
 
-Deno.test("quota: declared unavailable at informational severity", () => {
+test("quota: declared unavailable at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.length > 0);
   assertEquals(quota.check, undefined);

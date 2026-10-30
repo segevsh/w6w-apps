@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-get-many.ts";
 
-Deno.test("submission-get-many: GETs /form/{formID}/submissions with paging", async () => {
+test("submission-get-many: GETs /form/{formID}/submissions with paging", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([{ id: "237955080346633702" }], { "limit-left": 9991 }) },
   ]);
@@ -29,7 +30,7 @@ Deno.test("submission-get-many: GETs /form/{formID}/submissions with paging", as
   });
 });
 
-Deno.test("submission-get-many: omits unset filters", async () => {
+test("submission-get-many: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await action.execute({ formId: "1" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");

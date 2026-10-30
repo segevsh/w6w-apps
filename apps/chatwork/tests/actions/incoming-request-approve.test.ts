@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import incomingRequestApprove from "../../actions/incoming-request-approve.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("incoming-request-approve: PUTs the request and returns the new contact", async () => {
+test("incoming-request-approve: PUTs the request and returns the new contact", async () => {
   const contact = { account_id: 5, room_id: 10, name: "Bob", chatwork_id: "bob" };
   const { ctx, calls } = mockCtx([{ body: contact }]);
   const out = await incomingRequestApprove.execute({ requestId: 1 }, ctx);

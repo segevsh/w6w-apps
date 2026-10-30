@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import ticketFormKnowledgeRemove from "../../actions/ticket-form-knowledge-remove.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => ticketFormKnowledgeRemove.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("ticket-form-knowledge-remove: declares a perform action with a description, params and output", () => {
+test("ticket-form-knowledge-remove: declares a perform action with a description, params and output", () => {
   assertEquals(ticketFormKnowledgeRemove.key, "ticket-form-knowledge-remove");
   assertEquals(ticketFormKnowledgeRemove.type, "perform");
   assert((ticketFormKnowledgeRemove.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("ticket-form-knowledge-remove: declares a perform action with a descri
   assertEquals(ticketFormKnowledgeRemove.idempotent, true);
 });
 
-Deno.test("ticket-form-knowledge-remove: sends the documented request and returns the documented shape", async () => {
+test("ticket-form-knowledge-remove: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true } }]);
   const out = await run(ctx);
   assertEquals(out, { "ok": true });
@@ -31,7 +32,7 @@ Deno.test("ticket-form-knowledge-remove: sends the documented request and return
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("ticket-form-knowledge-remove: an Aidbase failure body is thrown with its message", async () => {
+test("ticket-form-knowledge-remove: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

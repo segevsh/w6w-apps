@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateDeal from "../../actions/update-deal.ts";
 
-Deno.test("update-deal: PUTs /deals/{id} and omits untouched fields", async () => {
+test("update-deal: PUTs /deals/{id} and omits untouched fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 2146 } }]);
   await updateDeal.execute({ id: 2146, stageId: 6 }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -21,7 +22,7 @@ Deno.test("update-deal: PUTs /deals/{id} and omits untouched fields", async () =
  * POST schema, both response examples and GET /deals all use the double-s,
  * double-m forms. Three sources against one typo — send the correct spelling.
  */
-Deno.test("update-deal: sends the correctly-spelled commission keys", async () => {
+test("update-deal: sends the correctly-spelled commission keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await updateDeal.execute({ id: 1, agentCommission: 50, teamCommission: 50 }, ctx);
   const body = JSON.parse(calls[0].body!);

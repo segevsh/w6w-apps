@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-locales.ts";
 
-Deno.test("list-locales: GETs /locales with default paging", async () => {
+test("list-locales: GETs /locales with default paging", async () => {
   const body = { items: [{ code: "en-US" }], total: 1, skip: 0, limit: 100 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-locales: GETs /locales with default paging", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-locales: honors limit/skip and preview source", async () => {
+test("list-locales: honors limit/skip and preview source", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     { spaceId: "sp", environmentId: "master", limit: 5, skip: 2, source: "preview" },

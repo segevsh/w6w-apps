@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadUpdateInterestStatus from "../../actions/lead-update-interest-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-update-interest-status: POSTs /leads/update-interest-status", async () => {
+test("lead-update-interest-status: POSTs /leads/update-interest-status", async () => {
   const { ctx, calls } = mockCtx([{ body: { lead_email: "a@b.com" } }]);
   await leadUpdateInterestStatus.execute(
     { lead_email: "a@b.com", interest_value: 1, campaign_id: "c1" },
@@ -16,12 +17,12 @@ Deno.test("lead-update-interest-status: POSTs /leads/update-interest-status", as
   assertEquals(body.interest_value, 1);
 });
 
-Deno.test("lead-update-interest-status: a null interest_value resets to plain Lead", async () => {
+test("lead-update-interest-status: a null interest_value resets to plain Lead", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await leadUpdateInterestStatus.execute({ lead_email: "a@b.com", interest_value: null }, ctx);
   assertEquals(JSON.parse(calls[0].body!).interest_value, null);
 });
 
-Deno.test("lead-update-interest-status: is declared idempotent", () => {
+test("lead-update-interest-status: is declared idempotent", () => {
   assertEquals(leadUpdateInterestStatus.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, text } from "./_shared.ts";
 import action from "../../actions/error-log.ts";
@@ -10,7 +11,7 @@ const log = text([
   "2026-08-18 09:00:03 INFO (MainThread) [homeassistant.core] Starting",
 ].join("\n"));
 
-Deno.test("error-log: reads the plain-text log and counts the severities", async () => {
+test("error-log: reads the plain-text log and counts the severities", async () => {
   const { ctx, calls } = mockCtx([log], { display });
   const result = await action.execute!({}, ctx) as {
     totalLines: number;
@@ -25,7 +26,7 @@ Deno.test("error-log: reads the plain-text log and counts the severities", async
 });
 
 /** A retrying integration can fill megabytes, so the tail is the default. */
-Deno.test("error-log: takes the tail, which is the newest", async () => {
+test("error-log: takes the tail, which is the newest", async () => {
   const { ctx } = mockCtx([log], { display });
   const result = await action.execute!({ lines: 2 }, ctx) as { log: string; lineCount: number };
   assertEquals(result.lineCount, 2);
@@ -33,7 +34,7 @@ Deno.test("error-log: takes the tail, which is the newest", async () => {
   assert(!result.log.includes("Setup of light"), result.log);
 });
 
-Deno.test("error-log: filtering to ERROR keeps only those lines", async () => {
+test("error-log: filtering to ERROR keeps only those lines", async () => {
   const { ctx } = mockCtx([log], { display });
   const result = await action.execute!({ level: "ERROR" }, ctx) as {
     lineCount: number;
@@ -44,13 +45,13 @@ Deno.test("error-log: filtering to ERROR keeps only those lines", async () => {
 });
 
 /** WARNING means "and above", because an error matters when warnings do. */
-Deno.test("error-log: filtering to WARNING includes errors too", async () => {
+test("error-log: filtering to WARNING includes errors too", async () => {
   const { ctx } = mockCtx([log], { display });
   const result = await action.execute!({ level: "WARNING" }, ctx) as { lineCount: number };
   assertEquals(result.lineCount, 2);
 });
 
-Deno.test("error-log: the counts describe the whole log, not the filtered tail", async () => {
+test("error-log: the counts describe the whole log, not the filtered tail", async () => {
   const { ctx } = mockCtx([log], { display });
   const result = await action.execute!({ lines: 1 }, ctx) as {
     lineCount: number;
@@ -62,7 +63,7 @@ Deno.test("error-log: the counts describe the whole log, not the filtered tail",
   assertEquals(result.errorCount, 1);
 });
 
-Deno.test("error-log: logs counts, never the log content", async () => {
+test("error-log: logs counts, never the log content", async () => {
   const { ctx, logs } = mockCtx([log], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("Failed to connect"), JSON.stringify(logs));
@@ -70,6 +71,6 @@ Deno.test("error-log: logs counts, never the log content", async () => {
 });
 
 /** The state API says an entity is unavailable; this says why. */
-Deno.test("error-log: says what it is for", () => {
+test("error-log: says what it is for", () => {
   assert(/WHY an entity is\s+unavailable/.test(action.description!), action.description);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { API, bodyOf, mockConnectedCtx, mockCtx, NET } from "../_helpers.ts";
 import action from "../../actions/event-update.ts";
 
@@ -22,7 +23,7 @@ const INPUT = {
   "recurUntil": "2027-01-01T00:00:00Z",
 };
 
-Deno.test("event-update: PATCH /events/{id}/ on the connected Network", async () => {
+test("event-update: PATCH /events/{id}/ on the connected Network", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: 1 } }]);
   await action.execute(INPUT as never, ctx);
   const url = new URL(calls[0].url);
@@ -51,31 +52,31 @@ Deno.test("event-update: PATCH /events/{id}/ on the connected Network", async ()
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("event-update: returns the API body", async () => {
+test("event-update: returns the API body", async () => {
   const { ctx } = mockConnectedCtx([{ body: { id: 42, marker: "x" } }]);
   assertEquals(await action.execute(INPUT as never, ctx), { id: 42, marker: "x" });
 });
 
-Deno.test("event-update: optional body fields that are unset are not sent", async () => {
+test("event-update: optional body fields that are unset are not sent", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: 1 } }]);
   await action.execute({ "id": 7 } as never, ctx);
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("event-update: declares what it needs and what it returns", () => {
+test("event-update: declares what it needs and what it returns", () => {
   assertEquals(action.type, "perform");
   assertEquals((action.params ?? []).filter((p) => p.required).map((p) => p.key), ["id"]);
   assertEquals(action.idempotent, true);
   assert(Array.isArray(action.output) && action.output.length > 0);
 });
 
-Deno.test("event-update: refuses to run on a connection with no Network ID", async () => {
+test("event-update: refuses to run on a connection with no Network ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await assertRejects(async () => await action.execute(INPUT as never, ctx), Error, "Network ID");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-update: surfaces the vendor error with status and path", async () => {
+test("event-update: surfaces the vendor error with status and path", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 403,
     statusText: "Forbidden",

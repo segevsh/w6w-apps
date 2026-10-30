@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import databaseList from "../../actions/database-list.ts";
 import databaseMetadata from "../../actions/database-metadata.ts";
 import search from "../../actions/search.ts";
 import { mockMetabaseCtx, SITE_URL } from "../_helpers.ts";
 
-Deno.test("database-list: returns the {data,total} envelope and maps its params", async () => {
+test("database-list: returns the {data,total} envelope and maps its params", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [{ id: 1, engine: "h2" }], total: 1 } }]);
   const r = await databaseList.execute({ include: "tables", savedQuestions: true }, ctx) as {
     data: unknown[];
@@ -17,7 +18,7 @@ Deno.test("database-list: returns the {data,total} envelope and maps its params"
   assertEquals(url.searchParams.get("saved"), "true");
 });
 
-Deno.test("database-list: sends nothing when nothing is asked for", async () => {
+test("database-list: sends nothing when nothing is asked for", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [] } }]);
   await databaseList.execute({}, ctx);
   // `savedQuestions` has a declared default of false but is not sent unless the
@@ -25,7 +26,7 @@ Deno.test("database-list: sends nothing when nothing is asked for", async () => 
   assertEquals(new URL(calls[0].url).searchParams.get("include"), null);
 });
 
-Deno.test("database-metadata: hits the metadata path and forwards skip_fields", async () => {
+test("database-metadata: hits the metadata path and forwards skip_fields", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { id: 1, tables: [] } }, { body: { id: 1 } }]);
   await databaseMetadata.execute({ databaseId: 1, skipFields: true }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/database/1/metadata");
@@ -36,7 +37,7 @@ Deno.test("database-metadata: hits the metadata path and forwards skip_fields", 
   assertEquals(new URL(calls[1].url).searchParams.get("skip_fields"), "false");
 });
 
-Deno.test("search: maps every filter onto Metabase's own param names", async () => {
+test("search: maps every filter onto Metabase's own param names", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [], total: 0 } }]);
   await search.execute({
     q: "revenue",
@@ -67,7 +68,7 @@ Deno.test("search: maps every filter onto Metabase's own param names", async () 
  * `received: "card,dashboard"` — verified on the wire. This is the check that
  * keeps multi-type search working at all.
  */
-Deno.test("search: models is repeated, and the comma form never reaches the wire", async () => {
+test("search: models is repeated, and the comma form never reaches the wire", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [] } }]);
   await search.execute({ q: "x", models: "card, dashboard" }, ctx);
   const url = new URL(calls[0].url);
@@ -81,7 +82,7 @@ Deno.test("search: models is repeated, and the comma form never reaches the wire
  * enumerates dashboards. That is what makes this the paginated lister the
  * type-specific endpoints do not provide.
  */
-Deno.test("search: q is optional, so it doubles as a paginated lister", async () => {
+test("search: q is optional, so it doubles as a paginated lister", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ body: { data: [], total: 0 } }]);
   await search.execute({ models: ["dashboard"], limit: 3 }, ctx);
   const url = new URL(calls[0].url);
@@ -90,7 +91,7 @@ Deno.test("search: q is optional, so it doubles as a paginated lister", async ()
   assertEquals(search.params!.find((p) => p.key === "q")!.required, undefined);
 });
 
-Deno.test("search: its model enum is the search one, not the collection one", () => {
+test("search: its model enum is the search one, not the collection one", () => {
   const opts = search.params!.find((p) => p.key === "models")!.options as Array<{ value: string }>;
   const values = opts.map((o) => o.value);
   for (const v of ["database", "segment", "action", "indexed-entity"]) {

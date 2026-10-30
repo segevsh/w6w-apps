@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-create.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("order-create: POSTs /orders with an empty body when nothing supplied", async () => {
+test("order-create: POSTs /orders with an empty body when nothing supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }], { display });
   const result = await action.execute!({}, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("order-create: POSTs /orders with an empty body when nothing supplied"
   assertEquals(result, { id: 1 });
 });
 
-Deno.test("order-create: maps fields, passes billing/shipping/lineItems through", async () => {
+test("order-create: maps fields, passes billing/shipping/lineItems through", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2 } }], { display });
   await action.execute!(
     {

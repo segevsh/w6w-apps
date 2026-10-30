@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-create: posts the name and returns the auto-generated slug", async () => {
+test("tag-create: posts the name and returns the auto-generated slug", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { slug: "marketing", name: "Marketing", created_at: "2026-01-15T10:30:00Z" },
@@ -16,6 +17,6 @@ Deno.test("tag-create: posts the name and returns the auto-generated slug", asyn
   assertEquals(out.slug, "marketing");
 });
 
-Deno.test("tag-create: is not idempotent", () => {
+test("tag-create: is not idempotent", () => {
   assertEquals(tagCreate.idempotent, false);
 });

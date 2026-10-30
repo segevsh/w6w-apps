@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateConversationState from "../../actions/update-conversation-state.ts";
 
-Deno.test("update-conversation-state: PATCHes {state} to /conversation/{session_id}/state", async () => {
+test("update-conversation-state: PATCHes {state} to /conversation/{session_id}/state", async () => {
   const { ctx, calls } = mockCtx([
     { body: { error: false, reason: "updated", data: {} } },
   ], "site_1");
@@ -17,6 +18,6 @@ Deno.test("update-conversation-state: PATCHes {state} to /conversation/{session_
   assertEquals(url.pathname, "/v1/website/site_1/conversation/session_x/state");
 });
 
-Deno.test("update-conversation-state: marked idempotent — setting the same state twice is a no-op", () => {
+test("update-conversation-state: marked idempotent — setting the same state twice is a no-op", () => {
   assertEquals(updateConversationState.idempotent, true);
 });

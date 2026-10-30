@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sms-notification-list.ts";
 
-Deno.test("sms-notification-list: GETs /notifications/sms with filters", async () => {
+test("sms-notification-list: GETs /notifications/sms with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   await action.execute(
     {

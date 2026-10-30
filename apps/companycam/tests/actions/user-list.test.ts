@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: pages users and offers no filters, because the endpoint has none", async () => {
+test("user-list: pages users and offers no filters, because the endpoint has none", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "9", status: "deleted" }] }]);
   const page = await userList.execute({ page: 1, perPage: 50 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/users");

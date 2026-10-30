@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-update.ts";
 
-Deno.test("group-update: PATCHes only the fields supplied", async () => {
+test("group-update: PATCHes only the fields supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ groupKey: "g-1", description: "Updated" }, ctx);
 

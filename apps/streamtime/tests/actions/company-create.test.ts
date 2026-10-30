@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyCreate from "../../actions/company-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("company-create: POSTs /v2/companies with only the writable fields", async () => {
+test("company-create: POSTs /v2/companies with only the writable fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2001, name: "Acme Corporation" } }]);
   const result = await companyCreate.execute({
     name: "Acme Corporation",
@@ -15,19 +16,19 @@ Deno.test("company-create: POSTs /v2/companies with only the writable fields", a
   assertEquals(result.id, 2001);
 });
 
-Deno.test("company-create: a status lookup is forwarded as the object Streamtime models", async () => {
+test("company-create: a status lookup is forwarded as the object Streamtime models", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await companyCreate.execute({ name: "Acme", companyStatus: '{"id":2,"name":"Prospect"}' }, ctx);
   assertEquals(bodyOf(calls[0]).companyStatus, { id: 2, name: "Prospect" });
 });
 
-Deno.test("company-create: unset fields are omitted rather than sent as null", async () => {
+test("company-create: unset fields are omitted rather than sent as null", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await companyCreate.execute({ name: "Acme" }, ctx);
   assertEquals(Object.keys(bodyOf(calls[0])), ["name"]);
 });
 
-Deno.test("company-create: a status string that is not JSON fails before any request", async () => {
+test("company-create: a status string that is not JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

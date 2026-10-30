@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/move-task.ts";
 
-Deno.test("move-task: POSTs a ONE-ELEMENT array — the endpoint is a batch", async () => {
+test("move-task: POSTs a ONE-ELEMENT array — the endpoint is a batch", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ id: "T1", etag: "43p2zso1" }],
@@ -19,7 +20,7 @@ Deno.test("move-task: POSTs a ONE-ELEMENT array — the endpoint is a batch", as
   assertEquals(out, { items: [{ id: "T1", etag: "43p2zso1" }], count: 1 });
 });
 
-Deno.test("move-task: a non-array response degrades to an empty result, not a wrong shape", async () => {
+test("move-task: a non-array response degrades to an empty result, not a wrong shape", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "T1" } }]);
   assertEquals(
     await action.execute!({ taskId: "T1", fromProjectId: "P1", toProjectId: "P2" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("move-task: a non-array response degrades to an empty result, not a wr
   );
 });
 
-Deno.test("move-task: all three ids are required — the source project is not optional", () => {
+test("move-task: all three ids are required — the source project is not optional", () => {
   for (const key of ["taskId", "fromProjectId", "toProjectId"]) {
     assert(action.params!.find((p) => p.key === key)?.required, `${key} must be required`);
   }

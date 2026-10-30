@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-create: POSTs /ar/customers with name/email, no address key when unset", async () => {
+test("customer-create: POSTs /ar/customers with name/email, no address key when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cust_new" } }]);
   await customerCreate.execute({ name: "Acme", email: "ap@acme.test" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v1/ar/customers");
@@ -12,7 +13,7 @@ Deno.test("customer-create: POSTs /ar/customers with name/email, no address key 
   assertEquals("address" in body, false);
 });
 
-Deno.test("customer-create: builds the nested address object when any address field is set", async () => {
+test("customer-create: builds the nested address object when any address field is set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customerCreate.execute(
     { name: "Acme", email: "ap@acme.test", city: "NYC", country: "US" },

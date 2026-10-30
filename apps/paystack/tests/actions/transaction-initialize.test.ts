@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transaction-initialize.ts";
 import { errorBody, mockCtx, ok, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const DATA = {
   reference: "r1",
 };
 
-Deno.test("transaction-initialize: POSTs the snake_case body and unwraps data", async () => {
+test("transaction-initialize: POSTs the snake_case body and unwraps data", async () => {
   const { ctx, calls } = mockCtx([{ body: ok(DATA) }]);
   const out = await action.execute({
     email: "a@b.co",
@@ -35,7 +36,7 @@ Deno.test("transaction-initialize: POSTs the snake_case body and unwraps data", 
   assertEquals(calls[0].headers.authorization, undefined, "credentials belong to sign");
 });
 
-Deno.test("transaction-initialize: rejects a bad amount or email without a request", async () => {
+test("transaction-initialize: rejects a bad amount or email without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   for (const amount of [0, -5, 10.5, NaN]) {
     await assertRejects(
@@ -52,7 +53,7 @@ Deno.test("transaction-initialize: rejects a bad amount or email without a reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("transaction-initialize: surfaces the vendor's message and code on a failure", async () => {
+test("transaction-initialize: surfaces the vendor's message and code on a failure", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("Duplicate Transaction Reference", "api_error", "api_error"),
@@ -64,7 +65,7 @@ Deno.test("transaction-initialize: surfaces the vendor's message and code on a f
   assert(String(err).includes("400"));
 });
 
-Deno.test("transaction-initialize: is declared non-idempotent", () => {
+test("transaction-initialize: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.type, "perform");
 });

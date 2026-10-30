@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import highlightTagGet from "../../actions/highlight-tag-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlight-tag-get: reads one tag, no trailing slash", async () => {
+test("highlight-tag-get: reads one tag, no trailing slash", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 11311390, name: "philosophy" } }]);
   const out = await highlightTagGet.execute({ highlightId: "59767830", tagId: "11311390" }, ctx);
 

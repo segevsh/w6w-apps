@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares a header-located apiKey method named X-Postmark-Server-Token", () => {
+test("api-key: declares a header-located apiKey method named X-Postmark-Server-Token", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -13,7 +14,7 @@ Deno.test("api-key: declares a header-located apiKey method named X-Postmark-Ser
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets the X-Postmark-Server-Token header", async () => {
+test("api-key: sign sets the X-Postmark-Server-Token header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.postmarkapp.com/server",
@@ -25,7 +26,7 @@ Deno.test("api-key: sign sets the X-Postmark-Server-Token header", async () => {
   assertEquals(out.headers["x-postmark-server-token"], "pm-abc123");
 });
 
-Deno.test("api-key: test with missing serverToken reports the failure without a network call", async () => {
+test("api-key: test with missing serverToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -33,7 +34,7 @@ Deno.test("api-key: test with missing serverToken reports the failure without a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test GETs /server with the token header", async () => {
+test("api-key: test GETs /server with the token header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ID: 1, Name: "My Server" } }]);
   const result = await auth.test({ credential: { serverToken: "pm-abc123" } }, ctx);
   assertEquals(result.ok, true);
@@ -44,7 +45,7 @@ Deno.test("api-key: test GETs /server with the token header", async () => {
   assertEquals(calls[0].headers["x-postmark-server-token"], "pm-abc123");
 });
 
-Deno.test("api-key: test surfaces the vendor's Message on a non-2xx", async () => {
+test("api-key: test surfaces the vendor's Message on a non-2xx", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { ErrorCode: 10, Message: "Invalid API key" },
@@ -54,7 +55,7 @@ Deno.test("api-key: test surfaces the vendor's Message on a non-2xx", async () =
   assertEquals(result.message, "Invalid API key");
 });
 
-Deno.test("api-key: afterConnect returns the server record for the connection label", async () => {
+test("api-key: afterConnect returns the server record for the connection label", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { ID: 1, Name: "My Server" } }]);
   const out = await auth.afterConnect!({ credential: { serverToken: "pm-abc123" } }, ctx);
   assertEquals(out, { server: { ID: 1, Name: "My Server" } });

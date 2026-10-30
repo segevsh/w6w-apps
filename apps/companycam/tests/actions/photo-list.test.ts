@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import photoList from "../../actions/photo-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("photo-list: maps single-id filters onto the plural query names", async () => {
+test("photo-list: maps single-id filters onto the plural query names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await photoList.execute({
     projectId: "94772883",
@@ -26,7 +27,7 @@ Deno.test("photo-list: maps single-id filters onto the plural query names", asyn
   });
 });
 
-Deno.test("photo-list: refuses two cursors at once", async () => {
+test("photo-list: refuses two cursors at once", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await photoList.execute({ after: "a", before: "b" }, ctx),
@@ -36,7 +37,7 @@ Deno.test("photo-list: refuses two cursors at once", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("photo-list: returns items, count and the cursor headers", async () => {
+test("photo-list: returns items, count and the cursor headers", async () => {
   const { ctx } = mockCtx([{
     body: [{ id: "1" }, { id: "2" }],
     headers: { "content-type": "application/json", "x-next-cursor": "n", "x-has-next": "true" },

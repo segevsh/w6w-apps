@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-user.ts";
 
-Deno.test("update-user: PATCHes only the fields that were set and reports success on 204", async () => {
+test("update-user: PATCHes only the fields that were set and reports success on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ userId: "u1", jobTitle: "Lead", accountEnabled: false }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -11,13 +12,13 @@ Deno.test("update-user: PATCHes only the fields that were set and reports succes
   assertEquals(out, { updated: true, userId: "u1" });
 });
 
-Deno.test("update-user: accountEnabled=false is sent, not dropped as empty", async () => {
+test("update-user: accountEnabled=false is sent, not dropped as empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ userId: "u1", accountEnabled: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { accountEnabled: false });
 });
 
-Deno.test("update-user: additionalProperties override named fields", async () => {
+test("update-user: additionalProperties override named fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute(
     { userId: "u1", jobTitle: "A", additionalProperties: { jobTitle: "B" } },
@@ -26,7 +27,7 @@ Deno.test("update-user: additionalProperties override named fields", async () =>
   assertEquals(JSON.parse(calls[0].body!), { jobTitle: "B" });
 });
 
-Deno.test("update-user: refuses an empty update without calling Graph", async () => {
+test("update-user: refuses an empty update without calling Graph", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ userId: "u1" }, ctx),
@@ -36,7 +37,7 @@ Deno.test("update-user: refuses an empty update without calling Graph", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-user: a 403 surfaces Graph's code", async () => {
+test("update-user: a 403 surfaces Graph's code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { code: "Authorization_RequestDenied", message: "Insufficient privileges" } },

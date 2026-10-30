@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-reply.ts";
 
-Deno.test("conversation-reply: admin comment POSTs to /reply with admin_id", async () => {
+test("conversation-reply: admin comment POSTs to /reply with admin_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "42" } }]);
   await action.execute!(
     { conversationId: "42", type: "admin", messageType: "comment", body: "hi", adminId: "99" },
@@ -19,7 +20,7 @@ Deno.test("conversation-reply: admin comment POSTs to /reply with admin_id", asy
   });
 });
 
-Deno.test("conversation-reply: user reply drops admin_id and keeps the contact identifier", async () => {
+test("conversation-reply: user reply drops admin_id and keeps the contact identifier", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "42" } }]);
   await action.execute!(
     { conversationId: "42", type: "user", body: "thanks", email: "a@b.com", adminId: "99" },

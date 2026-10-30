@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import storySearch from "../../actions/story-search.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("story-search: POSTs the filter body and returns the bare array unwrapped", async () => {
+test("story-search: POSTs the filter body and returns the bare array unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: [{ id: 1 }, { id: 2 }] }]);
   const out = await storySearch.execute(
     { epicId: 9, workflowStateTypes: ["started", "done"] },

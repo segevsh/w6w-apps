@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-session.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const required = {
   sessionDate: "2026-09-22T09:00:00Z",
 };
 
-Deno.test("create-session: POSTs the booking to /consultant/sessions", async () => {
+test("create-session: POSTs the booking to /consultant/sessions", async () => {
   const { ctx, calls } = mockCtx([{ body: booked }]);
   const result = await action.execute(required, ctx);
   assertEquals(calls[0].method, "POST");
@@ -26,7 +27,7 @@ Deno.test("create-session: POSTs the booking to /consultant/sessions", async () 
   assertEquals(result, booked);
 });
 
-Deno.test("create-session: optional fields are sent only when set", async () => {
+test("create-session: optional fields are sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: booked }]);
   await action.execute({
     ...required,
@@ -60,7 +61,7 @@ Deno.test("create-session: optional fields are sent only when set", async () => 
   assertEquals(Object.keys(bodyOf(bare.calls[0])).sort(), Object.keys(required).sort());
 });
 
-Deno.test("create-session: a 409 scheduling conflict is surfaced, not treated as booked", async () => {
+test("create-session: a 409 scheduling conflict is surfaced, not treated as booked", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: { message: "The consultant is not available at this time." },
@@ -70,7 +71,7 @@ Deno.test("create-session: a 409 scheduling conflict is surfaced, not treated as
   assert(/conflict/.test(err.message), err.message);
 });
 
-Deno.test("create-session: serviceType is the documented three-value enum", () => {
+test("create-session: serviceType is the documented three-value enum", () => {
   const serviceType = action.params!.find((p) => p.key === "serviceType")!;
   assertEquals(serviceType.required, true);
   assertEquals(
@@ -81,7 +82,7 @@ Deno.test("create-session: serviceType is the documented three-value enum", () =
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-session: the virtual/telehealth rule and the time-zone source are documented", () => {
+test("create-session: the virtual/telehealth rule and the time-zone source are documented", () => {
   const telehealth = action.params!.find((p) => p.key === "telehealthSettings")!;
   assert(/virtual/.test(telehealth.hint!), telehealth.hint);
   const timeZone = action.params!.find((p) => p.key === "timeZone")!;

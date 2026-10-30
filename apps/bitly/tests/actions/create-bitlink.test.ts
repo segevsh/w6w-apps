@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-bitlink.ts";
 
-Deno.test("create-bitlink: POSTs /bitlinks with long_url and optional fields", async () => {
+test("create-bitlink: POSTs /bitlinks with long_url and optional fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { id: "bit.ly/abc123", link: "https://bit.ly/abc123", long_url: "https://example.com" },
@@ -26,7 +27,7 @@ Deno.test("create-bitlink: POSTs /bitlinks with long_url and optional fields", a
   assertEquals(out.link, "https://bit.ly/abc123");
 });
 
-Deno.test("create-bitlink: omits optional fields when not supplied", async () => {
+test("create-bitlink: omits optional fields when not supplied", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "x", link: "https://bit.ly/x", long_url: "https://a.com" },
   }]);

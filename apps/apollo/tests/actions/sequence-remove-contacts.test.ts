@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceRemoveContacts from "../../actions/sequence-remove-contacts.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sequence-remove-contacts: POSTs to remove_or_stop_contact_ids with array query params", async () => {
+test("sequence-remove-contacts: POSTs to remove_or_stop_contact_ids with array query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [{ id: "c1" }], num_contacts: 1 } }]);
   const out = await sequenceRemoveContacts.execute(
     { emailer_campaign_ids: "seq1,seq2", contact_ids: "c1", mode: "remove" },
@@ -15,6 +16,6 @@ Deno.test("sequence-remove-contacts: POSTs to remove_or_stop_contact_ids with ar
   assertEquals(out.num_contacts, 1);
 });
 
-Deno.test("sequence-remove-contacts: idempotent", () => {
+test("sequence-remove-contacts: idempotent", () => {
   assertEquals(sequenceRemoveContacts.idempotent, true);
 });

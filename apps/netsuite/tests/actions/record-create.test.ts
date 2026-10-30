@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordCreate from "../../actions/record-create.ts";
 import { BASE, created, mockCtx, nsError, run } from "../_helpers.ts";
 
-Deno.test("record-create: POSTs the JSON body; the id comes from the Location header", async () => {
+test("record-create: POSTs the JSON body; the id comes from the Location header", async () => {
   const { ctx, calls } = mockCtx([created("customer", "647")]);
   const out = await run(recordCreate, {
     recordType: "customer",
@@ -14,7 +15,7 @@ Deno.test("record-create: POSTs the JSON body; the id comes from the Location he
   assertEquals(out, { id: "647", location: `${BASE}/services/rest/record/v1/customer/647` });
 });
 
-Deno.test("record-create: accepts the fields as a typed JSON string and adds externalId", async () => {
+test("record-create: accepts the fields as a typed JSON string and adds externalId", async () => {
   const { ctx, calls } = mockCtx([created("customer", "1")]);
   await run(recordCreate, {
     recordType: "customer",
@@ -24,7 +25,7 @@ Deno.test("record-create: accepts the fields as a typed JSON string and adds ext
   assertEquals(JSON.parse(calls[0].body!), { firstName: "John", externalId: "CID001" });
 });
 
-Deno.test("record-create: bad JSON and non-object bodies are refused before any request", async () => {
+test("record-create: bad JSON and non-object bodies are refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await run(recordCreate, { recordType: "customer", fields: "{nope" }, ctx),
@@ -39,7 +40,7 @@ Deno.test("record-create: bad JSON and non-object bodies are refused before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-create: NetSuite's validation error is raised with its code", async () => {
+test("record-create: NetSuite's validation error is raised with its code", async () => {
   const { ctx } = mockCtx([
     nsError(400, "INVALID_CONTENT", "You have entered an Invalid Field Value"),
   ]);

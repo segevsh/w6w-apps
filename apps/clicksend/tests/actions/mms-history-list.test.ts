@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/mms-history-list.ts";
 
-Deno.test("mms-history-list: unwraps the page and forwards search/sort params", async () => {
+test("mms-history-list: unwraps the page and forwards search/sort params", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

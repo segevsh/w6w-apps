@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-availability.ts";
 
 const T_MIN = "2026-07-01T09:00:00Z";
 const T_MAX = "2026-07-01T10:00:00Z";
 
-Deno.test("get-availability: POSTs to /freeBusy with the calendar and interval", async () => {
+test("get-availability: POSTs to /freeBusy with the calendar and interval", async () => {
   const { ctx, calls } = mockCtx([
     { body: { calendars: { primary: { busy: [] } } } },
   ]);
@@ -25,7 +26,7 @@ Deno.test("get-availability: POSTs to /freeBusy with the calendar and interval",
   assertEquals(result, { available: true });
 });
 
-Deno.test("get-availability: `bookedSlots` returns just the busy array", async () => {
+test("get-availability: `bookedSlots` returns just the busy array", async () => {
   const busy = [{ start: T_MIN, end: T_MAX }];
   const { ctx } = mockCtx([{ body: { calendars: { primary: { busy } } } }]);
   const result = await action.execute!({
@@ -37,7 +38,7 @@ Deno.test("get-availability: `bookedSlots` returns just the busy array", async (
   assertEquals(result, busy);
 });
 
-Deno.test("get-availability: `raw` passes through the FreeBusy payload", async () => {
+test("get-availability: `raw` passes through the FreeBusy payload", async () => {
   const raw = { timeMin: T_MIN, timeMax: T_MAX, calendars: { primary: { busy: [] } } };
   const { ctx } = mockCtx([{ body: raw }]);
   const result = await action.execute!({
@@ -49,7 +50,7 @@ Deno.test("get-availability: `raw` passes through the FreeBusy payload", async (
   assertEquals(result, raw);
 });
 
-Deno.test("get-availability: bubbles up per-calendar errors from FreeBusy", async () => {
+test("get-availability: bubbles up per-calendar errors from FreeBusy", async () => {
   const { ctx } = mockCtx([{
     body: { calendars: { primary: { errors: [{ domain: "global", reason: "notFound" }] } } },
   }]);
@@ -61,7 +62,7 @@ Deno.test("get-availability: bubbles up per-calendar errors from FreeBusy", asyn
   );
 });
 
-Deno.test("get-availability: `available` flips to false when there are busy slots", async () => {
+test("get-availability: `available` flips to false when there are busy slots", async () => {
   const busy = [{ start: T_MIN, end: T_MAX }];
   const { ctx } = mockCtx([{ body: { calendars: { primary: { busy } } } }]);
   const result = await action.execute!({
@@ -72,7 +73,7 @@ Deno.test("get-availability: `available` flips to false when there are busy slot
   assertEquals(result, { available: false });
 });
 
-Deno.test("get-availability: forwards the caller time zone", async () => {
+test("get-availability: forwards the caller time zone", async () => {
   const { ctx, calls } = mockCtx([{ body: { calendars: { primary: { busy: [] } } } }]);
   await action.execute!({
     calendarId: "primary",

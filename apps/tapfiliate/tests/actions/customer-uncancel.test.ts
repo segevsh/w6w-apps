@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerUncancel from "../../actions/customer-uncancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-uncancel: PUTs the status sub-resource", async () => {
+test("customer-uncancel: PUTs the status sub-resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cu_eXampl3Pay1ng", status: "paying" } }]);
   const out = await customerUncancel.execute({ id: "cu_eXampl3Pay1ng" }, ctx) as Record<
     string,

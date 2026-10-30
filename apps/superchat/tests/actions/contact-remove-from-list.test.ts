@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-remove-from-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("contact-remove-from-list: DELETEs the membership", async () => {
+test("contact-remove-from-list: DELETEs the membership", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "l_1" } }]);
   const result = await action.execute!(
     { "contactId": "c_1", "contactListId": "l_1" } as never,

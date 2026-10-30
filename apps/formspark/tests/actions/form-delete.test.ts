@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formDelete from "../../actions/form-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-delete: DELETE /forms/{id}, a 204 becomes {deleted:true,id}", async () => {
+test("form-delete: DELETE /forms/{id}, a 204 becomes {deleted:true,id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await formDelete.execute({ formId: "f1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("form-delete: DELETE /forms/{id}, a 204 becomes {deleted:true,id}", as
   assertEquals(out, { deleted: true, id: "f1" });
 });
 
-Deno.test("form-delete: a 404 problem surfaces with its code", async () => {
+test("form-delete: a 404 problem surfaces with its code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "not_found", detail: "No such form", status: 404 },

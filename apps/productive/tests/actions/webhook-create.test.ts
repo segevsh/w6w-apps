@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /webhooks sends a JSON:API document of attributes", async () => {
+test("webhook-create: POST /webhooks sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -52,7 +53,7 @@ Deno.test("webhook-create: POST /webhooks sends a JSON:API document of attribute
   );
 });
 
-Deno.test("webhook-create: a vendor error surfaces its status, title and detail", async () => {
+test("webhook-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -72,7 +73,7 @@ Deno.test("webhook-create: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("webhook-create: declares perform and idempotent=false", () => {
+test("webhook-create: declares perform and idempotent=false", () => {
   assertEquals(webhookCreate.type, "perform");
   assertEquals(webhookCreate.idempotent, false);
   assertEquals(webhookCreate.key, "webhook-create");

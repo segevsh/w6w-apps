@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/admin-token.ts";
 
-Deno.test("admin-token: signs with Bearer, not a custom scheme", async () => {
+test("admin-token: signs with Bearer, not a custom scheme", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x.bubbleapps.io/api/1.1/obj/thing",
@@ -13,13 +14,13 @@ Deno.test("admin-token: signs with Bearer, not a custom scheme", async () => {
   assertEquals(out.headers["authorization"], "Bearer t1");
 });
 
-Deno.test("admin-token: baseUrl and apiToken are required; testDataType is not", () => {
+test("admin-token: baseUrl and apiToken are required; testDataType is not", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiToken", "baseUrl"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiToken"]);
 });
 
-Deno.test("admin-token: test succeeds on a 200 with a `response` body", async () => {
+test("admin-token: test succeeds on a 200 with a `response` body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { response: { results: [] } } }]);
   const out = await auth.test(
     { credential: { apiToken: "t1", baseUrl: "myapp.bubbleapps.io" } } as never,
@@ -30,7 +31,7 @@ Deno.test("admin-token: test succeeds on a 200 with a `response` body", async ()
   assertEquals(calls[0].headers["authorization"], "Bearer t1");
 });
 
-Deno.test("admin-token: test probes the configured testDataType, formatted", async () => {
+test("admin-token: test probes the configured testDataType, formatted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { response: { results: [] } } }]);
   await auth.test(
     {
@@ -45,7 +46,7 @@ Deno.test("admin-token: test probes the configured testDataType, formatted", asy
   assertEquals(new URL(calls[0].url).pathname, "/api/1.1/obj/rentalunit");
 });
 
-Deno.test("admin-token: a 401 fails without ever surfacing the echoed token", async () => {
+test("admin-token: a 401 fails without ever surfacing the echoed token", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -64,7 +65,7 @@ Deno.test("admin-token: a 401 fails without ever surfacing the echoed token", as
   assert(out.message.includes("401"), out.message);
 });
 
-Deno.test("admin-token: a 404 fails with the ambiguity spelled out, and surfaces Bubble's own message", async () => {
+test("admin-token: a 404 fails with the ambiguity spelled out, and surfaces Bubble's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {
@@ -81,7 +82,7 @@ Deno.test("admin-token: a 404 fails with the ambiguity spelled out, and surfaces
   assert(out.message.includes("This application does not expose a Data API"), out.message);
 });
 
-Deno.test("admin-token: missing fields fail before any network call", async () => {
+test("admin-token: missing fields fail before any network call", async () => {
   const noToken = mockCtx([]);
   assertEquals(
     await auth.test({ credential: { baseUrl: "https://x.com" } } as never, noToken.ctx),
@@ -95,7 +96,7 @@ Deno.test("admin-token: missing fields fail before any network call", async () =
   assertEquals(noToken.calls.length + noUrl.calls.length, 0);
 });
 
-Deno.test("admin-token: afterConnect persists the normalised baseUrl, never the token", async () => {
+test("admin-token: afterConnect persists the normalised baseUrl, never the token", async () => {
   const display = await auth.afterConnect!(
     { credential: { apiToken: "secret", baseUrl: "myapp.bubbleapps.io/version-test/" } } as never,
     mockCtx().ctx,

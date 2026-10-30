@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 15 actions, one auth method and three health checks", () => {
+test("index: exports 15 actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, 15);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "api-key");
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: action keys are unique kebab-case with type, description, output, execute", () => {
+test("index: action keys are unique kebab-case with type, description, output, execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -20,7 +22,7 @@ Deno.test("index: action keys are unique kebab-case with type, description, outp
   }
 });
 
-Deno.test("index: perform actions declare idempotent; selects carry options", () => {
+test("index: perform actions declare idempotent; selects carry options", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -32,8 +34,8 @@ Deno.test("index: perform actions declare idempotent; selects carry options", ()
   }
 });
 
-Deno.test("index: every test file maps to an action", async () => {
+test("index: every test file maps to an action", async () => {
   const files: string[] = [];
-  for await (const f of Deno.readDir(new URL("./actions/", import.meta.url))) files.push(f.name);
+  for await (const f of denoReadDir(new URL("./actions/", import.meta.url))) files.push(f.name);
   assertEquals(files.sort(), app.actions.map((a) => `${a.key}.test.ts`).sort());
 });

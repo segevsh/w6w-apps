@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/user-get.ts";
 
 const OK = { data: { user: { user_id: "u1", name: "Ada" } } };
 
-Deno.test("user-get: with no id, it is a whoami — the argument stays nullable", async () => {
+test("user-get: with no id, it is a whoami — the argument stays nullable", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({}, ctx);
   const { query, variables } = sent(calls[0]);
@@ -15,13 +16,13 @@ Deno.test("user-get: with no id, it is a whoami — the argument stays nullable"
   assertEquals(action.params!.find((p) => p.key === "userId")!.required, undefined);
 });
 
-Deno.test("user-get: passes an id when given", async () => {
+test("user-get: passes an id when given", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ userId: "u2" }, ctx);
   assertEquals(sent(calls[0]).variables, { userId: "u2" });
 });
 
-Deno.test("user-get: user groups are opt-in", async () => {
+test("user-get: user groups are opt-in", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }, { body: OK }]);
   await action.execute({}, ctx);
   assert(!sent(calls[0]).query.includes("user_groups"));

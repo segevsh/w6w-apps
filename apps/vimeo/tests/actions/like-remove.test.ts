@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import likeRemove from "../../actions/like-remove.ts";
 import { mockCtx, url } from "../_helpers.ts";
 
-Deno.test("like-remove: DELETEs /me/likes/{id}", async () => {
+test("like-remove: DELETEs /me/likes/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await likeRemove.execute({ videoId: "258684937" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("like-remove: DELETEs /me/likes/{id}", async () => {
   assertEquals(out, { unliked: true, videoId: "258684937" });
 });
 
-Deno.test("like-remove: is a convergent perform", () => {
+test("like-remove: is a convergent perform", () => {
   assertEquals(likeRemove.type, "perform");
   assertEquals(likeRemove.idempotent, true);
 });

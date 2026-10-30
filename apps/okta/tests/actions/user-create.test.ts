@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockOktaCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
-Deno.test("user-create: POSTs /users with the profile envelope and activate query param", async () => {
+test("user-create: POSTs /users with the profile envelope and activate query param", async () => {
   const { ctx, calls } = mockOktaCtx([{ body: { id: "00u1" } }]);
   await action.execute(
     { firstName: "Jane", lastName: "Doe", email: "jane@acme.test", activate: true },
@@ -20,7 +21,7 @@ Deno.test("user-create: POSTs /users with the profile envelope and activate quer
   });
 });
 
-Deno.test("user-create: login defaults to email when left blank", async () => {
+test("user-create: login defaults to email when left blank", async () => {
   const { ctx, calls } = mockOktaCtx([{ body: { id: "00u1" } }]);
   await action.execute(
     { firstName: "Jane", lastName: "Doe", email: "jane@acme.test", login: "custom@acme.test" },
@@ -30,6 +31,6 @@ Deno.test("user-create: login defaults to email when left blank", async () => {
   assertEquals(body.profile.login, "custom@acme.test");
 });
 
-Deno.test("user-create: mints a new id each call — not idempotent", () => {
+test("user-create: mints a new id each call — not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

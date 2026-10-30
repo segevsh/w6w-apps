@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok, partial } from "./_shared.ts";
 import action from "../../actions/event-track.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/event-track.ts";
 const accepted = ok({ code: 200, events_ingested: 1, payload_size_bytes: 100 });
 const event = { user_id: "user-1071", event_type: "Checkout Completed" };
 
-Deno.test("event-track: posts events to the ingest host", async () => {
+test("event-track: posts events to the ingest host", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   const result = await action.execute!({ events: JSON.stringify([event]) }, ctx) as {
     ingested: number;
@@ -21,7 +22,7 @@ Deno.test("event-track: posts events to the ingest host", async () => {
  * Amplitude removes ids under five characters and ingests the event anonymously
  * — a 200 with `events_ingested: 1` and no user attached.
  */
-Deno.test("event-track: a short id is refused, and the error explains what would happen", async () => {
+test("event-track: a short id is refused, and the error explains what would happen", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () =>
@@ -36,7 +37,7 @@ Deno.test("event-track: a short id is refused, and the error explains what would
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-track: minIdLength both allows short ids and tells Amplitude to keep them", async () => {
+test("event-track: minIdLength both allows short ids and tells Amplitude to keep them", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   await action.execute!({
     events: JSON.stringify([{ user_id: "42", event_type: "a" }]),
@@ -49,7 +50,7 @@ Deno.test("event-track: minIdLength both allows short ids and tells Amplitude to
  * Deduplication keys on the id being identical across attempts, so a derived
  * one is what makes a retry safe.
  */
-Deno.test("event-track: derives a stable insert_id, identical for an identical payload", async () => {
+test("event-track: derives a stable insert_id, identical for an identical payload", async () => {
   const first = mockCtx([accepted], { display });
   await action.execute!({ events: JSON.stringify([event]) }, first.ctx);
   const second = mockCtx([accepted], { display });
@@ -61,7 +62,7 @@ Deno.test("event-track: derives a stable insert_id, identical for an identical p
   assertEquals(a, b, "a retry would not deduplicate");
 });
 
-Deno.test("event-track: a caller's own insert_id is left alone", async () => {
+test("event-track: a caller's own insert_id is left alone", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   await action.execute!({
     events: JSON.stringify([{ ...event, insert_id: "mine" }]),
@@ -69,14 +70,14 @@ Deno.test("event-track: a caller's own insert_id is left alone", async () => {
   assertEquals(JSON.parse(calls[0].body!).events[0].insert_id, "mine");
 });
 
-Deno.test("event-track: derivation can be turned off", async () => {
+test("event-track: derivation can be turned off", async () => {
   const { ctx, calls } = mockCtx([accepted], { display });
   await action.execute!({ events: JSON.stringify([event]), deriveInsertId: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).events[0].insert_id, undefined);
 });
 
 /** A 400 naming indexes means some events landed; resending everything double-counts. */
-Deno.test("event-track: a partial failure returns which events failed, by index", async () => {
+test("event-track: a partial failure returns which events failed, by index", async () => {
   const { ctx, logs } = mockCtx([
     partial({ code: 400, events_with_missing_fields: { event_type: [1] } }),
   ], { display });
@@ -89,7 +90,7 @@ Deno.test("event-track: a partial failure returns which events failed, by index"
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("event-track: a whole-request failure still throws", async () => {
+test("event-track: a whole-request failure still throws", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: 400, error: "Invalid API key: x" } }], {
     display,
   });
@@ -100,7 +101,7 @@ Deno.test("event-track: a whole-request failure still throws", async () => {
   );
 });
 
-Deno.test("event-track: every event needs an event_type and an identifier", async () => {
+test("event-track: every event needs an event_type and an identifier", async () => {
   const noType = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -117,7 +118,7 @@ Deno.test("event-track: every event needs an event_type and an identifier", asyn
   );
 });
 
-Deno.test("event-track: over 2000 events is refused with the count", async () => {
+test("event-track: over 2000 events is refused with the count", async () => {
   const many = JSON.stringify(Array.from({ length: 2001 }, () => event));
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
@@ -129,7 +130,7 @@ Deno.test("event-track: over 2000 events is refused with the count", async () =>
 });
 
 /** Event properties are the caller's data. */
-Deno.test("event-track: logs counts, never the events", async () => {
+test("event-track: logs counts, never the events", async () => {
   const { ctx, logs } = mockCtx([accepted], { display });
   await action.execute!({
     events: JSON.stringify([{ ...event, event_properties: { secret: "tuna" } }]),
@@ -138,7 +139,7 @@ Deno.test("event-track: logs counts, never the events", async () => {
   assertEquals(logs[0].data, { sent: 1, ingested: 1 });
 });
 
-Deno.test("event-track: names both silent behaviours in its description", () => {
+test("event-track: names both silent behaviours in its description", () => {
   assert(/SILENTLY REMOVED/.test(action.description!), action.description);
   assert(/double-counts/.test(action.description!), action.description);
 });

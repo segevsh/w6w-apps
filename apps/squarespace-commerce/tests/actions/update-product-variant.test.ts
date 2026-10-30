@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import updateProductVariant from "../../actions/update-product-variant.ts";
 import { API_ROOT, bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("update-product-variant: POST .../{variantId} with the Change wrapper", async () => {
+test("update-product-variant: POST .../{variantId} with the Change wrapper", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "V1", sku: "TSHIRT-L" } }]);
   const out = await updateProductVariant.execute!({
     productId: "P1",
@@ -20,7 +21,7 @@ Deno.test("update-product-variant: POST .../{variantId} with the Change wrapper"
   assertEquals(out.sku, "TSHIRT-L");
 });
 
-Deno.test("update-product-variant: every writable member wraps exactly once", async () => {
+test("update-product-variant: every writable member wraps exactly once", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "V1" } }]);
   await updateProductVariant.execute!({
     productId: "P1",
@@ -45,7 +46,7 @@ Deno.test("update-product-variant: every writable member wraps exactly once", as
   });
 });
 
-Deno.test("update-product-variant: an empty change set is rejected", () => {
+test("update-product-variant: an empty change set is rejected", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => updateProductVariant.execute!({ productId: "P1", variantId: "V1" }, ctx),
@@ -54,7 +55,7 @@ Deno.test("update-product-variant: an empty change set is rejected", () => {
   );
 });
 
-Deno.test("update-product-variant: a 404 PRODUCT_VARIANT_NOT_FOUND body is surfaced", async () => {
+test("update-product-variant: a 404 PRODUCT_VARIANT_NOT_FOUND body is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("INVALID_REQUEST_ERROR", {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: maps the Statuspage indicator and per-component detail", async () => {
+test("service: maps the Statuspage indicator and per-component detail", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -20,14 +21,14 @@ Deno.test("service: maps the Statuspage indicator and per-component detail", asy
   assertEquals(calls[0].url, "https://status.xero.com/api/v2/summary.json");
 });
 
-Deno.test("service: a major outage maps to down", async () => {
+test("service: a major outage maps to down", async () => {
   const { ctx } = mockCtx([{
     body: { status: { indicator: "major" }, components: [] },
   }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: an unreachable status page reports unknown, never down", async () => {
+test("service: an unreachable status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

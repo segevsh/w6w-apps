@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: POSTs the required title and description", async () => {
+test("lead-create: POSTs the required title and description", async () => {
   const { ctx, calls } = mockNocrmCtx([{ status: 201, body: { id: 8113 } }]);
   await action.execute({ title: "Awesome Company", description: "Firstname: John" }, ctx);
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/leads");
@@ -15,7 +16,7 @@ Deno.test("lead-create: POSTs the required title and description", async () => {
   assertEquals("tags" in body, false);
 });
 
-Deno.test("lead-create: maps assignment, step, created_at and tags", async () => {
+test("lead-create: maps assignment, step, created_at and tags", async () => {
   const { ctx, calls } = mockNocrmCtx([{ status: 201, body: {} }]);
   await action.execute({
     title: "Acme",
@@ -32,7 +33,7 @@ Deno.test("lead-create: maps assignment, step, created_at and tags", async () =>
   assertEquals(body.tags, ["prospect", "google"]);
 });
 
-Deno.test("lead-create: surfaces the vendor's own error type", async () => {
+test("lead-create: surfaces the vendor's own error type", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 422,
     body: { error: 422, message: "title is missing", type: "missing_parameter" },

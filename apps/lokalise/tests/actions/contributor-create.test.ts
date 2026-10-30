@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contributorCreate from "../../actions/contributor-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contributor-create: wraps contributors in the required array shape", async () => {
+test("contributor-create: wraps contributors in the required array shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: { contributors: [{ email: "a@example.com" }], errors: [] },
   }]);
@@ -21,6 +22,6 @@ Deno.test("contributor-create: wraps contributors in the required array shape", 
   });
 });
 
-Deno.test("contributor-create: is not idempotent", () => {
+test("contributor-create: is not idempotent", () => {
   assertEquals(contributorCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-add-contacts.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-add-contacts: POST /lists/{name}/contacts with Emails", async () => {
+test("list-add-contacts: POST /lists/{name}/contacts with Emails", async () => {
   const { ctx, calls } = mockCtx([{ body: { ListName: "News", PublicListID: "p" } }]);
   const out = await action.execute({ listName: "News", emails: "a@x.com, b@x.com" }, ctx) as {
     ListName: string;
@@ -13,7 +14,7 @@ Deno.test("list-add-contacts: POST /lists/{name}/contacts with Emails", async ()
   assertEquals(JSON.parse(calls[0].body!), { Emails: ["a@x.com", "b@x.com"] });
 });
 
-Deno.test("list-add-contacts: a rule works alone; emails + rule, or neither, is refused", async () => {
+test("list-add-contacts: a rule works alone; emails + rule, or neither, is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ listName: "News", rule: "All" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { Rule: "All" });

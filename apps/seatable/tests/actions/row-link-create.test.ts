@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowLinkCreate from "../../actions/row-link-create.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const input = {
   otherRowsIdsMap: { r1: ["x", "y"] },
 };
 
-Deno.test("row-link-create: sends POST /links/ with table ids, link id and the rows map", async () => {
+test("row-link-create: sends POST /links/ with table ids, link id and the rows map", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: 1 } }]);
   const out = await rowLinkCreate.execute(input, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "POST");
@@ -23,13 +24,13 @@ Deno.test("row-link-create: sends POST /links/ with table ids, link id and the r
   assertEquals(out.success, 1);
 });
 
-Deno.test("row-link-create: the rows map may arrive as JSON text", async () => {
+test("row-link-create: the rows map may arrive as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await rowLinkCreate.execute({ ...input, otherRowsIdsMap: '{"a":["b"]}' }, ctx);
   assertEquals(bodyOf(calls[0]).other_rows_ids_map, { a: ["b"] });
 });
 
-Deno.test("row-link-create: an array where the map belongs is refused without a request", async () => {
+test("row-link-create: an array where the map belongs is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -41,6 +42,6 @@ Deno.test("row-link-create: an array where the map belongs is refused without a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("row-link-create: idempotency is declared as false", () => {
+test("row-link-create: idempotency is declared as false", () => {
   assertEquals(rowLinkCreate.idempotent, false);
 });

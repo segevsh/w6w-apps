@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { COMPONENTS_URL, mapComponentStatus, SUMMARY_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -16,14 +17,14 @@ const tree = (apiStatus: string, other = "OPERATIONAL") => ({
   ],
 });
 
-Deno.test("service: probes the status host only", () => {
+test("service: probes the status host only", () => {
   assertEquals(SUMMARY_URL, "https://status.mixmax.com/summary.json");
   assertEquals(COMPONENTS_URL, "https://status.mixmax.com/components.json");
   assertEquals(service.network?.allow, ["status.mixmax.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: healthy API components report ok, ignoring other components", async () => {
+test("service: healthy API components report ok, ignoring other components", async () => {
   const { ctx, calls } = mockCtx([{ body: page }, { body: tree("OPERATIONAL", "MAJOROUTAGE") }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls.map((c) => c.url), [SUMMARY_URL, COMPONENTS_URL]);
@@ -31,19 +32,19 @@ Deno.test("service: healthy API components report ok, ignoring other components"
   assertEquals(Object.keys(r.components ?? {}).sort(), ["c1", "c2"]);
 });
 
-Deno.test("service: a nested Public API outage reports down", async () => {
+test("service: a nested Public API outage reports down", async () => {
   const { ctx } = mockCtx([{ body: page }, { body: tree("MAJOROUTAGE") }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "down");
   assertEquals(r.components?.c1.state, "down");
 });
 
-Deno.test("service: partial outage is degraded", async () => {
+test("service: partial outage is degraded", async () => {
   const { ctx } = mockCtx([{ body: page }, { body: tree("PARTIALOUTAGE") }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: bad feeds, a foreign page and a missing component report unknown", async () => {
+test("service: bad feeds, a foreign page and a missing component report unknown", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 503, body: "" }]).ctx)).state,
     "unknown",
@@ -62,7 +63,7 @@ Deno.test("service: bad feeds, a foreign page and a missing component report unk
   );
 });
 
-Deno.test("service: component status mapping", () => {
+test("service: component status mapping", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("UNDERMAINTENANCE"), "degraded");
   assertEquals(mapComponentStatus("???"), "unknown");

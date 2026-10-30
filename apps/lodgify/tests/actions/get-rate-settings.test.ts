@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getRateSettings from "../../actions/get-rate-settings.ts";
 
-Deno.test("get-rate-settings: houseId is optional", async () => {
+test("get-rate-settings: houseId is optional", async () => {
   const { ctx, calls } = mockCtx([{ body: { currency_code: "EUR" } }, { body: {} }]);
   await getRateSettings.execute({ propertyId: 5 }, ctx);
   await getRateSettings.execute({}, ctx);

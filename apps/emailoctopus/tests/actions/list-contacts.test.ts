@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/list-contacts.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-contacts: GETs /lists/{id}/contacts with no filters by default", async () => {
+test("list-contacts: GETs /lists/{id}/contacts with no filters by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ listId: "l1" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-contacts: GETs /lists/{id}/contacts with no filters by default",
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-contacts: sends the dotted date filters under their literal API names", async () => {
+test("list-contacts: sends the dotted date filters under their literal API names", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({
     listId: "l1",
@@ -34,7 +35,7 @@ Deno.test("list-contacts: sends the dotted date filters under their literal API 
   assertEquals(p.get("starting_after"), "cursor");
 });
 
-Deno.test("list-contacts: omits every filter the caller left unset", async () => {
+test("list-contacts: omits every filter the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ listId: "l1", status: "unsubscribed" }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -42,7 +43,7 @@ Deno.test("list-contacts: omits every filter the caller left unset", async () =>
   assert(!p.has("created_at.gte"));
 });
 
-Deno.test("list-contacts: returns the page verbatim, cursor envelope included", async () => {
+test("list-contacts: returns the page verbatim, cursor envelope included", async () => {
   const body = {
     data: [{ id: "c1", email_address: "otto@example.com", tags: ["vip"] }],
     paging: { next: { starting_after: "abc" } },

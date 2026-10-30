@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-delete.ts";
 
@@ -14,7 +15,7 @@ const workspace = (resourceCount: number) => ({
 });
 
 /** Safe-delete answers 409 while resources exist — the case that orphans them. */
-Deno.test("workspace-delete: uses safe-delete by default", async () => {
+test("workspace-delete: uses safe-delete by default", async () => {
   const { ctx, calls } = mockCtx([workspace(12), { status: 200, body: {} }]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(
@@ -26,7 +27,7 @@ Deno.test("workspace-delete: uses safe-delete by default", async () => {
   assertEquals(result.resourceCount, 12);
 });
 
-Deno.test("workspace-delete: a forced delete needs the name typed back", async () => {
+test("workspace-delete: a forced delete needs the name typed back", async () => {
   for (const confirm of [undefined, "", "PROD", "prod-old"]) {
     const { ctx, calls } = mockCtx([workspace(12)]);
     let message = "";
@@ -41,7 +42,7 @@ Deno.test("workspace-delete: a forced delete needs the name typed back", async (
 });
 
 /** The count is in the refusal, because it is the size of the mistake. */
-Deno.test("workspace-delete: the refusal says how many resources would be orphaned", async () => {
+test("workspace-delete: the refusal says how many resources would be orphaned", async () => {
   const { ctx } = mockCtx([workspace(37)]);
   let message = "";
   try {
@@ -52,7 +53,7 @@ Deno.test("workspace-delete: the refusal says how many resources would be orphan
   assert(/37 resources would be left running/.test(message), message);
 });
 
-Deno.test("workspace-delete: a confirmed force uses the plain DELETE and warns", async () => {
+test("workspace-delete: a confirmed force uses the plain DELETE and warns", async () => {
   const { ctx, calls, logs } = mockCtx([workspace(5), { status: 204 }]);
   const result = await action.execute(
     { workspaceId: "ws-1", force: true, confirmName: "prod" },
@@ -69,12 +70,12 @@ Deno.test("workspace-delete: a confirmed force uses the plain DELETE and warns",
  * The servers keep running, the bill keeps arriving, and nothing is left that
  * knows they were managed by Terraform.
  */
-Deno.test("workspace-delete: says the infrastructure is not deleted", () => {
+test("workspace-delete: says the infrastructure is not deleted", () => {
   assert(/INFRASTRUCTURE IS NOT DELETED/.test(action.description!), action.description);
   assert(/destroy run first/.test(action.description!), action.description);
 });
 
-Deno.test("workspace-delete: a safe-delete refused for resources surfaces the 409", async () => {
+test("workspace-delete: a safe-delete refused for resources surfaces the 409", async () => {
   const { ctx } = mockCtx([workspace(12), {
     status: 409,
     body: { errors: [{ title: "conflict", detail: "workspace is not safe to delete" }] },

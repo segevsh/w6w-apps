@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/instance-get.ts";
@@ -11,7 +12,7 @@ const instance = ok({
   configuration: { statuses: { max_characters: 500, max_media_attachments: 4 } },
 });
 
-Deno.test("instance-get: reads v2 and lifts out the limits every action respects", async () => {
+test("instance-get: reads v2 and lifts out the limits every action respects", async () => {
   const { ctx, calls } = mockCtx([instance], { display });
   const result = await action.execute!({}, ctx) as {
     maxCharacters: number;
@@ -27,26 +28,26 @@ Deno.test("instance-get: reads v2 and lifts out the limits every action respects
 });
 
 /** The rules usually say something about automated posting. */
-Deno.test("instance-get: returns the server's rules", async () => {
+test("instance-get: returns the server's rules", async () => {
   const { ctx } = mockCtx([instance], { display });
   const result = await action.execute!({}, ctx) as { rules: Array<{ text: string }> };
   assertEquals(result.rules.length, 1);
   assert(/No bots/.test(result.rules[0].text), result.rules[0].text);
 });
 
-Deno.test("instance-get: a server with no rules is an empty list, not undefined", async () => {
+test("instance-get: a server with no rules is an empty list, not undefined", async () => {
   const { ctx } = mockCtx([ok({ domain: "x.social" })], { display });
   const result = await action.execute!({}, ctx) as { rules: unknown[]; registrations: boolean };
   assertEquals(result.rules, []);
   assertEquals(result.registrations, false);
 });
 
-Deno.test("instance-get: takes no parameters", () => {
+test("instance-get: takes no parameters", () => {
   assertEquals(action.params?.length ?? 0, 0);
 });
 
 /** v1 is deprecated and shaped differently, so the doc comment says to use v2. */
-Deno.test("instance-get: says the limits are what other actions respect", () => {
+test("instance-get: says the limits are what other actions respect", () => {
   assert(/every other\s+action respects/.test(action.description!), action.description);
   assert(/automated posting/.test(action.description!), action.description);
 });

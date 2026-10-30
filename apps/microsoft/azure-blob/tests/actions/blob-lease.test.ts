@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-lease.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { account: "myaccount" } };
 const leased = { status: 201, body: "", headers: { "x-ms-lease-id": "lease-1" } };
 
 /** A real pessimistic lock, which S3 and Cloud Storage do not have. */
-Deno.test("blob-lease: acquiring sends the action and the duration", async () => {
+test("blob-lease: acquiring sends the action and the duration", async () => {
   const { ctx, calls } = mockCtx([leased], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", operation: "acquire", duration: 30 },
@@ -20,7 +21,7 @@ Deno.test("blob-lease: acquiring sends the action and the duration", async () =>
 });
 
 /** 15 to 60, or infinite — and infinite is deliberately not offered. */
-Deno.test("blob-lease: the duration is bounded, and says why infinite is absent", async () => {
+test("blob-lease: the duration is bounded, and says why infinite is absent", async () => {
   for (const duration of [1, 14, 61, 3600, -1]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -38,7 +39,7 @@ Deno.test("blob-lease: the duration is bounded, and says why infinite is absent"
   }
 });
 
-Deno.test("blob-lease: both bounds are inclusive", async () => {
+test("blob-lease: both bounds are inclusive", async () => {
   for (const duration of [15, 60]) {
     const { ctx, calls } = mockCtx([leased], D);
     await action.execute(
@@ -50,7 +51,7 @@ Deno.test("blob-lease: both bounds are inclusive", async () => {
 });
 
 /** The lease id is the capability. */
-Deno.test("blob-lease: renew and release require the id", async () => {
+test("blob-lease: renew and release require the id", async () => {
   for (const operation of ["renew", "release"]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -65,7 +66,7 @@ Deno.test("blob-lease: renew and release require the id", async () => {
   }
 });
 
-Deno.test("blob-lease: releasing with the id sends it", async () => {
+test("blob-lease: releasing with the id sends it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", operation: "release", leaseId: "lease-1" },
@@ -77,7 +78,7 @@ Deno.test("blob-lease: releasing with the id sends it", async () => {
 });
 
 /** Break is the escape hatch, not a way to jump the queue. */
-Deno.test("blob-lease: breaking needs no id and warns that the lock persists", async () => {
+test("blob-lease: breaking needs no id and warns that the lock persists", async () => {
   const { ctx, calls, logs } = mockCtx([{
     status: 202,
     body: "",
@@ -94,7 +95,7 @@ Deno.test("blob-lease: breaking needs no id and warns that the lock persists", a
 });
 
 /** Acquiring twice is a conflict, not a no-op. */
-Deno.test("blob-lease: is not idempotent, and says what losing the id costs", () => {
+test("blob-lease: is not idempotent, and says what losing the id costs", () => {
   assertEquals(action.idempotent, false);
   assert(
     /Losing the lease id leaves the blob locked/.test(action.description!),

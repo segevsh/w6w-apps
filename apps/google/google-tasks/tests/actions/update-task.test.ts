@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-task.ts";
 
-Deno.test("update-task: PATCHes only the supplied fields", async () => {
+test("update-task: PATCHes only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "T1" } }]);
   await action.execute!({ taskList: "L1", task: "T1", title: "New title" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/tasks/v1/lists/L1/tasks/T1");
@@ -10,13 +11,13 @@ Deno.test("update-task: PATCHes only the supplied fields", async () => {
   assertEquals(JSON.parse(calls[0].body!), { title: "New title" });
 });
 
-Deno.test("update-task: reopens a task via status needsAction", async () => {
+test("update-task: reopens a task via status needsAction", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ taskList: "L1", task: "T1", status: "needsAction" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { status: "needsAction" });
 });
 
-Deno.test("update-task: sends every writable field and keeps deleted=false", async () => {
+test("update-task: sends every writable field and keeps deleted=false", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     taskList: "L1",
@@ -38,7 +39,7 @@ Deno.test("update-task: sends every writable field and keeps deleted=false", asy
   });
 });
 
-Deno.test("update-task: exposes no parent/position — they are readOnly, use move-task", () => {
+test("update-task: exposes no parent/position — they are readOnly, use move-task", () => {
   const keys = action.params!.map((p) => p.key);
   assertEquals(keys.includes("parent"), false);
   assertEquals(keys.includes("position"), false);

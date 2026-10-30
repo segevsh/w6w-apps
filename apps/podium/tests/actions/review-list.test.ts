@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import reviewList from "../../actions/review-list.ts";
 
-Deno.test("review-list: sends every documented field in its documented place", async () => {
+test("review-list: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("review-list: sends every documented field in its documented place", a
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("review-list: a minimal call sends only what was set", async () => {
+test("review-list: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -46,7 +47,7 @@ Deno.test("review-list: a minimal call sends only what was set", async () => {
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("review-list: declares its params and kind", () => {
+test("review-list: declares its params and kind", () => {
   assertEquals((reviewList.params ?? []).map((p) => p.key), [
     "limit",
     "cursor",

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   asJson,
   asOptionalJson,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { API, mockCtx } from "../_helpers.ts";
 
-Deno.test("client: list() returns items and the metadata cursor; absent cursor is null", async () => {
+test("client: list() returns items and the metadata cursor; absent cursor is null", async () => {
   const { ctx } = mockCtx([
     { body: { data: [{ uid: "a" }], metadata: { nextCursor: "n1" } } },
     { body: { data: [], metadata: {} } },
@@ -21,7 +22,7 @@ Deno.test("client: list() returns items and the metadata cursor; absent cursor i
   assertEquals(await c.list("/x"), { items: [], nextCursor: null });
 });
 
-Deno.test("client: arrays become key[]=v, deepObjects key[sub]=v, empties are dropped", async () => {
+test("client: arrays become key[]=v, deepObjects key[sub]=v, empties are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new PodiumClient(ctx).list("/x", {
     query: {
@@ -42,7 +43,7 @@ Deno.test("client: arrays become key[]=v, deepObjects key[sub]=v, empties are dr
   assertEquals([...u.searchParams.keys()].length, 5);
 });
 
-Deno.test("client: an error body's vendor code and message are surfaced, not just the status", async () => {
+test("client: an error body's vendor code and message are surfaced, not just the status", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", message: "ID token has invalid signature" },
@@ -51,20 +52,20 @@ Deno.test("client: an error body's vendor code and message are surfaced, not jus
   assertEquals(err.message, "Podium GET /v4/x -> 401 unauthorized: ID token has invalid signature");
 });
 
-Deno.test("client: a non-JSON error body is truncated, never dumped whole", () => {
+test("client: a non-JSON error body is truncated, never dumped whole", () => {
   const msg = formatPodiumError(502, "GET", "/v4/x", "<html>" + "x".repeat(2000));
   assertEquals(msg.startsWith("Podium GET /v4/x -> 502 <html>"), true);
   assertEquals(msg.length < 520, true);
 });
 
-Deno.test("client: an empty 2xx body yields an empty object; a non-JSON 2xx body throws", async () => {
+test("client: an empty 2xx body yields an empty object; a non-JSON 2xx body throws", async () => {
   const { ctx } = mockCtx([{ status: 202 }, { status: 200, body: "<html>" }]);
   const c = new PodiumClient(ctx);
   assertEquals(await c.one("/x"), {});
   await assertRejects(() => c.one("/x"), Error, "non-JSON");
 });
 
-Deno.test("client: redact removes the named fields from one() and from every list item", async () => {
+test("client: redact removes the named fields from one() and from every list item", async () => {
   const { ctx } = mockCtx([
     { body: { data: { uid: "1", secret: "s" } } },
     { body: { data: [{ uid: "1", secret: "s" }, { uid: "2" }] } },
@@ -74,7 +75,7 @@ Deno.test("client: redact removes the named fields from one() and from every lis
   assertEquals((await c.list("/x", { redact: ["secret"] })).items, [{ uid: "1" }, { uid: "2" }]);
 });
 
-Deno.test("client: a body is sent as JSON with the content-type header", async () => {
+test("client: a body is sent as JSON with the content-type header", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await new PodiumClient(ctx).one("/x", { method: "POST", body: { a: 1 } });
   assertEquals(calls[0].method, "POST");
@@ -82,7 +83,7 @@ Deno.test("client: a body is sent as JSON with the content-type header", async (
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("helpers: toList, compact, range, encodeId, JSON params", () => {
+test("helpers: toList, compact, range, encodeId, JSON params", () => {
   assertEquals(toList(" a, b ,,c"), ["a", "b", "c"]);
   assertEquals(toList(["x", " "]), ["x"]);
   assertEquals(toList(""), undefined);
@@ -96,7 +97,7 @@ Deno.test("helpers: toList, compact, range, encodeId, JSON params", () => {
   assertEquals(asJson([1], "X"), [1]);
 });
 
-Deno.test("helpers: a required JSON param that is missing or malformed throws", () => {
+test("helpers: a required JSON param that is missing or malformed throws", () => {
   let msg = "";
   try {
     asJson(undefined, "Event");

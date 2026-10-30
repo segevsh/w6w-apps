@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderDelete from "../../actions/folder-delete.ts";
 import { jsonBody, mockCtx, url } from "../_helpers.ts";
 
-Deno.test("folder-delete: DELETEs /me/projects/{id} with no body by default", async () => {
+test("folder-delete: DELETEs /me/projects/{id} with no body by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await folderDelete.execute({ folderId: "/users/152184/projects/12345" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,7 +13,7 @@ Deno.test("folder-delete: DELETEs /me/projects/{id} with no body by default", as
   assertEquals(out, { deleted: true, folderId: "12345" });
 });
 
-Deno.test("folder-delete: the destructive flag is only sent when asked for", async () => {
+test("folder-delete: the destructive flag is only sent when asked for", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { status: 204 }]);
   await folderDelete.execute({ folderId: "1", shouldDeleteClips: true }, ctx);
   assertEquals(jsonBody(calls[0]), { should_delete_clips: true });
@@ -26,7 +27,7 @@ Deno.test("folder-delete: the destructive flag is only sent when asked for", asy
  * should_delete_clips is true". Sending it alone would make the request look
  * like it did something it did not.
  */
-Deno.test("folder-delete: recently-deleted is never sent without the delete flag", async () => {
+test("folder-delete: recently-deleted is never sent without the delete flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { status: 204 }]);
   await folderDelete.execute({ folderId: "1", sendToRecentlyDeleted: true }, ctx);
   assertEquals(calls[0].body, null);
@@ -38,7 +39,7 @@ Deno.test("folder-delete: recently-deleted is never sent without the delete flag
   assertEquals(jsonBody(calls[1]), { should_delete_clips: true, send_to_recently_deleted: true });
 });
 
-Deno.test("folder-delete: is a retry-safe perform", () => {
+test("folder-delete: is a retry-safe perform", () => {
   assertEquals(folderDelete.type, "perform");
   assertEquals(folderDelete.idempotent, true);
 });

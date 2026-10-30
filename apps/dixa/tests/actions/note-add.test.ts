@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import noteAdd from "../../actions/note-add.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("note-add: calls POST /v1/conversations/4711/notes", async () => {
+test("note-add: calls POST /v1/conversations/4711/notes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "11111111-2222-3333-4444-555555555555", "csid": 4711 } },
@@ -31,7 +32,7 @@ Deno.test("note-add: calls POST /v1/conversations/4711/notes", async () => {
   assertEquals(out, { "data": { "id": "11111111-2222-3333-4444-555555555555", "csid": 4711 } });
 });
 
-Deno.test("note-add: surfaces a Dixa error message with the status", async () => {
+test("note-add: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -50,7 +51,7 @@ Deno.test("note-add: surfaces a Dixa error message with the status", async () =>
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("note-add: rejects bad input before any request", async () => {
+test("note-add: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

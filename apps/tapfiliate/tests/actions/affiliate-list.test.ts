@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateList from "../../actions/affiliate-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("affiliate-list: maps every filter to its documented snake_case name", async () => {
+test("affiliate-list: maps every filter to its documented snake_case name", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await affiliateList.execute(
     {

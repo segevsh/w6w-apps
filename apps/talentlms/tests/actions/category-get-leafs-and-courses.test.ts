@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/category-get-leafs-and-courses.ts";
 
-Deno.test("category-get-leafs-and-courses: GET categoryleafsandcourses and returns the vendor payload", async () => {
+test("category-get-leafs-and-courses: GET categoryleafsandcourses and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({ "categoryId": 2 }, ctx);
   assertEquals(calls.length, 1);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -60,20 +61,20 @@ function summary(
  * may only reach hosts it declared — so following that redirect is either
  * blocked or parses a Cloudflare interstitial as a status document.
  */
-Deno.test("service: calls the canonical status host, which is not status.vimeo.com", () => {
+test("service: calls the canonical status host, which is not status.vimeo.com", () => {
   assertEquals(STATUS_HOST, "www.vimeostatus.com");
   assertEquals(STATUS_URL, "https://www.vimeostatus.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["www.vimeostatus.com"]);
 });
 
 /** A status host must never see a credential — which is why egress may widen at all. */
-Deno.test("service: is an app-scoped, unsigned check", () => {
+test("service: is an app-scoped, unsigned check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: maps Statuspage's component vocabulary", () => {
+test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -83,7 +84,7 @@ Deno.test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: maps the page-level indicator", () => {
+test("service: maps the page-level indicator", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -92,13 +93,13 @@ Deno.test("service: maps the page-level indicator", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: keys components by the vendor's id, falling back to a slug", () => {
+test("service: keys components by the vendor's id, falling back to a slug", () => {
   assertEquals(componentKey({ id: "glk5qg36x9hy", name: "API" }, 0), "glk5qg36x9hy");
   assertEquals(componentKey({ name: "Mobile/ TV Apps" }, 3), "mobile-tv-apps-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: a healthy page reports ok with every component named", async () => {
+test("service: a healthy page reports ok with every component named", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -109,7 +110,7 @@ Deno.test("service: a healthy page reports ok with every component named", async
   assertEquals(report.message, "All Systems Operational");
 });
 
-Deno.test("service: a degraded component is reported by name, and the state follows", async () => {
+test("service: a degraded component is reported by name, and the state follows", async () => {
   const components = LIVE_COMPONENTS.map((c) => ({
     ...c,
     status: c.name === "Upload" ? "partial_outage" : "operational",
@@ -124,12 +125,12 @@ Deno.test("service: a degraded component is reported by name, and the state foll
   assert(report.message?.includes("Upload (partial_outage)"), report.message);
 });
 
-Deno.test("service: a major outage on the page indicator reports down", async () => {
+test("service: a major outage on the page indicator reports down", async () => {
   const { ctx } = mockCtx([{ body: summary({ indicator: "critical" }) }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: open incidents and maintenance windows are counted in the message", async () => {
+test("service: open incidents and maintenance windows are counted in the message", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       indicator: "minor",
@@ -142,7 +143,7 @@ Deno.test("service: open incidents and maintenance windows are counted in the me
   assert(report.message?.includes("1 scheduled maintenance window(s)"), report.message);
 });
 
-Deno.test("service: group rows are skipped, not reported as components", async () => {
+test("service: group rows are skipped, not reported as components", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -156,19 +157,19 @@ Deno.test("service: group rows are skipped, not reported as components", async (
 });
 
 /** A broken status API says nothing about Vimeo. It must never read as `down`. */
-Deno.test("service: a failing status page is unknown, never down", async () => {
+test("service: a failing status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "nope" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("503"), report.message);
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page with no components is unknown", async () => {
+test("service: a page with no components is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -179,20 +180,20 @@ Deno.test("service: a page with no components is unknown", async () => {
  * The failure mode that reads as success: a healthy, claimed status page
  * belonging to an entirely different product.
  */
-Deno.test("service: a page that stops self-identifying as Vimeo's is unknown", async () => {
+test("service: a page that stops self-identifying as Vimeo's is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ pageUrl: "https://status.notvimeo.example" }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("self-identifies"), report.message);
 });
 
-Deno.test("service: the bare vimeostatus.com host still passes the self-identification guard", async () => {
+test("service: the bare vimeostatus.com host still passes the self-identification guard", async () => {
   const { ctx } = mockCtx([{ body: summary({ pageUrl: "https://vimeostatus.com/" }) }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
 /** With no page-level indicator the verdict is the worst component. */
-Deno.test("service: without an indicator the state is the worst component", async () => {
+test("service: without an indicator the state is the worst component", async () => {
   const body = summary({
     components: [
       { id: "a", name: "API", status: "operational", group: false },

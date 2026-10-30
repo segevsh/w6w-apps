@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: declares an app-scoped, unsigned check against the status host only", () => {
+test("service: declares an app-scoped, unsigned check against the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.close.com"]);
   // Unsigned posture is what makes widening egress safe.
@@ -10,7 +11,7 @@ Deno.test("service: declares an app-scoped, unsigned check against the status ho
   assert(typeof service.check === "function");
 });
 
-Deno.test("service: reads summary.json and reports ok when the rollup is `none`", async () => {
+test("service: reads summary.json and reports ok when the rollup is `none`", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -25,7 +26,7 @@ Deno.test("service: reads summary.json and reports ok when the rollup is `none`"
   assertEquals(report.components?.api.state, "ok");
 });
 
-Deno.test("service: maps every Statuspage rollup indicator", async () => {
+test("service: maps every Statuspage rollup indicator", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -40,7 +41,7 @@ Deno.test("service: maps every Statuspage rollup indicator", async () => {
   }
 });
 
-Deno.test("service: maps every per-component status", async () => {
+test("service: maps every per-component status", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -65,7 +66,7 @@ Deno.test("service: maps every per-component status", async () => {
   assertEquals(report.components?.mystery.state, "unknown");
 });
 
-Deno.test("service: skips group headers, which only restate their children", async () => {
+test("service: skips group headers, which only restate their children", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -80,7 +81,7 @@ Deno.test("service: skips group headers, which only restate their children", asy
   assertEquals(Object.keys(report.components ?? {}), ["api"]);
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   // A status API that itself fails says nothing about the vendor — calling that
   // an outage would be a lie.
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
@@ -89,7 +90,7 @@ Deno.test("service: a broken status page reports unknown, never down", async () 
   assert((report.message ?? "").includes("503"));
 });
 
-Deno.test("service: unparseable JSON degrades to unknown rather than throwing", async () => {
+test("service: unparseable JSON degrades to unknown rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>not json</html>" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

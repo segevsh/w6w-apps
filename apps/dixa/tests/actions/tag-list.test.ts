@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: calls GET /v1/tags", async () => {
+test("tag-list: calls GET /v1/tags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "data": [] } }]);
   const out = await tagList.execute({ "includeDeactivated": true } as never, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("tag-list: calls GET /v1/tags", async () => {
   assertEquals(out, { "data": [] });
 });
 
-Deno.test("tag-list: surfaces a Dixa error message with the status", async () => {
+test("tag-list: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {

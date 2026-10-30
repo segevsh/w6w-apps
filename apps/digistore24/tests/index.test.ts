@@ -1,22 +1,23 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 36;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "api-key");
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), `not kebab-case: ${key}`);
 });
 
-Deno.test("index: every action has a valid type, a description, an execute hook and an output", () => {
+test("index: every action has a valid type, a description, an execute hook and an output", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type`);
     assert(a.description && a.description.length > 0, `${a.key}: no description`);
@@ -25,14 +26,14 @@ Deno.test("index: every action has a valid type, a description, an execute hook 
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
 /** Money moves and mail goes out: a retry would repeat the side effect. */
-Deno.test("index: refunds, creates and mail are not marked idempotent", () => {
+test("index: refunds, creates and mail are not marked idempotent", () => {
   for (
     const key of [
       "refund-purchase",
@@ -47,7 +48,7 @@ Deno.test("index: refunds, creates and mail are not marked idempotent", () => {
   }
 });
 
-Deno.test("index: reads never claim to perform and writes are all performs", () => {
+test("index: reads never claim to perform and writes are all performs", () => {
   const writes = [
     "update-",
     "refund-",
@@ -65,14 +66,14 @@ Deno.test("index: reads never claim to perform and writes are all performs", () 
   }
 });
 
-Deno.test("index: required params are marked required and keys are unique within an action", () => {
+test("index: required params are marked required and keys are unique within an action", () => {
   for (const a of app.actions) {
     const keys = (a.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key}: duplicate param key`);
   }
 });
 
-Deno.test("index: no action carries credentials", () => {
+test("index: no action carries credentials", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(!/api.?key/i.test(p.key), `${a.key}: param ${p.key} looks like a credential`);

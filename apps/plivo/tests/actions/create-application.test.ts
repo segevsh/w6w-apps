@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, json, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-application.ts";
 
-Deno.test("create-application: POSTs the name alone when nothing else is set", async () => {
+test("create-application: POSTs the name alone when nothing else is set", async () => {
   const body = { message: "created", app_id: "15784735442685051", api_id: "a" };
   const { ctx, calls } = mockCtx([{ status: 201, body }], CONN);
   const out = await action.execute!({ appName: "IVR" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("create-application: POSTs the name alone when nothing else is set", a
   assertEquals(out, body);
 });
 
-Deno.test("create-application: URLs, methods and logging map to the documented fields", async () => {
+test("create-application: URLs, methods and logging map to the documented fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], CONN);
   await action.execute!(
     {
@@ -43,7 +44,7 @@ Deno.test("create-application: URLs, methods and logging map to the documented f
   });
 });
 
-Deno.test("create-application: a vendor 400 is thrown", async () => {
+test("create-application: a vendor 400 is thrown", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "bad url" }], CONN);
   await assertRejects(async () => await action.execute!({ appName: "x" }, ctx), Error, "bad url");
 });

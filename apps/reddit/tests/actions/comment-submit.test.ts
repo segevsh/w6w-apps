@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comment-submit.ts";
 
-Deno.test("comment-submit: posts a top-level comment with the post's t3_ fullname", async () => {
+test("comment-submit: posts a top-level comment with the post's t3_ fullname", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       json: { errors: [], data: { things: [{ data: { id: "c1", name: "t1_c1", body: "hi" } }] } },
@@ -14,7 +15,7 @@ Deno.test("comment-submit: posts a top-level comment with the post's t3_ fullnam
   assertEquals(out, { id: "c1", name: "t1_c1", body: "hi" });
 });
 
-Deno.test("comment-submit: a t1_ parentId posts a reply to a comment", async () => {
+test("comment-submit: a t1_ parentId posts a reply to a comment", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       json: { errors: [], data: { things: [{ data: { id: "c2", name: "t1_c2", body: "re" } }] } },
@@ -24,6 +25,6 @@ Deno.test("comment-submit: a t1_ parentId posts a reply to a comment", async () 
   assertEquals(calls[0].body, "api_type=json&thing_id=t1_c1&text=re");
 });
 
-Deno.test("comment-submit: is not idempotent", () => {
+test("comment-submit: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

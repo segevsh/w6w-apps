@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Webflow's authorize/token endpoints with space-separated scopes", () => {
+test("oauth2: declares Webflow's authorize/token endpoints with space-separated scopes", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://webflow.com/oauth/authorize");
@@ -12,7 +13,7 @@ Deno.test("oauth2: declares Webflow's authorize/token endpoints with space-separ
   assert(auth.oauth2?.scopes?.includes("cms:write"));
 });
 
-Deno.test("oauth2: sign appends Bearer using credential.accessToken", async () => {
+test("oauth2: sign appends Bearer using credential.accessToken", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -23,7 +24,7 @@ Deno.test("oauth2: sign appends Bearer using credential.accessToken", async () =
   assertEquals(out.headers["authorization"], "Bearer at-123");
 });
 
-Deno.test("oauth2: test hits /v2/sites and reports ok", async () => {
+test("oauth2: test hits /v2/sites and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sites: [] } }]);
   const result = await auth.test({ credential: { accessToken: "at-123" } }, ctx);
   assertEquals(result.ok, true);
@@ -32,14 +33,14 @@ Deno.test("oauth2: test hits /v2/sites and reports ok", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer at-123");
 });
 
-Deno.test("oauth2: test reports missing token without a fetch", async () => {
+test("oauth2: test reports missing token without a fetch", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect reads the authorized user for the label", async () => {
+test("oauth2: afterConnect reads the authorized user for the label", async () => {
   const user = { id: "u1", firstName: "Ada", lastName: "Lovelace", email: "ada@x.io" };
   const { ctx, calls } = mockCtx([{ status: 200, body: user }]);
   const result = await auth.afterConnect!({ credential: { accessToken: "at-123" } }, ctx);

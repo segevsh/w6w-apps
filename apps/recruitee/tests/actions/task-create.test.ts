@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: nests fields under `task`, joins admin ids", async () => {
+test("task-create: nests fields under `task`, joins admin ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { task: { id: 1 }, references: [] } }]);
   await taskCreate.execute({
     title: "Rate candidate",

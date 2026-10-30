@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
 import action from "../../actions/customer-find-by-email.ts";
 
-Deno.test("customer-find-by-email: GETs /customers/email={email}", async () => {
+test("customer-find-by-email: GETs /customers/email={email}", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: { id: "1" } } }]);
   const out = await action.execute({ email: "jane@example.com" }, ctx);
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-team-membership.ts";
 
-Deno.test("update-team-membership: PUTs /team/memberships/{membershipId}", async () => {
+test("update-team-membership: PUTs /team/memberships/{membershipId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "tm1" } }]);
   await action.execute({ membershipId: "tm1", isModerator: true }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,6 +11,6 @@ Deno.test("update-team-membership: PUTs /team/memberships/{membershipId}", async
   assertEquals(JSON.parse(calls[0].body!), { isModerator: true });
 });
 
-Deno.test("update-team-membership: is idempotent", () => {
+test("update-team-membership: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

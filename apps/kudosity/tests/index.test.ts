@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 18 actions, one auth method and two health checks", () => {
+test("index: exports 18 actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, 18);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case and fully described", () => {
+test("index: action keys are unique kebab-case and fully described", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -19,7 +20,7 @@ Deno.test("index: action keys are unique kebab-case and fully described", () => 
   }
 });
 
-Deno.test("index: every perform action states idempotency; sends are never idempotent", () => {
+test("index: every perform action states idempotency; sends are never idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -31,7 +32,7 @@ Deno.test("index: every perform action states idempotency; sends are never idemp
   }
 });
 
-Deno.test("index: the quota check is declared unavailable at informational severity", () => {
+test("index: the quota check is declared unavailable at informational severity", () => {
   const quota = app.healthChecks.find((h) => h.key === "quota")!;
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason);

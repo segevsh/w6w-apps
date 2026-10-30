@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/database-user-create.ts";
 
@@ -16,7 +17,7 @@ const base = {
   roles: '[{"roleName":"readWrite","databaseName":"app"}]',
 };
 
-Deno.test("database-user-create: POSTs when the user is absent", async () => {
+test("database-user-create: POSTs when the user is absent", async () => {
   const { ctx, calls } = mockCtx([listing([]), written]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(
@@ -28,7 +29,7 @@ Deno.test("database-user-create: POSTs when the user is absent", async () => {
 });
 
 /** Username and authentication database together are the identity. */
-Deno.test("database-user-create: PATCHes an existing user at its two-part path", async () => {
+test("database-user-create: PATCHes an existing user at its two-part path", async () => {
   const { ctx, calls } = mockCtx([
     listing([{ username: "app", databaseName: "admin" }]),
     written,
@@ -42,7 +43,7 @@ Deno.test("database-user-create: PATCHes an existing user at its two-part path",
   assertEquals(result.created, false);
 });
 
-Deno.test("database-user-create: the same name in another auth database is a different user", async () => {
+test("database-user-create: the same name in another auth database is a different user", async () => {
   const { ctx, calls } = mockCtx([
     listing([{ username: "app", databaseName: "$external" }]),
     written,
@@ -53,7 +54,7 @@ Deno.test("database-user-create: the same name in another auth database is a dif
 });
 
 /** Atlas never returns a password, so this app does not generate one. */
-Deno.test("database-user-create: refuses without a password, explaining why", async () => {
+test("database-user-create: refuses without a password, explaining why", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -66,7 +67,7 @@ Deno.test("database-user-create: refuses without a password, explaining why", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("database-user-create: roles must be a non-empty array", async () => {
+test("database-user-create: roles must be a non-empty array", async () => {
   for (const roles of [undefined, "", "[]", '{"roleName":"read"}']) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -81,7 +82,7 @@ Deno.test("database-user-create: roles must be a non-empty array", async () => {
 });
 
 /** Scopes are what stop a credential reaching everything the project holds. */
-Deno.test("database-user-create: scopes become cluster entries and are warned about when absent", async () => {
+test("database-user-create: scopes become cluster entries and are warned about when absent", async () => {
   const scoped = mockCtx([listing([]), written]);
   const result = await action.execute({ ...base, scopes: "prod, staging" }, scoped.ctx) as Record<
     string,
@@ -103,7 +104,7 @@ Deno.test("database-user-create: scopes become cluster entries and are warned ab
 });
 
 /** The password is the only copy leaving this system. */
-Deno.test("database-user-create: never logs the password", async () => {
+test("database-user-create: never logs the password", async () => {
   const { ctx, logs } = mockCtx([listing([]), written]);
   await action.execute({ ...base, scopes: "prod" }, ctx);
   const data = JSON.stringify(logs[0]);
@@ -111,13 +112,13 @@ Deno.test("database-user-create: never logs the password", async () => {
   assertEquals(logs[0].data, { username: "app", scoped: true });
 });
 
-Deno.test("database-user-create: the auth database defaults to admin and is sent", async () => {
+test("database-user-create: the auth database defaults to admin and is sent", async () => {
   const { ctx, calls } = mockCtx([listing([]), written]);
   await action.execute(base, ctx);
   assertEquals(JSON.parse(calls[1].body!).databaseName, "admin");
 });
 
-Deno.test("database-user-create: a username is required", async () => {
+test("database-user-create: a username is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

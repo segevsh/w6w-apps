@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/app-fields-get.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("app-fields-get: GETs /k/v1/app/form/fields.json?app=... (not `id=`)", async () => {
+test("app-fields-get: GETs /k/v1/app/form/fields.json?app=... (not `id=`)", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { properties: { Text: { type: "SINGLE_LINE_TEXT" } }, revision: "3" } }],
     conn,
@@ -14,7 +15,7 @@ Deno.test("app-fields-get: GETs /k/v1/app/form/fields.json?app=... (not `id=`)",
   assertEquals(out.revision, "3");
 });
 
-Deno.test("app-fields-get: passes lang through when set", async () => {
+test("app-fields-get: passes lang through when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { properties: {}, revision: "1" } }], conn);
   await action.execute({ appId: "1", lang: "en" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("lang"), "en");

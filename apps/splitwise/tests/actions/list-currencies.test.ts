@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listCurrencies from "../../actions/list-currencies.ts";
 import { PUBLIC_ENDPOINTS } from "../../lib/client.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-currencies: reads the currencies envelope", async () => {
+test("list-currencies: reads the currencies envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       currencies: [{ currency_code: "AED", unit: "DH" }, { currency_code: "BTC", unit: "B" }],
@@ -20,12 +21,12 @@ Deno.test("list-currencies: reads the currencies envelope", async () => {
  * credential. Declaring that is honest — and is exactly why it can never be the
  * auth probe.
  */
-Deno.test("list-currencies: is declared as needing no auth, matching the measurement", () => {
+test("list-currencies: is declared as needing no auth, matching the measurement", () => {
   assertEquals(listCurrencies.requiresAuth, false);
   assert(PUBLIC_ENDPOINTS.includes("/get_currencies"), "the public-endpoint list lost this path");
 });
 
-Deno.test("list-currencies: a missing key yields an empty list, not undefined", async () => {
+test("list-currencies: a missing key yields an empty list, not undefined", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await listCurrencies.execute({}, ctx), { currencies: [] });
 });

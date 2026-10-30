@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/refresh-graph.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("refresh-graph: GETs refresh_graph and maps true / false", async () => {
+test("refresh-graph: GETs refresh_graph and maps true / false", async () => {
   const yes = mockCtx([{ body: "true" }]);
   assertEquals(await run(action, { slug: "run" }, yes.ctx), { queued: true });
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("refresh-graph: GETs refresh_graph and maps true / false", async () =>
   assertEquals(await run(action, { slug: "run" }, no.ctx), { queued: false });
 });
 
-Deno.test("refresh-graph: errors throw", async () => {
+test("refresh-graph: errors throw", async () => {
   const bad = mockCtx([{ status: 404, body: { errors: "no goal" } }]);
   await assertRejects(() => run(action, { slug: "x" }, bad.ctx), Error, "no goal");
 });

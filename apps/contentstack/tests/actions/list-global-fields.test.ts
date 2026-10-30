@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-global-fields.ts";
 
-Deno.test("list-global-fields: metadata", () => {
+test("list-global-fields: metadata", () => {
   assertEquals(action.key, "list-global-fields");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -12,7 +13,7 @@ Deno.test("list-global-fields: metadata", () => {
   ]);
 });
 
-Deno.test("list-global-fields: calls GET /global_fields on the NA host", async () => {
+test("list-global-fields: calls GET /global_fields on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "global_fields": [{ "uid": "seo" }] } }]);
   const out = await action.execute({ "includeCount": true }, ctx);
   assertEquals(calls.length, 1);
@@ -24,7 +25,7 @@ Deno.test("list-global-fields: calls GET /global_fields on the NA host", async (
   assertEquals(out, { "global_fields": [{ "uid": "seo" }] });
 });
 
-Deno.test("list-global-fields: uses the connection's regional host", async () => {
+test("list-global-fields: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "global_fields": [{ "uid": "seo" }] } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -35,7 +36,7 @@ Deno.test("list-global-fields: uses the connection's regional host", async () =>
   );
 });
 
-Deno.test("list-global-fields: sends the branch header only when a branch is given", async () => {
+test("list-global-fields: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "global_fields": [{ "uid": "seo" }] } }, {
     body: { "global_fields": [{ "uid": "seo" }] },
   }]);
@@ -45,7 +46,7 @@ Deno.test("list-global-fields: sends the branch header only when a branch is giv
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("list-global-fields: surfaces Contentstack's own error body", async () => {
+test("list-global-fields: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

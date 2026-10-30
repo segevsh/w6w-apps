@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   createdResult,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: seg encodes, strList splits, jsonValue parses", () => {
+test("client: seg encodes, strList splits, jsonValue parses", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
   assertEquals(strList(" a, b ,,c"), ["a", "b", "c"]);
   assertEquals(strList(""), undefined);
@@ -22,12 +23,12 @@ Deno.test("client: seg encodes, strList splits, jsonValue parses", () => {
   assertEquals(jsonValue(" "), undefined);
 });
 
-Deno.test("client: buildQuery skips empty values and keeps false", () => {
+test("client: buildQuery skips empty values and keeps false", () => {
   assertEquals(buildQuery({ a: "1", b: undefined, c: "", d: false, e: 0 }), "?a=1&d=false&e=0");
   assertEquals(buildQuery(undefined), "");
 });
 
-Deno.test("client: result helpers shape the envelope", () => {
+test("client: result helpers shape the envelope", () => {
   assertEquals(idFromLocation("/tabs/ab1"), "ab1");
   assertEquals(idFromLocation(undefined), undefined);
   assertEquals(createdResult({ meta: { location: "/klips/k9" }, data: {} }).id, "k9");
@@ -43,7 +44,7 @@ Deno.test("client: result helpers shape the envelope", () => {
   assertEquals(listResult({ meta: {}, data: {} }).items, []);
 });
 
-Deno.test("client: sends JSON bodies with content-type and parses the envelope", async () => {
+test("client: sends JSON bodies with content-type and parses the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: { meta: { success: true }, data: { id: "1" } } }]);
   const env = await new KlipfolioClient(ctx).request("POST", "/klips", { body: { name: "n" } });
   assertEquals(env.data, { id: "1" });
@@ -51,19 +52,19 @@ Deno.test("client: sends JSON bodies with content-type and parses the envelope",
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("client: a non-JSON success body is returned as raw data", async () => {
+test("client: a non-JSON success body is returned as raw data", async () => {
   const { ctx } = mockCtx([{ body: "a,b\n1,2", headers: { "content-type": "text/csv" } }]);
   assertEquals((await new KlipfolioClient(ctx).request("GET", "/x")).data, "a,b\n1,2");
 });
 
-Deno.test("client: meta.success false on a 200 is still an error", async () => {
+test("client: meta.success false on a 200 is still an error", async () => {
   const { ctx } = mockCtx([{
     body: { meta: { success: false, error_code: "nope", error_desc: "denied" } },
   }]);
   await assertRejects(() => new KlipfolioClient(ctx).request("GET", "/x"), Error, "denied (nope)");
 });
 
-Deno.test("client: a non-JSON error body is quoted and a 429 is reported", async () => {
+test("client: a non-JSON error body is quoted and a 429 is reported", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "slow down" }]);
   const err = await assertRejects(() => new KlipfolioClient(ctx).request("GET", "/x"), Error);
   assert(err.message.includes("HTTP 429") && err.message.includes("slow down"));

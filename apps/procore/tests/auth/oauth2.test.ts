@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import production from "../../auth/oauth2.ts";
 import sandbox from "../../auth/oauth2-sandbox.ts";
@@ -9,14 +10,14 @@ const req = (url: string, headers: Record<string, string> = {}) => ({
   headers,
 });
 
-Deno.test("oauth2: production endpoints", () => {
+test("oauth2: production endpoints", () => {
   assertEquals(production.key, "oauth2");
   assertEquals(production.oauth2?.authorizationUrl, "https://login.procore.com/oauth/authorize");
   assertEquals(production.oauth2?.tokenUrl, "https://login.procore.com/oauth/token");
   assertEquals(production.oauth2?.refreshUrl, "https://login.procore.com/oauth/token");
 });
 
-Deno.test("oauth2-sandbox: sandbox endpoints", () => {
+test("oauth2-sandbox: sandbox endpoints", () => {
   assertEquals(sandbox.key, "oauth2-sandbox");
   assertEquals(
     sandbox.oauth2?.authorizationUrl,
@@ -25,7 +26,7 @@ Deno.test("oauth2-sandbox: sandbox endpoints", () => {
   assertEquals(sandbox.oauth2?.tokenUrl, "https://login-sandbox.procore.com/oauth/token");
 });
 
-Deno.test("oauth2: sign adds Bearer and the connection's company header", async () => {
+test("oauth2: sign adds Bearer and the connection's company header", async () => {
   const { ctx } = mockCtx();
   const out = await production.sign!({
     request: req("https://api.procore.com/rest/v1.0/projects"),
@@ -35,7 +36,7 @@ Deno.test("oauth2: sign adds Bearer and the connection's company header", async 
   assertEquals(out.headers["Procore-Company-Id"], "123");
 });
 
-Deno.test("oauth2: sign keeps an explicit company header and skips me/companies", async () => {
+test("oauth2: sign keeps an explicit company header and skips me/companies", async () => {
   const { ctx } = mockCtx();
   const explicit = await production.sign!({
     request: req("https://api.procore.com/rest/v1.0/projects", { "procore-company-id": "5" }),
@@ -53,7 +54,7 @@ Deno.test("oauth2: sign keeps an explicit company header and skips me/companies"
   }
 });
 
-Deno.test("oauth2: sign without a company id adds only the token", async () => {
+test("oauth2: sign without a company id adds only the token", async () => {
   const { ctx } = mockCtx();
   const out = await production.sign!({
     request: req("https://api.procore.com/rest/v1.0/projects"),
@@ -62,14 +63,14 @@ Deno.test("oauth2: sign without a company id adds only the token", async () => {
   assertEquals(Object.keys(out.headers), ["authorization"]);
 });
 
-Deno.test("oauth2: test with no accessToken makes no request", async () => {
+test("oauth2: test with no accessToken makes no request", async () => {
   const { ctx, calls } = mockCtx();
   const r = await production.test({ credential: {} }, ctx);
   assertEquals(r.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test passes on a /me body with a numeric id", async () => {
+test("oauth2: test passes on a /me body with a numeric id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, login: "a@b.co", name: "A" } }]);
   const r = await production.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(r, { ok: true });
@@ -77,13 +78,13 @@ Deno.test("oauth2: test passes on a /me body with a numeric id", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2-sandbox: test hits the sandbox host", async () => {
+test("oauth2-sandbox: test hits the sandbox host", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await sandbox.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(calls[0].url, "https://sandbox.procore.com/rest/v1.0/me");
 });
 
-Deno.test("oauth2: test fails on Procore's error body, quoting it, whatever the status", async () => {
+test("oauth2: test fails on Procore's error body, quoting it, whatever the status", async () => {
   const bad = mockCtx([{ status: 401, body: { errors: "Your access token has expired" } }]);
   const r = await production.test({ credential: { accessToken: "tok" } }, bad.ctx);
   assertEquals(r.ok, false);
@@ -96,7 +97,7 @@ Deno.test("oauth2: test fails on Procore's error body, quoting it, whatever the 
   assertEquals(r2.ok, false);
 });
 
-Deno.test("oauth2: afterConnect records environment, host, user and company name", async () => {
+test("oauth2: afterConnect records environment, host, user and company name", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 9, login: "a@b.co", name: "Ada" } },
     { body: [{ id: 1, name: "Other" }, { id: 123, name: "Acme Builders" }] },
@@ -116,7 +117,7 @@ Deno.test("oauth2: afterConnect records environment, host, user and company name
   assertEquals(calls[1].headers["procore-company-id"], undefined);
 });
 
-Deno.test("oauth2-sandbox: afterConnect without a company records the sandbox host", async () => {
+test("oauth2-sandbox: afterConnect without a company records the sandbox host", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 9, login: "a@b.co", name: "Ada" } }]);
   const out = await sandbox.afterConnect!({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(calls.length, 1);

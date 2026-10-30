@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 import action from "../../actions/recording-get-transcript.ts";
 
-Deno.test("recording-get-transcript: GETs the recording's transcript inline by default", async () => {
+test("recording-get-transcript: GETs the recording's transcript inline by default", async () => {
   const transcript = [{
     speaker: { display_name: "Jane Doe", matched_calendar_invitee_email: "jane.doe@acme.com" },
     text: "Let's revisit the budget allocations.",
@@ -17,7 +18,7 @@ Deno.test("recording-get-transcript: GETs the recording's transcript inline by d
   assertEquals(result, { transcript });
 });
 
-Deno.test("recording-get-transcript: passes destination_url for the async mode", async () => {
+test("recording-get-transcript: passes destination_url for the async mode", async () => {
   const { ctx, calls } = mockCtx([
     { body: { destination_url: "https://example.com/destination" } },
   ]);
@@ -31,6 +32,6 @@ Deno.test("recording-get-transcript: passes destination_url for the async mode",
   );
 });
 
-Deno.test("recording-get-transcript: declares the transcript output field", () => {
+test("recording-get-transcript: declares the transcript output field", () => {
   assertEquals(outputKeys(action), ["transcript", "destination_url"]);
 });

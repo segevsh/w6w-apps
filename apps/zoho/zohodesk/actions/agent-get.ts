@@ -18,7 +18,15 @@ const agentGet: ActionDefinition<Input, Record<string, unknown>> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "profile", label: "Profile" },
+        { value: "role", label: "Role" },
+        { value: "associatedDepartments", label: "Associated Departments" },
+        { value: "associatedChatDepartments", label: "Associated Chat Departments" },
+        { value: "verifiedEmails", label: "Verified Emails" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: profile, role, associatedDepartments, associatedChatDepartments, " +
         "verifiedEmails.",
     },

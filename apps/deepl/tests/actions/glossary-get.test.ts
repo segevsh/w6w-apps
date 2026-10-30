@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/glossary-get.ts";
 
-Deno.test("glossary-get: GETs /v2/glossaries/{id} and maps the entry", async () => {
+test("glossary-get: GETs /v2/glossaries/{id} and maps the entry", async () => {
   const body = {
     glossary_id: "g1",
     name: "Legal",

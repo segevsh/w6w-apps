@@ -36,7 +36,17 @@ const postList: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "stats", label: "Stats" },
+        { value: "free_web_content", label: "Free web content" },
+        { value: "free_email_content", label: "Free email content" },
+        { value: "free_rss_content", label: "Free rss content" },
+        { value: "premium_web_content", label: "Premium web content" },
+        { value: "premium_email_content", label: "Premium email content" },
+        { value: "recipients", label: "Recipients" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: `stats`, `free_web_content`, `free_email_content`, " +
         "`free_rss_content`, `premium_web_content`, `premium_email_content`, `recipients`.",
     },

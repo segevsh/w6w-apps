@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submit-form.ts";
 
-Deno.test("submit-form: POSTs the api.hsforms.com submission endpoint", async () => {
+test("submit-form: POSTs the api.hsforms.com submission endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { inlineMessage: "Thanks!" } }]);
   await action.execute!(
     {

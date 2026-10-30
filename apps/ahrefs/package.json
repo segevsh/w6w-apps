@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ahrefs",
   "version": "0.1.0",
-  "description": "Query Ahrefs SEO data \u2014 domain rating, backlinks, referring domains, organic keywords, top pages, keyword research, SERP overview, Rank Tracker and Site Audit \u2014 and check API unit usage.",
+  "description": "Query Ahrefs SEO data — domain rating, backlinks, referring domains, organic keywords, top pages, keyword research, SERP overview, Rank Tracker and Site Audit — and check API unit usage.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,5 +34,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
   }
 }

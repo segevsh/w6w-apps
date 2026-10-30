@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: calls POST /1/Contacts, form-urlencoded", async () => {
+test("contact-create: calls POST /1/Contacts, form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "7", firstname: "Mary" }) }]);
   await contactCreate.execute({
     firstname: "Mary",
@@ -19,7 +20,7 @@ Deno.test("contact-create: calls POST /1/Contacts, form-urlencoded", async () =>
   assertEquals(form.get("email"), "msmith@ontraport.com");
 });
 
-Deno.test("contact-create: extraFields are merged into the form body", async () => {
+test("contact-create: extraFields are merged into the form body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "7" }) }]);
   await contactCreate.execute({ email: "a@b.com", extraFields: { f1500: "*/*1*/*" } }, ctx);
 
@@ -27,7 +28,7 @@ Deno.test("contact-create: extraFields are merged into the form body", async () 
   assertEquals(form.get("f1500"), "*/*1*/*");
 });
 
-Deno.test("contact-create: an extraFields value given as a JSON string is parsed, not sent literally", async () => {
+test("contact-create: an extraFields value given as a JSON string is parsed, not sent literally", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "7" }) }]);
   await contactCreate.execute({ email: "a@b.com", extraFields: '{"birthday": 804798000}' }, ctx);
 

@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 
 import getContact from "../../actions/get-contact.ts";
 import { API_ROOT, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-contact: GET /contacts/{id}", async () => {
+test("get-contact: GET /contacts/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "c1", name: "Ada" } }]);
 
   const out = await getContact.execute({ contactId: "c1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("get-contact: GET /contacts/{id}", async () => {
   assertEquals(out, { _id: "c1", name: "Ada" });
 });
 
-Deno.test("get-contact: the id is URL-encoded, not concatenated raw", async () => {
+test("get-contact: the id is URL-encoded, not concatenated raw", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await getContact.execute({ contactId: "a b/c?d" }, ctx);
@@ -22,13 +23,13 @@ Deno.test("get-contact: the id is URL-encoded, not concatenated raw", async () =
   assertEquals(calls[0].url, `${API_ROOT}/contacts/a%20b%2Fc%3Fd`);
 });
 
-Deno.test("get-contact: declares contactId as required", () => {
+test("get-contact: declares contactId as required", () => {
   const param = getContact.params?.find((p) => p.key === "contactId");
   assertEquals(param?.required, true);
   assertEquals(getContact.type, "read");
 });
 
-Deno.test("get-contact: a 404 carries the vendor's own error message", async () => {
+test("get-contact: a 404 carries the vendor's own error message", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,

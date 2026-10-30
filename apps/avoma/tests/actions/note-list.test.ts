@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteList from "../../actions/note-list.ts";
 import { mockCtx, pageBody, pathOf, queryOf } from "../_helpers.ts";
 
 const WINDOW = { fromDate: "2026-10-01T00:00:00Z", toDate: "2026-10-02T00:00:00Z" };
 
-Deno.test("note-list: GET /v1/notes/ maps meetingUuid to meeting_uuid and customCategory", async () => {
+test("note-list: GET /v1/notes/ maps meetingUuid to meeting_uuid and customCategory", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([{ data: "# Notes" }]) }]);
   const out = await noteList.execute({
     ...WINDOW,
@@ -25,13 +26,13 @@ Deno.test("note-list: GET /v1/notes/ maps meetingUuid to meeting_uuid and custom
   assertEquals(out.results.length, 1);
 });
 
-Deno.test("note-list: a 204 'no notes' answer becomes an empty page", async () => {
+test("note-list: a 204 'no notes' answer becomes an empty page", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const out = await noteList.execute(WINDOW, ctx);
   assertEquals(out, { results: [], count: 0, next: null, previous: null });
 });
 
-Deno.test("note-list: the date window is required", async () => {
+test("note-list: the date window is required", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await noteList.execute({}, ctx), Error, "fromDate");
 });

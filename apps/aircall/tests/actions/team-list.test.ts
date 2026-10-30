@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamList from "../../actions/team-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("team-list: reads GET /v1/teams", async () => {
+test("team-list: reads GET /v1/teams", async () => {
   const { ctx, calls } = mockCtx([
     { body: listBody("teams", [{ id: 678, name: "Global Sales" }]) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("team-list: reads GET /v1/teams", async () => {
 });
 
 /** Teams take `order` but no from/to window, unlike the other list endpoints. */
-Deno.test("team-list: sends order and pagination but no creation window", async () => {
+test("team-list: sends order and pagination but no creation window", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("teams", []) }]);
   await teamList.execute({ order: "desc", page: 2, perPage: 10 }, ctx);
   assertEquals(queryOf(calls[0].url), { order: "desc", page: "2", per_page: "10" });

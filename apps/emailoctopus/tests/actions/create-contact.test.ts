@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-contact.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-contact: POSTs to /lists/{id}/contacts with only the email by default", async () => {
+test("create-contact: POSTs to /lists/{id}/contacts with only the email by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }]);
   await action.execute!({ listId: "l1", emailAddress: "otto@example.com" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/lists/l1/contacts");
@@ -10,7 +11,7 @@ Deno.test("create-contact: POSTs to /lists/{id}/contacts with only the email by 
   assertEquals(JSON.parse(calls[0].body!), { email_address: "otto@example.com" });
 });
 
-Deno.test("create-contact: sends tags as an ARRAY — the POST shape, not the PUT shape", async () => {
+test("create-contact: sends tags as an ARRAY — the POST shape, not the PUT shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({
     listId: "l1",
@@ -26,7 +27,7 @@ Deno.test("create-contact: sends tags as an ARRAY — the POST shape, not the PU
   assertEquals(sent.fields, { FirstName: "Otto", how_many_pets: 2 });
 });
 
-Deno.test("create-contact: is not idempotent — a repeat is an already-exists conflict", async () => {
+test("create-contact: is not idempotent — a repeat is an already-exists conflict", async () => {
   assertEquals(action.idempotent, false);
   const { ctx } = mockCtx([{
     status: 409,

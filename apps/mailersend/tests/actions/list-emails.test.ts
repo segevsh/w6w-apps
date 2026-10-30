@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-emails.ts";
 import { exec, mockCtx, page, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("list-emails: GETs /v1/emails with the three required window params", async () => {
+test("list-emails: GETs /v1/emails with the three required window params", async () => {
   const body = page([{ id: "e1", status: "delivered" }]);
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, {
@@ -19,7 +20,7 @@ Deno.test("list-emails: GETs /v1/emails with the three required window params", 
   assertEquals(out, body);
 });
 
-Deno.test("list-emails: array filters go out with brackets, never as bare keys", async () => {
+test("list-emails: array filters go out with brackets, never as bare keys", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await exec(action, {
     domainId: "d1",
@@ -34,7 +35,7 @@ Deno.test("list-emails: array filters go out with brackets, never as bare keys",
   assertEquals(queryAll(url, "status"), [], "?status=sent is a 422 on the real API");
 });
 
-Deno.test("list-emails: forwards the scalar filters under their wire names", async () => {
+test("list-emails: forwards the scalar filters under their wire names", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await exec(action, {
     domainId: "d1",
@@ -57,13 +58,13 @@ Deno.test("list-emails: forwards the scalar filters under their wire names", asy
   assertEquals([q.page, q.limit], ["3", "500"]);
 });
 
-Deno.test("list-emails: limit may reach 1000 and page 100 (unlike the other lists)", () => {
+test("list-emails: limit may reach 1000 and page 100 (unlike the other lists)", () => {
   const p = (k: string) => action.params!.find((x) => x.key === k)?.validation;
   assertEquals(p("limit"), { min: 10, max: 1000, integer: true });
   assertEquals(p("page"), { min: 1, max: 100, integer: true });
 });
 
-Deno.test("list-emails: a 422 about the window is surfaced", async () => {
+test("list-emails: a 422 about the window is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

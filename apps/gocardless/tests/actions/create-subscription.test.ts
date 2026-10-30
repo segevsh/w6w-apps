@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createSubscription from "../../actions/create-subscription.ts";
 import { envelope, mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
 const created = envelope("subscriptions", { id: "SB1", status: "active" });
 
-Deno.test("create-subscription: the cadence and the mandate link reach the wire", async () => {
+test("create-subscription: the cadence and the mandate link reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const out = await createSubscription.execute!({
     amount: 2500,
@@ -36,7 +37,7 @@ Deno.test("create-subscription: the cadence and the mandate link reach the wire"
   assertEquals(out.id, "SB1");
 });
 
-Deno.test("create-subscription: the invocation id keys the retry when none was typed", async () => {
+test("create-subscription: the invocation id keys the retry when none was typed", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: created }], "inv-sub-1");
   await createSubscription.execute!({
     amount: 2500,
@@ -47,7 +48,7 @@ Deno.test("create-subscription: the invocation id keys the retry when none was t
   assertEquals(calls[0].headers["idempotency-key"], "inv-sub-1");
 });
 
-Deno.test("create-subscription: yearly cadence carries the month, and blanks are dropped", async () => {
+test("create-subscription: yearly cadence carries the month, and blanks are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await createSubscription.execute!({
     amount: 5000,

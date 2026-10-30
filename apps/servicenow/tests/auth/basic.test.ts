@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: collects the instance alongside the credential", () => {
+test("basic: collects the instance alongside the credential", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -13,7 +14,7 @@ Deno.test("basic: collects the instance alongside the credential", () => {
   assertEquals(auth.fields?.find((f) => f.key === "instance")?.type, "string");
 });
 
-Deno.test("basic: sign sets a plain HTTP Basic header", async () => {
+test("basic: sign sets a plain HTTP Basic header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.service-now.com/api/now/table/incident",
@@ -27,7 +28,7 @@ Deno.test("basic: sign sets a plain HTTP Basic header", async () => {
   assertEquals(out.headers["authorization"], `Basic ${btoa("jo:tok")}`);
 });
 
-Deno.test("basic: test refuses a half-filled credential without a request", async () => {
+test("basic: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { instance: "acme" } }, ctx), {
     ok: false,
@@ -36,7 +37,7 @@ Deno.test("basic: test refuses a half-filled credential without a request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test probes sys_user_role on the instance's own host", async () => {
+test("basic: test probes sys_user_role on the instance's own host", async () => {
   const ok = mockCtx([{ body: { result: [] } }]);
   assertEquals(
     await auth.test(
@@ -52,7 +53,7 @@ Deno.test("basic: test probes sys_user_role on the instance's own host", async (
   assertEquals(ok.calls[0].headers["authorization"], `Basic ${btoa("jo:tok")}`);
 });
 
-Deno.test("basic: test reports a non-ok response", async () => {
+test("basic: test reports a non-ok response", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(
     await auth.test({ credential: { instance: "acme", username: "jo", password: "bad" } }, ctx),
@@ -60,7 +61,7 @@ Deno.test("basic: test reports a non-ok response", async () => {
   );
 });
 
-Deno.test("basic: afterConnect records the instance and username with no extra request", async () => {
+test("basic: afterConnect records the instance and username with no extra request", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.afterConnect!(
     { credential: { instance: "acme", username: "jo", password: "tok" } },

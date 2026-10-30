@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventHostAdd from "../../actions/event-host-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-host-add: posts event_id, email and optional fields", async () => {
+test("event-host-add: posts event_id, email and optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await eventHostAdd.execute(
     { eventId: "evt-1", email: "host@example.com", accessLevel: "manager", isVisible: true },

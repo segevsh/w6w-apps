@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import messageSendToConversation from "../../actions/message-send-to-conversation.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("message-send-to-conversation: sends the documented request and returns the answer", async () => {
+test("message-send-to-conversation: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await messageSendToConversation.execute({
     "conversation": 99,
@@ -20,7 +21,7 @@ Deno.test("message-send-to-conversation: sends the documented request and return
   assertEquals(result.id, 1);
 });
 
-Deno.test("message-send-to-conversation: repeats media_url[][url] once per URL", async () => {
+test("message-send-to-conversation: repeats media_url[][url] once per URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await messageSendToConversation.execute({
     "conversation": 99,
@@ -32,11 +33,11 @@ Deno.test("message-send-to-conversation: repeats media_url[][url] once per URL",
   assertEquals(urls, ["https://x.test/a.png", "https://x.test/b.png"]);
 });
 
-Deno.test("message-send-to-conversation: is not idempotent — a retry would text a person twice", () => {
+test("message-send-to-conversation: is not idempotent — a retry would text a person twice", () => {
   assertEquals(messageSendToConversation.idempotent, false);
 });
 
-Deno.test("message-send-to-conversation: omits media when none is given", async () => {
+test("message-send-to-conversation: omits media when none is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await messageSendToConversation.execute({
     "conversation": 99,
@@ -46,7 +47,7 @@ Deno.test("message-send-to-conversation: omits media when none is given", async 
   assertEquals(new URL(calls[0].url).searchParams.has("media_url[][url]"), false);
 });
 
-Deno.test("message-send-to-conversation: a refused token surfaces the vendor message", async () => {
+test("message-send-to-conversation: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

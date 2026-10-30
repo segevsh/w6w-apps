@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listContacts from "../../actions/list-contacts.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-contacts: calls GET /contacts and returns the paginated body", async () => {
+test("list-contacts: calls GET /contacts and returns the paginated body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { contacts: [{ id: "c1" }], paging: { hasMore: false, limit: 100 } } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("list-contacts: calls GET /contacts and returns the paginated body", a
   assertEquals(out.contacts, [{ id: "c1" }]);
 });
 
-Deno.test("list-contacts: forwards filters and pagination as query params", async () => {
+test("list-contacts: forwards filters and pagination as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await listContacts.execute({
     limit: 50,
@@ -34,20 +35,20 @@ Deno.test("list-contacts: forwards filters and pagination as query params", asyn
   });
 });
 
-Deno.test("list-contacts: unset filters are omitted from the query string, not sent empty", async () => {
+test("list-contacts: unset filters are omitted from the query string, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await listContacts.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
 /** `tag` and `status` are documented as mutually exclusive — the hint says so, this proves it exists. */
-Deno.test("list-contacts: the tag/status mutual-exclusion is documented on the params", () => {
+test("list-contacts: the tag/status mutual-exclusion is documented on the params", () => {
   const tag = listContacts.params?.find((p) => p.key === "tag");
   const status = listContacts.params?.find((p) => p.key === "status");
   assert(/cannot be combined/i.test(tag?.hint ?? ""), tag?.hint);
   assert(/cannot be combined/i.test(status?.hint ?? ""), status?.hint);
 });
 
-Deno.test("list-contacts: is a read action", () => {
+test("list-contacts: is a read action", () => {
   assertEquals(listContacts.type, "read");
 });

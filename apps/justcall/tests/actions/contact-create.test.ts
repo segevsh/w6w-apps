@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * bare object — this is the assertion that keeps the array wrapper invisible
  * to a workflow author.
  */
-Deno.test("contact-create: POSTs to /v2.1/contacts and unwraps the one-element data array", async () => {
+test("contact-create: POSTs to /v2.1/contacts and unwraps the one-element data array", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", data: [{ id: 1234, name: "Rachel Green" }] } },
   ]);
@@ -21,11 +22,11 @@ Deno.test("contact-create: POSTs to /v2.1/contacts and unwraps the one-element d
   assertEquals(out, { id: 1234, name: "Rachel Green" });
 });
 
-Deno.test("contact-create: is declared non-idempotent — no dedupe key is documented", () => {
+test("contact-create: is declared non-idempotent — no dedupe key is documented", () => {
   assertEquals(contactCreate.idempotent, false);
 });
 
-Deno.test("contact-create: other_numbers accepts a JSON string as well as an array", async () => {
+test("contact-create: other_numbers accepts a JSON string as well as an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: [{ id: 1 }] } }]);
   await contactCreate.execute(
     {

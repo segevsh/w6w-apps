@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import campaignRecipientsGet from "../../actions/campaign-recipients-get.ts";
 import { API_PATH, mockCtx, pagedBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-recipients-get: GETs /campaigns/{campaignid}/recipients.json", async () => {
+test("campaign-recipients-get: GETs /campaigns/{campaignid}/recipients.json", async () => {
   const { ctx, calls } = mockCtx([{
     body: pagedBody([{ EmailAddress: "a@b.com", ListID: "l1" }]),
   }]);
@@ -17,7 +18,7 @@ Deno.test("campaign-recipients-get: GETs /campaigns/{campaignid}/recipients.json
  * param would be offering something the endpoint rejects — which is exactly why
  * it is a separate action from the five interaction reports.
  */
-Deno.test("campaign-recipients-get: exposes no date param and only two order fields", () => {
+test("campaign-recipients-get: exposes no date param and only two order fields", () => {
   const keys = (campaignRecipientsGet.params ?? []).map((p) => p.key);
   assert(!keys.includes("date"), "a recipient list has no per-record timestamp");
   const options = (campaignRecipientsGet.params ?? [])

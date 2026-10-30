@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rerank.ts";
 
-Deno.test("rerank: sends the query, documents and rank fields", async () => {
+test("rerank: sends the query, documents and rank fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await action.execute!({
     model: "bge-reranker-v2-m3",
@@ -18,19 +19,19 @@ Deno.test("rerank: sends the query, documents and rank fields", async () => {
   assertEquals(sent.return_documents, true);
 });
 
-Deno.test("rerank: plain strings are wrapped as {text}", async () => {
+test("rerank: plain strings are wrapped as {text}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ model: "m", query: "q", documents: '["Paris","Lyon"]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).documents, [{ text: "Paris" }, { text: "Lyon" }]);
 });
 
-Deno.test("rerank: topN 0 means return everything, reordered", async () => {
+test("rerank: topN 0 means return everything, reordered", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ model: "m", query: "q", documents: '["a"]', topN: 0 }, ctx);
   assertEquals("top_n" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("rerank: a query and documents are both required", async () => {
+test("rerank: a query and documents are both required", async () => {
   const noQuery = mockCtx();
   await assertRejects(
     async () => await action.execute!({ model: "m", documents: '["a"]' }, noQuery.ctx),
@@ -47,6 +48,6 @@ Deno.test("rerank: a query and documents are both required", async () => {
 });
 
 /** It is not tied to Pinecone-stored data, and the description says so. */
-Deno.test("rerank: says it works on any documents", () => {
+test("rerank: says it works on any documents", () => {
   assert(/not just Pinecone/i.test(action.description!), action.description);
 });

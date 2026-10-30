@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-post.ts";
 
-Deno.test("get-post: GETs /{postId} with default fields", async () => {
+test("get-post: GETs /{postId} with default fields", async () => {
   const body = { id: "post-1", message: "hi" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ postId: "post-1" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("get-post: GETs /{postId} with default fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("get-post: honours a custom fields override", async () => {
+test("get-post: honours a custom fields override", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "post-1" } }]);
   await action.execute!({ postId: "post-1", fields: "id,message" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("fields"), "id,message");

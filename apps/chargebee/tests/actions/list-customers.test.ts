@@ -1,16 +1,17 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/list-customers.ts";
 
 const ok = { status: 200, body: { list: [], next_offset: undefined } };
 
-Deno.test("list-customers: is a search action over the customer resource", () => {
+test("list-customers: is a search action over the customer resource", () => {
   assertEquals(action.key, "list-customers");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "customer");
 });
 
-Deno.test("list-customers: GETs /customers on the connection's own site", async () => {
+test("list-customers: GETs /customers on the connection's own site", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({}, connected(ctx));
   const url = new URL(calls[0].url);
@@ -20,7 +21,7 @@ Deno.test("list-customers: GETs /customers on the connection's own site", async 
   assertEquals(url.search, "");
 });
 
-Deno.test("list-customers: sends filters in OPERATOR form, never as bare values", async () => {
+test("list-customers: sends filters in OPERATOR form, never as bare values", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     limit: 25,
@@ -47,7 +48,7 @@ Deno.test("list-customers: sends filters in OPERATOR form, never as bare values"
   assertEquals(q.get("auto_collection"), null);
 });
 
-Deno.test("list-customers: maps sort attribute + order onto sort_by[asc|desc]", async () => {
+test("list-customers: maps sort attribute + order onto sort_by[asc|desc]", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ sortAttribute: "updated_at", sortOrder: "desc" }, connected(ctx));
   const q = new URL(calls[0].url).searchParams;
@@ -55,18 +56,18 @@ Deno.test("list-customers: maps sort attribute + order onto sort_by[asc|desc]", 
   assertEquals(q.get("sort_by[asc]"), null);
 });
 
-Deno.test("list-customers: sends no sort_by when no attribute is chosen", async () => {
+test("list-customers: sends no sort_by when no attribute is chosen", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ sortOrder: "desc" }, connected(ctx));
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("list-customers: offers only the two sort attributes this list documents", () => {
+test("list-customers: offers only the two sort attributes this list documents", () => {
   assertEquals(optionValues(action, "sortAttribute"), ["created_at", "updated_at"]);
   assertEquals(optionValues(action, "autoCollection"), ["on", "off"]);
 });
 
-Deno.test("list-customers: returns Chargebee's list/next_offset envelope unchanged", async () => {
+test("list-customers: returns Chargebee's list/next_offset envelope unchanged", async () => {
   const body = { list: [{ customer: { id: "c1" } }], next_offset: "[1517505731000,29000]" };
   const { ctx } = mockCtx([{ status: 200, body }]);
   assertEquals(await action.execute({}, connected(ctx)), body);

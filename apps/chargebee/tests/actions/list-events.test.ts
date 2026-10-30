@@ -1,23 +1,24 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, mockCtx, optionValues, param } from "../_helpers.ts";
 import action from "../../actions/list-events.ts";
 
 const ok = { status: 200, body: { list: [] } };
 
-Deno.test("list-events: is a search action over the event resource", () => {
+test("list-events: is a search action over the event resource", () => {
   assertEquals(action.key, "list-events");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "event");
 });
 
-Deno.test("list-events: GETs /events", async () => {
+test("list-events: GETs /events", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({}, connected(ctx));
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/events");
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("list-events: sends the filters in operator form", async () => {
+test("list-events: sends the filters in operator form", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     eventType: "subscription_created",
@@ -30,7 +31,7 @@ Deno.test("list-events: sends the filters in operator form", async () => {
   assertEquals(q.get("source[is]"), "api");
 });
 
-Deno.test("list-events: occurred_at takes one bound or a `between` range", async () => {
+test("list-events: occurred_at takes one bound or a `between` range", async () => {
   const a = mockCtx([ok]);
   await action.execute({ occurredAfter: 1435054328 }, connected(a.ctx));
   assertEquals(new URL(a.calls[0].url).searchParams.get("occurred_at[after]"), "1435054328");
@@ -43,7 +44,7 @@ Deno.test("list-events: occurred_at takes one bound or a `between` range", async
   );
 });
 
-Deno.test("list-events: sort_by is hard-coded to occurred_at — the only value it accepts", async () => {
+test("list-events: sort_by is hard-coded to occurred_at — the only value it accepts", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ sortOrder: "desc" }, connected(ctx));
   const q = new URL(calls[0].url).searchParams;
@@ -52,20 +53,20 @@ Deno.test("list-events: sort_by is hard-coded to occurred_at — the only value 
   assertEquals((action.params ?? []).some((p) => p.key === "sortAttribute"), false);
 });
 
-Deno.test("list-events: no sort order means no sort_by, leaving Chargebee's own ordering", async () => {
+test("list-events: no sort order means no sort_by, leaving Chargebee's own ordering", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({}, connected(ctx));
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals(param(action, "sortOrder").default, undefined);
 });
 
-Deno.test("list-events: eventType is free text — Chargebee documents 200-plus values", () => {
+test("list-events: eventType is free text — Chargebee documents 200-plus values", () => {
   const p = param(action, "eventType");
   assertEquals(p.type, "string");
   assertEquals(p.options, undefined);
 });
 
-Deno.test("list-events: offers the documented webhook statuses and sources", () => {
+test("list-events: offers the documented webhook statuses and sources", () => {
   assertEquals(optionValues(action, "webhookStatus"), [
     "not_configured",
     "scheduled",

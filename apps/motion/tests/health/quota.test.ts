@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -7,7 +8,7 @@ import quota from "../../health/quota.ts";
  * probe. Spending the quota to measure it would cost 8% of an individual plan's
  * minute per check.
  */
-Deno.test("quota: is a declared absence with no probe", () => {
+test("quota: is a declared absence with no probe", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assert(typeof quota.unavailable?.reason === "string" && quota.unavailable.reason.length > 0);
@@ -18,12 +19,12 @@ Deno.test("quota: is a declared absence with no probe", () => {
  * `unknown`, and `unknown` outranks `ok` in the roll-up, so at any other
  * severity this would pin the app's verdict at `unknown` forever.
  */
-Deno.test("quota: is informational, or it would pin the app at unknown", () => {
+test("quota: is informational, or it would pin the app at unknown", () => {
   assertEquals(quota.severity, "informational");
 });
 
 /** The ceilings a workflow author needs are in the reason, not only in a doc page. */
-Deno.test("quota: the reason quotes the tier ceilings that do exist", () => {
+test("quota: the reason quotes the tier ceilings that do exist", () => {
   const reason = quota.unavailable!.reason;
   assert(reason.includes("12 requests/minute"), reason);
   assert(reason.includes("120/minute"), reason);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postUpdate from "../../actions/post-update.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-update: posts postID and the changed fields, unwraps the confirmation", async () => {
+test("post-update: posts postID and the changed fields, unwraps the confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: "success" }]);
   const out = await postUpdate.execute({ postID: "p1", title: "New title" }, ctx) as {
     message: string;
@@ -13,6 +14,6 @@ Deno.test("post-update: posts postID and the changed fields, unwraps the confirm
   assertEquals(out.message, "success");
 });
 
-Deno.test("post-update: is idempotent", () => {
+test("post-update: is idempotent", () => {
   assertEquals(postUpdate.idempotent, true);
 });

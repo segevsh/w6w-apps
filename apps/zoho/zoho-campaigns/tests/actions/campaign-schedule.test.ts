@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-schedule.ts";
 
-Deno.test("campaign-schedule: POSTs sendcampaign?isschedule=true with the schedule fields", async () => {
+test("campaign-schedule: POSTs sendcampaign?isschedule=true with the schedule fields", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { message: "Success", campaign_status: "ScheduledAfterReviewed", code: "200" } },
   ]);

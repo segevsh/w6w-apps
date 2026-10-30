@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("user-list: GETs /users with filters", async () => {
+test("user-list: GETs /users with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("users", "u1")]) }]);
   await userList.execute({ role: "host", pendingInvite: false }, ctx);
 

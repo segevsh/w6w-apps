@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-create.ts";
 
@@ -19,7 +20,7 @@ const base = {
   region: "EU_WEST_1",
 };
 
-Deno.test("cluster-create: posts to the project's clusters at the newest write version", async () => {
+test("cluster-create: posts to the project's clusters at the newest write version", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(
@@ -32,7 +33,7 @@ Deno.test("cluster-create: posts to the project's clusters at the newest write v
 });
 
 /** The nested three-deep shape, assembled from three flat parameters. */
-Deno.test("cluster-create: assembles the single-region replication spec", async () => {
+test("cluster-create: assembles the single-region replication spec", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute(base, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -48,7 +49,7 @@ Deno.test("cluster-create: assembles the single-region replication spec", async 
 });
 
 /** There is no safe default for something that bills hourly. */
-Deno.test("cluster-create: refuses without an instance size, and says why", async () => {
+test("cluster-create: refuses without an instance size, and says why", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -65,7 +66,7 @@ Deno.test("cluster-create: refuses without an instance size, and says why", asyn
 });
 
 /** Atlas defaults this off; a cluster nobody is watching should have it on. */
-Deno.test("cluster-create: turns termination protection on by default", async () => {
+test("cluster-create: turns termination protection on by default", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute(base, ctx);
   assertEquals(JSON.parse(calls[0].body!).terminationProtectionEnabled, true);
@@ -75,7 +76,7 @@ Deno.test("cluster-create: turns termination protection on by default", async ()
   );
 });
 
-Deno.test("cluster-create: protection and backup are sent explicitly, false included", async () => {
+test("cluster-create: protection and backup are sent explicitly, false included", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({ ...base, terminationProtection: false, backupEnabled: false }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -83,7 +84,7 @@ Deno.test("cluster-create: protection and backup are sent explicitly, false incl
   assertEquals(body.backupEnabled, false);
 });
 
-Deno.test("cluster-create: a raw replication spec replaces the flat parameters", async () => {
+test("cluster-create: a raw replication spec replaces the flat parameters", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -94,7 +95,7 @@ Deno.test("cluster-create: a raw replication spec replaces the flat parameters",
   assertEquals(body.replicationSpecs[0].regionConfigs[0].providerName, "GCP");
 });
 
-Deno.test("cluster-create: a raw spec must be an array", async () => {
+test("cluster-create: a raw spec must be an array", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -107,7 +108,7 @@ Deno.test("cluster-create: a raw spec must be an array", async () => {
 });
 
 /** Billing from creation, and it is not IDLE for minutes. */
-Deno.test("cluster-create: warns about the bill and the wait", async () => {
+test("cluster-create: warns about the bill and the wait", async () => {
   const { ctx, logs } = mockCtx([created]);
   await action.execute(base, ctx);
   assertEquals(logs[0].level, "warn");
@@ -115,7 +116,7 @@ Deno.test("cluster-create: warns about the bill and the wait", async () => {
   assert(/minutes to become IDLE/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("cluster-create: a name and a region are required", async () => {
+test("cluster-create: a name and a region are required", async () => {
   for (
     const input of [
       { projectId: "5f8d0d55b54eff0f2b2c3d4e", instanceSize: "M10", region: "EU_WEST_1" },
@@ -134,6 +135,6 @@ Deno.test("cluster-create: a name and a region are required", async () => {
   }
 });
 
-Deno.test("cluster-create: is not idempotent", () => {
+test("cluster-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

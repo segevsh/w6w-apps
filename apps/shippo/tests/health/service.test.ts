@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -14,7 +15,7 @@ const component = (
   group_id: opts.group_id ?? null,
 });
 
-Deno.test("service: reads status.goshippo.com, not the API host", async () => {
+test("service: reads status.goshippo.com, not the API host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { components: [component("Shippo REST API", "operational")] },
@@ -23,7 +24,7 @@ Deno.test("service: reads status.goshippo.com, not the API host", async () => {
   assertEquals(new URL(calls[0].url).hostname, "status.goshippo.com");
 });
 
-Deno.test("service: all own services operational and no carrier issues reads ok", async () => {
+test("service: all own services operational and no carrier issues reads ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -46,7 +47,7 @@ Deno.test("service: all own services operational and no carrier issues reads ok"
  * `partial_outage` while every Shippo-owned component reads `operational` —
  * exactly the case this split exists for.
  */
-Deno.test("service: a carrier outage is reported by name and does not sink the verdict", async () => {
+test("service: a carrier outage is reported by name and does not sink the verdict", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -65,7 +66,7 @@ Deno.test("service: a carrier outage is reported by name and does not sink the v
   assert(/Shippo itself is unaffected/.test(report.message!), report.message);
 });
 
-Deno.test("service: Shippo's own service being down degrades the verdict", async () => {
+test("service: Shippo's own service being down degrades the verdict", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -81,19 +82,19 @@ Deno.test("service: Shippo's own service being down degrades the verdict", async
 });
 
 /** A status page that itself fails says nothing about the vendor. */
-Deno.test("service: a failing status page reads unknown, never down", async () => {
+test("service: a failing status page reads unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an unexpected shape reads unknown", async () => {
+test("service: an unexpected shape reads unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { nope: true } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares only the status host, not the API host", () => {
+test("service: declares only the status host, not the API host", () => {
   assertEquals(service.network, { allow: ["status.goshippo.com"] });
   assertEquals(service.kind, "service");
 });

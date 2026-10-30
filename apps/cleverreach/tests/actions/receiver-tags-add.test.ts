@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/receiver-tags-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("receiver-tags-add: POSTs the tag list", async () => {
+test("receiver-tags-add: POSTs the tag list", async () => {
   const { ctx, calls } = mockCtx([{ body: ["hero", "batman.Good"] }]);
   const out = await action.execute(
     { receiver: "11", tags: "hero, batman.Good", groupId: "5" },
@@ -14,7 +15,7 @@ Deno.test("receiver-tags-add: POSTs the tag list", async () => {
   assertEquals(out.result, ["hero", "batman.Good"]);
 });
 
-Deno.test("receiver-tags-add: requires at least one tag", async () => {
+test("receiver-tags-add: requires at least one tag", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ receiver: "11", tags: " , " }, ctx),

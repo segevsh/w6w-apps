@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { INVOCATION_ID, mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
-Deno.test("customer-create: POSTs /v2/customers with an idempotency key", async () => {
+test("customer-create: POSTs /v2/customers with an idempotency key", async () => {
   const { ctx, calls } = mockCtx([{ body: { customer: { id: "c1" } } }]);
   await action.execute({ givenName: "Ada", familyName: "Lovelace" }, ctx);
   assertEquals(calls[0].url, "https://connect.squareup.com/v2/customers");
@@ -13,7 +14,7 @@ Deno.test("customer-create: POSTs /v2/customers with an idempotency key", async 
   });
 });
 
-Deno.test("customer-create: parses the address JSON param into a nested object", async () => {
+test("customer-create: parses the address JSON param into a nested object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     emailAddress: "ada@example.test",
@@ -25,7 +26,7 @@ Deno.test("customer-create: parses the address JSON param into a nested object",
   });
 });
 
-Deno.test("customer-create: rejects a profile with nothing identifying, before calling Square", async () => {
+test("customer-create: rejects a profile with nothing identifying, before calling Square", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await assertRejects(
     async () => {
@@ -37,7 +38,7 @@ Deno.test("customer-create: rejects a profile with nothing identifying, before c
   assertEquals(calls.length, 0);
 });
 
-Deno.test("customer-create: any one of the five identifying fields is enough", async () => {
+test("customer-create: any one of the five identifying fields is enough", async () => {
   for (const field of ["givenName", "familyName", "companyName", "emailAddress", "phoneNumber"]) {
     const { ctx, calls } = mockCtx([{ body: {} }]);
     await action.execute({ [field]: "x" }, ctx);
@@ -45,7 +46,7 @@ Deno.test("customer-create: any one of the five identifying fields is enough", a
   }
 });
 
-Deno.test("customer-create: is declared idempotent even though Square's key is optional here", () => {
+test("customer-create: is declared idempotent even though Square's key is optional here", () => {
   assertEquals(action.idempotent, true);
   assert(action.params?.some((p) => p.key === "idempotencyKey"));
 });

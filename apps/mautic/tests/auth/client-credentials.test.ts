@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: sign stamps a Bearer token, network-less", async () => {
+test("client-credentials: sign stamps a Bearer token, network-less", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://mautic.example.com/api/contacts",
@@ -13,7 +14,7 @@ Deno.test("client-credentials: sign stamps a Bearer token, network-less", async 
   assertEquals(out.headers["authorization"], "Bearer tok123");
 });
 
-Deno.test("client-credentials: fields require the URL, id and secret; only the secrets are masked", () => {
+test("client-credentials: fields require the URL, id and secret; only the secrets are masked", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["baseUrl", "clientId", "clientSecret"]);
   assertEquals(
@@ -23,7 +24,7 @@ Deno.test("client-credentials: fields require the URL, id and secret; only the s
 });
 
 /** Basic Auth and the browser Authorization Code flow are both declined, on purpose. */
-Deno.test("client-credentials: the description explains why Basic Auth is declined", () => {
+test("client-credentials: the description explains why Basic Auth is declined", () => {
   const doc = auth.description!;
   assert(doc.toLowerCase().includes("no browser sign-in"), doc);
   const fields = auth.fields!.map((f) => f.key);
@@ -31,7 +32,7 @@ Deno.test("client-credentials: the description explains why Basic Auth is declin
   assert(!fields.includes("password"), "basic auth must not be offered");
 });
 
-Deno.test("client-credentials: exchange mints a token via the client_credentials grant", async () => {
+test("client-credentials: exchange mints a token via the client_credentials grant", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "tok1", expires_in: 3600, token_type: "bearer" } },
   ]);
@@ -50,7 +51,7 @@ Deno.test("client-credentials: exchange mints a token via the client_credentials
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("client-credentials: exchange requires both the client id and secret", async () => {
+test("client-credentials: exchange requires both the client id and secret", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -63,7 +64,7 @@ Deno.test("client-credentials: exchange requires both the client id and secret",
 });
 
 /** No refresh_token in Mautic's client-credentials response — refresh just re-mints. */
-Deno.test("client-credentials: refresh re-runs the client_credentials grant", async () => {
+test("client-credentials: refresh re-runs the client_credentials grant", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "tok2", expires_in: 3600, token_type: "bearer" } },
   ]);
@@ -83,7 +84,7 @@ Deno.test("client-credentials: refresh re-runs the client_credentials grant", as
   assertEquals(cred.accessToken, "tok2");
 });
 
-Deno.test("client-credentials: test probes /users/self and reports success", async () => {
+test("client-credentials: test probes /users/self and reports success", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1, username: "ada" } }]);
   const result = await auth.test(
     { credential: { accessToken: "tok1", baseUrl: "https://mautic.example.com" } },
@@ -94,7 +95,7 @@ Deno.test("client-credentials: test probes /users/self and reports success", asy
   assertEquals(calls[0].headers["authorization"], "Bearer tok1");
 });
 
-Deno.test("client-credentials: test distinguishes 401 from 403", async () => {
+test("client-credentials: test distinguishes 401 from 403", async () => {
   const unauthorized = mockCtx([{
     status: 401,
     body: { error: { message: "invalid access token", code: 401 } },
@@ -115,7 +116,7 @@ Deno.test("client-credentials: test distinguishes 401 from 403", async () => {
   assert(b.message.includes("permission"), b.message);
 });
 
-Deno.test("client-credentials: test fails locally when the credential is incomplete", async () => {
+test("client-credentials: test fails locally when the credential is incomplete", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test({ credential: { baseUrl: "https://x.com" } }, ctx), {
     ok: false,
@@ -124,7 +125,7 @@ Deno.test("client-credentials: test fails locally when the credential is incompl
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: afterConnect records the user, never the token", async () => {
+test("client-credentials: afterConnect records the user, never the token", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -146,7 +147,7 @@ Deno.test("client-credentials: afterConnect records the user, never the token", 
   assert(!JSON.stringify(display).includes("supersecret"), "the credential leaked into display");
 });
 
-Deno.test("client-credentials: afterConnect never throws when the lookup fails", async () => {
+test("client-credentials: afterConnect never throws when the lookup fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!(
     { credential: { accessToken: "tok", baseUrl: "https://mautic.example.com" } },
@@ -155,6 +156,6 @@ Deno.test("client-credentials: afterConnect never throws when the lookup fails",
   assertEquals(display, { baseUrl: "https://mautic.example.com" });
 });
 
-Deno.test("client-credentials: declares no revoke — no documented endpoint to call", () => {
+test("client-credentials: declares no revoke — no documented endpoint to call", () => {
   assertEquals(auth.revoke, undefined);
 });

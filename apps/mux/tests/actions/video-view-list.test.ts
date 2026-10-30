@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/video-view-list.ts";
 
-Deno.test("video-view-list: reads individual sessions from the Data API", async () => {
+test("video-view-list: reads individual sessions from the Data API", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "v1" }] } }]);
   const out = await action.execute!({ filters: "asset_id:a1" }, ctx) as { views: unknown[] };
   assertEquals(out.views.length, 1);
@@ -12,6 +13,6 @@ Deno.test("video-view-list: reads individual sessions from the Data API", async 
 });
 
 /** The record behind "it would not play for me". */
-Deno.test("video-view-list: frames itself as the support tool", () => {
+test("video-view-list: frames itself as the support tool", () => {
   assert(/would not/.test(action.description!), action.description);
 });

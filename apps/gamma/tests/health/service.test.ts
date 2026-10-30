@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import type { HealthFeedEntry, HealthFeedInput } from "@w6w/types";
 import service, {
   affectedComponents,
@@ -41,38 +42,38 @@ function feed(
   return { entries, latest: entries, fetchedAt: "2026-09-05T12:00:00Z", ...overrides };
 }
 
-Deno.test("latestStatusToken: reads the LAST status line, not the first", () => {
+test("latestStatusToken: reads the LAST status line, not the first", () => {
   assertEquals(latestStatusToken(resolvedEntry), "Resolved");
   assertEquals(latestStatusToken(openEntry), "Investigating");
 });
 
-Deno.test("latestStatusToken: undefined when no recognised token is present — never guessed", () => {
+test("latestStatusToken: undefined when no recognised token is present — never guessed", () => {
   assertEquals(latestStatusToken(unrecognizedEntry), undefined);
 });
 
-Deno.test("isResolved: true only when the terminal token is Resolved", () => {
+test("isResolved: true only when the terminal token is Resolved", () => {
   assertEquals(isResolved(resolvedEntry), true);
   assertEquals(isResolved(openEntry), false);
   assertEquals(isResolved(unrecognizedEntry), false);
 });
 
-Deno.test("affectedComponents: parses the Affected Components line", () => {
+test("affectedComponents: parses the Affected Components line", () => {
   assertEquals(affectedComponents(resolvedEntry), ["Web Application", "Multiplayer", "AI", "API"]);
   assertEquals(affectedComponents(openEntry), ["API"]);
   assertEquals(affectedComponents(unrecognizedEntry), []);
 });
 
-Deno.test("service: ok when the feed has no incidents at all", async () => {
+test("service: ok when the feed has no incidents at all", async () => {
   const report = await service.check!({ feed: feed([]) }, {} as never);
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: ok when every incident's latest entry is resolved", async () => {
+test("service: ok when every incident's latest entry is resolved", async () => {
   const report = await service.check!({ feed: feed([resolvedEntry]) }, {} as never);
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: degraded when an incident's latest entry is still open, with components named", async () => {
+test("service: degraded when an incident's latest entry is still open, with components named", async () => {
   const report = await service.check!({ feed: feed([resolvedEntry, openEntry]) }, {} as never);
   assertEquals(report.state, "degraded");
   if (!report.message?.includes("API degraded")) {
@@ -83,7 +84,7 @@ Deno.test("service: degraded when an incident's latest entry is still open, with
   }
 });
 
-Deno.test("service: unknown when the feed itself failed, never down", async () => {
+test("service: unknown when the feed itself failed, never down", async () => {
   const report = await service.check!(
     { feed: feed([], { error: "status.gamma.app timed out" }) },
     {} as never,
@@ -92,7 +93,7 @@ Deno.test("service: unknown when the feed itself failed, never down", async () =
   assertEquals(report.message, "status.gamma.app timed out");
 });
 
-Deno.test("service: is unsigned and app-scoped, so it can widen egress via feed", () => {
+test("service: is unsigned and app-scoped, so it can widen egress via feed", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.feed?.format, "atom");
@@ -103,7 +104,7 @@ Deno.test("service: is unsigned and app-scoped, so it can widen egress via feed"
  * real feed — but if that ever regresses to `unavailable`, it must still be
  * informational or the App pins at `unknown` forever.
  */
-Deno.test("service: declares a check, not an unavailable stub", () => {
+test("service: declares a check, not an unavailable stub", () => {
   assertEquals(typeof service.check, "function");
   assertEquals(service.unavailable, undefined);
 });

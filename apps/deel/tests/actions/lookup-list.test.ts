@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lookup-list.ts";
 
 const display = {};
 
-Deno.test("lookup-list: maps each choice to its own endpoint", async () => {
+test("lookup-list: maps each choice to its own endpoint", async () => {
   const cases: Array<[string, string]> = [
     ["countries", "/rest/lookups/countries"],
     ["currencies", "/rest/lookups/currencies"],
@@ -20,7 +21,7 @@ Deno.test("lookup-list: maps each choice to its own endpoint", async () => {
 });
 
 /** A typo becomes a named error, not a 404 on a URL the caller never wrote. */
-Deno.test("lookup-list: an unknown lookup is refused with the valid names", async () => {
+test("lookup-list: an unknown lookup is refused with the valid names", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ lookup: "counties" }, ctx),

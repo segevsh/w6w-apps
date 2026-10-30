@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   mapIndicator,
@@ -22,13 +23,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the true status host, which is not the API host", () => {
+test("service: probes the true status host, which is not the API host", () => {
   assertEquals(STATUS_URL, "https://klicktipp-status.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["klicktipp-status.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: all operational is ok, with components keyed by vendor id", async () => {
+test("service: all operational is ok, with components keyed by vendor id", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -37,7 +38,7 @@ Deno.test("service: all operational is ok, with components keyed by vendor id", 
   assertEquals(r.components?.["01KB7DVXYEB4YNAPQF5ASJ87ER"]?.message, "API");
 });
 
-Deno.test("service: an API outage is down, and names the component", async () => {
+test("service: an API outage is down, and names the component", async () => {
   const body = summary({ status: { indicator: "major", description: "Partial System Outage" } });
   body.components[2].status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -46,14 +47,14 @@ Deno.test("service: an API outage is down, and names the component", async () =>
   assert(r.message!.includes("API (major_outage)"), r.message);
 });
 
-Deno.test("service: a Login incident degrades the verdict", async () => {
+test("service: a Login incident degrades the verdict", async () => {
   const body = summary();
   body.components[1].status = "partial_outage";
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a Landingpages incident is detail, not an API verdict", async () => {
+test("service: a Landingpages incident is detail, not an API verdict", async () => {
   const body = summary({ status: { indicator: "minor", description: "Minor" } });
   body.components[3].status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -62,7 +63,7 @@ Deno.test("service: a Landingpages incident is detail, not an API verdict", asyn
   assertEquals(r.components?.["01KB7CY0ZZZJPV8295GK8ST7YP"]?.state, "down");
 });
 
-Deno.test("service: without an API component it falls back to the indicator and says so", async () => {
+test("service: without an API component it falls back to the indicator and says so", async () => {
   const body = summary({ status: { indicator: "critical", description: "Outage" } });
   body.components = body.components.filter((c) => c.name !== "API");
   const { ctx } = mockCtx([{ body }]);
@@ -71,7 +72,7 @@ Deno.test("service: without an API component it falls back to the indicator and 
   assert(r.message!.includes("no API component"), r.message);
 });
 
-Deno.test("service: a page that no longer says KlickTipp, a broken feed, or no components is unknown", async () => {
+test("service: a page that no longer says KlickTipp, a broken feed, or no components is unknown", async () => {
   const other = mockCtx([{ body: summary({ page: { id: PAGE_ID, name: "Someone Else" } }) }]);
   assertEquals((await service.check!({}, other.ctx)).state, "unknown");
   const wrongId = mockCtx([{ body: summary({ page: { id: "X", name: "KlickTipp" } }) }]);
@@ -84,7 +85,7 @@ Deno.test("service: a page that no longer says KlickTipp, a broken feed, or no c
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 });
 
-Deno.test("service: vocabulary maps", () => {
+test("service: vocabulary maps", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

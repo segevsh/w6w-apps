@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -6,7 +7,7 @@ import quota from "../../health/quota.ts";
  * `ok` in the roll-up, so any severity but `informational` would pin this
  * app at `unknown` forever over a signal kvCORE never promised.
  */
-Deno.test("quota: is a declared absence at informational severity", () => {
+test("quota: is a declared absence at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.check, "undefined");
   assert((quota.unavailable?.reason ?? "").length > 0);

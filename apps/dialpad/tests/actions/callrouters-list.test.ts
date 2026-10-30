@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callroutersList from "../../actions/callrouters-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const ROUTER = {
   signature: { algo: "HS256", secret: "live-secret", type: "jwt" },
 };
 
-Deno.test("callrouters-list: GETs /callrouters and strips the signing secret from every item", async () => {
+test("callrouters-list: GETs /callrouters and strips the signing secret from every item", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([ROUTER]) }]);
   const out = await callroutersList.execute({ officeId: "5" }, ctx) as {
     items: Array<{ signature: { secret?: string; algo?: string } }>;

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const INPUT = {
   "workforces_id": "[1, 2]",
 };
 
-Deno.test("task-create: POST /api/v2/tasks with the documented query, header and body", async () => {
+test("task-create: POST /api/v2/tasks with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await taskCreate.execute(INPUT as never, ctx);
 
@@ -47,13 +48,13 @@ Deno.test("task-create: POST /api/v2/tasks with the documented query, header and
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("task-create: an Axonaut error surfaces its message and status", async () => {
+test("task-create: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await taskCreate.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("task-create: invalid JSON in workforces_id is rejected before any request", async () => {
+test("task-create: invalid JSON in workforces_id is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await (taskCreate.execute({

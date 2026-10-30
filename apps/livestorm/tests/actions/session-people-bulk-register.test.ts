@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionPeopleBulkRegister from "../../actions/session-people-bulk-register.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("session-people-bulk-register: POSTs a jobs body with a tasks array of {fields} entries", async () => {
+test("session-people-bulk-register: POSTs a jobs body with a tasks array of {fields} entries", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("jobs", "j1", { status: "pending" }),

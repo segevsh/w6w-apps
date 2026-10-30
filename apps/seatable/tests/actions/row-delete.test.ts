@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowDelete from "../../actions/row-delete.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("row-delete: sends DELETE /rows/ with table_name and row_ids", async () => {
+test("row-delete: sends DELETE /rows/ with table_name and row_ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await rowDelete.execute({ tableName: "Table1", rowIds: ["r1", "r2"] }, ctx) as {
     success: boolean;
@@ -13,13 +14,13 @@ Deno.test("row-delete: sends DELETE /rows/ with table_name and row_ids", async (
   assertEquals(out.success, true);
 });
 
-Deno.test("row-delete: row ids may arrive as JSON text", async () => {
+test("row-delete: row ids may arrive as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await rowDelete.execute({ tableName: "T", rowIds: '["a","b"]' }, ctx);
   assertEquals(bodyOf(calls[0]).row_ids, ["a", "b"]);
 });
 
-Deno.test("row-delete: an empty or non-array row id list is refused without a request", async () => {
+test("row-delete: an empty or non-array row id list is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -38,6 +39,6 @@ Deno.test("row-delete: an empty or non-array row id list is refused without a re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("row-delete: is declared idempotent", () => {
+test("row-delete: is declared idempotent", () => {
   assertEquals(rowDelete.idempotent, true);
 });

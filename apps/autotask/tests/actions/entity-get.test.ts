@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import entityGet from "../../actions/entity-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("entity-get: GETs /{Entity}/{id}; a null item is found:false, not an error", async () => {
+test("entity-get: GETs /{Entity}/{id}; a null item is found:false, not an error", async () => {
   const hit = mockCtx([{ body: { item: { id: 7, title: "x" } } }], display);
   assertEquals(await run(entityGet, { entity: "Tickets", id: 7 }, hit.ctx), {
     found: true,

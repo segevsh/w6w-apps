@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/external-duration-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("external-duration-create: POSTs the documented path", async () => {
+test("external-duration-create: POSTs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "e1" } } }]);
   const out = await action.execute!({
     externalId: "evt1",
@@ -20,7 +21,7 @@ Deno.test("external-duration-create: POSTs the documented path", async () => {
   assertEquals(out, { data: { id: "e1" } });
 });
 
-Deno.test("external-duration-create: a vendor error reports status and message", async () => {
+test("external-duration-create: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () =>

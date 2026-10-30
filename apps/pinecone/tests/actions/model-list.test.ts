@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/model-list.ts";
 
-Deno.test("model-list: filters by type when asked", async () => {
+test("model-list: filters by type when asked", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { models: [] } }]);
   await action.execute!({ type: "rerank" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("model-list: filters by type when asked", async () => {
   assertEquals(url.searchParams.get("type"), "rerank");
 });
 
-Deno.test("model-list: no filter asks for everything", async () => {
+test("model-list: no filter asks for everything", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { models: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { generateTestKeyPair } from "../_helpers.ts";
 import {
   normalizeAccountForJwt,
@@ -22,17 +23,17 @@ function base64UrlDecodeBytes(segment: string): Uint8Array {
   return bytes;
 }
 
-Deno.test("normalizeAccountForJwt: uppercases and replaces periods with hyphens", () => {
+test("normalizeAccountForJwt: uppercases and replaces periods with hyphens", () => {
   assertEquals(normalizeAccountForJwt("myorg-myaccount"), "MYORG-MYACCOUNT");
   assertEquals(normalizeAccountForJwt("xy12345.us-east-1.aws"), "XY12345-US-EAST-1-AWS");
   assertEquals(normalizeAccountForJwt("  acme  "), "ACME");
 });
 
-Deno.test("normalizeUsernameForJwt: uppercases only", () => {
+test("normalizeUsernameForJwt: uppercases only", () => {
   assertEquals(normalizeUsernameForJwt("svc_user"), "SVC_USER");
 });
 
-Deno.test("signKeyPairJwt: header is RS256/JWT and claim shape matches Snowflake's spec", async () => {
+test("signKeyPairJwt: header is RS256/JWT and claim shape matches Snowflake's spec", async () => {
   const { privateKeyPem, privateKey } = await generateTestKeyPair();
   const now = 1_700_000_000;
   const jwt = await signKeyPairJwt(
@@ -60,7 +61,7 @@ Deno.test("signKeyPairJwt: header is RS256/JWT and claim shape matches Snowflake
   assert(claim.exp - claim.iat <= 3600, "must stay within Snowflake's 1h hard cap");
 });
 
-Deno.test("signKeyPairJwt: the signature verifies against the matching public key", async () => {
+test("signKeyPairJwt: the signature verifies against the matching public key", async () => {
   const { privateKeyPem, publicKey } = await generateTestKeyPair();
   const jwt = await signKeyPairJwt({ account: "acme", username: "u", privateKey: privateKeyPem });
   const [headerB64, claimB64, sigB64] = jwt.split(".");
@@ -76,14 +77,14 @@ Deno.test("signKeyPairJwt: the signature verifies against the matching public ke
   assert(ok, "JWT signature must verify against the public key derived from the same private key");
 });
 
-Deno.test("signKeyPairJwt: accepts a `\\n`-escaped single-line PEM (as pasted into a form field)", async () => {
+test("signKeyPairJwt: accepts a `\\n`-escaped single-line PEM (as pasted into a form field)", async () => {
   const { privateKeyPem } = await generateTestKeyPair();
   const escaped = privateKeyPem.replace(/\n/g, "\\n");
   const jwt = await signKeyPairJwt({ account: "acme", username: "u", privateKey: escaped });
   assertEquals(jwt.split(".").length, 3);
 });
 
-Deno.test("signKeyPairJwt: rejects an encrypted PKCS8 key with a clear message", async () => {
+test("signKeyPairJwt: rejects an encrypted PKCS8 key with a clear message", async () => {
   const encrypted =
     "-----BEGIN ENCRYPTED PRIVATE KEY-----\nAAAA\n-----END ENCRYPTED PRIVATE KEY-----\n";
   await assertRejects(
@@ -93,7 +94,7 @@ Deno.test("signKeyPairJwt: rejects an encrypted PKCS8 key with a clear message",
   );
 });
 
-Deno.test("signKeyPairJwt: rejects a non-PKCS8 (e.g. PKCS1) PEM with a clear message", async () => {
+test("signKeyPairJwt: rejects a non-PKCS8 (e.g. PKCS1) PEM with a clear message", async () => {
   const pkcs1 = "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n-----END RSA PRIVATE KEY-----\n";
   await assertRejects(
     () => signKeyPairJwt({ account: "acme", username: "u", privateKey: pkcs1 }),

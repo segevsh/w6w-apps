@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rcsCapabilityCheck from "../../actions/rcs-capability-check.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rcs-capability-check: POSTs phone_numbers and returns results", async () => {
+test("rcs-capability-check: POSTs phone_numbers and returns results", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ results: [{ phone_number: "61491570156", code: "ENABLED" }] }),
   }]);
@@ -16,6 +17,6 @@ Deno.test("rcs-capability-check: POSTs phone_numbers and returns results", async
   assertEquals(out.results[0].code, "ENABLED");
 });
 
-Deno.test("rcs-capability-check: is a read, not a send", () => {
+test("rcs-capability-check: is a read, not a send", () => {
   assertEquals(rcsCapabilityCheck.type, "read");
 });

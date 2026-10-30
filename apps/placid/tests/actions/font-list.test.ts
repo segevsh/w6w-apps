@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fontList from "../../actions/font-list.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
 const FONT = { uuid: "f1", title: "H", filename: "h.ttf", created_at: "2026-05-06T11:24:00+00:00" };
 
-Deno.test("font-list: include_legacy=1 and cursor in the query", async () => {
+test("font-list: include_legacy=1 and cursor in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [FONT], links: {}, meta: { per_page: 20 } } }]);
   const out = await fontList.execute({ include_legacy: true, cursor: "C" }, ctx) as {
     data: unknown[];

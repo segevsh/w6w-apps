@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-create.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("client-create: POSTs name and expiresAfterInactivitySeconds", async () => {
+test("client-create: POSTs name and expiresAfterInactivitySeconds", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 2, name: "CLI", token: "gtfy.def" },
@@ -14,14 +15,14 @@ Deno.test("client-create: POSTs name and expiresAfterInactivitySeconds", async (
   assertEquals(body, { name: "CLI", expiresAfterInactivitySeconds: 2592000 });
 });
 
-Deno.test("client-create: omits expiresAfterInactivitySeconds when unset", async () => {
+test("client-create: omits expiresAfterInactivitySeconds when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 2, name: "CLI" } }], conn);
   await action.execute!({ name: "CLI" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals("expiresAfterInactivitySeconds" in body, false);
 });
 
-Deno.test("client-create: requires a non-empty name", async () => {
+test("client-create: requires a non-empty name", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {

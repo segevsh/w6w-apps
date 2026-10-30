@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-add.ts";
 
-Deno.test("contacts-add: POSTs contacts.add with the snake_case body and returns id/type", async () => {
+test("contacts-add: POSTs contacts.add with the snake_case body and returns id/type", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { data: { type: "contact", id: "new-1" } },
@@ -22,7 +23,7 @@ Deno.test("contacts-add: POSTs contacts.add with the snake_case body and returns
   assertEquals(out, { type: "contact", id: "new-1" });
 });
 
-Deno.test("contacts-add: omits unset optional fields rather than sending them as null/undefined", async () => {
+test("contacts-add: omits unset optional fields rather than sending them as null/undefined", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { type: "contact", id: "x" } } }]);
   await action.execute({ lastName: "Smith" }, ctx);
   const body = JSON.parse(calls[0].body!);

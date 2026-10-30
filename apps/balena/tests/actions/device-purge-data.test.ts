@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-purge-data.ts";
 
@@ -11,7 +12,7 @@ const online = {
 };
 const accepted = { status: 200, body: '{"Data":"OK","Error":""}' };
 
-Deno.test("device-purge-data: sends the fleet id the supervisor requires", async () => {
+test("device-purge-data: sends the fleet id the supervisor requires", async () => {
   const { ctx, calls } = mockCtx([online, accepted]);
   const result = await action.execute({ uuid: UUID, confirm: true }, ctx) as Record<
     string,
@@ -24,7 +25,7 @@ Deno.test("device-purge-data: sends the fleet id the supervisor requires", async
 });
 
 /** There is no undo and balena keeps no copy. */
-Deno.test("device-purge-data: refuses without confirmation, before any lookup", async () => {
+test("device-purge-data: refuses without confirmation, before any lookup", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ uuid: UUID }, ctx),
@@ -34,7 +35,7 @@ Deno.test("device-purge-data: refuses without confirmation, before any lookup", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("device-purge-data: warns about what it cleared", async () => {
+test("device-purge-data: warns about what it cleared", async () => {
   const { ctx, logs } = mockCtx([online, accepted]);
   await action.execute({ uuid: UUID, confirm: true }, ctx);
   assert(
@@ -43,7 +44,7 @@ Deno.test("device-purge-data: warns about what it cleared", async () => {
   );
 });
 
-Deno.test("device-purge-data: a lock stops the purge and is reported", async () => {
+test("device-purge-data: a lock stops the purge and is reported", async () => {
   const { ctx, logs } = mockCtx([
     online,
     { status: 200, body: '{"Data":"","Error":"Update lock is set"}' },
@@ -61,12 +62,12 @@ Deno.test("device-purge-data: a lock stops the purge and is reported", async () 
   );
 });
 
-Deno.test("device-purge-data: is the one non-idempotent action here", () => {
+test("device-purge-data: is the one non-idempotent action here", () => {
   assertEquals(action.idempotent, false);
   assert(/DESTRUCTIVE/.test(action.description!), action.description);
 });
 
-Deno.test("device-purge-data: an offline device is refused", async () => {
+test("device-purge-data: an offline device is refused", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { d: [{ is_online: false, belongs_to__application: { __id: 42 } }] },

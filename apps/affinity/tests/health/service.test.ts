@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("mapComponentStatus: maps the Statuspage component vocabulary", () => {
+test("mapComponentStatus: maps the Statuspage component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -10,18 +11,18 @@ Deno.test("mapComponentStatus: maps the Statuspage component vocabulary", () => 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: maps the page-level indicator", () => {
+test("mapIndicator: maps the page-level indicator", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("critical"), "down");
 });
 
-Deno.test("componentKey: prefers the vendor id over a name slug", () => {
+test("componentKey: prefers the vendor id over a name slug", () => {
   assertEquals(componentKey({ id: "abc123", name: "External API v1" }, 0), "abc123");
   assertEquals(componentKey({ name: "External API v1" }, 2), "external-api-v1-2");
 });
 
-Deno.test("check: ok with all-operational components", async () => {
+test("check: ok with all-operational components", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -41,7 +42,7 @@ Deno.test("check: ok with all-operational components", async () => {
   assertEquals(Object.keys(report.components ?? {}).length, 2);
 });
 
-Deno.test("check: down when the page indicator is critical", async () => {
+test("check: down when the page indicator is critical", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -55,13 +56,13 @@ Deno.test("check: down when the page indicator is critical", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("check: unknown (never down) when the status page itself errors", async () => {
+test("check: unknown (never down) when the status page itself errors", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: unknown when the page no longer self-identifies as Affinity's", async () => {
+test("check: unknown when the page no longer self-identifies as Affinity's", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -75,7 +76,7 @@ Deno.test("check: unknown when the page no longer self-identifies as Affinity's"
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: group components are excluded from the component map", async () => {
+test("check: group components are excluded from the component map", async () => {
   const { ctx } = mockCtx([
     {
       body: {

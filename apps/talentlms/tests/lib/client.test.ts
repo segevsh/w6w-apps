@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockTalentLmsCtx } from "../_helpers.ts";
 import {
   baseUrl,
@@ -11,11 +12,11 @@ import {
   TalentLmsClient,
 } from "../../lib/client.ts";
 
-Deno.test("baseUrl: the account host plus /api/v1", () => {
+test("baseUrl: the account host plus /api/v1", () => {
   assertEquals(baseUrl("acme"), "https://acme.talentlms.com/api/v1");
 });
 
-Deno.test("domainFromConnection: reads display.domain and refuses a connection without one", () => {
+test("domainFromConnection: reads display.domain and refuses a connection without one", () => {
   assertEquals(
     domainFromConnection({ display: { domain: "acme" } } as never),
     "acme",
@@ -23,20 +24,20 @@ Deno.test("domainFromConnection: reads display.domain and refuses a connection w
   assertThrows(() => domainFromConnection(undefined), Error, "no domain");
 });
 
-Deno.test("pathArgs: key:value pairs, unset values dropped, separators escaped", () => {
+test("pathArgs: key:value pairs, unset values dropped, separators escaped", () => {
   assertEquals(pathArgs({ user_id: 7, course_id: 4 }), "user_id:7,course_id:4");
   assertEquals(pathArgs({ a: undefined, b: null, c: "", d: 0, e: false }), "d:0,e:false");
   assertEquals(pathArgs({ v: "a,b:c d" }), "v:a%2Cb%3Ac%20d");
   assertEquals(encodeArg("ann@example.com"), "ann@example.com");
 });
 
-Deno.test("flag: maps booleans to the vendor's wording and leaves unset alone", () => {
+test("flag: maps booleans to the vendor's wording and leaves unset alone", () => {
   assertEquals(flag(true, "on", "off"), "on");
   assertEquals(flag(false, "yes", "no"), "no");
   assertEquals(flag(undefined, "on", "off"), undefined);
 });
 
-Deno.test("customFieldPairs: numeric keys become custom_field_N; strings parse", () => {
+test("customFieldPairs: numeric keys become custom_field_N; strings parse", () => {
   assertEquals(customFieldPairs({ "3": "x", custom_field_5: "on" }), {
     custom_field_3: "x",
     custom_field_5: "on",
@@ -46,13 +47,13 @@ Deno.test("customFieldPairs: numeric keys become custom_field_N; strings parse",
   assertThrows(() => customFieldPairs([1]), Error, "JSON object");
 });
 
-Deno.test("errorDetail: pulls the vendor message out of the error envelope", () => {
+test("errorDetail: pulls the vendor message out of the error envelope", () => {
   assertEquals(errorDetail('{"error":{"type":"api_error","message":"Bad key"}}'), "Bad key");
   assertEquals(errorDetail('{"error":"plain"}'), "plain");
   assertEquals(errorDetail("<html>nope</html>"), "<html>nope</html>");
 });
 
-Deno.test("client: get with no args hits the bare endpoint, with args appends one segment", async () => {
+test("client: get with no args hits the bare endpoint, with args appends one segment", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: [] }, { body: {} }]);
   const c = new TalentLmsClient(ctx);
   await c.get("courses");
@@ -62,7 +63,7 @@ Deno.test("client: get with no args hits the bare endpoint, with args appends on
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: post sends a form body without unset fields", async () => {
+test("client: post sends a form body without unset fields", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: {} }]);
   await new TalentLmsClient(ctx).post("creategroup", { name: "A b", key: undefined, price: "" });
   assertEquals(calls[0].method, "POST");
@@ -70,7 +71,7 @@ Deno.test("client: post sends a form body without unset fields", async () => {
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("client: a non-2xx surfaces the vendor's message", async () => {
+test("client: a non-2xx surfaces the vendor's message", async () => {
   const { ctx } = mockTalentLmsCtx([{
     status: 404,
     statusText: "Not Found",
@@ -85,6 +86,6 @@ Deno.test("client: a non-2xx surfaces the vendor's message", async () => {
   );
 });
 
-Deno.test("client: refuses to run on a connection without a domain", () => {
+test("client: refuses to run on a connection without a domain", () => {
   assertThrows(() => new TalentLmsClient(mockCtx().ctx), Error, "no domain");
 });

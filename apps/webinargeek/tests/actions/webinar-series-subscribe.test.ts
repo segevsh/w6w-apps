@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarSeriesSubscribe from "../../actions/webinar-series-subscribe.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webinar-series-subscribe: POSTs to /webinars/{id}/series_subscribe with a translated body", async () => {
+test("webinar-series-subscribe: POSTs to /webinars/{id}/series_subscribe with a translated body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { total_count: 1, subscriptions: [{ id: 1 }] } },
   ]);
@@ -25,6 +26,6 @@ Deno.test("webinar-series-subscribe: POSTs to /webinars/{id}/series_subscribe wi
   assertEquals(out.subscriptions, [{ id: 1 }]);
 });
 
-Deno.test("webinar-series-subscribe: is declared idempotent (documented silent-skip on re-subscribe)", () => {
+test("webinar-series-subscribe: is declared idempotent (documented silent-skip on re-subscribe)", () => {
   assertEquals(webinarSeriesSubscribe.idempotent, true);
 });

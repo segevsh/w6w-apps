@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/booking-decline.ts";
 
-Deno.test("booking-decline: PUTs /admin/bookings/{id}/decline", async () => {
+test("booking-decline: PUTs /admin/bookings/{id}/decline", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, status: "canceled" } }], {
     display: TEST_DISPLAY,
   });

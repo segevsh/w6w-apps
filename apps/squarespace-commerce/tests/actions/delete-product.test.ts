@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deleteProduct from "../../actions/delete-product.ts";
 import { API_ROOT, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-product: DELETE /v2/commerce/products/{productId} answers 204", async () => {
+test("delete-product: DELETE /v2/commerce/products/{productId} answers 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await deleteProduct.execute!({ productId: "P1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("delete-product: DELETE /v2/commerce/products/{productId} answers 204"
   assertEquals(out, { ok: true });
 });
 
-Deno.test("delete-product: a repeat is a 404, which is why it is not idempotent", async () => {
+test("delete-product: a repeat is a 404, which is why it is not idempotent", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("INVALID_REQUEST_ERROR", {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/order-list.ts";
 
-Deno.test("order-list: GETs /orders with filter/include/sort/page", async () => {
+test("order-list: GETs /orders with filter/include/sort/page", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: [] } }]);
   await action.execute({ filter: JSON.stringify({ status: { not_eq: "canceled" } }) }, ctx);
   const url = new URL(calls[0].url);

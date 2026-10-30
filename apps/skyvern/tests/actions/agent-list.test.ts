@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 import agentList from "../../actions/agent-list.ts";
 
-Deno.test("agent-list: maps filters onto /v1/agents query keys", async () => {
+test("agent-list: maps filters onto /v1/agents query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ workflow_permanent_id: "wpid_1" }] }]);
   const out = await agentList.execute({
     page: 1,

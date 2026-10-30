@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentFetchDeleted from "../../actions/agent-fetch-deleted.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-fetch-deleted: calls GET /agents/fetch-deleted with no query params", async () => {
+test("agent-fetch-deleted: calls GET /agents/fetch-deleted with no query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "1", name: "Deleted Agent" }] }]);
 
   const out = await agentFetchDeleted.execute({}, ctx) as Record<string, unknown>;
@@ -12,7 +13,7 @@ Deno.test("agent-fetch-deleted: calls GET /agents/fetch-deleted with no query pa
   assertEquals(out.agents, [{ id: "1", name: "Deleted Agent" }]);
 });
 
-Deno.test("agent-fetch-deleted: returns an empty list without error", async () => {
+test("agent-fetch-deleted: returns an empty list without error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }]);
   const out = await agentFetchDeleted.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out.agents, []);

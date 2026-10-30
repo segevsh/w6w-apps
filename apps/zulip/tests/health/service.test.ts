@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   CLOUD_COMPONENT_ID,
   componentKey,
@@ -18,13 +19,13 @@ const summary = (
 });
 const CLOUD = { id: CLOUD_COMPONENT_ID, name: "Zulip Cloud", status: "operational" };
 
-Deno.test("service: allowlists only the status host, unsigned", () => {
+test("service: allowlists only the status host, unsigned", () => {
   assertEquals(service.network, { allow: ["status.zulip.com"] });
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("mapComponentStatus / componentKey", () => {
+test("mapComponentStatus / componentKey", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -34,7 +35,7 @@ Deno.test("mapComponentStatus / componentKey", () => {
   assertEquals(componentKey({}, 4), "component-4");
 });
 
-Deno.test("service: ok when Zulip Cloud is operational even if the CDN is degraded", async () => {
+test("service: ok when Zulip Cloud is operational even if the CDN is degraded", async () => {
   const { ctx } = mockCtx([{
     body: summary([CLOUD, { id: "cdn", name: "Static asset CDN", status: "degraded_performance" }, {
       id: "g",
@@ -49,7 +50,7 @@ Deno.test("service: ok when Zulip Cloud is operational even if the CDN is degrad
   assert(r.message!.includes("Static asset CDN"));
 });
 
-Deno.test("service: the Zulip Cloud component's own outage decides", async () => {
+test("service: the Zulip Cloud component's own outage decides", async () => {
   const { ctx } = mockCtx([{ body: summary([{ ...CLOUD, status: "major_outage" }]) }]);
   assertEquals((await service.check!({} as never, ctx)).state, "down");
   const m = mockCtx([{
@@ -60,7 +61,7 @@ Deno.test("service: the Zulip Cloud component's own outage decides", async () =>
   assert(r.message!.includes("1 open incident"));
 });
 
-Deno.test("service: unknown, never down, for a broken, foreign or empty status page", async () => {
+test("service: unknown, never down, for a broken, foreign or empty status page", async () => {
   assertEquals(
     (await service.check!({} as never, mockCtx([{ status: 503, body: "" }]).ctx)).state,
     "unknown",

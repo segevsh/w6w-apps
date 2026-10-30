@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import keyCreate from "../../actions/key-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("key-create: wraps a single key in the required array shape", async () => {
+test("key-create: wraps a single key in the required array shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { keys: [{ key_id: 1 }], errors: [] } }]);
   await keyCreate.execute(
     { projectId: "p1", keys: '[{"key_name":"index.welcome","translations":[]}]' },
@@ -15,7 +16,7 @@ Deno.test("key-create: wraps a single key in the required array shape", async ()
   });
 });
 
-Deno.test("key-create: surfaces per-item errors alongside successes rather than hiding them", async () => {
+test("key-create: surfaces per-item errors alongside successes rather than hiding them", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -32,7 +33,7 @@ Deno.test("key-create: surfaces per-item errors alongside successes rather than 
   assertEquals(out.errors.length, 1);
 });
 
-Deno.test("key-create: rejects invalid JSON with a labelled error rather than sending garbage", async () => {
+test("key-create: rejects invalid JSON with a labelled error rather than sending garbage", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => keyCreate.execute({ projectId: "p1", keys: "not json" }, ctx),
@@ -40,7 +41,7 @@ Deno.test("key-create: rejects invalid JSON with a labelled error rather than se
   );
 });
 
-Deno.test("key-create: is not idempotent", () => {
+test("key-create: is not idempotent", () => {
   assertEquals(keyCreate.idempotent, false);
 });
 

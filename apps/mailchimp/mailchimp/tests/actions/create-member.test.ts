@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-member.ts";
 
-Deno.test("create-member: POSTs to /lists/{id}/members with required fields", async () => {
+test("create-member: POSTs to /lists/{id}/members with required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     { listId: "abc", email: "u@example.com", status: "subscribed" },
@@ -15,7 +16,7 @@ Deno.test("create-member: POSTs to /lists/{id}/members with required fields", as
   assertEquals(body.status, "subscribed");
 });
 
-Deno.test("create-member: forwards all optional fields, snake-casing where needed", async () => {
+test("create-member: forwards all optional fields, snake-casing where needed", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     {
@@ -50,7 +51,7 @@ Deno.test("create-member: forwards all optional fields, snake-casing where neede
   assertEquals(body.interests, { xyz: true });
 });
 
-Deno.test("create-member: omits unspecified optionals from the body", async () => {
+test("create-member: omits unspecified optionals from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { listId: "abc", email: "u@example.com", status: "subscribed" },

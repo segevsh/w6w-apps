@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota, { TEAM_URL } from "../../health/quota.ts";
 
-Deno.test("quota: declares connection scope, signed credential, and reads GET /v0/teams/me", () => {
+test("quota: declares connection scope, signed credential, and reads GET /v0/teams/me", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");
   assertEquals(TEAM_URL, "https://api.exa.ai/v0/teams/me");
 });
 
-Deno.test("quota: check reports ok with both dimensions' remaining headroom when well under limits", async () => {
+test("quota: check reports ok with both dimensions' remaining headroom when well under limits", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -30,7 +31,7 @@ Deno.test("quota: check reports ok with both dimensions' remaining headroom when
   assertEquals(concurrent?.remaining, 9);
 });
 
-Deno.test("quota: check reports degraded once usage crosses the 90% warn threshold", async () => {
+test("quota: check reports degraded once usage crosses the 90% warn threshold", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -45,7 +46,7 @@ Deno.test("quota: check reports degraded once usage crosses the 90% warn thresho
   assertEquals(report.message?.includes("concurrent-requests"), true);
 });
 
-Deno.test("quota: a null limit is reported as unmetered (no `limit`), not as 100% consumed", async () => {
+test("quota: a null limit is reported as unmetered (no `limit`), not as 100% consumed", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -61,7 +62,7 @@ Deno.test("quota: a null limit is reported as unmetered (no `limit`), not as 100
   assertEquals(concurrent?.limit, undefined);
 });
 
-Deno.test("quota: check reports unknown (not degraded/down) when Exa returns an error status", async () => {
+test("quota: check reports unknown (not degraded/down) when Exa returns an error status", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: "forbidden", tag: "INSUFFICIENT_SCOPE" },

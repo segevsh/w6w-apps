@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs the message wrapped under `message` to /me/sendMail", async () => {
+test("send-message: POSTs the message wrapped under `message` to /me/sendMail", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await action.execute({
     to: ["a@b.com"],
@@ -20,7 +21,7 @@ Deno.test("send-message: POSTs the message wrapped under `message` to /me/sendMa
   assertEquals(out, { status: 202 });
 });
 
-Deno.test("send-message: only sends saveToSentItems when it is false", async () => {
+test("send-message: only sends saveToSentItems when it is false", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: undefined },
     { status: 202, body: undefined },
@@ -33,6 +34,6 @@ Deno.test("send-message: only sends saveToSentItems when it is false", async () 
   assertEquals(JSON.parse(calls[1].body!).saveToSentItems, false);
 });
 
-Deno.test("send-message: is not idempotent — sendMail has no dedupe key", () => {
+test("send-message: is not idempotent — sendMail has no dedupe key", () => {
   assertEquals(action.idempotent, false);
 });

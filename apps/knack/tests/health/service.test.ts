@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -22,7 +23,7 @@ function summary(overrides: Partial<{
   };
 }
 
-Deno.test("service: reports ok from a healthy Statuspage summary, grouped rows excluded", async () => {
+test("service: reports ok from a healthy Statuspage summary, grouped rows excluded", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "ok");
@@ -30,7 +31,7 @@ Deno.test("service: reports ok from a healthy Statuspage summary, grouped rows e
   assertEquals(calls[0].url, "https://status.knack.com/api/v2/summary.json");
 });
 
-Deno.test("service: a degraded component reports degraded, keyed by vendor id", async () => {
+test("service: a degraded component reports degraded, keyed by vendor id", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "minor" },
@@ -44,7 +45,7 @@ Deno.test("service: a degraded component reports degraded, keyed by vendor id", 
   assertEquals(result.components?.["39z0356ftqyz"].state, "degraded");
 });
 
-Deno.test("service: a major outage reports down", async () => {
+test("service: a major outage reports down", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "critical" },
@@ -55,19 +56,19 @@ Deno.test("service: a major outage reports down", async () => {
   assertEquals(result.state, "down");
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Knack's is unknown", async () => {
+test("service: a page that no longer self-identifies as Knack's is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { url: "https://status.example.com" } }) }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -76,7 +77,7 @@ Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
+test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -84,13 +85,13 @@ Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("critical"), "down");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug", () => {
+test("componentKey: prefers the vendor id, falls back to a slug", () => {
   assertEquals(componentKey({ id: "abc123" }, 0), "abc123");
   assertEquals(componentKey({ name: "Live App" }, 2), "live-app-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: declares status.knack.com as its own egress, unsigned", () => {
+test("service: declares status.knack.com as its own egress, unsigned", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.knack.com"]);
   assert(service.scope === "app" || service.scope === undefined);

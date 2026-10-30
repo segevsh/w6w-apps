@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-is-member.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("list-is-member: GETs /rest/v1/lists/{listId}/leads/ismember.json", async () => {
+test("list-is-member: GETs /rest/v1/lists/{listId}/leads/ismember.json", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -20,7 +21,7 @@ Deno.test("list-is-member: GETs /rest/v1/lists/{listId}/leads/ismember.json", as
   assertEquals(out, [{ id: 1, status: "memberof" }, { id: 2, status: "notmemberof" }]);
 });
 
-Deno.test("list-is-member: status is a string, never coerced to a boolean", () => {
+test("list-is-member: status is a string, never coerced to a boolean", () => {
   const output = action.output as Array<{ key: string }>;
   assertEquals(output.some((o) => o.key === "result"), true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/web-search.ts";
 
-Deno.test("web-search: POSTs /search with the query only", async () => {
+test("web-search: POSTs /search with the query only", async () => {
   const body = { id: "search-1", results: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ query: "latest AI developments" }, ctx);
@@ -14,13 +15,13 @@ Deno.test("web-search: POSTs /search with the query only", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("web-search: accepts an array query for multi-query search", async () => {
+test("web-search: accepts an array query for multi-query search", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ query: ["AI news", "AI funding"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).query, ["AI news", "AI funding"]);
 });
 
-Deno.test("web-search: forwards optional params with snake_case keys", async () => {
+test("web-search: forwards optional params with snake_case keys", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -51,7 +52,7 @@ Deno.test("web-search: forwards optional params with snake_case keys", async () 
   assertEquals(sent.last_updated_before_filter, "12/31/2026");
 });
 
-Deno.test("web-search: max_tokens and max_tokens_per_page are forwarded independently", async () => {
+test("web-search: max_tokens and max_tokens_per_page are forwarded independently", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ query: "x", maxTokens: 5000, maxTokensPerPage: 500 }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -60,7 +61,7 @@ Deno.test("web-search: max_tokens and max_tokens_per_page are forwarded independ
   assertEquals("search_context_size" in sent, false);
 });
 
-Deno.test("web-search: omits undefined optional params and empty arrays from the body", async () => {
+test("web-search: omits undefined optional params and empty arrays from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ query: "x", searchDomainFilter: [] }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["query"]);

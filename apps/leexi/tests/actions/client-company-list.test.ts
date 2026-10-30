@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/client-company-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client-company-list: full input maps to GET /reseller/companies", async () => {
+test("client-company-list: full input maps to GET /reseller/companies", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [{ "uuid": "x1" }],
@@ -28,7 +29,7 @@ Deno.test("client-company-list: full input maps to GET /reseller/companies", asy
   });
 });
 
-Deno.test("client-company-list: sends no authorization header of its own", async () => {
+test("client-company-list: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({
     "reseller_external_id": "sample-reseller_external_id",
@@ -38,7 +39,7 @@ Deno.test("client-company-list: sends no authorization header of its own", async
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("client-company-list: surfaces a JSON error body as a thrown error", async () => {
+test("client-company-list: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -52,7 +53,7 @@ Deno.test("client-company-list: surfaces a JSON error body as a thrown error", a
   );
 });
 
-Deno.test("client-company-list: an empty 401 body still reads as an auth failure", async () => {
+test("client-company-list: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -66,7 +67,7 @@ Deno.test("client-company-list: an empty 401 body still reads as an auth failure
   );
 });
 
-Deno.test("client-company-list: declares type, params and output", () => {
+test("client-company-list: declares type, params and output", () => {
   assertEquals(action.type, "search");
   assertEquals(action.key, "client-company-list");
   assert(Array.isArray(action.output) && action.output.length > 0);

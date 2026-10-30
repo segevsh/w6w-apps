@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-expenses.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
 
 const EXPENSE = { merchant: "Cafe", created: "2026-01-01", amount: 1234, currency: "USD" };
 
-Deno.test("create-expenses: posts a create/expenses job and returns the created list", async () => {
+test("create-expenses: posts a create/expenses job and returns the created list", async () => {
   const created = [{ ...EXPENSE, transactionID: "6720309558248016" }];
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200, transactionList: created } }]);
   const out = await action.execute!({ transactionList: [EXPENSE], employeeEmail: "u@d.com" }, ctx);
@@ -17,14 +18,14 @@ Deno.test("create-expenses: posts a create/expenses job and returns the created 
   assertEquals(out, { transactionList: created, count: 1 });
 });
 
-Deno.test("create-expenses: accepts the list as JSON text", async () => {
+test("create-expenses: accepts the list as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200, transactionList: [] } }]);
   await action.execute!({ transactionList: JSON.stringify([EXPENSE]) }, ctx);
   assertEquals(sent(calls[0]).job.inputSettings.transactionList, [EXPENSE]);
   assert(!("employeeEmail" in sent(calls[0]).job.inputSettings));
 });
 
-Deno.test("create-expenses: rejects a malformed date, a non-integer amount and an empty list before the wire", async () => {
+test("create-expenses: rejects a malformed date, a non-integer amount and an empty list before the wire", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -50,7 +51,7 @@ Deno.test("create-expenses: rejects a malformed date, a non-integer amount and a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-expenses: surfaces the vendor's HTTP-200 error envelope", async () => {
+test("create-expenses: surfaces the vendor's HTTP-200 error envelope", async () => {
   const { ctx } = mockCtx([{
     body: {
       responseMessage: "Malformed date '16-01-01'. Expected format is yyyy-MM-dd",
@@ -64,7 +65,7 @@ Deno.test("create-expenses: surfaces the vendor's HTTP-200 error envelope", asyn
   );
 });
 
-Deno.test("create-expenses: declares a non-idempotent perform with output", () => {
+test("create-expenses: declares a non-idempotent perform with output", () => {
   assertEquals([action.type, action.idempotent], ["perform", false]);
   assert(action.params!.length > 0 && Array.isArray(action.output));
 });

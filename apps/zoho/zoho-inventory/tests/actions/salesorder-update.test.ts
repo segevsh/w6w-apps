@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/salesorder-update.ts";
 
-Deno.test("salesorder-update: PUTs /salesorders/{id} with the fields to change", async () => {
+test("salesorder-update: PUTs /salesorders/{id} with the fields to change", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", salesorder: { salesorder_id: "1" } } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("salesorder-update: PUTs /salesorders/{id} with the fields to change",
   assertEquals(out, { salesorder_id: "1" });
 });
 
-Deno.test("salesorder-update: is an idempotent perform action", () => {
+test("salesorder-update: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

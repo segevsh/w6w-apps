@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/domain-rating-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = { "target": "example.com", "date": "2026-10-01" };
 
-Deno.test("domain-rating-get: GETs /site-explorer/domain-rating and returns the domain_rating with cost headers", async () => {
+test("domain-rating-get: GETs /site-explorer/domain-rating and returns the domain_rating with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { domain_rating: { a: 1 } },
     headers: {
@@ -24,14 +25,14 @@ Deno.test("domain-rating-get: GETs /site-explorer/domain-rating and returns the 
   assertEquals(u.searchParams.get("date"), "2026-10-01");
 });
 
-Deno.test("domain-rating-get: omits cost fields when headers are absent and passes optional params", async () => {
+test("domain-rating-get: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { domain_rating: { a: 1 } } }]);
   const out = await action.execute!({ ...input }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(calls.length, 1);
 });
 
-Deno.test("domain-rating-get: a 403 array error body is surfaced", async () => {
+test("domain-rating-get: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listFlows from "../../actions/list-flows.ts";
 
@@ -12,14 +13,14 @@ const OK = {
   },
 };
 
-Deno.test("list-flows: GETs the flows endpoint", async () => {
+test("list-flows: GETs the flows endpoint", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await listFlows.execute!({}, ctx);
   assertEquals(calls[0].method, "GET");
   assertEquals(calls[0].url, "https://api.manychat.com/fb/page/getFlows");
 });
 
-Deno.test("list-flows: data carries BOTH flows and folders, unlike other list endpoints", async () => {
+test("list-flows: data carries BOTH flows and folders, unlike other list endpoints", async () => {
   const { ctx } = mockCtx([OK]);
   const out = await listFlows.execute!({}, ctx) as {
     data: { flows: unknown[]; folders: unknown[] };
@@ -27,7 +28,7 @@ Deno.test("list-flows: data carries BOTH flows and folders, unlike other list en
   assertEquals(Object.keys(out.data).sort(), ["flows", "folders"]);
 });
 
-Deno.test("list-flows: a flow's id is the opaque `ns` string that Send Flow takes", async () => {
+test("list-flows: a flow's id is the opaque `ns` string that Send Flow takes", async () => {
   const { ctx } = mockCtx([OK]);
   const out = await listFlows.execute!({}, ctx) as { data: { flows: Array<{ ns: string }> } };
   assertEquals(typeof out.data.flows[0].ns, "string");

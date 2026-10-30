@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exposes every action with a unique kebab-case key", () => {
+test("index: exposes every action with a unique kebab-case key", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 18);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -10,7 +11,7 @@ Deno.test("index: exposes every action with a unique kebab-case key", () => {
   }
 });
 
-Deno.test("index: every action declares a description, output and a valid type", () => {
+test("index: every action declares a description, output and a valid type", () => {
   for (const action of app.actions) {
     assert(action.description, `${action.key} is missing a description`);
     assert(action.output, `${action.key} declares no output`);
@@ -22,7 +23,7 @@ Deno.test("index: every action declares a description, output and a valid type",
   }
 });
 
-Deno.test("index: every perform action states whether it is idempotent", () => {
+test("index: every perform action states whether it is idempotent", () => {
   for (const action of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(
       typeof action.idempotent,
@@ -32,7 +33,7 @@ Deno.test("index: every perform action states whether it is idempotent", () => {
   }
 });
 
-Deno.test("index: only the converging writes claim idempotency", () => {
+test("index: only the converging writes claim idempotency", () => {
   const idempotent = app.actions
     .filter((a) => a.type === "perform" && a.idempotent)
     .map((a) => a.key)
@@ -50,7 +51,7 @@ Deno.test("index: only the converging writes claim idempotency", () => {
   ]);
 });
 
-Deno.test("index: everything that mints or notifies is marked non-idempotent", () => {
+test("index: everything that mints or notifies is marked non-idempotent", () => {
   const notIdempotent = app.actions
     .filter((a) => a.type === "perform" && !a.idempotent)
     .map((a) => a.key)
@@ -60,15 +61,15 @@ Deno.test("index: everything that mints or notifies is marked non-idempotent", (
   assertEquals(notIdempotent, ["copy-item", "create-folder", "send-sharing-invite"]);
 });
 
-Deno.test("index: declares the oauth2 auth method only", () => {
+test("index: declares the oauth2 auth method only", () => {
   assertEquals(app.auth.map((a) => a.key), ["oauth2"]);
 });
 
-Deno.test("index: declares the service, quota and request-rate health checks", () => {
+test("index: declares the service, quota and request-rate health checks", () => {
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota", "request-rate"]);
 });
 
-Deno.test("index: every health check answers a different question", () => {
+test("index: every health check answers a different question", () => {
   // "is the vendor up" / "is there room" / "is there rate headroom", plus the
   // derived auth:oauth2 for "is this credential live".
   assertEquals(app.healthChecks.map((h) => h.kind), ["service", "quota", "quota"]);
@@ -78,12 +79,12 @@ Deno.test("index: every health check answers a different question", () => {
   );
 });
 
-Deno.test("index: actions are grouped under a resource", () => {
+test("index: actions are grouped under a resource", () => {
   const resources = new Set(app.actions.map((a) => a.resource));
   assertEquals([...resources].sort(), ["drive", "item", "permission"]);
 });
 
-Deno.test("index: the item-addressed and drive-addressed actions partition the App", () => {
+test("index: the item-addressed and drive-addressed actions partition the App", () => {
   // Derived from the declared params rather than hand-listed, so an action that
   // loses an addressing form fails here rather than quietly shipping.
   const paramKeys = (key: string) =>
@@ -126,7 +127,7 @@ Deno.test("index: the item-addressed and drive-addressed actions partition the A
   }
 });
 
-Deno.test("index: every action that can reach another drive takes a drive id", () => {
+test("index: every action that can reach another drive takes a drive id", () => {
   // The two exceptions are structural, not oversights: `/me/drives` IS the
   // drive-discovery call, and sharedWithMe is `/me`-only in v1.0, so offering a
   // drive id on either would be a lie.
@@ -136,7 +137,7 @@ Deno.test("index: every action that can reach another drive takes a drive id", (
   assertEquals(withoutDriveId, ["list-drives", "list-shared-with-me"]);
 });
 
-Deno.test("index: no action declares a $filter param — no endpoint here supports one", () => {
+test("index: no action declares a $filter param — no endpoint here supports one", () => {
   // children, search and delta each enumerate their query options, and $filter
   // is on none of them.
   for (const action of app.actions) {
@@ -145,7 +146,7 @@ Deno.test("index: no action declares a $filter param — no endpoint here suppor
   }
 });
 
-Deno.test("index: every credential-shaped param is a secret", () => {
+test("index: every credential-shaped param is a secret", () => {
   const suspicious: string[] = [];
   for (const action of app.actions) {
     for (const param of action.params ?? []) {
@@ -164,7 +165,7 @@ Deno.test("index: every credential-shaped param is a secret", () => {
   assertEquals(password?.type, "secret");
 });
 
-Deno.test("index: the only param named `token` is a delta cursor, not a credential", () => {
+test("index: the only param named `token` is a delta cursor, not a credential", () => {
   // Deliberately outside the scan above. `list-changes.token` is the delta
   // function's own parameter — it rides in the query string, is echoed back by
   // Graph inside `@odata.deltaLink`, and grants nothing without a live

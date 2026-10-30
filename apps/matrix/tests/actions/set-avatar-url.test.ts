@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import setAvatarUrl from "../../actions/set-avatar-url.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("set-avatar-url: PUTs /profile/{connection's own userId}/avatar_url", async () => {
+test("set-avatar-url: PUTs /profile/{connection's own userId}/avatar_url", async () => {
   const { ctx, calls } = mockMatrixCtx([{ body: {} }]);
   const result = await setAvatarUrl.execute({ avatarUrl: "mxc://example.org/abc" }, ctx);
   assertEquals(

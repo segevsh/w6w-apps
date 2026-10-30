@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldCreate from "../../actions/custom-field-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-create: POSTs /beta/workspaces/{id}/custom-fields", async () => {
+test("custom-field-create: POSTs /beta/workspaces/{id}/custom-fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cf1", type: "text" } }]);
   await customFieldCreate.execute({ workspaceId: "ws1", name: "Owner", type: "text" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("custom-field-create: POSTs /beta/workspaces/{id}/custom-fields", asyn
   assertEquals(bodyOf(calls[0]), { name: "Owner", type: "text" });
 });
 
-Deno.test("custom-field-create: metadata is sent as parsed JSON when supplied", async () => {
+test("custom-field-create: metadata is sent as parsed JSON when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customFieldCreate.execute({
     workspaceId: "ws1",
@@ -30,7 +31,7 @@ Deno.test("custom-field-create: metadata is sent as parsed JSON when supplied", 
 });
 
 /** The twelve documented types, in the vendor's own casing. */
-Deno.test("custom-field-create: offers exactly Motion's twelve field types", () => {
+test("custom-field-create: offers exactly Motion's twelve field types", () => {
   const values = ((customFieldCreate.params?.find((p) => p.key === "type")?.options ??
     []) as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values, [

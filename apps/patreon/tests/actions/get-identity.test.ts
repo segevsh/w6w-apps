@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-identity.ts";
 
-Deno.test("get-identity: GETs /identity with sparse fieldsets and include", async () => {
+test("get-identity: GETs /identity with sparse fieldsets and include", async () => {
   const body = { data: { id: "u1", type: "user", attributes: { full_name: "Ada" } } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({
@@ -17,7 +18,7 @@ Deno.test("get-identity: GETs /identity with sparse fieldsets and include", asyn
   assertEquals(out, body);
 });
 
-Deno.test("get-identity: works with no params at all", async () => {
+test("get-identity: works with no params at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "u1", type: "user" } } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

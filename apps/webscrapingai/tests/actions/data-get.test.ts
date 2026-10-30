@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/data-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const doc = {
   data: { video_id: "x", title: "T" },
 };
 
-Deno.test("data-get: GETs /data with only the url by default", async () => {
+test("data-get: GETs /data with only the url by default", async () => {
   const { ctx, calls } = mockCtx([{ body: doc }]);
   assertEquals(await action.execute({ url: "https://youtu.be/x" }, ctx), doc);
   const u = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("data-get: GETs /data with only the url by default", async () => {
   assertEquals([...u.searchParams.keys()], ["url"]);
 });
 
-Deno.test("data-get: transcript flags and country are forwarded; the language needs transcript", async () => {
+test("data-get: transcript flags and country are forwarded; the language needs transcript", async () => {
   const { ctx, calls } = mockCtx([{ body: doc }, { body: doc }]);
   await action.execute({
     url: "https://youtu.be/x",
@@ -32,7 +33,7 @@ Deno.test("data-get: transcript flags and country are forwarded; the language ne
   assertEquals(new URL(calls[1].url).searchParams.has("transcript_language"), false);
 });
 
-Deno.test("data-get: a blank url makes no call; a 500 surfaces the vendor message", async () => {
+test("data-get: a blank url makes no call; a 500 surfaces the vendor message", async () => {
   const none = mockCtx();
   await assertRejects(async () => await action.execute({ url: "" }, none.ctx), Error, "required");
   assertEquals(none.calls.length, 0);

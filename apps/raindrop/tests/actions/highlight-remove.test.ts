@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import highlightRemove from "../../actions/highlight-remove.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
  * `text`. Nothing about the request says "delete", which is the whole reason
  * this is its own action — and this test pins the exact encoding.
  */
-Deno.test('highlight-remove: PUTs {_id, text: ""} — the vendor\'s delete encoding', async () => {
+test('highlight-remove: PUTs {_id, text: ""} — the vendor\'s delete encoding', async () => {
   const { ctx, calls } = mockCtx([{ body: item({ highlights: [] }) }]);
   const out = await highlightRemove.execute(
     { raindropId: 373777232, highlightId: "62388e9e48b63606f41e44a6" },
@@ -28,12 +29,12 @@ Deno.test('highlight-remove: PUTs {_id, text: ""} — the vendor\'s delete encod
  * the caller supplied — so this action can only ever delete the one highlight it
  * was given, and can never be steered into writing text.
  */
-Deno.test("highlight-remove: exposes no text parameter to steer the delete", () => {
+test("highlight-remove: exposes no text parameter to steer the delete", () => {
   assertEquals(highlightRemove.params?.some((p) => p.key === "text"), false);
   assertEquals(highlightRemove.params?.map((p) => p.key), ["raindropId", "highlightId"]);
 });
 
-Deno.test("highlight-remove: refuses an empty highlight id without a request", async () => {
+test("highlight-remove: refuses an empty highlight id without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(highlightRemove.execute({ raindropId: 1, highlightId: "" }, ctx)),
@@ -42,6 +43,6 @@ Deno.test("highlight-remove: refuses an empty highlight id without a request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("highlight-remove: is idempotent", () => {
+test("highlight-remove: is idempotent", () => {
   assertEquals(highlightRemove.idempotent, true);
 });

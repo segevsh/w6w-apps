@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import membershipUpdate from "../../actions/membership-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("membership-update: PATCHes cancelAtPeriodEnd and metadata", async () => {
+test("membership-update: PATCHes cancelAtPeriodEnd and metadata", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "mem_1", cancel_at_period_end: true } }]);
   await membershipUpdate.execute(
     { membershipId: "mem_1", cancelAtPeriodEnd: true, metadata: { seat: "42" } },
@@ -17,12 +18,12 @@ Deno.test("membership-update: PATCHes cancelAtPeriodEnd and metadata", async () 
   });
 });
 
-Deno.test("membership-update: metadata accepts the JSON-string form a user types", async () => {
+test("membership-update: metadata accepts the JSON-string form a user types", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "mem_1" } }]);
   await membershipUpdate.execute({ membershipId: "mem_1", metadata: '{"seat":"7"}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).metadata, { seat: "7" });
 });
 
-Deno.test("membership-update: is declared idempotent (PATCH is a full overwrite)", () => {
+test("membership-update: is declared idempotent (PATCH is a full overwrite)", () => {
   assertEquals(membershipUpdate.idempotent, true);
 });

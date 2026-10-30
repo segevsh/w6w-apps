@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is an apiKey method carrying the token as a query param", () => {
+test("api-key: is an apiKey method carrying the token as a query param", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "query", name: "token" });
@@ -12,7 +13,7 @@ Deno.test("api-key: is an apiKey method carrying the token as a query param", ()
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign appends token to the query string, not a header", async () => {
+test("api-key: sign appends token to the query string, not a header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://onesimpleapi.com/api/qr_code?message=hi",
@@ -25,7 +26,7 @@ Deno.test("api-key: sign appends token to the query string, not a header", async
   assertEquals(out.headers["authorization"], undefined);
 });
 
-Deno.test("api-key: test hits exchange_rate?to_currency=USD and reports ok on JSON 200", async () => {
+test("api-key: test hits exchange_rate?to_currency=USD and reports ok on JSON 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { to_value: 1 } }]);
   const result = await auth.test({ credential: { token: "tok-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -36,7 +37,7 @@ Deno.test("api-key: test hits exchange_rate?to_currency=USD and reports ok on JS
   assertEquals(url.searchParams.get("token"), "tok-abc");
 });
 
-Deno.test("api-key: test reports failure when the API redirects to /login (invalid token quirk)", async () => {
+test("api-key: test reports failure when the API redirects to /login (invalid token quirk)", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -49,14 +50,14 @@ Deno.test("api-key: test reports failure when the API redirects to /login (inval
   assert(result.message?.includes("JSON"));
 });
 
-Deno.test("api-key: test reports failure with status code on a JSON error response", async () => {
+test("api-key: test reports failure with status code on a JSON error response", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "unauthorized" } }]);
   const result = await auth.test({ credential: { token: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("401"));
 });
 
-Deno.test("api-key: test reports failure when the credential is missing a token", async () => {
+test("api-key: test reports failure when the credential is missing a token", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

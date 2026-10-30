@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-individual-reveal.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-individual-reveal: GETs by id and returns the data member", async () => {
+test("get-individual-reveal: GETs by id and returns the data member", async () => {
   const data = {
     id: 7,
     status: "finished",
@@ -19,14 +20,14 @@ Deno.test("get-individual-reveal: GETs by id and returns the data member", async
   assertEquals(out, data);
 });
 
-Deno.test("get-individual-reveal: a billing failure is a 200 and surfaces as a failed record", async () => {
+test("get-individual-reveal: a billing failure is a 200 and surfaces as a failed record", async () => {
   const data = { id: 8, status: "failed", is_complete: true, fail_error: "billing_issue" };
   const { ctx } = mockCtx([{ body: { status: { code: 200 }, data } }]);
   const out = await exec(action, { id: "8" }, ctx);
   assertEquals(out.fail_error, "billing_issue");
 });
 
-Deno.test("get-individual-reveal: rejects a non-numeric id before any request; 404 fails", async () => {
+test("get-individual-reveal: rejects a non-numeric id before any request; 404 fails", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { id: "../lists" }, none.ctx), Error, "numeric");
   assertEquals(none.calls.length, 0);

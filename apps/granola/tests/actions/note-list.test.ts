@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import noteList from "../../actions/note-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("note-list: maps every filter to the vendor's snake_case query", async () => {
+test("note-list: maps every filter to the vendor's snake_case query", async () => {
   const page = { notes: [{ id: "not_1d3tmYTlCICgjy" }], hasMore: true, cursor: "c2" };
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await noteList.execute({
@@ -27,13 +28,13 @@ Deno.test("note-list: maps every filter to the vendor's snake_case query", async
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("note-list: no filters sends no query string", async () => {
+test("note-list: no filters sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { notes: [], hasMore: false, cursor: null } }]);
   await noteList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("note-list: a vendor error surfaces its code and message", async () => {
+test("note-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BAD_REQUEST", message: "bad date" } }]);
   const err = await assertRejects(async () => await noteList.execute({ createdAfter: "x" }, ctx));
   assert(String((err as Error).message).includes("400 (BAD_REQUEST)"));

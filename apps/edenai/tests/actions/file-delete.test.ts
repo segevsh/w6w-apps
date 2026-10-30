@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fileDelete from "../../actions/file-delete.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-delete: posts the id list to the by-ids route, never the delete-all route", async () => {
+test("file-delete: posts the id list to the by-ids route, never the delete-all route", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted_count: 2 } }]);
   const out = await fileDelete.execute({ fileIds: "a, b\n" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("file-delete: posts the id list to the by-ids route, never the delete-
   assertEquals(out, { deletedCount: 2 });
 });
 
-Deno.test("file-delete: zero or more than 100 ids fails before any request", async () => {
+test("file-delete: zero or more than 100 ids fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await fileDelete.execute({ fileIds: " , " }, ctx),

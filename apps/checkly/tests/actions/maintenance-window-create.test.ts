@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/maintenance-window-create.ts";
 
@@ -9,7 +10,7 @@ const WINDOW = {
 };
 
 /** Silencing keeps the results; pausing loses them. */
-Deno.test("maintenance-window-create: silence and pause are opposite flags", async () => {
+test("maintenance-window-create: silence and pause are opposite flags", async () => {
   const silence = mockCtx([{ status: 201, body: { id: 1 } }]);
   await action.execute!({ ...WINDOW, mode: "silence" }, silence.ctx);
   const a = JSON.parse(silence.calls[0].body!);
@@ -21,19 +22,19 @@ Deno.test("maintenance-window-create: silence and pause are opposite flags", asy
   assertEquals([b.silenceAllAlerts, b.pauseAllChecks], [false, true]);
 });
 
-Deno.test("maintenance-window-create: silencing is the default", async () => {
+test("maintenance-window-create: silencing is the default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!(WINDOW, ctx);
   assertEquals(JSON.parse(calls[0].body!).silenceAllAlerts, true);
 });
 
-Deno.test("maintenance-window-create: tags scope the window", async () => {
+test("maintenance-window-create: tags scope the window", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ ...WINDOW, tags: "production, api" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).tags, ["production", "api"]);
 });
 
-Deno.test("maintenance-window-create: a repeat sends its interval, one-off does not", async () => {
+test("maintenance-window-create: a repeat sends its interval, one-off does not", async () => {
   const once = mockCtx([{ status: 201, body: {} }]);
   await action.execute!(WINDOW, once.ctx);
   assertEquals(JSON.parse(once.calls[0].body!).repeatInterval, undefined);
@@ -45,7 +46,7 @@ Deno.test("maintenance-window-create: a repeat sends its interval, one-off does 
 });
 
 /** A window that ends before it starts silences nothing, silently. */
-Deno.test("maintenance-window-create: an end before the start is refused", async () => {
+test("maintenance-window-create: an end before the start is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -59,7 +60,7 @@ Deno.test("maintenance-window-create: an end before the start is refused", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("maintenance-window-create: name and both times are required", async () => {
+test("maintenance-window-create: name and both times are required", async () => {
   for (
     const input of [
       { startsAt: WINDOW.startsAt, endsAt: WINDOW.endsAt },

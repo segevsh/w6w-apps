@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import billList from "../../actions/bill-list.ts";
 import { assertRejects, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("bill-list: GET /bills with paging, filters and metadata, normalised to items + total", async () => {
+test("bill-list: GET /bills with paging, filters and metadata, normalised to items + total", async () => {
   const rows = [{ id: "1" }, { id: "2" }];
   const { ctx, calls } = mockCtx([{ body: { metadata: { total: 42 }, data: rows } }]);
   const out = await billList.execute(
@@ -21,23 +22,23 @@ Deno.test("bill-list: GET /bills with paging, filters and metadata, normalised t
   assertEquals(out, { items: rows, total: 42 });
 });
 
-Deno.test("bill-list: a bare array body still yields items with a null total", async () => {
+test("bill-list: a bare array body still yields items with a null total", async () => {
   const { ctx } = mockCtx([{ body: [{ id: "9" }] }]);
   assertEquals(await billList.execute({}, ctx), { items: [{ id: "9" }], total: null });
 });
 
-Deno.test("bill-list: a limit above 30 is rejected locally and no request is made", async () => {
+test("bill-list: a limit above 30 is rejected locally and no request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => billList.execute({ limit: 31 }, ctx), Error, "limit must be");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bill-list: a vendor error surfaces the vendor's own wording", async () => {
+test("bill-list: a vendor error surfaces the vendor's own wording", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "limit too large", code: 400 } }]);
   await assertRejects(() => billList.execute({}, ctx), Error, "limit too large");
 });
 
-Deno.test("bill-list: declares search type and a 30-capped limit param", () => {
+test("bill-list: declares search type and a 30-capped limit param", () => {
   assertEquals(billList.type, "search");
   const limit = billList.params!.find((p) => p.key === "limit")!;
   assertEquals(limit.validation?.max, 30);

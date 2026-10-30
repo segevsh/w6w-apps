@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: reads both monthly and interval windows from headers", async () => {
+test("quota: reads both monthly and interval windows from headers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     headers: {
@@ -20,7 +21,7 @@ Deno.test("quota: reads both monthly and interval windows from headers", async (
   assertEquals(report.quota?.find((q) => q.id === "interval")?.remaining, 9);
 });
 
-Deno.test("quota: exhausted interval budget reports down", async () => {
+test("quota: exhausted interval budget reports down", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "ratelimit-monthly-limit": "10000",
@@ -33,7 +34,7 @@ Deno.test("quota: exhausted interval budget reports down", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: low headroom (<10%) reports degraded", async () => {
+test("quota: low headroom (<10%) reports degraded", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "ratelimit-monthly-limit": "10000",
@@ -44,13 +45,13 @@ Deno.test("quota: low headroom (<10%) reports degraded", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: no RateLimit-* headers at all reports unknown", async () => {
+test("quota: no RateLimit-* headers at all reports unknown", async () => {
   const { ctx } = mockCtx([{ headers: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: is signed, informational, connection-scoped", () => {
+test("quota: is signed, informational, connection-scoped", () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");

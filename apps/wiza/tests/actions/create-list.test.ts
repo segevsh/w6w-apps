@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action, { validItem } from "../../actions/create-list.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const items = [
   { email: "stephen@wiza.co" },
 ];
 
-Deno.test("validItem: accepts the three documented shapes only", () => {
+test("validItem: accepts the three documented shapes only", () => {
   assert(validItem({ full_name: "A", domain: "a.co" }));
   assert(validItem({ profile_url: "u" }));
   assert(validItem({ email: "a@b.co" }));
@@ -22,7 +23,7 @@ Deno.test("validItem: accepts the three documented shapes only", () => {
   assert(!validItem(null));
 });
 
-Deno.test("create-list: posts the nested list envelope with defaulted email options", async () => {
+test("create-list: posts the nested list envelope with defaulted email options", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   const out = await exec(action, { name: "L", enrichmentLevel: "partial", items }, ctx);
   assertEquals(calls[0].url, "https://wiza.co/api/lists");
@@ -37,7 +38,7 @@ Deno.test("create-list: posts the nested list envelope with defaulted email opti
   assertEquals(out, listBody.data);
 });
 
-Deno.test("create-list: items may be a JSON string; callback and skip_duplicates are passed through", async () => {
+test("create-list: items may be a JSON string; callback and skip_duplicates are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   await exec(action, {
     name: "L",
@@ -54,7 +55,7 @@ Deno.test("create-list: items may be a JSON string; callback and skip_duplicates
   assertEquals((list.email_options as Record<string, boolean>).accept_generic, false);
 });
 
-Deno.test("create-list: bad items, over 2500 items, and no accepted email type never reach the API", async () => {
+test("create-list: bad items, over 2500 items, and no accepted email type never reach the API", async () => {
   const none = mockCtx();
   await assertRejects(
     () => exec(action, { name: "L", enrichmentLevel: "partial", items: [] }, none.ctx),
@@ -92,7 +93,7 @@ Deno.test("create-list: bad items, over 2500 items, and no accepted email type n
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("create-list: a 503 maintenance pause fails with the vendor message", async () => {
+test("create-list: a 503 maintenance pause fails with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 503,
     body: { status: { code: 503, message: "try again shortly" } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarGet from "../../actions/calendar-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-get: calls GET /v1/calendars/get with no params", async () => {
+test("calendar-get: calls GET /v1/calendars/get with no params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cal-1", name: "My Calendar" } }]);
   const out = await calendarGet.execute({}, ctx) as { name: string };
 

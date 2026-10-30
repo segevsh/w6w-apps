@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const comps = (over: Record<string, string> = {}) => {
 const run = (responses: Parameters<typeof mockCtx>[0]) =>
   service.check!({} as never, mockCtx(responses).ctx);
 
-Deno.test("service: all operational is ok, group rows are skipped, and only the status host is hit", async () => {
+test("service: all operational is ok, group rows are skipped, and only the status host is hit", async () => {
   const { ctx, calls } = mockCtx([{ body: { page, components: comps() } }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -29,7 +30,7 @@ Deno.test("service: all operational is ok, group rows are skipped, and only the 
   assertEquals(service.network, { allow: ["status.landbot.io"] });
 });
 
-Deno.test("service: Chats decides down; channels cap at degraded; other components are detail", async () => {
+test("service: Chats decides down; channels cap at degraded; other components are detail", async () => {
   const chats = await run([{
     body: { page, components: comps({ "7g64ghy9tqmt": "major_outage" }) },
   }]);
@@ -49,7 +50,7 @@ Deno.test("service: Chats decides down; channels cap at degraded; other componen
   assertEquals(builder.message?.includes("Builder"), true);
 });
 
-Deno.test("service: wrong page, missing Chats or HTTP failure is unknown, never down", async () => {
+test("service: wrong page, missing Chats or HTTP failure is unknown, never down", async () => {
   assertEquals(
     (await run([{ body: { page: { id: "zzz" }, components: comps() } }])).state,
     "unknown",
@@ -65,7 +66,7 @@ Deno.test("service: wrong page, missing Chats or HTTP failure is unknown, never 
   assertEquals((await run([{ body: "not json", headers: {} }])).state, "unknown");
 });
 
-Deno.test("service: component status mapping", () => {
+test("service: component status mapping", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

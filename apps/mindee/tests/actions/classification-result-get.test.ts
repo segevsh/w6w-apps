@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import classificationResultGet from "../../actions/classification-result-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("classification-result-get: fetches the classification results route by id", async () => {
+test("classification-result-get: fetches the classification results route by id", async () => {
   const { ctx, calls } = mockCtx([
     { body: { inference: { result: { classification: { document_type: "INVOICE" } } } } },
   ]);

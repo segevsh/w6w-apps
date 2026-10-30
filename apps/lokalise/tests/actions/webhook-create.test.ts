@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: sends url and events, joining the multiselect into an array", async () => {
+test("webhook-create: sends url and events, joining the multiselect into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { webhook_id: "w1", secret: "shh" } }]);
   await webhookCreate.execute(
     {
@@ -20,7 +21,7 @@ Deno.test("webhook-create: sends url and events, joining the multiselect into an
   });
 });
 
-Deno.test("webhook-create: forwards branch and event_lang_map", async () => {
+test("webhook-create: forwards branch and event_lang_map", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookCreate.execute(
     {
@@ -43,6 +44,6 @@ Deno.test("webhook-create: forwards branch and event_lang_map", async () => {
  * Unlike Apify's Create Webhook, Lokalise documents no idempotency key here —
  * a retry duplicates the subscription.
  */
-Deno.test("webhook-create: is not idempotent", () => {
+test("webhook-create: is not idempotent", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

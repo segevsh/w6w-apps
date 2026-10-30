@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolResizeVideo from "../../actions/tool-resize-video.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-resize-video: POST /tools/resize_video", async () => {
+test("tool-resize-video: POST /tools/resize_video", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "resize_video" } }]);
   await toolResizeVideo.execute(
     { videoUrl: "https://x/in.mp4", width: 1080, height: 1920, fit: "cover" },
@@ -18,7 +19,7 @@ Deno.test("tool-resize-video: POST /tools/resize_video", async () => {
   });
 });
 
-Deno.test("tool-resize-video: requires width and height", async () => {
+test("tool-resize-video: requires width and height", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() =>
     toolResizeVideo.execute({ videoUrl: "https://x/in.mp4" } as never, ctx)

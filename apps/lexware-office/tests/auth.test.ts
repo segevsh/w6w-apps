@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import apiKey from "../auth/api-key.ts";
 import { gateway, mockCtx, pathOf } from "./_helpers.ts";
 
@@ -8,12 +9,12 @@ const req = () => ({
   headers: {} as Record<string, string>,
 });
 
-Deno.test("api-key: is a bearer method with one secret field", () => {
+test("api-key: is a bearer method with one secret field", () => {
   assertEquals(apiKey.type, "bearer");
   assertEquals(apiKey.fields?.map((f) => [f.key, f.type]), [["apiKey", "secret"]]);
 });
 
-Deno.test("api-key: sign stamps the bearer header", async () => {
+test("api-key: sign stamps the bearer header", async () => {
   const out = await apiKey.sign!(
     { request: req(), credential: { apiKey: "k-123" } } as never,
     mockCtx().ctx,
@@ -21,7 +22,7 @@ Deno.test("api-key: sign stamps the bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer k-123");
 });
 
-Deno.test("api-key: test probes GET /v1/profile with the key and passes on 200", async () => {
+test("api-key: test probes GET /v1/profile with the key and passes on 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { organizationId: "o", companyName: "T" } }]);
   const out = await apiKey.test({ credential: { apiKey: " k " } } as never, ctx);
   assertEquals(out, { ok: true });
@@ -29,7 +30,7 @@ Deno.test("api-key: test probes GET /v1/profile with the key and passes on 200",
   assertEquals(calls[0].headers["authorization"], "Bearer k");
 });
 
-Deno.test("api-key: test classifies from the body message, not the status", async () => {
+test("api-key: test classifies from the body message, not the status", async () => {
   const bad = mockCtx([{ status: 401, body: gateway("Unauthorized") }]);
   const r1 = await apiKey.test({ credential: { apiKey: "x" } } as never, bad.ctx);
   assertEquals(r1.ok, false);
@@ -58,14 +59,14 @@ Deno.test("api-key: test classifies from the body message, not the status", asyn
   assertEquals(r5.message?.includes("500"), true);
 });
 
-Deno.test("api-key: test fails without a network call when the key is empty", async () => {
+test("api-key: test fails without a network call when the key is empty", async () => {
   const { ctx, calls } = mockCtx();
   const out = await apiKey.test({ credential: { apiKey: "  " } } as never, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect keeps the company name only, and is silent on failure", async () => {
+test("api-key: afterConnect keeps the company name only, and is silent on failure", async () => {
   const ok = mockCtx([{
     body: {
       organizationId: "o1",

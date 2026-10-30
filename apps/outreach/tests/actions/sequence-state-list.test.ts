@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sequenceStateList from "../../actions/sequence-state-list.ts";
 import { collection, errorsBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 type Out = { data: unknown[]; nextCursor?: string; meta: Record<string, unknown> };
 
-Deno.test("sequence-state-list: GET /sequenceStates with JSON:API headers and cheap defaults", async () => {
+test("sequence-state-list: GET /sequenceStates with JSON:API headers and cheap defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("sequenceState", [1, 2]) }]);
   const out = await sequenceStateList.execute({}, ctx) as Out;
 
@@ -17,7 +18,7 @@ Deno.test("sequence-state-list: GET /sequenceStates with JSON:API headers and ch
   assertEquals(out.nextCursor, undefined);
 });
 
-Deno.test("sequence-state-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
+test("sequence-state-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("sequenceState", []) }]);
   await sequenceStateList.execute({
     filter: { id: "1..5", owner: { id: "7" }, name: ["a", "b"] },
@@ -42,20 +43,20 @@ Deno.test("sequence-state-list: filters, sort, include, sparse fields and cursor
   });
 });
 
-Deno.test("sequence-state-list: a JSON-string filter is accepted", async () => {
+test("sequence-state-list: a JSON-string filter is accepted", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("sequenceState", []) }]);
   await sequenceStateList.execute({ filter: '{"state":"incomplete"}' }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[state]"], "incomplete");
 });
 
-Deno.test("sequence-state-list: extracts the next page cursor from links.next", async () => {
+test("sequence-state-list: extracts the next page cursor from links.next", async () => {
   const next = "https://api.outreach.io/api/v2/sequenceStates?page[size]=2&page[after]=eyJ4Ijox";
   const { ctx } = mockCtx([{ body: collection("sequenceState", [1, 2], next) }]);
   const out = await sequenceStateList.execute({ pageSize: 2 }, ctx) as Out;
   assertEquals(out.nextCursor, "eyJ4Ijox");
 });
 
-Deno.test("sequence-state-list: surfaces the vendor's error id and detail", async () => {
+test("sequence-state-list: surfaces the vendor's error id and detail", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorsBody("unauthorizedOauthScope", "Unauthorized OAuth Scope", "Missing scope"),

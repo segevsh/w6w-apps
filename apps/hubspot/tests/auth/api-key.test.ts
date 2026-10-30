@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares hapikey as an apiKey-in-query field", () => {
+test("api-key: declares hapikey as an apiKey-in-query field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "query");
@@ -13,7 +14,7 @@ Deno.test("api-key: declares hapikey as an apiKey-in-query field", () => {
   );
 });
 
-Deno.test("api-key: sign appends hapikey to the URL", async () => {
+test("api-key: sign appends hapikey to the URL", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.hubapi.com/crm/v3/objects/contacts",
@@ -25,7 +26,7 @@ Deno.test("api-key: sign appends hapikey to the URL", async () => {
   assertEquals(url.searchParams.get("hapikey"), "legacy-key");
 });
 
-Deno.test("api-key: test probes /crm/v3/objects/contacts with the hapikey query param", async () => {
+test("api-key: test probes /crm/v3/objects/contacts with the hapikey query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: { apiKey: "legacy-key" } }, ctx);
   assertEquals(result.ok, true);

@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadNoteCreate from "../../actions/lead-note-create.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-note-create: metadata — not idempotent, appends", () => {
+test("lead-note-create: metadata — not idempotent, appends", () => {
   assertEquals(leadNoteCreate.type, "perform");
   assertEquals(leadNoteCreate.idempotent, false);
 });
 
-Deno.test("lead-note-create: POST /leads/{leadId}/notes with {title, desc}", async () => {
+test("lead-note-create: POST /leads/{leadId}/notes with {title, desc}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Created", "note-1") }]);
   const result = asMutation(
     await leadNoteCreate.execute({
@@ -25,7 +26,7 @@ Deno.test("lead-note-create: POST /leads/{leadId}/notes with {title, desc}", asy
   assertEquals(result.id, "note-1");
 });
 
-Deno.test("lead-note-create: desc is optional", async () => {
+test("lead-note-create: desc is optional", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Created", "note-1") }]);
   await leadNoteCreate.execute({ leadId: "l1", title: "Just a title" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { title: "Just a title" });

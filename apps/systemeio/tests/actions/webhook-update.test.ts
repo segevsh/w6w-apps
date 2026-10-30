@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: merge-patches /api/webhooks/{id}, never sends url", async () => {
+test("webhook-update: merge-patches /api/webhooks/{id}, never sends url", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "wh_1", active: false } }]);
   await webhookUpdate.execute({ id: "wh_1", active: false }, ctx);
 

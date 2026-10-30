@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailCreate, { toMessageHeaderPairs } from "../../actions/email-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-create: POSTs /email with the documented field names", async () => {
+test("email-create: POSTs /email with the documented field names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { message: "OK" } }]);
   const out = await emailCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("email-create: POSTs /email with the documented field names", async ()
   assertEquals(out.message, "OK");
 });
 
-Deno.test("email-create: message headers become [key, value] pairs on the wire", async () => {
+test("email-create: message headers become [key, value] pairs on the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { message: "OK" } }]);
   await emailCreate.execute(
     {
@@ -41,7 +42,7 @@ Deno.test("email-create: message headers become [key, value] pairs on the wire",
   assertEquals(body.message_headers, [["X-Envelope-From", "orig@example.com"]]);
 });
 
-Deno.test("email-create: custom parameters become query-string params", async () => {
+test("email-create: custom parameters become query-string params", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { message: "OK" } }]);
   await emailCreate.execute(
     {
@@ -56,11 +57,11 @@ Deno.test("email-create: custom parameters become query-string params", async ()
   assertEquals(queryOf(calls[0].url)["user.name"], "John");
 });
 
-Deno.test("toMessageHeaderPairs: empty object yields undefined, not an empty array", () => {
+test("toMessageHeaderPairs: empty object yields undefined, not an empty array", () => {
   assertEquals(toMessageHeaderPairs({}), undefined);
   assertEquals(toMessageHeaderPairs(undefined), undefined);
 });
 
-Deno.test("email-create: is not idempotent", () => {
+test("email-create: is not idempotent", () => {
   assertEquals(emailCreate.idempotent, false);
 });

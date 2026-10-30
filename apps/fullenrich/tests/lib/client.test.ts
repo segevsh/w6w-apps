@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { buildQuery, errorText, FullEnrichClient, jsonValue, strList } from "../../lib/client.ts";
 import { mergeFilters, valueFilter } from "../../lib/search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: strList, jsonValue and buildQuery normalise form input", () => {
+test("client: strList, jsonValue and buildQuery normalise form input", () => {
   assertEquals(strList("a, b,,"), ["a", "b"]);
   assertEquals(strList([]), undefined);
   assertEquals(jsonValue('{"a":1}'), { a: 1 });
@@ -11,7 +12,7 @@ Deno.test("client: strList, jsonValue and buildQuery normalise form input", () =
   assertEquals(buildQuery({ a: 1, b: undefined, c: "", d: true }), "?a=1&d=true");
 });
 
-Deno.test("client: errors carry the vendor code and message", async () => {
+test("client: errors carry the vendor code and message", async () => {
   assertEquals(errorText({ code: "error.rate.limit", message: "slow" }), "slow (error.rate.limit)");
   const { ctx } = mockCtx([{
     status: 429,
@@ -24,13 +25,13 @@ Deno.test("client: errors carry the vendor code and message", async () => {
   );
 });
 
-Deno.test("client: okStatuses returns the body instead of throwing", async () => {
+test("client: okStatuses returns the body instead of throwing", async () => {
   const { ctx } = mockCtx([{ status: 402, body: { status: "CREDITS_INSUFFICIENT" } }]);
   const out = await new FullEnrichClient(ctx).request("GET", "/x", { okStatuses: [402] });
   assertEquals(out, { status: "CREDITS_INSUFFICIENT" });
 });
 
-Deno.test("search: valueFilter wraps values and mergeFilters lets named params win", () => {
+test("search: valueFilter wraps values and mergeFilters lets named params win", () => {
   assertEquals(valueFilter("a,b"), [{ value: "a" }, { value: "b" }]);
   assertEquals(valueFilter(undefined), undefined);
   assertEquals(

@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 39 uniquely-keyed kebab-case read actions", () => {
+test("index: exports 39 uniquely-keyed kebab-case read actions", () => {
   assertEquals(app.actions.length, 39);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
@@ -15,7 +16,7 @@ Deno.test("index: exports 39 uniquely-keyed kebab-case read actions", () => {
   }
 });
 
-Deno.test("index: one apiKey auth and the three health checks", () => {
+test("index: one apiKey auth and the three health checks", () => {
   assertEquals(app.auth.map((a) => a.key), ["api-key"]);
   assertEquals(app.auth[0].type, "apiKey");
   assertEquals((app.healthChecks ?? []).map((h) => h.key), ["service", "api", "quota"]);

@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
-Deno.test("health/service: declares an absence rather than a probe", () => {
+test("health/service: declares an absence rather than a probe", () => {
   assertEquals(typeof service.check, "undefined");
   assertEquals(typeof service.unavailable?.reason, "string");
 });
@@ -11,10 +12,10 @@ Deno.test("health/service: declares an absence rather than a probe", () => {
  * `ok` in a roll-up — at any severity but `informational` this would pin the
  * App at `unknown` forever.
  */
-Deno.test("health/service: is informational, not the kind: service default of degraded", () => {
+test("health/service: is informational, not the kind: service default of degraded", () => {
   assertEquals(service.severity, "informational");
 });
 
-Deno.test("health/service: covers the whole app", () => {
+test("health/service: covers the whole app", () => {
   assertEquals(service.covers, ["*"]);
 });

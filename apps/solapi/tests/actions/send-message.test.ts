@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import sendMessage from "../../actions/send-message.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => sendMessage.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("send-message: declares a perform action with a description, params and output", () => {
+test("send-message: declares a perform action with a description, params and output", () => {
   assertEquals(sendMessage.key, "send-message");
   assertEquals(sendMessage.type, "perform");
   assert((sendMessage.description ?? "").length > 0);
@@ -24,7 +25,7 @@ Deno.test("send-message: declares a perform action with a description, params an
   assertEquals(sendMessage.idempotent, false);
 });
 
-Deno.test("send-message: sends the documented request and returns the documented shape", async () => {
+test("send-message: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "failedMessageList": [],
@@ -81,7 +82,7 @@ Deno.test("send-message: sends the documented request and returns the documented
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("send-message: a SOLAPI error body is thrown with its code and message", async () => {
+test("send-message: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

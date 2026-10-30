@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/synthesize-speech.ts";
 import { bodyOf, exec, failure, mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const reply = {
   wordDurations: [],
 };
 
-Deno.test("synthesize-speech: POSTs /v1/speech/generate with only the supplied fields", async () => {
+test("synthesize-speech: POSTs /v1/speech/generate with only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await exec(action, { text: "Hello", voiceId: "en-US-natalie" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -19,7 +20,7 @@ Deno.test("synthesize-speech: POSTs /v1/speech/generate with only the supplied f
   assertEquals(out, reply);
 });
 
-Deno.test("synthesize-speech: maps options, sends sampleRate as a number and parses the dictionary", async () => {
+test("synthesize-speech: maps options, sends sampleRate as a number and parses the dictionary", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   await exec(action, {
     text: "t",
@@ -55,7 +56,7 @@ Deno.test("synthesize-speech: maps options, sends sampleRate as a number and par
   });
 });
 
-Deno.test("synthesize-speech: validates input before calling", async () => {
+test("synthesize-speech: validates input before calling", async () => {
   const { ctx, calls } = mockCtx();
   assert((await failure(action, { text: " ", voiceId: "v" }, ctx)).includes("text"));
   assert((await failure(action, { text: "t", voiceId: "" }, ctx)).includes("voiceId"));
@@ -70,7 +71,7 @@ Deno.test("synthesize-speech: validates input before calling", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("synthesize-speech: a 402 fails with the vendor message", async () => {
+test("synthesize-speech: a 402 fails with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { error_message: "Insufficient characters", error_code: 402 },

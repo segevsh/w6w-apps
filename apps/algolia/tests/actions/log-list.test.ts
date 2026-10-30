@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/log-list.ts";
 
-Deno.test("log-list: reads the API call log with its filters", async () => {
+test("log-list: reads the API call log with its filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { logs: [] } }], {
     display: { appId: "APPID" },
   });

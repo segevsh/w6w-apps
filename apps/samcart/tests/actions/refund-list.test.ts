@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import refundList from "../../actions/refund-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const RESPONSE = {
   "pagination": { "next": "https://api.samcart.com/v1/x?offset=99&dir=next", "prev": null },
 };
 
-Deno.test("refund-list: sends GET /v1/refunds with the mapped parameters", async () => {
+test("refund-list: sends GET /v1/refunds with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await refundList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("refund-list: sends GET /v1/refunds with the mapped parameters", async
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("refund-list: returns the documented result shape", async () => {
+test("refund-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await refundList.execute(INPUT, ctx), {
     "data": [{ "id": 1 }],
@@ -29,7 +30,7 @@ Deno.test("refund-list: returns the documented result shape", async () => {
   });
 });
 
-Deno.test("refund-list: an error surfaces SamCart's own message", async () => {
+test("refund-list: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(() => Promise.resolve(refundList.execute(INPUT, ctx)), Error);
   assertEquals(err.message.includes("Object could not be found"), true, err.message);

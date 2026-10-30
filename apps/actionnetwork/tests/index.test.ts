@@ -1,20 +1,21 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 70 actions, one auth method and three health checks", () => {
+test("index: exports 70 actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, 70);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "api-key");
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), `not kebab-case: ${key}`);
 });
 
-Deno.test("index: every action has a type, description, resource and execute hook", () => {
+test("index: every action has a type, description, resource and execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type`);
     assert(a.description && a.description.length > 0, `${a.key}: no description`);
@@ -23,13 +24,13 @@ Deno.test("index: every action has a type, description, resource and execute hoo
   }
 });
 
-Deno.test("index: every read and search action declares an output", () => {
+test("index: every read and search action declares an output", () => {
   for (const a of app.actions.filter((x) => x.type !== "perform")) {
     assert(Array.isArray(a.output) && a.output.length > 0, `${a.key}: no output`);
   }
 });
 
-Deno.test("index: param keys are unique per action and every param has a label", () => {
+test("index: param keys are unique per action and every param has a label", () => {
   for (const a of app.actions) {
     const keys = (a.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key}: duplicate param`);
@@ -37,7 +38,7 @@ Deno.test("index: param keys are unique per action and every param has a label",
   }
 });
 
-Deno.test("index: every perform action states idempotency; records and creates are not", () => {
+test("index: every perform action states idempotency; records and creates are not", () => {
   for (const a of app.actions.filter((x) => x.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -71,7 +72,7 @@ Deno.test("index: every perform action states idempotency; records and creates a
   }
 });
 
-Deno.test("index: the app never declares an action that deletes a person or a page", () => {
+test("index: the app never declares an action that deletes a person or a page", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.filter((k) => k.endsWith("-delete")), ["tagging-delete"]);
 });

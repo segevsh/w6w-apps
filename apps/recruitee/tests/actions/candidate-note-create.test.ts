@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import candidateNoteCreate from "../../actions/candidate-note-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("candidate-note-create: POSTs a note nested under `note.body`", async () => {
+test("candidate-note-create: POSTs a note nested under `note.body`", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { note: { id: 1 }, references: [] } }]);
   await candidateNoteCreate.execute({ candidateId: 12, body: "Great candidate" }, ctx);
 

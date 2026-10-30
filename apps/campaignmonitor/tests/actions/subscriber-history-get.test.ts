@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberHistoryGet from "../../actions/subscriber-history-get.ts";
 import { API_PATH, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-history-get: GETs /subscribers/{listid}/history.json", async () => {
+test("subscriber-history-get: GETs /subscribers/{listid}/history.json", async () => {
   const history = [{
     ID: "fc0ce7105baeaf97f47c99be31d02a91",
     Type: "Campaign",

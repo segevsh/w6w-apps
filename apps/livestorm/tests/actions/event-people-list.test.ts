@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventPeopleList from "../../actions/event-people-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("event-people-list: lists people for an event with filters", async () => {
+test("event-people-list: lists people for an event with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("people", "p1")]) }]);
   await eventPeopleList.execute({ id: "e1", role: "participant", email: "a@b.com" }, ctx);
 

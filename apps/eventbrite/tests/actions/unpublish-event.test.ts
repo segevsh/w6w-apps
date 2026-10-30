@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unpublish-event.ts";
 
-Deno.test("unpublish-event: POSTs /events/{id}/unpublish/", async () => {
+test("unpublish-event: POSTs /events/{id}/unpublish/", async () => {
   const { ctx, calls } = mockCtx([{ body: { unpublished: true } }]);
   const out = await action.execute!({ eventId: "a/b" }, ctx);
   assertEquals(calls[0].method, "POST");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-sms.ts";
 
-Deno.test("send-sms: POSTs form-encoded message to /Accounts/{sid}/Messages.json", async () => {
+test("send-sms: POSTs form-encoded message to /Accounts/{sid}/Messages.json", async () => {
   const body = { sid: "SM123", status: "queued" };
   const { ctx, calls } = mockCtx([{ body }], {
     connection: { display: { accountSid: "AC_test" } },
@@ -28,7 +29,7 @@ Deno.test("send-sms: POSTs form-encoded message to /Accounts/{sid}/Messages.json
   assertEquals(result, body);
 });
 
-Deno.test("send-sms: prefixes numbers with whatsapp: when toWhatsapp is true", async () => {
+test("send-sms: prefixes numbers with whatsapp: when toWhatsapp is true", async () => {
   const { ctx, calls } = mockCtx([{ body: { sid: "SM456" } }], {
     connection: { display: { accountSid: "AC_test" } },
   });
@@ -57,7 +58,7 @@ Deno.test("send-sms: prefixes numbers with whatsapp: when toWhatsapp is true", a
 
 const conn = { connection: { display: { accountSid: "AC_test" } } };
 
-Deno.test("send-sms: media URLs encode as REPEATED MediaUrl parameters", async () => {
+test("send-sms: media URLs encode as REPEATED MediaUrl parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!(
     {
@@ -74,13 +75,13 @@ Deno.test("send-sms: media URLs encode as REPEATED MediaUrl parameters", async (
   assertEquals(form.getAll("MediaUrl"), ["https://x/a.jpg", "https://x/b.jpg"]);
 });
 
-Deno.test("send-sms: blank media rows are dropped and MediaUrl is omitted when empty", async () => {
+test("send-sms: blank media rows are dropped and MediaUrl is omitted when empty", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!({ from: "+1", to: "+2", message: "x", mediaUrls: ["", "  "] }, ctx);
   assertEquals(new URLSearchParams(calls[0].body ?? "").getAll("MediaUrl"), []);
 });
 
-Deno.test("send-sms: sends from a Messaging Service with no From", async () => {
+test("send-sms: sends from a Messaging Service with no From", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!(
     { messagingServiceSid: "MG123", to: "+2", message: "hi" },
@@ -91,7 +92,7 @@ Deno.test("send-sms: sends from a Messaging Service with no From", async () => {
   assertEquals(form.get("From"), null);
 });
 
-Deno.test("send-sms: exactly one sender is required", async () => {
+test("send-sms: exactly one sender is required", async () => {
   for (
     const [input, needle] of [
       [{ to: "+2", message: "x" }, "sender is required"],
@@ -111,7 +112,7 @@ Deno.test("send-sms: exactly one sender is required", async () => {
   }
 });
 
-Deno.test("send-sms: scheduling sends ScheduleType=fixed alongside an ISO SendAt", async () => {
+test("send-sms: scheduling sends ScheduleType=fixed alongside an ISO SendAt", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!(
     {
@@ -127,7 +128,7 @@ Deno.test("send-sms: scheduling sends ScheduleType=fixed alongside an ISO SendAt
   assertEquals(form.get("SendAt"), "2026-09-01T10:00:00.000Z");
 });
 
-Deno.test("send-sms: scheduling without a Messaging Service rejects before the request", async () => {
+test("send-sms: scheduling without a Messaging Service rejects before the request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {
@@ -143,7 +144,7 @@ Deno.test("send-sms: scheduling without a Messaging Service rejects before the r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-sms: content template variables are JSON-encoded", async () => {
+test("send-sms: content template variables are JSON-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!(
     {
@@ -161,7 +162,7 @@ Deno.test("send-sms: content template variables are JSON-encoded", async () => {
   assertEquals(form.get("ContentVariables"), '{"1":"Alice"}');
 });
 
-Deno.test("send-sms: a pre-encoded ContentVariables string is passed through", async () => {
+test("send-sms: a pre-encoded ContentVariables string is passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], conn);
   await action.execute!(
     { from: "+1", to: "+2", message: "x", contentVariables: '{"1":"Bob"}' },

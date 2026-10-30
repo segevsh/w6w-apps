@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import deleteFriend from "../../actions/delete-friend.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-friend: POSTs to the friend's user id", async () => {
+test("delete-friend: POSTs to the friend's user id", async () => {
   const { ctx, calls, logs } = mockCtx([{ body: { success: true } }]);
   assertEquals(await deleteFriend.execute({ userId: 15 }, ctx), { success: true });
 
@@ -12,7 +13,7 @@ Deno.test("delete-friend: POSTs to the friend's user id", async () => {
   assert(logs.some((l) => l.level === "warn"), "an irreversible delete logged no warning");
 });
 
-Deno.test("delete-friend: a 200 with success:false throws", async () => {
+test("delete-friend: a 200 with success:false throws", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { success: false, errors: {} } }]);
   await assertRejects(
     async () => await deleteFriend.execute({ userId: 15 }, ctx),
@@ -21,6 +22,6 @@ Deno.test("delete-friend: a 200 with success:false throws", async () => {
   );
 });
 
-Deno.test("delete-friend: is idempotent", () => {
+test("delete-friend: is idempotent", () => {
   assertEquals(deleteFriend.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-delete.ts";
 
-Deno.test("webhook-delete: DELETEs the subscription and handles the empty 204", async () => {
+test("webhook-delete: DELETEs the subscription and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ webhookId: "wh1" }, ctx);
 

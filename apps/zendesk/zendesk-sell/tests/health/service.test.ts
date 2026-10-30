@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   INCIDENTS_URL,
   mapImpact,
@@ -7,7 +8,7 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mapImpact: the three observed impact values", () => {
+test("mapImpact: the three observed impact values", () => {
   assertEquals(mapImpact("critical"), "down");
   assertEquals(mapImpact("major"), "degraded");
   assertEquals(mapImpact("minor"), "degraded");
@@ -15,7 +16,7 @@ Deno.test("mapImpact: the three observed impact values", () => {
   assertEquals(mapImpact("something-new"), "unknown");
 });
 
-Deno.test("reportFromIncidents: ok when no incident touches the Sell service", () => {
+test("reportFromIncidents: ok when no incident touches the Sell service", () => {
   const body = {
     data: [
       {
@@ -37,7 +38,7 @@ Deno.test("reportFromIncidents: ok when no incident touches the Sell service", (
   assertEquals(report.message, undefined);
 });
 
-Deno.test("reportFromIncidents: degraded when an OPEN incident touches Sell (serviceId 63)", () => {
+test("reportFromIncidents: degraded when an OPEN incident touches Sell (serviceId 63)", () => {
   const body = {
     data: [
       {
@@ -65,7 +66,7 @@ Deno.test("reportFromIncidents: degraded when an OPEN incident touches Sell (ser
   assertEquals(report.timeline[0].state, "degraded");
 });
 
-Deno.test("reportFromIncidents: a RESOLVED incident touching Sell does not affect current state", () => {
+test("reportFromIncidents: a RESOLVED incident touching Sell does not affect current state", () => {
   const body = {
     data: [
       {
@@ -92,7 +93,7 @@ Deno.test("reportFromIncidents: a RESOLVED incident touching Sell does not affec
   assertEquals(report.timeline[0].resolvedAt, "2026-08-13T16:38:00.000Z");
 });
 
-Deno.test("reportFromIncidents: critical impact reports down", () => {
+test("reportFromIncidents: critical impact reports down", () => {
   const body = {
     data: [{
       id: "1",
@@ -111,20 +112,20 @@ Deno.test("reportFromIncidents: critical impact reports down", () => {
   assertEquals(reportFromIncidents(body).state, "down");
 });
 
-Deno.test("reportFromIncidents: unrecognised shape reports unknown, not ok or down", () => {
+test("reportFromIncidents: unrecognised shape reports unknown, not ok or down", () => {
   // deno-lint-ignore no-explicit-any
   const report = reportFromIncidents({} as any);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service check: a non-OK status response reports unknown, never down", async () => {
+test("service check: a non-OK status response reports unknown, never down", async () => {
   const { ctx, calls } = mockCtx([{ status: 500, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assertEquals(pathOf(calls[0].url), new URL(INCIDENTS_URL).pathname);
 });
 
-Deno.test("service check: reports ok when the API answers with no open Sell incidents", async () => {
+test("service check: reports ok when the API answers with no open Sell incidents", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -137,7 +138,7 @@ Deno.test("service check: reports ok when the API answers with no open Sell inci
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: widens egress to status.zendesk.com and stays unsigned", () => {
+test("service: widens egress to status.zendesk.com and stays unsigned", () => {
   assertEquals(service.network?.allow, ["status.zendesk.com"]);
   assertEquals(service.credential, "none");
 });

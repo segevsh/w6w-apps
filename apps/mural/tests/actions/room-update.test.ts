@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import roomUpdate from "../../actions/room-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "roomId": 77, "name": "New", "favorite": true };
 
-Deno.test("room-update: PATCH /rooms/{roomId}", async () => {
+test("room-update: PATCH /rooms/{roomId}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -20,7 +21,7 @@ Deno.test("room-update: PATCH /rooms/{roomId}", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("room-update: puts no credential on the request (sign owns that)", async () => {
+test("room-update: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -29,7 +30,7 @@ Deno.test("room-update: puts no credential on the request (sign owns that)", asy
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("room-update: a vendor error surfaces its own code and message", async () => {
+test("room-update: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -40,7 +41,7 @@ Deno.test("room-update: a vendor error surfaces its own code and message", async
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("room-update: an empty roomId is refused before any request", async () => {
+test("room-update: an empty roomId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await roomUpdate.execute({ ...INPUT, roomId: "  " as never }, ctx)

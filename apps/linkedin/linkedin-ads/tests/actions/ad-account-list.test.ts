@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import adAccountList from "../../actions/ad-account-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("ad-account-list: with no filters still sends q=search and no search param", async () => {
+test("ad-account-list: with no filters still sends q=search and no search param", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await adAccountList.execute({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("ad-account-list: with no filters still sends q=search and no search p
   assertEquals(q.pageSize, "50");
 });
 
-Deno.test("ad-account-list: builds a search from statuses, types and a CSV id list", async () => {
+test("ad-account-list: builds a search from statuses, types and a CSV id list", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await adAccountList.execute(
     {
@@ -33,19 +34,19 @@ Deno.test("ad-account-list: builds a search from statuses, types and a CSV id li
   assertEquals(q.sortOrder, "DESCENDING");
 });
 
-Deno.test("ad-account-list: the test tri-state becomes a scalar search.test", async () => {
+test("ad-account-list: the test tri-state becomes a scalar search.test", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await adAccountList.execute({ test: "true" }, ctx);
   assertEquals(queryOf(calls[0].url).search, "(test:true)");
 });
 
-Deno.test("ad-account-list: passes pageToken through for the next page", async () => {
+test("ad-account-list: passes pageToken through for the next page", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await adAccountList.execute({ pageToken: "abc123" }, ctx);
   assertEquals(queryOf(calls[0].url).pageToken, "abc123");
 });
 
-Deno.test("ad-account-list: returns the elements/metadata body verbatim", async () => {
+test("ad-account-list: returns the elements/metadata body verbatim", async () => {
   const body = { elements: [{ id: 1, name: "A" }], metadata: { nextPageToken: "next" } };
   const { ctx } = mockCtx([{ body }]);
   const result = await adAccountList.execute({}, ctx);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-invoices.ts";
 import { API_ROOT, mockCtx, page, queryAllOf, queryOf, urlOf } from "../_helpers.ts";
 
 const sample = page([{ id: "inv-1" }], { count: 1 });
 
-Deno.test("list-invoices: reads /consultant/payments/invoices", async () => {
+test("list-invoices: reads /consultant/payments/invoices", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("list-invoices: reads /consultant/payments/invoices", async () => {
   assertEquals(result, sample);
 });
 
-Deno.test("list-invoices: the documented filters are passed through", async () => {
+test("list-invoices: the documented filters are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({
     consultants: ["c-1"],
@@ -32,7 +33,7 @@ Deno.test("list-invoices: the documented filters are passed through", async () =
   assertEquals(all.paymentstatus, ["paid", "unpaid"]);
 });
 
-Deno.test("list-invoices: this app reads invoices and never writes them", () => {
+test("list-invoices: this app reads invoices and never writes them", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "invoice");
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), [

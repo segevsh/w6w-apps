@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /api/v1/webhook on the workspace host", async () => {
+test("webhook-create: POST /api/v1/webhook on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { webhook: { id: "w1", url: "https://h.test/x", status: "active", secret: "s3" } },
@@ -26,7 +27,7 @@ Deno.test("webhook-create: POST /api/v1/webhook on the workspace host", async ()
   assertEquals((out as { secret: string }).secret, "s3");
 });
 
-Deno.test("webhook-create: a Fellow error surfaces its detail and status", async () => {
+test("webhook-create: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () =>

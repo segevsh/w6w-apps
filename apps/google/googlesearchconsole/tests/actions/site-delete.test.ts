@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/site-delete.ts";
 
-Deno.test("site-delete: DELETEs the site addressed by the override", async () => {
+test("site-delete: DELETEs the site addressed by the override", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], { display: {} });
   await action.execute!({ siteUrl: "https://www.example.com/" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,7 +13,7 @@ Deno.test("site-delete: DELETEs the site addressed by the override", async () =>
   );
 });
 
-Deno.test("site-delete: falls back to the connection's default site", async () => {
+test("site-delete: falls back to the connection's default site", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], {
     display: { siteUrl: "sc-domain:example.com" },
   });

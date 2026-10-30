@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import listProducts from "../../actions/list-products.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-products: GET /v2/commerce/products — the v2 segment, not /1.0", async () => {
+test("list-products: GET /v2/commerce/products — the v2 segment, not /1.0", async () => {
   const { ctx, calls } = mockCtx([{
     body: { pagination: pagination(), products: [{ id: "P1", type: "PHYSICAL", name: "Tee" }] },
   }]);
@@ -14,7 +15,7 @@ Deno.test("list-products: GET /v2/commerce/products — the v2 segment, not /1.0
   assertEquals(out.products?.[0].name, "Tee");
 });
 
-Deno.test("list-products: `type` is sent as a REPEATED query parameter", async () => {
+test("list-products: `type` is sent as a REPEATED query parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), products: [] } }]);
   await listProducts.execute!({
     type: ["PHYSICAL", "GIFT_CARD"],
@@ -31,7 +32,7 @@ Deno.test("list-products: `type` is sent as a REPEATED query parameter", async (
   });
 });
 
-Deno.test("list-products: one half of the modified pair is rejected before the call", () => {
+test("list-products: one half of the modified pair is rejected before the call", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => listProducts.execute!({ modifiedBefore: "2026-09-30T23:59:59Z" }, ctx),
@@ -40,7 +41,7 @@ Deno.test("list-products: one half of the modified pair is rejected before the c
   );
 });
 
-Deno.test("list-products: a 400 is surfaced with its subtype", async () => {
+test("list-products: a 400 is surfaced with its subtype", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", { subtype: "INVALID_ARGUMENT", message: "bad type" }),

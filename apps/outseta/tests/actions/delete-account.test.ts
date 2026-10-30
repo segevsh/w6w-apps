@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-account.ts";
 
-Deno.test("delete-account: identity", () => {
+test("delete-account: identity", () => {
   assertEquals(action.key, "delete-account");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "account");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("delete-account: sends DELETE /api/v1/crm/accounts/acc1", async () => {
+test("delete-account: sends DELETE /api/v1/crm/accounts/acc1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await action.execute({
     accountUid: "acc1",
@@ -25,7 +26,7 @@ Deno.test("delete-account: sends DELETE /api/v1/crm/accounts/acc1", async () => 
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("delete-account: a failure names the status and the request", async () => {
+test("delete-account: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

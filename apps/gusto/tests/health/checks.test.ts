@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import apiVersion from "../../health/api-version.ts";
@@ -18,7 +19,7 @@ const page = (over: Record<string, string> = {}) => ({
   ].map((name) => ({ name, status: over[name] ?? "operational", group: false })),
 });
 
-Deno.test("service: all green reports ok", async () => {
+test("service: all green reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page() }], conn);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -26,7 +27,7 @@ Deno.test("service: all green reports ok", async () => {
 });
 
 /** The support channels are not this app's path. */
-Deno.test("service: a support-channel outage is ignored entirely", async () => {
+test("service: a support-channel outage is ignored entirely", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({ "Phone System": "major_outage", "Chat System": "major_outage" }),
@@ -36,20 +37,20 @@ Deno.test("service: a support-channel outage is ignored entirely", async () => {
   assertEquals(out.components!["phone-system"], undefined);
 });
 
-Deno.test("service: an API outage is down", async () => {
+test("service: an API outage is down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ API: "major_outage" }) }], conn);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
 /** Gusto exposes its vendors by name; they are upstream, not authoritative. */
-Deno.test("service: an infrastructure outage is capped at degraded", async () => {
+test("service: an infrastructure outage is capped at degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ "S3 West": "major_outage" }) }], conn);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "degraded");
   assertEquals(out.components!["s3-west"].state, "degraded");
 });
 
-Deno.test("service: Cloudflare's components are treated as infrastructure too", async () => {
+test("service: Cloudflare's components are treated as infrastructure too", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page({ "Cloudflare CDN/Cache": "major_outage" }),
@@ -57,18 +58,18 @@ Deno.test("service: Cloudflare's components are treated as infrastructure too", 
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }], conn);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: renamed components report unknown rather than a false green", async () => {
+test("service: renamed components report unknown rather than a false green", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { components: [{ name: "Something" }] } }], conn);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** Gusto answers the deprecation question itself, in a header nobody reads. */
-Deno.test("api-version: no deprecation header means the pin is current", async () => {
+test("api-version: no deprecation header means the pin is current", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {},
@@ -79,7 +80,7 @@ Deno.test("api-version: no deprecation header means the pin is current", async (
   assertEquals(calls[0].headers["x-gusto-api-version"], "2026-06-15");
 });
 
-Deno.test("api-version: a future sunset is degraded, with the days left", async () => {
+test("api-version: a future sunset is degraded, with the days left", async () => {
   const future = Math.floor(Date.now() / 1000) + 30 * 86400;
   const { ctx } = mockCtx([{
     status: 200,
@@ -95,7 +96,7 @@ Deno.test("api-version: a future sunset is degraded, with the days left", async 
   assert(/days left/.test(out.message!), out.message);
 });
 
-Deno.test("api-version: a sunset already past is down", async () => {
+test("api-version: a sunset already past is down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -112,7 +113,7 @@ Deno.test("api-version: a sunset already past is down", async () => {
 });
 
 /** An unknown version is served as the newest, silently. */
-Deno.test("api-version: being served a different version is down", async () => {
+test("api-version: being served a different version is down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -123,12 +124,12 @@ Deno.test("api-version: being served a different version is down", async () => {
   assert(/no longer recognised/.test(out.message!), out.message);
 });
 
-Deno.test("api-version: a credential failure is left to the auth check", async () => {
+test("api-version: a credential failure is left to the auth check", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }], conn);
   assertEquals((await apiVersion.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("api-version: is a connection-scoped dependency check", () => {
+test("api-version: is a connection-scoped dependency check", () => {
   assertEquals(apiVersion.kind, "dependency");
   assertEquals(apiVersion.scope, "connection");
   assertEquals(apiVersion.credential, "signed");

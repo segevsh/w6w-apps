@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeline from "../../actions/analytics-timeline.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const WIRE = {
   subject: "account",
 };
 
-Deno.test("analytics-timeline: GET /v2/analytics/timelines", async () => {
+test("analytics-timeline: GET /v2/analytics/timelines", async () => {
   const series = [{ metric: "followers", values: [{ dateTime: "2026-01-01", value: 3 }] }];
   const { ctx, calls } = mockCtx([{ body: envelope(series) }]);
   const out = await timeline.execute(M, ctx);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: reads the one path above the organisation", async () => {
+test("organization-list: reads the one path above the organisation", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { result: [{ id: "org-1", name: "Acme" }] },
@@ -15,7 +16,7 @@ Deno.test("organization-list: reads the one path above the organisation", async 
 });
 
 /** A key is created inside one organisation and sees that one. */
-Deno.test("organization-list: leaves the single id unset when there is not exactly one", async () => {
+test("organization-list: leaves the single id unset when there is not exactly one", async () => {
   const many = mockCtx([{ status: 200, body: { result: [{ id: "a" }, { id: "b" }] } }]);
   const ambiguous = await action.execute({}, many.ctx) as Record<string, unknown>;
   assertEquals(ambiguous.id, undefined);
@@ -27,12 +28,12 @@ Deno.test("organization-list: leaves the single id unset when there is not exact
   assertEquals(empty.count, 0);
 });
 
-Deno.test("organization-list: takes no parameters", () => {
+test("organization-list: takes no parameters", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
 });
 
-Deno.test("organization-list: a rejected key surfaces the explanation", async () => {
+test("organization-list: a rejected key surfaces the explanation", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "unauthorized" } }]);
   let message = "";
   try {

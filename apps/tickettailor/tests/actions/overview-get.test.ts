@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import overviewGet from "../../actions/overview-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("overview-get: hits GET /overview", async () => {
+test("overview-get: hits GET /overview", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { box_office_name: "Acme", revenue: 100 },

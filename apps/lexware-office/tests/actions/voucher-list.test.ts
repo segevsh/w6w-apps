@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/voucher-list.ts";
 import { mockCtx, PAGE, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("voucher-list: GET /v1/voucherlist with every filter named as documented", async () => {
+test("voucher-list: GET /v1/voucherlist with every filter named as documented", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     voucherType: "invoice,creditnote",
@@ -39,7 +40,7 @@ Deno.test("voucher-list: GET /v1/voucherlist with every filter named as document
   });
 });
 
-Deno.test("voucher-list: declares the two mandatory filters as required, defaulting to any", () => {
+test("voucher-list: declares the two mandatory filters as required, defaulting to any", () => {
   for (const key of ["voucherType", "voucherStatus"]) {
     const p = action.params!.find((p) => p.key === key)!;
     assertEquals(p.required, true);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionList from "../../actions/transaction-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("transaction-list: sends every input as query", async () => {
+test("transaction-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await transactionList.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("transaction-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("transaction-list: omits every unset optional", async () => {
+test("transaction-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await transactionList.execute({} as never, ctx);
 
@@ -48,7 +49,7 @@ Deno.test("transaction-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("transaction-list: declares a read-only shape", () => {
+test("transaction-list: declares a read-only shape", () => {
   assertEquals(transactionList.type, "read");
   assertEquals(transactionList.idempotent, undefined);
   assertEquals(transactionList.params!.filter((p) => p.required).map((p) => p.key), []);

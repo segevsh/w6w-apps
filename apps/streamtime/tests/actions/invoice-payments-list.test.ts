@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoicePaymentsList from "../../actions/invoice-payments-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-payments-list: reads the payments route", async () => {
+test("invoice-payments-list: reads the payments route", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: 1, paymentDate: "2025-02-01", amountPaidIncTax: 500 }] },
   ]);

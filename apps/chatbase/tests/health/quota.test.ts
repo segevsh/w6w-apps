@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, page } from "../_helpers.ts";
@@ -15,11 +16,11 @@ function withRateLimit(limit: number, remaining: number, resetMs = 1770681600000
   };
 }
 
-Deno.test("quota: probes the same /agents endpoint api-key.ts uses", () => {
+test("quota: probes the same /agents endpoint api-key.ts uses", () => {
   assertEquals(PROBE_PATH, "/agents");
 });
 
-Deno.test("quota: plenty of headroom reports ok with a quota reading", async () => {
+test("quota: plenty of headroom reports ok with a quota reading", async () => {
   const { ctx, calls } = mockCtx([withRateLimit(100, 80)]);
   const report = await quota.check!({}, ctx);
 
@@ -34,19 +35,19 @@ Deno.test("quota: plenty of headroom reports ok with a quota reading", async () 
   });
 });
 
-Deno.test("quota: at or above the warn fraction reports degraded", async () => {
+test("quota: at or above the warn fraction reports degraded", async () => {
   const { ctx } = mockCtx([withRateLimit(100, 5)]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: zero remaining reports degraded, never down — a 10s window recovers on its own", async () => {
+test("quota: zero remaining reports degraded, never down — a 10s window recovers on its own", async () => {
   const { ctx } = mockCtx([withRateLimit(100, 0)]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: a 429 reports degraded and surfaces Retry-After", async () => {
+test("quota: a 429 reports degraded and surfaces Retry-After", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { code: "RATE_LIMIT_TOO_MANY_REQUESTS", message: "Too many requests" } },
@@ -63,12 +64,12 @@ Deno.test("quota: a 429 reports degraded and surfaces Retry-After", async () => 
   assertEquals(/7s/.test(report.message ?? ""), true, report.message);
 });
 
-Deno.test("quota: no rate-limit headers reports unknown", async () => {
+test("quota: no rate-limit headers reports unknown", async () => {
   const { ctx } = mockCtx([{ body: page([]) }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a 401/403 says nothing about headroom — reports unknown, not degraded", async () => {
+test("quota: a 401/403 says nothing about headroom — reports unknown, not degraded", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { error: { code: "AUTH_INVALID_API_KEY", message: "bad key" } } },
   ]);

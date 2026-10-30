@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-update: PATCH /tasks/{id} sends a JSON:API document of attributes", async () => {
+test("task-update: PATCH /tasks/{id} sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "tasks", "attributes": { "name": "x" } } },
@@ -57,7 +58,7 @@ Deno.test("task-update: PATCH /tasks/{id} sends a JSON:API document of attribute
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("task-update: only the fields set are sent", async () => {
+test("task-update: only the fields set are sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "tasks", "attributes": { "name": "x" } } },
@@ -68,7 +69,7 @@ Deno.test("task-update: only the fields set are sent", async () => {
   });
 });
 
-Deno.test("task-update: naming no field to change fails before any request", async () => {
+test("task-update: naming no field to change fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(taskUpdate.execute({ id: "42" }, ctx)),
@@ -78,7 +79,7 @@ Deno.test("task-update: naming no field to change fails before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("task-update: a vendor error surfaces its status, title and detail", async () => {
+test("task-update: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -91,7 +92,7 @@ Deno.test("task-update: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("task-update: declares perform and idempotent=true", () => {
+test("task-update: declares perform and idempotent=true", () => {
   assertEquals(taskUpdate.type, "perform");
   assertEquals(taskUpdate.idempotent, true);
   assertEquals(taskUpdate.key, "task-update");

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import sessionGet from "../../actions/session-get.ts";
 import { envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("session-get: calls GET /sessions/{id} and returns the detail payload", async () => {
+test("session-get: calls GET /sessions/{id} and returns the detail payload", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -29,13 +30,13 @@ Deno.test("session-get: calls GET /sessions/{id} and returns the detail payload"
   assertEquals(out.meeting_minutes, "1. Project Updates\n- Project X is on track...");
 });
 
-Deno.test("session-get: a session id is path-escaped", async () => {
+test("session-get: a session id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "a b/c" }) }]);
   await sessionGet.execute({ sessionId: "a b/c" }, ctx);
   assertEquals(pathOf(calls[0].url), "/sessions/a%20b%2Fc");
 });
 
-Deno.test("session-get: a 404 for an unknown session throws with the vendor's error code", async () => {
+test("session-get: a 404 for an unknown session throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("not_found", "Session not found") }]);
   try {
     await sessionGet.execute({ sessionId: "does-not-exist" }, ctx);
@@ -45,7 +46,7 @@ Deno.test("session-get: a 404 for an unknown session throws with the vendor's er
   }
 });
 
-Deno.test("session-get: requires a sessionId param", () => {
+test("session-get: requires a sessionId param", () => {
   const param = sessionGet.params?.find((p) => p.key === "sessionId");
   assertEquals(param?.required, true);
 });

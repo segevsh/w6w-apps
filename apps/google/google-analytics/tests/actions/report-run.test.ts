@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/report-run.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("report-run: expands comma lists into GA4's [{name}] arrays", async () => {
+test("report-run: expands comma lists into GA4's [{name}] arrays", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rows: [] } }], { display });
   await action.execute!({ dimensions: "date, country", metrics: "activeUsers,sessions" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -18,7 +19,7 @@ Deno.test("report-run: expands comma lists into GA4's [{name}] arrays", async ()
   assertEquals(body.dateRanges, [{ startDate: "28daysAgo", endDate: "yesterday" }]);
 });
 
-Deno.test("report-run: limit and offset are int64, so they go on the wire as strings", async () => {
+test("report-run: limit and offset are int64, so they go on the wire as strings", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ metrics: "sessions", limit: 500, offset: 1000 }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -26,7 +27,7 @@ Deno.test("report-run: limit and offset are int64, so they go on the wire as str
   assertEquals(body.offset, "1000");
 });
 
-Deno.test("report-run: filters and orderBys pass through as parsed JSON", async () => {
+test("report-run: filters and orderBys pass through as parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     metrics: "sessions",
@@ -38,13 +39,13 @@ Deno.test("report-run: filters and orderBys pass through as parsed JSON", async 
   assertEquals(body.orderBys[0].desc, true);
 });
 
-Deno.test("report-run: the property param overrides the connection's", async () => {
+test("report-run: the property param overrides the connection's", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ metrics: "sessions", propertyId: "properties/999" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1beta/properties/999:runReport");
 });
 
-Deno.test("report-run: metrics are required and bad JSON is named", async () => {
+test("report-run: metrics are required and bad JSON is named", async () => {
   const noMetrics = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ dimensions: "date" }, noMetrics.ctx),

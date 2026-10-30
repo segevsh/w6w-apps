@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   datacenterFromApiEndpoint,
@@ -6,17 +7,17 @@ import {
   MailchimpClient,
 } from "../../lib/client.ts";
 
-Deno.test("datacenterFromApiKey: extracts suffix after last dash", () => {
+test("datacenterFromApiKey: extracts suffix after last dash", () => {
   assertEquals(datacenterFromApiKey("abcdef0123456789-us14"), "us14");
   assertEquals(datacenterFromApiKey("with-many-dashes-eu2"), "eu2");
 });
 
-Deno.test("datacenterFromApiKey: throws on malformed keys", () => {
+test("datacenterFromApiKey: throws on malformed keys", () => {
   assertThrows(() => datacenterFromApiKey("no-suffix-"), Error, "datacenter suffix");
   assertThrows(() => datacenterFromApiKey("nodashkey"), Error, "datacenter suffix");
 });
 
-Deno.test("datacenterFromApiEndpoint: pulls first host label out of api_endpoint", () => {
+test("datacenterFromApiEndpoint: pulls first host label out of api_endpoint", () => {
   assertEquals(
     datacenterFromApiEndpoint("https://us14.api.mailchimp.com"),
     "us14",
@@ -27,7 +28,7 @@ Deno.test("datacenterFromApiEndpoint: pulls first host label out of api_endpoint
   );
 });
 
-Deno.test("client: builds URLs against the connection's datacenter", async () => {
+test("client: builds URLs against the connection's datacenter", async () => {
   const { ctx, calls } = mockCtx([{ body: { members: [] } }], { datacenter: "us7" });
   const client = new MailchimpClient(ctx);
   await client.request("/lists/abc/members");
@@ -36,14 +37,14 @@ Deno.test("client: builds URLs against the connection's datacenter", async () =>
   assertEquals(url.pathname, "/3.0/lists/abc/members");
 });
 
-Deno.test("client: explicit datacenter overrides the connection", async () => {
+test("client: explicit datacenter overrides the connection", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { datacenter: "us1" });
   const client = new MailchimpClient(ctx, { datacenter: "eu2" });
   await client.request("/ping");
   assertEquals(new URL(calls[0].url).origin, "https://eu2.api.mailchimp.com");
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new MailchimpClient(ctx);
   const result = await client.request("/lists/abc/members/x/actions/delete-permanent", {
@@ -52,7 +53,7 @@ Deno.test("client: 204 returns undefined without parsing a body", async () => {
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"title":"Resource Not Found"}' },
   ]);
@@ -66,7 +67,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/3.0/lists/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new MailchimpClient(ctx);
   await client.request("/x", {
@@ -79,7 +80,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: serializes JSON body and sets content-type", async () => {
+test("client: serializes JSON body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new MailchimpClient(ctx);
   await client.request("/x", { method: "POST", body: { hello: "world" } });
@@ -88,14 +89,14 @@ Deno.test("client: serializes JSON body and sets content-type", async () => {
   assertEquals(calls[0].body, '{"hello":"world"}');
 });
 
-Deno.test("client: throws when an oauth2 connection has no datacenter", () => {
+test("client: throws when an oauth2 connection has no datacenter", () => {
   // oauth2's datacenter isn't derivable from the credential alone (see
   // auth/oauth2.ts), so it has no self-heal and this must still throw.
   const { ctx } = mockCtx([], { display: {}, auth: "oauth2" });
   assertThrows(() => new MailchimpClient(ctx), Error, "no datacenter");
 });
 
-Deno.test("client: an api-key connection with no display.datacenter falls back to a placeholder host instead of throwing", async () => {
+test("client: an api-key connection with no display.datacenter falls back to a placeholder host instead of throwing", async () => {
   // display.datacenter is empty (e.g. the host never ran `afterConnect`).
   // For api-key auth this is not fatal: auth/api-key.ts's `sign()` rewrites
   // the request's real host from the credential on every call, so the client

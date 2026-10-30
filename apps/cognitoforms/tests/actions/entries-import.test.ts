@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entries-import.ts";
 
-Deno.test("entries-import: POSTs a multipart body to /forms/{formId}/import-entries", async () => {
+test("entries-import: POSTs a multipart body to /forms/{formId}/import-entries", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "imp1", Status: "Processing" } }]);
   const result = await action.execute({
     formId: "42",
@@ -26,7 +27,7 @@ Deno.test("entries-import: POSTs a multipart body to /forms/{formId}/import-entr
   assertEquals(result, { Id: "imp1", Status: "Processing" });
 });
 
-Deno.test("entries-import: omits optional fields when not given", async () => {
+test("entries-import: omits optional fields when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "imp2", Status: "Processing" } }]);
   await action.execute({ formId: "1", file: btoa("x"), importMode: "SyncEntries" }, ctx);
   const form = calls[0].rawBody as FormData;
@@ -34,6 +35,6 @@ Deno.test("entries-import: omits optional fields when not given", async () => {
   assertEquals(form.get("MatchEntriesUsing"), null);
 });
 
-Deno.test("entries-import: is not idempotent", () => {
+test("entries-import: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

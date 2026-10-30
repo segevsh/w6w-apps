@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import meetingList from "../../actions/meeting-list.ts";
 import { mockCtx, pageBody, pathOf, queryOf } from "../_helpers.ts";
 
 const WINDOW = { fromDate: "2026-10-01T00:00:00Z", toDate: "2026-10-02T00:00:00Z" };
 
-Deno.test("meeting-list: GET /v1/meetings/ with the required window, trailing slash kept", async () => {
+test("meeting-list: GET /v1/meetings/ with the required window, trailing slash kept", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([{ uuid: "m1" }], { count: 7 }) }]);
   const out = await meetingList.execute({ ...WINDOW, pageSize: 25 }, ctx) as {
     results: unknown[];
@@ -23,7 +24,7 @@ Deno.test("meeting-list: GET /v1/meetings/ with the required window, trailing sl
   assertEquals(out.next, null);
 });
 
-Deno.test("meeting-list: filters are mapped to the documented names; lists are comma-joined", async () => {
+test("meeting-list: filters are mapped to the documented names; lists are comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([]) }]);
   await meetingList.execute({
     ...WINDOW,
@@ -45,7 +46,7 @@ Deno.test("meeting-list: filters are mapped to the documented names; lists are c
   assertEquals(q.o, "start_at");
 });
 
-Deno.test("meeting-list: a missing date window is refused before any request", async () => {
+test("meeting-list: a missing date window is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await meetingList.execute({ fromDate: WINDOW.fromDate }, ctx),
@@ -55,14 +56,14 @@ Deno.test("meeting-list: a missing date window is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("meeting-list: a next URL is followed verbatim and needs no window", async () => {
+test("meeting-list: a next URL is followed verbatim and needs no window", async () => {
   const next = "https://api.avoma.com/v1/meetings/?page=2&from_date=x&to_date=y";
   const { ctx, calls } = mockCtx([{ body: pageBody([]) }]);
   await meetingList.execute({ next }, ctx);
   assertEquals(calls[0].url, next);
 });
 
-Deno.test("meeting-list: a next URL on another host is refused", async () => {
+test("meeting-list: a next URL on another host is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -21,32 +22,32 @@ const SUMMARY = {
   ],
 };
 
-Deno.test("service: reads only the connection's own region group", async () => {
+test("service: reads only the connection's own region group", async () => {
   const { ctx } = mockCtx([{ status: 200, body: SUMMARY }], { display: { region: "us-cloud1" } });
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage in a DIFFERENT region's group does not turn this connection down", async () => {
+test("service: an outage in a DIFFERENT region's group does not turn this connection down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: SUMMARY }], { display: { region: "us-cloud1" } });
   const report = await service.check!({}, ctx);
   // us-cloud1 -> NA1 group, which is operational even though NA2 is a major outage.
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage in THIS connection's own group is reported down", async () => {
+test("service: an outage in THIS connection's own group is reported down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: SUMMARY }], { display: { region: "us-cloud2" } });
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }], { display: { region: "us-cloud2" } });
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: never sends a credential — the status host must never see one", async () => {
+test("service: never sends a credential — the status host must never see one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: SUMMARY }], {
     display: { region: "us-cloud2" },
   });

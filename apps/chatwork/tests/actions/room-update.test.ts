@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomUpdate from "../../actions/room-update.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-update: PUTs only the fields given", async () => {
+test("room-update: PUTs only the fields given", async () => {
   const { ctx, calls } = mockCtx([{ body: { room_id: 123 } }]);
   const out = await roomUpdate.execute({ roomId: "123", name: "New Name" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/rooms/123");
@@ -11,6 +12,6 @@ Deno.test("room-update: PUTs only the fields given", async () => {
   assertEquals(out, { room_id: 123 });
 });
 
-Deno.test("room-update: is idempotent — a retry sets the same fields again", () => {
+test("room-update: is idempotent — a retry sets the same fields again", () => {
   assertEquals(roomUpdate.idempotent, true);
 });

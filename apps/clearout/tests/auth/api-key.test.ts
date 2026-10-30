@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const FAILED = {
   error: { code: 1000, message: "Invalid API Token, please generate new token" },
 };
 
-Deno.test("api-key: sign sets the bearer header (trimmed) and leaves the URL alone", async () => {
+test("api-key: sign sets the bearer header (trimmed) and leaves the URL alone", async () => {
   const { ctx } = mockCtx();
   const out = await apiKey.sign!({
     request: { url: "https://api.clearout.io/v2/account/credits", method: "GET", headers: {} },
@@ -18,7 +19,7 @@ Deno.test("api-key: sign sets the bearer header (trimmed) and leaves the URL alo
   assertEquals(out.url, "https://api.clearout.io/v2/account/credits");
 });
 
-Deno.test("api-key: test passes on a 2xx success envelope via the free credits read", async () => {
+test("api-key: test passes on a 2xx success envelope via the free credits read", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", data: { total_remaining_credits: 5 } },
   }]);
@@ -27,12 +28,12 @@ Deno.test("api-key: test passes on a 2xx success envelope via the free credits r
   assertEquals(calls[0].headers.authorization, "Bearer SECRET-TOKEN");
 });
 
-Deno.test("api-key: a 200 carrying status failed is not a pass", async () => {
+test("api-key: a 200 carrying status failed is not a pass", async () => {
   const { ctx } = mockCtx([{ status: 200, body: FAILED }]);
   assertEquals((await apiKey.test!({ credential: cred }, ctx)).ok, false);
 });
 
-Deno.test("api-key: 401 / code 1000 is a rejection that never echoes the token", async () => {
+test("api-key: 401 / code 1000 is a rejection that never echoes the token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: FAILED }]);
   const res = await apiKey.test!({ credential: cred }, ctx);
   assertEquals(res.ok, false);
@@ -40,7 +41,7 @@ Deno.test("api-key: 401 / code 1000 is a rejection that never echoes the token",
   assert(!res.message?.includes("SECRET-TOKEN"));
 });
 
-Deno.test("api-key: 429, 5xx and a missing token get distinct messages", async () => {
+test("api-key: 429, 5xx and a missing token get distinct messages", async () => {
   const busy = mockCtx([{
     status: 429,
     body: { status: "failed", error: { code: 1030, message: "slow" } },

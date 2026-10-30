@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-field.ts";
 
-Deno.test("update-field: PUTs the field to change_field/", async () => {
+test("update-field: PUTs the field to change_field/", async () => {
   const { ctx, calls } = mockCtx([{ body: { slug: "email" } }]);
   await action.execute!(
     { tableId: "tbl1", field: { slug: "email", label: "Work Email" } },
@@ -13,6 +14,6 @@ Deno.test("update-field: PUTs the field to change_field/", async () => {
   assertEquals(JSON.parse(calls[0].body!), { field: { slug: "email", label: "Work Email" } });
 });
 
-Deno.test("update-field: is idempotent", () => {
+test("update-field: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

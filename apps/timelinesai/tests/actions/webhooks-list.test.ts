@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import webhooksList from "../../actions/webhooks-list.ts";
 
-Deno.test("webhooks-list: lists webhooks", async () => {
+test("webhooks-list: lists webhooks", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": [] } }]);
   const out = await webhooksList.execute!({} as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("webhooks-list: lists webhooks", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("webhooks-list: surfaces a vendor error envelope", async () => {
+test("webhooks-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

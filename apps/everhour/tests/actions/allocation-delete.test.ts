@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import allocationDelete from "../../actions/allocation-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("allocation-delete: DELETE /allocations/{allocationId} with the documented query and body", async () => {
+test("allocation-delete: DELETE /allocations/{allocationId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await allocationDelete.execute({ "allocationId": 876534 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("allocation-delete: DELETE /allocations/{allocationId} with the docume
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("allocation-delete: an Everhour error surfaces its message and status", async () => {
+test("allocation-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(allocationDelete.execute({ "allocationId": 876534 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("allocation-delete: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("allocation-delete: declares perform and idempotent=true", () => {
+test("allocation-delete: declares perform and idempotent=true", () => {
   assertEquals(allocationDelete.type, "perform");
   assertEquals(allocationDelete.idempotent, true);
 });

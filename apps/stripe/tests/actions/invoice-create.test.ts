@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
-Deno.test("invoice-create: POSTs /invoices for the customer", async () => {
+test("invoice-create: POSTs /invoices for the customer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "in_1", status: "draft" } }]);
   await action.execute(
     { customerId: "cus_1", collectionMethod: "send_invoice", daysUntilDue: 14 },
@@ -15,17 +16,17 @@ Deno.test("invoice-create: POSTs /invoices for the customer", async () => {
   assertEquals(body.get("days_until_due"), "14");
 });
 
-Deno.test("invoice-create: the due-days field only shows for manual collection", () => {
+test("invoice-create: the due-days field only shows for manual collection", () => {
   const days = action.params?.find((p) => p.key === "daysUntilDue");
   assertEquals(days?.showIf, { field: "collectionMethod", eq: "send_invoice" });
 });
 
-Deno.test("invoice-create: dueDate forwards as due_date, gated the same as daysUntilDue", () => {
+test("invoice-create: dueDate forwards as due_date, gated the same as daysUntilDue", () => {
   const dueDate = action.params?.find((p) => p.key === "dueDate");
   assertEquals(dueDate?.showIf, { field: "collectionMethod", eq: "send_invoice" });
 });
 
-Deno.test("invoice-create: dueDate value forwards to the outbound form", async () => {
+test("invoice-create: dueDate value forwards to the outbound form", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "in_1" } }]);
   await action.execute(
     { customerId: "cus_1", collectionMethod: "send_invoice", dueDate: 1735689600 },

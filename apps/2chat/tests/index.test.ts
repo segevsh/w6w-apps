@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { test } from "node:test";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await readFile(new URL("../package.json", import.meta.url), "utf8"),
 ) as {
   w6w: {
     id: string;
@@ -13,27 +15,27 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 28 actions with unique kebab-case keys and valid types", () => {
-  assertEquals(app.actions.length, 28);
+test("index: exports 28 actions with unique kebab-case keys and valid types", () => {
+  assert.deepStrictEqual(app.actions.length, 28);
   const keys = app.actions.map((a) => a.key);
-  assertEquals(new Set(keys).size, keys.length, "duplicate action key");
+  assert.deepStrictEqual(new Set(keys).size, keys.length, "duplicate action key");
   for (const a of app.actions) {
-    assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.key), `${a.key} is not kebab-case`);
-    assert(["read", "search", "perform"].includes(a.type), `${a.key} has type ${a.type}`);
-    assert(a.title.length > 0 && a.description!.length > 0, `${a.key} lacks title or description`);
+    assert.ok(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.key), `${a.key} is not kebab-case`);
+    assert.ok(["read", "search", "perform"].includes(a.type), `${a.key} has type ${a.type}`);
+    assert.ok(a.title.length > 0 && a.description!.length > 0, `${a.key} lacks title or description`);
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
-    assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
+    assert.deepStrictEqual(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Anything that duplicates on a retry says so; deletes, updates and commands do not. */
-Deno.test("index: the actions that duplicate on a retry are honest about it", () => {
+test("index: the actions that duplicate on a retry are honest about it", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
-  assertEquals(notIdempotent, [
+  assert.deepStrictEqual(notIdempotent, [
     "contact-create",
     "group-create",
     "message-send",
@@ -43,8 +45,8 @@ Deno.test("index: the actions that duplicate on a retry are honest about it", ()
   ]);
 });
 
-Deno.test("index: no action key is a vendor path accident (all keys are the shipped list)", () => {
-  assertEquals(app.actions.map((a) => a.key), [
+test("index: no action key is a vendor path accident (all keys are the shipped list)", () => {
+  assert.deepStrictEqual(app.actions.map((a) => a.key), [
     "users-list",
     "contact-create",
     "contacts-list",
@@ -76,20 +78,20 @@ Deno.test("index: no action key is a vendor path accident (all keys are the ship
   ]);
 });
 
-Deno.test("index: one api-key auth method and the two declared health checks", () => {
-  assertEquals(app.auth.map((a) => a.key), ["api-key"]);
-  assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota"]);
+test("index: one api-key auth method and the two declared health checks", () => {
+  assert.deepStrictEqual(app.auth.map((a) => a.key), ["api-key"]);
+  assert.deepStrictEqual(app.healthChecks.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: manifest id, single API host and icon are what the README claims", () => {
-  assertEquals(manifest.w6w.id, "io.w6w.2chat");
-  assertEquals(manifest.w6w.displayName, "2Chat");
-  assertEquals(manifest.w6w.network.allow, ["api.p.2chat.io"]);
-  assert(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
-  assertEquals(manifest.w6w.appearance.icon.url, "./assets/icon.png");
+test("index: manifest id, single API host and icon are what the README claims", () => {
+  assert.deepStrictEqual(manifest.w6w.id, "io.w6w.2chat");
+  assert.deepStrictEqual(manifest.w6w.displayName, "2Chat");
+  assert.deepStrictEqual(manifest.w6w.network.allow, ["api.p.2chat.io"]);
+  assert.ok(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
+  assert.deepStrictEqual(manifest.w6w.appearance.icon.url, "./assets/icon.png");
 });
 
-Deno.test("index: no action sets an Authorization or API-key header itself", async () => {
+test("index: no action sets an Authorization or API-key header itself", async () => {
   for (
     const key of [
       "users-list",
@@ -122,8 +124,8 @@ Deno.test("index: no action sets an Authorization or API-key header itself", asy
       "waba-conversation-window-get",
     ]
   ) {
-    const src = await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url));
-    assert(!/authorization|x-user-api-key/i.test(src), `${key} touches credentials`);
-    assert(!/[^.\w]fetch\(/.test(src), `${key} calls global fetch`);
+    const src = await readFile(new URL(`../actions/${key}.ts`, import.meta.url), "utf8");
+    assert.ok(!/authorization|x-user-api-key/i.test(src), `${key} touches credentials`);
+    assert.ok(!/[^.\w]fetch\(/.test(src), `${key} calls global fetch`);
   }
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeClockList from "../../actions/time-clock-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("time-clock-list: GETs /time-clock/v1/time-clocks with no params", async () => {
+test("time-clock-list: GETs /time-clock/v1/time-clocks with no params", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ timeClocks: [{ id: 1, name: "Main", isArchived: false }] }) },
   ]);
@@ -11,6 +12,6 @@ Deno.test("time-clock-list: GETs /time-clock/v1/time-clocks with no params", asy
   assertEquals(out, { timeClocks: [{ id: 1, name: "Main", isArchived: false }] });
 });
 
-Deno.test("time-clock-list: takes no parameters", () => {
+test("time-clock-list: takes no parameters", () => {
   assertEquals(timeClockList.params?.length, 0);
 });

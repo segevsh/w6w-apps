@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: collects the org subdomain alongside the credential", () => {
+test("api-key: collects the org subdomain alongside the credential", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   const keys = auth.fields?.map((f) => f.key);
@@ -14,7 +15,7 @@ Deno.test("api-key: collects the org subdomain alongside the credential", () => 
   assertEquals(auth.apiKey, { in: "header", name: "Authorization", prefix: "Bearer " });
 });
 
-Deno.test("api-key: sign uses Kustomer's Bearer scheme", async () => {
+test("api-key: sign uses Kustomer's Bearer scheme", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.api.kustomerapp.com/v1/customers",
@@ -25,7 +26,7 @@ Deno.test("api-key: sign uses Kustomer's Bearer scheme", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("api-key: test refuses a half-filled credential without a request", async () => {
+test("api-key: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { orgSubdomain: "acme" } }, ctx), {
     ok: false,
@@ -34,7 +35,7 @@ Deno.test("api-key: test refuses a half-filled credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes the org's own host, signed itself", async () => {
+test("api-key: test probes the org's own host, signed itself", async () => {
   const ok = mockCtx([{ body: { data: { id: "1", type: "user" } } }]);
   assertEquals(
     await auth.test({ credential: { orgSubdomain: "acme", apiKey: "tok" } }, ok.ctx),
@@ -44,7 +45,7 @@ Deno.test("api-key: test probes the org's own host, signed itself", async () => 
   assertEquals(ok.calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("api-key: test surfaces a non-2xx status", async () => {
+test("api-key: test surfaces a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(
     await auth.test({ credential: { orgSubdomain: "acme", apiKey: "bad" } }, ctx),
@@ -52,7 +53,7 @@ Deno.test("api-key: test surfaces a non-2xx status", async () => {
   );
 });
 
-Deno.test("api-key: afterConnect records the org subdomain and the agent for the client to use", async () => {
+test("api-key: afterConnect records the org subdomain and the agent for the client to use", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", attributes: { name: "Jo" } } } }]);
   const out = await auth.afterConnect!(
     { credential: { orgSubdomain: "acme", apiKey: "tok" } },
@@ -64,7 +65,7 @@ Deno.test("api-key: afterConnect records the org subdomain and the agent for the
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("api-key: afterConnect still records the org subdomain if the probe fails", async () => {
+test("api-key: afterConnect still records the org subdomain if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { orgSubdomain: "acme", apiKey: "tok" } },

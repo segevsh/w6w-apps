@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import collaboratorAdd from "../../actions/collaborator-add.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collaborator-add: calls POST /api/templates/t1/collaborators with the documented body", async () => {
+test("collaborator-add: calls POST /api/templates/t1/collaborators with the documented body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ template_collaborator_id: "col1", template_collaborator_editor_url: "u" }] },
   }]);
@@ -23,7 +24,7 @@ Deno.test("collaborator-add: calls POST /api/templates/t1/collaborators with the
   );
 });
 
-Deno.test("collaborator-add: a vendor error surfaces its error_code and message", async () => {
+test("collaborator-add: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

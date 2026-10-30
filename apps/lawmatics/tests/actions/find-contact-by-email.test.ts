@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import findContactByEmail from "../../actions/find-contact-by-email.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("find-contact-by-email: hits GET /v1/contacts/find_by_email/:email", async () => {
+test("find-contact-by-email: hits GET /v1/contacts/find_by_email/:email", async () => {
   const { ctx, calls } = mockCtx([{
     body: item("74", "contact", { email: "roey@lawmatics.com" }),
   }]);

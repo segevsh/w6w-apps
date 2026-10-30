@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-sender-profile.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-sender-profile: maps one profile", async () => {
+test("get-sender-profile: maps one profile", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -20,7 +21,7 @@ Deno.test("get-sender-profile: maps one profile", async () => {
   assertEquals([out.name, out.enabledChannels, out.updatedAt], ["Acme", ["sms"], "u"]);
 });
 
-Deno.test("get-sender-profile: 404 throws", async () => {
+test("get-sender-profile: 404 throws", async () => {
   await assertRejects(
     () =>
       run(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-delete-records.ts";
 
-Deno.test("bulk-delete-records: PATCHes { items } to records/bulk_delete/ with ?fields=id", async () => {
+test("bulk-delete-records: PATCHes { items } to records/bulk_delete/ with ?fields=id", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted: true } }]);
   const result = await action.execute!({ tableId: "tbl1", items: ["rec1", "rec2"] }, ctx);
   const url = new URL(calls[0].url);
@@ -13,6 +14,6 @@ Deno.test("bulk-delete-records: PATCHes { items } to records/bulk_delete/ with ?
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("bulk-delete-records: is idempotent", () => {
+test("bulk-delete-records: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

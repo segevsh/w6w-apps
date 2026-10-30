@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import collaboratorRemove from "../../actions/collaborator-remove.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collaborator-remove: calls POST /api/templates/t1/collaborators/col1/remove with the documented body", async () => {
+test("collaborator-remove: calls POST /api/templates/t1/collaborators/col1/remove with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "removed" } }]);
   const out = await collaboratorRemove.execute(
     { templateId: "t1", collaboratorId: "col1" } as never,
@@ -18,7 +19,7 @@ Deno.test("collaborator-remove: calls POST /api/templates/t1/collaborators/col1/
   assert(out.status === "removed", JSON.stringify(out));
 });
 
-Deno.test("collaborator-remove: a vendor error surfaces its error_code and message", async () => {
+test("collaborator-remove: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

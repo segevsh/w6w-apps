@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/update-collection-rows.ts";
 
-Deno.test("update-collection-rows: PUTs the raw array of { id, data } objects", async () => {
+test("update-collection-rows: PUTs the raw array of { id, data } objects", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 204 }]);
   const rows = [{ id: "row-1", data: { Name: "Ada", Email: "ada@acme.com" } }];
   const result = await action.execute!(
@@ -20,7 +21,7 @@ Deno.test("update-collection-rows: PUTs the raw array of { id, data } objects", 
  * The one behavior this action most needs to communicate: Duda overwrites the
  * whole row, so a partial `data` object is a data-loss bug, not a patch.
  */
-Deno.test("update-collection-rows: the hint says an omitted field is blanked", () => {
+test("update-collection-rows: the hint says an omitted field is blanked", () => {
   const rows = action.params!.find((p) => p.key === "rows");
   assert(/overwrites the whole row/i.test(rows!.hint!), rows!.hint);
   assert(/blanked/i.test(rows!.hint!), rows!.hint);
@@ -28,11 +29,11 @@ Deno.test("update-collection-rows: the hint says an omitted field is blanked", (
 });
 
 /** Resending the same full-row payload converges on the same state. */
-Deno.test("update-collection-rows: is idempotent", () => {
+test("update-collection-rows: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("update-collection-rows: refuses an empty array before spending a request", async () => {
+test("update-collection-rows: refuses an empty array before spending a request", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   const err = await Promise.resolve(action.execute!(
     { siteName: "abc", collectionName: "Team", rows: [] },

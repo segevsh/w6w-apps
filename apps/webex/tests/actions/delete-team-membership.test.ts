@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-team-membership.ts";
 
-Deno.test("delete-team-membership: DELETEs /team/memberships/{membershipId}", async () => {
+test("delete-team-membership: DELETEs /team/memberships/{membershipId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ membershipId: "tm1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

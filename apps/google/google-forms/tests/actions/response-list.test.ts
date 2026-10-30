@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/response-list.ts";
 
-Deno.test("response-list: GET /v1/forms/{formId}/responses with no filter by default", async () => {
+test("response-list: GET /v1/forms/{formId}/responses with no filter by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { responses: [] } }]);
   const result = await action.execute({ formId: "f1" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("response-list: GET /v1/forms/{formId}/responses with no filter by def
   assertEquals(result, { responses: [] });
 });
 
-Deno.test("response-list: submittedAfter builds the `timestamp >` filter", async () => {
+test("response-list: submittedAfter builds the `timestamp >` filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ formId: "f1", submittedAfter: "2014-10-02T15:01:23Z" }, ctx);
   assertEquals(
@@ -22,7 +23,7 @@ Deno.test("response-list: submittedAfter builds the `timestamp >` filter", async
   );
 });
 
-Deno.test("response-list: an explicit filter wins over submittedAfter", async () => {
+test("response-list: an explicit filter wins over submittedAfter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     formId: "f1",
@@ -35,7 +36,7 @@ Deno.test("response-list: an explicit filter wins over submittedAfter", async ()
   );
 });
 
-Deno.test("response-list: forwards pageSize and pageToken", async () => {
+test("response-list: forwards pageSize and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ formId: "f1", pageSize: 50, pageToken: "tok" }, ctx);
   const url = new URL(calls[0].url);

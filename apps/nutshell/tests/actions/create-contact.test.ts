@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createContact from "../../actions/create-contact.ts";
 import { mockCtx, rpcBody } from "../_helpers.ts";
 
-Deno.test("create-contact: is a non-idempotent perform action", () => {
+test("create-contact: is a non-idempotent perform action", () => {
   assertEquals(createContact.type, "perform");
   assertEquals(createContact.idempotent, false);
 });
 
-Deno.test("create-contact: splits comma-separated phone/email and wires accountId", async () => {
+test("create-contact: splits comma-separated phone/email and wires accountId", async () => {
   const { ctx, calls } = mockCtx([{ result: { id: 12, name: "Andy Fowler" } }]);
   await createContact.execute({
     name: "Andy Fowler",

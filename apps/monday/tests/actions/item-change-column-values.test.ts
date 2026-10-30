@@ -1,10 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/item-change-column-values.ts";
 
 const OK = { data: { change_multiple_column_values: { id: "i1", name: "Task" } } };
 
-Deno.test("item-change-column-values: sends board, item and a JSON-string payload", async () => {
+test("item-change-column-values: sends board, item and a JSON-string payload", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute(
     { boardId: "b1", itemId: "i1", columnValues: '{"text8": "hi"}' },
@@ -15,7 +16,7 @@ Deno.test("item-change-column-values: sends board, item and a JSON-string payloa
   assertEquals(sent.variables, { boardId: "b1", itemId: "i1", columnValues: '{"text8":"hi"}' });
 });
 
-Deno.test("item-change-column-values: rejects invalid JSON before calling monday", () => {
+test("item-change-column-values: rejects invalid JSON before calling monday", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ boardId: "b1", itemId: "i1", columnValues: "nope" }, ctx),

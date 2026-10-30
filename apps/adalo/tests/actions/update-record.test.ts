@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { APP_ID, mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/update-record.ts";
 
-Deno.test("update-record: PUTs fields to /v0/apps/{appId}/collections/{id}/{recordId}", async () => {
+test("update-record: PUTs fields to /v0/apps/{appId}/collections/{id}/{recordId}", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: "42" } }]);
   const result = await action.execute!(
     { collectionId: "c1", recordId: "42", fields: { Score: 20 } },

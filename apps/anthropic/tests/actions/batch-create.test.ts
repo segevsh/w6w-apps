@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-create.ts";
 
-Deno.test("batch-create: POSTs /v1/messages/batches with requests array", async () => {
+test("batch-create: POSTs /v1/messages/batches with requests array", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "batch_1", processing_status: "in_progress" } }]);
   const requests = [
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes with application/merge-patch+json", async () => {
+test("contact-update: PATCHes with application/merge-patch+json", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await contactUpdate.execute(
     { id: "1", locale: "fr", fields: [{ slug: "phone_number", value: null }] },
@@ -18,7 +19,7 @@ Deno.test("contact-update: PATCHes with application/merge-patch+json", async () 
   );
 });
 
-Deno.test("contact-update: never sends an email field — the vendor's patch schema has none", async () => {
+test("contact-update: never sends an email field — the vendor's patch schema has none", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await contactUpdate.execute({ id: "1", locale: "en" }, ctx);
   const body = JSON.parse(calls[0].body!);

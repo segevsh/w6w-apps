@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import botInfoGet from "../../actions/bot-info-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bot-info-get: GETs /v2/bot/info and returns the body as-is", async () => {
+test("bot-info-get: GETs /v2/bot/info and returns the body as-is", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -22,6 +23,6 @@ Deno.test("bot-info-get: GETs /v2/bot/info and returns the body as-is", async ()
   assertEquals(out.displayName, "Example name");
 });
 
-Deno.test("bot-info-get: requires no auth-opt-out (auth is the default posture)", () => {
+test("bot-info-get: requires no auth-opt-out (auth is the default posture)", () => {
   assertEquals(botInfoGet.requiresAuth, undefined);
 });

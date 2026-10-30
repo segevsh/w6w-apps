@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import estimateList from "../../actions/estimate-list.ts";
 
-Deno.test("estimate-list: returns the estimates connection", async () => {
+test("estimate-list: returns the estimates connection", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -26,7 +27,7 @@ Deno.test("estimate-list: returns the estimates connection", async () => {
   assertEquals(body.variables.sort, undefined);
 });
 
-Deno.test("estimate-list: type/resource metadata", () => {
+test("estimate-list: type/resource metadata", () => {
   assertEquals(estimateList.type, "search");
   assertEquals(estimateList.resource, "estimate");
 });

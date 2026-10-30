@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import jobGet from "../../actions/batch-prediction-job-get.ts";
 import jobList from "../../actions/batch-prediction-job-list.ts";
@@ -7,7 +8,7 @@ import jobCancel from "../../actions/batch-prediction-job-cancel.ts";
 const display = { projectId: "p1", location: "us-central1" };
 const BASE = "https://us-central1-aiplatform.googleapis.com/v1/projects/p1/locations/us-central1";
 
-Deno.test("batch-prediction-job-get / -list / -cancel", async () => {
+test("batch-prediction-job-get / -list / -cancel", async () => {
   const { ctx, calls } = mockCtx([
     { body: { state: "JOB_STATE_RUNNING" } },
     { body: { batchPredictionJobs: [{ name: "j" }] } },

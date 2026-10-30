@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: posts the project body and returns the created project", async () => {
+test("project-create: posts the project body and returns the created project", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 201, body: { project: { id: "p1", name: "New" } } }],
     { display: DEFAULT_DISPLAY },
@@ -16,7 +17,7 @@ Deno.test("project-create: posts the project body and returns the created projec
   assertEquals(body.project.contentPermissions, "ManagedByOwner");
 });
 
-Deno.test("project-create: requires a name before any network call", async () => {
+test("project-create: requires a name before any network call", async () => {
   const { ctx, calls } = mockCtx([], { display: DEFAULT_DISPLAY });
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "`name` is required");
   assertEquals(calls.length, 0);

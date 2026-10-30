@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
-Deno.test("project-list: GETs /projects, turning contactId into a full resource URL", async () => {
+test("project-list: GETs /projects, turning contactId into a full resource URL", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ body: { projects: [] } }]);
   await action.execute({ contactId: "2", view: "active" }, ctx);
   const url = new URL(calls[0].url);

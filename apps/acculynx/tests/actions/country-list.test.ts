@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/country-list.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("country-list: sends GET /acculynx/countries and returns the vendor body", async () => {
+test("country-list: sends GET /acculynx/countries and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { items: [{ id: 1, name: "United States", abbreviation: "US" }] },
   }]);
@@ -16,7 +17,7 @@ Deno.test("country-list: sends GET /acculynx/countries and returns the vendor bo
   assertEquals(out, { items: [{ id: 1, name: "United States", abbreviation: "US" }] });
 });
 
-Deno.test("country-list: a vendor error surfaces its title and status", async () => {
+test("country-list: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ includes: "states" } as never, ctx),

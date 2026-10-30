@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import incidentTimelineGet from "../../actions/incident-timeline-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("incident-timeline-get: GET /api/v3/incidents/{incident_id}/timeline", async () => {
+test("incident-timeline-get: GET /api/v3/incidents/{incident_id}/timeline", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -33,7 +34,7 @@ Deno.test("incident-timeline-get: GET /api/v3/incidents/{incident_id}/timeline",
   assertEquals((out.items as Array<Record<string, unknown>>)[0].item_type, "comment");
 });
 
-Deno.test("incident-timeline-get: puts no credential on the request (sign owns that)", async () => {
+test("incident-timeline-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -52,7 +53,7 @@ Deno.test("incident-timeline-get: puts no credential on the request (sign owns t
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("incident-timeline-get: a vendor error surfaces its own message", async () => {
+test("incident-timeline-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await incidentTimelineGet.execute({ "incident_id": "25" }, ctx)

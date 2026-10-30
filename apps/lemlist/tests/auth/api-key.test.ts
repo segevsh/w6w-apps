@@ -1,5 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth, { basicHeader } from "../../auth/api-key.ts";
 
@@ -17,7 +18,7 @@ const expected = `Basic ${encodeBase64(`:${cred.apiKey}`)}`;
  * therefore pinned from several directions below.
  */
 
-Deno.test("api-key: the encoded payload is `:key` — EMPTY username, key as password", () => {
+test("api-key: the encoded payload is `:key` — EMPTY username, key as password", () => {
   const encoded = basicHeader(cred.apiKey).slice("Basic ".length);
   const decoded = atob(encoded);
 
@@ -29,14 +30,14 @@ Deno.test("api-key: the encoded payload is `:key` — EMPTY username, key as pas
   assertEquals(decoded.split(":")[1], cred.apiKey, "password must be the API key");
 });
 
-Deno.test("api-key: matches lemlist's documented recipe — base64 of `:YourApiKey`", () => {
+test("api-key: matches lemlist's documented recipe — base64 of `:YourApiKey`", () => {
   // lemlist: "Create string with format `:YourApiKey`" → base64 → `Basic {result}`.
   assertEquals(basicHeader("YourApiKey"), `Basic ${encodeBase64(":YourApiKey")}`);
   assertEquals(basicHeader("YourApiKey"), "Basic OllvdXJBcGlLZXk=");
   assertEquals(atob("OllvdXJBcGlLZXk="), ":YourApiKey");
 });
 
-Deno.test("api-key: the Close-shaped `base64('key:')` is a DIFFERENT, wrong header", () => {
+test("api-key: the Close-shaped `base64('key:')` is a DIFFERENT, wrong header", () => {
   // Guards the single most likely silent failure in this app: building the
   // header the way the sibling Close app does.
   const closeShaped = `Basic ${encodeBase64(`${cred.apiKey}:`)}`;
@@ -49,18 +50,18 @@ Deno.test("api-key: the Close-shaped `base64('key:')` is a DIFFERENT, wrong head
   assertEquals(atob(closeShaped.slice("Basic ".length)), "abcdef123456:");
 });
 
-Deno.test("api-key: bare base64 of the key, with no colon at all, is also wrong", () => {
+test("api-key: bare base64 of the key, with no colon at all, is also wrong", () => {
   assert(basicHeader(cred.apiKey) !== `Basic ${encodeBase64(cred.apiKey)}`);
 });
 
-Deno.test("api-key: encodes keys with non-ASCII bytes as UTF-8, not code units", () => {
+test("api-key: encodes keys with non-ASCII bytes as UTF-8, not code units", () => {
   // btoa() throws on code points > 255, so the encoder must go through
   // TextEncoder. A key is ASCII in practice; this pins the implementation
   // anyway so a future edit cannot regress into raw btoa().
   assertEquals(basicHeader("clé"), `Basic ${encodeBase64(":clé")}`);
 });
 
-Deno.test("api-key: declares one secret field and the basic wire type", () => {
+test("api-key: declares one secret field and the basic wire type", () => {
   assertEquals(auth.key, "api-key");
   // Basic is genuinely what goes over the wire, even though the credential is an
   // API key — `ApiKeyConfig` cannot express base64(`:key`).
@@ -74,7 +75,7 @@ Deno.test("api-key: declares one secret field and the basic wire type", () => {
   assertEquals(fields.length, 1);
 });
 
-Deno.test("api-key: sign stamps the Basic header and returns the request", async () => {
+test("api-key: sign stamps the Basic header and returns the request", async () => {
   const request = {
     url: "https://x",
     method: "GET" as const,
@@ -84,7 +85,7 @@ Deno.test("api-key: sign stamps the Basic header and returns the request", async
   assertEquals(out.headers["authorization"], expected);
 });
 
-Deno.test("api-key: sign makes no network call", async () => {
+test("api-key: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   await auth.sign!(
     { request: { url: "https://x", method: "GET", headers: {} }, credential: cred },
@@ -93,7 +94,7 @@ Deno.test("api-key: sign makes no network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes GET /team?version=v2 with the credential", async () => {
+test("api-key: test probes GET /team?version=v2 with the credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _id: "tea_1", name: "lemlist" } }]);
   const result = await auth.test({ credential: cred }, ctx);
 
@@ -104,14 +105,14 @@ Deno.test("api-key: test probes GET /team?version=v2 with the credential", async
   assertEquals(calls[0].headers["authorization"], expected);
 });
 
-Deno.test("api-key: test fails without a network call when the key is missing", async () => {
+test("api-key: test fails without a network call when the key is missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test surfaces lemlist's text/plain auth errors verbatim", async () => {
+test("api-key: test surfaces lemlist's text/plain auth errors verbatim", async () => {
   // lemlist answers auth failures with text/plain, not JSON — these exact
   // sentences are the documented bodies.
   const cases: Array<[number, string]> = [
@@ -128,7 +129,7 @@ Deno.test("api-key: test surfaces lemlist's text/plain auth errors verbatim", as
   }
 });
 
-Deno.test("api-key: test falls back to the status when the body is HTML or oversized", async () => {
+test("api-key: test falls back to the status when the body is HTML or oversized", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
@@ -140,7 +141,7 @@ Deno.test("api-key: test falls back to the status when the body is HTML or overs
   assert((result2.message ?? "").includes("500"));
 });
 
-Deno.test("afterConnect: publishes team display data, never the key", async () => {
+test("afterConnect: publishes team display data, never the key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -166,7 +167,7 @@ Deno.test("afterConnect: publishes team display data, never the key", async () =
   assertEquals(JSON.stringify(display).includes("ada@example.com"), false);
 });
 
-Deno.test("afterConnect: falls back to userIds for the member count without v2 users", async () => {
+test("afterConnect: falls back to userIds for the member count without v2 users", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { _id: "tea_1", name: "lemlist", userIds: ["usr_1", "usr_2", "usr_3"] },
@@ -175,11 +176,11 @@ Deno.test("afterConnect: falls back to userIds for the member count without v2 u
   assertEquals((display.team as Record<string, unknown>).memberCount, 3);
 });
 
-Deno.test("afterConnect: degrades to empty display data rather than throwing", async () => {
+test("afterConnect: degrades to empty display data rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, ctx), {});
 });
 
-Deno.test("api-key: connectionLabel references only data afterConnect publishes", () => {
+test("api-key: connectionLabel references only data afterConnect publishes", () => {
   assertEquals(auth.connectionLabel, "{{team.name}}");
 });

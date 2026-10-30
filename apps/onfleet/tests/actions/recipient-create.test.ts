@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recipient-create.ts";
 
-Deno.test("recipient-create: sends name and phone", async () => {
+test("recipient-create: sends name and phone", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "rcp_1" } }]);
   await action.execute!({ name: "Neiman Runtilly", phone: "+16505551133" }, ctx);
   assertEquals(calls[0].url, "https://onfleet.com/api/v2/recipients");
@@ -12,13 +13,13 @@ Deno.test("recipient-create: sends name and phone", async () => {
   });
 });
 
-Deno.test("recipient-create: name and phone are required", async () => {
+test("recipient-create: name and phone are required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ phone: "+1" }, ctx), Error, "name");
   await assertRejects(async () => await action.execute!({ name: "A" }, ctx), Error, "phone");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("recipient-create: is not idempotent", () => {
+test("recipient-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

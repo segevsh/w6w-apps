@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: GET /user/list with the mapped wire fields", async () => {
+test("user-list: GET /user/list with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const out = await userList.execute({} as never, ctx) as Record<string, unknown>;
 
@@ -13,7 +14,7 @@ Deno.test("user-list: GET /user/list with the mapped wire fields", async () => {
   assertEquals(out.items, [{ id: 1 }]);
 });
 
-Deno.test("user-list: a vendor error is thrown with its message", async () => {
+test("user-list: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

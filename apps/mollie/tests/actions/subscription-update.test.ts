@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionUpdate from "../../actions/subscription-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-update: patches given fields only", async () => {
+test("subscription-update: patches given fields only", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_1", status: "active" } }]);
   await subscriptionUpdate.execute(
     { customerId: "cst_1", subscriptionId: "sub_1", description: "New description" },
@@ -14,6 +15,6 @@ Deno.test("subscription-update: patches given fields only", async () => {
   assertEquals(JSON.parse(calls[0].body!), { description: "New description" });
 });
 
-Deno.test("subscription-update: is idempotent", () => {
+test("subscription-update: is idempotent", () => {
   assertEquals(subscriptionUpdate.idempotent, true);
 });

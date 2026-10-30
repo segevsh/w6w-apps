@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listsList from "../../actions/lists-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lists-list: calls GET /lists with no query", async () => {
+test("lists-list: calls GET /lists with no query", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "My List" }] }]);
   const out = await listsList.execute({}, ctx) as Array<{ name: string }>;
   assertEquals(calls[0].method, "GET");

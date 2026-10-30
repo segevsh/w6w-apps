@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import upload from "../../actions/evidence-file-upload.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("evidence-file-upload: sends a multipart base64File part holding a JSON string", async () => {
+test("evidence-file-upload: sends a multipart base64File part holding a JSON string", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -34,7 +35,7 @@ Deno.test("evidence-file-upload: sends a multipart base64File part holding a JSO
   assertEquals(out.fileKey, "a/b/report.pdf");
 });
 
-Deno.test("evidence-file-upload: content that is already a data URL is not wrapped twice", async () => {
+test("evidence-file-upload: content that is already a data URL is not wrapped twice", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { fileKey: "k" } }]);
   await upload.execute({
     workspaceId: 7,
@@ -46,7 +47,7 @@ Deno.test("evidence-file-upload: content that is already a data URL is not wrapp
   assertEquals(text.split("data:").length, 2);
 });
 
-Deno.test("evidence-file-upload: defaults the MIME type and surfaces an error", async () => {
+test("evidence-file-upload: defaults the MIME type and surfaces an error", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: errorBody(400, "Unsupported extension", 2),

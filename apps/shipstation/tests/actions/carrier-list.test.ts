@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/carrier-list.ts";
 
-Deno.test("carrier-list: GETs /v2/carriers", async () => {
+test("carrier-list: GETs /v2/carriers", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { carriers: [{ carrier_id: "se-1", friendly_name: "UPS" }] } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("carrier-list: GETs /v2/carriers", async () => {
   assertEquals(result.carriers.length, 1);
 });
 
-Deno.test("carrier-list: an empty account returns an empty array, not an error", async () => {
+test("carrier-list: an empty account returns an empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { carriers: [] } }]);
   const result = await action.execute!({}, ctx) as { carriers: unknown[] };
   assertEquals(result.carriers, []);

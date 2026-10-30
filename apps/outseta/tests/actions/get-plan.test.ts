@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-plan.ts";
 
-Deno.test("get-plan: identity", () => {
+test("get-plan: identity", () => {
   assertEquals(action.key, "get-plan");
   assertEquals(action.type, "read");
   assertEquals(action.resource, "billing");
 });
 
-Deno.test("get-plan: sends GET /api/v1/billing/plans/pl1", async () => {
+test("get-plan: sends GET /api/v1/billing/plans/pl1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     planUid: "pl1",
@@ -24,7 +25,7 @@ Deno.test("get-plan: sends GET /api/v1/billing/plans/pl1", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("get-plan: a failure names the status and the request", async () => {
+test("get-plan: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

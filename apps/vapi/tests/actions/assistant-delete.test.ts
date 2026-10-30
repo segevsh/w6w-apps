@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import assistantDelete from "../../actions/assistant-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("assistant-delete: calls DELETE /assistant/{id}", async () => {
+test("assistant-delete: calls DELETE /assistant/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "a1" } }]);
   const out = await assistantDelete.execute({ id: "a1" }, ctx);
 
@@ -11,12 +12,12 @@ Deno.test("assistant-delete: calls DELETE /assistant/{id}", async () => {
   assertEquals(out, { id: "a1" });
 });
 
-Deno.test("assistant-delete: is declared idempotent", () => {
+test("assistant-delete: is declared idempotent", () => {
   assertEquals(assistantDelete.idempotent, true);
 });
 
 /** The pinned-assistant 409 carries a distinct error code, surfaced verbatim. */
-Deno.test("assistant-delete: a pinned assistant surfaces the vendor's own reason", async () => {
+test("assistant-delete: a pinned assistant surfaces the vendor's own reason", async () => {
   const { ctx } = mockCtx([
     {
       status: 409,

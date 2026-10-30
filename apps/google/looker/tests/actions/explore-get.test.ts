@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/explore-get.ts";
 
@@ -20,7 +21,7 @@ const explore = {
 };
 
 /** Selecting only measures gives one row; a dimension groups. */
-Deno.test("explore-get: splits dimensions from measures", async () => {
+test("explore-get: splits dimensions from measures", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: explore }], D);
   const result = await action.execute({ model: "ecommerce", explore: "orders" }, ctx) as Record<
     string,
@@ -36,7 +37,7 @@ Deno.test("explore-get: splits dimensions from measures", async () => {
 });
 
 /** Hidden means hidden from the picker, not from the API. */
-Deno.test("explore-get: omits hidden fields by default and counts them anyway", async () => {
+test("explore-get: omits hidden fields by default and counts them anyway", async () => {
   const { ctx } = mockCtx([{ status: 200, body: explore }], D);
   const result = await action.execute({ model: "m", explore: "e" }, ctx) as Record<string, unknown>;
   const names = (result.dimensions as Array<{ name: string }>).map((d) => d.name);
@@ -44,7 +45,7 @@ Deno.test("explore-get: omits hidden fields by default and counts them anyway", 
   assertEquals(result.hiddenCount, 1);
 });
 
-Deno.test("explore-get: includeHidden returns them, because the API can select them", async () => {
+test("explore-get: includeHidden returns them, because the API can select them", async () => {
   const { ctx } = mockCtx([{ status: 200, body: explore }], D);
   const result = await action.execute(
     { model: "m", explore: "e", includeHidden: true },
@@ -54,13 +55,13 @@ Deno.test("explore-get: includeHidden returns them, because the API can select t
 });
 
 /** A filter on one of these is rejected in terms of the filter. */
-Deno.test("explore-get: names the fields that cannot be filtered", async () => {
+test("explore-get: names the fields that cannot be filtered", async () => {
   const { ctx } = mockCtx([{ status: 200, body: explore }], D);
   const result = await action.execute({ model: "m", explore: "e" }, ctx) as Record<string, unknown>;
   assertEquals(result.unfilterable, ["orders.calc"]);
 });
 
-Deno.test("explore-get: both names are required before any request", async () => {
+test("explore-get: both names are required before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ explore: "orders" }, ctx),
@@ -75,7 +76,7 @@ Deno.test("explore-get: both names are required before any request", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("explore-get: the hint says an Explore name is not a LookML view", () => {
+test("explore-get: the hint says an Explore name is not a LookML view", () => {
   const explore = action.params!.find((p) => p.key === "explore")!;
   assert(/not a LookML view name/.test(explore.hint!), explore.hint);
 });

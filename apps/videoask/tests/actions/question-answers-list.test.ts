@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import questionAnswersList from "../../actions/question-answers-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * is that the action returns `{answers: [...]}` from that bare array, not
  * `{answers: undefined}` from mis-reading `body.results`.
  */
-Deno.test("question-answers-list: reads a bare array, not a {results} envelope", async () => {
+test("question-answers-list: reads a bare array, not a {results} envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ answer_id: "a1" }, { answer_id: "a2" }] }]);
   const out = await questionAnswersList.execute(
     { questionId: "q1", limit: 20, offset: 0 },

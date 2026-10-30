@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("health/service: maps 'none' indicator to ok and hits the status host, unsigned", async () => {
+test("health/service: maps 'none' indicator to ok and hits the status host, unsigned", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -19,7 +20,7 @@ Deno.test("health/service: maps 'none' indicator to ok and hits the status host,
   assertEquals(url.pathname, "/api/v2/summary.json");
 });
 
-Deno.test("health/service: maps 'major' indicator to down and folds per-component detail", async () => {
+test("health/service: maps 'major' indicator to down and folds per-component detail", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -38,13 +39,13 @@ Deno.test("health/service: maps 'major' indicator to down and folds per-componen
   assertEquals("group" in (report.components ?? {}), false);
 });
 
-Deno.test("health/service: a failed status fetch reports unknown, not down", async () => {
+test("health/service: a failed status fetch reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("health/service: declares service kind, app scope defaults, and its own network.allow", () => {
+test("health/service: declares service kind, app scope defaults, and its own network.allow", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["www.linkedin-apistatus.com"]);
 });

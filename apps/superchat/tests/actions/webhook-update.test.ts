@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-update.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("webhook-update: PUTs only what was set and redacts the secret", async () => {
+test("webhook-update: PUTs only what was set and redacts the secret", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "w_1", "secret": "s3cret" } }]);
   const result = await action.execute!(
     { "subscriptionId": "w_1", "eventTypes": ["contact_created"] } as never,
@@ -34,7 +35,7 @@ Deno.test("webhook-update: PUTs only what was set and redacts the secret", async
   assertEquals(result, { "id": "w_1", "secret": "[redacted]" });
 });
 
-Deno.test("webhook-update: can change just the target URL", async () => {
+test("webhook-update: can change just the target URL", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "w_1", "secret": null } }]);
   const result = await action.execute!(
     { "subscriptionId": "w_1", "targetUrl": "https://y.test/h" } as never,

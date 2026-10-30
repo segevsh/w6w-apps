@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { BASE, mockCtx, nsError } from "../_helpers.ts";
 
 const req = (url: string) => ({ url, method: "GET", headers: {} as Record<string, string> });
 
-Deno.test("oauth2: URLs carry the account placeholder, PKCE and the REST scope", () => {
+test("oauth2: URLs carry the account placeholder, PKCE and the REST scope", () => {
   const o = oauth2.oauth2!;
   assertEquals(o.authorizationUrl.includes("{accountId}.app.netsuite.com"), true);
   assertEquals(o.tokenUrl.includes("{accountId}.suitetalk.api.netsuite.com"), true);
@@ -12,7 +13,7 @@ Deno.test("oauth2: URLs carry the account placeholder, PKCE and the REST scope",
   assertEquals(o.pkce, true);
 });
 
-Deno.test("oauth2: sign sets a bearer header on a SuiteTalk host", async () => {
+test("oauth2: sign sets a bearer header on a SuiteTalk host", async () => {
   const out = await oauth2.sign!({
     request: req(`${BASE}/services/rest/record/v1/customer`),
     credential: { accessToken: "tok" },
@@ -20,7 +21,7 @@ Deno.test("oauth2: sign sets a bearer header on a SuiteTalk host", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: sign refuses any other host", async () => {
+test("oauth2: sign refuses any other host", async () => {
   await assertRejects(
     async () =>
       await oauth2.sign!({
@@ -32,7 +33,7 @@ Deno.test("oauth2: sign refuses any other host", async () => {
   );
 });
 
-Deno.test("oauth2: test passes on serverTime", async () => {
+test("oauth2: test passes on serverTime", async () => {
   const { ctx, calls } = mockCtx([{ body: { serverTime: "2025-03-26T16:21:00.000Z" } }]);
   const r = await oauth2.test!(
     { credential: { accountId: "1234567", accessToken: "t" } } as never,
@@ -43,7 +44,7 @@ Deno.test("oauth2: test passes on serverTime", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer t");
 });
 
-Deno.test("oauth2: test classifies a failure from the body, not the status", async () => {
+test("oauth2: test classifies a failure from the body, not the status", async () => {
   const { ctx } = mockCtx([nsError(401, "INVALID_LOGIN", "Invalid login attempt.")]);
   const r = await oauth2.test!(
     { credential: { accountId: "1234567", accessToken: "t" } } as never,
@@ -53,7 +54,7 @@ Deno.test("oauth2: test classifies a failure from the body, not the status", asy
   assertEquals(r.message?.startsWith("INVALID_LOGIN"), true);
 });
 
-Deno.test("oauth2: test refuses a missing token or hostile account id without a request", async () => {
+test("oauth2: test refuses a missing token or hostile account id without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await oauth2.test!({ credential: { accountId: "1" } } as never, ctx)).ok, false);
   assertEquals(
@@ -66,7 +67,7 @@ Deno.test("oauth2: test refuses a missing token or hostile account id without a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect records the normalised account id", async () => {
+test("oauth2: afterConnect records the normalised account id", async () => {
   const out = await oauth2.afterConnect!(
     { credential: { accountId: "1234567-SB1" } } as never,
     {} as never,

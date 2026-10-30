@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockXeroCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
@@ -9,7 +10,7 @@ const LINE_ITEMS = [{
   AccountCode: "200",
 }];
 
-Deno.test("invoice-create: POSTs /Invoices with the Contact and LineItems envelope", async () => {
+test("invoice-create: POSTs /Invoices with the Contact and LineItems envelope", async () => {
   const { ctx, calls } = mockXeroCtx([{ body: { Invoices: [{ InvoiceID: "i1" }] } }]);
   await action.execute({ type: "ACCREC", contactId: "c1", lineItems: LINE_ITEMS }, ctx);
   assertEquals(calls[0].url, "https://api.xero.com/api.xro/2.0/Invoices");
@@ -19,7 +20,7 @@ Deno.test("invoice-create: POSTs /Invoices with the Contact and LineItems envelo
   });
 });
 
-Deno.test("invoice-create: merges additionalFields and accepts lineItems as a JSON string", async () => {
+test("invoice-create: merges additionalFields and accepts lineItems as a JSON string", async () => {
   const { ctx, calls } = mockXeroCtx([{ body: {} }]);
   await action.execute({
     type: "ACCPAY",

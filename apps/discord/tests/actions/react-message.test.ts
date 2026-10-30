@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/react-message.ts";
 
-Deno.test("react-message: PUTs /reactions/{emoji}/@me and URL-encodes the emoji", async () => {
+test("react-message: PUTs /reactions/{emoji}/@me and URL-encodes the emoji", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!(
     { channelId: "c1", messageId: "m1", emoji: "👍" },
@@ -18,7 +19,7 @@ Deno.test("react-message: PUTs /reactions/{emoji}/@me and URL-encodes the emoji"
   assertEquals(result, { success: true });
 });
 
-Deno.test("react-message: works with custom emoji `name:id` values", async () => {
+test("react-message: works with custom emoji `name:id` values", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!(
     { channelId: "c1", messageId: "m1", emoji: "myemoji:12345" },

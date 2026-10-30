@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobPhaseDelete from "../../actions/job-phase-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-phase-delete: DELETEs and reports the deletion", async () => {
+test("job-phase-delete: DELETEs and reports the deletion", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const result = await jobPhaseDelete.execute({ jobPhaseId: 3 }, ctx) as Record<string, unknown>;
 
@@ -11,13 +12,13 @@ Deno.test("job-phase-delete: DELETEs and reports the deletion", async () => {
   assertEquals(result.deleted, true);
 });
 
-Deno.test("job-phase-delete: a replacement phase is sent as the documented query param", async () => {
+test("job-phase-delete: a replacement phase is sent as the documented query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await jobPhaseDelete.execute({ jobPhaseId: 3, replacementJobPhaseId: 4 }, ctx);
   assertEquals(queryOf(calls[0].url), { replacement_job_phase_id: "4" });
 });
 
-Deno.test("job-phase-delete: deleting the items is opt-in", async () => {
+test("job-phase-delete: deleting the items is opt-in", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }, { status: 200 }]);
   await jobPhaseDelete.execute({ jobPhaseId: 3 }, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -27,7 +28,7 @@ Deno.test("job-phase-delete: deleting the items is opt-in", async () => {
 });
 
 /** The vendor says the two options cannot be combined; so does this action. */
-Deno.test("job-phase-delete: the mutually exclusive options are refused locally", async () => {
+test("job-phase-delete: the mutually exclusive options are refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

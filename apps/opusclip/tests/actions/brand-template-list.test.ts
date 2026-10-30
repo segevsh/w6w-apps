@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import brandTemplateList from "../../actions/brand-template-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("brand-template-list: GETs /api/brand-templates?q=mine", async () => {
+test("brand-template-list: GETs /api/brand-templates?q=mine", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: [{ templateId: "t1", name: "Karaoke", isDefault: true, preferences: {} }] },
   ]);
@@ -14,7 +15,7 @@ Deno.test("brand-template-list: GETs /api/brand-templates?q=mine", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("brand-template-list: an empty list is returned as an empty array, not undefined", async () => {
+test("brand-template-list: an empty list is returned as an empty array, not undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }]);
   const out = await brandTemplateList.execute({}, ctx) as { items: unknown[] };
   assertEquals(out.items, []);

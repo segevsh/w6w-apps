@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-device-add.ts";
 
@@ -6,7 +7,7 @@ const A = "0123456789abcdef01234567";
 const B = "0123456789abcdef01234568";
 const added = { status: 200, body: { updated: 2, existingDeviceIds: [], nonmemberDeviceIds: [] } };
 
-Deno.test("product-device-add: posts the ids as a comma-separated form field", async () => {
+test("product-device-add: posts the ids as a comma-separated form field", async () => {
   const { ctx, calls } = mockCtx([added]);
   const result = await action.execute({
     product: "sensors",
@@ -20,7 +21,7 @@ Deno.test("product-device-add: posts the ids as a comma-separated form field", a
 });
 
 /** Adding a device to a product can reflash it. */
-Deno.test("product-device-add: needs the firmware acknowledgement, and says why", async () => {
+test("product-device-add: needs the firmware acknowledgement, and says why", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -34,7 +35,7 @@ Deno.test("product-device-add: needs the firmware acknowledgement, and says why"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("product-device-add: ids are validated before anything is sent", async () => {
+test("product-device-add: ids are validated before anything is sent", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -50,7 +51,7 @@ Deno.test("product-device-add: ids are validated before anything is sent", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("product-device-add: already-present devices are reported, not failed", async () => {
+test("product-device-add: already-present devices are reported, not failed", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { updated: 1, existingDeviceIds: [B], nonmemberDeviceIds: [] },
@@ -63,7 +64,7 @@ Deno.test("product-device-add: already-present devices are reported, not failed"
   assertEquals(result.existing, [B]);
 });
 
-Deno.test("product-device-add: a product and at least one id are required", async () => {
+test("product-device-add: a product and at least one id are required", async () => {
   for (const input of [{ deviceIds: A }, { product: "sensors", deviceIds: "" }]) {
     const { ctx, calls } = mockCtx([]);
     let threw = false;
@@ -77,7 +78,7 @@ Deno.test("product-device-add: a product and at least one id are required", asyn
   }
 });
 
-Deno.test("product-device-add: warns that the product now owns them", async () => {
+test("product-device-add: warns that the product now owns them", async () => {
   const { ctx, logs } = mockCtx([added]);
   await action.execute({ product: "sensors", deviceIds: A, confirmFirmwareRelease: true }, ctx);
   assertEquals(logs[0].level, "warn");

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import appGet from "../../actions/app-get.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("app-get: GETs app/me.json with the documented parameters", async () => {
+test("app-get: GETs app/me.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "business": { "id": 12345, "businessName": "Loft Hotels" } }),
   }]);
@@ -16,7 +17,7 @@ Deno.test("app-get: GETs app/me.json with the documented parameters", async () =
   assertEquals(out, { "business": { "id": 12345, "businessName": "Loft Hotels" } });
 });
 
-Deno.test("app-get: is a read with no request body", async () => {
+test("app-get: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "business": { "id": 12345, "businessName": "Loft Hotels" } }),
   }]);
@@ -25,7 +26,7 @@ Deno.test("app-get: is a read with no request body", async () => {
   assertEquals(appGet.type, "read");
 });
 
-Deno.test("app-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("app-get: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () => await appGet.execute({} as never, ctx));

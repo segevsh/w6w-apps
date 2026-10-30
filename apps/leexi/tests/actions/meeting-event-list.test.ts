@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/meeting-event-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("meeting-event-list: full input maps to GET /meeting_events", async () => {
+test("meeting-event-list: full input maps to GET /meeting_events", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [{ "uuid": "x1" }],
@@ -32,7 +33,7 @@ Deno.test("meeting-event-list: full input maps to GET /meeting_events", async ()
   });
 });
 
-Deno.test("meeting-event-list: sends no authorization header of its own", async () => {
+test("meeting-event-list: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({
     "page": 2,
@@ -46,7 +47,7 @@ Deno.test("meeting-event-list: sends no authorization header of its own", async 
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("meeting-event-list: surfaces a JSON error body as a thrown error", async () => {
+test("meeting-event-list: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -64,7 +65,7 @@ Deno.test("meeting-event-list: surfaces a JSON error body as a thrown error", as
   );
 });
 
-Deno.test("meeting-event-list: an empty 401 body still reads as an auth failure", async () => {
+test("meeting-event-list: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -82,7 +83,7 @@ Deno.test("meeting-event-list: an empty 401 body still reads as an auth failure"
   );
 });
 
-Deno.test("meeting-event-list: declares type, params and output", () => {
+test("meeting-event-list: declares type, params and output", () => {
   assertEquals(action.type, "search");
   assertEquals(action.key, "meeting-event-list");
   assert(Array.isArray(action.output) && action.output.length > 0);

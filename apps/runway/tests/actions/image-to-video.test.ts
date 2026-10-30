@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/image-to-video.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("image-to-video: sends the documented request and maps the answer", async () => {
+test("image-to-video: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "11111111-1111-4111-8111-111111111111" } }]);
   const out = await run(action, {
     "model": "gen4_turbo",
@@ -23,7 +24,7 @@ Deno.test("image-to-video: sends the documented request and maps the answer", as
   });
 });
 
-Deno.test("image-to-video: a 401 surfaces Runway's error text", async () => {
+test("image-to-video: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },
@@ -40,7 +41,7 @@ Deno.test("image-to-video: a 401 surfaces Runway's error text", async () => {
   );
 });
 
-Deno.test("image-to-video: a JSON array promptImage is sent as an array", async () => {
+test("image-to-video: a JSON array promptImage is sent as an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t" } }]);
   const frames = [{ uri: "https://x.test/a.png", position: "first" }];
   await run(action, { model: "gen4.5", promptImage: JSON.stringify(frames) }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastList from "../../actions/broadcast-list.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("broadcast-list: requires and sends a status filter — there is no 'all broadcasts' call", async () => {
+test("broadcast-list: requires and sends a status filter — there is no 'all broadcasts' call", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ broadcast_id: "1" }]) }]);
   await broadcastList.execute({ accountId: "1", listId: "2", status: "sent" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("broadcast-list: requires and sends a status filter — there is no 'a
   assertEquals(queryOf(calls[0].url).status, "sent");
 });
 
-Deno.test("broadcast-list: status is a required param on the action definition", () => {
+test("broadcast-list: status is a required param on the action definition", () => {
   const statusParam = broadcastList.params?.find((p) => p.key === "status");
   assertEquals(statusParam?.required, true);
 });

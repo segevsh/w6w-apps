@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getBrand from "../../actions/get-brand.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { BRAND } from "../_fixtures.ts";
 
-Deno.test("get-brand: path-encodes the identifier and maps the brand", async () => {
+test("get-brand: path-encodes the identifier and maps the brand", async () => {
   const { ctx, calls } = mockCtx([{ body: BRAND }]);
   const out = await run(getBrand, { identifier: "john@example.brandfetch.com" }, ctx);
   assertEquals(calls[0].url, "https://api.brandfetch.io/v2/brands/john%40example.brandfetch.com");
@@ -17,13 +18,13 @@ Deno.test("get-brand: path-encodes the identifier and maps the brand", async () 
   assertEquals(out.iconUrl, "https://cdn/icon.webp");
 });
 
-Deno.test("get-brand: website URL identifiers are encoded whole", async () => {
+test("get-brand: website URL identifiers are encoded whole", async () => {
   const { ctx, calls } = mockCtx([{ body: BRAND }]);
   await run(getBrand, { identifier: "https://www.nike.com/a" }, ctx);
   assertEquals(calls[0].url, "https://api.brandfetch.io/v2/brands/https%3A%2F%2Fwww.nike.com%2Fa");
 });
 
-Deno.test("get-brand: allowNsfw and cachedOnly go on the query only when set", async () => {
+test("get-brand: allowNsfw and cachedOnly go on the query only when set", async () => {
   const set = mockCtx([{ body: BRAND }]);
   await run(getBrand, { identifier: "nike.com", allowNsfw: "false", cachedOnly: true }, set.ctx);
   const url = new URL(set.calls[0].url);
@@ -34,7 +35,7 @@ Deno.test("get-brand: allowNsfw and cachedOnly go on the query only when set", a
   assertEquals(unset.calls[0].url, "https://api.brandfetch.io/v2/brands/nike.com");
 });
 
-Deno.test("get-brand: 204 is notIndexed, a crawl_queued 404 is crawlQueued", async () => {
+test("get-brand: 204 is notIndexed, a crawl_queued 404 is crawlQueued", async () => {
   const none = mockCtx([{ status: 204 }]);
   assertEquals(await run(getBrand, { identifier: "x.com", cachedOnly: true }, none.ctx), {
     found: false,
@@ -51,7 +52,7 @@ Deno.test("get-brand: 204 is notIndexed, a crawl_queued 404 is crawlQueued", asy
   });
 });
 
-Deno.test("get-brand: a plain 404, 402 and 403 throw with the vendor message and a hint", async () => {
+test("get-brand: a plain 404, 402 and 403 throw with the vendor message and a hint", async () => {
   const nf = mockCtx([{ status: 404, body: { message: "Not Found" } }]);
   await assertRejects(() => run(getBrand, { identifier: "x" }, nf.ctx), Error, "still consumes");
   const pay = mockCtx([{ status: 402, body: { message: "Payment required." } }]);

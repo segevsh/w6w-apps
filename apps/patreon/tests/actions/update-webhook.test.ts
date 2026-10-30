@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-webhook.ts";
 
-Deno.test("update-webhook: PATCHes /webhooks/{id} with only the provided attributes", async () => {
+test("update-webhook: PATCHes /webhooks/{id} with only the provided attributes", async () => {
   const body = { data: { id: "1234567", type: "webhook" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ webhookId: "1234567", paused: false }, ctx);
@@ -14,7 +15,7 @@ Deno.test("update-webhook: PATCHes /webhooks/{id} with only the provided attribu
   assertEquals(out, body);
 });
 
-Deno.test("update-webhook: splits a triggers CSV into an array", async () => {
+test("update-webhook: splits a triggers CSV into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({
     webhookId: "1",

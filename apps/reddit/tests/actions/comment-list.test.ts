@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comment-list.ts";
 
-Deno.test("comment-list: reads the comments half of the 2-element response", async () => {
+test("comment-list: reads the comments half of the 2-element response", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { kind: "Listing", data: { children: [{ kind: "t3", data: { id: "post1" } }] } },
@@ -25,7 +26,7 @@ Deno.test("comment-list: reads the comments half of the 2-element response", asy
   assertEquals(out, { comments: [{ id: "c1", body: "first" }, { id: "c2", body: "second" }] });
 });
 
-Deno.test("comment-list: forwards the sort param when given", async () => {
+test("comment-list: forwards the sort param when given", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { kind: "Listing", data: { children: [] } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/settings-get.ts";
 
-Deno.test("settings-get: reads settings from the DSN host", async () => {
+test("settings-get: reads settings from the DSN host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { searchableAttributes: ["name"] } }], {
     display: { appId: "APPID" },
   });

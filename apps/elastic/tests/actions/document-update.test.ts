@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-update.ts";
 
 const display = { endpoint: "https://example.com:9200" };
 
-Deno.test("document-update: POSTs /<index>/_update/<id> with a doc merge body", async () => {
+test("document-update: POSTs /<index>/_update/<id> with a doc merge body", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "updated" } }], { display });
   const result = await action.execute(
     { index: "my-index", id: "1", doc: { title: "new title" } },
@@ -16,7 +17,7 @@ Deno.test("document-update: POSTs /<index>/_update/<id> with a doc merge body", 
   assertEquals(result, { result: "updated" });
 });
 
-Deno.test("document-update: docAsUpsert flows into the body", async () => {
+test("document-update: docAsUpsert flows into the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute(
     { index: "my-index", id: "1", doc: { a: 1 }, docAsUpsert: true },

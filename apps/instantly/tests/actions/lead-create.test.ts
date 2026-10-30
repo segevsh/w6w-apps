@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadCreate from "../../actions/lead-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-create: POSTs /leads with the profile fields", async () => {
+test("lead-create: POSTs /leads with the profile fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1", email: "a@b.com" } }]);
   const out = await leadCreate.execute(
     { campaign: "c1", email: "a@b.com", first_name: "Jon" },
@@ -18,7 +19,7 @@ Deno.test("lead-create: POSTs /leads with the profile fields", async () => {
   assertEquals(out.id, "l1");
 });
 
-Deno.test("lead-create: custom_variables accepts a JSON string", async () => {
+test("lead-create: custom_variables accepts a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await leadCreate.execute(
     { campaign: "c1", email: "a@b.com", custom_variables: '{"past_customer":true}' },
@@ -27,6 +28,6 @@ Deno.test("lead-create: custom_variables accepts a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).custom_variables, { past_customer: true });
 });
 
-Deno.test("lead-create: is declared non-idempotent", () => {
+test("lead-create: is declared non-idempotent", () => {
   assertEquals(leadCreate.idempotent, false);
 });

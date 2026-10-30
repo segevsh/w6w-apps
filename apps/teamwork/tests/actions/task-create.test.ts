@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs /projects/api/v3/tasklists/{id}/tasks.json, wrapped in `task`", async () => {
+test("task-create: POSTs /projects/api/v3/tasklists/{id}/tasks.json, wrapped in `task`", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ status: 201, body: { task: { id: 1 } } }]);
   await action.execute({ tasklistId: 5, name: "Ship it" }, ctx);
   assertEquals(
@@ -13,7 +14,7 @@ Deno.test("task-create: POSTs /projects/api/v3/tasklists/{id}/tasks.json, wrappe
   assertEquals(JSON.parse(calls[0].body!), { task: { name: "Ship it" } });
 });
 
-Deno.test("task-create: turns comma-separated assignee ids into assignees.userIds", async () => {
+test("task-create: turns comma-separated assignee ids into assignees.userIds", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ status: 201, body: {} }]);
   await action.execute({ tasklistId: 5, name: "Ship it", assigneeUserIds: "1, 2" }, ctx);
   const body = JSON.parse(calls[0].body!).task;

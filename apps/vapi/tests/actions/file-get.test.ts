@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileGet from "../../actions/file-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-get: calls GET /file/{id}", async () => {
+test("file-get: calls GET /file/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "f1", name: "notes.txt" } }]);
   const out = await fileGet.execute({ id: "f1" }, ctx);
 

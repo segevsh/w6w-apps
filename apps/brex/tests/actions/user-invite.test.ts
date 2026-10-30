@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userInvite from "../../actions/user-invite.ts";
 import { bodyOf, errorBody, mockCtx, pathOf, USER } from "../_helpers.ts";
 
-Deno.test("user-invite: POSTs only the fields Brex requires when nothing else is set", async () => {
+test("user-invite: POSTs only the fields Brex requires when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   const result = await userInvite.execute({
     firstName: "Ada",
@@ -20,7 +21,7 @@ Deno.test("user-invite: POSTs only the fields Brex requires when nothing else is
   assertEquals(result.id, USER.id);
 });
 
-Deno.test("user-invite: assignments and metadata are sent under Brex's field names", async () => {
+test("user-invite: assignments and metadata are sent under Brex's field names", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   await userInvite.execute({
     firstName: "Ada",
@@ -54,7 +55,7 @@ Deno.test("user-invite: assignments and metadata are sent under Brex's field nam
  * given and never invents a value — which is why the action is declared
  * non-idempotent.
  */
-Deno.test("user-invite: an idempotency key is forwarded verbatim, and never invented", async () => {
+test("user-invite: an idempotency key is forwarded verbatim, and never invented", async () => {
   const withKey = mockCtx([{ body: USER }]);
   await userInvite.execute({
     firstName: "Ada",
@@ -73,12 +74,12 @@ Deno.test("user-invite: an idempotency key is forwarded verbatim, and never inve
   assertEquals(withoutKey.calls[0].headers["idempotency-key"], undefined);
 });
 
-Deno.test("user-invite: it is a perform and is not declared idempotent", () => {
+test("user-invite: it is a perform and is not declared idempotent", () => {
   assertEquals(userInvite.type, "perform");
   assertEquals(userInvite.idempotent, false);
 });
 
-Deno.test("user-invite: an invalid metadata value is refused before the call", async () => {
+test("user-invite: an invalid metadata value is refused before the call", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   let threw = false;
   try {
@@ -96,7 +97,7 @@ Deno.test("user-invite: an invalid metadata value is refused before the call", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-invite: a Brex error surfaces with its code", async () => {
+test("user-invite: a Brex error surfaces with its code", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: errorBody("VALIDATION_ERROR", "Email is invalid", "INVALID_EMAIL") },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import publicationInstall from "../../actions/publication-install.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("publication-install: POST /publications/{uid}/install", async () => {
+test("publication-install: POST /publications/{uid}/install", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uid: "t-new", name: "Installed" } }]);
   const out = await publicationInstall.execute({ uid: "p1" }, ctx) as unknown as Record<
     string,
@@ -14,11 +15,11 @@ Deno.test("publication-install: POST /publications/{uid}/install", async () => {
   assertEquals(out.uid, "t-new");
 });
 
-Deno.test("publication-install: requires uid", async () => {
+test("publication-install: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => publicationInstall.execute({ uid: "" }, ctx));
 });
 
-Deno.test("publication-install: not idempotent", () => {
+test("publication-install: not idempotent", () => {
   assertEquals(publicationInstall.idempotent, false);
 });

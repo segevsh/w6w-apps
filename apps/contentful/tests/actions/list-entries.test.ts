@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-entries.ts";
 
-Deno.test("list-entries: hits CDN with default paging", async () => {
+test("list-entries: hits CDN with default paging", async () => {
   const body = { items: [], total: 0, skip: 0, limit: 100 };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("list-entries: hits CDN with default paging", async () => {
   assertEquals(url.searchParams.get("skip"), "0");
 });
 
-Deno.test("list-entries: forwards content_type and search extras", async () => {
+test("list-entries: forwards content_type and search extras", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     {
@@ -32,7 +33,7 @@ Deno.test("list-entries: forwards content_type and search extras", async () => {
   assertEquals(params.get("order"), "-sys.createdAt");
 });
 
-Deno.test("list-entries: uses connection display when params are omitted", async () => {
+test("list-entries: uses connection display when params are omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }], {
     connection: {
       display: { space: { id: "conn-sp" }, environment: { id: "staging" } },
@@ -45,7 +46,7 @@ Deno.test("list-entries: uses connection display when params are omitted", async
   );
 });
 
-Deno.test("list-entries: omits unset extras", async () => {
+test("list-entries: omits unset extras", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
   const params = new URL(calls[0].url).searchParams;

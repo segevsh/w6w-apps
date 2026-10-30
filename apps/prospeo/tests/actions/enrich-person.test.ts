@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-person.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-person: posts snake_case data and flags to /enrich-person", async () => {
+test("enrich-person: posts snake_case data and flags to /enrich-person", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       error: false,
@@ -30,7 +31,7 @@ Deno.test("enrich-person: posts snake_case data and flags to /enrich-person", as
   assertEquals(out.free_enrichment, false);
 });
 
-Deno.test("enrich-person: NO_MATCH (HTTP 400) is a normal unmatched result", async () => {
+test("enrich-person: NO_MATCH (HTTP 400) is a normal unmatched result", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: true, error_code: "NO_MATCH" } }]);
   assertEquals(await exec(action, { email: "a@b.co" }, ctx), {
     matched: false,
@@ -38,7 +39,7 @@ Deno.test("enrich-person: NO_MATCH (HTTP 400) is a normal unmatched result", asy
   });
 });
 
-Deno.test("enrich-person: other errors throw and empty input never calls the API", async () => {
+test("enrich-person: other errors throw and empty input never calls the API", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { error: true, error_code: "INSUFFICIENT_CREDITS" },

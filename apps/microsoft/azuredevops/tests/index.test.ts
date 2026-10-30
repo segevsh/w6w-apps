@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: {
     id: string;
@@ -11,7 +13,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 19 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 19 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 19);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -25,14 +27,14 @@ Deno.test("index: exports 19 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Anything that creates a second object or starts another run. */
-Deno.test("index: the actions that duplicate on a retry say so", () => {
+test("index: the actions that duplicate on a retry say so", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, [
     "build-queue",
@@ -42,12 +44,12 @@ Deno.test("index: the actions that duplicate on a retry say so", () => {
   ]);
 });
 
-Deno.test("index: exports the one auth method and all three health checks", () => {
+test("index: exports the one auth method and all three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["pat"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "organization", "quota"]);
 });
 
-Deno.test("index: the manifest names the API host", () => {
+test("index: the manifest names the API host", () => {
   assert(
     manifest.w6w.network.allow.includes("dev.azure.com"),
     manifest.w6w.network.allow.join(","),
@@ -59,7 +61,7 @@ Deno.test("index: the manifest names the API host", () => {
  * An unattended workflow otherwise notifies reviewers and starts a validation
  * build on every run.
  */
-Deno.test("index: creating a pull request defaults to a draft", () => {
+test("index: creating a pull request defaults to a draft", () => {
   const action = app.actions.find((a) => a.key === "pull-request-create")!;
   const isDraft = (action.params as Array<{ key: string; default?: unknown }>)
     .find((p) => p.key === "isDraft")!;
@@ -70,7 +72,7 @@ Deno.test("index: creating a pull request defaults to a draft", () => {
  * Azure DevOps can delete repositories, pipelines and work items. A deleted
  * repository goes to a recycle bin; a deleted pipeline does not.
  */
-Deno.test("index: nothing here deletes or abandons anything", () => {
+test("index: nothing here deletes or abandons anything", () => {
   for (const a of app.actions) {
     assert(!/delete|remove|abandon|destroy/i.test(a.key), `${a.key} destroys something`);
   }
@@ -90,10 +92,10 @@ const code = (src: string) =>
       "",
     );
 
-Deno.test("index: no action reaches the network except through ctx.fetch", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action reaches the network except through ctx.fetch", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(
       !/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")),
       `${entry.name} calls global fetch`,
@@ -102,10 +104,10 @@ Deno.test("index: no action reaches the network except through ctx.fetch", async
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/authorization/i.test(src), `${entry.name} sets an authorization header`);
     assert(!/credential/i.test(src), `${entry.name} reads the credential`);
   }
@@ -116,10 +118,10 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * name, and a pull request comment is the caller's content. A run log records
  * ids and field names.
  */
-Deno.test("index: no action logs a value, a comment or a parameter", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action logs a value, a comment or a parameter", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
     for (const call of logs) {
       const object = call.slice(call.indexOf("{"));
@@ -130,7 +132,7 @@ Deno.test("index: no action logs a value, a comment or a parameter", async () =>
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

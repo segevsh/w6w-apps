@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import textMessageList from "../../actions/text-message-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("text-message-list: hits text-messages.json and forwards search + date filters", async () => {
+test("text-message-list: hits text-messages.json and forwards search + date filters", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope("conversations", [{ id: "KZaGR" }]) },
   ]);

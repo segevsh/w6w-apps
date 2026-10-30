@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("search: POSTs the query to the DSN host", async () => {
+test("search: POSTs the query to the DSN host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { hits: [], nbHits: 0 } }], { display });
   await action.execute!({ indexName: "products", query: "shoes", hitsPerPage: 5 }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("search: POSTs the query to the DSN host", async () => {
   assertEquals(JSON.parse(calls[0].body!), { query: "shoes", hitsPerPage: 5 });
 });
 
-Deno.test("search: comma lists become arrays and filters pass through", async () => {
+test("search: comma lists become arrays and filters pass through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     indexName: "products",
@@ -29,7 +30,7 @@ Deno.test("search: comma lists become arrays and filters pass through", async ()
   assertEquals(body.filters, "price < 100");
 });
 
-Deno.test("search: extraParams is merged over the modelled fields", async () => {
+test("search: extraParams is merged over the modelled fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     indexName: "products",
@@ -41,7 +42,7 @@ Deno.test("search: extraParams is merged over the modelled fields", async () => 
   assertEquals(body.typoTolerance, false);
 });
 
-Deno.test("search: an index is required", async () => {
+test("search: an index is required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`indexName`");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-call.ts";
 
-Deno.test("create-call: POSTs /crm/v3/objects/calls with call-specific properties", async () => {
+test("create-call: POSTs /crm/v3/objects/calls with call-specific properties", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "call1" } }]);
   await action.execute!(
     { hs_call_title: "Kickoff", hs_call_direction: "OUTBOUND", hs_call_duration: 900 },

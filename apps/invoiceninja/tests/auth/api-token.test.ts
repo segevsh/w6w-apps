@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: collects an instance URL and a secret token", () => {
+test("api-token: collects an instance URL and a secret token", () => {
   assertEquals(auth.key, "api-token");
   assertEquals(auth.type, "apiKey");
   const keys = auth.fields?.map((f) => f.key);
@@ -11,7 +12,7 @@ Deno.test("api-token: collects an instance URL and a secret token", () => {
   assertEquals(auth.fields?.find((f) => f.key === "baseUrl")?.default, "https://invoicing.co");
 });
 
-Deno.test("api-token: sign stamps X-API-TOKEN, nothing else", async () => {
+test("api-token: sign stamps X-API-TOKEN, nothing else", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.invoicing.co/api/v1/clients",
@@ -22,7 +23,7 @@ Deno.test("api-token: sign stamps X-API-TOKEN, nothing else", async () => {
   assertEquals(out.headers["x-api-token"], "tok");
 });
 
-Deno.test("api-token: test refuses a half-filled credential without a request", async () => {
+test("api-token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.test({ credential: { baseUrl: "https://acme.invoicing.co" } }, ctx),
@@ -31,7 +32,7 @@ Deno.test("api-token: test refuses a half-filled credential without a request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: test probes GET /api/v1/ping, signed itself", async () => {
+test("api-token: test probes GET /api/v1/ping, signed itself", async () => {
   const ok = mockCtx([{ body: { company_name: "Acme Inc", user_name: "Jo" } }]);
   assertEquals(
     await auth.test(
@@ -45,7 +46,7 @@ Deno.test("api-token: test probes GET /api/v1/ping, signed itself", async () => 
   assertEquals(ok.calls[0].headers["x-requested-with"], "XMLHttpRequest");
 });
 
-Deno.test("api-token: test reads Invoice Ninja's own {message} body, not the bare status code", async () => {
+test("api-token: test reads Invoice Ninja's own {message} body, not the bare status code", async () => {
   // Verified live: an invalid token comes back 403, not the OpenAPI doc's 401.
   const bad = mockCtx([{ status: 403, body: { message: "Invalid token" } }]);
   assertEquals(
@@ -57,7 +58,7 @@ Deno.test("api-token: test reads Invoice Ninja's own {message} body, not the bar
   );
 });
 
-Deno.test("api-token: afterConnect records the instance URL and company name", async () => {
+test("api-token: afterConnect records the instance URL and company name", async () => {
   const { ctx, calls } = mockCtx([{ body: { company_name: "Acme Inc", user_name: "Jo" } }]);
   const out = await auth.afterConnect!(
     { credential: { baseUrl: "acme.invoicing.co", apiToken: "tok" } },
@@ -74,7 +75,7 @@ Deno.test("api-token: afterConnect records the instance URL and company name", a
   assertEquals(calls[0].headers["x-api-token"], "tok");
 });
 
-Deno.test("api-token: afterConnect still records the normalised URL if the probe fails", async () => {
+test("api-token: afterConnect still records the normalised URL if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { baseUrl: "acme.invoicing.co", apiToken: "tok" } },

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-list.ts";
 
 const display = { projectId: "proj_1" };
 
-Deno.test("member-list: reads who has access to the project", async () => {
+test("member-list: reads who has access to the project", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { members: [{ member_id: "m1", email: "ada@acme.com" }] } }],
     { display },
@@ -15,7 +16,7 @@ Deno.test("member-list: reads who has access to the project", async () => {
 });
 
 /** A run log is not the place for a staff roster. */
-Deno.test("member-list: logs a count, not the people", async () => {
+test("member-list: logs a count, not the people", async () => {
   const { ctx, logs } = mockCtx(
     [{ status: 200, body: { members: [{ email: "ada@acme.com" }] } }],
     { display },
@@ -25,6 +26,6 @@ Deno.test("member-list: logs a count, not the people", async () => {
   assertEquals(logs[0].data, { count: 1 });
 });
 
-Deno.test("member-list: pairs itself with the key list", () => {
+test("member-list: pairs itself with the key list", () => {
   assert(/key-list/.test(action.description!), action.description);
 });

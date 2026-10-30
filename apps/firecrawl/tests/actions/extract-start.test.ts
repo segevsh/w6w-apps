@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import extractStart from "../../actions/extract-start.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("extract-start: POSTs urls, prompt and parsed schema", async () => {
+test("extract-start: POSTs urls, prompt and parsed schema", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, id: "e1" } }]);
   const out = await extractStart.execute(
     {
@@ -21,13 +22,13 @@ Deno.test("extract-start: POSTs urls, prompt and parsed schema", async () => {
   assertEquals(out.id, "e1");
 });
 
-Deno.test("extract-start: schema also accepts an already-parsed object", async () => {
+test("extract-start: schema also accepts an already-parsed object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, id: "e1" } }]);
   await extractStart.execute({ urls: "https://a.example", schema: { type: "object" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).schema, { type: "object" });
 });
 
-Deno.test("extract-start: malformed schema JSON fails before any request is made", async () => {
+test("extract-start: malformed schema JSON fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     // `execute` throws synchronously here (schema parsing happens while building the request
@@ -40,6 +41,6 @@ Deno.test("extract-start: malformed schema JSON fails before any request is made
   assertEquals(calls.length, 0);
 });
 
-Deno.test("extract-start: is declared non-idempotent", () => {
+test("extract-start: is declared non-idempotent", () => {
   assertEquals(extractStart.idempotent, false);
 });

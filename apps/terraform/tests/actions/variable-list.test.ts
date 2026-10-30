@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-list.ts";
 
@@ -22,7 +23,7 @@ const vars = {
   },
 };
 
-Deno.test("variable-list: reads a workspace's variables", async () => {
+test("variable-list: reads a workspace's variables", async () => {
   const { ctx, calls } = mockCtx([vars]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/workspaces/ws-1/vars");
@@ -31,7 +32,7 @@ Deno.test("variable-list: reads a workspace's variables", async () => {
 });
 
 /** Read-modify-write across a workspace blanks every sensitive variable. */
-Deno.test("variable-list: reports how many values are unreadable", async () => {
+test("variable-list: reports how many values are unreadable", async () => {
   const { ctx, logs } = mockCtx([vars]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.sensitiveCount, 1);
@@ -40,7 +41,7 @@ Deno.test("variable-list: reports how many values are unreadable", async () => {
 });
 
 /** Provider credentials live in `env`; a `terraform` one is ignored silently. */
-Deno.test("variable-list: counts and filters by category", async () => {
+test("variable-list: counts and filters by category", async () => {
   const { ctx } = mockCtx([vars]);
   const all = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(all.envCount, 2);
@@ -62,20 +63,20 @@ Deno.test("variable-list: counts and filters by category", async () => {
 });
 
 /** The category filter is applied here; the API returns both. */
-Deno.test("variable-list: filtering does not change the request", async () => {
+test("variable-list: filtering does not change the request", async () => {
   const { ctx, calls } = mockCtx([vars]);
   await action.execute({ workspaceId: "ws-1", category: "env" }, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/workspaces/ws-1/vars");
 });
 
-Deno.test("variable-list: a workspace with no variables is not an error", async () => {
+test("variable-list: a workspace with no variables is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] } }]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
   assertEquals(result.sensitiveCount, 0);
 });
 
-Deno.test("variable-list: the sensitive value comes back as null, and is left as it is", async () => {
+test("variable-list: the sensitive value comes back as null, and is left as it is", async () => {
   const { ctx } = mockCtx([vars]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   const secret = (result.variables as Array<Record<string, unknown>>)

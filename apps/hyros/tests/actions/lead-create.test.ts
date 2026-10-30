@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, OK, pathOf } from "../_helpers.ts";
 import leadCreate from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: POST /leads with the documented body", async () => {
+test("lead-create: POST /leads with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await leadCreate.execute({
     email: "j@x.io",
@@ -25,7 +26,7 @@ Deno.test("lead-create: POST /leads with the documented body", async () => {
   assertEquals(out, { requestId: "req1", result: "OK" });
 });
 
-Deno.test("lead-create: needs an email or a phone, before any request", async () => {
+test("lead-create: needs an email or a phone, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await leadCreate.execute({ firstName: "x" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("lead-create: needs an email or a phone, before any request", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lead-create: a phone alone is enough", async () => {
+test("lead-create: a phone alone is enough", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await leadCreate.execute({ phoneNumbers: "123" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { phoneNumbers: ["123"] });

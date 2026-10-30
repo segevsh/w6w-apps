@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationTagList from "../../actions/conversation-tag-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-tag-list: calls GET /v1/conversations/4711/tags", async () => {
+test("conversation-tag-list: calls GET /v1/conversations/4711/tags", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -24,7 +25,7 @@ Deno.test("conversation-tag-list: calls GET /v1/conversations/4711/tags", async 
   });
 });
 
-Deno.test("conversation-tag-list: surfaces a Dixa error message with the status", async () => {
+test("conversation-tag-list: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -36,7 +37,7 @@ Deno.test("conversation-tag-list: surfaces a Dixa error message with the status"
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-tag-list: rejects bad input before any request", async () => {
+test("conversation-tag-list: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

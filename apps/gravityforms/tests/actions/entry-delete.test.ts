@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { BASE_PATH, DISPLAY, mockCtx, paramsOf } from "../_helpers.ts";
 import action from "../../actions/entry-delete.ts";
 
-Deno.test("entry-delete: DELETEs /entries/{id} and trashes by default", async () => {
+test("entry-delete: DELETEs /entries/{id} and trashes by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "159", status: "trash" } }], {
     display: DISPLAY,
   });
@@ -15,13 +16,13 @@ Deno.test("entry-delete: DELETEs /entries/{id} and trashes by default", async ()
   assertEquals(out.status, "trash");
 });
 
-Deno.test("entry-delete: force=false is still omitted", async () => {
+test("entry-delete: force=false is still omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display: DISPLAY });
   await action.execute!({ entryId: 159, force: false }, ctx);
   assertEquals(paramsOf(calls).has("force"), false);
 });
 
-Deno.test("entry-delete: force=true sends force=1 and returns the deleted envelope", async () => {
+test("entry-delete: force=true sends force=1 and returns the deleted envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted: true, previous: { id: "159" } } }], {
     display: DISPLAY,
   });
@@ -34,13 +35,13 @@ Deno.test("entry-delete: force=true sends force=1 and returns the deleted envelo
   assertEquals(out.previous.id, "159");
 });
 
-Deno.test("entry-delete: logs the force flag it actually used", async () => {
+test("entry-delete: logs the force flag it actually used", async () => {
   const { ctx, logs } = mockCtx([{ body: {} }], { display: DISPLAY });
   await action.execute!({ entryId: 159 }, ctx);
   assertEquals((logs[0].data as { force: boolean }).force, false);
 });
 
-Deno.test("entry-delete: leaves the same end state, so it is declared idempotent", () => {
+test("entry-delete: leaves the same end state, so it is declared idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assert(action.output);

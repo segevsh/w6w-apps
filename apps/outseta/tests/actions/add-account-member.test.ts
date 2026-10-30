@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-account-member.ts";
 
-Deno.test("add-account-member: identity", () => {
+test("add-account-member: identity", () => {
   assertEquals(action.key, "add-account-member");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "account");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("add-account-member: sends POST /api/v1/crm/accounts/acc1/memberships", async () => {
+test("add-account-member: sends POST /api/v1/crm/accounts/acc1/memberships", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     accountUid: "acc1",
@@ -35,7 +36,7 @@ Deno.test("add-account-member: sends POST /api/v1/crm/accounts/acc1/memberships"
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("add-account-member: a failure names the status and the request", async () => {
+test("add-account-member: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

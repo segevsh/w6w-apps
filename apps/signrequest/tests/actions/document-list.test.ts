@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentList from "../../actions/document-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-list: GETs /documents/ with page/limit query params (not offset)", async () => {
+test("document-list: GETs /documents/ with page/limit query params (not offset)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { count: 0, results: [] } }]);
   await documentList.execute({ page: 2, limit: 25, status: "si" }, ctx);
   assertEquals(pathOf(calls[0]), "/api/v1/documents/");
@@ -13,7 +14,7 @@ Deno.test("document-list: GETs /documents/ with page/limit query params (not off
   assertEquals(q.has("offset"), false);
 });
 
-Deno.test("document-list: returns the paginated envelope", async () => {
+test("document-list: returns the paginated envelope", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { count: 1, next: null, previous: null, results: [{ uuid: "d1" }] },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-list.ts";
 
@@ -14,7 +15,7 @@ const page = {
   },
 };
 
-Deno.test("workspace-list: lists an organisation's workspaces", async () => {
+test("workspace-list: lists an organisation's workspaces", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ organization: "acme" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/organizations/acme/workspaces");
@@ -28,7 +29,7 @@ Deno.test("workspace-list: lists an organisation's workspaces", async () => {
  * The most useful thing to know before pointing an automation at an
  * organisation: which workspaces apply without asking anyone.
  */
-Deno.test("workspace-list: counts the auto-apply and locked workspaces", async () => {
+test("workspace-list: counts the auto-apply and locked workspaces", async () => {
   const { ctx, logs } = mockCtx([page]);
   const result = await action.execute({ organization: "acme" }, ctx) as Record<string, unknown>;
   assertEquals(result.autoApplyCount, 2);
@@ -36,7 +37,7 @@ Deno.test("workspace-list: counts the auto-apply and locked workspaces", async (
   assertEquals(logs[0].data, { count: 3, autoApplyCount: 2, lockedCount: 2 });
 });
 
-Deno.test("workspace-list: search and tags are sent as the API's bracketed filters", async () => {
+test("workspace-list: search and tags are sent as the API's bracketed filters", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute(
     { organization: "acme", search: "prod", tags: "aws, eu", excludeTags: "legacy" },
@@ -49,12 +50,12 @@ Deno.test("workspace-list: search and tags are sent as the API's bracketed filte
 });
 
 /** All tags must match, so a long list usually returns nothing. */
-Deno.test("workspace-list: the tag hint says the filter is an AND", () => {
+test("workspace-list: the tag hint says the filter is an AND", () => {
   const tags = action.params!.find((p) => p.key === "tags")!;
   assert(/ALL of them must match/.test(tags.hint!), tags.hint);
 });
 
-Deno.test("workspace-list: unset filters are not sent as empty parameters", async () => {
+test("workspace-list: unset filters are not sent as empty parameters", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ organization: "acme", search: "", tags: "" }, ctx);
   const url = new URL(calls[0].url);
@@ -62,7 +63,7 @@ Deno.test("workspace-list: unset filters are not sent as empty parameters", asyn
   assertEquals(url.searchParams.get("search[tags]"), null);
 });
 
-Deno.test("workspace-list: an organisation is required", async () => {
+test("workspace-list: an organisation is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Strava's endpoints, comma scopes, and a same-host refresh", () => {
+test("oauth2: declares Strava's endpoints, comma scopes, and a same-host refresh", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://www.strava.com/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://www.strava.com/oauth/token");
@@ -13,7 +14,7 @@ Deno.test("oauth2: declares Strava's endpoints, comma scopes, and a same-host re
   assertEquals(auth.oauth2?.scopes, ["profile:read_all", "activity:read_all", "activity:write"]);
 });
 
-Deno.test("oauth2: sign sets the Bearer header", async () => {
+test("oauth2: sign sets the Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://www.strava.com/api/v3/athlete",
@@ -24,7 +25,7 @@ Deno.test("oauth2: sign sets the Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer s_x");
 });
 
-Deno.test("oauth2: test reports the upstream status", async () => {
+test("oauth2: test reports the upstream status", async () => {
   const bad = mockCtx([{ status: 401, body: {} }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, bad.ctx), {
     ok: false,
@@ -32,7 +33,7 @@ Deno.test("oauth2: test reports the upstream status", async () => {
   });
 });
 
-Deno.test("oauth2: test fails locally when the credential is missing its token", async () => {
+test("oauth2: test fails locally when the credential is missing its token", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -40,7 +41,7 @@ Deno.test("oauth2: test fails locally when the credential is missing its token",
   });
 });
 
-Deno.test("oauth2: afterConnect surfaces athlete display data", async () => {
+test("oauth2: afterConnect surfaces athlete display data", async () => {
   const { ctx } = mockCtx([{ body: { id: 7, firstname: "Marianne", lastname: "T." } }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "t" } }, ctx);
   assertEquals(out, { athlete: { id: 7, firstname: "Marianne", lastname: "T." } });

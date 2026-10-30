@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_HOST_SUFFIX,
   API_VERSION,
@@ -23,7 +24,7 @@ import {
   REGION_ID,
 } from "../_helpers.ts";
 
-Deno.test("client: the base URL is built from the region id, and nothing else", () => {
+test("client: the base URL is built from the region id, and nothing else", () => {
   assertEquals(API_HOST_SUFFIX, "stack.tryrelevance.com");
   assertEquals(API_VERSION, "latest");
   assertEquals(baseUrl("f1db6c"), API_ROOT);
@@ -32,7 +33,7 @@ Deno.test("client: the base URL is built from the region id, and nothing else", 
   assertEquals(baseUrl("0e489e"), "https://api-0e489e.stack.tryrelevance.com/latest");
 });
 
-Deno.test("client: the region id comes from the connection's redacted display", () => {
+test("client: the region id comes from the connection's redacted display", () => {
   assertEquals(
     regionIdFromConnection({
       id: "c",
@@ -47,7 +48,7 @@ Deno.test("client: the region id comes from the connection's redacted display", 
   );
 });
 
-Deno.test("client: a connection without a region id fails with a reconnect message", () => {
+test("client: a connection without a region id fails with a reconnect message", () => {
   for (const connection of [undefined, { display: {} }]) {
     const error = assertThrows(
       () => regionIdFromConnection(connection as never),
@@ -58,7 +59,7 @@ Deno.test("client: a connection without a region id fails with a reconnect messa
   }
 });
 
-Deno.test("client: compact() drops unset top-level keys and keeps real ones", () => {
+test("client: compact() drops unset top-level keys and keeps real ones", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -70,13 +71,13 @@ Deno.test("client: compact() drops unset top-level keys and keeps real ones", ()
   });
 });
 
-Deno.test("client: encodeId leaves a valid vendor id alone and neutralises a pasted URL", () => {
+test("client: encodeId leaves a valid vendor id alone and neutralises a pasted URL", () => {
   assertEquals(encodeId("a1b2.c3-d4_e5"), "a1b2.c3-d4_e5");
   assertEquals(encodeId("  abc  "), "abc");
   assertEquals(encodeId("a/b?c=d"), "a%2Fb%3Fc%3Dd");
 });
 
-Deno.test("client: asOptionalJson() accepts a parsed value, a JSON string, or nothing", () => {
+test("client: asOptionalJson() accepts a parsed value, a JSON string, or nothing", () => {
   assertEquals(asOptionalJson([{ field: "x" }], "filters"), [{ field: "x" }]);
   assertEquals(asOptionalJson('{"a":1}', "filters"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "filters"), undefined);
@@ -84,7 +85,7 @@ Deno.test("client: asOptionalJson() accepts a parsed value, a JSON string, or no
   assertThrows(() => asOptionalJson("{oops", "filters"), Error, "filters is not valid JSON");
 });
 
-Deno.test("client: a success is recognised by user_id + key_id, not by the status", () => {
+test("client: a success is recognised by user_id + key_id, not by the status", () => {
   assert(isAuthInfo(authInfo()));
   // The wrong-key body arrives as HTTP 400 and is NOT a success, whatever it is
   // labelled: it has no user_id and no key_id.
@@ -95,7 +96,7 @@ Deno.test("client: a success is recognised by user_id + key_id, not by the statu
   assertEquals(isAuthInfo("200"), false);
 });
 
-Deno.test("client: errors keep the vendor's error_type and message", () => {
+test("client: errors keep the vendor's error_type and message", () => {
   const formatted = formatRelevanceError(
     400,
     "POST",
@@ -107,7 +108,7 @@ Deno.test("client: errors keep the vendor's error_type and message", () => {
   assert(formatted.includes("not found in Postgres"), formatted);
 });
 
-Deno.test("client: a missing Authorization header is named as such", () => {
+test("client: a missing Authorization header is named as such", () => {
   const formatted = formatRelevanceError(
     401,
     "GET",
@@ -120,7 +121,7 @@ Deno.test("client: a missing Authorization header is named as such", () => {
   assert(/reconnect/.test(formatted), formatted);
 });
 
-Deno.test("client: a non-JSON error body is still reported", () => {
+test("client: a non-JSON error body is still reported", () => {
   const formatted = formatRelevanceError(
     502,
     "GET",
@@ -131,7 +132,7 @@ Deno.test("client: a non-JSON error body is still reported", () => {
   assert(formatted.includes("Bad Gateway"), formatted);
 });
 
-Deno.test("client: a GET carries the query and never an Authorization header", async () => {
+test("client: a GET carries the query and never an Authorization header", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);
   await new RelevanceAiClient(ctx).json("/studios/list", {
     query: { query: "triage", page: 2, page_size: 20, version: undefined, tool_version: "" },
@@ -145,7 +146,7 @@ Deno.test("client: a GET carries the query and never an Authorization header", a
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("client: a POST body is compacted and sent as JSON", async () => {
+test("client: a POST body is compacted and sent as JSON", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { ok: true } }]);
   await new RelevanceAiClient(ctx).json("/agents/trigger", {
     method: "POST",
@@ -164,7 +165,7 @@ Deno.test("client: a POST body is compacted and sent as JSON", async () => {
   });
 });
 
-Deno.test("client: an empty 200 (both cancels) parses to undefined", async () => {
+test("client: an empty 200 (both cancels) parses to undefined", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ status: 200 }]);
   const out = await new RelevanceAiClient(ctx).json("/agents/a1/cancel", {
     method: "POST",
@@ -174,7 +175,7 @@ Deno.test("client: an empty 200 (both cancels) parses to undefined", async () =>
   assertEquals(pathOf(calls[0].url), "/latest/agents/a1/cancel");
 });
 
-Deno.test("client: a failed request throws the vendor's own words", async () => {
+test("client: a failed request throws the vendor's own words", async () => {
   const { ctx } = mockRelevanceCtx([
     { status: 422, body: errorBody("unset_error_type", "Agent id is invalid") },
   ]);
@@ -185,7 +186,7 @@ Deno.test("client: a failed request throws the vendor's own words", async () => 
   );
 });
 
-Deno.test("client: a 200 that is not JSON is reported as such, not silently passed on", async () => {
+test("client: a 200 that is not JSON is reported as such, not silently passed on", async () => {
   const { ctx } = mockRelevanceCtx([{ headers: { "content-type": "text/html" }, body: "<html>x" }]);
   await assertRejects(
     () => new RelevanceAiClient(ctx).json("/studios/list"),
@@ -194,13 +195,13 @@ Deno.test("client: a 200 that is not JSON is reported as such, not silently pass
   );
 });
 
-Deno.test("client: the connection's host is used, and a different region gives a different host", async () => {
+test("client: the connection's host is used, and a different region gives a different host", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: {} }], "0e489e");
   await new RelevanceAiClient(ctx).json("/auth/info");
   assertEquals(calls[0].url, "https://api-0e489e.stack.tryrelevance.com/latest/auth/info");
 });
 
-Deno.test("client: a context with no connection cannot build a URL at all", () => {
+test("client: a context with no connection cannot build a URL at all", () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertThrows(() => new RelevanceAiClient(ctx), Error, "region id");
   assertEquals(REGION_ID, "f1db6c");

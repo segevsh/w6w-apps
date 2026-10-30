@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleGet from "../../actions/article-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-get: GETs the article with its query flags", async () => {
+test("article-get: GETs the article with its query flags", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "a1", title: "Hi", status: "published" }),
@@ -26,7 +27,7 @@ Deno.test("article-get: GETs the article with its query flags", async () => {
   assertEquals(out.status, "published");
 });
 
-Deno.test("article-get: a vendor error surfaces its code and message", async () => {
+test("article-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

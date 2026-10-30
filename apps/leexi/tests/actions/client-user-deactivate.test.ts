@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/client-user-deactivate.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client-user-deactivate: full input maps to DELETE /reseller/companies/{company_uuid}/users/{uuid}", async () => {
+test("client-user-deactivate: full input maps to DELETE /reseller/companies/{company_uuid}/users/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -21,7 +22,7 @@ Deno.test("client-user-deactivate: full input maps to DELETE /reseller/companies
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("client-user-deactivate: required input only maps to DELETE /reseller/companies/{company_uuid}/users/{uuid}", async () => {
+test("client-user-deactivate: required input only maps to DELETE /reseller/companies/{company_uuid}/users/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -40,13 +41,13 @@ Deno.test("client-user-deactivate: required input only maps to DELETE /reseller/
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("client-user-deactivate: sends no authorization header of its own", async () => {
+test("client-user-deactivate: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({ "company_uuid": "cccccccc-0000", "uuid": "11111111-aaaa" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("client-user-deactivate: surfaces a JSON error body as a thrown error", async () => {
+test("client-user-deactivate: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -56,7 +57,7 @@ Deno.test("client-user-deactivate: surfaces a JSON error body as a thrown error"
   );
 });
 
-Deno.test("client-user-deactivate: an empty 401 body still reads as an auth failure", async () => {
+test("client-user-deactivate: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -66,7 +67,7 @@ Deno.test("client-user-deactivate: an empty 401 body still reads as an auth fail
   );
 });
 
-Deno.test("client-user-deactivate: declares type, params and output", () => {
+test("client-user-deactivate: declares type, params and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.key, "client-user-deactivate");
   assert(Array.isArray(action.output) && action.output.length > 0);

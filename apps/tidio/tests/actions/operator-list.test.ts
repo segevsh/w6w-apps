@@ -1,9 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import operatorList from "../../actions/operator-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("operator-list: GET /operators", async () => {
+test("operator-list: GET /operators", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -34,7 +35,7 @@ Deno.test("operator-list: GET /operators", async () => {
   assertEquals(items[0].role, "admin");
 });
 
-Deno.test("operator-list: a vendor error surfaces its code and message", async () => {
+test("operator-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ code: "not_found", message: "Nope" }] },

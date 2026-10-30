@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listingCreate from "../../actions/listing-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("listing-create: POST /listings/create, expand=true, builds the body from params", async () => {
+test("listing-create: POST /listings/create, expand=true, builds the body from params", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -37,7 +38,7 @@ Deno.test("listing-create: POST /listings/create, expand=true, builds the body f
   assertEquals((result as { id: string }).id, "l1");
 });
 
-Deno.test("listing-create: omits images and extended-data fields entirely when not given", async () => {
+test("listing-create: omits images and extended-data fields entirely when not given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "l1" } } }]);
   await listingCreate.execute({ title: "x", authorId: "u1", state: "published" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");

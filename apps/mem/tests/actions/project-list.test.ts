@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -18,7 +19,7 @@ const RESPONSE = {
   "next_page": null,
 };
 
-Deno.test("project-list: GET /v2/projects", async () => {
+test("project-list: GET /v2/projects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await projectList.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -33,13 +34,13 @@ Deno.test("project-list: GET /v2/projects", async () => {
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("project-list: puts no credential on the request (sign owns that)", async () => {
+test("project-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await projectList.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("project-list: a vendor error surfaces its own message", async () => {
+test("project-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-list: GET /api/v3/conversation_messages/get with every documented parameter", async () => {
+test("message-list: GET /api/v3/conversation_messages/get with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await messageList.execute({
     "conversationId": 100,
@@ -28,14 +29,14 @@ Deno.test("message-list: GET /api/v3/conversation_messages/get with every docume
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("message-list: omits optional parameters that are not set", async () => {
+test("message-list: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await messageList.execute({ "conversationId": 100 }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "conversation_id": "100" });
 });
 
-Deno.test("message-list: sends no credential of its own", async () => {
+test("message-list: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await messageList.execute({
     "conversationId": 100,
@@ -49,7 +50,7 @@ Deno.test("message-list: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("message-list: surfaces Twist's error body", async () => {
+test("message-list: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

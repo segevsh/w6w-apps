@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import personnelGet from "../../actions/personnel-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "personnelId": "email:a@b.co" };
 
-Deno.test("personnel-get: GET /personnel/email%3Aa%40b.co returns the bare object", async () => {
+test("personnel-get: GET /personnel/email%3Aa%40b.co returns the bare object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "x" } }]);
   const out = await personnelGet.execute({ ...INPUT }, ctx) as { id: number };
 
@@ -14,7 +15,7 @@ Deno.test("personnel-get: GET /personnel/email%3Aa%40b.co returns the bare objec
   assertEquals(out.id, 1);
 });
 
-Deno.test("personnel-get: expand goes out as repeated expand[] parameters", async () => {
+test("personnel-get: expand goes out as repeated expand[] parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await personnelGet.execute({ ...INPUT, ...{ "expand": ["user"] } }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("personnel-get: expand goes out as repeated expand[] parameters", asyn
   assertEquals(queryOf(calls[0].url).getAll("expand[]"), wire.map(([, v]) => v));
 });
 
-Deno.test("personnel-get: a 404 surfaces Drata's own message", async () => {
+test("personnel-get: a 404 surfaces Drata's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found", 3) }]);
   const err = await assertRejects(
     () => Promise.resolve(personnelGet.execute({ ...INPUT }, ctx)),

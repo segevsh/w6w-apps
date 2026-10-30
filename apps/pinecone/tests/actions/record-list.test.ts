@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-list.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
-Deno.test("record-list: lists ids under a prefix", async () => {
+test("record-list: lists ids under a prefix", async () => {
   const { ctx, calls } = mockCtx([
     describe,
     { status: 200, body: { vectors: [{ id: "doc123#c1" }], namespace: "ns" } },
@@ -19,7 +20,7 @@ Deno.test("record-list: lists ids under a prefix", async () => {
   assertEquals(url.searchParams.get("prefix"), "doc123#");
 });
 
-Deno.test("record-list: follows the pagination token when returning all", async () => {
+test("record-list: follows the pagination token when returning all", async () => {
   const { ctx, calls } = mockCtx([
     describe,
     { status: 200, body: { vectors: [{ id: "a" }], pagination: { next: "tok" } } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentGet from "../../actions/document-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-get: GETs /documents/{id}/", async () => {
+test("document-get: GETs /documents/{id}/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { uuid: "doc-1", name: "NDA" } }]);
   const out = await documentGet.execute({ documentId: "doc-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("document-get: GETs /documents/{id}/", async () => {
   assertEquals(out.name, "NDA");
 });
 
-Deno.test("document-get: URL-encodes the document id", async () => {
+test("document-get: URL-encodes the document id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await documentGet.execute({ documentId: "doc 1" }, ctx);
   assertEquals(pathOf(calls[0]), "/api/v1/documents/doc%201/");

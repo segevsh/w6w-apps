@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import extractionResultGet from "../../actions/extraction-result-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const INFERENCE_ID = "018f1e2a-0000-7000-8000-000000000001";
 
-Deno.test("extraction-result-get: fetches the extraction results route by id", async () => {
+test("extraction-result-get: fetches the extraction results route by id", async () => {
   const { ctx, calls } = mockCtx([
     { body: { inference: { id: INFERENCE_ID, result: { fields: { total: { value: 42 } } } } } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("extraction-result-get: fetches the extraction results route by id", a
   );
 });
 
-Deno.test("extraction-result-get: a not-yet-processed job answers 404 and throws", async () => {
+test("extraction-result-get: a not-yet-processed job answers 404 and throws", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -34,7 +35,7 @@ Deno.test("extraction-result-get: a not-yet-processed job answers 404 and throws
   }
 });
 
-Deno.test("extraction-result-get: encodes the id into the path", async () => {
+test("extraction-result-get: encodes the id into the path", async () => {
   const { ctx, calls } = mockCtx([{ body: { inference: {} } }]);
   await extractionResultGet.execute({ inferenceId: "has a space" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/products/extraction/results/has%20a%20space");

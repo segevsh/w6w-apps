@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageGet from "../../actions/message-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-get: GETs /contact/{identifier}/message/{messageId}", async () => {
+test("message-get: GETs /contact/{identifier}/message/{messageId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 987654, contactId: 1 } }]);
   const out = await messageGet.execute(
     { identifier: "id:1", messageId: 987654 },
@@ -13,7 +14,7 @@ Deno.test("message-get: GETs /contact/{identifier}/message/{messageId}", async (
   assertEquals(out.messageId, 987654);
 });
 
-Deno.test("message-get: a missing messageId is refused before any request", async () => {
+test("message-get: a missing messageId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
@@ -6,12 +7,12 @@ import { mockCtx } from "../_helpers.ts";
 
 const run = (c: typeof api, ctx: ReturnType<typeof mockCtx>["ctx"]) => c.check!({} as never, ctx);
 
-Deno.test("service: declared unavailable at informational severity", () => {
+test("service: declared unavailable at informational severity", () => {
   assertEquals(service.severity, "informational");
   assertEquals(typeof service.unavailable?.reason, "string");
 });
 
-Deno.test("api: a schema-correct auth error is a pass; 5xx is down; odd body degraded", async () => {
+test("api: a schema-correct auth error is a pass; 5xx is down; odd body degraded", async () => {
   const ok = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   assertEquals((await run(api, ok.ctx)).state, "ok");
   assertEquals(ok.calls[0].headers["authorization"], undefined);
@@ -23,7 +24,7 @@ Deno.test("api: a schema-correct auth error is a pass; 5xx is down; odd body deg
 
 const usage = (u: Record<string, unknown>) => ({ body: { limits_and_usage: u } });
 
-Deno.test("quota: reports remaining units for the key and workspace, worst bucket wins", async () => {
+test("quota: reports remaining units for the key and workspace, worst bucket wins", async () => {
   const r = await run(
     quota,
     mockCtx([usage({
@@ -39,7 +40,7 @@ Deno.test("quota: reports remaining units for the key and workspace, worst bucke
   assertEquals(r.quota?.[0].resetAt, "2026-11-01T00:00:00.000Z");
 });
 
-Deno.test("quota: exhausted is down; null limits and failures are unknown", async () => {
+test("quota: exhausted is down; null limits and failures are unknown", async () => {
   const gone = await run(
     quota,
     mockCtx([usage({ units_limit_api_key: 10, units_usage_api_key: 10 })]).ctx,

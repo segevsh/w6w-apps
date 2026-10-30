@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/analytics-report-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("analytics-report-create: posts the report request and returns the id", async () => {
+test("analytics-report-create: posts the report request and returns the id", async () => {
   const { ctx, calls } = mockCtx([{ body: { reports: { id: "rep-1" } } }]);
   const out = await action.execute(
     { organization: "org-1", start: 1691812800, end: 1692371867, timeZone: "America/Montreal" },
@@ -16,7 +17,7 @@ Deno.test("analytics-report-create: posts the report request and returns the id"
   assertEquals(out, { id: "rep-1" });
 });
 
-Deno.test("analytics-report-create: passes array filters through", async () => {
+test("analytics-report-create: passes array filters through", async () => {
   const { ctx, calls } = mockCtx([{ body: { reports: { id: "rep-2" } } }]);
   await action.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("analytics-report-create: passes array filters through", async () => {
   assertEquals(body.reports.account_types, ["email", "sms"]);
 });
 
-Deno.test("analytics-report-create: requires organization/start/end", async () => {
+test("analytics-report-create: requires organization/start/end", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ organization: "", start: 0, end: 0 }, ctx));
 });

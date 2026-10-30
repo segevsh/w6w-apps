@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-email-campaigns.ts";
 
-Deno.test("list-email-campaigns: GETs /v3/emails with the default limit", async () => {
+test("list-email-campaigns: GETs /v3/emails with the default limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaigns: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-email-campaigns: GETs /v3/emails with the default limit", async 
   assertEquals(url.searchParams.get("limit"), "50");
 });
 
-Deno.test("list-email-campaigns: forwards the updated_at date window", async () => {
+test("list-email-campaigns: forwards the updated_at date window", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaigns: [] } }]);
   await action.execute!({
     afterDate: "2026-01-01T00:00:00Z",
@@ -26,7 +27,7 @@ Deno.test("list-email-campaigns: forwards the updated_at date window", async () 
   assertEquals(p.get("cursor"), "abc");
 });
 
-Deno.test("list-email-campaigns: omits the date window when not supplied", async () => {
+test("list-email-campaigns: omits the date window when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaigns: [] } }]);
   await action.execute!({}, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -34,7 +35,7 @@ Deno.test("list-email-campaigns: omits the date window when not supplied", async
   assert(!p.has("before_date"));
 });
 
-Deno.test("list-email-campaigns: lifts the cursor out of _links.next", async () => {
+test("list-email-campaigns: lifts the cursor out of _links.next", async () => {
   const { ctx } = mockCtx([{
     body: {
       campaigns: [{ campaign_id: "e1", current_status: "Done" }],

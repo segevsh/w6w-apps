@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { API_ROOT, errorBody, listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import legalEntityList from "../../actions/legal-entity-list.ts";
 
 const NEXT = `${API_ROOT}/legal-entities/?cursor=abc%3D&limit=2`;
 
-Deno.test("legal-entity-list: GETs /legal-entities/ with every query parameter and shapes the page", async () => {
+test("legal-entity-list: GETs /legal-entities/ with every query parameter and shapes the page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -40,7 +41,7 @@ Deno.test("legal-entity-list: GETs /legal-entities/ with every query parameter a
   }]);
 });
 
-Deno.test("legal-entity-list: last page has a null cursor and sends no stray parameters", async () => {
+test("legal-entity-list: last page has a null cursor and sends no stray parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   const out = await legalEntityList.execute({}, ctx) as Record<string, unknown>;
 
@@ -50,7 +51,7 @@ Deno.test("legal-entity-list: last page has a null cursor and sends no stray par
   assertEquals(out.redactedFields, []);
 });
 
-Deno.test("legal-entity-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
+test("legal-entity-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await legalEntityList.execute({ cursor: NEXT }, ctx);
 
@@ -59,7 +60,7 @@ Deno.test("legal-entity-list: a pasted next_link URL is reduced to its cursor, n
   assertEquals(queryOf(calls[0].url), { cursor: "abc=" });
 });
 
-Deno.test("legal-entity-list: sends no credential (sign owns it) and declares its scope", async () => {
+test("legal-entity-list: sends no credential (sign owns it) and declares its scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await legalEntityList.execute({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -69,7 +70,7 @@ Deno.test("legal-entity-list: sends no credential (sign owns it) and declares it
   assert(legalEntityList.params!.some((p) => p.key === "limit" && p.validation?.max === 100));
 });
 
-Deno.test("legal-entity-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
+test("legal-entity-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

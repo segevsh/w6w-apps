@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mandateRevoke from "../../actions/mandate-revoke.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mandate-revoke: sends DELETE to /customers/{id}/mandates/{mandateId}", async () => {
+test("mandate-revoke: sends DELETE to /customers/{id}/mandates/{mandateId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await mandateRevoke.execute({ customerId: "cst_1", mandateId: "mdt_1" }, ctx);
 

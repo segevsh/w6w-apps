@@ -1,8 +1,9 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "./_assert.ts";
 import app from "../index.ts";
 import coverage from "../docs/endpoint-coverage.json" with { type: "json" };
 
-Deno.test("catalog covers every public and Admin OpenAPI operation without duplicate action keys", () => {
+test("catalog covers every public and Admin OpenAPI operation without duplicate action keys", () => {
   assertEquals(new Set(app.actions.map((action) => action.key)).size, app.actions.length);
   assertEquals(coverage.length, 107);
   for (const endpoint of coverage) assertExists(app.actions.find((a) => a.key === endpoint.action));

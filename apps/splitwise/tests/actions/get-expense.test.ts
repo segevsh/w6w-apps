@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getExpense from "../../actions/get-expense.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-expense: unwraps the expense, shares and derived repayments", async () => {
+test("get-expense: unwraps the expense, shares and derived repayments", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       expense: {
@@ -26,7 +27,7 @@ Deno.test("get-expense: unwraps the expense, shares and derived repayments", asy
   assertEquals(out.repayments.length, 1);
 });
 
-Deno.test("get-expense: a 404 is distinguishable from a 403", async () => {
+test("get-expense: a 404 is distinguishable from a 403", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(["Invalid API Request: record not found"]),
@@ -38,7 +39,7 @@ Deno.test("get-expense: a 404 is distinguishable from a 403", async () => {
   );
 });
 
-Deno.test("get-expense: a bad id fails before the request", async () => {
+test("get-expense: a bad id fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await getExpense.execute({ expenseId: "1;2" as unknown as number }, ctx),

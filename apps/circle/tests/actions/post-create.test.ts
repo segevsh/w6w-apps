@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { API, bodyOf, mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-create.ts";
 
-Deno.test("post-create: POSTs /posts with a TipTap document built from plain text", async () => {
+test("post-create: POSTs /posts with a TipTap document built from plain text", async () => {
   const { ctx, calls } = mockCtx([{ body: { post: { id: 1 } } }]);
   await action.execute({ spaceId: 5, name: "Hello", text: "Body text" }, ctx);
   assertEquals(calls[0].url, `${API}/posts`);
@@ -20,14 +21,14 @@ Deno.test("post-create: POSTs /posts with a TipTap document built from plain tex
   });
 });
 
-Deno.test("post-create: a raw TipTap document is passed straight through", async () => {
+test("post-create: a raw TipTap document is passed straight through", async () => {
   const doc = { type: "doc", content: [{ type: "heading", attrs: { level: 2 } }] };
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ spaceId: 5, name: "H", bodyJson: doc }, ctx);
   assertEquals(bodyOf(calls[0]).tiptap_body, { body: doc });
 });
 
-Deno.test("post-create: supplying both body forms is rejected before any request", async () => {
+test("post-create: supplying both body forms is rejected before any request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -39,7 +40,7 @@ Deno.test("post-create: supplying both body forms is rejected before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("post-create: supplying no body at all is rejected", async () => {
+test("post-create: supplying no body at all is rejected", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => {
@@ -50,18 +51,18 @@ Deno.test("post-create: supplying no body at all is rejected", async () => {
   );
 });
 
-Deno.test("post-create: the author override is sent as user_email, Circle's preferred form", async () => {
+test("post-create: the author override is sent as user_email, Circle's preferred form", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ spaceId: 5, name: "H", text: "x", authorEmail: "a@b.c" }, ctx);
   assertEquals(bodyOf(calls[0]).user_email, "a@b.c");
 });
 
-Deno.test("post-create: topics are sent as an integer array", async () => {
+test("post-create: topics are sent as an integer array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ spaceId: 5, name: "H", text: "x", topics: "3, 4" }, ctx);
   assertEquals(bodyOf(calls[0]).topics, [3, 4]);
 });
 
-Deno.test("post-create: is not idempotent — every call mints a post", () => {
+test("post-create: is not idempotent — every call mints a post", () => {
   assertEquals(action.idempotent, false);
 });

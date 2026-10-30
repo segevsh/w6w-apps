@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import membershipList from "../../actions/membership-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("membership-list: hits /api/community/memberships with the given filters", async () => {
+test("membership-list: hits /api/community/memberships with the given filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }]) }]);
   await membershipList.execute({ community: 9, contact: 42 }, ctx);
 

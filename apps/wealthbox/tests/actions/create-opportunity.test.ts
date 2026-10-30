@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-opportunity.ts";
 
-Deno.test("create-opportunity: requires name, targetClose, probability, stage and amounts", () => {
+test("create-opportunity: requires name, targetClose, probability, stage and amounts", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const required = (action.params ?? []).filter((p) => p.required).map((p) => p.key);
@@ -11,7 +12,7 @@ Deno.test("create-opportunity: requires name, targetClose, probability, stage an
   }
 });
 
-Deno.test("create-opportunity: POSTs /opportunities with the mapped body", async () => {
+test("create-opportunity: POSTs /opportunities with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   const amounts = [{ amount: 56.76, currency: "$", kind: "Fee" }];
   await action.execute({
@@ -32,7 +33,7 @@ Deno.test("create-opportunity: POSTs /opportunities with the mapped body", async
   });
 });
 
-Deno.test("create-opportunity: only uses the first linked contact per Wealthbox's documented limit", () => {
+test("create-opportunity: only uses the first linked contact per Wealthbox's documented limit", () => {
   const p = (action.params ?? []).find((p) => p.key === "linkedTo")!;
   assert(/first entry/i.test(p.hint ?? ""), "hint should say only the first entry is used");
 });

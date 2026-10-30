@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-create.ts";
 
@@ -11,7 +12,7 @@ function baseInput(overrides: Record<string, unknown> = {}): Record<string, unkn
   };
 }
 
-Deno.test("order-create: happy path posts a single purchase unit", async () => {
+test("order-create: happy path posts a single purchase unit", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "ORD-1", status: "CREATED" } }]);
   const result = await action.execute!(baseInput(), ctx);
 
@@ -23,7 +24,7 @@ Deno.test("order-create: happy path posts a single purchase unit", async () => {
   assertEquals(result, { id: "ORD-1", status: "CREATED" });
 });
 
-Deno.test("order-create: description and additionalFields populate the purchase unit", async () => {
+test("order-create: description and additionalFields populate the purchase unit", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     baseInput({
@@ -49,7 +50,7 @@ Deno.test("order-create: description and additionalFields populate the purchase 
   });
 });
 
-Deno.test("order-create: value is required", async () => {
+test("order-create: value is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!(baseInput({ value: "" }), ctx)),
@@ -59,7 +60,7 @@ Deno.test("order-create: value is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("order-create: the former group's fields are read flat", async () => {
+test("order-create: the former group's fields are read flat", async () => {
   // `returnUrl`/`cancelUrl` decide where PayPal sends the buyer after approval,
   // and they lived in a `type: "group"` the studio renders as a JSON editor —
   // so the approval round trip could not be configured from the form at all.
@@ -87,7 +88,7 @@ Deno.test("order-create: the former group's fields are read flat", async () => {
   });
 });
 
-Deno.test("order-create: a flat field wins over the deprecated group", async () => {
+test("order-create: a flat field wins over the deprecated group", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1" } }]);
   await action.execute!(
     {

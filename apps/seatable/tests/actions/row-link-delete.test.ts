@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowLinkDelete from "../../actions/row-link-delete.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const input = {
   otherRowsIdsMap: { r1: ["x", "y"] },
 };
 
-Deno.test("row-link-delete: sends DELETE /links/ with table ids, link id and the rows map", async () => {
+test("row-link-delete: sends DELETE /links/ with table ids, link id and the rows map", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted_links_count: 1 } }]);
   const out = await rowLinkDelete.execute(input, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "DELETE");
@@ -23,13 +24,13 @@ Deno.test("row-link-delete: sends DELETE /links/ with table ids, link id and the
   assertEquals(out.deleted_links_count, 1);
 });
 
-Deno.test("row-link-delete: the rows map may arrive as JSON text", async () => {
+test("row-link-delete: the rows map may arrive as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await rowLinkDelete.execute({ ...input, otherRowsIdsMap: '{"a":["b"]}' }, ctx);
   assertEquals(bodyOf(calls[0]).other_rows_ids_map, { a: ["b"] });
 });
 
-Deno.test("row-link-delete: an array where the map belongs is refused without a request", async () => {
+test("row-link-delete: an array where the map belongs is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -41,6 +42,6 @@ Deno.test("row-link-delete: an array where the map belongs is refused without a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("row-link-delete: idempotency is declared as true", () => {
+test("row-link-delete: idempotency is declared as true", () => {
   assertEquals(rowLinkDelete.idempotent, true);
 });

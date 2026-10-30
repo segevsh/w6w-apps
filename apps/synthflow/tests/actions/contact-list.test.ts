@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: items plus the sibling paging counters", async () => {
+test("contact-list: items plus the sibling paging counters", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ items: [{ id: "ct1" }], total: 1, page_size: 20, page_number: 1 }),
   }]);

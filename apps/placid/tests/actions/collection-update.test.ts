@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionUpdate from "../../actions/collection-update.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-update: replace, add and remove lists map to their own keys", async () => {
+test("collection-update: replace, add and remove lists map to their own keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c" } }]);
   await collectionUpdate.execute({
     collection_id: "c",

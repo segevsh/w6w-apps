@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/segment-list.ts";
 
 const conn = { display: { baseUrl: "https://mautic.example.com" } };
 
 /** The envelope's collection key is `lists`, not `segments` — this is the whole point of the test. */
-Deno.test("segment-list: GETs /segments and reads the `lists` envelope key", async () => {
+test("segment-list: GETs /segments and reads the `lists` envelope key", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { total: 1, lists: { "3": { id: 3, name: "VIP" } } } },
   ], conn);

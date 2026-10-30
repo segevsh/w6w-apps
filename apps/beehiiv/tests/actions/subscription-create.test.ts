@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-create: POSTs to /publications/:id/subscriptions with a compacted body", async () => {
+test("subscription-create: POSTs to /publications/:id/subscriptions with a compacted body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { data: { id: "sub_1", email: "a@b.com", status: "active" } },
@@ -31,7 +32,7 @@ Deno.test("subscription-create: POSTs to /publications/:id/subscriptions with a 
   assertEquals(out.id, "sub_1");
 });
 
-Deno.test("subscription-create: parses a JSON-array customFields param", async () => {
+test("subscription-create: parses a JSON-array customFields param", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "sub_1" } } }]);
   await subscriptionCreate.execute({
     publicationId: "pub_1",
@@ -42,7 +43,7 @@ Deno.test("subscription-create: parses a JSON-array customFields param", async (
   assertEquals(sent.custom_fields, [{ name: "First Name", value: "Bruce" }]);
 });
 
-Deno.test("subscription-create: is a non-idempotent perform action", () => {
+test("subscription-create: is a non-idempotent perform action", () => {
   assertEquals(subscriptionCreate.type, "perform");
   assertEquals(subscriptionCreate.idempotent, false);
 });

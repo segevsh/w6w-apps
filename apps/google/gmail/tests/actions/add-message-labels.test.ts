@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-message-labels.ts";
 
-Deno.test("add-message-labels: POSTs modify with addLabelIds", async () => {
+test("add-message-labels: POSTs modify with addLabelIds", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!({ messageId: "m1", labelIds: ["INBOX", "STARRED"] }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/gmail/v1/users/me/messages/m1/modify");

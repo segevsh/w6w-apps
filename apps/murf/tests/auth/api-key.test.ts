@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const req = (url: string) => ({ url, method: "GET", headers: {} as Record<string
 const sign = (url: string, credential: unknown) =>
   auth.sign!({ request: req(url), credential } as never, {} as never) as ReturnType<typeof req>;
 
-Deno.test("api-key: sign uses the speech key on speech endpoints and the dub key on /v1/murfdub/", () => {
+test("api-key: sign uses the speech key on speech endpoints and the dub key on /v1/murfdub/", () => {
   assertEquals(
     sign("https://api.murf.ai/v1/speech/generate", both).headers["api-key"],
     "speech-secret-1",
@@ -17,7 +18,7 @@ Deno.test("api-key: sign uses the speech key on speech endpoints and the dub key
   assertEquals(Object.keys(dub.headers), ["api-key"]);
 });
 
-Deno.test("api-key: sign refuses when the needed key is missing, without echoing the other", () => {
+test("api-key: sign refuses when the needed key is missing, without echoing the other", () => {
   let msg = "";
   try {
     sign("https://api.murf.ai/v1/murfdub/projects/list", { apiKey: "speech-secret-1" });
@@ -35,7 +36,7 @@ Deno.test("api-key: sign refuses when the needed key is missing, without echoing
   assert(msg2.includes("Speech"));
 });
 
-Deno.test("api-key: test probes each supplied key on its own endpoint", async () => {
+test("api-key: test probes each supplied key on its own endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }, {
     body: [{ locale: "en_US", language: "English" }],
   }]);
@@ -48,13 +49,13 @@ Deno.test("api-key: test probes each supplied key on its own endpoint", async ()
   assertEquals(calls[1].headers["api-key"], "dub-secret-2");
 });
 
-Deno.test("api-key: a single key is enough, and only that key is probed", async () => {
+test("api-key: a single key is enough, and only that key is probed", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   assertEquals((await auth.test!({ credential: { apiKey: "k" } } as never, ctx)).ok, true);
   assertEquals(calls.length, 1);
 });
 
-Deno.test("api-key: a 403 envelope fails by error_code and never echoes the key", async () => {
+test("api-key: a 403 envelope fails by error_code and never echoes the key", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error_message: "Invalid 'api-key' header passed", error_code: 403 },
@@ -66,7 +67,7 @@ Deno.test("api-key: a 403 envelope fails by error_code and never echoes the key"
   assert(!JSON.stringify(r).includes("speech-secret-1"));
 });
 
-Deno.test("api-key: a 200 with an error_code body (not the list shape) fails; a bad dub key names Murf Dub", async () => {
+test("api-key: a 200 with an error_code body (not the list shape) fails; a bad dub key names Murf Dub", async () => {
   const a = mockCtx([{ body: { error_message: "nope", error_code: 401 } }]);
   assertEquals((await auth.test!({ credential: { apiKey: "k" } } as never, a.ctx)).ok, false);
   const b = mockCtx([
@@ -78,7 +79,7 @@ Deno.test("api-key: a 200 with an error_code body (not the list shape) fails; a 
   assert(r.message?.includes("Murf Dub"));
 });
 
-Deno.test("api-key: 429, an HTML 200, no key, and an unreachable host all fail", async () => {
+test("api-key: 429, an HTML 200, no key, and an unreachable host all fail", async () => {
   const a = await auth.test!(
     { credential: { apiKey: "k" } } as never,
     mockCtx([{ status: 429, body: "slow" }]).ctx,

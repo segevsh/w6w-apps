@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-delete.ts";
 
-Deno.test("submission-delete: DELETEs /submission/{id} and returns Jotform's message", async () => {
+test("submission-delete: DELETEs /submission/{id} and returns Jotform's message", async () => {
   const { ctx, calls, logs } = mockCtx([
     { body: envelope("Submission #237955080346633702 deleted successfully.") },
   ]);
@@ -15,7 +16,7 @@ Deno.test("submission-delete: DELETEs /submission/{id} and returns Jotform's mes
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("submission-delete: deleting twice converges, so it is idempotent", () => {
+test("submission-delete: deleting twice converges, so it is idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { encodeCalendarId, GoogleCalendarClient } from "../../lib/client.ts";
 
-Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
+test("client: prefixes API_URL and returns parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { kind: "calendar#calendar", id: "primary" } }]);
   const client = new GoogleCalendarClient(ctx);
   const result = await client.request<{ id: string }>("/calendars/primary");
@@ -11,7 +12,7 @@ Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/calendar/v3/calendars/primary");
 });
 
-Deno.test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
+test("client: skips undefined/null/empty query params, keeps zeros and false", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const client = new GoogleCalendarClient(ctx);
   await client.request("/x", {
@@ -33,7 +34,7 @@ Deno.test("client: skips undefined/null/empty query params, keeps zeros and fals
   assertEquals(params.get("f"), "keep");
 });
 
-Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
+test("client: JSON-encodes bodies and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new GoogleCalendarClient(ctx);
   await client.request("/freeBusy", { method: "POST", body: { timeMin: "t" } });
@@ -42,7 +43,7 @@ Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
   assertEquals(calls[0].body, `{"timeMin":"t"}`);
 });
 
-Deno.test("client: throws with status + detail on non-2xx", async () => {
+test("client: throws with status + detail on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: "not here" }]);
   const client = new GoogleCalendarClient(ctx);
   await assertRejects(
@@ -52,14 +53,14 @@ Deno.test("client: throws with status + detail on non-2xx", async () => {
   );
 });
 
-Deno.test("client: returns undefined for 204 No Content", async () => {
+test("client: returns undefined for 204 No Content", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const client = new GoogleCalendarClient(ctx);
   const result = await client.request<void>("/x", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("encodeCalendarId: leaves `primary` untouched and %40-encodes emails", () => {
+test("encodeCalendarId: leaves `primary` untouched and %40-encodes emails", () => {
   assertEquals(encodeCalendarId("primary"), "primary");
   assertEquals(encodeCalendarId("foo@example.com"), "foo%40example.com");
   // Idempotent: an already-encoded value stays encoded once.

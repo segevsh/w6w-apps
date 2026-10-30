@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   base64ToHex,
   basicIsoTimestamp,
@@ -36,13 +37,13 @@ const base = {
  * Python from Google's documented format — so this checks the implementation
  * against the specification, not against itself.
  */
-Deno.test("signedUrl: matches a signature computed by an independent implementation", async () => {
+test("signedUrl: matches a signature computed by an independent implementation", async () => {
   const result = await signedUrl(base);
   const signature = new URL(result.url).searchParams.get("X-Goog-Signature");
   assertEquals(signature, EXPECTED_SIGNATURE);
 });
 
-Deno.test("signedUrl: the URL carries every parameter Cloud Storage requires", async () => {
+test("signedUrl: the URL carries every parameter Cloud Storage requires", async () => {
   const { url } = await signedUrl(base);
   const parsed = new URL(url);
   assertEquals(parsed.host, "storage.googleapis.com");
@@ -57,7 +58,7 @@ Deno.test("signedUrl: the URL carries every parameter Cloud Storage requires", a
 });
 
 /** A signature over no headers verifies against nothing. */
-Deno.test("signedUrl: host is always signed, and extra headers join it in order", async () => {
+test("signedUrl: host is always signed, and extra headers join it in order", async () => {
   const plain = await signedUrl(base);
   assertEquals(plain.signedHeaders, ["host"]);
 
@@ -73,7 +74,7 @@ Deno.test("signedUrl: host is always signed, and extra headers join it in order"
 });
 
 /** Adding a header changes what the signature covers. */
-Deno.test("signedUrl: a different header set produces a different signature", async () => {
+test("signedUrl: a different header set produces a different signature", async () => {
   const plain = await signedUrl(base);
   const extra = await signedUrl({ ...base, headers: { "content-type": "text/plain" } });
   assert(
@@ -83,7 +84,7 @@ Deno.test("signedUrl: a different header set produces a different signature", as
 });
 
 /** The path separators stay separators; everything else is encoded. */
-Deno.test("encodePath: encodes each segment but leaves the slashes alone", () => {
+test("encodePath: encodes each segment but leaves the slashes alone", () => {
   assertEquals(encodePath("cat pics/tabby.jpeg"), "cat%20pics/tabby.jpeg");
   assertEquals(encodePath("a/b/c.txt"), "a/b/c.txt");
   assertEquals(encodePath("a+b&c=d.txt"), "a%2Bb%26c%3Dd.txt");
@@ -92,13 +93,13 @@ Deno.test("encodePath: encodes each segment but leaves the slashes alone", () =>
   assertEquals(encodePath("~keep-._.txt"), "~keep-._.txt");
 });
 
-Deno.test("basicIsoTimestamp: the only format V4 accepts", () => {
+test("basicIsoTimestamp: the only format V4 accepts", () => {
   assertEquals(basicIsoTimestamp(Date.UTC(2026, 7, 19, 12, 0, 0)), "20260819T120000Z");
   assertEquals(basicIsoTimestamp(Date.UTC(2019, 11, 1, 19, 8, 59)), "20191201T190859Z");
 });
 
 /** A longer URL signs fine and is refused when somebody uses it. */
-Deno.test("signedUrl: refuses an expiry beyond Google's seven-day maximum", async () => {
+test("signedUrl: refuses an expiry beyond Google's seven-day maximum", async () => {
   assertEquals(MAX_EXPIRY_SECONDS, 604800);
   await assertRejects(
     () => signedUrl({ ...base, expiresInSeconds: MAX_EXPIRY_SECONDS + 1 }),
@@ -110,19 +111,19 @@ Deno.test("signedUrl: refuses an expiry beyond Google's seven-day maximum", asyn
   assertEquals(new URL(edge.url).searchParams.get("X-Goog-Expires"), "604800");
 });
 
-Deno.test("signedUrl: refuses a zero or negative lifetime", async () => {
+test("signedUrl: refuses a zero or negative lifetime", async () => {
   for (const seconds of [0, -1, Number.NaN]) {
     await assertRejects(() => signedUrl({ ...base, expiresInSeconds: seconds }), Error);
   }
 });
 
-Deno.test("signedUrl: reports when the URL stops working", async () => {
+test("signedUrl: reports when the URL stops working", async () => {
   const result = await signedUrl(base);
   assertEquals(result.expiresAt, new Date(TEST_NOW + 3600_000).toISOString());
 });
 
 /** A PUT signature does not work for a GET, which is what scopes it. */
-Deno.test("signedUrl: the method is part of what is signed", async () => {
+test("signedUrl: the method is part of what is signed", async () => {
   const get = await signedUrl(base);
   const put = await signedUrl({ ...base, method: "PUT" });
   assert(
@@ -132,7 +133,7 @@ Deno.test("signedUrl: the method is part of what is signed", async () => {
 });
 
 /** No secret enters the URL builder; the signer is where the key is used. */
-Deno.test("signedUrl: the builder never receives a key", async () => {
+test("signedUrl: the builder never receives a key", async () => {
   const result = await signedUrl(base);
   assert(result.url.startsWith("https://storage.googleapis.com/example-bucket/"));
   assertEquals("privateKey" in base, false);
@@ -142,7 +143,7 @@ Deno.test("signedUrl: the builder never receives a key", async () => {
  * signBlob takes base64 and returns base64; a V4 signature travels as hex.
  * Getting this wrong produces a URL that looks right and never verifies.
  */
-Deno.test("signWithIam: posts base64 to signBlob and converts the answer to hex", async () => {
+test("signWithIam: posts base64 to signBlob and converts the answer to hex", async () => {
   const calls: Array<{ url: string; body: string }> = [];
   const fetchImpl = (url: string, init: RequestInit) => {
     calls.push({ url, body: String(init.body) });
@@ -166,7 +167,7 @@ Deno.test("signWithIam: posts base64 to signBlob and converts the answer to hex"
 });
 
 /** No Cloud Storage role grants this permission. */
-Deno.test("signWithIam: a 403 says which role is missing", async () => {
+test("signWithIam: a 403 says which role is missing", async () => {
   const fetchImpl = () =>
     Promise.resolve(
       new Response(JSON.stringify({ error: { message: "Permission denied" } }), { status: 403 }),
@@ -178,12 +179,12 @@ Deno.test("signWithIam: a 403 says which role is missing", async () => {
   );
 });
 
-Deno.test("signWithIam: a response with no signature is an error, not an empty URL", async () => {
+test("signWithIam: a response with no signature is an error, not an empty URL", async () => {
   const fetchImpl = () => Promise.resolve(new Response("{}", { status: 200 }));
   await assertRejects(() => signWithIam(fetchImpl, TEST_CLIENT_EMAIL)("x"), Error, "no signature");
 });
 
-Deno.test("base64ToHex and encodeBase64 round-trip the way signBlob expects", () => {
+test("base64ToHex and encodeBase64 round-trip the way signBlob expects", () => {
   assertEquals(base64ToHex("3q2+7w=="), "deadbeef");
   assertEquals(base64ToHex(encodeBase64("A")), "41");
   // signBlob answers with standard base64; the url-safe alphabet is tolerated.

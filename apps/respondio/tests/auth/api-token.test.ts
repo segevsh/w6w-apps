@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, { authHeaders, PROBE_PATH } from "../../auth/api-token.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const TOKEN = "respondio_unit_test_fixture_token_not_real";
 
-Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
+test("api-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.respond.io/v2/space/user",
@@ -26,7 +27,7 @@ Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
  * blocked at the CloudFront edge before it ever reaches respond.io. See the
  * module doc's table.
  */
-Deno.test("api-token: sign always emits the Bearer prefix, even for an empty credential", () => {
+test("api-token: sign always emits the Bearer prefix, even for an empty credential", () => {
   const request = { method: "GET", url: "x", headers: {} as Record<string, string> };
   const signed = apiToken.sign!({ request, credential: {} }, {} as never) as {
     headers: Record<string, string>;
@@ -34,15 +35,15 @@ Deno.test("api-token: sign always emits the Bearer prefix, even for an empty cre
   assertEquals(signed.headers.authorization, "Bearer ");
 });
 
-Deno.test("api-token: authHeaders is the single source of the wire format", () => {
+test("api-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("api-token: the probe is /space/user, the same one respond.io's own mcp-server uses", () => {
+test("api-token: the probe is /space/user, the same one respond.io's own mcp-server uses", () => {
   assertEquals(PROBE_PATH, "/space/user");
 });
 
-Deno.test("api-token: test passes when the workspace-users read answers", async () => {
+test("api-token: test passes when the workspace-users read answers", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, firstName: "A" }]) }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -52,7 +53,7 @@ Deno.test("api-token: test passes when the workspace-users read answers", async 
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("api-token: test fails with no token, without making a request", async () => {
+test("api-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
 
@@ -60,7 +61,7 @@ Deno.test("api-token: test fails with no token, without making a request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: an invalid token is reported as a rejected token, from the JSON body", async () => {
+test("api-token: an invalid token is reported as a rejected token, from the JSON body", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody(401, "AuthorizationError", "Token not found") },
   ]);
@@ -71,7 +72,7 @@ Deno.test("api-token: an invalid token is reported as a rejected token, from the
   assert(/AuthorizationError/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 403 is reported as a refusal", async () => {
+test("api-token: a 403 is reported as a refusal", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody(403, "ForbiddenError", "insufficient scope") },
   ]);
@@ -81,7 +82,7 @@ Deno.test("api-token: a 403 is reported as a refusal", async () => {
   assert(/refused/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: errorBody(500, "ServerError", "boom") }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -94,7 +95,7 @@ Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential pro
  * block, never mistaken for a respond.io auth verdict — see `lib/client.ts`
  * and this file's module doc.
  */
-Deno.test("api-token: a non-JSON response is reported as an edge block, not an auth verdict", async () => {
+test("api-token: a non-JSON response is reported as an edge block, not an auth verdict", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

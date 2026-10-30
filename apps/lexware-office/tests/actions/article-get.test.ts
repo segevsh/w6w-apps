@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/article-get.ts";
 import { gateway, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("article-get: GET /v1/articles/{id} and returns the body", async () => {
+test("article-get: GET /v1/articles/{id} and returns the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", version: 3 } }]);
   const out = await action.execute({ id: "x1" }, ctx) as { version: number };
   assertEquals(calls[0].method, "GET");
@@ -10,13 +11,13 @@ Deno.test("article-get: GET /v1/articles/{id} and returns the body", async () =>
   assertEquals(out.version, 3);
 });
 
-Deno.test("article-get: id is path-escaped so it cannot leave the segment", async () => {
+test("article-get: id is path-escaped so it cannot leave the segment", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ id: "a/b?c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/articles/a%2Fb%3Fc");
 });
 
-Deno.test("article-get: missing id throws before the network; vendor error is surfaced", async () => {
+test("article-get: missing id throws before the network; vendor error is surfaced", async () => {
   const none = mockCtx();
   await assertRejects(async () => await action.execute({ id: " " }, none.ctx), Error, "required");
   assertEquals(none.calls.length, 0);

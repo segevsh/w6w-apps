@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import departmentUpdate from "../../actions/department-update.ts";
 
-Deno.test("department-update: PATCHes /departments/<id>/ with only the fields set", async () => {
+test("department-update: PATCHes /departments/<id>/ with only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "d1", name: "Platform" } }]);
   await departmentUpdate.execute({ id: "d1", name: "Platform" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("department-update: PATCHes /departments/<id>/ with only the fields se
   assertEquals(JSON.parse(calls[0].body!), { name: "Platform" });
 });
 
-Deno.test("department-update: needs an id and at least one field, before any request", async () => {
+test("department-update: needs an id and at least one field, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve().then(() => departmentUpdate.execute({ name: "x" }, ctx)),
@@ -26,7 +27,7 @@ Deno.test("department-update: needs an id and at least one field, before any req
   assertEquals(calls.length, 0);
 });
 
-Deno.test("department-update: no member is required on a PATCH, and it is idempotent", () => {
+test("department-update: no member is required on a PATCH, and it is idempotent", () => {
   assertEquals(departmentUpdate.idempotent, true);
   assertEquals(
     departmentUpdate.params!.filter((p) => p.key !== "id").some((p) => p.required),

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import {
   FIELD_TYPES,
   summarizeApp,
@@ -57,7 +58,7 @@ const APP = {
   ],
 };
 
-Deno.test("summarizeApp: drops the app token and the push signature", () => {
+test("summarizeApp: drops the app token and the push signature", () => {
   const out = summarizeApp(APP);
   assertEquals(out.token, undefined, "the app token survived — it mints access tokens");
   assertEquals(out.push, undefined);
@@ -65,7 +66,7 @@ Deno.test("summarizeApp: drops the app token and the push signature", () => {
   assertEquals(out.config, { name: "Leads", item_name: "Lead" });
 });
 
-Deno.test("summarizeAppFields: projects id, external id, type, label and requiredness", () => {
+test("summarizeAppFields: projects id, external id, type, label and requiredness", () => {
   const fields = summarizeAppFields(APP);
   assertEquals(fields.length, 3);
   assertEquals(fields[0].fieldId, 1);
@@ -82,7 +83,7 @@ Deno.test("summarizeAppFields: projects id, external id, type, label and require
  * The single most common Podio write failure: sending a category's *text* where
  * Podio wants its option *id*. Surfacing the option list is what stops it.
  */
-Deno.test("summarizeAppFields: surfaces category option ids, which is what a value must be", () => {
+test("summarizeAppFields: surfaces category option ids, which is what a value must be", () => {
   const status = summarizeAppFields(APP).find((f) => f.externalId === "status")!;
   assertEquals(status.options, [
     { id: 11, text: "Open", status: "active", color: "DCEBD8" },
@@ -95,20 +96,20 @@ Deno.test("summarizeAppFields: surfaces category option ids, which is what a val
   assert(status.valueShape.includes("NOT the option text"));
 });
 
-Deno.test("summarizeAppFields: reports an undocumented type's shape as unknown, not as a guess", () => {
+test("summarizeAppFields: reports an undocumented type's shape as unknown, not as a guess", () => {
   const score = summarizeAppFields(APP).find((f) => f.externalId === "score")!;
   assertEquals(score.valueShape, UNKNOWN_VALUE_SHAPE);
   assertEquals(score.options, undefined);
   assertEquals(score.settings, { script: "1+1" });
 });
 
-Deno.test("summarizeAppFields: an app with no fields array yields an empty list, not a throw", () => {
+test("summarizeAppFields: an app with no fields array yields an empty list, not a throw", () => {
   assertEquals(summarizeAppFields({}), []);
   assertEquals(summarizeAppFields(null), []);
   assertEquals(summarizeAppFields({ fields: "nope" }), []);
 });
 
-Deno.test("FIELD_TYPES holds exactly the eighteen types Podio's Applications area lists", () => {
+test("FIELD_TYPES holds exactly the eighteen types Podio's Applications area lists", () => {
   assertEquals(FIELD_TYPES.length, 18);
   assertEquals([...FIELD_TYPES].sort(), [
     "app",
@@ -138,7 +139,7 @@ Deno.test("FIELD_TYPES holds exactly the eighteen types Podio's Applications are
  * `image` and `tel`. VALUE_SHAPES is keyed by what the API returns, and says
  * where the other name lives.
  */
-Deno.test("VALUE_SHAPES resolves the three field-type / value-name renamings", () => {
+test("VALUE_SHAPES resolves the three field-type / value-name renamings", () => {
   assert(VALUE_SHAPES.contact!.includes("member"));
   assert(VALUE_SHAPES.image!.includes("video"));
   assert(VALUE_SHAPES.tel!.includes("phone"));
@@ -148,14 +149,14 @@ Deno.test("VALUE_SHAPES resolves the three field-type / value-name renamings", (
   assertEquals((VALUE_SHAPES as Record<string, string | undefined>).phone, undefined);
 });
 
-Deno.test("VALUE_SHAPES covers every field type that carries a documented value", () => {
+test("VALUE_SHAPES covers every field type that carries a documented value", () => {
   // The three absences are deliberate: `separator` holds no value, and
   // `calculation` and `media` are not in the vendor's sub_id list.
   const missing = FIELD_TYPES.filter((t) => !VALUE_SHAPES[t]);
   assertEquals([...missing].sort(), ["calculation", "media", "separator"]);
 });
 
-Deno.test("VALUE_SHAPES names the multi-sub_id shapes rather than pretending they are scalars", () => {
+test("VALUE_SHAPES names the multi-sub_id shapes rather than pretending they are scalars", () => {
   assert(VALUE_SHAPES.date!.includes("start_date"));
   assert(VALUE_SHAPES.date!.includes("end_time"));
   assert(VALUE_SHAPES.money!.includes("currency"));

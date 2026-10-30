@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   apiBase,
   baseFromConnection,
@@ -14,21 +15,21 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("normalizeSubdomain: accepts a label, a host or a URL", () => {
+test("normalizeSubdomain: accepts a label, a host or a URL", () => {
   assertEquals(normalizeSubdomain("Acme"), "acme");
   assertEquals(normalizeSubdomain("acme.zulipchat.com"), "acme");
   assertEquals(normalizeSubdomain("https://acme.zulipchat.com/#narrow"), "acme");
   assertEquals(normalizeSubdomain(" my-org "), "my-org");
 });
 
-Deno.test("normalizeSubdomain: rejects anything that is not one DNS label", () => {
+test("normalizeSubdomain: rejects anything that is not one DNS label", () => {
   for (const bad of ["", "a.b", "evil.com/x", "a b", "-a", "a-", "acme:443", "x@y", undefined, 4]) {
     assertEquals(normalizeSubdomain(bad), undefined, String(bad));
   }
   assertEquals(normalizeSubdomain("evil.com"), undefined);
 });
 
-Deno.test("apiBase / baseFromConnection build the org URL, or refuse", () => {
+test("apiBase / baseFromConnection build the org URL, or refuse", () => {
   assertEquals(apiBase("acme"), "https://acme.zulipchat.com/api/v1");
   assertEquals(
     baseFromConnection({ display: { subdomain: "acme" } } as never),
@@ -38,7 +39,7 @@ Deno.test("apiBase / baseFromConnection build the org URL, or refuse", () => {
   assertThrows(() => baseFromConnection({ display: { subdomain: "a b" } } as never));
 });
 
-Deno.test("list helpers: strList, idOrEmailList, intList", () => {
+test("list helpers: strList, idOrEmailList, intList", () => {
   assertEquals(strList(" a, ,b "), ["a", "b"]);
   assertEquals(strList([1, "x"]), ["1", "x"]);
   assertEquals(strList(""), undefined);
@@ -49,7 +50,7 @@ Deno.test("list helpers: strList, idOrEmailList, intList", () => {
   assertThrows(() => intList("3,z", "ids"), Error, "ids");
 });
 
-Deno.test("encodeParams: scalars as-is, structures JSON-encoded, unset skipped, false kept", () => {
+test("encodeParams: scalars as-is, structures JSON-encoded, unset skipped, false kept", () => {
   const p = encodeParams({
     a: "x",
     b: 1,
@@ -70,21 +71,21 @@ Deno.test("encodeParams: scalars as-is, structures JSON-encoded, unset skipped, 
   });
 });
 
-Deno.test("jsonValue: parses text, passes through junk, drops blank", () => {
+test("jsonValue: parses text, passes through junk, drops blank", () => {
   assertEquals(jsonValue('[{"a":1}]'), [{ a: 1 }]);
   assertEquals(jsonValue("nope"), "nope");
   assertEquals(jsonValue("  "), undefined);
   assertEquals(jsonValue([1]), [1]);
 });
 
-Deno.test("payload: strips the result/msg envelope only", () => {
+test("payload: strips the result/msg envelope only", () => {
   assertEquals(
     payload({ result: "success", msg: "", ignored_parameters_unsupported: ["x"], id: 1 }),
     { id: 1 },
   );
 });
 
-Deno.test("failure: includes status, msg, code and the rate-limit retry hint", () => {
+test("failure: includes status, msg, code and the rate-limit retry hint", () => {
   assertEquals(
     failure("GET", "/x", { status: 429 }, {
       msg: "slow",
@@ -99,7 +100,7 @@ Deno.test("failure: includes status, msg, code and the rate-limit retry hint", (
   );
 });
 
-Deno.test("ZulipClient: a 200 body with result=error is still a failure", async () => {
+test("ZulipClient: a 200 body with result=error is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { result: "error", msg: "nope", code: "BAD_REQUEST" } }]);
   await assertRejects(
     async () => await new ZulipClient(ctx).request("GET", "/x"),
@@ -108,7 +109,7 @@ Deno.test("ZulipClient: a 200 body with result=error is still a failure", async 
   );
 });
 
-Deno.test("ZulipClient: a form body sets the urlencoded content type; a GET sets none", async () => {
+test("ZulipClient: a form body sets the urlencoded content type; a GET sets none", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }, { body: {} }]);
   const c = new ZulipClient(ctx);
   await c.request("POST", "/p", { form: { a: 1 } });

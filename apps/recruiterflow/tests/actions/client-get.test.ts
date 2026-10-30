@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clientGet from "../../actions/client-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client-get: GET /client/get with the mapped wire fields", async () => {
+test("client-get: GET /client/get with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { RESULT: "success", data: { id: 1 } } }]);
   const out = await clientGet.execute({ "id": 9 } as never, ctx) as Record<string, unknown>;
 
@@ -13,7 +14,7 @@ Deno.test("client-get: GET /client/get with the mapped wire fields", async () =>
   assertEquals((out.data as { id: number }).id, 1);
 });
 
-Deno.test("client-get: a vendor error is thrown with its message", async () => {
+test("client-get: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

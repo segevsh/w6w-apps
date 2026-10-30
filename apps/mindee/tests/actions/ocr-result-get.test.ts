@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ocrResultGet from "../../actions/ocr-result-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ocr-result-get: fetches the ocr results route, pages with words and content", async () => {
+test("ocr-result-get: fetches the ocr results route, pages with words and content", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

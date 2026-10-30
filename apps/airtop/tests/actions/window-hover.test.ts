@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowHover from "../../actions/window-hover.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-hover: posts elementDescription to the hover path", async () => {
+test("window-hover: posts elementDescription to the hover path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: aiEnvelope("Hovered.") }]);
   const out = await windowHover.execute(
     { sessionId: "s1", windowId: "w1", elementDescription: "The menu icon" },

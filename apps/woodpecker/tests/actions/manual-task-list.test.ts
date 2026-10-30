@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import manualTaskList from "../../actions/manual-task-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("manual-task-list: passes the limit", async () => {
+test("manual-task-list: passes the limit", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ "prospect": { "id": 1, "email": "erlich@bachman.com" } }],

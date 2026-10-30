@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   buildListQuery,
   compact,
@@ -14,7 +15,7 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty string but keeps false and zero", () => {
+test("compact: drops undefined, null and empty string but keeps false and zero", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
@@ -25,24 +26,24 @@ Deno.test("compact: drops undefined, null and empty string but keeps false and z
  * The vendor's own worked example is `created_at=gte|2024-01-01T00:00:00Z`. It
  * is not `created_at[gte]=`, not `created_at_after=`, and not a bare timestamp.
  */
-Deno.test("dateFilter: renders the pipe-delimited operator form", () => {
+test("dateFilter: renders the pipe-delimited operator form", () => {
   assertEquals(dateFilter("gte", "2024-01-01T00:00:00Z"), "gte|2024-01-01T00:00:00Z");
 });
 
-Deno.test("dateFilter: a half-filled pair is dropped rather than guessed at", () => {
+test("dateFilter: a half-filled pair is dropped rather than guessed at", () => {
   assertEquals(dateFilter("gte", ""), undefined);
   assertEquals(dateFilter("", "2024-01-01T00:00:00Z"), undefined);
   assertEquals(dateFilter(undefined, undefined), undefined);
 });
 
-Deno.test("idList: joins to the explode:false comma form and tolerates whitespace", () => {
+test("idList: joins to the explode:false comma form and tolerates whitespace", () => {
   assertEquals(idList("1, 2 ,3", "ids"), "1,2,3");
   assertEquals(idList([4, 5], "ids"), "4,5");
   assertEquals(idList("", "ids"), undefined);
 });
 
 /** Greenhouse documents a 50-item ceiling; failing locally saves a 422 round trip. */
-Deno.test("idList: refuses more than the documented 50 ids, naming the field", () => {
+test("idList: refuses more than the documented 50 ids, naming the field", () => {
   const tooMany = Array.from({ length: 51 }, (_, i) => i + 1).join(",");
   const err = assertThrows(() => idList(tooMany, "candidateIds"), Error);
   assert(err.message.includes("candidateIds"), err.message);
@@ -55,7 +56,7 @@ Deno.test("idList: refuses more than the documented 50 ids, naming the field", (
  * The whole point of `buildListQuery`. Greenhouse answers 422 for a cursor sent
  * with anything else, and the message has to name what to clear.
  */
-Deno.test("buildListQuery: a cursor travels alone, and everything else is rejected by name", () => {
+test("buildListQuery: a cursor travels alone, and everything else is rejected by name", () => {
   assertEquals(buildListQuery("abc", {}), { cursor: "abc" });
 
   const err = assertThrows(
@@ -67,12 +68,12 @@ Deno.test("buildListQuery: a cursor travels alone, and everything else is reject
   assert(err.message.includes("422"), err.message);
 });
 
-Deno.test("buildListQuery: an empty cursor is not a cursor", () => {
+test("buildListQuery: an empty cursor is not a cursor", () => {
   assertEquals(buildListQuery("   ", { per_page: 50 }), { per_page: 50 });
   assertEquals(buildListQuery(undefined, { per_page: 50 }), { per_page: 50 });
 });
 
-Deno.test("parseNextLink: reads rel=next, ignores other relations, tolerates absence", () => {
+test("parseNextLink: reads rel=next, ignores other relations, tolerates absence", () => {
   assertEquals(
     parseNextLink('<https://harvest.greenhouse.io/v3/jobs?cursor=abc>; rel="next"'),
     "https://harvest.greenhouse.io/v3/jobs?cursor=abc",
@@ -85,7 +86,7 @@ Deno.test("parseNextLink: reads rel=next, ignores other relations, tolerates abs
   assertEquals(parseNextLink(null), undefined);
 });
 
-Deno.test("cursorFromUrl: lifts the opaque cursor out, and survives a malformed URL", () => {
+test("cursorFromUrl: lifts the opaque cursor out, and survives a malformed URL", () => {
   assertEquals(
     cursorFromUrl("https://harvest.greenhouse.io/v3/jobs?cursor=eyJ4IjoxfQ"),
     "eyJ4IjoxfQ",
@@ -95,7 +96,7 @@ Deno.test("cursorFromUrl: lifts the opaque cursor out, and survives a malformed 
   assertEquals(cursorFromUrl(undefined), undefined);
 });
 
-Deno.test("readRateLimit: reads the documented triple and ignores unparseable values", () => {
+test("readRateLimit: reads the documented triple and ignores unparseable values", () => {
   const headers = new Headers({
     "x-ratelimit-limit": "75",
     "x-ratelimit-remaining": "0",
@@ -111,18 +112,18 @@ Deno.test("readRateLimit: reads the documented triple and ignores unparseable va
   assertEquals(readRateLimit(new Headers({ "x-ratelimit-limit": "lots" })).limit, undefined);
 });
 
-Deno.test("encodeId: a slash pasted into an id cannot escape its path segment", () => {
+test("encodeId: a slash pasted into an id cannot escape its path segment", () => {
   assertEquals(encodeId("1/../users"), "1%2F..%2Fusers");
   assertEquals(encodeId(42), "42");
 });
 
-Deno.test("truncate: leaves short text alone and marks what it cut", () => {
+test("truncate: leaves short text alone and marks what it cut", () => {
   assertEquals(truncate("short", 100), "short");
   assert(truncate("x".repeat(50), 10).includes("truncated"));
 });
 
 /** Both `errors` shapes appear in Greenhouse's own examples on one doc page. */
-Deno.test("formatHarvestError: flattens the string-array errors shape", () => {
+test("formatHarvestError: flattens the string-array errors shape", () => {
   const message = formatHarvestError(
     422,
     "GET",
@@ -135,7 +136,7 @@ Deno.test("formatHarvestError: flattens the string-array errors shape", () => {
   assert(message.includes("do not include other query params"), message);
 });
 
-Deno.test("formatHarvestError: flattens the object-array errors shape with its field name", () => {
+test("formatHarvestError: flattens the object-array errors shape with its field name", () => {
   const message = formatHarvestError(
     422,
     "GET",
@@ -152,7 +153,7 @@ Deno.test("formatHarvestError: flattens the object-array errors shape with its f
  * credential is fine and the grant is not, and every v3 GET additionally needs a
  * Site Admin subject.
  */
-Deno.test("formatHarvestError: a 403 explains that the credential is not the problem", () => {
+test("formatHarvestError: a 403 explains that the credential is not the problem", () => {
   const message = formatHarvestError(
     403,
     "GET",
@@ -165,18 +166,18 @@ Deno.test("formatHarvestError: a 403 explains that the credential is not the pro
   assert(message.includes("Site Admin"), message);
 });
 
-Deno.test("formatHarvestError: a 429 carries the Retry-After value, which the body never does", () => {
+test("formatHarvestError: a 429 carries the Retry-After value, which the body never does", () => {
   const message = formatHarvestError(429, "GET", "/v3/jobs", "{}", 12);
   assert(message.includes("retry after 12 seconds"), message);
 });
 
-Deno.test("formatHarvestError: a non-JSON body still produces a usable line", () => {
+test("formatHarvestError: a non-JSON body still produces a usable line", () => {
   const message = formatHarvestError(502, "GET", "/v3/jobs", "<html>bad gateway</html>");
   assert(message.includes("502"), message);
   assert(message.includes("bad gateway"), message);
 });
 
-Deno.test("HarvestClient.list: returns the bare array plus the header-borne cursor", async () => {
+test("HarvestClient.list: returns the bare array plus the header-borne cursor", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 2 }, { id: 1 }], "CURSOR2")]);
   const page = await new HarvestClient(ctx).list("/candidates", { query: { per_page: 2 } });
 
@@ -189,7 +190,7 @@ Deno.test("HarvestClient.list: returns the bare array plus the header-borne curs
   assertEquals(page.rateLimit.limit, 75);
 });
 
-Deno.test("HarvestClient.list: no Link header means the last page", async () => {
+test("HarvestClient.list: no Link header means the last page", async () => {
   const { ctx } = mockCtx([listPage([{ id: 1 }])]);
   const page = await new HarvestClient(ctx).list("/candidates");
   assertEquals(page.nextCursor, undefined);
@@ -201,14 +202,14 @@ Deno.test("HarvestClient.list: no Link header means the last page", async () => 
  * the `sign` hook. A client that stamped one would be a credential leak into the
  * action sandbox.
  */
-Deno.test("HarvestClient: an action request carries no credential of any kind", async () => {
+test("HarvestClient: an action request carries no credential of any kind", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await new HarvestClient(ctx).list("/candidates");
   assertEquals(calls[0].headers.authorization, undefined);
   assertEquals(Object.keys(calls[0].headers).sort(), ["accept"]);
 });
 
-Deno.test("HarvestClient.status: a 204 lifecycle call reports its status and parses no body", async () => {
+test("HarvestClient.status: a 204 lifecycle call reports its status and parses no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const status = await new HarvestClient(ctx).status("/applications/1/hire", {
     method: "POST",
@@ -219,7 +220,7 @@ Deno.test("HarvestClient.status: a 204 lifecycle call reports its status and par
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("HarvestClient: a failure throws with the vendor's own message", async () => {
+test("HarvestClient: a failure throws with the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("Resource not found") }]);
   let caught: Error | undefined;
   try {

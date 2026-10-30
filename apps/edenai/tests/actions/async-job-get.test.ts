@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import get from "../../actions/async-job-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("async-job-get: a successful job is done with its output", async () => {
+test("async-job-get: a successful job is done with its output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -25,7 +26,7 @@ Deno.test("async-job-get: a successful job is done with its output", async () =>
   assertEquals(out.cost, 0.5);
 });
 
-Deno.test("async-job-get: a processing job is not done and carries no output", async () => {
+test("async-job-get: a processing job is not done and carries no output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "processing", public_id: "job-1", output: null },
   }]);
@@ -35,7 +36,7 @@ Deno.test("async-job-get: a processing job is not done and carries no output", a
   assertEquals(out.output, undefined);
 });
 
-Deno.test("async-job-get: a failed job is returned as failed, not thrown", async () => {
+test("async-job-get: a failed job is returned as failed, not thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", error: { message: "bad file" }, public_id: "job-1" },
   }]);

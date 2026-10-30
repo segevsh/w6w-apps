@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: fields are siteId, apiKey (secret) and region (select, defaults us)", () => {
+test("basic: fields are siteId, apiKey (secret) and region (select, defaults us)", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -15,7 +16,7 @@ Deno.test("basic: fields are siteId, apiKey (secret) and region (select, default
   assertEquals(region?.default, "us");
 });
 
-Deno.test("basic: sign encodes siteId:apiKey as a Basic header", async () => {
+test("basic: sign encodes siteId:apiKey as a Basic header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://track.customer.io/api/v1/customers/u1",
@@ -29,7 +30,7 @@ Deno.test("basic: sign encodes siteId:apiKey as a Basic header", async () => {
   assertEquals(out.headers["authorization"], `Basic ${btoa("site_123:key_abc")}`);
 });
 
-Deno.test("basic: test rejects a credential missing siteId or apiKey, without a request", async () => {
+test("basic: test rejects a credential missing siteId or apiKey, without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -38,7 +39,7 @@ Deno.test("basic: test rejects a credential missing siteId or apiKey, without a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test PUTs a minimal identify call to the US host by default", async () => {
+test("basic: test PUTs a minimal identify call to the US host by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   assertEquals(
     await auth.test({ credential: { siteId: "site_123", apiKey: "key_abc" } }, ctx),
@@ -51,13 +52,13 @@ Deno.test("basic: test PUTs a minimal identify call to the US host by default", 
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("basic: test PUTs to the EU host when region is eu", async () => {
+test("basic: test PUTs to the EU host when region is eu", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await auth.test({ credential: { siteId: "s", apiKey: "k", region: "eu" } }, ctx);
   assertEquals(calls[0].url, "https://track-eu.customer.io/api/v1/customers/w6w-connection-test");
 });
 
-Deno.test("basic: test surfaces a non-2xx as a failed check", async () => {
+test("basic: test surfaces a non-2xx as a failed check", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(await auth.test({ credential: { siteId: "s", apiKey: "bad" } }, ctx), {
     ok: false,
@@ -65,7 +66,7 @@ Deno.test("basic: test surfaces a non-2xx as a failed check", async () => {
   });
 });
 
-Deno.test("basic: afterConnect echoes region, normalizing anything but eu to us", async () => {
+test("basic: afterConnect echoes region, normalizing anything but eu to us", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.afterConnect!({ credential: { region: "eu" } }, ctx), { region: "eu" });
   assertEquals(await auth.afterConnect!({ credential: { region: "us" } }, ctx), { region: "us" });

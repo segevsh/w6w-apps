@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/portal-link-create.ts";
 
-Deno.test("portal-link-create: posts the organization and intent", async () => {
+test("portal-link-create: posts the organization and intent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { link: "https://setup.workos.com/x" } }]);
   const result = await action.execute!(
     { organizationId: "org_1", intent: "dsync", returnUrl: "https://app.example.com/done" },
@@ -21,7 +22,7 @@ Deno.test("portal-link-create: posts the organization and intent", async () => {
  * Anyone holding the link can configure that organization's authentication, and
  * it expires in minutes — so it is returned and never written to a log.
  */
-Deno.test("portal-link-create: logs the organization and intent, never the link", async () => {
+test("portal-link-create: logs the organization and intent, never the link", async () => {
   const { ctx, logs } = mockCtx([{
     status: 201,
     body: { link: "https://setup.workos.com/secret" },
@@ -32,14 +33,14 @@ Deno.test("portal-link-create: logs the organization and intent, never the link"
 });
 
 /** SSO and Directory Sync are separate setups, so they are separate pages. */
-Deno.test("portal-link-create: offers both of the intents that matter", () => {
+test("portal-link-create: offers both of the intents that matter", () => {
   const p = (action.params as Array<{ key: string; options?: Array<{ value: string }> }>)
     .find((p) => p.key === "intent")!;
   const values = p.options!.map((o) => o.value);
   assert(values.includes("sso") && values.includes("dsync"), values.join(","));
 });
 
-Deno.test("portal-link-create: needs an organization", async () => {
+test("portal-link-create: needs an organization", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "organizationId");
   assertEquals(calls.length, 0);

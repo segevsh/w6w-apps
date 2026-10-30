@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-query.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
 /** The vector API is camelCase; the records API on the same host is not. */
-Deno.test("record-query: sends camelCase topK and include flags", async () => {
+test("record-query: sends camelCase topK and include flags", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: { matches: [] } }]);
   await action.execute!({ indexName: "idx", vector: "[0.1,0.2]", topK: 5 }, ctx);
   const sent = JSON.parse(calls[1].body!);
@@ -17,7 +18,7 @@ Deno.test("record-query: sends camelCase topK and include flags", async () => {
   assertEquals(new URL(calls[1].url).pathname, "/query");
 });
 
-Deno.test("record-query: querying by record id needs no vector", async () => {
+test("record-query: querying by record id needs no vector", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: { matches: [] } }]);
   await action.execute!({ indexName: "idx", id: "doc-1" }, ctx);
   const sent = JSON.parse(calls[1].body!);
@@ -25,7 +26,7 @@ Deno.test("record-query: querying by record id needs no vector", async () => {
   assertEquals("vector" in sent, false);
 });
 
-Deno.test("record-query: a vector AND an id is refused", async () => {
+test("record-query: a vector AND an id is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", vector: "[0.1]", id: "x" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("record-query: a vector AND an id is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-query: neither one is refused too", async () => {
+test("record-query: neither one is refused too", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx" }, ctx),
@@ -44,7 +45,7 @@ Deno.test("record-query: neither one is refused too", async () => {
   );
 });
 
-Deno.test("record-query: topK beyond Pinecone's ceiling is refused locally", async () => {
+test("record-query: topK beyond Pinecone's ceiling is refused locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", vector: "[0.1]", topK: 10001 }, ctx),
@@ -54,7 +55,7 @@ Deno.test("record-query: topK beyond Pinecone's ceiling is refused locally", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-query: the description warns about model mismatch", () => {
+test("record-query: the description warns about model mismatch", () => {
   assert(/SAME model/i.test(action.description!), action.description);
   assertEquals(action.type, "search");
 });

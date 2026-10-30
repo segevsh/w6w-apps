@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-create.ts";
 
@@ -9,7 +10,7 @@ const created = {
 };
 const content = '{"component":"article","title":"New"}';
 
-Deno.test("story-create: posts the story and leaves it unpublished by default", async () => {
+test("story-create: posts the story and leaves it unpublished by default", async () => {
   const { ctx, calls } = mockCtx([created], M);
   const result = await action.execute({ name: "New", slug: "new-post", content }, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("story-create: posts the story and leaves it unpublished by default", 
   assertEquals(result.contentType, "article");
 });
 
-Deno.test("story-create: publish and parent folder reach the body", async () => {
+test("story-create: publish and parent folder reach the body", async () => {
   const { ctx, calls } = mockCtx([created], M);
   await action.execute(
     { name: "New", slug: "new-post", content, publish: true, parentId: "5" },
@@ -37,7 +38,7 @@ Deno.test("story-create: publish and parent folder reach the body", async () => 
  * The rule Storyblok's own error does not name: a nested component without a
  * `_uid` can import cleanly and render as an empty block.
  */
-Deno.test("story-create: validates the content shape before sending", async () => {
+test("story-create: validates the content shape before sending", async () => {
   const { ctx, calls } = mockCtx([], M);
   const err = await assertRejects(
     async () =>
@@ -53,7 +54,7 @@ Deno.test("story-create: validates the content shape before sending", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("story-create: a slug is required, and says why", async () => {
+test("story-create: a slug is required, and says why", async () => {
   const { ctx } = mockCtx([], M);
   const err = await assertRejects(
     async () => await action.execute({ name: "New", content }, ctx),
@@ -62,12 +63,12 @@ Deno.test("story-create: a slug is required, and says why", async () => {
   assert(/does not derive one from the name/.test(err.message), err.message);
 });
 
-Deno.test("story-create: is not idempotent", () => {
+test("story-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
 /** Ids and paths in the log, not the content. */
-Deno.test("story-create: never logs the content", async () => {
+test("story-create: never logs the content", async () => {
   const { ctx, logs } = mockCtx([created], M);
   await action.execute({
     name: "New",

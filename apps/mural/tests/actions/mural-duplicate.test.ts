@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import muralDuplicate from "../../actions/mural-duplicate.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "muralId": "ws12345.1600", "roomId": 77, "title": "Copy" };
 
-Deno.test("mural-duplicate: POST /murals/{muralId}/duplicate", async () => {
+test("mural-duplicate: POST /murals/{muralId}/duplicate", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -20,7 +21,7 @@ Deno.test("mural-duplicate: POST /murals/{muralId}/duplicate", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("mural-duplicate: puts no credential on the request (sign owns that)", async () => {
+test("mural-duplicate: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -29,7 +30,7 @@ Deno.test("mural-duplicate: puts no credential on the request (sign owns that)",
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("mural-duplicate: a vendor error surfaces its own code and message", async () => {
+test("mural-duplicate: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -40,7 +41,7 @@ Deno.test("mural-duplicate: a vendor error surfaces its own code and message", a
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("mural-duplicate: an empty muralId is refused before any request", async () => {
+test("mural-duplicate: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await muralDuplicate.execute({ ...INPUT, muralId: "  " as never }, ctx)

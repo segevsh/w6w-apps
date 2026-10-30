@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userTimecardList from "../../actions/user-timecard-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-timecard-list: GET /users/{userId}/timecards with the documented query and body", async () => {
+test("user-timecard-list: GET /users/{userId}/timecards with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await userTimecardList.execute({ "userId": 89, "from": "2020-10-01" }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("user-timecard-list: GET /users/{userId}/timecards with the documented
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("user-timecard-list: an Everhour error surfaces its message and status", async () => {
+test("user-timecard-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(userTimecardList.execute({ "userId": 89, "from": "2020-10-01" }, ctx)),
@@ -30,6 +31,6 @@ Deno.test("user-timecard-list: an Everhour error surfaces its message and status
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("user-timecard-list: declares search", () => {
+test("user-timecard-list: declares search", () => {
   assertEquals(userTimecardList.type, "search");
 });

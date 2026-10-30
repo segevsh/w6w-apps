@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, {
   basicHeader,
   IGNORED_PASSWORD,
@@ -16,7 +17,7 @@ import { API_PATH, errorBody, mockCtx, pathOf } from "../_helpers.ts";
  * so the encoded payload is `${key}:x`, computed here independently of the
  * implementation rather than by calling the same helper twice.
  */
-Deno.test("api-key: the Basic payload is base64 of key + ':' + the ignored password", () => {
+test("api-key: the Basic payload is base64 of key + ':' + the ignored password", () => {
   const key = "dklkmwlmkdy7qwd98y98y98y8d68d9";
   const expected = `Basic ${btoa(`${key}:x`)}`;
   assertEquals(basicHeader(key), expected);
@@ -25,7 +26,7 @@ Deno.test("api-key: the Basic payload is base64 of key + ':' + the ignored passw
   assertEquals(atob(basicHeader(key).slice("Basic ".length)), `${key}:x`);
 });
 
-Deno.test("api-key: sign stamps the header on the outbound request and returns it", () => {
+test("api-key: sign stamps the header on the outbound request and returns it", () => {
   const request = {
     method: "GET",
     url: "https://api.createsend.com/api/v3.3/clients.json",
@@ -39,7 +40,7 @@ Deno.test("api-key: sign stamps the header on the outbound request and returns i
 });
 
 /** `sign` is network-less: it must not reach for ctx.fetch. */
-Deno.test("api-key: sign makes no request", () => {
+test("api-key: sign makes no request", () => {
   const { ctx, calls } = mockCtx([]);
   apiKey.sign!(
     {
@@ -53,7 +54,7 @@ Deno.test("api-key: sign makes no request", () => {
 
 // --- the probe --------------------------------------------------------------
 
-Deno.test("api-key: test probes /systemdate.json, not the client-details endpoint", async () => {
+test("api-key: test probes /systemdate.json, not the client-details endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { SystemDate: "2026-08-11 06:18:33" } }]);
   const result = await apiKey.test({ credential: { apiKey: "k" } }, ctx);
   assertEquals(result, { ok: true });
@@ -66,13 +67,13 @@ Deno.test("api-key: test probes /systemdate.json, not the client-details endpoin
  * returns a live client key. Pinned by path so a future "shorter probe" swap is
  * deliberate rather than accidental.
  */
-Deno.test("api-key: the probe path is not a client-details read", () => {
+test("api-key: the probe path is not a client-details read", () => {
   assertEquals(PROBE_PATH, "/systemdate.json");
   assert(!PROBE_PATH.includes("/clients/"), WHY_NOT_CLIENT_DETAILS);
   assert(!PROBE_PATH.includes("billingdetails"), "billingdetails is 403 for a non-agency customer");
 });
 
-Deno.test("api-key: a missing credential fails without a request", async () => {
+test("api-key: a missing credential fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -86,7 +87,7 @@ Deno.test("api-key: a missing credential fails without a request", async () => {
  * request" — measured byte-identical on 2026-08-11 — so the message has to name
  * that ambiguity rather than assert one cause.
  */
-Deno.test("api-key: code 100 is reported without asserting which of its two causes", async () => {
+test("api-key: code 100 is reported without asserting which of its two causes", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody(100, "Invalid API Key") }]);
   const result = await apiKey.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
@@ -101,7 +102,7 @@ Deno.test("api-key: code 100 is reported without asserting which of its two caus
  * The classification that matters most: a 401 is NOT automatically a bad
  * credential. Code 102 means the credential is fine and the client id is wrong.
  */
-Deno.test("api-key: a 401 code 102 is not reported as a rejected key", async () => {
+test("api-key: a 401 code 102 is not reported as a rejected key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody(102, "Invalid ClientID") }]);
   const result = await apiKey.test({ credential: { apiKey: "k" } }, ctx);
   assertEquals(result.ok, false);
@@ -113,7 +114,7 @@ Deno.test("api-key: a 401 code 102 is not reported as a rejected key", async () 
 });
 
 /** A 403 code 403 means the credential was accepted and the endpoint refused. */
-Deno.test("api-key: code 403 says the credential itself was accepted", async () => {
+test("api-key: code 403 says the credential itself was accepted", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody(403, "Not allowed for a Non-agency Customer.") },
   ]);
@@ -123,7 +124,7 @@ Deno.test("api-key: code 403 says the credential itself was accepted", async () 
 });
 
 /** A 500 with an HTML body must not be classified as an auth failure. */
-Deno.test("api-key: a non-JSON error falls back to the status without inventing a code", async () => {
+test("api-key: a non-JSON error falls back to the status without inventing a code", async () => {
   const { ctx } = mockCtx([{
     status: 502,
     body: "<html>bad gateway</html>",
@@ -143,7 +144,7 @@ Deno.test("api-key: a non-JSON error falls back to the status without inventing 
  * be a credential — asserted here by feeding it a response that DOES contain
  * one and checking it does not reach the result.
  */
-Deno.test("api-key: nothing from the probe response reaches the test result", async () => {
+test("api-key: nothing from the probe response reaches the test result", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { Code: 100, Message: "Invalid API Key", ApiKey: "639d8cc27198202f5fe6037a8b17a29a" },
@@ -156,7 +157,7 @@ Deno.test("api-key: nothing from the probe response reaches the test result", as
 
 // --- afterConnect -----------------------------------------------------------
 
-Deno.test("api-key: afterConnect labels a single-client connection by name", async () => {
+test("api-key: afterConnect labels a single-client connection by name", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ ClientID: "4a397ccaaa55eb4e6aa1221e1e2d7122", Name: "Client One" }],
   }]);
@@ -169,7 +170,7 @@ Deno.test("api-key: afterConnect labels a single-client connection by name", asy
   assertEquals(meta.clientCount, 1);
 });
 
-Deno.test("api-key: afterConnect counts an agency account rather than picking one client", async () => {
+test("api-key: afterConnect counts an agency account rather than picking one client", async () => {
   const { ctx } = mockCtx([{
     body: [
       { ClientID: "c1", Name: "Client One" },
@@ -185,13 +186,13 @@ Deno.test("api-key: afterConnect counts an agency account rather than picking on
 });
 
 /** A client-scoped key may be refused /clients.json; that must not fail a good connection. */
-Deno.test("api-key: afterConnect is silent when the account list is refused", async () => {
+test("api-key: afterConnect is silent when the account list is refused", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Not allowed") }]);
   const meta = await apiKey.afterConnect!({ credential: { apiKey: "k" } } as never, ctx);
   assertEquals(meta, {});
 });
 
-Deno.test("api-key: afterConnect is silent when the request throws outright", async () => {
+test("api-key: afterConnect is silent when the request throws outright", async () => {
   const { ctx } = mockCtx([{ throws: "connection reset" }]);
   const meta = await apiKey.afterConnect!({ credential: { apiKey: "k" } } as never, ctx);
   assertEquals(meta, {});
@@ -199,7 +200,7 @@ Deno.test("api-key: afterConnect is silent when the request throws outright", as
 
 // --- declaration ------------------------------------------------------------
 
-Deno.test("api-key: declares basic auth with exactly one secret field", () => {
+test("api-key: declares basic auth with exactly one secret field", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "basic");
   assertEquals(apiKey.fields?.length, 1);

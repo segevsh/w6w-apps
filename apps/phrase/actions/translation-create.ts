@@ -44,7 +44,16 @@ const translationCreate: ActionDefinition<Input> = {
     {
       key: "pluralSuffix",
       label: "Plural suffix",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [
+        { value: "zero", label: "zero" },
+        { value: "one", label: "one" },
+        { value: "two", label: "two" },
+        { value: "few", label: "few" },
+        { value: "many", label: "many" },
+        { value: "other", label: "other" },
+      ],
       hint: "`zero`, `one`, `two`, `few`, `many` or `other` for plural keys.",
     },
     { key: "unverified", label: "Unverified", type: "boolean" },

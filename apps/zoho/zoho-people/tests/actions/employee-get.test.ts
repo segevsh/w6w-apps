@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/employee-get.ts";
 
@@ -6,7 +7,7 @@ const body = {
   response: { result: [{ "759": [{ EmailID: "j@x.com", FirstName: "John" }] }], status: 0 },
 };
 
-Deno.test("employee-get: searches the employee form by email by default", async () => {
+test("employee-get: searches the employee form by email by default", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body }]);
   const out = await action.execute({ identifier: "j@x.com" }, ctx) as {
     employee: Record<string, unknown>;
@@ -20,7 +21,7 @@ Deno.test("employee-get: searches the employee form by email by default", async 
   assertEquals(out.employee.FirstName, "John");
 });
 
-Deno.test("employee-get: employeeId type searches EMPLOYEEID; no match gives null", async () => {
+test("employee-get: employeeId type searches EMPLOYEEID; no match gives null", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: { response: { result: [], status: 0 } } }]);
   const out = await action.execute({ identifier: "HRM02", identifierType: "employeeId" }, ctx) as {
     employee: unknown;

@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/repository-get.ts";
 
-Deno.test("repository-get: fetches one repository by name", async () => {
+test("repository-get: fetches one repository by name", async () => {
   const { ctx, calls } = mockCtx([one({
     id: "r1",
     name: "api",
@@ -19,7 +20,7 @@ Deno.test("repository-get: fetches one repository by name", async () => {
   assertEquals(result.defaultBranch, "refs/heads/main");
 });
 
-Deno.test("repository-get: needs a project and a repository", async () => {
+test("repository-get: needs a project and a repository", async () => {
   const noProject = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ repository: "api" }, noProject.ctx),
@@ -35,6 +36,6 @@ Deno.test("repository-get: needs a project and a repository", async () => {
 });
 
 /** The default branch comes back as a full ref, which the git calls want. */
-Deno.test("repository-get: says the default branch is a full ref", () => {
+test("repository-get: says the default branch is a full ref", () => {
   assert(/refs\/heads/.test(action.description!), action.description);
 });

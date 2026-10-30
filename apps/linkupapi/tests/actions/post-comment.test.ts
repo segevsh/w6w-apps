@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postComment from "../../actions/post-comment.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("post-comment: sends every input, unwraps data and credits", async () => {
+test("post-comment: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -29,7 +30,7 @@ Deno.test("post-comment: sends every input, unwraps data and credits", async () 
   });
 });
 
-Deno.test("post-comment: omits optional inputs that were not given", async () => {
+test("post-comment: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -46,7 +47,7 @@ Deno.test("post-comment: omits optional inputs that were not given", async () =>
   });
 });
 
-Deno.test("post-comment: an error envelope is thrown with the vendor code", async () => {
+test("post-comment: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

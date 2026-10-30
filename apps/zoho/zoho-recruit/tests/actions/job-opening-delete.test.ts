@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/job-opening-delete.ts";
 
-Deno.test("job-opening-delete: DELETEs /Job_Openings with the id in the `ids` query param", async () => {
+test("job-opening-delete: DELETEs /Job_Openings with the id in the `ids` query param", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "1" } }] } },
   ]);
@@ -13,6 +14,6 @@ Deno.test("job-opening-delete: DELETEs /Job_Openings with the id in the `ids` qu
   assertEquals(url.searchParams.get("ids"), "1");
 });
 
-Deno.test("job-opening-delete: idempotent — deleting an already-deleted id converges", () => {
+test("job-opening-delete: idempotent — deleting an already-deleted id converges", () => {
   assertEquals(action.idempotent, true);
 });

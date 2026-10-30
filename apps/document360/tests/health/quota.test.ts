@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { readHeaders, WARN_FRACTION } from "../../health/quota.ts";
 import { CA, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const hdr = (limit: string | number, remaining: string | number) => ({
 });
 const run = (ctx: Parameters<NonNullable<typeof quota.check>>[1]) => quota.check!({}, ctx);
 
-Deno.test("quota: reports the read bucket from the headers", async () => {
+test("quota: reports the read bucket from the headers", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]), headers: hdr(120, 100) }], {
     region: "ca",
   });
@@ -21,7 +22,7 @@ Deno.test("quota: reports the read bucket from the headers", async () => {
   assertEquals(queryOf(calls[0].url), { page_size: "1" });
 });
 
-Deno.test("quota: degraded at the warn fraction, down at zero", async () => {
+test("quota: degraded at the warn fraction, down at zero", async () => {
   assertEquals(WARN_FRACTION, 0.9);
   const warn = await run(mockCtx([{ body: listEnvelope([]), headers: hdr(100, 10) }]).ctx);
   assertEquals(warn.state, "degraded");
@@ -29,19 +30,19 @@ Deno.test("quota: degraded at the warn fraction, down at zero", async () => {
   assertEquals(empty.state, "down");
 });
 
-Deno.test("quota: a 429 is down and carries the retry hint", async () => {
+test("quota: a 429 is down and carries the retry hint", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "", headers: { "retry-after": "30" } }]);
   const r = await run(ctx);
   assertEquals(r.state, "down");
   assertEquals(r.message?.includes("30s"), true);
 });
 
-Deno.test("quota: missing headers and non-2xx are unknown, never ok", async () => {
+test("quota: missing headers and non-2xx are unknown, never ok", async () => {
   assertEquals((await run(mockCtx([{ body: listEnvelope([]) }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ status: 403, body: "" }]).ctx)).state, "unknown");
 });
 
-Deno.test("quota: readHeaders ignores blank and non-numeric values", () => {
+test("quota: readHeaders ignores blank and non-numeric values", () => {
   assertEquals(
     readHeaders(new Headers({ "x-ratelimit-limit": " ", "x-ratelimit-remaining": "x" })),
     {
@@ -51,7 +52,7 @@ Deno.test("quota: readHeaders ignores blank and non-numeric values", () => {
   );
 });
 
-Deno.test("quota: a signed, connection-scoped quota check", () => {
+test("quota: a signed, connection-scoped quota check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");

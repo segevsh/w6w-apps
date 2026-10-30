@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-subscriptions.ts";
 
-Deno.test("list-subscriptions: identity", () => {
+test("list-subscriptions: identity", () => {
   assertEquals(action.key, "list-subscriptions");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "billing");
 });
 
-Deno.test("list-subscriptions: sends GET /api/v1/billing/subscriptions", async () => {
+test("list-subscriptions: sends GET /api/v1/billing/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { metadata: { limit: 25, offset: 0, total: 1 }, items: [{ Uid: "x1" }] },
@@ -30,7 +31,7 @@ Deno.test("list-subscriptions: sends GET /api/v1/billing/subscriptions", async (
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-subscriptions: a failure names the status and the request", async () => {
+test("list-subscriptions: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

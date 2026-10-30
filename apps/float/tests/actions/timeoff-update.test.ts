@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeoffUpdate from "../../actions/timeoff-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timeoff-update - PATCHes /timeoffs/{id}", async () => {
+test("timeoff-update - PATCHes /timeoffs/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { timeoff_id: 5, hours: 4 } }]);
   const out = await timeoffUpdate.execute({ timeoff_id: 5, hours: 4, fullDay: false }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/timeoffs/5");

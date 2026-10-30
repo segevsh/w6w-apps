@@ -1,17 +1,18 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audit-log-list.ts";
 
 const conn = { display: { projectKey: "default" } };
 
-Deno.test("audit-log-list: reads the account-wide audit log", async () => {
+test("audit-log-list: reads the account-wide audit log", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [{ _id: "a" }] } }], conn);
   assertEquals(await action.execute!({}, ctx), [{ _id: "a" }]);
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/auditlog");
 });
 
 /** An ISO timestamp is accepted by the API and simply does not filter. */
-Deno.test("audit-log-list: an ISO timestamp is refused before any request", async () => {
+test("audit-log-list: an ISO timestamp is refused before any request", async () => {
   for (const key of ["after", "before"]) {
     const { ctx, calls } = mockCtx([], conn);
     await assertRejects(
@@ -23,7 +24,7 @@ Deno.test("audit-log-list: an ISO timestamp is refused before any request", asyn
   }
 });
 
-Deno.test("audit-log-list: epoch milliseconds and a spec reach the wire", async () => {
+test("audit-log-list: epoch milliseconds and a spec reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [] } }], conn);
   await action.execute!({
     after: "1787000000000",

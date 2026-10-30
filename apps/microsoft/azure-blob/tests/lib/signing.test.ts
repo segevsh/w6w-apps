@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_VERSION,
   decodeBase64,
@@ -40,7 +41,7 @@ const putInput = {
 };
 
 /** The known-answer test, against a signature this code did not produce. */
-Deno.test("sharedKey: matches a signature computed by an independent implementation", async () => {
+test("sharedKey: matches a signature computed by an independent implementation", async () => {
   assertEquals(
     await sharedKeyAuthorization(getInput),
     `SharedKey ${TEST_ACCOUNT}:${EXPECTED_GET_SIGNATURE}`,
@@ -52,7 +53,7 @@ Deno.test("sharedKey: matches a signature computed by an independent implementat
 });
 
 /** Matches the worked example in Microsoft's own documentation. */
-Deno.test("stringToSign: twelve lines, then the headers, then the resource", () => {
+test("stringToSign: twelve lines, then the headers, then the resource", () => {
   assertEquals(
     stringToSign(getInput),
     "GET\n\n\n\n\n\n\n\n\n\n\n\n" +
@@ -62,7 +63,7 @@ Deno.test("stringToSign: twelve lines, then the headers, then the resource", () 
 });
 
 /** Not "0" — the change that makes GETs work and writes fail. */
-Deno.test("stringToSign: an empty body is an empty Content-Length line", () => {
+test("stringToSign: an empty body is an empty Content-Length line", () => {
   const lines = stringToSign(getInput).split("\n");
   assertEquals(lines[3], "", "Content-Length is the fourth line and must be empty");
 
@@ -72,14 +73,14 @@ Deno.test("stringToSign: an empty body is an empty Content-Length line", () => {
 });
 
 /** `x-ms-date` supersedes `Date`, so the Date line stays empty. */
-Deno.test("stringToSign: the Date line is blank while x-ms-date carries the value", () => {
+test("stringToSign: the Date line is blank while x-ms-date carries the value", () => {
   const signed = stringToSign(getInput);
   assertEquals(signed.split("\n")[6], "", "the Date line");
   assert(signed.includes(`x-ms-date:${TEST_DATE}`), signed);
 });
 
 /** Content-Type has its own line and must not appear twice. */
-Deno.test("stringToSign: only x-ms-* headers are canonicalized", () => {
+test("stringToSign: only x-ms-* headers are canonicalized", () => {
   const signed = stringToSign({
     ...putInput,
     headers: {
@@ -94,7 +95,7 @@ Deno.test("stringToSign: only x-ms-* headers are canonicalized", () => {
   assertEquals(signed.split("content-type:").length, 1, "content-type appears only as a line");
 });
 
-Deno.test("stringToSign: headers are lowercased, trimmed and sorted", () => {
+test("stringToSign: headers are lowercased, trimmed and sorted", () => {
   const signed = stringToSign({
     ...getInput,
     headers: {
@@ -112,7 +113,7 @@ Deno.test("stringToSign: headers are lowercased, trimmed and sorted", () => {
 });
 
 /** A signature over the encoded form fails on spaces and slashes. */
-Deno.test("stringToSign: query values are the decoded ones, names lowercased and sorted", () => {
+test("stringToSign: query values are the decoded ones, names lowercased and sorted", () => {
   const signed = stringToSign({
     ...getInput,
     query: { Prefix: "my folder/", comp: "list", restype: "container" },
@@ -123,18 +124,18 @@ Deno.test("stringToSign: query values are the decoded ones, names lowercased and
   );
 });
 
-Deno.test("stringToSign: no query is just the account and the path", () => {
+test("stringToSign: no query is just the account and the path", () => {
   assert(stringToSign(putInput).endsWith("/myaccount/mycontainer/hello.txt"));
 });
 
 /** Using the base64 text as the key never verifies. */
-Deno.test("sharedKey: the key is decoded before being used", () => {
+test("sharedKey: the key is decoded before being used", () => {
   const decoded = decodeBase64(TEST_KEY);
   assertEquals(decoded.length, 32);
   assertEquals(encodeBase64(decoded), TEST_KEY);
 });
 
-Deno.test("sharedKey: a key that is not base64 says where to get one that is", async () => {
+test("sharedKey: a key that is not base64 says where to get one that is", async () => {
   await assertRejects(
     () => sharedKeyAuthorization({ ...getInput, key: "not base64!!" }),
     Error,
@@ -142,16 +143,16 @@ Deno.test("sharedKey: a key that is not base64 says where to get one that is", a
   );
 });
 
-Deno.test("sharedKey: the header names the account, so Azure knows which key to check", async () => {
+test("sharedKey: the header names the account, so Azure knows which key to check", async () => {
   const header = await sharedKeyAuthorization(getInput);
   assert(header.startsWith(`SharedKey ${TEST_ACCOUNT}:`), header);
 });
 
 /** RFC 1123 is the only format Azure accepts. */
-Deno.test("rfc1123: formats the date the way Azure requires", () => {
+test("rfc1123: formats the date the way Azure requires", () => {
   assertEquals(rfc1123(Date.UTC(2015, 5, 26, 23, 39, 12)), TEST_DATE);
 });
 
-Deno.test("the API version is recent enough for the empty-Content-Length rule", () => {
+test("the API version is recent enough for the empty-Content-Length rule", () => {
   assert(API_VERSION >= "2015-02-21", API_VERSION);
 });

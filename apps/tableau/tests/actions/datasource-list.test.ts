@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/datasource-list.ts";
 
-Deno.test("datasource-list: unwraps a single data source and targets the right path", async () => {
+test("datasource-list: unwraps a single data source and targets the right path", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { datasources: { datasource: { id: "d1", name: "Sales DS" } } } }],
     { display: DEFAULT_DISPLAY },

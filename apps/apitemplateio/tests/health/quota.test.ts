@@ -1,7 +1,8 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declared unavailable, no check hook", () => {
+test("quota: declared unavailable, no check hook", () => {
   assertEquals(quota.check, undefined);
   assertExists(quota.unavailable);
   assertEquals(quota.severity, "informational");

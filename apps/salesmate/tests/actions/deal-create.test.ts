@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import create from "../../actions/deal-create.ts";
 
 const B = "https://acme.salesmate.io/apis/deal/v4";
 const ok = (Data: unknown) => ({ body: { Status: "success", Data } });
 
-Deno.test("deal-create: POSTs the fields and custom fields at the top level", async () => {
+test("deal-create: POSTs the fields and custom fields at the top level", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ id: 9 })]);
   const out = await create.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("deal-create: POSTs the fields and custom fields at the top level", as
   });
 });
 
-Deno.test("deal-create: drops unset optional fields rather than sending nulls", async () => {
+test("deal-create: drops unset optional fields rather than sending nulls", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({})]);
   await create.execute(
     {
@@ -65,7 +66,7 @@ Deno.test("deal-create: drops unset optional fields rather than sending nulls", 
   });
 });
 
-Deno.test("deal-create: declares the documented required params", () => {
+test("deal-create: declares the documented required params", () => {
   const required = (create.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["owner", "pipeline", "primaryContact", "stage", "status", "title"]);
 });

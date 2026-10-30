@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rsvpAttendeeCreate from "../../actions/rsvp-attendee-create.ts";
 import { mockCtx, pathOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("rsvp-attendee-create: POSTs under the event, mapping notify to the wire's notify=active", async () => {
+test("rsvp-attendee-create: POSTs under the event, mapping notify to the wire's notify=active", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "att-1", event_id: "evt-1", email: "a@b.com", attending: "going" } },
   ]);
@@ -21,14 +22,14 @@ Deno.test("rsvp-attendee-create: POSTs under the event, mapping notify to the wi
   assertEquals(out.email, "a@b.com");
 });
 
-Deno.test("rsvp-attendee-create: notify left unset sends no notify field — no email by default", async () => {
+test("rsvp-attendee-create: notify left unset sends no notify field — no email by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "att-1" } }]);
   await rsvpAttendeeCreate.execute({ eventId: "evt-1", email: "a@b.com" }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assertEquals("notify" in sent, false);
 });
 
-Deno.test("rsvp-attendee-create: a 400 validation error surfaces the field-level reasons", async () => {
+test("rsvp-attendee-create: a 400 validation error surfaces the field-level reasons", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,

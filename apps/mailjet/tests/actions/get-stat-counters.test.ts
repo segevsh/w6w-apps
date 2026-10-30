@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getStatCounters from "../../actions/get-stat-counters.ts";
 
 // ------------------------------------------------------------ get-stat-counters
 
-Deno.test("get-stat-counters: sends the three mandatory dimensions", async () => {
+test("get-stat-counters: sends the three mandatory dimensions", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [{ MessageSentCount: 10 }] } }]);
   await getStatCounters.execute!(
     { counterSource: "APIKey", counterResolution: "Lifetime", counterTiming: "Message" },
@@ -17,7 +18,7 @@ Deno.test("get-stat-counters: sends the three mandatory dimensions", async () =>
   assertEquals(p.get("CounterTiming"), "Message");
 });
 
-Deno.test("get-stat-counters: defaults are the one combination needing no extra input", () => {
+test("get-stat-counters: defaults are the one combination needing no extra input", () => {
   const byKey = Object.fromEntries(
     (getStatCounters.params ?? []).map((p) => [p.key, p.default]),
   );
@@ -26,7 +27,7 @@ Deno.test("get-stat-counters: defaults are the one combination needing no extra 
   assertEquals(byKey.counterTiming, "Message");
 });
 
-Deno.test("get-stat-counters: forwards SourceID and the time window when supplied", async () => {
+test("get-stat-counters: forwards SourceID and the time window when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [] } }]);
   await getStatCounters.execute!({
     counterSource: "Campaign",
@@ -42,7 +43,7 @@ Deno.test("get-stat-counters: forwards SourceID and the time window when supplie
   assertEquals(p.get("ToTS"), "2026-08-03T00:00:00Z");
 });
 
-Deno.test("get-stat-counters: omits SourceID and FromTS when not supplied", async () => {
+test("get-stat-counters: omits SourceID and FromTS when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [] } }]);
   await getStatCounters.execute!(
     { counterSource: "APIKey", counterResolution: "Lifetime", counterTiming: "Message" },

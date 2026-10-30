@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listNotes from "../../actions/list-notes.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-notes: GET /notes filtered by contact", async () => {
+test("list-notes: GET /notes filtered by contact", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("notes", [{ note: { id: "n1" } }]) }]);
   const out = await listNotes.execute(
     { contactId: "c1", sortBy: "date", order: "asc" },

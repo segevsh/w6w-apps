@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import planGet from "../../actions/plan-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("plan-get: fetches /plans/{uid} and forwards the undocumented extra query params", async () => {
+test("plan-get: fetches /plans/{uid} and forwards the undocumented extra query params", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "plan_1", status: "active" }) }]);
   const out = await planGet.execute({ id: "plan_1", email: "a@b.com" }, ctx);
 

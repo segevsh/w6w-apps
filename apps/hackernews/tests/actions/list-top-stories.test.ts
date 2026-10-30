@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-top-stories.ts";
 
-Deno.test("list-top-stories: GETs /v0/topstories.json and wraps the id array", async () => {
+test("list-top-stories: GETs /v0/topstories.json and wraps the id array", async () => {
   const { ctx, calls } = mockCtx([{ body: [9129911, 9129199, 9127761] }]);
   const out = await action.execute({}, ctx);
 

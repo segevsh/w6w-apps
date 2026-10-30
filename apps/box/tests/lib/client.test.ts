@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BoxClient } from "../../lib/client.ts";
 
-Deno.test("client: defaults to GET and prepends API_URL for relative paths", async () => {
+test("client: defaults to GET and prepends API_URL for relative paths", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new BoxClient(ctx);
   await client.request("/files/123");
@@ -10,7 +11,7 @@ Deno.test("client: defaults to GET and prepends API_URL for relative paths", asy
   assertEquals(calls[0].url, "https://api.box.com/2.0/files/123");
 });
 
-Deno.test("client: passes absolute URLs through unchanged", async () => {
+test("client: passes absolute URLs through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [] } }]);
   const client = new BoxClient(ctx);
   await client.request("https://upload.box.com/api/2.0/files/content", {
@@ -23,7 +24,7 @@ Deno.test("client: passes absolute URLs through unchanged", async () => {
   assertEquals(calls[0].body, "raw-body");
 });
 
-Deno.test("client: JSON-encodes `body` and sets content-type", async () => {
+test("client: JSON-encodes `body` and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   const client = new BoxClient(ctx);
   await client.request("/folders", { method: "POST", body: { name: "x" } });
@@ -31,7 +32,7 @@ Deno.test("client: JSON-encodes `body` and sets content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "x" });
 });
 
-Deno.test("client: omits undefined/empty query params", async () => {
+test("client: omits undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [] } }]);
   const client = new BoxClient(ctx);
   await client.request("/search", { query: { query: "invoice", type: undefined, scope: "" } });
@@ -41,14 +42,14 @@ Deno.test("client: omits undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("scope"), false);
 });
 
-Deno.test("client: returns undefined for a 204 response", async () => {
+test("client: returns undefined for a 204 response", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const client = new BoxClient(ctx);
   const result = await client.request("/files/1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"code":"not_found"}' },
   ]);

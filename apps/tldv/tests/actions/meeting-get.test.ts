@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/meeting-get.ts";
 
@@ -14,14 +15,14 @@ const MEETING = {
   extraProperties: { conferenceId: "conf-123" },
 };
 
-Deno.test("meeting-get: hits GET /meetings/{meetingId} and returns the meeting verbatim", async () => {
+test("meeting-get: hits GET /meetings/{meetingId} and returns the meeting verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: MEETING }]);
   const out = await action.execute({ meetingId: "653663ac7c8dbd00130f11d9" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1alpha1/meetings/653663ac7c8dbd00130f11d9");
   assertEquals(out, MEETING);
 });
 
-Deno.test("meeting-get: URL-encodes a meetingId that needs it", async () => {
+test("meeting-get: URL-encodes a meetingId that needs it", async () => {
   const { ctx, calls } = mockCtx([{ body: MEETING }]);
   await action.execute({ meetingId: "has space/slash" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1alpha1/meetings/has%20space%2Fslash");

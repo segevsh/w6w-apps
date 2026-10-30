@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/policy-update.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("policy-update: PUTs enabled and data", async () => {
+test("policy-update: PUTs enabled and data", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "3f2b8c1e-5a4d-4e6f-9a1b-7c8d9e0f1a2b",
@@ -23,7 +24,7 @@ Deno.test("policy-update: PUTs enabled and data", async () => {
   assertEquals(result.typeName, "MasterPassword");
 });
 
-Deno.test("policy-update: requires a boolean enabled", async () => {
+test("policy-update: requires a boolean enabled", async () => {
   const { ctx } = mockCtx([], D);
   const err = await assertRejects(async () => await action.execute({ type: 1 }, ctx));
   assertMatch((err as Error).message, /enabled/);

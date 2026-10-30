@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: collects the key and token as two secret fields on one row", () => {
+test("api-key: collects the key and token as two secret fields on one row", () => {
   assertEquals(auth.key, "api-key");
   // `custom`: the credential is not a header at all — see `sign`.
   assertEquals(auth.type, "custom");
@@ -15,7 +16,7 @@ Deno.test("api-key: collects the key and token as two secret fields on one row",
   }
 });
 
-Deno.test("api-key: sign appends key + token to the query string", async () => {
+test("api-key: sign appends key + token to the query string", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.trello.com/1/cards?name=hi",
@@ -30,7 +31,7 @@ Deno.test("api-key: sign appends key + token to the query string", async () => {
   assertEquals("authorization" in out.headers, false);
 });
 
-Deno.test("api-key: test refuses a half-filled credential without a request", async () => {
+test("api-key: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { apiKey: "k1" } }, ctx), {
     ok: false,
@@ -39,7 +40,7 @@ Deno.test("api-key: test refuses a half-filled credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes /members/me", async () => {
+test("api-key: test probes /members/me", async () => {
   const ok = mockCtx([{ body: { id: "m1" } }]);
   assertEquals(await auth.test({ credential: { apiKey: "k", apiToken: "t" } }, ok.ctx), {
     ok: true,
@@ -53,7 +54,7 @@ Deno.test("api-key: test probes /members/me", async () => {
   });
 });
 
-Deno.test("api-key: afterConnect labels the connection with the member", async () => {
+test("api-key: afterConnect labels the connection with the member", async () => {
   const { ctx } = mockCtx([{ body: { id: "m1", username: "acme", fullName: "Acme Co" } }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {
     user: { id: "m1", username: "acme", fullName: "Acme Co" },

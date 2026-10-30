@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import update from "../../actions/note-update.ts";
 
 const B = "https://acme.salesmate.io/apis";
 
-Deno.test("note-update: PUTs to the note under the record", async () => {
+test("note-update: PUTs to the note under the record", async () => {
   const { ctx, calls } = mockSalesmateCtx([{ body: { Status: "success" } }]);
   const out = await update.execute({ module: "contact", recordId: 9, noteId: 4, note: "x" }, ctx);
   assertEquals(out, { updated: true, noteId: 4 });

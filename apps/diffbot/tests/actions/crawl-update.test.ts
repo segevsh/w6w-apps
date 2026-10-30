@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/crawl-update.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { CRAWL_JOB } from "../_fixtures.ts";
 
 const PAUSED = { ...CRAWL_JOB, jobStatus: { status: 6, message: "Job paused" } };
 
-Deno.test("crawl-update: each operation maps to the vendor's query parameter", async () => {
+test("crawl-update: each operation maps to the vendor's query parameter", async () => {
   const cases: Record<string, Record<string, string>> = {
     pause: { pause: "1" },
     resume: { pause: "0" },
@@ -22,7 +23,7 @@ Deno.test("crawl-update: each operation maps to the vendor's query parameter", a
   }
 });
 
-Deno.test("crawl-update: returns the job's new status; an unknown operation never calls out", async () => {
+test("crawl-update: returns the job's new status; an unknown operation never calls out", async () => {
   const { ctx } = mockCtx([{ body: { response: "ok", jobs: [PAUSED] } }]);
   const out = await run(action, { name: "test-crawl", operation: "pause" }, ctx);
   assertEquals(out.statusCode, 6);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import responseExportStatus from "../../actions/response-export-status.ts";
 import { API_ROOT, envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("response-export-status: polls the export job and returns fileId when complete", async () => {
+test("response-export-status: polls the export job and returns fileId when complete", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ percentComplete: 100, status: "complete", fileId: "EF_1" }) },
   ]);
@@ -17,7 +18,7 @@ Deno.test("response-export-status: polls the export job and returns fileId when 
   assertEquals(out.fileId, "EF_1");
 });
 
-Deno.test("response-export-status: path-escapes both ids", async () => {
+test("response-export-status: path-escapes both ids", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ status: "inProgress" }) }]);
   await responseExportStatus.execute({ surveyId: "SV/1", progressId: "ES 1" }, ctx);
 

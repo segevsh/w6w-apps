@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import workLocationCreate from "../../actions/work-location-create.ts";
 
-Deno.test("work-location-create: folds the flat address params into the nested wire object", async () => {
+test("work-location-create: folds the flat address params into the nested wire object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w1", name: "HQ" } }]);
   await workLocationCreate.execute({
     name: "HQ",
@@ -29,7 +30,7 @@ Deno.test("work-location-create: folds the flat address params into the nested w
   });
 });
 
-Deno.test("work-location-create: always sends an address object (it is required) and requires a name", async () => {
+test("work-location-create: always sends an address object (it is required) and requires a name", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w1" } }]);
   await workLocationCreate.execute({ name: "Remote hub" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Remote hub", address: {} });

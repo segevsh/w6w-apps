@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelAccessToken, { authHeaders, PROBE_PATH } from "../../auth/channel-access-token.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const TOKEN = "unitTestFixtureNotARealChannelAccessToken0000000000";
 
-Deno.test("channel-access-token: sign stamps the bearer header and nothing else", () => {
+test("channel-access-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.line.me/v2/bot/info",
@@ -20,15 +21,15 @@ Deno.test("channel-access-token: sign stamps the bearer header and nothing else"
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("channel-access-token: authHeaders is the single source of the wire format", () => {
+test("channel-access-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ channelAccessToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("channel-access-token: the probe is /v2/bot/info", () => {
+test("channel-access-token: the probe is /v2/bot/info", () => {
   assertEquals(PROBE_PATH, "/v2/bot/info");
 });
 
-Deno.test("channel-access-token: test passes when bot info answers", async () => {
+test("channel-access-token: test passes when bot info answers", async () => {
   const { ctx, calls } = mockCtx([{ body: { userId: "U1", displayName: "Bot" } }]);
   const result = await channelAccessToken.test({ credential: { channelAccessToken: TOKEN } }, ctx);
 
@@ -37,7 +38,7 @@ Deno.test("channel-access-token: test passes when bot info answers", async () =>
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("channel-access-token: test fails with no token, without making a request", async () => {
+test("channel-access-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await channelAccessToken.test({ credential: {} }, ctx);
 
@@ -45,7 +46,7 @@ Deno.test("channel-access-token: test fails with no token, without making a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-access-token: a missing header is reported as never having arrived", async () => {
+test("channel-access-token: a missing header is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -60,7 +61,7 @@ Deno.test("channel-access-token: a missing header is reported as never having ar
   assert(/received no token/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("channel-access-token: an invalid token is reported as rejected, with LINE's own message", async () => {
+test("channel-access-token: an invalid token is reported as rejected, with LINE's own message", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -79,7 +80,7 @@ Deno.test("channel-access-token: an invalid token is reported as rejected, with 
   assert(/Authentication failed/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("channel-access-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("channel-access-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await channelAccessToken.test({ credential: { channelAccessToken: TOKEN } }, ctx);
 
@@ -87,7 +88,7 @@ Deno.test("channel-access-token: a 500 is reported as an HTTP failure, not a cre
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("channel-access-token: afterConnect publishes the display name and basic ID", async () => {
+test("channel-access-token: afterConnect publishes the display name and basic ID", async () => {
   const { ctx, calls } = mockCtx([
     { body: { userId: "U1", basicId: "@abc123", displayName: "Acme Support" } },
   ]);
@@ -100,7 +101,7 @@ Deno.test("channel-access-token: afterConnect publishes the display name and bas
   assertEquals(display, { displayName: "Acme Support", basicId: "@abc123" });
 });
 
-Deno.test("channel-access-token: afterConnect stays silent when the read fails", async () => {
+test("channel-access-token: afterConnect stays silent when the read fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("no") }]);
   assertEquals(
     await channelAccessToken.afterConnect!({ credential: { channelAccessToken: TOKEN } }, ctx),
@@ -108,7 +109,7 @@ Deno.test("channel-access-token: afterConnect stays silent when the read fails",
   );
 });
 
-Deno.test("channel-access-token: the credential field is declared secret", () => {
+test("channel-access-token: the credential field is declared secret", () => {
   for (const f of channelAccessToken.fields ?? []) {
     assertEquals(f.type, "secret", `${f.key}: credential field is not type "secret"`);
   }

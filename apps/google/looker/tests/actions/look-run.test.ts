@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/look-run.ts";
 
@@ -9,7 +10,7 @@ const meta = {
 };
 
 /** The definition can change under a workflow, so its timestamp comes back. */
-Deno.test("look-run: fetches the definition, runs it, and returns updated_at", async () => {
+test("look-run: fetches the definition, runs it, and returns updated_at", async () => {
   const { ctx, calls } = mockCtx([meta, { status: 200, body: [{ "orders.count": 7 }] }], D);
   const result = await action.execute({ lookId: "1" }, ctx) as Record<string, unknown>;
 
@@ -23,13 +24,13 @@ Deno.test("look-run: fetches the definition, runs it, and returns updated_at", a
 });
 
 /** A Look saved without a limit runs unbounded; this is what caps it. */
-Deno.test("look-run: sends a limit that overrides whatever the Look was saved with", async () => {
+test("look-run: sends a limit that overrides whatever the Look was saved with", async () => {
   const { ctx, calls } = mockCtx([meta, { status: 200, body: [] }], D);
   await action.execute({ lookId: "1", limit: 25 }, ctx);
   assertEquals(new URL(calls[1].url).searchParams.get("limit"), "25");
 });
 
-Deno.test("look-run: refuses a non-positive limit, naming the unbounded case", async () => {
+test("look-run: refuses a non-positive limit, naming the unbounded case", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ lookId: "1", limit: -1 }, ctx),
@@ -39,12 +40,12 @@ Deno.test("look-run: refuses a non-positive limit, naming the unbounded case", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("look-run: requires an id", async () => {
+test("look-run: requires an id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`lookId` is required");
 });
 
-Deno.test("look-run: json_detail returns the SQL as well as the rows", async () => {
+test("look-run: json_detail returns the SQL as well as the rows", async () => {
   const { ctx } = mockCtx([meta, {
     status: 200,
     body: { data: [{ a: 1 }], sql: "SELECT 1" },
@@ -57,7 +58,7 @@ Deno.test("look-run: json_detail returns the SQL as well as the rows", async () 
   assertEquals(result.rowCount, 1);
 });
 
-Deno.test("look-run: csv comes back verbatim", async () => {
+test("look-run: csv comes back verbatim", async () => {
   const { ctx, calls } = mockCtx([meta, { status: 200, body: "a,b\n1,2" }], D);
   const result = await action.execute({ lookId: "1", format: "csv" }, ctx) as Record<
     string,
@@ -68,7 +69,7 @@ Deno.test("look-run: csv comes back verbatim", async () => {
 });
 
 /** Rows are business data. */
-Deno.test("look-run: logs the count and never the rows", async () => {
+test("look-run: logs the count and never the rows", async () => {
   const { ctx, logs } = mockCtx([meta, { status: 200, body: [{ salary: 90000 }] }], D);
   await action.execute({ lookId: "1" }, ctx);
   const data = JSON.stringify(logs.at(-1)?.data ?? {});
@@ -77,7 +78,7 @@ Deno.test("look-run: logs the count and never the rows", async () => {
 });
 
 /** The shape this app recommends: an analyst owns the query, the workflow runs it. */
-Deno.test("look-run: says a Look is a saved query rather than a saved result", () => {
+test("look-run: says a Look is a saved query rather than a saved result", () => {
   assert(/saved QUERY, not a saved result/.test(action.description!), action.description);
   assertEquals(action.type, "read");
 });

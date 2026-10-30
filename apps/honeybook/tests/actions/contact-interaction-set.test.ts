@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactInteractionSet from "../../actions/contact-interaction-set.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const INPUT = {
   "maxCustomFields": 5,
 };
 
-Deno.test("contact-interaction-set: sends PUT /contacts/{id}/interaction with the mapped fields", async () => {
+test("contact-interaction-set: sends PUT /contacts/{id}/interaction with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await contactInteractionSet.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -35,21 +36,21 @@ Deno.test("contact-interaction-set: sends PUT /contacts/{id}/interaction with th
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("contact-interaction-set: sends only what was supplied", async () => {
+test("contact-interaction-set: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await contactInteractionSet.execute({ "contactId": "x-contactId" } as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("contact-interaction-set: percent-encodes path ids", async () => {
+test("contact-interaction-set: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await contactInteractionSet.execute({ ...INPUT, ...{ "contactId": "a/b" } }, ctx);
   const segs = pathOf(calls[0].url).split("/");
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("contact-interaction-set: surfaces the API error type and message", async () => {
+test("contact-interaction-set: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await contactInteractionSet.execute(INPUT, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupCreate from "../../actions/group-create.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("group-create: calls POST /contact-groups and returns the documented shape", async () => {
+test("group-create: calls POST /contact-groups and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "3" } }]);
   const result = await groupCreate.execute(
     { "name": "VIP", "phoneNumbers": "2125551234", "strictValidation": true } as never,
@@ -19,7 +20,7 @@ Deno.test("group-create: calls POST /contact-groups and returns the documented s
   assertEquals(result, { "id": "3" });
 });
 
-Deno.test("group-create: carries no credential — auth is the sign hook's job", async () => {
+test("group-create: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "3" } }]);
   await groupCreate.execute(
     { "name": "VIP", "phoneNumbers": "2125551234", "strictValidation": true } as never,

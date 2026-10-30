@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/oncall-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("oncall-list: full input maps to GET /v1/oncalls", async () => {
+test("oncall-list: full input maps to GET /v1/oncalls", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -120,7 +121,7 @@ Deno.test("oncall-list: full input maps to GET /v1/oncalls", async () => {
   });
 });
 
-Deno.test("oncall-list: required input only maps to GET /v1/oncalls", async () => {
+test("oncall-list: required input only maps to GET /v1/oncalls", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -183,7 +184,7 @@ Deno.test("oncall-list: required input only maps to GET /v1/oncalls", async () =
   });
 });
 
-Deno.test("oncall-list: an API error rejects with the vendor's title and detail", async () => {
+test("oncall-list: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

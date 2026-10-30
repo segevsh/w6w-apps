@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import itemFilter from "../../actions/item-filter.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const PAGE = {
   ],
 };
 
-Deno.test("item-filter: POSTs to the filter endpoint", async () => {
+test("item-filter: POSTs to the filter endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await itemFilter.execute({ appId: "123" }, ctx);
   assertEquals(pathOf(calls[0].url), "/item/app/123/filter/");
@@ -23,13 +24,13 @@ Deno.test("item-filter: POSTs to the filter endpoint", async () => {
   });
 });
 
-Deno.test("item-filter: an empty request sends an empty body, not nulls", async () => {
+test("item-filter: an empty request sends an empty body, not nulls", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await itemFilter.execute({ appId: "123" }, ctx);
   assertEquals(bodyOf(calls[0]), {});
 });
 
-Deno.test("item-filter: every documented body field maps to its snake_case name", async () => {
+test("item-filter: every documented body field maps to its snake_case name", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await itemFilter.execute({
     appId: "123",
@@ -49,7 +50,7 @@ Deno.test("item-filter: every documented body field maps to its snake_case name"
 });
 
 /** `offset: 0` and `sortDesc: false` are meaningful and must survive. */
-Deno.test("item-filter: zero and false are sent, not dropped", async () => {
+test("item-filter: zero and false are sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await itemFilter.execute({ appId: "1", offset: 0, sortDesc: false, limit: 0 }, ctx);
   assertEquals(bodyOf(calls[0]), { offset: 0, sort_desc: false, limit: 0 });
@@ -59,13 +60,13 @@ Deno.test("item-filter: zero and false are sent, not dropped", async () => {
  * Podio's `remember` flag would overwrite the connected user's "last used view"
  * in the Podio UI. A workflow's filter is not a human's browsing state.
  */
-Deno.test("item-filter: never sends `remember`", async () => {
+test("item-filter: never sends `remember`", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await itemFilter.execute({ appId: "1", filters: { a: 1 } }, ctx);
   assertEquals(bodyOf(calls[0]).remember, undefined);
 });
 
-Deno.test("item-filter: unparseable filters fail before any request", async () => {
+test("item-filter: unparseable filters fail before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(itemFilter.execute({ appId: "1", filters: "{bad" }, ctx)),
@@ -75,7 +76,7 @@ Deno.test("item-filter: unparseable filters fail before any request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-filter: a bodyless response yields empty counts rather than undefined", async () => {
+test("item-filter: a bodyless response yields empty counts rather than undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await itemFilter.execute({ appId: "1" }, ctx), { items: [], total: 0, filtered: 0 });
 });

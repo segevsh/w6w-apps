@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import {
   callDirectionOptions,
   dispatchingStrategyOptions,
@@ -16,7 +17,7 @@ import {
  * 50." A form that lets someone ask for 100 produces a request Aircall does not
  * honour and gives no feedback about.
  */
-Deno.test("params: perPage is bounded at Aircall's documented 1..50", () => {
+test("params: perPage is bounded at Aircall's documented 1..50", () => {
   const [perPage] = paginationParams();
   assertEquals(perPage.key, "perPage");
   assertEquals(perPage.default, 20);
@@ -25,7 +26,7 @@ Deno.test("params: perPage is bounded at Aircall's documented 1..50", () => {
   assertEquals(perPage.validation?.integer, true);
 });
 
-Deno.test("params: pagination maps to Aircall's page / per_page names", () => {
+test("params: pagination maps to Aircall's page / per_page names", () => {
   assertEquals(paginationQuery({ page: 3, perPage: 50 }), { page: 3, per_page: 50 });
   assertEquals(paginationQuery({}), { page: undefined, per_page: undefined });
 });
@@ -35,7 +36,7 @@ Deno.test("params: pagination maps to Aircall's page / per_page names", () => {
  * ISO string returns an empty list rather than an error, so the hint has to say
  * so or the mistake is silent.
  */
-Deno.test("params: the creation window says UNIX seconds, not ISO 8601", () => {
+test("params: the creation window says UNIX seconds, not ISO 8601", () => {
   const [from, to, order] = windowParams("Calls");
   assertEquals(from.key, "from");
   assertEquals(to.key, "to");
@@ -45,7 +46,7 @@ Deno.test("params: the creation window says UNIX seconds, not ISO 8601", () => {
   assertEquals(order.options, orderOptions);
 });
 
-Deno.test("params: the window query passes values through unchanged", () => {
+test("params: the window query passes values through unchanged", () => {
   assertEquals(windowQuery({ from: "1", to: "2", order: "desc" }), {
     from: "1",
     to: "2",
@@ -58,7 +59,7 @@ Deno.test("params: the window query passes values through unchanged", () => {
  * `total` can exceed the 10,000-item pagination ceiling, so the comparison
  * promises a page the API will refuse to serve.
  */
-Deno.test("params: listResult derives hasMore from next_page_link only", () => {
+test("params: listResult derives hasMore from next_page_link only", () => {
   assertEquals(
     listResult({ count: 2, total: 2234, next_page_link: null }, [{ id: 1 }, { id: 2 }]),
     {
@@ -78,7 +79,7 @@ Deno.test("params: listResult derives hasMore from next_page_link only", () => {
   );
 });
 
-Deno.test("params: listResult falls back to the item count when meta omits one", () => {
+test("params: listResult falls back to the item count when meta omits one", () => {
   const out = listResult({}, [{ id: 1 }, { id: 2 }, { id: 3 }]);
   assertEquals(out.count, 3);
   assertEquals(out.total, undefined);
@@ -89,7 +90,7 @@ Deno.test("params: listResult falls back to the item count when meta omits one",
  * Aircall requires E.164 for every number it dials or transfers to — "+" then
  * country code and digits, no spaces or punctuation.
  */
-Deno.test("params: the E.164 pattern accepts real numbers and rejects formatted ones", () => {
+test("params: the E.164 pattern accepts real numbers and rejects formatted ones", () => {
   const param = e164Param("to", "To", true, "hint");
   const re = new RegExp(param.validation!.pattern!);
   for (const good of ["+18001231234", "+33176360695", "+441200000000"]) {
@@ -100,7 +101,7 @@ Deno.test("params: the E.164 pattern accepts real numbers and rejects formatted 
   }
 });
 
-Deno.test("params: the vendor enums are transcribed, not invented", () => {
+test("params: the vendor enums are transcribed, not invented", () => {
   assertEquals(orderOptions.map((o) => o.value), ["asc", "desc"]);
   assertEquals(callDirectionOptions.map((o) => o.value), ["inbound", "outbound"]);
   assertEquals(

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const cred = { apiKey: "SECRET-KEY" };
 const account = { email: "a@b.test", remaining_total_credits: 10 };
 
-Deno.test("api-key: sign sets the api_key query param (trimmed), keeping the rest of the url", async () => {
+test("api-key: sign sets the api_key query param (trimmed), keeping the rest of the url", async () => {
   const { ctx } = mockCtx();
   const out = await apiKey.sign!({
     request: {
@@ -21,7 +22,7 @@ Deno.test("api-key: sign sets the api_key query param (trimmed), keeping the res
   assertEquals(out.headers["x-api-key"], undefined);
 });
 
-Deno.test("api-key: sign overwrites a pre-existing api_key rather than duplicating it", async () => {
+test("api-key: sign overwrites a pre-existing api_key rather than duplicating it", async () => {
   const { ctx } = mockCtx();
   const out = await apiKey.sign!({
     request: { url: "https://api.webscraping.ai/account?api_key=old", method: "GET", headers: {} },
@@ -30,7 +31,7 @@ Deno.test("api-key: sign overwrites a pre-existing api_key rather than duplicati
   assertEquals(new URL(out.url).searchParams.getAll("api_key"), ["SECRET-KEY"]);
 });
 
-Deno.test("api-key: test passes only on the credit counters, via a signed GET /account", async () => {
+test("api-key: test passes only on the credit counters, via a signed GET /account", async () => {
   const { ctx, calls } = mockCtx([{ body: account }]);
   assertEquals(await apiKey.test!({ credential: cred }, ctx), { ok: true });
   const u = new URL(calls[0].url);
@@ -42,7 +43,7 @@ Deno.test("api-key: test passes only on the credit counters, via a signed GET /a
   assert(res.message?.includes("without credit counters"));
 });
 
-Deno.test("api-key: a 403 Wrong API key is a rejection; the key is never repeated in the message", async () => {
+test("api-key: a 403 Wrong API key is a rejection; the key is never repeated in the message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Wrong API key." } }]);
   const res = await apiKey.test!({ credential: cred }, ctx);
   assertEquals(res.ok, false);
@@ -53,7 +54,7 @@ Deno.test("api-key: a 403 Wrong API key is a rejection; the key is never repeate
   assertEquals((await apiKey.test!({ credential: cred }, byBody.ctx)).ok, false);
 });
 
-Deno.test("api-key: 402 means the key was accepted; 429 and 5xx are not valid; a missing key skips the call", async () => {
+test("api-key: 402 means the key was accepted; 429 and 5xx are not valid; a missing key skips the call", async () => {
   const quota = mockCtx([{ status: 402, body: { message: "quota exceeded" } }]);
   assertEquals((await apiKey.test!({ credential: cred }, quota.ctx)).ok, true);
   const busy = mockCtx([{ status: 429, body: { message: "Too many" } }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import blacklistDomainList from "../../actions/blacklist-domain-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("blacklist-domain-list: GET /rest/v2/blacklist/domains", async () => {
+test("blacklist-domain-list: GET /rest/v2/blacklist/domains", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "domains": ["a.com", "b.io"], "total": 2 },

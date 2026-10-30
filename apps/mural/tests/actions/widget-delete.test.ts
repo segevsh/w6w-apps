@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import widgetDelete from "../../actions/widget-delete.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "muralId": "ws12345.1600", "widgetId": "w-1" };
 
-Deno.test("widget-delete: DELETE /murals/{muralId}/widgets/{widgetId}", async () => {
+test("widget-delete: DELETE /murals/{muralId}/widgets/{widgetId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await widgetDelete.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -17,13 +18,13 @@ Deno.test("widget-delete: DELETE /murals/{muralId}/widgets/{widgetId}", async ()
   assertEquals(out, { deleted: true, id: "w-1" });
 });
 
-Deno.test("widget-delete: puts no credential on the request (sign owns that)", async () => {
+test("widget-delete: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await widgetDelete.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("widget-delete: a vendor error surfaces its own code and message", async () => {
+test("widget-delete: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -34,7 +35,7 @@ Deno.test("widget-delete: a vendor error surfaces its own code and message", asy
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("widget-delete: an empty muralId is refused before any request", async () => {
+test("widget-delete: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await widgetDelete.execute({ ...INPUT, muralId: "  " as never }, ctx)

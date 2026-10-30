@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import translate from "../../actions/youtube-transcript-translate.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("youtube-transcript-translate: GETs /youtube/transcript/translate with lang and the url", async () => {
+test("youtube-transcript-translate: GETs /youtube/transcript/translate with lang and the url", async () => {
   const body = { content: "hola", lang: "es" };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await translate.execute({
@@ -21,7 +22,7 @@ Deno.test("youtube-transcript-translate: GETs /youtube/transcript/translate with
   });
 });
 
-Deno.test("youtube-transcript-translate: a video id alone works; no source or no lang makes no call", async () => {
+test("youtube-transcript-translate: a video id alone works; no source or no lang makes no call", async () => {
   const { ctx, calls } = mockCtx([{ body: { content: [], lang: "fr" } }]);
   await translate.execute({ videoId: "abc", lang: "fr", chunkSize: 100 }, ctx);
   assertEquals(Object.fromEntries(new URL(calls[0].url).searchParams), {

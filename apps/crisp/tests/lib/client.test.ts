@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   bitFlag,
@@ -10,7 +11,7 @@ import {
   websiteIdFromConnection,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the website-scoped URL and adds the tier header", async () => {
+test("client: builds the website-scoped URL and adds the tier header", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { error: false, reason: "resolved", data: { ok: 1 } } }],
     "site_1",
@@ -26,7 +27,7 @@ Deno.test("client: builds the website-scoped URL and adds the tier header", asyn
   assertEquals(call.headers["authorization"], undefined);
 });
 
-Deno.test("client: appends non-empty query params only", async () => {
+test("client: appends non-empty query params only", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: [] } }], "site_1");
   const client = new CrispClient(ctx);
   await client.request("/conversations/1", {
@@ -38,7 +39,7 @@ Deno.test("client: appends non-empty query params only", async () => {
   assertEquals(url.searchParams.has("filter_unread"), false);
 });
 
-Deno.test("client: JSON-encodes a request body and sets content-type", async () => {
+test("client: JSON-encodes a request body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { error: false, data: { fingerprint: 1 } },
@@ -52,7 +53,7 @@ Deno.test("client: JSON-encodes a request body and sets content-type", async () 
   assertEquals(JSON.parse(calls[0].body!), { type: "text", content: "hi" });
 });
 
-Deno.test("client: throws on a non-ok HTTP status, message carries the vendor reason", async () => {
+test("client: throws on a non-ok HTTP status, message carries the vendor reason", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: { error: true, reason: "session_not_found", data: {} } },
   ], "site_1");
@@ -64,7 +65,7 @@ Deno.test("client: throws on a non-ok HTTP status, message carries the vendor re
   );
 });
 
-Deno.test("client: throws when the envelope itself reports error:true even on HTTP 200", async () => {
+test("client: throws when the envelope itself reports error:true even on HTTP 200", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { error: true, reason: "not_allowed", data: {} } },
   ], "site_1");
@@ -72,7 +73,7 @@ Deno.test("client: throws when the envelope itself reports error:true even on HT
   await assertRejects(() => client.request("/website"), Error, "not_allowed");
 });
 
-Deno.test("client: throws a clear error when the connection carries no websiteId", () => {
+test("client: throws a clear error when the connection carries no websiteId", () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {
@@ -84,26 +85,26 @@ Deno.test("client: throws a clear error when the connection carries no websiteId
   assert(threw, "expected constructing CrispClient without a websiteId to throw");
 });
 
-Deno.test("websiteIdFromConnection: reads display.websiteId", () => {
+test("websiteIdFromConnection: reads display.websiteId", () => {
   assertEquals(
     websiteIdFromConnection({ display: { websiteId: "abc" } } as never),
     "abc",
   );
 });
 
-Deno.test("formatError: falls back to bare status when there is no body or reason", () => {
+test("formatError: falls back to bare status when there is no body or reason", () => {
   assertEquals(formatError(500, undefined), "HTTP 500");
   assertEquals(formatError(500, { error: true }), "HTTP 500");
   assertEquals(formatError(404, { error: true, reason: "not_found" }), "HTTP 404: not_found");
 });
 
-Deno.test("bitFlag: maps booleans to Crisp's 1/0 query convention, passes through undefined", () => {
+test("bitFlag: maps booleans to Crisp's 1/0 query convention, passes through undefined", () => {
   assertEquals(bitFlag(true), 1);
   assertEquals(bitFlag(false), 0);
   assertEquals(bitFlag(undefined), undefined);
 });
 
-Deno.test("compact: drops undefined and empty-string values only", () => {
+test("compact: drops undefined and empty-string values only", () => {
   assertEquals(compact({ a: "x", b: undefined, c: "", d: 0, e: false }), {
     a: "x",
     d: 0,
@@ -111,7 +112,7 @@ Deno.test("compact: drops undefined and empty-string values only", () => {
   });
 });
 
-Deno.test("csv: splits and trims, empty/blank input is left unset", () => {
+test("csv: splits and trims, empty/blank input is left unset", () => {
   assertEquals(csv("a, b ,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv(undefined), undefined);

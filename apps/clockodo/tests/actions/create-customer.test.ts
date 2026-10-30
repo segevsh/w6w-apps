@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-customer.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-customer: POSTs /v3/customers with the given fields", async () => {
+test("create-customer: POSTs /v3/customers with the given fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 3, name: "ACME" } } }]);
   const out = await exec(action, {
     name: " ACME ",
@@ -23,7 +24,7 @@ Deno.test("create-customer: POSTs /v3/customers with the given fields", async ()
   assertEquals(out, { data: { id: 3, name: "ACME" } });
 });
 
-Deno.test("create-customer: a missing name is refused; a 409 surfaces", async () => {
+test("create-customer: a missing name is refused; a 409 surfaces", async () => {
   await assertRejects(() => exec(action, { name: "  " }, mockCtx().ctx), Error, "name is required");
   const { ctx } = mockCtx([{
     status: 409,

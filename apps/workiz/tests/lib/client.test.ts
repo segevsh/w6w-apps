@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_BASE,
   API_PREFIX,
@@ -13,32 +14,32 @@ import {
 } from "../../lib/client.ts";
 import { bodyOf, forbiddenBody, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("client: one host, one prefix, and the token is not part of either", () => {
+test("client: one host, one prefix, and the token is not part of either", () => {
   assertEquals(API_BASE, "https://api.workiz.com");
   assertEquals(API_PREFIX, "/api/v1");
 });
 
-Deno.test("client: compact drops only unset values, keeping false and 0", () => {
+test("client: compact drops only unset values, keeping false and 0", () => {
   assertEquals(
     compact({ a: 1, b: false, c: 0, d: undefined, e: null, f: "" }),
     { a: 1, b: false, c: 0 },
   );
 });
 
-Deno.test("client: compact renames camelCase form keys to Workiz's wire names", () => {
+test("client: compact renames camelCase form keys to Workiz's wire names", () => {
   assertEquals(
     compact({ authSecret: "sec_1", uuid: "abc" }, { authSecret: "auth_secret", uuid: "UUID" }),
     { auth_secret: "sec_1", UUID: "abc" },
   );
 });
 
-Deno.test("client: encodeId escapes a path segment", () => {
+test("client: encodeId escapes a path segment", () => {
   assertEquals(encodeId("abc-123"), "abc-123");
   assertEquals(encodeId("a/b?c"), "a%2Fb%3Fc");
   assertEquals(encodeId("  spaced  "), "spaced");
 });
 
-Deno.test("client: truncate keeps short text and caps long text", () => {
+test("client: truncate keeps short text and caps long text", () => {
   assertEquals(truncate("short"), "short");
   const long = "x".repeat(700);
   const out = truncate(long, 600);
@@ -46,7 +47,7 @@ Deno.test("client: truncate keeps short text and caps long text", () => {
   assert(out.includes("700 bytes truncated"), out.slice(-40));
 });
 
-Deno.test("client: the Forbidden shape is matched on fields, not on status", () => {
+test("client: the Forbidden shape is matched on fields, not on status", () => {
   assert(isForbiddenBody(forbiddenBody()));
   assert(isForbiddenBody({ success: false, error: "Forbidden" }));
   assertEquals(isForbiddenBody({ success: true, error: "Forbidden" }), false);
@@ -55,7 +56,7 @@ Deno.test("client: the Forbidden shape is matched on fields, not on status", () 
   assertEquals(isForbiddenBody(null), false);
 });
 
-Deno.test("client: formatWorkizError surfaces the vendor message, token-free", () => {
+test("client: formatWorkizError surfaces the vendor message, token-free", () => {
   assertEquals(
     formatWorkizError(403, "GET", "/team/all/", forbiddenBody()),
     "Workiz refused GET /team/all/ (403 Forbidden): Invalid API path or malformed API key.",
@@ -71,7 +72,7 @@ Deno.test("client: formatWorkizError surfaces the vendor message, token-free", (
 });
 
 /** `/job/get/` and `/job/all/` nest each record one level deeper — collapse that. */
-Deno.test("client: unwrapRecord collapses {flag, data} and passes bare records through", () => {
+test("client: unwrapRecord collapses {flag, data} and passes bare records through", () => {
   assertEquals(unwrapRecord({ flag: true, data: { UUID: "j1" } }), { UUID: "j1" });
   // A bare record has no `data`, so it survives untouched.
   assertEquals(unwrapRecord({ UUID: "l1" }), { UUID: "l1" });
@@ -82,7 +83,7 @@ Deno.test("client: unwrapRecord collapses {flag, data} and passes bare records t
   });
 });
 
-Deno.test("client: unwrapList reads all three shapes the API returns", () => {
+test("client: unwrapList reads all three shapes the API returns", () => {
   // Bare array of records (team/all, lead/all, TimeOff/get).
   assertEquals(unwrapList([{ UUID: "l1" }, { UUID: "l2" }]), [{ UUID: "l1" }, { UUID: "l2" }]);
   // Array of wrappers (job/get, and job/all's documented reading).
@@ -96,7 +97,7 @@ Deno.test("client: unwrapList reads all three shapes the API returns", () => {
   assertEquals(unwrapList(null), []);
 });
 
-Deno.test("client: json sends the token-free path, and the right accept header", async () => {
+test("client: json sends the token-free path, and the right accept header", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new WorkizClient(ctx).json("/team/all/");
 
@@ -107,7 +108,7 @@ Deno.test("client: json sends the token-free path, and the right accept header",
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("client: json builds a JSON body with a content type", async () => {
+test("client: json builds a JSON body with a content type", async () => {
   const { ctx, calls } = mockCtx([{ body: { flag: true, data: [] } }]);
   await new WorkizClient(ctx).json("/lead/create/", {
     method: "POST",
@@ -119,7 +120,7 @@ Deno.test("client: json builds a JSON body with a content type", async () => {
   assertEquals(bodyOf(calls[0]), { FirstName: "Dana" });
 });
 
-Deno.test("client: scalar query params are set once, arrays are repeated", async () => {
+test("client: scalar query params are set once, arrays are repeated", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new WorkizClient(ctx).json("/lead/all/", {
     query: { start_date: "2026-09-01", offset: 0, records: 100, only_open: false },
@@ -136,7 +137,7 @@ Deno.test("client: scalar query params are set once, arrays are repeated", async
   assertEquals(queryAll(second.calls[0].url), { status: ["Submited", "New"] });
 });
 
-Deno.test("client: unset query params are omitted, false and 0 are not", async () => {
+test("client: unset query params are omitted, false and 0 are not", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new WorkizClient(ctx).json("/job/all/", {
     query: { start_date: undefined, offset: 0, records: 10, only_open: false },
@@ -144,7 +145,7 @@ Deno.test("client: unset query params are omitted, false and 0 are not", async (
   assertEquals(queryOf(calls[0].url), { offset: "0", records: "10", only_open: "false" });
 });
 
-Deno.test("client: a non-2xx response throws with the vendor's own message", async () => {
+test("client: a non-2xx response throws with the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: forbiddenBody() }]);
   await assertRejects(
     () => new WorkizClient(ctx).json("/team/all/"),
@@ -154,12 +155,12 @@ Deno.test("client: a non-2xx response throws with the vendor's own message", asy
 });
 
 /** HTTP 200 is not proof of success: the Forbidden body at 200 is still a failure. */
-Deno.test("client: a 200 carrying the Forbidden body throws", async () => {
+test("client: a 200 carrying the Forbidden body throws", async () => {
   const { ctx } = mockCtx([{ status: 200, body: forbiddenBody() }]);
   await assertRejects(() => new WorkizClient(ctx).json("/team/all/"), Error, "Workiz refused");
 });
 
-Deno.test("client: an empty 204 body parses to undefined rather than throwing", async () => {
+test("client: an empty 204 body parses to undefined rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new WorkizClient(ctx).json("/lead/all/"), undefined);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import queueList from "../../actions/queue-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("queue-list: calls GET /v1/queues", async () => {
+test("queue-list: calls GET /v1/queues", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "data": [] } }]);
   const out = await queueList.execute({} as never, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("queue-list: calls GET /v1/queues", async () => {
   assertEquals(out, { "data": [] });
 });
 
-Deno.test("queue-list: surfaces a Dixa error message with the status", async () => {
+test("queue-list: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const WEBHOOK = {
   triggers: ["INCOMING_MESSAGE"],
 };
 
-Deno.test("webhook-list: reads the webhooks page and returns its rows", async () => {
+test("webhook-list: reads the webhooks page and returns its rows", async () => {
   const { ctx, calls } = mockCtx([{ body: page([WEBHOOK], { totalElements: 1 }) }]);
   const result = await webhookList.execute({}, ctx) as { content: unknown[] };
 
@@ -17,13 +18,13 @@ Deno.test("webhook-list: reads the webhooks page and returns its rows", async ()
   assertEquals(result.content, [WEBHOOK]);
 });
 
-Deno.test("webhook-list: forwards page and size verbatim", async () => {
+test("webhook-list: forwards page and size verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await webhookList.execute({ page: 0, size: 50 }, ctx);
   assertEquals(queryOf(calls[0].url), { page: "0", size: "50" });
 });
 
-Deno.test("webhook-list: is a read action grouped under webhook", () => {
+test("webhook-list: is a read action grouped under webhook", () => {
   assertEquals(webhookList.type, "read");
   assertEquals(webhookList.resource, "webhook");
 });

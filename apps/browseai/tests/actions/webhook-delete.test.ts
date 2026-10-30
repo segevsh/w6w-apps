@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete: DELETEs /robots/{robotId}/webhooks/{webhookId}", async () => {
+test("webhook-delete: DELETEs /robots/{robotId}/webhooks/{webhookId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: errorBody(200, "success") }]);
   const out = await webhookDelete.execute({ robotId: "r1", webhookId: "w1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("webhook-delete: DELETEs /robots/{robotId}/webhooks/{webhookId}", asyn
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("webhook-delete: is declared idempotent", () => {
+test("webhook-delete: is declared idempotent", () => {
   assertEquals(webhookDelete.idempotent, true);
 });

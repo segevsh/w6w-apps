@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
@@ -9,7 +10,7 @@ const credential = {
   useCdn: false,
 };
 
-Deno.test("token: signs as a Bearer token", async () => {
+test("token: signs as a Bearer token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://abc123.api.sanity.io/v2025-02-19/data/query/production",
@@ -21,7 +22,7 @@ Deno.test("token: signs as a Bearer token", async () => {
 });
 
 /** The management API proves the token reaches THIS project. */
-Deno.test("token: test reads the project from the management API", async () => {
+test("token: test reads the project from the management API", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { displayName: "Acme Content" } }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, true);
@@ -30,27 +31,27 @@ Deno.test("token: test reads the project from the management API", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/v2025-02-19/projects/abc123");
 });
 
-Deno.test("token: a 404 names the project rather than blaming the token", async () => {
+test("token: a 404 names the project rather than blaming the token", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, false);
   assert(/no project "abc123"/.test(out.message!), out.message);
 });
 
-Deno.test("token: a 401 mentions the other-project case", async () => {
+test("token: a 401 mentions the other-project case", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, false);
   assert(/another project/.test(out.message!), out.message);
 });
 
-Deno.test("token: a missing project never reaches the network", async () => {
+test("token: a missing project never reaches the network", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test!({ credential: { token: "x" } }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("token: afterConnect records what a URL needs, never the token", async () => {
+test("token: afterConnect records what a URL needs, never the token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { displayName: "Acme Content" } }]);
   const display = await auth.afterConnect!({ credential }, ctx) as Record<string, unknown>;
   assertEquals(display.projectId, "abc123");
@@ -60,7 +61,7 @@ Deno.test("token: afterConnect records what a URL needs, never the token", async
   assert(!JSON.stringify(display).includes("sk-abc"));
 });
 
-Deno.test("token: the dataset defaults to production", async () => {
+test("token: the dataset defaults to production", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!(
     { credential: { token: "x", projectId: "abc123" } },
@@ -70,12 +71,12 @@ Deno.test("token: the dataset defaults to production", async () => {
 });
 
 /** Sanity's own advice: an integration should read the live API. */
-Deno.test("token: the CDN is off by default, and the hint says why", () => {
+test("token: the CDN is off by default, and the hint says why", () => {
   const f = auth.fields!.find((f) => f.key === "useCdn")!;
   assertEquals(f.default, false);
   assert(/two hours/.test(f.hint!), f.hint);
 });
 
-Deno.test("token: the token field is declared secret", () => {
+test("token: the token field is declared secret", () => {
   assertEquals(auth.fields!.find((f) => f.key === "token")!.type, "secret");
 });

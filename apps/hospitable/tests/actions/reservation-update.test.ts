@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationUpdate from "../../actions/reservation-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("reservation-update: a partial update sends only supplied fields", async () => {
+test("reservation-update: a partial update sends only supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "r1" } } }]);
   await reservationUpdate.execute({
     identifier: "r1",
@@ -22,7 +23,7 @@ Deno.test("reservation-update: a partial update sends only supplied fields", asy
   });
 });
 
-Deno.test("reservation-update: a full update on a manual booking nests guests and financials", async () => {
+test("reservation-update: a full update on a manual booking nests guests and financials", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await reservationUpdate.execute({
     identifier: "r1",

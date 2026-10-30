@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postCreate from "../../actions/post-create.ts";
 import { envelope, jsonBody, mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const POST = {
   providers: [{ network: "instagram" }],
 };
 
-Deno.test("post-create: POST shapes the vendor body, merging per-network data", async () => {
+test("post-create: POST shapes the vendor body, merging per-network data", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 11 }) }]);
   const out = await postCreate.execute({
     blogId: "9",
@@ -31,7 +32,7 @@ Deno.test("post-create: POST shapes the vendor body, merging per-network data", 
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("post-create: invalid providers JSON is refused before any request", async () => {
+test("post-create: invalid providers JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

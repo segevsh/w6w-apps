@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ITEM, ok } from "./_shared.ts";
 import action from "../../actions/item-field-get.ts";
 
 /** One value, and nothing else enters the run's data. */
-Deno.test("item-field-get: returns exactly one field", async () => {
+test("item-field-get: returns exactly one field", async () => {
   const { ctx } = mockCtx([ok(ITEM)], { display });
   const result = await action.execute!({
     vaultId: "v1",
@@ -18,7 +19,7 @@ Deno.test("item-field-get: returns exactly one field", async () => {
 });
 
 /** `purpose` survives a renamed or localised label. */
-Deno.test("item-field-get: `password` matches on purpose, not on the label", async () => {
+test("item-field-get: `password` matches on purpose, not on the label", async () => {
   const { ctx } = mockCtx([
     ok({
       fields: [
@@ -34,7 +35,7 @@ Deno.test("item-field-get: `password` matches on purpose, not on the label", asy
   assertEquals(result.value, "x");
 });
 
-Deno.test("item-field-get: a label or an id both work", async () => {
+test("item-field-get: a label or an id both work", async () => {
   const byLabel = mockCtx([ok(ITEM)], { display });
   const label = await action.execute!({
     vaultId: "v1",
@@ -51,7 +52,7 @@ Deno.test("item-field-get: a label or an id both work", async () => {
 });
 
 /** Picking one silently is how the wrong credential gets used. */
-Deno.test("item-field-get: duplicate labels are refused rather than guessed", async () => {
+test("item-field-get: duplicate labels are refused rather than guessed", async () => {
   const { ctx } = mockCtx([
     ok({
       fields: [
@@ -68,7 +69,7 @@ Deno.test("item-field-get: duplicate labels are refused rather than guessed", as
   assert(/Use the field's id/.test(error.message), error.message);
 });
 
-Deno.test("item-field-get: an unknown field lists what is available", async () => {
+test("item-field-get: an unknown field lists what is available", async () => {
   const { ctx } = mockCtx([ok(ITEM)], { display });
   const error = await assertRejects(
     async () => await action.execute!({ vaultId: "v1", itemId: "i1", field: "apiKey" }, ctx),
@@ -78,7 +79,7 @@ Deno.test("item-field-get: an unknown field lists what is available", async () =
 });
 
 /** The value never reaches a log, and neither does the item's title. */
-Deno.test("item-field-get: logs the label and whether it was secret, nothing else", async () => {
+test("item-field-get: logs the label and whether it was secret, nothing else", async () => {
   const { ctx, logs } = mockCtx([ok(ITEM)], { display });
   await action.execute!({ vaultId: "v1", itemId: "i1", field: "password" }, ctx);
   const dumped = JSON.stringify(logs);
@@ -87,7 +88,7 @@ Deno.test("item-field-get: logs the label and whether it was secret, nothing els
   assertEquals(logs[0].data, { label: "password", isSecret: true });
 });
 
-Deno.test("item-field-get: an Events connection is refused", async () => {
+test("item-field-get: an Events connection is refused", async () => {
   const { ctx, calls } = mockCtx([], { display: eventsDisplay });
   await assertRejects(
     async () => await action.execute!({ vaultId: "v1", itemId: "i1", field: "password" }, ctx),
@@ -97,6 +98,6 @@ Deno.test("item-field-get: an Events connection is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-field-get: says why it exists alongside item-get", () => {
+test("item-field-get: says why it exists alongside item-get", () => {
   assert(/never enters the run's data/.test(action.description!), action.description);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import highlightAdd from "../../actions/highlight-add.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
  * Highlights have no write endpoints of their own: adding one is a PUT on the
  * PARENT raindrop carrying a one-element `highlights` array.
  */
-Deno.test("highlight-add: PUTs the parent raindrop with a highlights array", async () => {
+test("highlight-add: PUTs the parent raindrop with a highlights array", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1, highlights: [{ _id: "h1" }] }) }]);
   const out = await highlightAdd.execute(
     { raindropId: 373777232, text: "Orion is a WebKit browser", color: "red", note: "native" },
@@ -22,7 +23,7 @@ Deno.test("highlight-add: PUTs the parent raindrop with a highlights array", asy
 });
 
 /** No `_id`: an element without one is what makes this an add rather than an edit. */
-Deno.test("highlight-add: sends no _id, which is what distinguishes add from update", async () => {
+test("highlight-add: sends no _id, which is what distinguishes add from update", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ highlights: [] }) }]);
   await highlightAdd.execute({ raindropId: 1, text: "quote" }, ctx);
 
@@ -36,7 +37,7 @@ Deno.test("highlight-add: sends no _id, which is what distinguishes add from upd
  * action would silently destroy a highlight from a form labelled "add", so it is
  * refused before the request.
  */
-Deno.test("highlight-add: refuses empty text, because empty text means delete", async () => {
+test("highlight-add: refuses empty text, because empty text means delete", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(highlightAdd.execute({ raindropId: 1, text: "   " }, ctx)),
@@ -47,6 +48,6 @@ Deno.test("highlight-add: refuses empty text, because empty text means delete", 
 });
 
 /** A retry adds a second identical highlight. */
-Deno.test("highlight-add: is not idempotent", () => {
+test("highlight-add: is not idempotent", () => {
   assertEquals(highlightAdd.idempotent, false);
 });

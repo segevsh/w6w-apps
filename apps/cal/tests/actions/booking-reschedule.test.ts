@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-reschedule.ts";
 
-Deno.test("booking-reschedule: POSTs /bookings/{uid}/reschedule with cal-api-version 2026-02-25", async () => {
+test("booking-reschedule: POSTs /bookings/{uid}/reschedule with cal-api-version 2026-02-25", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { uid: "new-uid" } } }]);
   const result = await action.execute(
     { bookingUid: "abc", start: "2026-08-15T10:00:00Z" },
@@ -18,7 +19,7 @@ Deno.test("booking-reschedule: POSTs /bookings/{uid}/reschedule with cal-api-ver
   assertEquals(body.start, "2026-08-15T10:00:00Z");
 });
 
-Deno.test("booking-reschedule: forwards reschedulingReason and rescheduledBy", async () => {
+test("booking-reschedule: forwards reschedulingReason and rescheduledBy", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute(
     {
@@ -34,6 +35,6 @@ Deno.test("booking-reschedule: forwards reschedulingReason and rescheduledBy", a
   assertEquals(body.rescheduledBy, "owner@example.com");
 });
 
-Deno.test("booking-reschedule: is declared non-idempotent (creates a new booking)", () => {
+test("booking-reschedule: is declared non-idempotent (creates a new booking)", () => {
   assertEquals(action.idempotent, false);
 });

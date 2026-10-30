@@ -1,17 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 
-Deno.test("quota: has a real check hook, unlike zohobooks' declared absence", () => {
+test("quota: has a real check hook, unlike zohobooks' declared absence", () => {
   assertEquals(typeof quota.check, "function");
   assertEquals(quota.unavailable, undefined);
 });
 
-Deno.test("quota: informational, so a probe failure cannot pin the App at unknown forever", () => {
+test("quota: informational, so a probe failure cannot pin the App at unknown forever", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: reads X-Rate-Limit-Remaining-v3 off GET /organizations", async () => {
+test("quota: reads X-Rate-Limit-Remaining-v3 off GET /organizations", async () => {
   const { ctx, calls } = mockDeskCtx([
     { body: { data: [] }, headers: { "x-rate-limit-remaining-v3": "950" } },
   ]);
@@ -24,7 +25,7 @@ Deno.test("quota: reads X-Rate-Limit-Remaining-v3 off GET /organizations", async
   );
 });
 
-Deno.test("quota: down once the daily budget is fully exhausted", async () => {
+test("quota: down once the daily budget is fully exhausted", async () => {
   const { ctx } = mockDeskCtx([
     { body: { data: [] }, headers: { "x-rate-limit-remaining-v3": "0" } },
   ]);
@@ -32,7 +33,7 @@ Deno.test("quota: down once the daily budget is fully exhausted", async () => {
   assertEquals((result as { state: string }).state, "down");
 });
 
-Deno.test("quota: degraded under the conservative low-headroom floor", async () => {
+test("quota: degraded under the conservative low-headroom floor", async () => {
   const { ctx } = mockDeskCtx([
     { body: { data: [] }, headers: { "x-rate-limit-remaining-v3": "10" } },
   ]);
@@ -40,19 +41,19 @@ Deno.test("quota: degraded under the conservative low-headroom floor", async () 
   assertEquals((result as { state: string }).state, "degraded");
 });
 
-Deno.test("quota: unknown when the header is absent", async () => {
+test("quota: unknown when the header is absent", async () => {
   const { ctx } = mockDeskCtx([{ body: { data: [] } }]);
   const result = await quota.check!({}, ctx);
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("quota: unknown when the probe itself fails", async () => {
+test("quota: unknown when the probe itself fails", async () => {
   const { ctx } = mockDeskCtx([{ status: 500, body: "boom" }]);
   const result = await quota.check!({}, ctx);
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("quota: declares no network widening (stays on the app's own allowlist)", () => {
+test("quota: declares no network widening (stays on the app's own allowlist)", () => {
   assertEquals(quota.network, undefined);
   assertEquals(quota.kind, "quota");
 });

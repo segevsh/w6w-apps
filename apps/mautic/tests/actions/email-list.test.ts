@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-list.ts";
 
 const conn = { display: { baseUrl: "https://mautic.example.com" } };
 
-Deno.test("email-list: GETs /emails and unwraps the `emails` map", async () => {
+test("email-list: GETs /emails and unwraps the `emails` map", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { total: 1, emails: { "1": { id: 1, name: "Welcome" } } } },
   ], conn);

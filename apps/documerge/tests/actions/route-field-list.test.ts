@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeFieldList from "../../actions/route-field-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-field-list: GET /api/routes/fields/{routeId}", async () => {
+test("route-field-list: GET /api/routes/fields/{routeId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeFieldList.execute({ "routeId": 13 } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("route-field-list: GET /api/routes/fields/{routeId}", async () => {
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("route-field-list: a vendor error surfaces its own message", async () => {
+test("route-field-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () => Promise.resolve(routeFieldList.execute({ "routeId": 13 } as never, ctx)),

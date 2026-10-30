@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskSearch from "../../actions/task-search.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-search: GET /tasks/search with the documented query and body", async () => {
+test("task-search: GET /tasks/search with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await taskSearch.execute(
     { "query": "Managem", "limit": 2, "searchInClosed": true },
@@ -27,7 +28,7 @@ Deno.test("task-search: GET /tasks/search with the documented query and body", a
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": 2 });
 });
 
-Deno.test("task-search: an Everhour error surfaces its message and status", async () => {
+test("task-search: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -40,6 +41,6 @@ Deno.test("task-search: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("task-search: declares search", () => {
+test("task-search: declares search", () => {
   assertEquals(taskSearch.type, "search");
 });

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/interaction-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const ok = { id: "i1", credentialId: "c1", eventType: "credential_viewed", triggeredBy: "guest" };
 
-Deno.test("interaction-create: POST /v1/credential-interactions with all four required fields", async () => {
+test("interaction-create: POST /v1/credential-interactions with all four required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: ok }]);
   await action.execute({
     credentialId: "c1",
@@ -22,7 +23,7 @@ Deno.test("interaction-create: POST /v1/credential-interactions with all four re
   });
 });
 
-Deno.test("interaction-create: triggeredAt defaults to now as an ISO timestamp", async () => {
+test("interaction-create: triggeredAt defaults to now as an ISO timestamp", async () => {
   const { ctx, calls } = mockCtx([{ body: ok }]);
   await action.execute({
     credentialId: "c1",
@@ -33,7 +34,7 @@ Deno.test("interaction-create: triggeredAt defaults to now as an ISO timestamp",
   assertEquals(new Date(at).toISOString(), at);
 });
 
-Deno.test("interaction-create: unknown event and actor are rejected before any request", async () => {
+test("interaction-create: unknown event and actor are rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

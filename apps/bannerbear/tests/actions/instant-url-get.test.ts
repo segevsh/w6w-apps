@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import instantUrlGet from "../../actions/instant-url-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("instant-url-get: GET /instant_urls/{uid}", async () => {
+test("instant-url-get: GET /instant_urls/{uid}", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "iu1", render_count: 42 } }]);
   const out = await instantUrlGet.execute({ uid: "iu1" }, ctx) as unknown as Record<
     string,
@@ -13,7 +14,7 @@ Deno.test("instant-url-get: GET /instant_urls/{uid}", async () => {
   assertEquals(out.render_count, 42);
 });
 
-Deno.test("instant-url-get: requires uid", async () => {
+test("instant-url-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => instantUrlGet.execute({ uid: "" }, ctx));
 });

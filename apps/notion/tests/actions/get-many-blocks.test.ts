@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-many-blocks.ts";
 
-Deno.test("get-many-blocks: GETs /blocks/{id}/children with page_size and cursor", async () => {
+test("get-many-blocks: GETs /blocks/{id}/children with page_size and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", results: [], next_cursor: null, has_more: false },
   }]);

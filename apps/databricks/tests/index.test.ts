@@ -1,7 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 8 actions with unique keys", () => {
+test("index: exports 8 actions with unique keys", () => {
   assertEquals(app.actions.length, 8);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
@@ -17,17 +19,17 @@ Deno.test("index: exports 8 actions with unique keys", () => {
   ]);
 });
 
-Deno.test("index: exports the bearer-token auth method", () => {
+test("index: exports the bearer-token auth method", () => {
   assertEquals((app.auth ?? []).map((a) => a.key), ["bearer-token"]);
 });
 
-Deno.test("index: exports 2 health checks with unique keys", () => {
+test("index: exports 2 health checks with unique keys", () => {
   const checks = app.healthChecks ?? [];
   assertEquals(checks.length, 2);
   assertEquals(checks.map((c) => c.key).sort(), ["service", "workspace"]);
 });
 
-Deno.test("index: every action has a kebab-case key and a valid type", () => {
+test("index: every action has a kebab-case key and a valid type", () => {
   const validTypes = new Set(["read", "search", "perform", "control"]);
   for (const action of app.actions) {
     assertEquals(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(action.key), true, `bad key: ${action.key}`);
@@ -37,7 +39,7 @@ Deno.test("index: every action has a kebab-case key and a valid type", () => {
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assertEquals(typeof action.idempotent, "boolean", `${action.key} missing idempotent flag`);
@@ -45,7 +47,7 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
   }
 });
 
-Deno.test("index: every action declares its outputs", () => {
+test("index: every action declares its outputs", () => {
   for (const action of app.actions) {
     const output = action.output;
     assert(Array.isArray(output) && output.length > 0, `${action.key} declares no output`);
@@ -58,9 +60,9 @@ Deno.test("index: every action declares its outputs", () => {
  * suffixes is narrower than the bare `*` the self-hosted apps in this pack need,
  * and it is what keeps a mistyped workspace URL from reaching an arbitrary host.
  */
-Deno.test("index: egress is scoped to Databricks' three cloud domains", async () => {
+test("index: egress is scoped to Databricks' three cloud domains", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network?: { allow?: string[] }; appearance: { icon: unknown } } };
 
   assertEquals(manifest.w6w.id, "io.w6w.databricks");
@@ -78,7 +80,7 @@ Deno.test("index: egress is scoped to Databricks' three cloud domains", async ()
  * not implement them either, and their request shapes could not be verified —
  * so nothing was invented for them. This pins that decision.
  */
-Deno.test("index: covers SQL and Unity Catalog only — no invented Jobs/Clusters", () => {
+test("index: covers SQL and Unity Catalog only — no invented Jobs/Clusters", () => {
   const resources = new Set(app.actions.map((a) => a.resource));
   assertEquals([...resources].sort(), ["catalog", "sql-statement", "table"]);
 });

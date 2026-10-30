@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { encodeBase64 } from "../../lib/client.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares endpoint / apiKeyId / apiKey fields", () => {
+test("api-key: declares endpoint / apiKeyId / apiKey fields", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -15,7 +16,7 @@ Deno.test("api-key: declares endpoint / apiKeyId / apiKey fields", () => {
   assertEquals(secret?.required, true);
 });
 
-Deno.test("api-key: sign injects an ApiKey Authorization header from base64(id:key)", async () => {
+test("api-key: sign injects an ApiKey Authorization header from base64(id:key)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -32,7 +33,7 @@ Deno.test("api-key: sign injects an ApiKey Authorization header from base64(id:k
   );
 });
 
-Deno.test("api-key: test hits <endpoint>/_security/_authenticate with the ApiKey header", async () => {
+test("api-key: test hits <endpoint>/_security/_authenticate with the ApiKey header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { username: "elastic" } }]);
   const result = await auth.test(
     {
@@ -49,14 +50,14 @@ Deno.test("api-key: test hits <endpoint>/_security/_authenticate with the ApiKey
   assertEquals(calls[0].headers["authorization"], `ApiKey ${encodeBase64("id1:secret1")}`);
 });
 
-Deno.test("api-key: test reports failure without a network call when fields are missing", async () => {
+test("api-key: test reports failure without a network call when fields are missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { apiKeyId: "id1" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test surfaces upstream status on failure", async () => {
+test("api-key: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     {
@@ -72,7 +73,7 @@ Deno.test("api-key: test surfaces upstream status on failure", async () => {
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: afterConnect republishes endpoint onto the connection display", () => {
+test("api-key: afterConnect republishes endpoint onto the connection display", () => {
   const out = auth.afterConnect!(
     { credential: { endpoint: "https://example.com:9200", apiKeyId: "id1", apiKey: "s" } },
     mockCtx().ctx,

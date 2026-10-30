@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-many.ts";
 
-Deno.test("user-get-many: sends the Users query", async () => {
+test("user-get-many: sends the Users query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { users: { nodes: [] } } } }]);
   await action.execute({ first: 10 }, ctx);
   const sent = JSON.parse(calls[0].body!);

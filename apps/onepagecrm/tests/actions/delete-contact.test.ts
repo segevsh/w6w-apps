@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deleteContact from "../../actions/delete-contact.ts";
 import { envelope, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("delete-contact: DELETE /contacts/{id}", async () => {
+test("delete-contact: DELETE /contacts/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   const out = await deleteContact.execute({ contactId: "c1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,14 +12,14 @@ Deno.test("delete-contact: DELETE /contacts/{id}", async () => {
   assertEquals(out, { deleted: true, restored: false });
 });
 
-Deno.test("delete-contact: undo=true restores instead", async () => {
+test("delete-contact: undo=true restores instead", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   const out = await deleteContact.execute({ contactId: "c1", undo: true }, ctx);
   assertEquals(queryOf(calls[0].url), { undo: "true" });
   assertEquals(out, { deleted: false, restored: true });
 });
 
-Deno.test("delete-contact: a permission 403 (JSON envelope) is an error, not a throttle", async () => {
+test("delete-contact: a permission 403 (JSON envelope) is an error, not a throttle", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("no_permission_to_complete_action", "no permission", 403),

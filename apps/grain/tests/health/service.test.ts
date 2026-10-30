@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -11,7 +12,7 @@ const summary = (
   components,
 });
 
-Deno.test("service: reports ok with component breakdown when Grain is fully operational", async () => {
+test("service: reports ok with component breakdown when Grain is fully operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: summary("none", [
       { name: "Grain Desktop App", status: "operational" },
@@ -25,7 +26,7 @@ Deno.test("service: reports ok with component breakdown when Grain is fully oper
   assertEquals(new URL(calls[0].url).hostname, "www.grainstatus.com");
 });
 
-Deno.test("service: maps a major incident to down", async () => {
+test("service: maps a major incident to down", async () => {
   const { ctx } = mockCtx([{
     body: summary("major", [{ name: "Recording Processing", status: "major_outage" }]),
   }]);
@@ -34,7 +35,7 @@ Deno.test("service: maps a major incident to down", async () => {
   assertEquals(report.components?.["recording-processing"].state, "down");
 });
 
-Deno.test("service: maps a minor incident to degraded", async () => {
+test("service: maps a minor incident to degraded", async () => {
   const { ctx } = mockCtx([{
     body: summary("minor", [{ name: "Grain Web App", status: "degraded_performance" }]),
   }]);
@@ -42,13 +43,13 @@ Deno.test("service: maps a minor incident to degraded", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: reports unknown, not down, when the status API itself fails", async () => {
+test("service: reports unknown, not down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: skips group headers when building the component map", async () => {
+test("service: skips group headers when building the component map", async () => {
   const { ctx } = mockCtx([{
     body: summary("none", [
       { name: "Recording", status: "operational", group: true },
@@ -59,7 +60,7 @@ Deno.test("service: skips group headers when building the component map", async 
   assertEquals(Object.keys(report.components ?? {}), ["recording-processing"]);
 });
 
-Deno.test("service: kind service, unauthenticated, egress restricted to the status host", () => {
+test("service: kind service, unauthenticated, egress restricted to the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["www.grainstatus.com"]);
 });

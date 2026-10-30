@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagList from "../../actions/contact-tag-list.ts";
 import { mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-list: GETs /contact-tags with no parameters", async () => {
+test("contact-tag-list: GETs /contact-tags with no parameters", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ id: 1, name: "vip", contacts_count: 3 }]) },
   ]);

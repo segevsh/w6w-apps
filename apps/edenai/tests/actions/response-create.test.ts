@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import responseCreate, { outputText } from "../../actions/response-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -14,13 +15,13 @@ const reply = {
   provider: "openai",
 };
 
-Deno.test("outputText: concatenates output_text parts of message items only", () => {
+test("outputText: concatenates output_text parts of message items only", () => {
   assertEquals(outputText(reply.output), "Hello there");
   assertEquals(outputText([{ type: "reasoning" }]), "");
   assertEquals(outputText(undefined), "");
 });
 
-Deno.test("response-create: sends the Responses API body and returns the text", async () => {
+test("response-create: sends the Responses API body and returns the text", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await responseCreate.execute({
     model: "openai/gpt-4o",
@@ -43,7 +44,7 @@ Deno.test("response-create: sends the Responses API body and returns the text", 
   assertEquals(out.cost, 0.01);
 });
 
-Deno.test("response-create: a JSON-array input is sent as items; a follow-up needs no input", async () => {
+test("response-create: a JSON-array input is sent as items; a follow-up needs no input", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }, { body: reply }]);
   await responseCreate.execute({ model: "m", input: '[{"role":"user","content":"x"}]' }, ctx);
   assertEquals(bodyOf(calls[0]).input, [{ role: "user", content: "x" }]);
@@ -52,13 +53,13 @@ Deno.test("response-create: a JSON-array input is sent as items; a follow-up nee
   assertEquals("input" in bodyOf(calls[1]), false);
 });
 
-Deno.test("response-create: text starting with a bracket that is not JSON stays text", async () => {
+test("response-create: text starting with a bracket that is not JSON stays text", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   await responseCreate.execute({ model: "m", input: "[note] hello" }, ctx);
   assertEquals(bodyOf(calls[0]).input, "[note] hello");
 });
 
-Deno.test("response-create: no input and no previous response fails before any request", async () => {
+test("response-create: no input and no previous response fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await responseCreate.execute({ model: "m" }, ctx),

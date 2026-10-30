@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import checkCreate from "../../actions/check-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const addr = {
   address_zip: "94107",
 };
 
-Deno.test("check-create: POSTs the documented body to /checks", async () => {
+test("check-create: POSTs the documented body to /checks", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_1", url: "https://lob-assets.com/x.pdf" } }]);
   const out = await checkCreate.execute({
     to: "adr_1",
@@ -36,7 +37,7 @@ Deno.test("check-create: POSTs the documented body to /checks", async () => {
   assertEquals(out.id, "x_1");
 });
 
-Deno.test("check-create: a saved address id passes through as a string, an inline address as an object", async () => {
+test("check-create: a saved address id passes through as a string, an inline address as an object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_2" } }]);
   await checkCreate.execute({
     ...{
@@ -67,7 +68,7 @@ Deno.test("check-create: a saved address id passes through as a string, an inlin
   assertEquals(bodyOf(second.calls[0]).to, addr);
 });
 
-Deno.test("check-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
+test("check-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
   const own = mockCtx([{ body: { id: "a" } }]);
   await checkCreate.execute({
     ...{
@@ -109,11 +110,11 @@ Deno.test("check-create: Idempotency-Key is the caller's own, else the invocatio
   assertEquals("idempotency-key" in none.calls[0].headers, false);
 });
 
-Deno.test("check-create: is declared non-idempotent (it mails a physical piece)", () => {
+test("check-create: is declared non-idempotent (it mails a physical piece)", () => {
   assertEquals(checkCreate.idempotent, false);
 });
 
-Deno.test("check-create: a missing use type is refused before any request", async () => {
+test("check-create: a missing use type is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -135,7 +136,7 @@ Deno.test("check-create: a missing use type is refused before any request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("check-create: Lob's validation error is surfaced with its code", async () => {
+test("check-create: Lob's validation error is surfaced with its code", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "to is invalid", 422) }]);
   await assertRejects(
     async () =>
@@ -153,7 +154,7 @@ Deno.test("check-create: Lob's validation error is surfaced with its code", asyn
   );
 });
 
-Deno.test("check-create: refuses a check with neither message nor check bottom", async () => {
+test("check-create: refuses a check with neither message nor check bottom", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -170,7 +171,7 @@ Deno.test("check-create: refuses a check with neither message nor check bottom",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("check-create: refuses a missing sender and a non-positive amount", async () => {
+test("check-create: refuses a missing sender and a non-positive amount", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -199,7 +200,7 @@ Deno.test("check-create: refuses a missing sender and a non-positive amount", as
   );
 });
 
-Deno.test("check-create: a check bottom replaces the message, and no mail_type is ever sent", async () => {
+test("check-create: a check bottom replaces the message, and no mail_type is ever sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "chk_1" } }]);
   await checkCreate.execute({
     to: "adr_1",

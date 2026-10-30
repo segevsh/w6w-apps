@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockSplunkCtx } from "../_helpers.ts";
 import { baseUrl, SplunkClient, stackFromConnection, unset } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's stack, not a param, on port 8089", async () => {
+test("client: builds the URL from the connection's stack, not a param, on port 8089", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { entry: [] } }], "acme.splunkcloud.com");
   await new SplunkClient(ctx).request("/services/data/indexes");
   assertEquals(
@@ -12,12 +13,12 @@ Deno.test("client: builds the URL from the connection's stack, not a param, on p
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no stack", () => {
+test("client: fails loudly when the connection carries no stack", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new SplunkClient(ctx), Error, "no stack");
 });
 
-Deno.test("client: sends form bodies as application/x-www-form-urlencoded, not JSON", async () => {
+test("client: sends form bodies as application/x-www-form-urlencoded, not JSON", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { sid: "1" } }]);
   await new SplunkClient(ctx).request("/services/search/jobs", {
     method: "POST",
@@ -27,7 +28,7 @@ Deno.test("client: sends form bodies as application/x-www-form-urlencoded, not J
   assertEquals(calls[0].body, "search=search+index%3D_internal");
 });
 
-Deno.test("client: surfaces Splunk's error body", async () => {
+test("client: surfaces Splunk's error body", async () => {
   const { ctx } = mockSplunkCtx([{
     status: 400,
     statusText: "Bad Request",
@@ -40,7 +41,7 @@ Deno.test("client: surfaces Splunk's error body", async () => {
   );
 });
 
-Deno.test("client: returns undefined for a 204", async () => {
+test("client: returns undefined for a 204", async () => {
   const { ctx } = mockSplunkCtx([{ status: 204 }]);
   assertEquals(
     await new SplunkClient(ctx).request("/services/search/jobs/1", { method: "DELETE" }),
@@ -48,7 +49,7 @@ Deno.test("client: returns undefined for a 204", async () => {
   );
 });
 
-Deno.test("stackFromConnection: reads the display data afterConnect records", () => {
+test("stackFromConnection: reads the display data afterConnect records", () => {
   assertEquals(
     stackFromConnection({ display: { stack: "acme.splunkcloud.com" } } as never),
     "acme.splunkcloud.com",
@@ -56,11 +57,11 @@ Deno.test("stackFromConnection: reads the display data afterConnect records", ()
   assertThrows(() => stackFromConnection(undefined), Error, "no stack");
 });
 
-Deno.test("baseUrl: builds the per-stack host on port 8089", () => {
+test("baseUrl: builds the per-stack host on port 8089", () => {
   assertEquals(baseUrl("acme.splunkcloud.com"), "https://acme.splunkcloud.com:8089");
 });
 
-Deno.test("unset: treats a blank string as absent", () => {
+test("unset: treats a blank string as absent", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("x"), "x");
 });

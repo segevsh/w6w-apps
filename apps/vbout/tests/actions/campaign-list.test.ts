@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-list: GETs emailmarketing/campaigns.json with the documented parameters", async () => {
+test("campaign-list: GETs emailmarketing/campaigns.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "campaigns": { "count": 1, "items": {} } }),
   }]);
@@ -16,7 +17,7 @@ Deno.test("campaign-list: GETs emailmarketing/campaigns.json with the documented
   assertEquals(out, { "campaigns": { "count": 1, "items": {} } });
 });
 
-Deno.test("campaign-list: is a read with no request body", async () => {
+test("campaign-list: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "campaigns": { "count": 1, "items": {} } }),
   }]);
@@ -25,7 +26,7 @@ Deno.test("campaign-list: is a read with no request body", async () => {
   assertEquals(campaignList.type, "read");
 });
 
-Deno.test("campaign-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("campaign-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

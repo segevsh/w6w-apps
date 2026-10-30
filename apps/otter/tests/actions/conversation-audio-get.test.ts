@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationAudioGet from "../../actions/conversation-audio-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("conversation-audio-get: fetches GET /conversations/{id}/audio", async () => {
+test("conversation-audio-get: fetches GET /conversations/{id}/audio", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       meta: { retrieved_at: "2026-09-29T00:00:00Z" },
@@ -16,7 +17,7 @@ Deno.test("conversation-audio-get: fetches GET /conversations/{id}/audio", async
   assertEquals(out.data.url, "https://test.com/audio.mp3");
 });
 
-Deno.test("conversation-audio-get: id is required", () => {
+test("conversation-audio-get: id is required", () => {
   const param = conversationAudioGet.params!.find((p) => p.key === "id")!;
   assertEquals(param.required, true);
 });

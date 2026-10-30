@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { NOTION_VERSION, NotionClient } from "../../lib/client.ts";
 
-Deno.test("client: pins Notion-Version on every request", async () => {
+test("client: pins Notion-Version on every request", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "database" } }]);
   const client = new NotionClient(ctx);
   await client.request("/databases/abc");
   assertEquals(calls[0].headers["notion-version"], NOTION_VERSION);
 });
 
-Deno.test("client: POST serialises body and sets content-type", async () => {
+test("client: POST serialises body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   const client = new NotionClient(ctx);
   await client.request("/search", { method: "POST", body: { query: "x" } });
@@ -18,7 +19,7 @@ Deno.test("client: POST serialises body and sets content-type", async () => {
   assertEquals(calls[0].body, JSON.stringify({ query: "x" }));
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     statusText: "Not Found",
@@ -33,7 +34,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v1/databases/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new NotionClient(ctx);
   await client.request("/x", {

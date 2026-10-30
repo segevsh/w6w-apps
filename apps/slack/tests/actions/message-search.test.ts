@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-search.ts";
 
-Deno.test("message-search: POSTs /search.messages with relevance → sort=score", async () => {
+test("message-search: POSTs /search.messages with relevance → sort=score", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, messages: { matches: [] } } }]);
   await action.execute!({ query: "hello", sort: "relevance" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("message-search: POSTs /search.messages with relevance → sort=score"
   assertEquals(url.searchParams.get("count"), "20");
 });
 
-Deno.test("message-search: sort=asc → timestamp/asc", async () => {
+test("message-search: sort=asc → timestamp/asc", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, messages: { matches: [] } } }]);
   await action.execute!({ query: "hi", sort: "asc" }, ctx);
   const params = new URL(calls[0].url).searchParams;

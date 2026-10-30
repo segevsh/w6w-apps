@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaImportUrl from "../../actions/media-import-url.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-import-url: calls POST /modern/medias/import_url with the version header", async () => {
+test("media-import-url: calls POST /modern/medias/import_url with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await mediaImportUrl.execute(
     { "url": " https://example.com/v.mp4 ", "folderId": "f1" } as never,
@@ -24,7 +25,7 @@ Deno.test("media-import-url: calls POST /modern/medias/import_url with the versi
   assert(out.ok === true);
 });
 
-Deno.test("media-import-url: surfaces a Wistia error with its code", async () => {
+test("media-import-url: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -42,7 +43,7 @@ Deno.test("media-import-url: surfaces a Wistia error with its code", async () =>
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("media-import-url: is not idempotent and requires a url", async () => {
+test("media-import-url: is not idempotent and requires a url", async () => {
   assertEquals(mediaImportUrl.idempotent, false);
   const { ctx, calls } = mockCtx([]);
   let message = "";

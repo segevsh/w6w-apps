@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-update.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("issue-update: sends only the fields the caller set", async () => {
+test("issue-update: sends only the fields the caller set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "42" } }], { display });
   await action.execute!({ issueId: "42", status: "resolved" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -12,7 +13,7 @@ Deno.test("issue-update: sends only the fields the caller set", async () => {
   assertEquals(JSON.parse(calls[0].body!), { status: "resolved" });
 });
 
-Deno.test("issue-update: statusDetails is parsed from JSON", async () => {
+test("issue-update: statusDetails is parsed from JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     issueId: "42",
@@ -25,19 +26,19 @@ Deno.test("issue-update: statusDetails is parsed from JSON", async () => {
   });
 });
 
-Deno.test("issue-update: an empty assignee is sent, because it means unassign", async () => {
+test("issue-update: an empty assignee is sent, because it means unassign", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ issueId: "42", assignedTo: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { assignedTo: "" });
 });
 
-Deno.test("issue-update: booleans survive, including false", async () => {
+test("issue-update: booleans survive, including false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ issueId: "42", isBookmarked: false, hasSeen: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { isBookmarked: false, hasSeen: true });
 });
 
-Deno.test("issue-update: refuses a no-op and malformed statusDetails", async () => {
+test("issue-update: refuses a no-op and malformed statusDetails", async () => {
   const empty = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ issueId: "42" }, empty.ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSubscriptionList from "../../actions/event-subscription-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("event-subscription-list: calls GET /eventsubscriptions", async () => {
+test("event-subscription-list: calls GET /eventsubscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "SUB_1" }]) }]);
   const out = await eventSubscriptionList.execute({}, ctx) as { elements: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("event-subscription-list: calls GET /eventsubscriptions", async () => 
   assertEquals(out.elements, [{ id: "SUB_1" }]);
 });
 
-Deno.test("event-subscription-list: follows nextPage", async () => {
+test("event-subscription-list: follows nextPage", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/eventsubscriptions?offset=10";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "SUB_1" }], page2) },

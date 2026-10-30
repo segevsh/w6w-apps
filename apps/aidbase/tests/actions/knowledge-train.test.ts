@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import knowledgeTrain from "../../actions/knowledge-train.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => knowledgeTrain.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("knowledge-train: declares a perform action with a description, params and output", () => {
+test("knowledge-train: declares a perform action with a description, params and output", () => {
   assertEquals(knowledgeTrain.key, "knowledge-train");
   assertEquals(knowledgeTrain.type, "perform");
   assert((knowledgeTrain.description ?? "").length > 0);
@@ -16,7 +17,7 @@ Deno.test("knowledge-train: declares a perform action with a description, params
   assertEquals(knowledgeTrain.idempotent, true);
 });
 
-Deno.test("knowledge-train: sends the documented request and returns the documented shape", async () => {
+test("knowledge-train: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -34,7 +35,7 @@ Deno.test("knowledge-train: sends the documented request and returns the documen
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("knowledge-train: an Aidbase failure body is thrown with its message", async () => {
+test("knowledge-train: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

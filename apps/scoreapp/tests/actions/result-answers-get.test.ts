@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import resultAnswersGet from "../../actions/result-answers-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("result-answers-get: reads the dedicated answers path", async () => {
+test("result-answers-get: reads the dedicated answers path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await resultAnswersGet.execute({ scorecard: "1", result: "123" }, ctx);
@@ -20,7 +21,7 @@ Deno.test("result-answers-get: reads the dedicated answers path", async () => {
  * `result-get` with `include[]=answers`, which also pulls the result row and every
  * other relationship asked for.
  */
-Deno.test("result-answers-get: asks for answers and nothing else", async () => {
+test("result-answers-get: asks for answers and nothing else", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await resultAnswersGet.execute({ scorecard: "1", result: "123" }, ctx);
@@ -28,7 +29,7 @@ Deno.test("result-answers-get: asks for answers and nothing else", async () => {
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("result-answers-get: both ids are passed through uncoerced", async () => {
+test("result-answers-get: both ids are passed through uncoerced", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await resultAnswersGet.execute(
@@ -42,7 +43,7 @@ Deno.test("result-answers-get: both ids are passed through uncoerced", async () 
   );
 });
 
-Deno.test("result-answers-get: the answers envelope comes back verbatim, score strings and all", async () => {
+test("result-answers-get: the answers envelope comes back verbatim, score strings and all", async () => {
   const body = envelope([
     {
       id: "a0f14224-7d61-437f-8851-54bff7923720",
@@ -58,7 +59,7 @@ Deno.test("result-answers-get: the answers envelope comes back verbatim, score s
   );
 });
 
-Deno.test("result-answers-get: both path ids are required string params", () => {
+test("result-answers-get: both path ids are required string params", () => {
   const required = (resultAnswersGet.params ?? [])
     .filter((p) => p.required === true)
     .map((p) => p.key);

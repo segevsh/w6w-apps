@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscription-get.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("subscription-get: returns both product blocks", async () => {
+test("subscription-get: returns both product blocks", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       passwordManager: { seats: 50, maxAutoScaleSeats: 80, storage: 1 },

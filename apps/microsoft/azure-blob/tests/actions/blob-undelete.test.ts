@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-undelete.ts";
 
 const D = { display: { account: "myaccount" } };
 
 /** By name, with no version to name — unlike Cloud Storage. */
-Deno.test("blob-undelete: PUTs comp=undelete with only the name", async () => {
+test("blob-undelete: PUTs comp=undelete with only the name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "", headers: { etag: '"0x8D"' } }], D);
   const result = await action.execute(
     { container: "uploads", blob: "logs/a.log" },
@@ -18,14 +19,14 @@ Deno.test("blob-undelete: PUTs comp=undelete with only the name", async () => {
   assertEquals(result.etag, '"0x8D"');
 });
 
-Deno.test("blob-undelete: takes no generation or version parameter at all", () => {
+test("blob-undelete: takes no generation or version parameter at all", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assertEquals(keys, ["container", "blob"]);
   assert(/by NAME, with no version to name/.test(action.description!), action.description);
 });
 
 /** A 404 here has two meanings that look identical. */
-Deno.test("blob-undelete: a 404 explains both of its meanings", async () => {
+test("blob-undelete: a 404 explains both of its meanings", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: "<Error><Code>BlobNotFound</Code><Message>not found</Message></Error>",
@@ -43,7 +44,7 @@ Deno.test("blob-undelete: a 404 explains both of its meanings", async () => {
 });
 
 /** Anything else should pass through unchanged. */
-Deno.test("blob-undelete: another error is not rewritten", async () => {
+test("blob-undelete: another error is not rewritten", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: "<Error><Code>AuthorizationFailure</Code><Message>no</Message></Error>",
@@ -60,7 +61,7 @@ Deno.test("blob-undelete: another error is not rewritten", async () => {
 });
 
 /** Safe to call speculatively, which a recovery workflow relies on. */
-Deno.test("blob-undelete: is idempotent", () => {
+test("blob-undelete: is idempotent", () => {
   assertEquals(action.idempotent, true);
   assert(/Only works inside the retention window/.test(action.description!), action.description);
 });

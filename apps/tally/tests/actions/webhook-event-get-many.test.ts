@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-event-get-many.ts";
 
-Deno.test("webhook-event-get-many: GETs the delivery log", async () => {
+test("webhook-event-get-many: GETs the delivery log", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -23,6 +24,6 @@ Deno.test("webhook-event-get-many: GETs the delivery log", async () => {
   assertEquals(result.totalNumberOfEvents, 1);
 });
 
-Deno.test("webhook-event-get-many: offers no limit — the server fixes pages at 25", () => {
+test("webhook-event-get-many: offers no limit — the server fixes pages at 25", () => {
   assertEquals(action.params?.map((p) => p.key), ["webhookId", "page"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/note-relationship-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("note-relationship-list: GETs the note's relationships", async () => {
+test("note-relationship-list: GETs the note's relationships", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ type: "customer" }]) }]);
   const out = await action.execute({ noteId: "n-1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -15,7 +16,7 @@ Deno.test("note-relationship-list: GETs the note's relationships", async () => {
  * API chooses it and hands back a cursor, which is why `limit` appears on this
  * action alone.
  */
-Deno.test("note-relationship-list: it is the one endpoint carrying a limit", async () => {
+test("note-relationship-list: it is the one endpoint carrying a limit", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ noteId: "n-1", type: "link", targetType: "feature", limit: 25 }, ctx);
   assertEquals(queryOf(calls[0].url), {

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, { authHeaders, PROBE_PATH } from "../../auth/api-token.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const TOKEN = "wistia_unitTestFixtureNotARealToken0000";
 
-Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
+test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.wistia.com/modern/medias",
@@ -19,13 +20,13 @@ Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", (
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("api-token: the probe is /account, which needs any scope and echoes no token", () => {
+test("api-token: the probe is /account, which needs any scope and echoes no token", () => {
   assertEquals(PROBE_PATH, "/account");
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.key, "api-token");
 });
 
-Deno.test("api-token: test passes when /account answers", async () => {
+test("api-token: test passes when /account answers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: 1, name: "Acme", url: "https://acme.wistia.com" },
   }]);
@@ -35,14 +36,14 @@ Deno.test("api-token: test passes when /account answers", async () => {
   assertEquals(calls[0].headers["x-wistia-api-version"], "2026-09");
 });
 
-Deno.test("api-token: test fails with no token, without a request", async () => {
+test("api-token: test fails with no token, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: classifies failures by the body's code, not the status", async () => {
+test("api-token: classifies failures by the body's code, not the status", async () => {
   const cases: Array<[number, string, string]> = [
     [401, "unauthorized_credentials", "rejected the token"],
     [403, "account_inactive", "inactive"],
@@ -61,14 +62,14 @@ Deno.test("api-token: classifies failures by the body's code, not the status", a
   );
 });
 
-Deno.test("api-token: an unrecognised failure reports the status", async () => {
+test("api-token: an unrecognised failure reports the status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("HTTP 500"));
 });
 
-Deno.test("api-token: afterConnect labels the connection with the account name", async () => {
+test("api-token: afterConnect labels the connection with the account name", async () => {
   const { ctx } = mockCtx([{ body: { id: 42, name: "Acme", url: "https://acme.wistia.com" } }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } } as never, ctx), {
     accountName: "Acme",

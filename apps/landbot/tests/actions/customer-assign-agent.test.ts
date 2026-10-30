@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerAssignAgent from "../../actions/customer-assign-agent.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-assign-agent: PUT /customers/42/assign/9/ with the documented query and body", async () => {
+test("customer-assign-agent: PUT /customers/42/assign/9/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await customerAssignAgent.execute({ "customerId": 42, "agentId": 9 } as never, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("customer-assign-agent: PUT /customers/42/assign/9/ with the documente
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("customer-assign-agent: a Landbot error surfaces its status and message", async () => {
+test("customer-assign-agent: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -28,7 +29,7 @@ Deno.test("customer-assign-agent: a Landbot error surfaces its status and messag
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("customer-assign-agent: declares perform", () => {
+test("customer-assign-agent: declares perform", () => {
   assertEquals(customerAssignAgent.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

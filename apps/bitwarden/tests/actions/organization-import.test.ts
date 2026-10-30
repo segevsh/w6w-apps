@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-import.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("organization-import: POSTs members/groups with overwriteExisting always present", async () => {
+test("organization-import: POSTs members/groups with overwriteExisting always present", async () => {
   const { ctx, calls } = mockCtx([{ body: { statusCode: 200 } }], D);
   const result = await action.execute({
     members: '[{"externalId":"u1","email":"a@x.io"}]',
@@ -16,7 +17,7 @@ Deno.test("organization-import: POSTs members/groups with overwriteExisting alwa
   assertEquals(result, { statusCode: 200, memberCount: 1, groupCount: 1 });
 });
 
-Deno.test("organization-import: requires an email unless the member is deleted", async () => {
+test("organization-import: requires an email unless the member is deleted", async () => {
   const { ctx } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({ members: [{ externalId: "u1" }] }, ctx)
@@ -24,7 +25,7 @@ Deno.test("organization-import: requires an email unless the member is deleted",
   assertMatch((err as Error).message, /email.*unless/);
 });
 
-Deno.test("organization-import: allows a deleted member without an email", async () => {
+test("organization-import: allows a deleted member without an email", async () => {
   const { ctx, calls } = mockCtx([{ body: { statusCode: 200 } }], D);
   await action.execute(
     { members: [{ externalId: "u1", deleted: true }], overwriteExisting: true },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/signature-request-list.ts";
 
-Deno.test("list: pages the signature_requests collection", async () => {
+test("list: pages the signature_requests collection", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { list_info: { num_pages: 1 }, signature_requests: [{ signature_request_id: "sr1" }] },
@@ -14,7 +15,7 @@ Deno.test("list: pages the signature_requests collection", async () => {
 });
 
 /** The query is Dropbox Sign's own grammar and is passed through verbatim. */
-Deno.test("list: the search query and account id reach the wire unwrapped", async () => {
+test("list: the search query and account id reach the wire unwrapped", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { list_info: {}, signature_requests: [] },
@@ -28,7 +29,7 @@ Deno.test("list: the search query and account id reach the wire unwrapped", asyn
   assertEquals(q.get("account_id"), "all");
 });
 
-Deno.test("list: returnAll walks every page", async () => {
+test("list: returnAll walks every page", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { list_info: { num_pages: 2 }, signature_requests: [{ id: "a" }] } },
     { status: 200, body: { list_info: { num_pages: 2 }, signature_requests: [{ id: "b" }] } },

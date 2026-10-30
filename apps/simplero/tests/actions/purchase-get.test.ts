@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/purchase-get.ts";
 import { mockCtx, pathOf, recordBody } from "../_helpers.ts";
 
-Deno.test("purchase-get: is a read action with a required numeric id", () => {
+test("purchase-get: is a read action with a required numeric id", () => {
   assertEquals(action.key, "purchase-get");
   assertEquals(action.type, "read");
   const id = action.params!.find((p) => p.key === "id");
@@ -10,7 +11,7 @@ Deno.test("purchase-get: is a read action with a required numeric id", () => {
   assertEquals(id?.type, "number");
 });
 
-Deno.test("purchase-get: GETs /api/v2/purchases/42 and returns the unwrapped record", async () => {
+test("purchase-get: GETs /api/v2/purchases/42 and returns the unwrapped record", async () => {
   const { ctx, calls } = mockCtx([{ body: recordBody({ id: 42, name: "x" }) }]);
   const out = await action.execute({ id: 42 }, ctx) as { record: { id: number } };
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("purchase-get: GETs /api/v2/purchases/42 and returns the unwrapped rec
   assertEquals(out.record.id, 42);
 });
 
-Deno.test("purchase-get: sends a User-Agent and never an Authorization or API-key header", async () => {
+test("purchase-get: sends a User-Agent and never an Authorization or API-key header", async () => {
   const { ctx, calls } = mockCtx([{ body: recordBody({ id: 1 }) }]);
   await action.execute({ id: 1 }, ctx);
   assert(calls[0].headers["user-agent"]?.startsWith("w6w-simplero/"));
@@ -27,7 +28,7 @@ Deno.test("purchase-get: sends a User-Agent and never an Authorization or API-ke
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("purchase-get: a 404 HTML page is reported as not an API route, not parsed", async () => {
+test("purchase-get: a 404 HTML page is reported as not an API route, not parsed", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -38,7 +39,7 @@ Deno.test("purchase-get: a 404 HTML page is reported as not an API route, not pa
   await assertRejects(async () => await action.execute({ id: 9 }, ctx), Error, "HTML page");
 });
 
-Deno.test("purchase-get: a 200 with no data record is an error, not an empty success", async () => {
+test("purchase-get: a 200 with no data record is an error, not an empty success", async () => {
   const { ctx } = mockCtx([{ body: { something: "else" } }]);
   await assertRejects(async () => await action.execute({ id: 9 }, ctx), Error, "no `data` record");
 });

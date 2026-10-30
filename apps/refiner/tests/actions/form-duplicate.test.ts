@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import formDuplicate from "../../actions/form-duplicate.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-duplicate: POSTs form_uuid and name and returns the new uuid", async () => {
+test("form-duplicate: POSTs form_uuid and name and returns the new uuid", async () => {
   const reply = { message: "ok", source_form_uuid: "f1", new_form_uuid: "f2" };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await formDuplicate.execute({ formUuid: "f1", name: "Copy" }, ctx);
@@ -12,9 +13,9 @@ Deno.test("form-duplicate: POSTs form_uuid and name and returns the new uuid", a
   assertEquals(out, reply);
 });
 
-Deno.test("form-duplicate: is not idempotent", () => assertEquals(formDuplicate.idempotent, false));
+test("form-duplicate: is not idempotent", () => assertEquals(formDuplicate.idempotent, false));
 
-Deno.test("form-duplicate: a vendor error surfaces its own message", async () => {
+test("form-duplicate: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(formDuplicate.execute({ formUuid: "f1", name: "Copy" }, ctx)),

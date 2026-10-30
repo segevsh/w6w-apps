@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate, { webhookEventOptions } from "../../actions/webhook-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs url and the selected events to /webhooks", async () => {
+test("webhook-create: POSTs url and the selected events to /webhooks", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "wh_1", signature: "whsec_x" }) }]);
   await webhookCreate.execute(
     { url: "https://example.com/hook", events: ["transaction.succeeded", "contact.created"] },
@@ -17,7 +18,7 @@ Deno.test("webhook-create: POSTs url and the selected events to /webhooks", asyn
   });
 });
 
-Deno.test("webhook-create: the 12 documented event types are exactly the options offered", () => {
+test("webhook-create: the 12 documented event types are exactly the options offered", () => {
   assertEquals(webhookEventOptions.length, 12);
   assertEquals(
     webhookEventOptions.map((o) => o.value).sort(),

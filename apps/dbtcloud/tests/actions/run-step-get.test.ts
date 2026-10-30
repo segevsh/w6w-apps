@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-step-get.ts";
 
@@ -6,7 +7,7 @@ const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
 const logs = Array.from({ length: 200 }, (_, i) => `line ${i}`).join("\n");
 
 /** A debug log is measured in megabytes on a large project. */
-Deno.test("run-step-get: returns no logs by default", async () => {
+test("run-step-get: returns no logs by default", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -22,7 +23,7 @@ Deno.test("run-step-get: returns no logs by default", async () => {
 });
 
 /** The last fifty lines contain the error; the rest is a build transcript. */
-Deno.test("run-step-get: tail mode returns the last 50 lines", async () => {
+test("run-step-get: tail mode returns the last 50 lines", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { data: { id: 5, status: 20, logs } } }],
     { display },
@@ -33,7 +34,7 @@ Deno.test("run-step-get: tail mode returns the last 50 lines", async () => {
   assertEquals(lines[49], "line 199");
 });
 
-Deno.test("run-step-get: full mode returns everything dbt printed", async () => {
+test("run-step-get: full mode returns everything dbt printed", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { data: { id: 5, status: 10, logs } } }],
     { display },
@@ -43,7 +44,7 @@ Deno.test("run-step-get: full mode returns everything dbt printed", async () => 
 });
 
 /** The debug log is never returned, whatever the mode. */
-Deno.test("run-step-get: the debug log is dropped even in full mode", async () => {
+test("run-step-get: the debug log is dropped even in full mode", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { data: { id: 5, status: 10, logs: "a", debug_logs: "HUGE" } } }],
     { display },
@@ -56,7 +57,7 @@ Deno.test("run-step-get: the debug log is dropped even in full mode", async () =
   assert(!JSON.stringify(result).includes("HUGE"));
 });
 
-Deno.test("run-step-get: needs a step id", async () => {
+test("run-step-get: needs a step id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "stepId");
   assertEquals(calls.length, 0);

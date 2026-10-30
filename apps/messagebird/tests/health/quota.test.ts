@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: is a declared absence at informational severity", () => {
+test("quota: is a declared absence at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.check, "undefined");
   assert((quota.unavailable?.reason ?? "").length > 0);

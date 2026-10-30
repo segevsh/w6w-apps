@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/run-report.ts";
 
-Deno.test("run-report: POSTs with NO body — paging goes in the query string", async () => {
+test("run-report: POSTs with NO body — paging goes in the query string", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { data: [], metadata: {} } }]);
   await action.execute({ tableId: "bck1", reportId: "1", skip: 100, top: 50 }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("run-report: POSTs with NO body — paging goes in the query string", 
   assertEquals(url.searchParams.get("top"), "50");
 });
 
-Deno.test("run-report: omits paging params when unset", async () => {
+test("run-report: omits paging params when unset", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "bck1", reportId: "1" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("run-report: omits paging params when unset", async () => {
   assert(!url.searchParams.has("top"));
 });
 
-Deno.test("run-report: returns the same envelope as query-records", async () => {
+test("run-report: returns the same envelope as query-records", async () => {
   const { ctx } = mockQbCtx([{
     body: {
       data: [{ "6": { value: "Acme" } }],

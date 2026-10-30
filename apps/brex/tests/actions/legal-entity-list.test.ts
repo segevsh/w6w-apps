@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import legalEntityList from "../../actions/legal-entity-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const ENTITY = {
   isDefault: true,
 };
 
-Deno.test("legal-entity-list: GETs the collection and paginates", async () => {
+test("legal-entity-list: GETs the collection and paginates", async () => {
   const { ctx, calls } = mockCtx([{ body: page([ENTITY]) }]);
   await legalEntityList.execute({ limit: 10, cursor: "c1" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("legal-entity-list: GETs the collection and paginates", async () => {
   assertEquals(queryOf(calls[0].url), { limit: "10", cursor: "c1" });
 });
 
-Deno.test("legal-entity-list: camelCase field names are passed through verbatim", async () => {
+test("legal-entity-list: camelCase field names are passed through verbatim", async () => {
   const { ctx } = mockCtx([{ body: page([ENTITY]) }]);
   const result = await legalEntityList.execute({}, ctx) as {
     items: Array<Record<string, unknown>>;
@@ -37,7 +38,7 @@ Deno.test("legal-entity-list: camelCase field names are passed through verbatim"
  * Brex documents no filter on this endpoint — only cursor and limit — so the
  * action must not offer one that would be silently ignored.
  */
-Deno.test("legal-entity-list: no filter params are offered", () => {
+test("legal-entity-list: no filter params are offered", () => {
   assertEquals(legalEntityList.params?.map((p) => p.key), ["limit", "cursor"]);
   assertEquals(legalEntityList.type, "search");
 });

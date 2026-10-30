@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import nodeComplete from "../../actions/node-complete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("node-complete: POSTs /nodes/:id/complete with no body", async () => {
+test("node-complete: POSTs /nodes/:id/complete with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "ok" } }]);
   assertEquals(await nodeComplete.execute({ id: "abc" }, ctx), { status: "ok" });
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("node-complete: POSTs /nodes/:id/complete with no body", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("node-complete: requires an id", async () => {
+test("node-complete: requires an id", async () => {
   const { ctx, calls } = mockCtx();
   let err: unknown;
   try {

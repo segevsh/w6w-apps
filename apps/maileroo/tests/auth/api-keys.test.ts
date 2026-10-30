@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import apiKeys from "../../auth/api-keys.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const both = { sendingKey: "SEND-SECRET", accountKey: "ACCT-SECRET" };
 const req = (url: string) => ({ url, method: "GET", headers: {} as Record<string, string> });
 
-Deno.test("api-keys: sign stamps the sending key as X-Api-Key on the Email API host", async () => {
+test("api-keys: sign stamps the sending key as X-Api-Key on the Email API host", async () => {
   const { ctx } = mockCtx();
   const out = await apiKeys.sign!({
     request: req("https://smtp.maileroo.com/api/v2/emails"),
@@ -15,7 +16,7 @@ Deno.test("api-keys: sign stamps the sending key as X-Api-Key on the Email API h
   assertEquals(out.headers.authorization, undefined);
 });
 
-Deno.test("api-keys: sign stamps the account key as a bearer on the Account API host", async () => {
+test("api-keys: sign stamps the account key as a bearer on the Account API host", async () => {
   const { ctx } = mockCtx();
   const out = await apiKeys.sign!({
     request: req("https://api.maileroo.com/v1/account"),
@@ -25,7 +26,7 @@ Deno.test("api-keys: sign stamps the account key as a bearer on the Account API 
   assertEquals(out.headers["x-api-key"], undefined);
 });
 
-Deno.test("api-keys: sign names the missing key instead of sending nothing", () => {
+test("api-keys: sign names the missing key instead of sending nothing", () => {
   const { ctx } = mockCtx();
   assertThrows(
     () =>
@@ -47,7 +48,7 @@ Deno.test("api-keys: sign names the missing key instead of sending nothing", () 
   );
 });
 
-Deno.test("api-keys: test probes each supplied key on its own host and passes", async () => {
+test("api-keys: test probes each supplied key on its own host and passes", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, data: { results: [] } } },
     { body: { data: { user_id: 1 } } },
@@ -60,7 +61,7 @@ Deno.test("api-keys: test probes each supplied key on its own host and passes", 
   assertEquals(calls[1].headers.authorization, "Bearer ACCT-SECRET");
 });
 
-Deno.test("api-keys: an app-scoped key's 'linked domain' 400 and a scope 403 both prove the key", async () => {
+test("api-keys: an app-scoped key's 'linked domain' 400 and a scope 403 both prove the key", async () => {
   const sendOnly = mockCtx([{
     status: 400,
     body: {
@@ -78,7 +79,7 @@ Deno.test("api-keys: an app-scoped key's 'linked domain' 400 and a scope 403 bot
   assert(res.message?.includes("account.read"));
 });
 
-Deno.test("api-keys: rejections are failures and never echo a key", async () => {
+test("api-keys: rejections are failures and never echo a key", async () => {
   const send = mockCtx([{
     status: 401,
     body: { success: false, message: "You have used an invalid API key." },
@@ -115,7 +116,7 @@ Deno.test("api-keys: rejections are failures and never echo a key", async () => 
   assertEquals((await apiKeys.test!({ credential: { accountKey: "A" } }, odd.ctx)).ok, false);
 });
 
-Deno.test("api-keys: no key at all is a failure without a request", async () => {
+test("api-keys: no key at all is a failure without a request", async () => {
   const none = mockCtx();
   assertEquals((await apiKeys.test!({ credential: { sendingKey: " " } }, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);

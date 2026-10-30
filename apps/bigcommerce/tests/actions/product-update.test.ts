@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import productUpdate from "../../actions/product-update.ts";
 import { bodyOf, mockCtx, pathOf, v3Envelope } from "../_helpers.ts";
 
-Deno.test("product-update: PUTs only the fields given", async () => {
+test("product-update: PUTs only the fields given", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Envelope({ id: 77 }) }]);
   await productUpdate.execute({ productId: 77, fields: { price: 19.99 } }, ctx);
 
@@ -11,13 +12,13 @@ Deno.test("product-update: PUTs only the fields given", async () => {
   assertEquals(bodyOf(calls[0]), { price: 19.99 });
 });
 
-Deno.test("product-update: accepts the fields param as a JSON string too", async () => {
+test("product-update: accepts the fields param as a JSON string too", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Envelope({}) }]);
   await productUpdate.execute({ productId: 1, fields: '{"is_visible":false}' }, ctx);
   assertEquals(bodyOf(calls[0]), { is_visible: false });
 });
 
-Deno.test("product-update: rejects unparseable JSON before making a request", async () => {
+test("product-update: rejects unparseable JSON before making a request", async () => {
   // `mockCtx([])` throws on any fetch, so reaching the network fails the test.
   const { ctx } = mockCtx([]);
   await assertRejects(
@@ -27,6 +28,6 @@ Deno.test("product-update: rejects unparseable JSON before making a request", as
   );
 });
 
-Deno.test("product-update: a repeat is a no-op, so it is idempotent", () => {
+test("product-update: a repeat is a no-op, so it is idempotent", () => {
   assertEquals(productUpdate.idempotent, true);
 });

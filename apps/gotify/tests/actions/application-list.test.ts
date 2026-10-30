@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/application-list.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("application-list: GETs /application and returns the array", async () => {
+test("application-list: GETs /application and returns the array", async () => {
   const apps = [{ id: 1, name: "Backup", token: "", internal: false }];
   const { ctx, calls } = mockCtx([{ status: 200, body: apps }], conn);
   const result = await action.execute!({}, ctx);

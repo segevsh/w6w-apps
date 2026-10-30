@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import signerUpdate from "../../actions/signer-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("signer-update: calls POST /api/contracts/c1/signers/s1 with the documented body", async () => {
+test("signer-update: calls POST /api/contracts/c1/signers/s1 with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "updated" } }]);
   const out = await signerUpdate.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("signer-update: calls POST /api/contracts/c1/signers/s1 with the docum
   assert(out.status === "updated", JSON.stringify(out));
 });
 
-Deno.test("signer-update: a vendor error surfaces its error_code and message", async () => {
+test("signer-update: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -52,7 +53,7 @@ Deno.test("signer-update: a vendor error surfaces its error_code and message", a
   );
 });
 
-Deno.test("signer-update: a slash pasted into an id cannot escape the path segment", async () => {
+test("signer-update: a slash pasted into an id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "updated" } }]);
   await signerUpdate.execute(
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/target-list.ts";
 
-Deno.test("target-list: lists repositories, the level above projects", async () => {
+test("target-list: lists repositories, the level above projects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "t1" }], links: {} } }], {
     display: { orgId: "org-1" },
   });

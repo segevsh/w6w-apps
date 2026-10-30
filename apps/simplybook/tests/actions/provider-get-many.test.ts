@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/provider-get-many.ts";
 
-Deno.test("provider-get-many: GETs /admin/providers", async () => {
+test("provider-get-many: GETs /admin/providers", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Alex" }] }], {
     display: TEST_DISPLAY,
   });
@@ -12,7 +13,7 @@ Deno.test("provider-get-many: GETs /admin/providers", async () => {
   assertEquals(result, [{ id: 1, name: "Alex" }]);
 });
 
-Deno.test("provider-get-many: filters by service id", async () => {
+test("provider-get-many: filters by service id", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({ serviceId: 9 }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[service_id]"], "9");

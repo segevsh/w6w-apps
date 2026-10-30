@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import oauth2Sandbox from "../../auth/oauth2-sandbox.ts";
@@ -12,7 +13,7 @@ const sign = (a: typeof oauth2, cred: Record<string, unknown>) =>
     headers: Record<string, string>;
   };
 
-Deno.test("oauth2: production login, pardot_api scope, refresh_token requested", () => {
+test("oauth2: production login, pardot_api scope, refresh_token requested", () => {
   assertEquals(
     oauth2.oauth2!.authorizationUrl,
     "https://login.salesforce.com/services/oauth2/authorize",
@@ -22,7 +23,7 @@ Deno.test("oauth2: production login, pardot_api scope, refresh_token requested",
   assert(oauth2.oauth2!.scopes!.includes("refresh_token"));
 });
 
-Deno.test("oauth2: collects the business unit id and the environment", () => {
+test("oauth2: collects the business unit id and the environment", () => {
   assertEquals(oauth2.fields!.map((f) => f.key), ["businessUnitId", "environment"]);
   const pattern = new RegExp(oauth2.fields![0].validation!.pattern!);
   assert(pattern.test(BU));
@@ -30,13 +31,13 @@ Deno.test("oauth2: collects the business unit id and the environment", () => {
   assert(!pattern.test("0Uv123"));
 });
 
-Deno.test("oauth2: sign stamps Authorization and Pardot-Business-Unit-Id", async () => {
+test("oauth2: sign stamps Authorization and Pardot-Business-Unit-Id", async () => {
   const out = await sign(oauth2, { accessToken: "tok", businessUnitId: BU });
   assertEquals(out.headers["authorization"], "Bearer tok");
   assertEquals(out.headers["pardot-business-unit-id"], BU);
 });
 
-Deno.test("oauth2: test passes on a v5 query answer, with both headers on the wire", async () => {
+test("oauth2: test passes on a v5 query answer, with both headers on the wire", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   const out = await oauth2.test(
     { credential: { accessToken: "tok", businessUnitId: BU } } as never,
@@ -50,7 +51,7 @@ Deno.test("oauth2: test passes on a v5 query answer, with both headers on the wi
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test uses the demo host when the environment says so", async () => {
+test("oauth2: test uses the demo host when the environment says so", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await oauth2.test(
     { credential: { accessToken: "t", businessUnitId: BU, environment: "demo" } } as never,
@@ -59,7 +60,7 @@ Deno.test("oauth2: test uses the demo host when the environment says so", async 
   assertEquals(new URL(calls[0].url).host, "pi.demo.pardot.com");
 });
 
-Deno.test("oauth2: test classifies from the BODY — a bad business unit is reported with its code", async () => {
+test("oauth2: test classifies from the BODY — a bad business unit is reported with its code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {
@@ -76,7 +77,7 @@ Deno.test("oauth2: test classifies from the BODY — a bad business unit is repo
   assert(!out.message!.includes('t"'), "no credential in the message");
 });
 
-Deno.test("oauth2: a 200 that is not the v5 shape is NOT a pass", async () => {
+test("oauth2: a 200 that is not the v5 shape is NOT a pass", async () => {
   const { ctx } = mockCtx([{ body: "<html>login</html>" }]);
   const out = await oauth2.test(
     { credential: { accessToken: "t", businessUnitId: BU } } as never,
@@ -85,13 +86,13 @@ Deno.test("oauth2: a 200 that is not the v5 shape is NOT a pass", async () => {
   assertEquals(out.ok, false);
 });
 
-Deno.test("oauth2: test refuses an incomplete credential without any request", async () => {
+test("oauth2: test refuses an incomplete credential without any request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await oauth2.test({ credential: { accessToken: "t" } } as never, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect records the host and business unit on display", async () => {
+test("oauth2: afterConnect records the host and business unit on display", async () => {
   const out = await oauth2.afterConnect!(
     { credential: { accessToken: "t", businessUnitId: BU, environment: "demo" } } as never,
     {} as never,
@@ -104,7 +105,7 @@ Deno.test("oauth2: afterConnect records the host and business unit on display", 
   assertEquals(prod.host, "pi.pardot.com");
 });
 
-Deno.test("oauth2-sandbox: signs in at test.salesforce.com and always calls the demo host", async () => {
+test("oauth2-sandbox: signs in at test.salesforce.com and always calls the demo host", async () => {
   assertEquals(
     oauth2Sandbox.oauth2!.authorizationUrl,
     "https://test.salesforce.com/services/oauth2/authorize",

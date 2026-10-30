@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import account from "../../health/account.ts";
 import { envelope, mockWrikeCtx } from "../_helpers.ts";
 
-Deno.test("health/account: ok when subscription.suspended is false", async () => {
+test("health/account: ok when subscription.suspended is false", async () => {
   const { ctx } = mockWrikeCtx([
     {
       status: 200,
@@ -13,7 +14,7 @@ Deno.test("health/account: ok when subscription.suspended is false", async () =>
   assertEquals(report.state, "ok");
 });
 
-Deno.test("health/account: down when subscription.suspended is true, names the account", async () => {
+test("health/account: down when subscription.suspended is true, names the account", async () => {
   const { ctx } = mockWrikeCtx([
     {
       status: 200,
@@ -25,20 +26,20 @@ Deno.test("health/account: down when subscription.suspended is true, names the a
   assertEquals(report.message?.includes("Acme"), true);
 });
 
-Deno.test("health/account: unknown when the field is absent — never guessed as down", async () => {
+test("health/account: unknown when the field is absent — never guessed as down", async () => {
   const { ctx } = mockWrikeCtx([{ status: 200, body: envelope([{ id: "A1" }]) }]);
   const report = await account.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("health/account: unknown when the connection carries no host", async () => {
+test("health/account: unknown when the connection carries no host", async () => {
   const { ctx } = mockWrikeCtx([]);
   (ctx as unknown as { connection: unknown }).connection = { display: {} };
   const report = await account.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("health/account: is unsigned-safe metadata — credential posture is signed, kind is credential", () => {
+test("health/account: is unsigned-safe metadata — credential posture is signed, kind is credential", () => {
   assertEquals(account.kind, "credential");
   assertEquals(account.credential, "signed");
   assertEquals(account.scope, "connection");

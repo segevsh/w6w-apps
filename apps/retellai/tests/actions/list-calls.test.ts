@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCalls from "../../actions/list-calls.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-calls: posts to /v3/list-calls with no filter when none given", async () => {
+test("list-calls: posts to /v3/list-calls with no filter when none given", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listCalls.execute({}, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("list-calls: posts to /v3/list-calls with no filter when none given", 
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("list-calls: builds Retell's typed filter grammar for status/agent/numbers", async () => {
+test("list-calls: builds Retell's typed filter grammar for status/agent/numbers", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listCalls.execute({
     agentId: "agent_1",
@@ -29,7 +30,7 @@ Deno.test("list-calls: builds Retell's typed filter grammar for status/agent/num
   });
 });
 
-Deno.test("list-calls: pagination key and limit are passed through in the body, not the query", async () => {
+test("list-calls: pagination key and limit are passed through in the body, not the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listCalls.execute({ limit: 25, paginationKey: "cursor-1" }, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("list-calls: pagination key and limit are passed through in the body, 
   assertEquals(body.pagination_key, "cursor-1");
 });
 
-Deno.test("list-calls: unwraps items/has_more/pagination_key from the response", async () => {
+test("list-calls: unwraps items/has_more/pagination_key from the response", async () => {
   const { ctx } = mockCtx([{
     body: { items: [{ call_id: "c1" }], has_more: true, pagination_key: "next" },
   }]);

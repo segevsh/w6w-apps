@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 29);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every param declares a label and a type", () => {
+test("index: every param declares a label and a type", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.label === "string" && p.label.length > 0, `${a.key}/${p.key}: no label`);
@@ -57,9 +59,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -71,7 +73,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action exposes the credential as a param", () => {
+test("index: no action exposes the credential as a param", () => {
   const banned = ["apikey", "accesstoken", "token", "secret", "password", "authorization"];
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -96,16 +98,16 @@ Deno.test("index: no action exposes the credential as a param", () => {
  * is the property that matters: reading a field is harmless, persisting it is
  * not.
  */
-Deno.test("index: nothing in the app copies a token-shaped field out of a response", async () => {
+test("index: nothing in the app copies a token-shaped field out of a response", async () => {
   const dirs = ["actions", "auth", "health", "lib"];
   // Assignment or property-shorthand of a credential-shaped name, e.g.
   // `apiKey: body.apiKey` or `token = self.access_token`.
   const leak = /\b(access_?token|api_?key|client_?secret|refresh_?token|private_?key)\b/i;
   for (const dir of dirs) {
     const base = new URL(`../${dir}/`, import.meta.url);
-    for await (const entry of Deno.readDir(base)) {
+    for await (const entry of denoReadDir(base)) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-      const src = code(await Deno.readTextFile(new URL(entry.name, base)));
+      const src = code(await denoReadTextFile(new URL(entry.name, base)));
       // `auth/api-key.ts` legitimately names the credential field it collects;
       // everything else must not mention one at all.
       if (dir === "auth" && entry.name === "api-key.ts") continue;
@@ -115,7 +117,7 @@ Deno.test("index: nothing in the app copies a token-shaped field out of a respon
 });
 
 /** The credential-leak guard must still catch a real violation. */
-Deno.test("index: the credential-leak guard would catch an actual copy", () => {
+test("index: the credential-leak guard would catch an actual copy", () => {
   const leak = /\b(access_?token|api_?key|client_?secret|refresh_?token|private_?key)\b/i;
   assert(leak.test("return { apiKey: body.apiKey };"));
   assert(leak.test("const t = self.access_token;"));
@@ -133,13 +135,13 @@ Deno.test("index: the credential-leak guard would catch an actual copy", () => {
  * pinned here so a future "simplification" to a bare `res.ok` cannot land
  * silently.
  */
-Deno.test("index: every caller of /v2/self checks `active`, not just the status", async () => {
+test("index: every caller of /v2/self checks `active`, not just the status", async () => {
   const callers = [
     new URL("../auth/api-key.ts", import.meta.url),
     new URL("../actions/get-identity.ts", import.meta.url),
   ];
   for (const url of callers) {
-    const src = code(await Deno.readTextFile(url));
+    const src = code(await denoReadTextFile(url));
     assert(/\/self/.test(src), `${url.pathname}: expected to call /v2/self`);
     assert(
       /active\s*!==\s*true|active\s*===\s*true/.test(src),
@@ -148,7 +150,7 @@ Deno.test("index: every caller of /v2/self checks `active`, not just the status"
   }
 });
 
-Deno.test("index: health checks cover service and quota, keyed and titled", () => {
+test("index: health checks cover service and quota, keyed and titled", () => {
   const keys = app.healthChecks.map((h) => h.key);
   assertEquals(keys.sort(), ["quota", "service"]);
   for (const h of app.healthChecks) {
@@ -165,7 +167,7 @@ Deno.test("index: health checks cover service and quota, keyed and titled", () =
  * severity that would pin the app at `unknown` forever. Every declared-absent
  * check must therefore be `informational`.
  */
-Deno.test("index: any unavailable health check is informational", () => {
+test("index: any unavailable health check is informational", () => {
   for (const h of app.healthChecks) {
     if (!h.unavailable) continue;
     assertEquals(
@@ -182,7 +184,7 @@ Deno.test("index: any unavailable health check is informational", () => {
  * an unsigned posture, because a status host is exactly the host that must never
  * see a credential.
  */
-Deno.test("index: no signed health check declares its own network allowlist", () => {
+test("index: no signed health check declares its own network allowlist", () => {
   for (const h of app.healthChecks) {
     const posture = h.credential ?? (h.kind === "service" ? "none" : "signed");
     if (posture !== "signed") continue;
@@ -195,12 +197,12 @@ Deno.test("index: no signed health check declares its own network allowlist", ()
  * `api.attio.com`; the status host is widened for the one unsigned service hook
  * and must not leak into anything else.
  */
-Deno.test("index: actions and lib call only api.attio.com", async () => {
+test("index: actions and lib call only api.attio.com", async () => {
   for (const dir of ["actions", "lib", "auth"]) {
     const base = new URL(`../${dir}/`, import.meta.url);
-    for await (const entry of Deno.readDir(base)) {
+    for await (const entry of denoReadDir(base)) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-      const src = code(await Deno.readTextFile(new URL(entry.name, base)));
+      const src = code(await denoReadTextFile(new URL(entry.name, base)));
       for (const [, host] of src.matchAll(/https:\/\/([a-z0-9.-]+)/gi)) {
         assertEquals(host, "api.attio.com", `${dir}/${entry.name}: undeclared host ${host}`);
       }

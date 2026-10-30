@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fn from "../../actions/function.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("function: sends code and context, parses a JSON result", async () => {
+test("function: sends code and context, parses a JSON result", async () => {
   const { ctx, calls } = mockCtx([{ body: { title: "T" } }]);
   const out = await fn.execute(
     {
@@ -18,7 +19,7 @@ Deno.test("function: sends code and context, parses a JSON result", async () => 
   assertEquals(JSON.parse(calls[0].body!).context, { a: 1 });
 });
 
-Deno.test("function: text results come back as text, binary as base64", async () => {
+test("function: text results come back as text, binary as base64", async () => {
   const text = mockCtx([{ headers: { "content-type": "text/plain" }, body: "hello" }]);
   const t = await fn.execute({ code: "x" }, text.ctx) as Record<string, unknown>;
   assertEquals(t.text, "hello");
@@ -33,7 +34,7 @@ Deno.test("function: text results come back as text, binary as base64", async ()
   assertEquals(b.sizeBytes, 3);
 });
 
-Deno.test("function: empty code and bad context are refused", async () => {
+test("function: empty code and bad context are refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await fn.execute({ code: "  " }, ctx), Error, "Code is required");
   await assertRejects(

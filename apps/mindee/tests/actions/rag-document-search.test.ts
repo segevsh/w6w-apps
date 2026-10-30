@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ragDocumentSearch from "../../actions/rag-document-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const MODEL_ID = "018f1e2a-0000-7000-8000-0000000000aa";
 
-Deno.test("rag-document-search: requires model_id, filters map to snake_case", async () => {
+test("rag-document-search: requires model_id, filters map to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: { rag_documents: [], pagination: {} } }]);
   await ragDocumentSearch.execute(
     { modelId: MODEL_ID, filename: "ref", page: 1, perPage: 25 },

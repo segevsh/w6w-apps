@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import lookup from "../../actions/universal-lookup-person.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("universal-lookup-person: sends only the reveal flags that were set", async () => {
+test("universal-lookup-person: sends only the reveal flags that were set", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: 8,
@@ -24,13 +25,13 @@ Deno.test("universal-lookup-person: sends only the reveal flags that were set", 
   assertEquals([out.complete, out.recommendedProfessionalEmail], [true, "a@b.co"]);
 });
 
-Deno.test("universal-lookup-person: declares five reveal flags, all off by default", () => {
+test("universal-lookup-person: declares five reveal flags, all off by default", () => {
   const flags = lookup.params!.filter((p) => p.key.startsWith("reveal_"));
   assertEquals(flags.length, 5);
   for (const f of flags) assertEquals(f.default, false);
 });
 
-Deno.test("universal-lookup-person: unidentified input is refused; 403 throws", async () => {
+test("universal-lookup-person: unidentified input is refused; 403 throws", async () => {
   await assertRejects(() => run(lookup, {}, mockCtx().ctx), Error, "Identify the person");
   const bad = mockCtx([{ status: 403, body: { detail: "not universal" } }]);
   await assertRejects(() => run(lookup, { id: 1 }, bad.ctx), Error, "not universal");

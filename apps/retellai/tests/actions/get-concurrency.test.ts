@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getConcurrency from "../../actions/get-concurrency.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-concurrency: GETs /get-concurrency and returns the figures verbatim", async () => {
+test("get-concurrency: GETs /get-concurrency and returns the figures verbatim", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       current_concurrency: 10,

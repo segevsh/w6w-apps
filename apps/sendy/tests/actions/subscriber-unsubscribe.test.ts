@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscriber-unsubscribe.ts";
 
 const conn = { display: { baseUrl: "https://example.com/sendy" } };
 
-Deno.test("subscriber-unsubscribe: posts to /unsubscribe", async () => {
+test("subscriber-unsubscribe: posts to /unsubscribe", async () => {
   const { ctx, calls } = mockCtx([{ body: "true" }], conn);
   const result = await action.execute({ email: "ada@example.com", listId: "abc123" }, ctx);
   assertEquals(calls[0].url, "https://example.com/sendy/unsubscribe");
@@ -15,7 +16,7 @@ Deno.test("subscriber-unsubscribe: posts to /unsubscribe", async () => {
   assertEquals(result, { unsubscribed: true });
 });
 
-Deno.test("subscriber-unsubscribe: a documented error becomes a thrown error", async () => {
+test("subscriber-unsubscribe: a documented error becomes a thrown error", async () => {
   const { ctx } = mockCtx([{ body: "Email does not exist." }], conn);
   await assertRejects(
     async () => await action.execute({ email: "ada@example.com", listId: "abc123" }, ctx),

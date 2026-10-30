@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: GETs /contacts with the given filters", async () => {
+test("contact-list: GETs /contacts with the given filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }]) }]);
   await contactList.execute({ shared: 1, orderBy: "firstName", direction: "asc" }, ctx);
 

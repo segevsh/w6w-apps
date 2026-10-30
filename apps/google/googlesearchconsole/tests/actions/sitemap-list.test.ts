@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sitemap-list.ts";
 
-Deno.test("sitemap-list: lists a site's submitted sitemaps with no sitemapIndex", async () => {
+test("sitemap-list: lists a site's submitted sitemaps with no sitemapIndex", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sitemap: [{ path: "a.xml" }] } }], {
     display: { siteUrl: "https://www.example.com/" },
   });
@@ -16,7 +17,7 @@ Deno.test("sitemap-list: lists a site's submitted sitemaps with no sitemapIndex"
   assertEquals(out.sitemap.length, 1);
 });
 
-Deno.test("sitemap-list: passes sitemapIndex to list entries inside an index", async () => {
+test("sitemap-list: passes sitemapIndex to list entries inside an index", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sitemap: [] } }], {
     display: { siteUrl: "https://www.example.com/" },
   });

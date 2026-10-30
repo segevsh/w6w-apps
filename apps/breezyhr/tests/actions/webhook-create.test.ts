@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/webhook-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs url and events and returns the one-time secret", async () => {
+test("webhook-create: POSTs url and events and returns the one-time secret", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w1", secret: "whsec_x" } }]);
   const out = await action.execute!({
     companyId: "c1",
@@ -20,7 +21,7 @@ Deno.test("webhook-create: POSTs url and events and returns the one-time secret"
   assertEquals(out, { id: "w1", secret: "whsec_x" });
 });
 
-Deno.test("webhook-create: the 10-endpoint quota 429 is an error", async () => {
+test("webhook-create: the 10-endpoint quota 429 is an error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { type: "quota", message: "limit" } },

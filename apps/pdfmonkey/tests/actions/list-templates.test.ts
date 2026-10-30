@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-templates.ts";
 
-Deno.test("list-templates: GETs /document_template_cards with q[workspace_id] required", async () => {
+test("list-templates: GETs /document_template_cards with q[workspace_id] required", async () => {
   const body = { document_template_cards: [{ id: "tpl-1" }], meta: { total_pages: 1 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -19,7 +20,7 @@ Deno.test("list-templates: GETs /document_template_cards with q[workspace_id] re
   assertEquals(result, body);
 });
 
-Deno.test("list-templates: uses the plain page param, not page[number] (per Templates API docs)", async () => {
+test("list-templates: uses the plain page param, not page[number] (per Templates API docs)", async () => {
   const { ctx, calls } = mockCtx([{ body: { document_template_cards: [], meta: {} } }]);
   await action.execute!({ workspaceId: "ws-1" }, ctx);
   const url = new URL(calls[0].url);

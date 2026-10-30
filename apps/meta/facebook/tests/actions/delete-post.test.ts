@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-post.ts";
 
-Deno.test("delete-post: DELETEs /{postId} and reports deleted:true", async () => {
+test("delete-post: DELETEs /{postId} and reports deleted:true", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const result = await action.execute!({ postId: "post-1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("delete-post: DELETEs /{postId} and reports deleted:true", async () =>
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("delete-post: declares idempotent: false", () => {
+test("delete-post: declares idempotent: false", () => {
   assertEquals(action.idempotent, false);
 });

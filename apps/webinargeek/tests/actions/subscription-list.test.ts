@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionList from "../../actions/subscription-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscription-list: translates camelCase filters to WebinarGeek's snake_case query", async () => {
+test("subscription-list: translates camelCase filters to WebinarGeek's snake_case query", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskRetry from "../../actions/task-retry.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-retry: POSTs /v2/tasks/{id}/retry and returns the new task", async () => {
+test("task-retry: POSTs /v2/tasks/{id}/retry and returns the new task", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ id: "t2", status: "waiting" }),
@@ -13,6 +14,6 @@ Deno.test("task-retry: POSTs /v2/tasks/{id}/retry and returns the new task", asy
   assertEquals(out.id, "t2");
 });
 
-Deno.test("task-retry: is declared non-idempotent — every call creates a new task", () => {
+test("task-retry: is declared non-idempotent — every call creates a new task", () => {
   assertEquals(taskRetry.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse, PDF_BYTES } from "../_helpers.ts";
 import action from "../../actions/file-convert-to-pdf.ts";
 
-Deno.test("file-convert-to-pdf: POSTs the file to /tools/convert_to_pdf and returns it base64-encoded", async () => {
+test("file-convert-to-pdf: POSTs the file to /tools/convert_to_pdf and returns it base64-encoded", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "application/pdf" },
     body: PDF_BYTES,
@@ -25,11 +26,11 @@ Deno.test("file-convert-to-pdf: POSTs the file to /tools/convert_to_pdf and retu
   assertEquals(atob(file.contentBase64), new TextDecoder().decode(PDF_BYTES));
 });
 
-Deno.test("file-convert-to-pdf: idempotent flag is true", () => {
+test("file-convert-to-pdf: idempotent flag is true", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("file-convert-to-pdf: declares key, type and a description", () => {
+test("file-convert-to-pdf: declares key, type and a description", () => {
   assertEquals(action.key, "file-convert-to-pdf");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

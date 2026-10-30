@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 
-Deno.test("campaign-create: sends every documented field in its documented place", async () => {
+test("campaign-create: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -34,7 +35,7 @@ Deno.test("campaign-create: sends every documented field in its documented place
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("campaign-create: a minimal call sends only what was set", async () => {
+test("campaign-create: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -56,7 +57,7 @@ Deno.test("campaign-create: a minimal call sends only what was set", async () =>
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("campaign-create: declares its params and kind", () => {
+test("campaign-create: declares its params and kind", () => {
   assertEquals((campaignCreate.params ?? []).map((p) => p.key), [
     "name",
     "locations",

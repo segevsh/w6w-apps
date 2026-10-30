@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_BASE,
   BETA,
@@ -15,7 +16,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, pathOf, queryOf, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
-Deno.test("client: one origin, two version prefixes", () => {
+test("client: one origin, two version prefixes", () => {
   assertEquals(API_BASE, "https://api.usemotion.com");
   assertEquals(V1, "/v1");
   // Custom fields are served under /beta with no /v1 alias — the wrong prefix is
@@ -30,7 +31,7 @@ Deno.test("client: one origin, two version prefixes", () => {
  * auth, so a body-carrying request without it is refused with a 400 about
  * headers on paths that do not exist and with no credential attached.
  */
-Deno.test("client: a body always carries content-type, even an empty one", async () => {
+test("client: a body always carries content-type, even an empty one", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new MotionClient(ctx);
 
@@ -43,7 +44,7 @@ Deno.test("client: a body always carries content-type, even an empty one", async
   assertEquals(calls[1].body, "{}");
 });
 
-Deno.test("client: a request with no body sends no content-type", async () => {
+test("client: a request with no body sends no content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await new MotionClient(ctx).status(`${V1}/tasks/t1`, { method: "DELETE" });
 
@@ -54,7 +55,7 @@ Deno.test("client: a request with no body sends no content-type", async () => {
 
 // --- query building ---------------------------------------------------------
 
-Deno.test("client: undefined, null and empty-string query values are dropped", async () => {
+test("client: undefined, null and empty-string query values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MotionClient(ctx).json(`${V1}/tasks`, {
     query: { a: "1", b: undefined, c: null, d: "", e: 0, f: false },
@@ -68,7 +69,7 @@ Deno.test("client: undefined, null and empty-string query values are dropped", a
  * "false" as true. Off is the documented default for every boolean this app
  * sends.
  */
-Deno.test("client: flag renders true and omits false", () => {
+test("client: flag renders true and omits false", () => {
   assertEquals(flag(true), "true");
   assertEquals(flag(false), undefined);
   assertEquals(flag(undefined), undefined);
@@ -76,7 +77,7 @@ Deno.test("client: flag renders true and omits false", () => {
 
 // --- response shapes --------------------------------------------------------
 
-Deno.test("client: page reads the vendor's collection key and the meta envelope", async () => {
+test("client: page reads the vendor's collection key and the meta envelope", async () => {
   const { ctx } = mockCtx([
     { body: { meta: { nextCursor: "c2", pageSize: 2 }, tasks: [{ id: "a" }, { id: "b" }] } },
   ]);
@@ -86,28 +87,28 @@ Deno.test("client: page reads the vendor's collection key and the meta envelope"
   });
 });
 
-Deno.test("client: page tolerates a missing collection and a missing meta", async () => {
+test("client: page tolerates a missing collection and a missing meta", async () => {
   const { ctx } = mockCtx([{ body: { meta: {} } }, { body: {} }]);
   const client = new MotionClient(ctx);
   assertEquals(await client.page(`${V1}/projects`, "projects"), { items: [], meta: {} });
   assertEquals(await client.page(`${V1}/projects`, "projects"), { items: [], meta: {} });
 });
 
-Deno.test("client: a 204 and an empty body both read as undefined", async () => {
+test("client: a 204 and an empty body both read as undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new MotionClient(ctx);
   assertEquals(await client.json(`${V1}/tasks/t1`), undefined);
   assertEquals(await client.json(`${V1}/tasks/t1`), undefined);
 });
 
-Deno.test("client: a bare array is returned as-is by json", async () => {
+test("client: a bare array is returned as-is by json", async () => {
   const { ctx } = mockCtx([{ body: [{ name: "Todo" }] }]);
   assertEquals(await new MotionClient(ctx).json(`${V1}/statuses`), [{ name: "Todo" }]);
 });
 
 // --- ids and paths ----------------------------------------------------------
 
-Deno.test("client: the /beta prefix survives into the URL", async () => {
+test("client: the /beta prefix survives into the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new MotionClient(ctx).json(`${BETA}/workspaces/ws1/custom-fields`);
   assertEquals(pathOf(calls[0].url), "/beta/workspaces/ws1/custom-fields");
@@ -115,7 +116,7 @@ Deno.test("client: the /beta prefix survives into the URL", async () => {
 
 // --- errors -----------------------------------------------------------------
 
-Deno.test("client: an error status throws with Motion's own message", async () => {
+test("client: an error status throws with Motion's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { message: "Cannot GET /v1/x", statusCode: 404 },
@@ -129,7 +130,7 @@ Deno.test("client: an error status throws with Motion's own message", async () =
   );
 });
 
-Deno.test("format: the content-type guard is explained rather than passed through", () => {
+test("format: the content-type guard is explained rather than passed through", () => {
   const message = formatMotionError(
     400,
     "POST",
@@ -143,12 +144,12 @@ Deno.test("format: the content-type guard is explained rather than passed throug
   assert(message.includes("before routing and before auth"), message);
 });
 
-Deno.test("format: a 401 says what it could be, because Motion will not say", () => {
+test("format: a 401 says what it could be, because Motion will not say", () => {
   const message = formatMotionError(401, "GET", "/v1/tasks", JSON.stringify(UNAUTHORIZED_BODY));
   assert(/missing, empty, revoked/.test(message), message);
 });
 
-Deno.test("format: a 429 quotes the ceiling that produced it", () => {
+test("format: a 429 quotes the ceiling that produced it", () => {
   const message = formatMotionError(
     429,
     "GET",
@@ -163,7 +164,7 @@ Deno.test("format: a 429 quotes the ceiling that produced it", () => {
  * validation failure. Only the scalar form was observable without a credential,
  * so both are handled rather than one assumed.
  */
-Deno.test("format: an array message is joined rather than rendered as [object Object]", () => {
+test("format: an array message is joined rather than rendered as [object Object]", () => {
   assertEquals(
     messageText(["name must be a string", "workspaceId should not be empty"]),
     "name must be a string; workspaceId should not be empty",
@@ -180,12 +181,12 @@ Deno.test("format: an array message is joined rather than rendered as [object Ob
   assert(message.includes("name must be a string"), message);
 });
 
-Deno.test("format: a non-JSON body falls through to the raw text", () => {
+test("format: a non-JSON body falls through to the raw text", () => {
   const message = formatMotionError(502, "GET", "/v1/tasks", "<html>bad gateway</html>");
   assert(message.includes("<html>bad gateway</html>"), message);
 });
 
-Deno.test("truncate: keeps a long body readable and says how much it dropped", () => {
+test("truncate: keeps a long body readable and says how much it dropped", () => {
   const out = truncate("x".repeat(1000), 100);
   assert(out.startsWith("x".repeat(100)));
   assert(out.includes("1000 bytes truncated"));
@@ -199,7 +200,7 @@ Deno.test("truncate: keeps a long body readable and says how much it dropped", (
  * `autoScheduled` as `object | null`, and the null is the only way to turn
  * auto-scheduling off.
  */
-Deno.test("omitUndefined: drops unset fields and keeps an explicit null", () => {
+test("omitUndefined: drops unset fields and keeps an explicit null", () => {
   assertEquals(omitUndefined({ a: 1, b: undefined, c: null, d: "", e: false }), {
     a: 1,
     c: null,
@@ -207,7 +208,7 @@ Deno.test("omitUndefined: drops unset fields and keeps an explicit null", () => 
   });
 });
 
-Deno.test("optionalJson: parses text, passes objects through, preserves null", () => {
+test("optionalJson: parses text, passes objects through, preserves null", () => {
   assertEquals(optionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(optionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(optionalJson("null", "x"), null);
@@ -217,13 +218,13 @@ Deno.test("optionalJson: parses text, passes objects through, preserves null", (
   assertThrows(() => optionalJson("{oops", "Auto-schedule"), Error, "Auto-schedule is not valid");
 });
 
-Deno.test("requiredJson: absence is an error, false and 0 are not", () => {
+test("requiredJson: absence is an error, false and 0 are not", () => {
   assertEquals(requiredJson("false", "Value"), false);
   assertEquals(requiredJson(0, "Value"), 0);
   assertThrows(() => requiredJson(undefined, "Value"), Error, "Value is required");
 });
 
-Deno.test("toStringList: trims, drops blanks, and collapses an empty list to undefined", () => {
+test("toStringList: trims, drops blanks, and collapses an empty list to undefined", () => {
   assertEquals(toStringList(["a", " b ", ""]), ["a", "b"]);
   assertEquals(toStringList("a, b"), ["a", "b"]);
   assertEquals(toStringList([]), undefined);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-sync.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("company-sync: POSTs to /rest/v1/companies.json with default action", async () => {
+test("company-sync: POSTs to /rest/v1/companies.json with default action", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1, status: "created" }] } },
   ], conn);
@@ -20,14 +21,14 @@ Deno.test("company-sync: POSTs to /rest/v1/companies.json with default action", 
   assertEquals(out, { id: 1, status: "created" });
 });
 
-Deno.test("company-sync: otherFields merges arbitrary fields", async () => {
+test("company-sync: otherFields merges arbitrary fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, result: [{}] } }], conn);
   await action.execute!({ company: "Acme", otherFields: '{"annualRevenue": 5000000}' }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.input[0].annualRevenue, 5000000);
 });
 
-Deno.test("company-sync: requires at least one company field", async () => {
+test("company-sync: requires at least one company field", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -38,6 +39,6 @@ Deno.test("company-sync: requires at least one company field", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("company-sync: idempotent is false", () => {
+test("company-sync: idempotent is false", () => {
   assertEquals(action.idempotent, false);
 });

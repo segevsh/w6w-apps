@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGifsById from "../../actions/get-gifs-by-id.ts";
 import { envelope, gif, mockCtx, PAGINATION_FIXTURE, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-gifs-by-id: calls GET /v1/gifs with one comma-separated ids value", async () => {
+test("get-gifs-by-id: calls GET /v1/gifs with one comma-separated ids value", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([gif("a"), gif("b")], { pagination: PAGINATION_FIXTURE }) },
   ]);
@@ -18,7 +19,7 @@ Deno.test("get-gifs-by-id: calls GET /v1/gifs with one comma-separated ids value
   assertEquals(out.pagination, PAGINATION_FIXTURE);
 });
 
-Deno.test("get-gifs-by-id: the ids string is sent exactly as typed", async () => {
+test("get-gifs-by-id: the ids string is sent exactly as typed", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   // No re-ordering, no de-duplication, no splitting into repeated keys.
   await getGifsById.execute({ ids: "z,  y ,x" }, ctx);
@@ -26,6 +27,6 @@ Deno.test("get-gifs-by-id: the ids string is sent exactly as typed", async () =>
   assertEquals(new URL(calls[0].url).searchParams.getAll("ids").length, 1);
 });
 
-Deno.test("get-gifs-by-id: ids is required", () => {
+test("get-gifs-by-id: ids is required", () => {
   assertEquals(getGifsById.params?.find((p) => p.key === "ids")?.required, true);
 });

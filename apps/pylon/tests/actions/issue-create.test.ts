@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/issue-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("issue-create: POSTs snake_case fields and converts custom fields", async () => {
+test("issue-create: POSTs snake_case fields and converts custom fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "i1" } } }]);
   const out = await action.execute!({
     title: "Login broken",
@@ -32,14 +33,14 @@ Deno.test("issue-create: POSTs snake_case fields and converts custom fields", as
   assertEquals(out, { id: "i1" });
 });
 
-Deno.test("issue-create: without a destination no destination_metadata is sent (internal note)", async () => {
+test("issue-create: without a destination no destination_metadata is sent (internal note)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ title: "t", bodyHtml: "b", accountId: "a" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { title: "t", body_html: "b", account_id: "a" });
   assert(!calls[0].body!.includes("destination_metadata"));
 });
 
-Deno.test("issue-create: is not idempotent and requires title and body", () => {
+test("issue-create: is not idempotent and requires title and body", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.params!.filter((p) => p.required).map((p) => p.key), ["title", "bodyHtml"]);
 });

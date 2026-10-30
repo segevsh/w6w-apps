@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-people.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("search-people: POSTs the Elasticsearch query through unchanged", async () => {
+test("search-people: POSTs the Elasticsearch query through unchanged", async () => {
   const query = { bool: { must: [{ term: { job_title_role: "health" } }] } };
   const { ctx, calls } = mockCtx([{
     body: { status: 200, data: [{ id: "a" }], total: 5, scroll_token: "t1" },
@@ -31,7 +32,7 @@ Deno.test("search-people: POSTs the Elasticsearch query through unchanged", asyn
   assertEquals(out.found, true);
 });
 
-Deno.test("search-people: a SQL query goes as `sql`; both or neither is refused", async () => {
+test("search-people: a SQL query goes as `sql`; both or neither is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: 200, data: [], total: 0 } }]);
   await action.execute!(
     { sql: "SELECT * FROM person WHERE location_country='mexico'" } as never,
@@ -58,7 +59,7 @@ Deno.test("search-people: a SQL query goes as `sql`; both or neither is refused"
   );
 });
 
-Deno.test("search-people: a 404 (no more records) is an empty page, not an error", async () => {
+test("search-people: a 404 (no more records) is an empty page, not an error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, error: { type: ["not_found"] } } }]);
   const out = await action.execute!(
     { sql: "SELECT * FROM person WHERE x=1" } as never,

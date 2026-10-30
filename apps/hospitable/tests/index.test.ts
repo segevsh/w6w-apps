@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 28;
 
-Deno.test("index: exports actions, one auth method and three health checks", () => {
+test("index: exports actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "personal-access-token");
   assertEquals(app.healthChecks.map((h) => h.key).sort(), ["api", "quota", "service"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case, with a description and execute", () => {
+test("index: every action key is unique and kebab-case, with a description and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const a of app.actions) {
@@ -22,7 +24,7 @@ Deno.test("index: every action key is unique and kebab-case, with a description 
   }
 });
 
-Deno.test("index: every perform action states idempotency; reads do not", () => {
+test("index: every perform action states idempotency; reads do not", () => {
   for (const a of app.actions) {
     if (a.type === "perform") {
       assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent unset`);
@@ -32,10 +34,10 @@ Deno.test("index: every perform action states idempotency; reads do not", () => 
   }
 });
 
-Deno.test("index: every action is covered by a test file that imports it", async () => {
+test("index: every action is covered by a test file that imports it", async () => {
   const sources: string[] = [];
-  for await (const f of Deno.readDir(new URL("./actions/", import.meta.url))) {
-    sources.push(await Deno.readTextFile(new URL(`./actions/${f.name}`, import.meta.url)));
+  for await (const f of denoReadDir(new URL("./actions/", import.meta.url))) {
+    sources.push(await denoReadTextFile(new URL(`./actions/${f.name}`, import.meta.url)));
   }
   const all = sources.join("\n");
   for (const a of app.actions) {
@@ -43,7 +45,7 @@ Deno.test("index: every action is covered by a test file that imports it", async
   }
 });
 
-Deno.test("index: health checks never ship a credential and the quota check declares itself unavailable", () => {
+test("index: health checks never ship a credential and the quota check declares itself unavailable", () => {
   const quota = app.healthChecks.find((h) => h.key === "quota")!;
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason);

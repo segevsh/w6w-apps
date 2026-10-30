@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderItemsList from "../../actions/order-items-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("order-items-list: calls GET /api/v2/orders/42/items and shapes the output", async () => {
+test("order-items-list: calls GET /api/v2/orders/42/items and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await orderItemsList.execute(
     { "orderId": "42", "perPage": 10, "page": 2 } as never,
@@ -19,7 +20,7 @@ Deno.test("order-items-list: calls GET /api/v2/orders/42/items and shapes the ou
   assert((out.items as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("order-items-list: a vendor error surfaces the HTTP status and message", async () => {
+test("order-items-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { "message": "x", "errors": { "per_page": ["Too big"] } },

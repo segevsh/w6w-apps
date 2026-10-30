@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const cred = { apiKey: "SECRET-KEY" };
 
-Deno.test("api-key: sign sets x-api-key (trimmed) and leaves url and other headers alone", async () => {
+test("api-key: sign sets x-api-key (trimmed) and leaves url and other headers alone", async () => {
   const { ctx } = mockCtx();
   const out = await apiKey.sign!({
     request: { url: "https://api.supadata.ai/v1/me?a=1", method: "GET", headers: { accept: "x" } },
@@ -15,7 +16,7 @@ Deno.test("api-key: sign sets x-api-key (trimmed) and leaves url and other heade
   assertEquals(out.url, "https://api.supadata.ai/v1/me?a=1");
 });
 
-Deno.test("api-key: test passes only on an account document, via a signed GET /me", async () => {
+test("api-key: test passes only on an account document, via a signed GET /me", async () => {
   const { ctx, calls } = mockCtx([{
     body: { organizationId: "o", plan: "p", maxCredits: 1, usedCredits: 0 },
   }]);
@@ -28,7 +29,7 @@ Deno.test("api-key: test passes only on an account document, via a signed GET /m
   assert(res.message?.includes("without an account document"));
 });
 
-Deno.test("api-key: a rejected key never has its echoed value repeated in the message", async () => {
+test("api-key: a rejected key never has its echoed value repeated in the message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -44,7 +45,7 @@ Deno.test("api-key: a rejected key never has its echoed value repeated in the me
   assert(!res.message?.includes("SECRET-KEY"));
 });
 
-Deno.test("api-key: a 200-status unauthorized envelope still fails; 429, 5xx and a blank key are distinct", async () => {
+test("api-key: a 200-status unauthorized envelope still fails; 429, 5xx and a blank key are distinct", async () => {
   const odd = mockCtx([{
     status: 200,
     body: { error: "unauthorized", message: "m", details: "d" },
@@ -59,7 +60,7 @@ Deno.test("api-key: a 200-status unauthorized envelope still fails; 429, 5xx and
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("api-key: a non-auth error message scrubs an echoed key", async () => {
+test("api-key: a non-auth error message scrubs an echoed key", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: "invalid-request", message: "m", details: "Invalid API Key: SECRET-KEY" },

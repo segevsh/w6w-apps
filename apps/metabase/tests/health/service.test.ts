@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentId,
   mapComponentStatus,
@@ -14,12 +15,12 @@ const PAGE = {
   url: "https://status.metabase.com",
 };
 
-Deno.test("service: probes the Statuspage summary and no other host", () => {
+test("service: probes the Statuspage summary and no other host", () => {
   assertEquals(STATUS_URL, "https://status.metabase.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.metabase.com"]);
 });
 
-Deno.test("service: maps Statuspage's component vocabulary", () => {
+test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -29,7 +30,7 @@ Deno.test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: maps Statuspage's page-level indicator", () => {
+test("service: maps Statuspage's page-level indicator", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -38,12 +39,12 @@ Deno.test("service: maps Statuspage's page-level indicator", () => {
   assertEquals(mapIndicator("who knows"), "unknown");
 });
 
-Deno.test("componentId: slugifies a component name stably", () => {
+test("componentId: slugifies a component name stably", () => {
   assertEquals(componentId("Metabase Cloud Platform"), "metabase-cloud-platform");
   assertEquals(componentId("Metabase Store"), "metabase-store");
 });
 
-Deno.test("service: an all-operational page reports ok with both components", async () => {
+test("service: an all-operational page reports ok with both components", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       page: PAGE,
@@ -68,7 +69,7 @@ Deno.test("service: an all-operational page reports ok with both components", as
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("service: an outage is reported with the affected component named", async () => {
+test("service: an outage is reported with the affected component named", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: PAGE,
@@ -87,12 +88,12 @@ Deno.test("service: an outage is reported with the affected component named", as
   assert(report.message!.includes("1 open incident"));
 });
 
-Deno.test("service: a broken status API is unknown — it says nothing about Metabase", async () => {
+test("service: a broken status API is unknown — it says nothing about Metabase", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown, not down", async () => {
+test("service: an unreadable body is unknown, not down", async () => {
   const { ctx } = mockCtx([{
     body: "<html>nope</html>",
     headers: { "content-type": "text/html" },
@@ -100,7 +101,7 @@ Deno.test("service: an unreadable body is unknown, not down", async () => {
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page with no components is unknown", async () => {
+test("service: a page with no components is unknown", async () => {
   const { ctx } = mockCtx([{
     body: { page: PAGE, components: [], status: { indicator: "none" } },
   }]);
@@ -113,7 +114,7 @@ Deno.test("service: a page with no components is unknown", async () => {
  * points this probe somewhere else, it must report `unknown` rather than
  * cheerfully relaying another company's uptime as Metabase's.
  */
-Deno.test("service: a status page that is not Metabase's is unknown, however healthy", async () => {
+test("service: a status page that is not Metabase's is unknown, however healthy", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { id: "abc", name: "Circle", url: "https://circle.statuspage.io" },
@@ -126,7 +127,7 @@ Deno.test("service: a status page that is not Metabase's is unknown, however hea
   assert(report.message!.includes("no longer self-identifies"));
 });
 
-Deno.test("service: group rows are not reported as components", async () => {
+test("service: group rows are not reported as components", async () => {
   // Statuspage returns container rows with `group: true`; they duplicate their
   // children and would double-count in the roll-up.
   const { ctx } = mockCtx([{

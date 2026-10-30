@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs /v1/tasks with exactly one link field", async () => {
+test("task-create: POSTs /v1/tasks with exactly one link field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { taskId: "TK1" } } }]);
   await taskCreate.execute(
     { title: "Follow up", description: "Call back", phoneNumberId: "PN1" },
@@ -16,7 +17,7 @@ Deno.test("task-create: POSTs /v1/tasks with exactly one link field", async () =
   assertEquals("activityId" in body, false);
 });
 
-Deno.test("task-create: rejects when zero link fields are given", async () => {
+test("task-create: rejects when zero link fields are given", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await taskCreate.execute({ title: "t", description: "d" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("task-create: rejects when zero link fields are given", async () => {
   );
 });
 
-Deno.test("task-create: rejects when more than one link field is given", async () => {
+test("task-create: rejects when more than one link field is given", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -38,7 +39,7 @@ Deno.test("task-create: rejects when more than one link field is given", async (
   );
 });
 
-Deno.test("task-create: is a non-idempotent perform action", () => {
+test("task-create: is a non-idempotent perform action", () => {
   assertEquals(taskCreate.type, "perform");
   assertEquals(taskCreate.idempotent, false);
 });

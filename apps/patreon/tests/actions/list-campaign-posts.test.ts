@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-campaign-posts.ts";
 
-Deno.test("list-campaign-posts: GETs /campaigns/{id}/posts", async () => {
+test("list-campaign-posts: GETs /campaigns/{id}/posts", async () => {
   const body = { data: [{ id: "p1", type: "post" }], meta: { pagination: { total: 1 } } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ campaignId: "999", postFields: "title,url", count: 20 }, ctx);

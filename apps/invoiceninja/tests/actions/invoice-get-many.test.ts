@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-get-many.ts";
 
-Deno.test("invoice-get-many: GETs /invoices scoped to a client with status and pagination", async () => {
+test("invoice-get-many: GETs /invoices scoped to a client with status and pagination", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { data: [] } }]);
   await action.execute({ clientId: "cl1", status: ["active"], page: 1, perPage: 5 }, ctx);
   const url = new URL(calls[0].url);

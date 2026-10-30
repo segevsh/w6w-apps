@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetGet from "../../actions/asset-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("asset-get: fetches by id and returns the asset unwrapped", async () => {
+test("asset-get: fetches by id and returns the asset unwrapped", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "asset_1", name: "hello.png", type: "image", owner: "acme" }) },
   ]);

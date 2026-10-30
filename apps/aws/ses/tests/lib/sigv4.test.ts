@@ -26,7 +26,8 @@
  * `post-x-www-form-urlencoded-parameters` exercises the request-body hash
  * and multi-header signing (content-length + content-type + host + date).
  */
-import { assertEquals, assertNotEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertNotEquals } from "../_assert.ts";
 import {
   ALGORITHM,
   amzDateStamp,
@@ -70,11 +71,11 @@ async function signAndBuildAuthHeader(
   return authorization;
 }
 
-Deno.test("sigv4: amzDateStamp matches the test suite's fixed date", () => {
+test("sigv4: amzDateStamp matches the test suite's fixed date", () => {
   assertEquals(amzDateStamp(NOW), { amzDate: "20150830T123600Z", dateStamp: "20150830" });
 });
 
-Deno.test("sigv4: get-vanilla — full Authorization header matches AWS's vector", async () => {
+test("sigv4: get-vanilla — full Authorization header matches AWS's vector", async () => {
   const authorization = await signAndBuildAuthHeader(
     { url: "https://example.amazonaws.com/", method: "GET", headers: {} },
     SERVICE,
@@ -87,7 +88,7 @@ Deno.test("sigv4: get-vanilla — full Authorization header matches AWS's vector
   );
 });
 
-Deno.test("sigv4: get-vanilla — canonical request and string-to-sign match AWS's vector", async () => {
+test("sigv4: get-vanilla — canonical request and string-to-sign match AWS's vector", async () => {
   const canonicalRequest = buildCanonicalRequest({
     method: "GET",
     canonicalUri: canonicalUriPath("/"),
@@ -114,7 +115,7 @@ Deno.test("sigv4: get-vanilla — canonical request and string-to-sign match AWS
   );
 });
 
-Deno.test("sigv4: post-vanilla — POST with no body signs like AWS's vector", async () => {
+test("sigv4: post-vanilla — POST with no body signs like AWS's vector", async () => {
   const authorization = await signAndBuildAuthHeader(
     { url: "https://example.amazonaws.com/", method: "POST", headers: {} },
     SERVICE,
@@ -127,12 +128,12 @@ Deno.test("sigv4: post-vanilla — POST with no body signs like AWS's vector", a
   );
 });
 
-Deno.test("sigv4: get-vanilla-query-order-key — duplicate query keys sort by value", () => {
+test("sigv4: get-vanilla-query-order-key — duplicate query keys sort by value", () => {
   // Param1=value2&Param1=Value1 -> Param1=Value1&Param1=value2 (ASCII 'V' < 'v').
   assertEquals(canonicalQueryString("Param1=value2&Param1=Value1"), "Param1=Value1&Param1=value2");
 });
 
-Deno.test("sigv4: get-vanilla-query-order-key — full signature matches AWS's vector", async () => {
+test("sigv4: get-vanilla-query-order-key — full signature matches AWS's vector", async () => {
   const authorization = await signAndBuildAuthHeader(
     {
       url: "https://example.amazonaws.com/?Param1=value2&Param1=Value1",
@@ -149,12 +150,12 @@ Deno.test("sigv4: get-vanilla-query-order-key — full signature matches AWS's v
   );
 });
 
-Deno.test("sigv4: get-unreserved — unreserved characters pass through unencoded", () => {
+test("sigv4: get-unreserved — unreserved characters pass through unencoded", () => {
   const path = "/-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   assertEquals(canonicalUriPath(path), path);
 });
 
-Deno.test("sigv4: get-unreserved — full signature matches AWS's vector", async () => {
+test("sigv4: get-unreserved — full signature matches AWS's vector", async () => {
   const authorization = await signAndBuildAuthHeader(
     {
       url:
@@ -172,7 +173,7 @@ Deno.test("sigv4: get-unreserved — full signature matches AWS's vector", async
   );
 });
 
-Deno.test("sigv4: post-x-www-form-urlencoded-parameters — canonical request matches AWS's vector", () => {
+test("sigv4: post-x-www-form-urlencoded-parameters — canonical request matches AWS's vector", () => {
   // Content-Length is part of the *original* raw request being replayed, so
   // it's passed explicitly (a real HTTP client sets it itself; this signer
   // only signs the headers a caller actually hands it).
@@ -199,7 +200,7 @@ Deno.test("sigv4: post-x-www-form-urlencoded-parameters — canonical request ma
   );
 });
 
-Deno.test("sigv4: post-x-www-form-urlencoded-parameters — full signature (independently cross-checked)", async () => {
+test("sigv4: post-x-www-form-urlencoded-parameters — full signature (independently cross-checked)", async () => {
   // NOTE: this fixture's own mirrored `.sts`/`.authz` files are internally
   // inconsistent with their own `.creq` (SHA-256 of the mirror's `.creq` text
   // does not equal the hash embedded in its `.sts` — a bug in the mirror
@@ -232,14 +233,14 @@ Deno.test("sigv4: post-x-www-form-urlencoded-parameters — full signature (inde
   );
 });
 
-Deno.test("sigv4: awsUriEncode encodes space, plus and slash per AWS's rule", () => {
+test("sigv4: awsUriEncode encodes space, plus and slash per AWS's rule", () => {
   assertEquals(awsUriEncode("a b"), "a%20b");
   assertEquals(awsUriEncode("a+b"), "a%2Bb");
   assertEquals(awsUriEncode("a/b", true), "a%2Fb");
   assertEquals(awsUriEncode("a/b", false), "a/b");
 });
 
-Deno.test("sigv4: canonicalizeHeaders lowercases, sorts, trims and joins duplicates", () => {
+test("sigv4: canonicalizeHeaders lowercases, sorts, trims and joins duplicates", () => {
   const { canonicalHeaders, signedHeaders } = canonicalizeHeaders({
     "X-Amz-Date": "20150830T123600Z",
     "Host": "example.amazonaws.com",
@@ -252,7 +253,7 @@ Deno.test("sigv4: canonicalizeHeaders lowercases, sorts, trims and joins duplica
   );
 });
 
-Deno.test("sigv4: computeSigV4 sets x-amz-content-sha256 to the real body hash", async () => {
+test("sigv4: computeSigV4 sets x-amz-content-sha256 to the real body hash", async () => {
   const { headers } = await computeSigV4(
     { url: "https://example.amazonaws.com/", method: "PUT", headers: {}, body: "hello" },
     CONFIG,
@@ -269,7 +270,7 @@ Deno.test("sigv4: computeSigV4 sets x-amz-content-sha256 to the real body hash",
 
 import { canonicalUriPathDouble } from "../../lib/sigv4.ts";
 
-Deno.test("sigv4: canonicalUriPathDouble encodes an already-encoded path a second time", () => {
+test("sigv4: canonicalUriPathDouble encodes an already-encoded path a second time", () => {
   assertEquals(canonicalUriPathDouble("/"), "/");
   assertEquals(canonicalUriPathDouble(""), "/");
   assertEquals(
@@ -284,7 +285,7 @@ Deno.test("sigv4: canonicalUriPathDouble encodes an already-encoded path a secon
   );
 });
 
-Deno.test("sigv4: computeSigV4 uses the double-encoded path for `ses` and the single one for `s3`", async () => {
+test("sigv4: computeSigV4 uses the double-encoded path for `ses` and the single one for `s3`", async () => {
   const request = {
     url: "https://email.us-east-1.amazonaws.com/v2/email/identities/ada%40example.com",
     method: "GET",

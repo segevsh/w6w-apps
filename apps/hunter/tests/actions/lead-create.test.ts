@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: POSTs /leads with a JSON body", async () => {
+test("lead-create: POSTs /leads with a JSON body", async () => {
   const body = envelope({ id: 3, email: "alexis@reddit.com" });
   const { ctx, calls } = mockCtx([{ status: 201, body }]);
   const result = await action.execute!({
@@ -19,6 +20,6 @@ Deno.test("lead-create: POSTs /leads with a JSON body", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("lead-create: is not marked idempotent", () => {
+test("lead-create: is not marked idempotent", () => {
   assertEquals(action.idempotent, false);
 });

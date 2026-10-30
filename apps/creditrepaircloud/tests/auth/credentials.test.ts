@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import credentials, { PROBE_ID, PROBE_XML } from "../../auth/credentials.ts";
 import { LEAD_VIEW } from "../../lib/client.ts";
 import {
@@ -11,7 +12,7 @@ import {
   unreachableCtx,
 } from "../_helpers.ts";
 
-Deno.test("credentials: declares the two secret fields and no others", () => {
+test("credentials: declares the two secret fields and no others", () => {
   assertEquals(credentials.key, "credentials");
   // Neither field maps to a built-in auth type: `apiKey` carries one field, one
   // name and one optional prefix, and this vendor needs two query parameters.
@@ -23,12 +24,12 @@ Deno.test("credentials: declares the two secret fields and no others", () => {
   }
 });
 
-Deno.test("credentials: the probe document is the vendor's own example", () => {
+test("credentials: the probe document is the vendor's own example", () => {
   assertEquals(PROBE_ID, "MQ==");
   assertEquals(PROBE_XML, "<crcloud><client><id>MQ==</id></client></crcloud>");
 });
 
-Deno.test("credentials: sign appends both credentials to the query string only", async () => {
+test("credentials: sign appends both credentials to the query string only", async () => {
   const request = {
     url: "https://app.creditrepaircloud.com/api/lead/insertRecord",
     method: "POST",
@@ -49,7 +50,7 @@ Deno.test("credentials: sign appends both credentials to the query string only",
   assertEquals(signed.method, "POST");
 });
 
-Deno.test("credentials: test sends the probe as a form body to /api/lead/viewRecord", async () => {
+test("credentials: test sends the probe as a form body to /api/lead/viewRecord", async () => {
   const { ctx, calls } = mockCtx([{ body: errorResponse(4413, "Incorrect Client ID") }]);
   const result = await credentials.test({
     credential: { apiauthkey: "k1", secretkey: "s1" },
@@ -65,7 +66,7 @@ Deno.test("credentials: test sends the probe as a form body to /api/lead/viewRec
   assertEquals(result.ok && result.message?.includes("4413"), true);
 });
 
-Deno.test("credentials: test rejects each of the four credential-invalid codes", async () => {
+test("credentials: test rejects each of the four credential-invalid codes", async () => {
   for (
     const [code, message] of [
       [4405, "Incorrect API key parameter or API key parameter value"],
@@ -84,7 +85,7 @@ Deno.test("credentials: test rejects each of the four credential-invalid codes",
   }
 });
 
-Deno.test("credentials: test never echoes either credential", async () => {
+test("credentials: test never echoes either credential", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4406, "Wrong API Key or Secret key") }]);
   const result = await credentials.test({
     credential: { apiauthkey: "SUPER-SECRET-KEY", secretkey: "SUPER-SECRET-SECRET" },
@@ -94,7 +95,7 @@ Deno.test("credentials: test never echoes either credential", async () => {
   assert(!result.message!.includes("SUPER-SECRET-SECRET"), result.message);
 });
 
-Deno.test("credentials: test treats an accepted-but-wrong-record code as live", async () => {
+test("credentials: test treats an accepted-but-wrong-record code as live", async () => {
   for (
     const [code, message] of [
       [4410, "Wrong ID in update"],
@@ -111,7 +112,7 @@ Deno.test("credentials: test treats an accepted-but-wrong-record code as live", 
   }
 });
 
-Deno.test("credentials: test treats a successful probe as live", async () => {
+test("credentials: test treats a successful probe as live", async () => {
   const { ctx } = mockCtx([{ body: okResponse("<id>MQ==</id>") }]);
   const result = await credentials.test({
     credential: { apiauthkey: "k1", secretkey: "s1" },
@@ -120,7 +121,7 @@ Deno.test("credentials: test treats a successful probe as live", async () => {
   assertEquals(result.message, "the API accepted the credentials");
 });
 
-Deno.test("credentials: test fails an unreadable body rather than assuming liveness", async () => {
+test("credentials: test fails an unreadable body rather than assuming liveness", async () => {
   const { ctx } = mockCtx([{ body: "<html>gateway</html>" }]);
   const result = await credentials.test({
     credential: { apiauthkey: "k1", secretkey: "s1" },
@@ -129,7 +130,7 @@ Deno.test("credentials: test fails an unreadable body rather than assuming liven
   assert(result.message?.includes("unreadable"), result.message);
 });
 
-Deno.test("credentials: test reports a missing field without making a call", async () => {
+test("credentials: test reports a missing field without making a call", async () => {
   for (
     const credential of [
       { apiauthkey: "", secretkey: "s1" },
@@ -144,7 +145,7 @@ Deno.test("credentials: test reports a missing field without making a call", asy
   }
 });
 
-Deno.test("credentials: test reports an unreachable host without leaking the URL", async () => {
+test("credentials: test reports an unreachable host without leaking the URL", async () => {
   const { ctx } = unreachableCtx("connect ECONNREFUSED");
   const result = await credentials.test({
     credential: { apiauthkey: "SUPER-SECRET-KEY", secretkey: "SUPER-SECRET-SECRET" },

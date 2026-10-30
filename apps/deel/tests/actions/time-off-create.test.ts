@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-off-create.ts";
 
 const display = {};
 
-Deno.test("time-off-create: sends the three fields Deel's schema requires", async () => {
+test("time-off-create: sends the three fields Deel's schema requires", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { time_offs: [] } }], { display });
   await action.execute!({
     recipientProfileId: "hp1",
@@ -18,7 +19,7 @@ Deno.test("time-off-create: sends the three fields Deel's schema requires", asyn
 });
 
 /** false is meaningful here — it means "skip Deel's approvers". */
-Deno.test("time-off-create: the approval-flow flag survives when set to false", async () => {
+test("time-off-create: the approval-flow flag survives when set to false", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], { display });
   await action.execute!({
     recipientProfileId: "hp1",
@@ -32,7 +33,7 @@ Deno.test("time-off-create: the approval-flow flag survives when set to false", 
   assertEquals(data.status, "APPROVED");
 });
 
-Deno.test("time-off-create: all three required fields are enforced", async () => {
+test("time-off-create: all three required fields are enforced", async () => {
   for (
     const patch of [
       { startDate: "a", endDate: "b" },

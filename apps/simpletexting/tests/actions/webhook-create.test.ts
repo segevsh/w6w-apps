@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs the url and triggers and returns the new id", async () => {
+test("webhook-create: POSTs the url and triggers and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "507f191e810c19729de860ea" } }]);
   const result = await webhookCreate.execute(
     { url: "https://example.com/hook", triggers: ["INCOMING_MESSAGE", "OUTGOING_MESSAGE"] },
@@ -19,7 +20,7 @@ Deno.test("webhook-create: POSTs the url and triggers and returns the new id", a
 });
 
 /** A trigger that never fires is worse than a refused request. */
-Deno.test("webhook-create: refuses an empty trigger list before the request", async () => {
+test("webhook-create: refuses an empty trigger list before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await webhookCreate.execute({ url: "https://example.com/hook", triggers: [] }, ctx),
@@ -29,11 +30,11 @@ Deno.test("webhook-create: refuses an empty trigger list before the request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("webhook-create: requestPerSecLimit caps at the vendor's documented maximum", () => {
+test("webhook-create: requestPerSecLimit caps at the vendor's documented maximum", () => {
   const limit = webhookCreate.params!.find((p) => p.key === "requestPerSecLimit");
   assertEquals(limit?.validation, { integer: true, min: 1, max: 25 });
 });
 
-Deno.test("webhook-create: is not idempotent — the endpoint declares no idempotency key", () => {
+test("webhook-create: is not idempotent — the endpoint declares no idempotency key", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

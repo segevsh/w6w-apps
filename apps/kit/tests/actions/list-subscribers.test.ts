@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/list-subscribers.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-subscribers: GETs /v4/subscribers with no params by default", async () => {
+test("list-subscribers: GETs /v4/subscribers with no params by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscribers: [], pagination: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-subscribers: GETs /v4/subscribers with no params by default", as
   assertEquals([...url.searchParams.keys()], [], "should not invent defaults Kit already has");
 });
 
-Deno.test("list-subscribers: forwards every filter under Kit's snake_case names", async () => {
+test("list-subscribers: forwards every filter under Kit's snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscribers: [] } }]);
   await action.execute!({
     emailAddress: "ada@example.com",
@@ -37,7 +38,7 @@ Deno.test("list-subscribers: forwards every filter under Kit's snake_case names"
   assertEquals(p.get("slim"), "true");
 });
 
-Deno.test("list-subscribers: forwards cursor pagination", async () => {
+test("list-subscribers: forwards cursor pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscribers: [] } }]);
   await action.execute!({ after: "cursor-1", perPage: 100, includeTotalCount: true }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -47,7 +48,7 @@ Deno.test("list-subscribers: forwards cursor pagination", async () => {
   assert(!p.has("before"));
 });
 
-Deno.test("list-subscribers: is a search action returning the pagination envelope", async () => {
+test("list-subscribers: is a search action returning the pagination envelope", async () => {
   assertEquals(action.type, "search");
   const body = { subscribers: [{ id: 1 }], pagination: { has_next_page: true, end_cursor: "c" } };
   const { ctx } = mockCtx([{ body }]);

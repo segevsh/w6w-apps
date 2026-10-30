@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("exchange: mints a token with a GET request, credentials in the query string", async () => {
+test("exchange: mints a token with a GET request, credentials in the query string", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -34,7 +35,7 @@ Deno.test("exchange: mints a token with a GET request, credentials in the query 
   assertEquals(cred.identityUrl, "https://123-abc-456.mktorest.com/identity");
 });
 
-Deno.test("exchange: strips a trailing /rest from the pasted REST base URL", async () => {
+test("exchange: strips a trailing /rest from the pasted REST base URL", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "t", expires_in: 3600 } }]);
   const cred = await auth.exchange!({
     fields: {
@@ -47,7 +48,7 @@ Deno.test("exchange: strips a trailing /rest from the pasted REST base URL", asy
   assertEquals(cred.restBaseUrl, "https://123-abc-456.mktorest.com");
 });
 
-Deno.test("exchange: a 401 from the Identity endpoint is a clear bad-credential error", async () => {
+test("exchange: a 401 from the Identity endpoint is a clear bad-credential error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "unauthorized" } }]);
   let threw = false;
   try {
@@ -66,7 +67,7 @@ Deno.test("exchange: a 401 from the Identity endpoint is a clear bad-credential 
   assertEquals(threw, true);
 });
 
-Deno.test("refresh: re-mints from the stored client id/secret — no refresh token to redeem", async () => {
+test("refresh: re-mints from the stored client id/secret — no refresh token to redeem", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-2", expires_in: 3600 } }]);
   const cred = await auth.refresh!({
     credential: {
@@ -81,7 +82,7 @@ Deno.test("refresh: re-mints from the stored client id/secret — no refresh tok
   assertEquals(cred.accessToken, "tok-2");
 });
 
-Deno.test("sign: stamps the Authorization header and touches nothing else", () => {
+test("sign: stamps the Authorization header and touches nothing else", () => {
   const request = { headers: {} as Record<string, string>, method: "GET", url: "https://x" };
   const out = auth.sign!(
     { request, credential: { accessToken: "tok-1" } } as never,
@@ -92,7 +93,7 @@ Deno.test("sign: stamps the Authorization header and touches nothing else", () =
   assertEquals(out.headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("test: success:true is a pass", async () => {
+test("test: success:true is a pass", async () => {
   const { ctx } = mockCtx([{ body: { success: true, result: [] } }]);
   const out = await auth.test({
     credential: { accessToken: "tok-1", restBaseUrl: "https://123-abc-456.mktorest.com" },
@@ -100,7 +101,7 @@ Deno.test("test: success:true is a pass", async () => {
   assertEquals(out.ok, true);
 });
 
-Deno.test("test: a 200 with success:false and code 601/602 is an expired/invalid token", async () => {
+test("test: a 200 with success:false and code 601/602 is an expired/invalid token", async () => {
   const { ctx } = mockCtx([
     { body: { success: false, errors: [{ code: "602", message: "Access token expired" }] } },
   ]);
@@ -111,7 +112,7 @@ Deno.test("test: a 200 with success:false and code 601/602 is an expired/invalid
   assert(out.message!.includes("602"));
 });
 
-Deno.test("test: code 603 is diagnosed as a permissions problem, not an invalid token", async () => {
+test("test: code 603 is diagnosed as a permissions problem, not an invalid token", async () => {
   const { ctx } = mockCtx([
     { body: { success: false, errors: [{ code: "603", message: "Access denied" }] } },
   ]);
@@ -122,7 +123,7 @@ Deno.test("test: code 603 is diagnosed as a permissions problem, not an invalid 
   assert(out.message!.includes("permission"));
 });
 
-Deno.test("test: a non-JSON response is diagnosed as a wrong REST base URL", async () => {
+test("test: a non-JSON response is diagnosed as a wrong REST base URL", async () => {
   const { ctx } = mockCtx([{
     body: "<html>nope</html>",
     headers: { "content-type": "text/html" },
@@ -134,7 +135,7 @@ Deno.test("test: a non-JSON response is diagnosed as a wrong REST base URL", asy
   assert(out.message!.includes("REST base URL"));
 });
 
-Deno.test("test never echoes the access token or client secret in its message", async () => {
+test("test never echoes the access token or client secret in its message", async () => {
   const { ctx } = mockCtx([
     { body: { success: false, errors: [{ code: "601", message: "Unauthorized" }] } },
   ]);

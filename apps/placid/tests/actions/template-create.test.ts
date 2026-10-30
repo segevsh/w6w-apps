@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { assertRejects, mockCtx } from "../_helpers.ts";
 
-Deno.test("template-create: sends the documented fields; duplicate needs no title", async () => {
+test("template-create: sends the documented fields; duplicate needs no title", async () => {
   const { ctx, calls } = mockCtx([{ body: { uuid: "n" } }]);
   await templateCreate.execute({
     title: "T",

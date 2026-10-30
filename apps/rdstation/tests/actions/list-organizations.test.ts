@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import listOrganizations from "../../actions/list-organizations.ts";
 import { API_ROOT, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-organizations: GET /organizations with the documented filter names", async () => {
+test("list-organizations: GET /organizations with the documented filter names", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("organizations", []) }]);
 
   await listOrganizations.execute(
@@ -32,14 +33,14 @@ Deno.test("list-organizations: GET /organizations with the documented filter nam
   });
 });
 
-Deno.test("list-organizations: returns the vendor's envelope verbatim", async () => {
+test("list-organizations: returns the vendor's envelope verbatim", async () => {
   const payload = { organizations: [{ _id: "o1" }], has_more: false, total: 1 };
   const { ctx } = mockCtx([{ body: payload }]);
 
   assertEquals(await listOrganizations.execute({}, ctx), payload);
 });
 
-Deno.test("list-organizations: an unset optional filter is omitted", async () => {
+test("list-organizations: an unset optional filter is omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("organizations", []) }]);
 
   await listOrganizations.execute({ page: 1 }, ctx);

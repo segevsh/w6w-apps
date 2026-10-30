@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/group-list.ts";
 
-Deno.test("group-list: GETs /groups.json with no query at all", async () => {
+test("group-list: GETs /groups.json with no query at all", async () => {
   const body = { groups: [{ id: 1, name: "staff" }], total_rows_groups: 1 };
   const { ctx, calls } = mockDiscourseCtx([{ body }]);
   const out = await action.execute({}, ctx);
@@ -10,7 +11,7 @@ Deno.test("group-list: GETs /groups.json with no query at all", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("group-list: declares no params, because the reference documents none", () => {
+test("group-list: declares no params, because the reference documents none", () => {
   // Discourse publishes no filter, ordering or page-size parameter for this
   // route. Inventing one would be guessing at surface.
   assertEquals(action.params, []);

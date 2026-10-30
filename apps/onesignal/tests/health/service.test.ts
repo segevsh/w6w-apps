@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -12,7 +13,7 @@ Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () =>
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
+test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -21,13 +22,13 @@ Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug, then an index", () => {
+test("componentKey: prefers the vendor id, falls back to a slug, then an index", () => {
   assertEquals(componentKey({ id: "abc123", name: "Push" }, 0), "abc123");
   assertEquals(componentKey({ name: "APIs & SDK Endpoints" }, 2), "apis-sdk-endpoints-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("check: all-operational summary reports ok with every component", async () => {
+test("check: all-operational summary reports ok with every component", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -47,7 +48,7 @@ Deno.test("check: all-operational summary reports ok with every component", asyn
   assertEquals(report.components?.c1.state, "ok");
 });
 
-Deno.test("check: a major outage on one component reports down and names it", async () => {
+test("check: a major outage on one component reports down and names it", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -64,7 +65,7 @@ Deno.test("check: a major outage on one component reports down and names it", as
   assertEquals(report.message?.includes("Push"), true);
 });
 
-Deno.test("check: group rows are excluded from the component map", async () => {
+test("check: group rows are excluded from the component map", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -80,13 +81,13 @@ Deno.test("check: group rows are excluded from the component map", async () => {
   assertEquals(Object.keys(report.components ?? {}), ["c1"]);
 });
 
-Deno.test("check: a broken status API reports unknown, never down", async () => {
+test("check: a broken status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: a page that no longer self-identifies as OneSignal reports unknown", async () => {
+test("check: a page that no longer self-identifies as OneSignal reports unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -101,7 +102,7 @@ Deno.test("check: a page that no longer self-identifies as OneSignal reports unk
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: unsigned posture, unauthenticated status call", () => {
+test("check: unsigned posture, unauthenticated status call", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.onesignal.com"]);
 });

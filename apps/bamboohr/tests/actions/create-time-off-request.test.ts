@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import createTimeOffRequest from "../../actions/create-time-off-request.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const BASE = {
   timeOffTypeId: "1",
 };
 
-Deno.test("create-time-off-request: PUTs to /employees/{id}/time_off/request", async () => {
+test("create-time-off-request: PUTs to /employees/{id}/time_off/request", async () => {
   assertEquals(createTimeOffRequest.type, "perform");
   const { ctx, calls } = mockCtx([{ status: 201, body: "" }]);
   const out = await createTimeOffRequest.execute({ ...BASE }, ctx);
@@ -27,18 +28,18 @@ Deno.test("create-time-off-request: PUTs to /employees/{id}/time_off/request", a
   assertEquals(out, { status: 201 });
 });
 
-Deno.test("create-time-off-request: is non-idempotent — a retry books more leave", () => {
+test("create-time-off-request: is non-idempotent — a retry books more leave", () => {
   assertEquals(createTimeOffRequest.idempotent, false);
 });
 
-Deno.test("create-time-off-request: the four schema-required fields are required", () => {
+test("create-time-off-request: the four schema-required fields are required", () => {
   // Schema: required = ["status", "start", "end", "timeOffTypeId"], plus the
   // employeeId that forms the path.
   const required = (createTimeOffRequest.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["employeeId", "end", "start", "status", "timeOffTypeId"]);
 });
 
-Deno.test("create-time-off-request: status options match the create schema exactly", () => {
+test("create-time-off-request: status options match the create schema exactly", () => {
   // `canceled` is NOT valid on create — only on the status update endpoint.
   assertEquals(
     optionValues(createTimeOffRequest, "status"),
@@ -47,13 +48,13 @@ Deno.test("create-time-off-request: status options match the create schema exact
   assertEquals(param(createTimeOffRequest, "status").default, "requested");
 });
 
-Deno.test("create-time-off-request: warns that approved/denied need permission and 403", () => {
+test("create-time-off-request: warns that approved/denied need permission and 403", () => {
   const hint = param(createTimeOffRequest, "status").hint ?? "";
   assert(/403/.test(hint), "a 403 here looks like a broken credential unless explained");
   assert(/suppress/i.test(hint), "must say approval notifications are suppressed");
 });
 
-Deno.test("create-time-off-request: labels previousRequest as destructive", () => {
+test("create-time-off-request: labels previousRequest as destructive", () => {
   // It sets the prior request to `superceded`, removes all approvals, marks the
   // workflow deleted and deletes its notifications. That is not a link.
   const hint = param(createTimeOffRequest, "previousRequest").hint ?? "";
@@ -61,7 +62,7 @@ Deno.test("create-time-off-request: labels previousRequest as destructive", () =
   assert(/superceded/i.test(hint));
 });
 
-Deno.test("create-time-off-request: optional bodies pass through, unset ones are dropped", async () => {
+test("create-time-off-request: optional bodies pass through, unset ones are dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: "" }]);
   await createTimeOffRequest.execute({
     ...BASE,
@@ -77,11 +78,11 @@ Deno.test("create-time-off-request: optional bodies pass through, unset ones are
   assertEquals("previousRequest" in body, false);
 });
 
-Deno.test("create-time-off-request: says amount is ignored when dates is given", () => {
+test("create-time-off-request: says amount is ignored when dates is given", () => {
   assert(/ignored/i.test(param(createTimeOffRequest, "amount").hint ?? ""));
 });
 
-Deno.test("create-time-off-request: the employee id is escaped into the path", async () => {
+test("create-time-off-request: the employee id is escaped into the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: "" }]);
   await createTimeOffRequest.execute({ ...BASE, employeeId: "a/b" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/employees/a%2Fb/time_off/request");

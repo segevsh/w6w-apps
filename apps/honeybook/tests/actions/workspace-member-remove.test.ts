@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workspaceMemberRemove from "../../actions/workspace-member-remove.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": "x-workspaceId", "userId": "x-userId" };
 
-Deno.test("workspace-member-remove: sends DELETE /workspaces/{id}/members/{user_id} with the mapped fields", async () => {
+test("workspace-member-remove: sends DELETE /workspaces/{id}/members/{user_id} with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await workspaceMemberRemove.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -16,7 +17,7 @@ Deno.test("workspace-member-remove: sends DELETE /workspaces/{id}/members/{user_
   assertEquals(out, { success: true });
 });
 
-Deno.test("workspace-member-remove: sends only what was supplied", async () => {
+test("workspace-member-remove: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await workspaceMemberRemove.execute(
     { "workspaceId": "x-workspaceId", "userId": "x-userId" } as never,
@@ -25,7 +26,7 @@ Deno.test("workspace-member-remove: sends only what was supplied", async () => {
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("workspace-member-remove: percent-encodes path ids", async () => {
+test("workspace-member-remove: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await workspaceMemberRemove.execute(
     { ...INPUT, ...{ "workspaceId": "a/b", "userId": "a/b" } },
@@ -35,7 +36,7 @@ Deno.test("workspace-member-remove: percent-encodes path ids", async () => {
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("workspace-member-remove: surfaces the API error type and message", async () => {
+test("workspace-member-remove: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await workspaceMemberRemove.execute(INPUT, ctx),

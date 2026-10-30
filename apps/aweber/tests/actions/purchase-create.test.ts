@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import purchaseCreate from "../../actions/purchase-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("purchase-create: posts a purchase event and reports the status", async () => {
+test("purchase-create: posts a purchase event and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await purchaseCreate.execute(
     { accountId: "1", listId: "2", email: "a@b.com", value: 49.99, currency: "USD" },
@@ -15,6 +16,6 @@ Deno.test("purchase-create: posts a purchase event and reports the status", asyn
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("purchase-create: is not marked idempotent", () => {
+test("purchase-create: is not marked idempotent", () => {
   assertEquals(purchaseCreate.idempotent, false);
 });

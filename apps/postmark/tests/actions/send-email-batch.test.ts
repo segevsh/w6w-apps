@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email-batch.ts";
 
-Deno.test("send-email-batch: POSTs /email/batch with the raw messages array", async () => {
+test("send-email-batch: POSTs /email/batch with the raw messages array", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ ErrorCode: 0, Message: "OK", MessageID: "a" }, { ErrorCode: 300, Message: "bad" }],
@@ -20,7 +21,7 @@ Deno.test("send-email-batch: POSTs /email/batch with the raw messages array", as
   assertEquals(out[1].ErrorCode, 300);
 });
 
-Deno.test("send-email-batch: throws on an empty or missing messages array", async () => {
+test("send-email-batch: throws on an empty or missing messages array", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ messages: [] }, ctx)),

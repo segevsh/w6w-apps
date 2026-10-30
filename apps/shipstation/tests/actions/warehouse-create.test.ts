@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/warehouse-create.ts";
 
 const originAddress = '{"name":"John Doe","address_line1":"4009 Marathon Blvd",' +
   '"city_locality":"Austin","state_province":"TX","postal_code":"78756","country_code":"US"}';
 
-Deno.test("warehouse-create: posts to /v2/warehouses", async () => {
+test("warehouse-create: posts to /v2/warehouses", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { warehouse_id: "se-1" } }]);
   const result = await action.execute!(
     { name: "East Warehouse", originAddress },
@@ -19,7 +20,7 @@ Deno.test("warehouse-create: posts to /v2/warehouses", async () => {
   assertEquals(result.warehouseId, "se-1");
 });
 
-Deno.test("warehouse-create: requires name", async () => {
+test("warehouse-create: requires name", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ originAddress }, ctx),
@@ -29,7 +30,7 @@ Deno.test("warehouse-create: requires name", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("warehouse-create: requires originAddress", async () => {
+test("warehouse-create: requires originAddress", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ name: "East" }, ctx),

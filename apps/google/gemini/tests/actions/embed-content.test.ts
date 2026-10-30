@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embed-content.ts";
 
-Deno.test("embed-content: POSTs to /models/{model}:embedContent wrapping text as a Content part", async () => {
+test("embed-content: POSTs to /models/{model}:embedContent wrapping text as a Content part", async () => {
   const { ctx, calls } = mockCtx([{ body: { embedding: { values: [0.1, 0.2] } } }]);
   await action.execute!({ model: "gemini-embedding-001", text: "hello world" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("embed-content: POSTs to /models/{model}:embedContent wrapping text as
   assertEquals("embedContentConfig" in body, false);
 });
 
-Deno.test("embed-content: folds taskType/title/outputDimensionality into embedContentConfig", async () => {
+test("embed-content: folds taskType/title/outputDimensionality into embedContentConfig", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

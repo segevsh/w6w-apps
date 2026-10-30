@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-template.ts";
 
-Deno.test("delete-template: DELETEs /document_templates/{id} and reports deleted", async () => {
+test("delete-template: DELETEs /document_templates/{id} and reports deleted", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ templateId: "tpl-1" }, ctx);
 

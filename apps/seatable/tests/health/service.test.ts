@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { COMPONENT_KEY, STATUS_HOST, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const endpoint = (result: Record<string, unknown> | null, key = COMPONENT_KEY) =
   results: result ? [result] : [],
 });
 
-Deno.test("service: asks the single Base Operations component, unsigned-host only", async () => {
+test("service: asks the single Base Operations component, unsigned-host only", async () => {
   const { calls } = await run({ body: endpoint({ success: true, state: "healthy" }) });
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(
@@ -26,36 +27,36 @@ Deno.test("service: asks the single Base Operations component, unsigned-host onl
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: a successful latest probe is ok", async () => {
+test("service: a successful latest probe is ok", async () => {
   const { report } = await run({ body: endpoint({ success: true, state: "healthy" }) });
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a degraded probe is degraded", async () => {
+test("service: a degraded probe is degraded", async () => {
   const { report } = await run({
     body: endpoint({ success: false, state: "degraded", timestamp: "2026-10-05T08:45:29Z" }),
   });
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a failed probe with any other state is down", async () => {
+test("service: a failed probe with any other state is down", async () => {
   const { report } = await run({ body: endpoint({ success: false, state: "unhealthy" }) });
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   assertEquals((await run({ status: 503, body: "oops" })).report.state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   assertEquals((await run({ body: "<html>shell</html>" })).report.state, "unknown");
 });
 
-Deno.test("service: a different component key is unknown (page re-keyed or swapped)", async () => {
+test("service: a different component key is unknown (page re-keyed or swapped)", async () => {
   const { report } = await run({ body: endpoint({ success: true }, "other_component") });
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: no results is unknown", async () => {
+test("service: no results is unknown", async () => {
   assertEquals((await run({ body: endpoint(null) })).report.state, "unknown");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import documentImportUrl from "../../actions/document-import-url.ts";
 import { errorOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-import-url: POSTs a form to /v2/document/fetch/<id>", async () => {
+test("document-import-url: POSTs a form to /v2/document/fetch/<id>", async () => {
   const resp = { document_id: "d1", parser_id: "p1", remote_id: "r1", message: "scheduled" };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const out = await documentImportUrl.execute(
@@ -19,13 +20,13 @@ Deno.test("document-import-url: POSTs a form to /v2/document/fetch/<id>", async 
   assertEquals(calls[0].headers.api_key, undefined);
 });
 
-Deno.test("document-import-url: omits an empty remote id", async () => {
+test("document-import-url: omits an empty remote id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await documentImportUrl.execute({ parserId: "p1", url: "https://e.com/a.pdf" }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).has("remote_id"), false);
 });
 
-Deno.test("document-import-url: is not idempotent and requires url", async () => {
+test("document-import-url: is not idempotent and requires url", async () => {
   assertEquals(documentImportUrl.idempotent, false);
   const { ctx, calls } = mockCtx([]);
   const err = await errorOf(() => documentImportUrl.execute({ parserId: "p1", url: " " }, ctx));

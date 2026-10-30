@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-employee-attributes.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-employee-attributes: fetches the attribute schema unmodified", async () => {
+test("list-employee-attributes: fetches the attribute schema unmodified", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

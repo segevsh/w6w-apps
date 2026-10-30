@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import host from "../../health/host.ts";
 import { errorBody, mockRelevanceCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { errorBody, mockRelevanceCtx } from "../_helpers.ts";
  * complete for the user, and a mistyped region id otherwise fails as "Relevance
  * AI rejected the key" — the wrong diagnosis. This check separates the two.
  */
-Deno.test("host: is a per-connection dependency that needs the Connection but no credential", () => {
+test("host: is a per-connection dependency that needs the Connection but no credential", () => {
   assertEquals(host.kind, "dependency");
   assertEquals(host.scope, "connection");
   assertEquals(host.credential, "context");
@@ -19,7 +20,7 @@ Deno.test("host: is a per-connection dependency that needs the Connection but no
   assertEquals(host.severity, undefined);
 });
 
-Deno.test("host: probes this connection's own region host, unauthenticated", async () => {
+test("host: probes this connection's own region host, unauthenticated", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     {
       status: 401,
@@ -40,13 +41,13 @@ Deno.test("host: probes this connection's own region host, unauthenticated", asy
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("host: a different Connection probes a different host", async () => {
+test("host: a different Connection probes a different host", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: {} }], "0e489e");
   await host.check!({}, ctx);
   assertEquals(calls[0].url, "https://api-0e489e.stack.tryrelevance.com/latest/auth/info");
 });
 
-Deno.test("host: a connection with no region id cannot be probed", async () => {
+test("host: a connection with no region id cannot be probed", async () => {
   const { ctx, calls } = mockRelevanceCtx();
   (ctx as unknown as { connection: { display: Record<string, unknown> } }).connection.display = {};
   const report = await host.check!({}, ctx);
@@ -55,7 +56,7 @@ Deno.test("host: a connection with no region id cannot be probed", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("host: a 404 means the region id belongs to no gateway", async () => {
+test("host: a 404 means the region id belongs to no gateway", async () => {
   const { ctx } = mockRelevanceCtx([{ status: 404, body: {} }]);
   const report = await host.check!({}, ctx);
 
@@ -63,12 +64,12 @@ Deno.test("host: a 404 means the region id belongs to no gateway", async () => {
   assert(/f1db6c/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("host: a 5xx is down", async () => {
+test("host: a 5xx is down", async () => {
   const { ctx } = mockRelevanceCtx([{ status: 503, body: "" }]);
   assertEquals((await host.check!({}, ctx)).state, "down");
 });
 
-Deno.test("host: an unreachable host is down, and names the region id", async () => {
+test("host: an unreachable host is down, and names the region id", async () => {
   // No queued response, so the request throws — DNS failure, in effect.
   const { ctx } = mockRelevanceCtx([], "zzzzzz");
   const report = await host.check!({}, ctx);

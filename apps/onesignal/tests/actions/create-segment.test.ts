@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createSegment from "../../actions/create-segment.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("create-segment: parses filters JSON and posts name + filters", async () => {
+test("create-segment: parses filters JSON and posts name + filters", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 201, body: { id: "seg-1", success: true } },
   ]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "./_assert.ts";
 import {
   buildQuery,
   encodeId,
@@ -10,7 +11,7 @@ import {
 } from "../lib/client.ts";
 import { envelope, errorBody, mockCtx } from "./_helpers.ts";
 
-Deno.test("errorParts: reads error_name and message; ignores success envelopes", () => {
+test("errorParts: reads error_name and message; ignores success envelopes", () => {
   assertEquals(errorParts(errorBody("invalid_login", "bad")), {
     name: "invalid_login",
     message: "bad",
@@ -20,7 +21,7 @@ Deno.test("errorParts: reads error_name and message; ignores success envelopes",
   assertEquals(errorParts([1]), {});
 });
 
-Deno.test("isThrottled: 429, and 403 only with the text/plain Rate Limit Exceeded body", () => {
+test("isThrottled: 429, and 403 only with the text/plain Rate Limit Exceeded body", () => {
   assertEquals(isThrottled(429, null, ""), true);
   assertEquals(isThrottled(403, "text/plain; charset=utf-8", "Rate Limit Exceeded"), true);
   assertEquals(isThrottled(403, "application/json", '{"error_name":"no_permission"}'), false);
@@ -28,7 +29,7 @@ Deno.test("isThrottled: 429, and 403 only with the text/plain Rate Limit Exceede
   assertEquals(isThrottled(401, "text/plain", "Rate Limit Exceeded"), false);
 });
 
-Deno.test("buildQuery: drops unset/blank, spells booleans, joins arrays, keeps 0 and false", () => {
+test("buildQuery: drops unset/blank, spells booleans, joins arrays, keeps 0 and false", () => {
   assertEquals(buildQuery({}), "");
   assertEquals(
     buildQuery({ a: undefined, b: null, c: "", d: 0, e: false, f: ["x", "y"], g: [], h: "q r" }),
@@ -36,13 +37,13 @@ Deno.test("buildQuery: drops unset/blank, spells booleans, joins arrays, keeps 0
   );
 });
 
-Deno.test("toList / encodeId", () => {
+test("toList / encodeId", () => {
   assertEquals(toList(" a, b ,,"), ["a", "b"]);
   assertEquals(toList(""), undefined);
   assertEquals(encodeId("a/b"), "a%2Fb");
 });
 
-Deno.test("listResult: maps paging state and tolerates a missing list", () => {
+test("listResult: maps paging state and tolerates a missing list", () => {
   assertEquals(
     listResult({ x: [1], total_count: 5, page: 2, per_page: 1, max_page: 5 }, "x"),
     { items: [1], totalCount: 5, page: 2, perPage: 1, maxPage: 5 },
@@ -50,7 +51,7 @@ Deno.test("listResult: maps paging state and tolerates a missing list", () => {
   assertEquals(listResult(undefined, "x").items, []);
 });
 
-Deno.test("client: HTTP 403 text/plain is reported as a throttle with the back-off hint", async () => {
+test("client: HTTP 403 text/plain is reported as a throttle with the back-off hint", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     headers: { "content-type": "text/plain" },
@@ -60,7 +61,7 @@ Deno.test("client: HTTP 403 text/plain is reported as a throttle with the back-o
   assert(err.message.includes("throttled") && err.message.includes("HTTP 403"));
 });
 
-Deno.test("client: 429 is a throttle too", async () => {
+test("client: 429 is a throttle too", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: "slow down",
@@ -70,7 +71,7 @@ Deno.test("client: 429 is a throttle too", async () => {
   assert(err.message.includes("throttled"));
 });
 
-Deno.test("client: bad credentials mention the user id / key check", async () => {
+test("client: bad credentials mention the user id / key check", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_login", "Invalid login data provided"),
@@ -79,13 +80,13 @@ Deno.test("client: bad credentials mention the user id / key check", async () =>
   assert(err.message.includes("invalid_login") && err.message.includes("user ID and API key"));
 });
 
-Deno.test("client: a non-JSON error body is truncated into the message", async () => {
+test("client: a non-JSON error body is truncated into the message", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>" + "x".repeat(500) + "</html>" }]);
   const err = await assertRejects(() => new OnePageClient(ctx).data("/users"), Error);
   assert(err.message.includes("HTTP 502") && err.message.length < 400);
 });
 
-Deno.test("client: an HTTP 200 carrying an error envelope is still an error", async () => {
+test("client: an HTTP 200 carrying an error envelope is still an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorBody("invalid_request_data", "hm") }]);
   await assertRejects(
     () => new OnePageClient(ctx).data("/contacts"),
@@ -94,7 +95,7 @@ Deno.test("client: an HTTP 200 carrying an error envelope is still an error", as
   );
 });
 
-Deno.test("client: never adds an Authorization header; sends Accept: application/json", async () => {
+test("client: never adds an Authorization header; sends Accept: application/json", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await new OnePageClient(ctx).data("/users");
   assertEquals(calls[0].headers["authorization"], undefined);

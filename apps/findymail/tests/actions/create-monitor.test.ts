@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-monitor.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-monitor: POSTs the monitor with lists split and filters parsed", async () => {
+test("create-monitor: POSTs the monitor with lists split and filters parsed", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "id": 1, "name": "Hiring", "signal_type": "keyword_mention" },
@@ -34,7 +35,7 @@ Deno.test("create-monitor: POSTs the monitor with lists split and filters parsed
   assertEquals(out, { "id": 1, "name": "Hiring", "signal_type": "keyword_mention" });
 });
 
-Deno.test("create-monitor: surfaces a 422 validation error", async () => {
+test("create-monitor: surfaces a 422 validation error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

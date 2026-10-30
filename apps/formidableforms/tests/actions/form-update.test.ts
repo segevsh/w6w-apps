@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { BASE_PATH, bodyOf, DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-update.ts";
 
-Deno.test("form-update: PATCHes /forms/{id} with only the fields set", async () => {
+test("form-update: PATCHes /forms/{id} with only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display: DISPLAY });
   await action.execute({ formId: 25, name: "New Name" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -10,13 +11,13 @@ Deno.test("form-update: PATCHes /forms/{id} with only the fields set", async () 
   assertEquals(bodyOf(calls), { name: "New Name" });
 });
 
-Deno.test("form-update: omits fields the caller left unset", async () => {
+test("form-update: omits fields the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display: DISPLAY });
   await action.execute({ formId: 25, name: "New Name" }, ctx);
   const body = bodyOf(calls);
   for (const k of ["description", "status", "options"]) assert(!(k in body), k);
 });
 
-Deno.test("form-update: is idempotent", () => {
+test("form-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

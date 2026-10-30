@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: collects the store handle alongside the token", () => {
+test("access-token: collects the store handle alongside the token", () => {
   assertEquals(auth.key, "access-token");
   // `custom`, not `bearer`: the Admin API reads its own header.
   assertEquals(auth.type, "custom");
@@ -10,7 +11,7 @@ Deno.test("access-token: collects the store handle alongside the token", () => {
   assertEquals(auth.fields?.find((f) => f.key === "accessToken")?.type, "secret");
 });
 
-Deno.test("access-token: sign sets X-Shopify-Access-Token, not Authorization", async () => {
+test("access-token: sign sets X-Shopify-Access-Token, not Authorization", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.myshopify.com/admin/api/2024-07/shop.json",
@@ -22,7 +23,7 @@ Deno.test("access-token: sign sets X-Shopify-Access-Token, not Authorization", a
   assertEquals("authorization" in out.headers, false);
 });
 
-Deno.test("access-token: test refuses a half-filled credential without a request", async () => {
+test("access-token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { shop: "acme" } }, ctx), {
     ok: false,
@@ -31,7 +32,7 @@ Deno.test("access-token: test refuses a half-filled credential without a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test probes the store's own host", async () => {
+test("access-token: test probes the store's own host", async () => {
   const ok = mockCtx([{ body: { shop: { id: 1 } } }]);
   assertEquals(await auth.test({ credential: { shop: "acme", accessToken: "t" } }, ok.ctx), {
     ok: true,
@@ -39,7 +40,7 @@ Deno.test("access-token: test probes the store's own host", async () => {
   assertEquals(ok.calls[0].url, "https://acme.myshopify.com/admin/api/2024-07/shop.json");
 });
 
-Deno.test("access-token: afterConnect records the store handle for the client", async () => {
+test("access-token: afterConnect records the store handle for the client", async () => {
   const { ctx } = mockCtx([{ body: { shop: { id: 1, name: "Acme Store" } } }]);
   assertEquals(await auth.afterConnect!({ credential: { shop: "acme" } }, ctx), {
     shop: "acme",
@@ -47,7 +48,7 @@ Deno.test("access-token: afterConnect records the store handle for the client", 
   });
 });
 
-Deno.test("access-token: afterConnect still records the handle if the probe fails", async () => {
+test("access-token: afterConnect still records the handle if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   // Without the handle the client could never build a URL for this connection.
   assertEquals(await auth.afterConnect!({ credential: { shop: "acme" } }, ctx), { shop: "acme" });

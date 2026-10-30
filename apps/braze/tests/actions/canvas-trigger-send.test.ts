@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/canvas-trigger-send.ts";
 
-Deno.test("canvas-trigger-send: posts canvas_id and canvas_entry_properties", async () => {
+test("canvas-trigger-send: posts canvas_id and canvas_entry_properties", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], { display: { instance: "iad-01" } });
   await action.execute!({
     canvasId: "canv1",

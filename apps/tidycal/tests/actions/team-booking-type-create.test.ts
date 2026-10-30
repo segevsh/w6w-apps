@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamBookingTypeCreate from "../../actions/team-booking-type-create.ts";
 import bookingTypeCreate from "../../actions/booking-type-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
@@ -10,7 +11,7 @@ const REQUIRED = {
   url_slug: "team-intro",
 };
 
-Deno.test("team-booking-type-create: POSTs to /api/teams/{id}/booking-types", async () => {
+test("team-booking-type-create: POSTs to /api/teams/{id}/booking-types", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 11 }) }]);
   const out = await teamBookingTypeCreate.execute({ team: 4, ...REQUIRED }, ctx) as {
     data: { id: number };
@@ -22,7 +23,7 @@ Deno.test("team-booking-type-create: POSTs to /api/teams/{id}/booking-types", as
 });
 
 /** The team id addresses the resource; it must not leak into the body. */
-Deno.test("team-booking-type-create: the team id stays in the path", async () => {
+test("team-booking-type-create: the team id stays in the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({}) }]);
   await teamBookingTypeCreate.execute({ team: 4, ...REQUIRED }, ctx);
   assertEquals(bodyOf(calls[0]), REQUIRED);
@@ -34,7 +35,7 @@ Deno.test("team-booking-type-create: the team id stays in the path", async () =>
  * creates, which is why both actions share one param fragment. If they ever
  * diverge, this is where it shows up rather than in a 422 at runtime.
  */
-Deno.test("team-booking-type-create: shares the personal create's body fields exactly", () => {
+test("team-booking-type-create: shares the personal create's body fields exactly", () => {
   const personal = (bookingTypeCreate.params ?? []).map((p) => p.key);
   const team = (teamBookingTypeCreate.params ?? []).map((p) => p.key);
   assertEquals(team[0], "team", "the team id is not the first param");

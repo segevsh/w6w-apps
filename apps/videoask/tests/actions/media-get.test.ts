@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mediaGet from "../../actions/media-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-get: GETs /media/{mediaId} and returns the transcript entity", async () => {
+test("media-get: GETs /media/{mediaId} and returns the transcript entity", async () => {
   const { ctx, calls } = mockCtx([
     { body: { media_id: "m1", transcription: "Hello there, world." } },
   ]);

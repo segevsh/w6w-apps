@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactUpsert from "../../actions/contact-upsert.ts";
 import { dataEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-upsert: posts to /v2/contacts/upsert with the filter in the QUERY string", async () => {
+test("contact-upsert: posts to /v2/contacts/upsert with the filter in the QUERY string", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 2 }) }]);
   await contactUpsert.execute({ filterEmail: "mark@example.com", phone: "508" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("contact-upsert: posts to /v2/contacts/upsert with the filter in the Q
   assertEquals(body.data.phone, "508");
 });
 
-Deno.test("contact-upsert: refuses to run with no filter, and makes no request", async () => {
+test("contact-upsert: refuses to run with no filter, and makes no request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await contactUpsert.execute({ name: "Design Co" }, ctx),
@@ -22,7 +23,7 @@ Deno.test("contact-upsert: refuses to run with no filter, and makes no request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-upsert: a custom-field filter is sent bracket-syntax", async () => {
+test("contact-upsert: a custom-field filter is sent bracket-syntax", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 2 }) }]);
   await contactUpsert.execute(
     { filterCustomFieldName: "external_id", filterCustomFieldValue: "SKU01" },

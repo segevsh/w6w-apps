@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: calls GET /api/contacts", async () => {
+test("contact-list: calls GET /api/contacts", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 1, email: "john@example.com" }]) }]);
   const out = await contactList.execute({ page: 2 }, ctx) as { data: unknown[] };
 

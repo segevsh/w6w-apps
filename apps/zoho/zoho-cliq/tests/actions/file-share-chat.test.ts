@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/file-share-chat.ts";
 
-Deno.test("file-share-chat: uploads multipart to a chat", async () => {
+test("file-share-chat: uploads multipart to a chat", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("file-share-chat: uploads multipart to a chat", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("file-share-chat: idempotent is declared as false", () => {
+test("file-share-chat: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

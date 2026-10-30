@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_BASE,
@@ -11,7 +12,7 @@ import {
   TeamUpClient,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the documented host and prefix", async () => {
+test("client: builds the documented host and prefix", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await new TeamUpClient(ctx).request("/customers/12");
   assertEquals(calls[0].method, "GET");
@@ -20,14 +21,14 @@ Deno.test("client: builds the documented host and prefix", async () => {
   assertEquals(API_PREFIX, "/api/v2");
 });
 
-Deno.test("client: never signs a request — that is the auth hook's job", async () => {
+test("client: never signs a request — that is the auth hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new TeamUpClient(ctx).request("/customers");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].headers["teamup-request-mode"], undefined);
 });
 
-Deno.test("client: serializes query values and drops the unset ones", async () => {
+test("client: serializes query values and drops the unset ones", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new TeamUpClient(ctx).request("/events", {
     query: { status: "active", page: 2, page_size: 100, active_customer: false, ids: undefined },
@@ -42,7 +43,7 @@ Deno.test("client: serializes query values and drops the unset ones", async () =
 });
 
 /** The one control that travels as a header rather than in the query. */
-Deno.test("client: sends TeamUp-Provider-ID only when a caller names a provider", async () => {
+test("client: sends TeamUp-Provider-ID only when a caller names a provider", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new TeamUpClient(ctx);
   await client.request("/customers", { query: {}, providerId: 42 });
@@ -51,7 +52,7 @@ Deno.test("client: sends TeamUp-Provider-ID only when a caller names a provider"
   assertEquals(calls[1].headers["teamup-provider-id"], undefined);
 });
 
-Deno.test("client: a JSON body is sent as JSON with a content-type", async () => {
+test("client: a JSON body is sent as JSON with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await new TeamUpClient(ctx).request("/customers", {
     method: "POST",
@@ -63,7 +64,7 @@ Deno.test("client: a JSON body is sent as JSON with a content-type", async () =>
 });
 
 /** List actions return the envelope verbatim, never `results` alone. */
-Deno.test("client: a pagination envelope is returned unchanged", async () => {
+test("client: a pagination envelope is returned unchanged", async () => {
   const envelope = {
     count: 2,
     next: "https://goteamup.com/api/v2/customers?page=2&page_size=100",
@@ -74,7 +75,7 @@ Deno.test("client: a pagination envelope is returned unchanged", async () => {
   assertEquals(await new TeamUpClient(ctx).request("/customers"), envelope);
 });
 
-Deno.test("client: surfaces TeamUp's message, code and type", async () => {
+test("client: surfaces TeamUp's message, code and type", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -92,7 +93,7 @@ Deno.test("client: surfaces TeamUp's message, code and type", async () => {
 });
 
 /** A 401 is reported with TeamUp's own code, not just its status. */
-Deno.test("client: a rejected credential is named as such", async () => {
+test("client: a rejected credential is named as such", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "authentication_failed", message: "Invalid token." },
@@ -104,7 +105,7 @@ Deno.test("client: a rejected credential is named as such", async () => {
 });
 
 /** A 403's vocabulary is surfaced, never special-cased away. */
-Deno.test("client: a 403 keeps TeamUp's own code and message", async () => {
+test("client: a 403 keeps TeamUp's own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { code: "permission_denied", message: "You do not have permission." },
@@ -114,30 +115,30 @@ Deno.test("client: a 403 keeps TeamUp's own code and message", async () => {
   assert(/role or provider-scope mismatch/.test(err.message), err.message);
 });
 
-Deno.test("client: a 429 recommends exponential backoff", async () => {
+test("client: a 429 recommends exponential backoff", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { code: "throttled", message: "Too many." } }]);
   const err = await assertRejects(() => new TeamUpClient(ctx).request("/customers"), Error);
   assert(/exponential backoff/.test(err.message), err.message);
 });
 
-Deno.test("client: keeps a non-envelope error body verbatim", async () => {
+test("client: keeps a non-envelope error body verbatim", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const err = await assertRejects(() => new TeamUpClient(ctx).request("/customers"), Error);
   assert(/<html>bad gateway<\/html>/.test(err.message), err.message);
 });
 
-Deno.test("client: a non-JSON success body is an error, not a silent empty result", async () => {
+test("client: a non-JSON success body is an error, not a silent empty result", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>nope</html>" }]);
   const err = await assertRejects(() => new TeamUpClient(ctx).request("/customers"), Error);
   assert(/did not return JSON/.test(err.message), err.message);
 });
 
-Deno.test("client: an empty body parses as undefined", async () => {
+test("client: an empty body parses as undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: undefined }]);
   assertEquals(await new TeamUpClient(ctx).request("/customers/1"), undefined);
 });
 
-Deno.test("readTeamUpError: message first, then field_errors, then the raw body", () => {
+test("readTeamUpError: message first, then field_errors, then the raw body", () => {
   const envelope = readTeamUpError('{"code":"c","message":"m"}');
   assertEquals(envelope.detail, "m");
   assertEquals(envelope.code, "c");
@@ -149,21 +150,21 @@ Deno.test("readTeamUpError: message first, then field_errors, then the raw body"
   assertEquals(readTeamUpError("").detail, "");
 });
 
-Deno.test("formatTeamUpError: an empty body still names the call", () => {
+test("formatTeamUpError: an empty body still names the call", () => {
   assertEquals(
     formatTeamUpError(404, "GET", "/api/v2/customers/1", ""),
     "TeamUp 404 for GET /api/v2/customers/1",
   );
 });
 
-Deno.test("compact: drops unset values but keeps false and 0", () => {
+test("compact: drops unset values but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("intList: parses a comma list into a real array and rejects junk", () => {
+test("intList: parses a comma list into a real array and rejects junk", () => {
   assertEquals(intList("5, 6"), [5, 6]);
   assertEquals(intList([1, 2]), [1, 2]);
   assertEquals(intList(""), undefined);
@@ -171,7 +172,7 @@ Deno.test("intList: parses a comma list into a real array and rejects junk", () 
   assertThrows(() => intList("5,x"), Error, "is not an integer");
 });
 
-Deno.test("asOptionalJson: accepts a parsed value or raw JSON, and rejects junk", () => {
+test("asOptionalJson: accepts a parsed value or raw JSON, and rejects junk", () => {
   assertEquals(asOptionalJson([{ a: 1 }], "p"), [{ a: 1 }]);
   assertEquals(asOptionalJson('[{"a":1}]', "p"), [{ a: 1 }]);
   assertEquals(asOptionalJson("", "p"), undefined);

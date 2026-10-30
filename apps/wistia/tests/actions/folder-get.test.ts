@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import folderGet from "../../actions/folder-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("folder-get: calls GET /modern/folders/f1 with the version header", async () => {
+test("folder-get: calls GET /modern/folders/f1 with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await folderGet.execute({ "folderId": "f1" } as never, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("folder-get: calls GET /modern/folders/f1 with the version header", as
   assert(out.ok === true);
 });
 
-Deno.test("folder-get: surfaces a Wistia error with its code", async () => {
+test("folder-get: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import createDeal from "../../actions/create-deal.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-deal: POST /deals with the deal fields and both {_id} links", async () => {
+test("create-deal: POST /deals with the deal fields and both {_id} links", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "d1" } }]);
 
   await createDeal.execute(
@@ -34,7 +35,7 @@ Deno.test("create-deal: POST /deals with the deal fields and both {_id} links", 
   });
 });
 
-Deno.test("create-deal: with no links the body carries only the deal key", async () => {
+test("create-deal: with no links the body carries only the deal key", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await createDeal.execute({ name: "Bare" }, ctx);
@@ -42,7 +43,7 @@ Deno.test("create-deal: with no links the body carries only the deal key", async
   assertEquals(bodyOf(calls[0]), { deal: { name: "Bare" } });
 });
 
-Deno.test("create-deal: rating stays a number and only one link is sent when only one is given", async () => {
+test("create-deal: rating stays a number and only one link is sent when only one is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await createDeal.execute({ rating: 0, organizationId: "o1" }, ctx);
@@ -52,7 +53,7 @@ Deno.test("create-deal: rating stays a number and only one link is sent when onl
   assertEquals(body.campaign, undefined);
 });
 
-Deno.test("create-deal: the unsupported nested deal sub-objects are not exposed", () => {
+test("create-deal: the unsupported nested deal sub-objects are not exposed", () => {
   const keys = (createDeal.params ?? []).map((p) => p.key).sort();
   assertEquals(keys, [
     "campaignId",

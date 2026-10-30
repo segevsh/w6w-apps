@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyGet from "../../actions/company-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-get: GET /v1/companies/{companyId}/", async () => {
+test("company-get: GET /v1/companies/{companyId}/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 3, name: "Acme" } }]);
   const result = await companyGet.execute({ companyId: "3" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -13,11 +14,11 @@ Deno.test("company-get: GET /v1/companies/{companyId}/", async () => {
   assertEquals(result, { id: 3, name: "Acme" });
 });
 
-Deno.test("company-get: declares type read", () => {
+test("company-get: declares type read", () => {
   assertEquals(companyGet.type, "read");
 });
 
-Deno.test("company-get: surfaces the vendor error body", async () => {
+test("company-get: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

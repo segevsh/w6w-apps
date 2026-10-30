@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import listActionPlans from "../../actions/list-action-plans.ts";
 import applyActionPlan from "../../actions/apply-action-plan.ts";
 
-Deno.test("list-action-plans: GETs /actionPlans with status and ids", async () => {
+test("list-action-plans: GETs /actionPlans with status and ids", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "actionPlans" }, actionPlans: [{ id: 6 }] },
@@ -21,7 +22,7 @@ Deno.test("list-action-plans: GETs /actionPlans with status and ids", async () =
 });
 
 /** The vendor has flagged both endpoints for deprecation; that must stay visible. */
-Deno.test("action plans: both actions carry the deprecation notice", () => {
+test("action plans: both actions carry the deprecation notice", () => {
   assert(/deprecat/i.test(listActionPlans.description!), listActionPlans.description);
   assert(/deprecat/i.test(applyActionPlan.description!), applyActionPlan.description);
 });

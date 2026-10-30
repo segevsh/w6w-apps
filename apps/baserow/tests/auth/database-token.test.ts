@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import databaseToken, { authHeaders, PROBE_PATH } from "../../auth/database-token.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ function signWith(request: SignableRequest, credential: Record<string, unknown>)
   return databaseToken.sign!({ request, credential } as never, ctx) as SignableRequest;
 }
 
-Deno.test("auth: declares an apiKey scheme carrying the URL and the token", () => {
+test("auth: declares an apiKey scheme carrying the URL and the token", () => {
   assertEquals(databaseToken.key, "database-token");
   assertEquals(databaseToken.type, "apiKey");
   const fields = databaseToken.fields ?? [];
@@ -32,13 +33,13 @@ Deno.test("auth: declares an apiKey scheme carrying the URL and the token", () =
  * `JWT`-prefixed value with "credentials were not provided", which reads like a
  * missing header rather than a wrong one — so this is pinned.
  */
-Deno.test("authHeaders: uses the Token prefix Baserow's spec declares, not Bearer", () => {
+test("authHeaders: uses the Token prefix Baserow's spec declares, not Bearer", () => {
   assertEquals(authHeaders({ token: TOKEN }), { authorization: `Token ${TOKEN}` });
   assertEquals(databaseToken.apiKey?.prefix, "Token ");
   assertEquals(databaseToken.apiKey?.name, "Authorization");
 });
 
-Deno.test("sign: stamps the Token header and leaves the URL alone", () => {
+test("sign: stamps the Token header and leaves the URL alone", () => {
   const request = {
     url: `${SITE}/api/database/rows/table/1/`,
     headers: {} as Record<string, string>,
@@ -53,7 +54,7 @@ Deno.test("sign: stamps the Token header and leaves the URL alone", () => {
  * scheme is the database token, and the only one that needs none of the token's
  * four per-table permissions.
  */
-Deno.test("test: probes all-tables on the instance the credential names", async () => {
+test("test: probes all-tables on the instance the credential names", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Tasks", database_id: 42 }] }]);
   const result = await databaseToken.test!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,
@@ -64,13 +65,13 @@ Deno.test("test: probes all-tables on the instance the credential names", async 
   assertEquals(calls[0].headers["authorization"], `Token ${TOKEN}`);
 });
 
-Deno.test("test: a trailing /api in the pasted URL is normalised before probing", async () => {
+test("test: a trailing /api in the pasted URL is normalised before probing", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   await databaseToken.test!({ credential: { siteUrl: `${SITE}/api`, token: TOKEN } } as never, ctx);
   assertEquals(calls[0].url, `${SITE}${PROBE_PATH}`);
 });
 
-Deno.test("test: reports a missing half of the credential without making a request", async () => {
+test("test: reports a missing half of the credential without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(
     (await databaseToken.test!({ credential: { token: TOKEN } } as never, ctx)).ok,
@@ -84,7 +85,7 @@ Deno.test("test: reports a missing half of the credential without making a reque
 });
 
 /** Baserow's own error code for a revoked or mistyped token. */
-Deno.test("test: names an unknown token from ERROR_TOKEN_DOES_NOT_EXIST", async () => {
+test("test: names an unknown token from ERROR_TOKEN_DOES_NOT_EXIST", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -99,7 +100,7 @@ Deno.test("test: names an unknown token from ERROR_TOKEN_DOES_NOT_EXIST", async 
   assert(result.message!.includes("Settings → Database tokens"), result.message);
 });
 
-Deno.test("test: a 404 means nothing Baserow-shaped is routed at this URL", async () => {
+test("test: a 404 means nothing Baserow-shaped is routed at this URL", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await databaseToken.test!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,
@@ -113,7 +114,7 @@ Deno.test("test: a 404 means nothing Baserow-shaped is routed at this URL", asyn
  * Baserow is very commonly behind a reverse proxy, so a 200 that is not a table
  * list is a real case — a login page, a captive portal, a parked domain.
  */
-Deno.test("test: a 200 that is not a table list is rejected", async () => {
+test("test: a 200 that is not a table list is rejected", async () => {
   const { ctx } = mockCtx([{ body: { detail: "welcome" } }]);
   const result = await databaseToken.test!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,
@@ -124,7 +125,7 @@ Deno.test("test: a 200 that is not a table list is rejected", async () => {
 });
 
 /** A valid token that can reach nothing is useless, and the fix is actionable. */
-Deno.test("test: a token that can reach no tables is reported as not usable", async () => {
+test("test: a token that can reach no tables is reported as not usable", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   const result = await databaseToken.test!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,
@@ -134,7 +135,7 @@ Deno.test("test: a token that can reach no tables is reported as not usable", as
   assert(result.message!.includes("can reach no tables"), result.message);
 });
 
-Deno.test("afterConnect: records the origin, the host and the token's reach", async () => {
+test("afterConnect: records the origin, the host and the token's reach", async () => {
   const { ctx } = mockCtx([
     {
       body: [
@@ -156,7 +157,7 @@ Deno.test("afterConnect: records the origin, the host and the token's reach", as
  * The display block is shown wherever the connection is. It must carry the
  * token's *reach*, not the customer's table inventory, and never the token.
  */
-Deno.test("afterConnect: publishes counts, not the table list, and never the token", async () => {
+test("afterConnect: publishes counts, not the table list, and never the token", async () => {
   const { ctx } = mockCtx([{ body: [{ id: 1, name: "Salaries", database_id: 42 }] }]);
   const display = await databaseToken.afterConnect!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,
@@ -167,7 +168,7 @@ Deno.test("afterConnect: publishes counts, not the table list, and never the tok
   assert(!json.includes("Salaries"), "republished the customer's table names");
 });
 
-Deno.test("afterConnect: a failed lookup still records the URL", async () => {
+test("afterConnect: a failed lookup still records the URL", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("ERROR_TOKEN_DOES_NOT_EXIST", "no") }]);
   const display = await databaseToken.afterConnect!(
     { credential: { siteUrl: SITE, token: TOKEN } } as never,

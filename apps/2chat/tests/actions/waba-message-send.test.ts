@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
-import { mockCtx } from "../_helpers.ts";
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { mockCtx, rejects } from "../_helpers.ts";
 import wabaMessageSend from "../../actions/waba-message-send.ts";
 
-Deno.test("waba-message-send: sends a session text", async () => {
+test("waba-message-send: sends a session text", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { "success": true, "batched": true, "message_uuid": "MSG1" },
@@ -11,18 +12,18 @@ Deno.test("waba-message-send: sends a session text", async () => {
     { "fromNumber": "+5215512345432", "toNumber": "+595981048477", "text": "hola" } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "from_number": "+5215512345432",
     "to_number": "+595981048477",
     "text": "hola",
   });
-  assertEquals((out as { message_uuid: string }).message_uuid, "MSG1");
+  assert.deepStrictEqual((out as { message_uuid: string }).message_uuid, "MSG1");
 });
 
-Deno.test("waba-message-send: sends a template with positional body and a button value", async () => {
+test("waba-message-send: sends a template with positional body and a button value", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { "success": true, "batched": true, "message_uuid": "MSG2" },
@@ -37,10 +38,10 @@ Deno.test("waba-message-send: sends a template with positional body and a button
     } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "from_number": "+1",
     "to_number": "+2",
     "template_uuid": "TMP1",
@@ -48,7 +49,7 @@ Deno.test("waba-message-send: sends a template with positional body and a button
   });
 });
 
-Deno.test("waba-message-send: sends params as an empty object for a variable-less template", async () => {
+test("waba-message-send: sends params as an empty object for a variable-less template", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "batched": true, "message_uuid": "MSG3" },
   }]);
@@ -56,10 +57,10 @@ Deno.test("waba-message-send: sends params as an empty object for a variable-les
     { "fromNumber": "+1", "toNumber": "+2", "templateUuid": "TMP1" } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "from_number": "+1",
     "to_number": "+2",
     "template_uuid": "TMP1",
@@ -67,7 +68,7 @@ Deno.test("waba-message-send: sends params as an empty object for a variable-les
   });
 });
 
-Deno.test("waba-message-send: passes named-variable bodies and header media", async () => {
+test("waba-message-send: passes named-variable bodies and header media", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "batched": true, "message_uuid": "M" },
   }]);
@@ -82,10 +83,10 @@ Deno.test("waba-message-send: passes named-variable bodies and header media", as
     } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/waba/send-message");
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "from_number": "+1",
     "to_number": "+2",
     "template_uuid": "TMP1",
@@ -97,28 +98,28 @@ Deno.test("waba-message-send: passes named-variable bodies and header media", as
   });
 });
 
-Deno.test("waba-message-send: refuses text and template together", async () => {
+test("waba-message-send: refuses text and template together", async () => {
   const { ctx, calls } = mockCtx([]);
-  const err = await assertRejects(async () => {
+  const err = await rejects(async () => {
     await wabaMessageSend.execute!(
       { "fromNumber": "+1", "toNumber": "+2", "text": "x", "templateUuid": "TMP1" } as never,
       ctx,
     );
-  }, Error);
-  assert(err.message.includes("not both"), err.message);
-  assertEquals(calls.length, 0, "must not reach the network");
+  });
+  assert.ok(err.message.includes("not both"), err.message);
+  assert.deepStrictEqual(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("waba-message-send: refuses neither", async () => {
+test("waba-message-send: refuses neither", async () => {
   const { ctx, calls } = mockCtx([]);
-  const err = await assertRejects(async () => {
+  const err = await rejects(async () => {
     await wabaMessageSend.execute!({ "fromNumber": "+1", "toNumber": "+2" } as never, ctx);
-  }, Error);
-  assert(err.message.includes("needs `text`"), err.message);
-  assertEquals(calls.length, 0, "must not reach the network");
+  });
+  assert.ok(err.message.includes("needs `text`"), err.message);
+  assert.deepStrictEqual(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("waba-message-send: surfaces the vendor error_code for a closed window", async () => {
+test("waba-message-send: surfaces the vendor error_code for a closed window", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {
@@ -127,12 +128,12 @@ Deno.test("waba-message-send: surfaces the vendor error_code for a closed window
       "error_message": "The 24-hour customer service window for this contact is closed.",
     },
   }]);
-  const err = await assertRejects(async () => {
+  const err = await rejects(async () => {
     await wabaMessageSend.execute!(
       { "fromNumber": "+1", "toNumber": "+2", "text": "x" } as never,
       ctx,
     );
-  }, Error);
-  assert(err.message.includes("WABA_WINDOW_CLOSED"), err.message);
-  assert(err.message.includes("HTTP 422"), err.message);
+  });
+  assert.ok(err.message.includes("WABA_WINDOW_CLOSED"), err.message);
+  assert.ok(err.message.includes("HTTP 422"), err.message);
 });

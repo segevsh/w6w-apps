@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import clientCredentials from "../../auth/client-credentials.ts";
 import { mockCtx, odataList, pathOf } from "../_helpers.ts";
 
-Deno.test("exchange: mints a token via form-urlencoded POST to the identity host", async () => {
+test("exchange: mints a token via form-urlencoded POST to the identity host", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       access_token: "tok-123",
@@ -27,7 +28,7 @@ Deno.test("exchange: mints a token via form-urlencoded POST to the identity host
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("exchange: requires both clientId and clientSecret", async () => {
+test("exchange: requires both clientId and clientSecret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(clientCredentials.exchange!({ fields: { clientId: "cid" } }, ctx)),
@@ -36,7 +37,7 @@ Deno.test("exchange: requires both clientId and clientSecret", async () => {
   );
 });
 
-Deno.test("exchange: surfaces the vendor's error_description on a rejected grant", async () => {
+test("exchange: surfaces the vendor's error_description on a rejected grant", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: "invalid_client", error_description: "invalid client credentials" },
@@ -51,7 +52,7 @@ Deno.test("exchange: surfaces the vendor's error_description on a rejected grant
   );
 });
 
-Deno.test("refresh: re-mints from the stored clientId/clientSecret", async () => {
+test("refresh: re-mints from the stored clientId/clientSecret", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok-456", expires_in: 3600 } }]);
   const cred = await clientCredentials.refresh!(
     { credential: { clientId: "cid", clientSecret: "csecret", accessToken: "old" } },
@@ -62,7 +63,7 @@ Deno.test("refresh: re-mints from the stored clientId/clientSecret", async () =>
   assertEquals(cred.clientId, "cid");
 });
 
-Deno.test("refresh: refuses without a stored clientId/clientSecret", async () => {
+test("refresh: refuses without a stored clientId/clientSecret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(clientCredentials.refresh!({ credential: { accessToken: "old" } }, ctx)),
@@ -71,7 +72,7 @@ Deno.test("refresh: refuses without a stored clientId/clientSecret", async () =>
   );
 });
 
-Deno.test("sign: stamps a bearer authorization header and never touches the network", () => {
+test("sign: stamps a bearer authorization header and never touches the network", () => {
   const request: SignableRequest = {
     url: "https://workspace.prod.jibble.io/v1/Organizations",
     method: "GET",
@@ -89,7 +90,7 @@ Deno.test("sign: stamps a bearer authorization header and never touches the netw
   assertEquals((signed as SignableRequest).headers["authorization"], "Bearer tok-123");
 });
 
-Deno.test("test: reports ok and names the organization on a live token", async () => {
+test("test: reports ok and names the organization on a live token", async () => {
   const { ctx, calls } = mockCtx([{ body: odataList([{ id: "org-1", name: "Acme Co" }]) }]);
   const result = await clientCredentials.test(
     { credential: { accessToken: "tok-123" } },
@@ -100,7 +101,7 @@ Deno.test("test: reports ok and names the organization on a live token", async (
   assert(result.message?.includes("Acme Co"));
 });
 
-Deno.test("test: reports not-ok on a rejected token, without ever calling sign", async () => {
+test("test: reports not-ok on a rejected token, without ever calling sign", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "unauthorized", message: "bad token" } },
@@ -110,7 +111,7 @@ Deno.test("test: reports not-ok on a rejected token, without ever calling sign",
   assert(result.message?.includes("unauthorized"));
 });
 
-Deno.test("test: fails closed when the credential carries no accessToken", async () => {
+test("test: fails closed when the credential carries no accessToken", async () => {
   const { ctx } = mockCtx([]);
   const result = await clientCredentials.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

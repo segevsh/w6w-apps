@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-message.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 const form = (body: string | null) => Object.fromEntries(new URLSearchParams(body ?? ""));
 
-Deno.test("update-message: edits content with a PATCH form body", async () => {
+test("update-message: edits content with a PATCH form body", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }]);
   const out = await action.execute!({ message_id: 9, content: "new" }, ctx);
   const url = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("update-message: edits content with a PATCH form body", async () => {
   assertEquals(out, {});
 });
 
-Deno.test("update-message: moves a message to another channel and topic", async () => {
+test("update-message: moves a message to another channel and topic", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }]);
   const out = await action.execute!({
     message_id: 9,
@@ -40,13 +41,13 @@ Deno.test("update-message: moves a message to another channel and topic", async 
   assertEquals(out, {});
 });
 
-Deno.test("update-message: sends no authorization header of its own", async () => {
+test("update-message: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }]);
   await action.execute!({ message_id: 9, content: "new" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("update-message: surfaces Zulip's error msg and code", async () => {
+test("update-message: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -58,7 +59,7 @@ Deno.test("update-message: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("update-message: a 401 names the credential problem", async () => {
+test("update-message: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ message_id: 9, content: "new" }, ctx),
@@ -67,7 +68,7 @@ Deno.test("update-message: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("update-message: a connection without a subdomain is refused before any request", async () => {
+test("update-message: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(
@@ -78,7 +79,7 @@ Deno.test("update-message: a connection without a subdomain is refused before an
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-message: nothing to change is refused before any request", async () => {
+test("update-message: nothing to change is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ message_id: 9 }, ctx),

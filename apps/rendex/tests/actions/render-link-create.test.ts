@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/render-link-create.ts";
 import { bodyOf, envelope, mockCtx, obj, pathOf } from "../_helpers.ts";
 
-Deno.test("render-link-create: POSTs /render/link with one source, data and expiresIn", async () => {
+test("render-link-create: POSTs /render/link with one source, data and expiresIn", async () => {
   const link = { url: "https://api.rendex.dev/v1/render?p=1", expiresAt: "2026-11-01T00:00:00Z" };
   const { ctx, calls } = mockCtx([{ body: envelope(link) }]);
   const out = await obj(
@@ -25,7 +26,7 @@ Deno.test("render-link-create: POSTs /render/link with one source, data and expi
   assertEquals(out.url, link.url);
 });
 
-Deno.test("render-link-create: requires exactly one of url, html, markdown", async () => {
+test("render-link-create: requires exactly one of url, html, markdown", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute({}, ctx), Error, "exactly one");
   await assertRejects(

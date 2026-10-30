@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscribersList from "../../actions/subscribers-list.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscribers-list: POST /api/1/getSubscribers/ with the documented form fields", async () => {
+test("subscribers-list: POST /api/1/getSubscribers/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await subscribersList.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("subscribers-list: POST /api/1/getSubscribers/ with the documented for
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("subscribers-list: a vendor error surfaces its status and body", async () => {
+test("subscribers-list: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await subscribersList.execute(
@@ -49,7 +50,7 @@ Deno.test("subscribers-list: a vendor error surfaces its status and body", async
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("subscribers-list: an empty list_id fails before any request", async () => {
+test("subscribers-list: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -69,7 +70,7 @@ Deno.test("subscribers-list: an empty list_id fails before any request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscribers-list: unset optional fields are not sent", async () => {
+test("subscribers-list: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await subscribersList.execute({ "list_id": 7 } as never, ctx);
   assertEquals(formOf(calls[0]), { "list_id": "7" });

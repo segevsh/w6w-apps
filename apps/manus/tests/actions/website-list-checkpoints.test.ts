@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import websiteListCheckpoints from "../../actions/website-list-checkpoints.ts";
 import { mockCtx, okBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("website-list-checkpoints: sends website_id, returns website_id/data/published_version_id", async () => {
+test("website-list-checkpoints: sends website_id, returns website_id/data/published_version_id", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({
       website_id: "w1",
@@ -20,6 +21,6 @@ Deno.test("website-list-checkpoints: sends website_id, returns website_id/data/p
   });
 });
 
-Deno.test("website-list-checkpoints: is a read action (not paginated)", () => {
+test("website-list-checkpoints: is a read action (not paginated)", () => {
   assertEquals(websiteListCheckpoints.type, "read");
 });

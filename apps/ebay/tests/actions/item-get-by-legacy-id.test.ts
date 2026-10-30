@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/item-get-by-legacy-id.ts";
 
-Deno.test("item-get-by-legacy-id: fetches by legacy numeric ID", async () => {
+test("item-get-by-legacy-id: fetches by legacy numeric ID", async () => {
   const { ctx, calls } = mockCtx([{ body: { itemId: "v1|123|0", legacyItemId: "123" } }]);
   const result = await action.execute!({ legacyItemId: "123" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("item-get-by-legacy-id: fetches by legacy numeric ID", async () => {
   assertEquals(result, { itemId: "v1|123|0", legacyItemId: "123" });
 });
 
-Deno.test("item-get-by-legacy-id: legacyItemId is required", async () => {
+test("item-get-by-legacy-id: legacyItemId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ legacyItemId: "" }, ctx)),
@@ -22,7 +23,7 @@ Deno.test("item-get-by-legacy-id: legacyItemId is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-get-by-legacy-id: passes variation id/sku when given", async () => {
+test("item-get-by-legacy-id: passes variation id/sku when given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ legacyItemId: "123", legacyVariationId: "456" }, ctx);
   const url = new URL(calls[0].url);

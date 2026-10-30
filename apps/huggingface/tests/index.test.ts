@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 14 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 14 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 14);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,7 +23,7 @@ Deno.test("index: exports 14 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -32,12 +34,12 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
  * state; a retried creation makes a second repository, and a retried completion
  * is a second inference, billed again.
  */
-Deno.test("index: only creating a repository and running inference duplicate on a retry", () => {
+test("index: only creating a repository and running inference duplicate on a retry", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, ["chat-complete", "repo-create"]);
 });
 
-Deno.test("index: exports the one auth method and both health checks", () => {
+test("index: exports the one auth method and both health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["token"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "quota"]);
 });
@@ -47,7 +49,7 @@ Deno.test("index: exports the one auth method and both health checks", () => {
  * server. `api-inference.huggingface.co` is deliberately absent — it no longer
  * resolves at all, so allowing it would only hide a DNS failure.
  */
-Deno.test("index: the manifest allows the three hosts the app actually uses", () => {
+test("index: the manifest allows the three hosts the app actually uses", () => {
   assertEquals(manifest.w6w.id, "io.w6w.huggingface");
   assertEquals(manifest.w6w.categories, ["ai", "developer-tools"]);
   for (
@@ -59,14 +61,14 @@ Deno.test("index: the manifest allows the three hosts the app actually uses", ()
 });
 
 /** Weights are gigabytes; a workflow's data is not where they go. */
-Deno.test("index: the only file read has a size ceiling", async () => {
-  const src = await Deno.readTextFile(new URL("../actions/file-download.ts", import.meta.url));
+test("index: the only file read has a size ceiling", async () => {
+  const src = await denoReadTextFile(new URL("../actions/file-download.ts", import.meta.url));
   assert(/MAX_BYTES/.test(src), "file-download has no ceiling");
   assertEquals(app.actions.some((a) => a.key === "file-upload"), false);
 });
 
 /** A destructive action with no confirmation is a destructive action. */
-Deno.test("index: deleting a repository demands the id twice", () => {
+test("index: deleting a repository demands the id twice", () => {
   const remove = app.actions.find((a) => a.key === "repo-delete")!;
   const keys = remove.params as Array<{ key: string; required?: boolean }>;
   const confirm = keys.find((p) => p.key === "confirmId")!;
@@ -89,17 +91,17 @@ const code = (src: string) =>
 
 const sources = async (dir: string) => {
   const out: Array<[string, string]> = [];
-  for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+  for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
     out.push([
       `${dir}/${entry.name}`,
-      code(await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
+      code(await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
     ]);
   }
   return out;
 };
 
-Deno.test("index: nothing reaches the network except through ctx.fetch", async () => {
+test("index: nothing reaches the network except through ctx.fetch", async () => {
   for (const dir of ["actions", "lib", "health"]) {
     for (const [name, src] of await sources(dir)) {
       assert(
@@ -112,7 +114,7 @@ Deno.test("index: nothing reaches the network except through ctx.fetch", async (
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
   for (const [name, src] of await sources("actions")) {
     assert(!/authorization/i.test(src), `${name} sets an authorization header`);
     assert(
@@ -127,7 +129,7 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * log records counts, ids and shapes — never either of those, and never the
  * contents of a file this app read.
  */
-Deno.test("index: nothing logs a prompt, a completion or a file's contents", async () => {
+test("index: nothing logs a prompt, a completion or a file's contents", async () => {
   for (const dir of ["actions", "lib"]) {
     for (const [name, src] of await sources(dir)) {
       const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
@@ -148,7 +150,7 @@ Deno.test("index: nothing logs a prompt, a completion or a file's contents", asy
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

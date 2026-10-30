@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import agentDelete from "../../actions/agent-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-delete: POSTs to /agents/delete with the id", async () => {
+test("agent-delete: POSTs to /agents/delete with the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
 
   const out = await agentDelete.execute({ id: "42" }, ctx) as Record<string, unknown>;
@@ -13,11 +14,11 @@ Deno.test("agent-delete: POSTs to /agents/delete with the id", async () => {
   assertEquals(out.status, 200);
 });
 
-Deno.test("agent-delete: is marked idempotent — a repeat delete is safe to retry", () => {
+test("agent-delete: is marked idempotent — a repeat delete is safe to retry", () => {
   assertEquals(agentDelete.idempotent, true);
 });
 
-Deno.test("agent-delete: a running-agent 403 surfaces as an error, not a status", async () => {
+test("agent-delete: a running-agent 403 surfaces as an error, not a status", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { status: "error", error: "Agent is currently running and could not be deleted." },

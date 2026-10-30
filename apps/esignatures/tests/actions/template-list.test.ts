@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templateList from "../../actions/template-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-list: calls GET /api/templates with the documented body", async () => {
+test("template-list: calls GET /api/templates with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ template_id: "t1", title: "NDA" }] } }]);
   const out = await templateList.execute({} as never, ctx) as Record<string, unknown>;
 
@@ -15,7 +16,7 @@ Deno.test("template-list: calls GET /api/templates with the documented body", as
   assert((out.templates as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("template-list: a vendor error surfaces its error_code and message", async () => {
+test("template-list: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

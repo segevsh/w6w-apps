@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardGet from "../../actions/card-get.ts";
 import { CARD, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-get: GETs one card by id and passes the whole object through", async () => {
+test("card-get: GETs one card by id and passes the whole object through", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   const result = await cardGet.execute({ id: "card_1" }, ctx) as typeof CARD;
 
@@ -13,7 +14,7 @@ Deno.test("card-get: GETs one card by id and passes the whole object through", a
   assertEquals(result.spend_controls?.spend_limit, { amount: 500000, currency: "USD" });
 });
 
-Deno.test("card-get: it asks for nothing that returns a PAN or CVV", async () => {
+test("card-get: it asks for nothing that returns a PAN or CVV", async () => {
   // GET /v2/cards/{id}/pan is deliberately not implemented; the card action must
   // never build that path.
   assertEquals(cardGet.params?.map((p) => p.key), ["id"]);
@@ -23,7 +24,7 @@ Deno.test("card-get: it asks for nothing that returns a PAN or CVV", async () =>
   assertEquals(pathOf(calls[0].url), "/v2/cards/card%2F1");
 });
 
-Deno.test("card-get: a missing card surfaces Brex's code", async () => {
+test("card-get: a missing card surfaces Brex's code", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("NOT_FOUND", "Not Found", "CARD_NOT_FOUND") },
   ]);

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelsList, { DEFAULT_LIMIT, slim } from "../../actions/models-list.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const data = [
   { id: "x/y", owned_by: "x" },
 ];
 
-Deno.test("slim: keeps the selection fields and drops the rest", () => {
+test("slim: keeps the selection fields and drops the rest", () => {
   assertEquals(slim({ ...data[0], source: "https://x" } as never), {
     id: "openai/gpt-4o",
     ownedBy: "openai",
@@ -30,7 +31,7 @@ Deno.test("slim: keeps the selection fields and drops the rest", () => {
   });
 });
 
-Deno.test("models-list: filters by search over id and description, then cuts off", async () => {
+test("models-list: filters by search over id and description, then cuts off", async () => {
   const { ctx, calls } = mockCtx([{ body: { data } }, { body: { data } }]);
   const a = await modelsList.execute({ search: "BIG" }, ctx) as {
     models: Array<{ id: string }>;
@@ -44,7 +45,7 @@ Deno.test("models-list: filters by search over id and description, then cuts off
   assertEquals(DEFAULT_LIMIT, 50);
 });
 
-Deno.test("models-list: view=models is forwarded and nested endpoints are summarised", async () => {
+test("models-list: view=models is forwarded and nested endpoints are summarised", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{

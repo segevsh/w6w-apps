@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: GETs /users and forwards the cursor", async () => {
+test("user-list: GETs /users and forwards the cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { users: [{ id: "u1", email: "jane.doe@example.com", username: "Jane Doe" }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("user-list: GETs /users and forwards the cursor", async () => {
   assertEquals(out.users, [{ id: "u1", email: "jane.doe@example.com", username: "Jane Doe" }]);
 });
 
-Deno.test("user-list: extracts nextCursor", async () => {
+test("user-list: extracts nextCursor", async () => {
   const { ctx } = mockCtx([{
     body: {
       users: [],

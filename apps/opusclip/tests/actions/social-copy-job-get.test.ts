@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import socialCopyJobGet from "../../actions/social-copy-job-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("social-copy-job-get: GETs the job and unwraps its data", async () => {
+test("social-copy-job-get: GETs the job and unwraps its data", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: envelope({ jobId: "j1", status: "COMPLETED", title: "Hi" }) },
   ]);

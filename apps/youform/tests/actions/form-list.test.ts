@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formList from "../../actions/form-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-list: GET /api/forms with optional page", async () => {
+test("form-list: GET /api/forms with optional page", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { current_page: 2, data: [] } } }, {
     body: { data: { data: [] } },
   }]);

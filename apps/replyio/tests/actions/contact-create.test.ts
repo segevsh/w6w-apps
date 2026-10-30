@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs only the fields provided, dropping the rest", async () => {
+test("contact-create: POSTs only the fields provided, dropping the rest", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, email: "a@b.com" } }]);
   await contactCreate.execute({ email: "a@b.com", firstName: "Ada" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("contact-create: POSTs only the fields provided, dropping the rest", a
  * camelCase on read — a request built with the read-side casing is silently
  * wrong shaped. This pins the write side.
  */
-Deno.test("contact-create: companySize is sent PascalCase, matching the write schema", async () => {
+test("contact-create: companySize is sent PascalCase, matching the write schema", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await contactCreate.execute({ email: "a@b.com", companySize: "SelfEmployed" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("contact-create: companySize is sent PascalCase, matching the write sc
   assertEquals(body.companySize, "SelfEmployed");
 });
 
-Deno.test("contact-create: customFields is parsed from a JSON string param", async () => {
+test("contact-create: customFields is parsed from a JSON string param", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await contactCreate.execute(
     { email: "a@b.com", customFields: '[{"key":"leadSource","value":"Conference"}]' },
@@ -35,7 +36,7 @@ Deno.test("contact-create: customFields is parsed from a JSON string param", asy
   assertEquals(body.customFields, [{ key: "leadSource", value: "Conference" }]);
 });
 
-Deno.test("contact-create: is not idempotent — Reply mints a new id per call", () => {
+test("contact-create: is not idempotent — Reply mints a new id per call", () => {
   assertEquals(contactCreate.idempotent, false);
   assert(contactCreate.type === "perform");
 });

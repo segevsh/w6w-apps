@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunitiesCreate from "../../actions/opportunities-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("opportunities-create: POSTs name/list_id/person_ids/organization_ids", async () => {
+test("opportunities-create: POSTs name/list_id/person_ids/organization_ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 120611418, name: "Penny Opportunity" } }]);
   await opportunitiesCreate.execute(
     { name: "Penny Opportunity", listId: 6645, personIds: "38706", organizationIds: "21442" },

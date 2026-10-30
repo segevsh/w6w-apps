@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keyUpdate from "../../actions/key-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("key-update: PUTs only the fields supplied", async () => {
+test("key-update: PUTs only the fields supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { key_id: 1 } }]);
   await keyUpdate.execute({ projectId: "p1", keyId: 1, description: "New desc" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("key-update: PUTs only the fields supplied", async () => {
   assertEquals(JSON.parse(calls[0].body!), { description: "New desc" });
 });
 
-Deno.test("key-update: forwards platforms, tags and inline translations", async () => {
+test("key-update: forwards platforms, tags and inline translations", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await keyUpdate.execute(
     {
@@ -31,6 +32,6 @@ Deno.test("key-update: forwards platforms, tags and inline translations", async 
   });
 });
 
-Deno.test("key-update: is idempotent", () => {
+test("key-update: is idempotent", () => {
   assertEquals(keyUpdate.idempotent, true);
 });

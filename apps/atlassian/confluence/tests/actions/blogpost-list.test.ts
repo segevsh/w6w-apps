@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blogpost-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("blogpost-list: filters by space and status", async () => {
+test("blogpost-list: filters by space and status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ id: "b1" }], _links: {} } }], {
     display,
   });

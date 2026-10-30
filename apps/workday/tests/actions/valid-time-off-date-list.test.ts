@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/valid-time-off-date-list.ts";
 
 const D = { display: { host: "wd2-impl-services1.workday.com", tenant: "acme_impl1" } };
 
-Deno.test("valid-time-off-date-list: calls the documented URL and returns a page", async () => {
+test("valid-time-off-date-list: calls the documented URL and returns a page", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { total: 1, data: [{ id: "x1", descriptor: "One" }] } }],
     D,
@@ -26,7 +27,7 @@ Deno.test("valid-time-off-date-list: calls the documented URL and returns a page
   assertEquals(result.hasMore, false);
 });
 
-Deno.test("valid-time-off-date-list: surfaces a Workday error body", async () => {
+test("valid-time-off-date-list: surfaces a Workday error body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "Access denied" } }], D);
   await assertRejects(
     async () =>
@@ -40,7 +41,7 @@ Deno.test("valid-time-off-date-list: surfaces a Workday error body", async () =>
   );
 });
 
-Deno.test("valid-time-off-date-list: refuses a malformed date", async () => {
+test("valid-time-off-date-list: refuses a malformed date", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () =>

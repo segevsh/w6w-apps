@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 5 actions, 2 auth methods and 2 health checks", () => {
+test("index: exports 5 actions, 2 auth methods and 2 health checks", () => {
   assertEquals(app.actions.length, 5);
   assertEquals(app.auth.map((a) => a.key), ["product-secret-key", "api-key"]);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case with execute, output and description", () => {
+test("index: action keys are unique kebab-case with execute, output and description", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -17,7 +18,7 @@ Deno.test("index: action keys are unique kebab-case with execute, output and des
   }
 });
 
-Deno.test("index: only verify is a read; every perform states idempotency, usage ones are not", () => {
+test("index: only verify is a read; every perform states idempotency, usage ones are not", () => {
   for (const a of app.actions) {
     assertEquals(a.type, a.key === "license-verify" ? "read" : "perform");
     if (a.type === "perform") assertEquals(typeof a.idempotent, "boolean", a.key);
@@ -28,7 +29,7 @@ Deno.test("index: only verify is a read; every perform states idempotency, usage
   assertEquals(by["license-enable"].idempotent, true);
 });
 
-Deno.test("index: health checks are informational absences", () => {
+test("index: health checks are informational absences", () => {
   for (const c of app.healthChecks) {
     assertEquals(c.severity, "informational");
     assertEquals(typeof c.unavailable?.reason, "string");

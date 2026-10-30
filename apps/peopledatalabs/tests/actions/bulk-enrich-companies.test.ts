@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-enrich-companies.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("bulk-enrich-companies: POSTs {requests} to /v5/company/enrich/bulk", async () => {
+test("bulk-enrich-companies: POSTs {requests} to /v5/company/enrich/bulk", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ status: 200, name: "google" }, { status: 404 }] }]);
   const out = await action.execute!(
     { requests: [{ params: { website: "google.com" } }, { website: "zzz.example" }] } as never,
@@ -16,7 +17,7 @@ Deno.test("bulk-enrich-companies: POSTs {requests} to /v5/company/enrich/bulk", 
   assertEquals([out.count, out.matches], [2, 1]);
 });
 
-Deno.test("bulk-enrich-companies: an empty list is refused", async () => {
+test("bulk-enrich-companies: an empty list is refused", async () => {
   await assertRejects(
     async () => await action.execute!({ requests: [] } as never, mockCtx([]).ctx),
     Error,

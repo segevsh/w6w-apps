@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -25,7 +26,7 @@ const INPUT = {
   "maxCustomFields": 5,
 };
 
-Deno.test("contact-create: sends POST /contacts with the mapped fields", async () => {
+test("contact-create: sends POST /contacts with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "r1", marker: "m" } }]);
   const out = await contactCreate.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -58,14 +59,14 @@ Deno.test("contact-create: sends POST /contacts with the mapped fields", async (
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("contact-create: sends only what was supplied", async () => {
+test("contact-create: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "r1", marker: "m" } }]);
   await contactCreate.execute({ "email": "x-email" } as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
   assertEquals(typeof calls[0].body, "string");
 });
 
-Deno.test("contact-create: surfaces the API error type and message", async () => {
+test("contact-create: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await contactCreate.execute(INPUT, ctx),

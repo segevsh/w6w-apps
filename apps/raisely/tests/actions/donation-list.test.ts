@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import donationList from "../../actions/donation-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("donation-list: GETs /v3/donations with every filter and the list params on the query", async () => {
+test("donation-list: GETs /v3/donations with every filter and the list params on the query", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ uuid: "1" }], { total: 41 }) }]);
   const out = await donationList.execute({
     "private": true,
@@ -40,19 +41,19 @@ Deno.test("donation-list: GETs /v3/donations with every filter and the list para
   assertEquals(out.pagination.total, 41);
 });
 
-Deno.test("donation-list: unset filters are omitted, and private=true is asked for by default", async () => {
+test("donation-list: unset filters are omitted, and private=true is asked for by default", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await donationList.execute({ private: true }, ctx);
   assertEquals(queryOf(calls[0].url), { "private": "true" });
 });
 
-Deno.test("donation-list: the param default for private is true and the action never signs", () => {
+test("donation-list: the param default for private is true and the action never signs", () => {
   const p = donationList.params!.find((p) => p.key === "private");
   assertEquals(p?.default, true);
   assertEquals(donationList.type, "read");
 });
 
-Deno.test("donation-list: a Raisely error body surfaces its code and detail", async () => {
+test("donation-list: a Raisely error body surfaces its code and detail", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { code: "forbidden", detail: "You are not authorized to do that" },

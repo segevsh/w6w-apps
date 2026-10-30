@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-update: PUTs /v1/tasks/{taskId} with title/description", async () => {
+test("task-update: PUTs /v1/tasks/{taskId} with title/description", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { taskId: "TK1", revision: "2" } },
@@ -14,7 +15,7 @@ Deno.test("task-update: PUTs /v1/tasks/{taskId} with title/description", async (
   assertEquals(body, { title: "New title", description: "New desc" });
 });
 
-Deno.test("task-update: is an idempotent perform action", () => {
+test("task-update: is an idempotent perform action", () => {
   assertEquals(taskUpdate.type, "perform");
   assertEquals(taskUpdate.idempotent, true);
 });

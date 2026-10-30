@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardFind from "../../actions/card-find.ts";
 
-Deno.test("card-find: finds cards by an exact field value", async () => {
+test("card-find: finds cards by an exact field value", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -24,7 +25,7 @@ Deno.test("card-find: finds cards by an exact field value", async () => {
   assert(q.includes('search: { fieldId: "external_id", fieldValue: "ext-42" }'));
 });
 
-Deno.test("card-find: type/resource metadata", () => {
+test("card-find: type/resource metadata", () => {
   assertEquals(cardFind.type, "search");
   assertEquals(cardFind.resource, "card");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import recipientCreate from "../../actions/recipient-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-create: calls POST /api/v2/recipients and shapes the output", async () => {
+test("recipient-create: calls POST /api/v2/recipients and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 99, "name": "Ada" } }]);
   const out = await recipientCreate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("recipient-create: calls POST /api/v2/recipients and shapes the output
   assert(out.id === 99, JSON.stringify(out));
 });
 
-Deno.test("recipient-create: a vendor error surfaces the HTTP status and message", async () => {
+test("recipient-create: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { "message": "Mailing List Does Not Exist" } }]);
   const err = await assertRejects(
     () =>
@@ -51,7 +52,7 @@ Deno.test("recipient-create: a vendor error surfaces the HTTP status and message
   assert(err.message.includes("HTTP 400") && err.message.includes("Does Not Exist"), err.message);
 });
 
-Deno.test("recipient-create: needs an address or an email", async () => {
+test("recipient-create: needs an address or an email", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(recipientCreate.execute({ mailingListId: 7, name: "Ada" } as never, ctx)),

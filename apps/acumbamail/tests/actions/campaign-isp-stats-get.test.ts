@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignIspStatsGet from "../../actions/campaign-isp-stats-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-isp-stats-get: POST /api/1/getCampaignInformationByISP/ with the documented form fields", async () => {
+test("campaign-isp-stats-get: POST /api/1/getCampaignInformationByISP/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await campaignIspStatsGet.execute({ "campaign_id": 55 } as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("campaign-isp-stats-get: POST /api/1/getCampaignInformationByISP/ with
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("campaign-isp-stats-get: a vendor error surfaces its status and body", async () => {
+test("campaign-isp-stats-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await campaignIspStatsGet.execute({ "campaign_id": 55 } as never, ctx)
@@ -25,7 +26,7 @@ Deno.test("campaign-isp-stats-get: a vendor error surfaces its status and body",
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("campaign-isp-stats-get: an empty campaign_id fails before any request", async () => {
+test("campaign-isp-stats-get: an empty campaign_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignIspStatsGet.execute({ "campaign_id": "  " } as never, ctx),

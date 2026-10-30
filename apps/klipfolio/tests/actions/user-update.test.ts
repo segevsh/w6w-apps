@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -18,7 +19,7 @@ const RESPONSE = {
   "data": {},
 };
 
-Deno.test("user-update: sends PUT /users/user1 with the mapped input", async () => {
+test("user-update: sends PUT /users/user1 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -34,7 +35,7 @@ Deno.test("user-update: sends PUT /users/user1 with the mapped input", async () 
   assertEquals(JSON.parse(JSON.stringify(out)), { "success": true });
 });
 
-Deno.test("user-update: sends no optional field when only required input is given", async () => {
+test("user-update: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "user_id": "user1" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -42,13 +43,13 @@ Deno.test("user-update: sends no optional field when only required input is give
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("user-update: sends no credential header of its own", async () => {
+test("user-update: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("user-update: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("user-update: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -62,7 +63,7 @@ Deno.test("user-update: surfaces Klipfolio's error envelope as a thrown error", 
   );
 });
 
-Deno.test("user-update: declares type, idempotency and output", () => {
+test("user-update: declares type, idempotency and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assert(Array.isArray(action.output) && action.output.length > 0);

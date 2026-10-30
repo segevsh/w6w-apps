@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, display, ok } from "./_shared.ts";
 import action from "../../actions/model-running.ts";
 
-Deno.test("model-running: reads /api/ps and says whether each model is fully on the GPU", async () => {
+test("model-running: reads /api/ps and says whether each model is fully on the GPU", async () => {
   const { ctx, calls } = mockCtx([ok({
     models: [
       { name: "a", size: 100, size_vram: 100, expires_at: "2026-10-22T12:00:00Z" },
@@ -21,7 +22,7 @@ Deno.test("model-running: reads /api/ps and says whether each model is fully on 
   assertEquals(result.models[1].contextLength, 4096);
 });
 
-Deno.test("model-running: nothing loaded is an empty list", async () => {
+test("model-running: nothing loaded is an empty list", async () => {
   const { ctx } = mockCtx([ok({ models: [] })], { display });
   assertEquals((await action.execute!({}, ctx) as { count: number }).count, 0);
 });

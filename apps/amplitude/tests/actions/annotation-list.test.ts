@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/annotation-list.ts";
 
-Deno.test("annotation-list: returns the annotations and their dates", async () => {
+test("annotation-list: returns the annotations and their dates", async () => {
   const { ctx, calls } = mockCtx([
     ok({
       data: [
@@ -18,17 +19,17 @@ Deno.test("annotation-list: returns the annotations and their dates", async () =
   assertEquals(result.dates, ["2026-08-14", "2026-08-18"]);
 });
 
-Deno.test("annotation-list: no annotations is a count of zero", async () => {
+test("annotation-list: no annotations is a count of zero", async () => {
   const { ctx } = mockCtx([ok({ data: [] })], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 0);
 });
 
-Deno.test("annotation-list: takes no parameters", () => {
+test("annotation-list: takes no parameters", () => {
   assertEquals(action.params?.length ?? 0, 0);
 });
 
 /** They are project-wide, not per-chart. */
-Deno.test("annotation-list: says they appear on every chart", () => {
+test("annotation-list: says they appear on every chart", () => {
   assert(/project-wide/.test(action.description!), action.description);
 });

@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-message-types.ts";
 
-Deno.test("list-message-types: metadata", () => {
+test("list-message-types: metadata", () => {
   assertEquals(action.key, "list-message-types");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), []);
 });
 
-Deno.test("list-message-types: calls GET /messageTypes on the US host", async () => {
+test("list-message-types: calls GET /messageTypes on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "messageTypes": [{ "id": 1 }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("list-message-types: calls GET /messageTypes on the US host", async ()
   assertEquals(out, { "messageTypes": [{ "id": 1 }] });
 });
 
-Deno.test("list-message-types: uses the EU host when the connection region is eu", async () => {
+test("list-message-types: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "messageTypes": [{ "id": 1 }] } }], {
     connection: { display: { region: "eu" } },
   });
@@ -27,7 +28,7 @@ Deno.test("list-message-types: uses the EU host when the connection region is eu
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/messageTypes");
 });
 
-Deno.test("list-message-types: surfaces an HTTP error with Iterable's own code", async () => {
+test("list-message-types: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -38,7 +39,7 @@ Deno.test("list-message-types: surfaces an HTTP error with Iterable's own code",
   );
 });
 
-Deno.test("list-message-types: treats a 200 carrying a non-Success code as a failure", async () => {
+test("list-message-types: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

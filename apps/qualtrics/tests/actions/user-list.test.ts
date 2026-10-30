@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("user-list: calls GET /users", async () => {
+test("user-list: calls GET /users", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "UR_1" }]) }]);
   const out = await userList.execute({}, ctx) as { elements: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("user-list: calls GET /users", async () => {
   assertEquals(out.elements, [{ id: "UR_1" }]);
 });
 
-Deno.test("user-list: a refusal is surfaced with the vendor's own code", async () => {
+test("user-list: a refusal is surfaced with the vendor's own code", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

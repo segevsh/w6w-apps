@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recipientGet from "../../actions/recipient-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-get: GETs /accounts/{accountId}", async () => {
+test("recipient-get: GETs /accounts/{accountId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 9, currency: "EUR" } }]);
   const out = await recipientGet.execute({ accountId: 9 }, ctx) as { id: number };
 

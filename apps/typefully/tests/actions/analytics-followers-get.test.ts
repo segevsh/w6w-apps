@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import analyticsFollowersGet from "../../actions/analytics-followers-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("analytics-followers-get: fetches the daily follower series", async () => {
+test("analytics-followers-get: fetches the daily follower series", async () => {
   const { ctx, calls } = mockCtx([{
     body: { platform: "x", current_followers_count: 1450, data: [] },
   }]);
@@ -15,7 +16,7 @@ Deno.test("analytics-followers-get: fetches the daily follower series", async ()
   assertEquals(out.current_followers_count, 1450);
 });
 
-Deno.test("analytics-followers-get: start/end dates are optional and omitted when unset", async () => {
+test("analytics-followers-get: start/end dates are optional and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{
     body: { platform: "x", current_followers_count: 0, data: [] },
   }]);

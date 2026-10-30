@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCompanies from "../../actions/list-companies.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-companies: GET /companies with name filter and paging", async () => {
+test("list-companies: GET /companies with name filter and paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: listEnvelope("companies", [{ company: { id: "co1" } }]),
   }]);
@@ -19,7 +20,7 @@ Deno.test("list-companies: GET /companies with name filter and paging", async ()
   assertEquals(out.maxPage, 1);
 });
 
-Deno.test("list-companies: missing list key yields an empty page, not a crash", async () => {
+test("list-companies: missing list key yields an empty page, not a crash", async () => {
   const { ctx } = mockCtx([{ body: { status: 0, data: {} } }]);
   const out = await listCompanies.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out.items, []);

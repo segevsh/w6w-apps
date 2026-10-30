@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { encodeFilter, listQuery } from "../../lib/params.ts";
 
-Deno.test("listQuery: passes through the documented list params", () => {
+test("listQuery: passes through the documented list params", () => {
   assertEquals(
     listQuery({
       size: 25,
@@ -22,7 +23,7 @@ Deno.test("listQuery: passes through the documented list params", () => {
   );
 });
 
-Deno.test("listQuery: omits fields the caller left unset", () => {
+test("listQuery: omits fields the caller left unset", () => {
   assertEquals(listQuery({}), {
     size: undefined,
     from: undefined,
@@ -33,19 +34,19 @@ Deno.test("listQuery: omits fields the caller left unset", () => {
   });
 });
 
-Deno.test("encodeFilter: accepts an already-parsed object", () => {
+test("encodeFilter: accepts an already-parsed object", () => {
   assertEquals(encodeFilter({ must: [] }), '{"must":[]}');
 });
 
-Deno.test("encodeFilter: accepts a JSON string a user typed", () => {
+test("encodeFilter: accepts a JSON string a user typed", () => {
   assertEquals(encodeFilter('{"must":[]}'), '{"must":[]}');
 });
 
-Deno.test('encodeFilter: absence is absence, not the literal string "undefined"', () => {
+test('encodeFilter: absence is absence, not the literal string "undefined"', () => {
   assertEquals(encodeFilter(undefined), undefined);
   assertEquals(encodeFilter(""), undefined);
 });
 
-Deno.test("encodeFilter: an unparsable string throws rather than sending garbage", () => {
+test("encodeFilter: an unparsable string throws rather than sending garbage", () => {
   assertThrows(() => encodeFilter("{not json"), Error, "filter is not valid JSON");
 });

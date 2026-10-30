@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardCreate from "../../actions/card-create.ts";
 
-Deno.test("card-create: creates a card with field values", async () => {
+test("card-create: creates a card with field values", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { createCard: { card: { id: "1", title: "New card" } } } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("card-create: creates a card with field values", async () => {
   assert(q.includes('fields_attributes: [{ field_id: "field_1", field_value: "Value 1" }]'));
 });
 
-Deno.test("card-create: works with no field values", async () => {
+test("card-create: works with no field values", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { createCard: { card: { id: "1", title: "Bare" } } } },
   }]);
@@ -31,7 +32,7 @@ Deno.test("card-create: works with no field values", async () => {
   assert(!q.includes("fields_attributes"));
 });
 
-Deno.test("card-create: an invalid fields JSON string names the field", async () => {
+test("card-create: an invalid fields JSON string names the field", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await cardCreate.execute({ pipeId: "123", title: "x", fields: "{not json" }, ctx),
@@ -40,7 +41,7 @@ Deno.test("card-create: an invalid fields JSON string names the field", async ()
   );
 });
 
-Deno.test("card-create: type/resource/idempotency metadata", () => {
+test("card-create: type/resource/idempotency metadata", () => {
   assertEquals(cardCreate.type, "perform");
   assertEquals(cardCreate.resource, "card");
   assertEquals(cardCreate.idempotent, false);

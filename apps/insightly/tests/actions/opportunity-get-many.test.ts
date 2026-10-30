@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInsightlyCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-get-many.ts";
 
-Deno.test("opportunity-get-many: plain list with no filter", async () => {
+test("opportunity-get-many: plain list with no filter", async () => {
   const { ctx, calls } = mockInsightlyCtx([{ body: [{ OPPORTUNITY_ID: 1 }] }]);
   const out = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("opportunity-get-many: plain list with no filter", async () => {
   assertEquals(out, { opportunities: [{ OPPORTUNITY_ID: 1 }] });
 });
 
-Deno.test("opportunity-get-many: switches to /Search when a filter field is set", async () => {
+test("opportunity-get-many: switches to /Search when a filter field is set", async () => {
   const { ctx, calls } = mockInsightlyCtx([{ body: [] }]);
   await action.execute({ fieldName: "PROBABILITY", fieldValue: "100", top: 10 }, ctx);
   const url = new URL(calls[0].url);

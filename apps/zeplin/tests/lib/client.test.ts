@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   compact,
   errorText,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: false, e: null, f: 0 }), {
     a: 1,
     d: false,
@@ -25,7 +26,7 @@ Deno.test("client: helpers", () => {
   assertEquals(truncate("abcdef", 3), "abc… (6 chars truncated)");
 });
 
-Deno.test("client: errorText reads message and detail, HTML titles and raw text", () => {
+test("client: errorText reads message and detail, HTML titles and raw text", () => {
   assertEquals(
     errorText('{"message":"invalid_token","detail":"Authorization header is missing"}'),
     "invalid_token (Authorization header is missing)",
@@ -35,14 +36,14 @@ Deno.test("client: errorText reads message and detail, HTML titles and raw text"
   assertEquals(errorText(""), "");
 });
 
-Deno.test("client: formatError adds a hint per status and the retry-after on 429", () => {
+test("client: formatError adds a hint per status and the retry-after on 429", () => {
   assertEquals(formatError(401, "GET", "/x", "{}").includes("reconnect"), true);
   assertEquals(formatError(404, "GET", "/x", "{}").includes("not a member"), true);
   assertEquals(formatError(422, "PATCH", "/x", "{}").includes("archived"), true);
   assertEquals(formatError(429, "GET", "/x", "{}", "12").includes("retry after 12s"), true);
 });
 
-Deno.test("client: request omits empty query values and sends JSON bodies with a content type", async () => {
+test("client: request omits empty query values and sends JSON bodies with a content type", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   await new ZeplinClient(ctx).request("POST", "/x", {
     query: { a: "1", b: "", c: undefined },
@@ -53,7 +54,7 @@ Deno.test("client: request omits empty query values and sends JSON bodies with a
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: a 204 is null, a non-JSON 200 and a 429 are errors", async () => {
+test("client: a 204 is null, a non-JSON 200 and a 429 are errors", async () => {
   const empty = mockCtx([{ status: 204 }]);
   assertEquals(await new ZeplinClient(empty.ctx).request("DELETE", "/x"), null);
   const html = mockCtx([{ headers: { "content-type": "text/html" }, body: "<html></html>" }]);
@@ -74,7 +75,7 @@ Deno.test("client: a 204 is null, a non-JSON 200 and a 429 are errors", async ()
   );
 });
 
-Deno.test("client: page computes next_offset only for a full page", async () => {
+test("client: page computes next_offset only for a full page", async () => {
   const full = mockCtx([{ body: [1, 2, 3] }]);
   assertEquals(
     (await new ZeplinClient(full.ctx).page("/x", {}, { limit: 3, offset: 6 })).next_offset,

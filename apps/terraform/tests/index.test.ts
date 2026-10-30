@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 20 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 20 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 20);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,7 +23,7 @@ Deno.test("index: exports 20 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -31,18 +33,18 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
  * A retried lock is a 409 because the first one succeeded, and a retried
  * create makes a second workspace or a second run. Everything else converges.
  */
-Deno.test("index: only the three that duplicate on a retry are non-idempotent", () => {
+test("index: only the three that duplicate on a retry are non-idempotent", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, ["run-create", "workspace-create", "workspace-lock"]);
 });
 
-Deno.test("index: exports the one auth method and all three health checks", () => {
+test("index: exports the one auth method and all three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["token"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "instance", "quota"]);
 });
 
 /** Terraform Enterprise is the same API at the customer's own address. */
-Deno.test("index: the manifest admits an instance can be anywhere", () => {
+test("index: the manifest admits an instance can be anywhere", () => {
   assertEquals(manifest.w6w.network.allow, ["*"]);
   assertEquals(manifest.w6w.id, "io.w6w.terraform");
   assertEquals(manifest.w6w.categories, ["devops", "developer-tools"]);
@@ -53,7 +55,7 @@ Deno.test("index: the manifest admits an instance can be anywhere", () => {
  * parameter the caller has to set deliberately, and the gates are asserted
  * here so removing one fails the suite rather than passing quietly.
  */
-Deno.test("index: every infrastructure-changing path is gated", () => {
+test("index: every infrastructure-changing path is gated", () => {
   const params = (key: string) =>
     (app.actions.find((a) => a.key === key)!.params as Array<{ key: string }>).map((p) => p.key);
 
@@ -75,7 +77,7 @@ Deno.test("index: every infrastructure-changing path is gated", () => {
 });
 
 /** Plan-only cannot apply under any workspace setting. */
-Deno.test("index: queueing a run defaults to plan-only", () => {
+test("index: queueing a run defaults to plan-only", () => {
   const planOnly = (app.actions.find((a) => a.key === "run-create")!
     .params as Array<{ key: string; default?: unknown }>).find((p) => p.key === "planOnly")!;
   assertEquals(planOnly.default, true);
@@ -97,17 +99,17 @@ const code = (src: string) =>
 
 const sources = async (dir: string) => {
   const out: Array<[string, string]> = [];
-  for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+  for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
     out.push([
       `${dir}/${entry.name}`,
-      code(await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
+      code(await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
     ]);
   }
   return out;
 };
 
-Deno.test("index: nothing reaches the network except through ctx.fetch", async () => {
+test("index: nothing reaches the network except through ctx.fetch", async () => {
   for (const dir of ["actions", "lib", "health"]) {
     for (const [name, src] of await sources(dir)) {
       assert(
@@ -120,7 +122,7 @@ Deno.test("index: nothing reaches the network except through ctx.fetch", async (
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
   for (const [name, src] of await sources("actions")) {
     assert(!/authorization/i.test(src), `${name} sets an authorization header`);
     assert(
@@ -134,7 +136,7 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * Variable values are provider credentials and state outputs are connection
  * strings. A run log records counts, ids and key NAMES — never a value.
  */
-Deno.test("index: nothing logs a variable value or a state output value", async () => {
+test("index: nothing logs a variable value or a state output value", async () => {
   for (const dir of ["actions", "lib"]) {
     for (const [name, src] of await sources(dir)) {
       const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
@@ -155,7 +157,7 @@ Deno.test("index: nothing logs a variable value or a state output value", async 
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

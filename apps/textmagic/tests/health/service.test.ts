@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ function summary(components: Array<{ id: string; name: string; status: string }>
   };
 }
 
-Deno.test("service: all-operational reports ok", async () => {
+test("service: all-operational reports ok", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: summary([
@@ -31,7 +32,7 @@ Deno.test("service: all-operational reports ok", async () => {
   assertEquals(report.components?.c.state, "down");
 });
 
-Deno.test("service: a degraded SMS API Gateway drives the top-level state", async () => {
+test("service: a degraded SMS API Gateway drives the top-level state", async () => {
   const { ctx } = mockCtx([
     {
       body: summary([
@@ -44,13 +45,13 @@ Deno.test("service: a degraded SMS API Gateway drives the top-level state", asyn
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a broken status endpoint is unknown, never down", async () => {
+test("service: a broken status endpoint is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as TextMagic is unknown", async () => {
+test("service: a page that no longer self-identifies as TextMagic is unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -63,7 +64,7 @@ Deno.test("service: a page that no longer self-identifies as TextMagic is unknow
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unsigned, app-scoped, and widens only to the status host", () => {
+test("service: unsigned, app-scoped, and widens only to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["status.textmagic.com"]);

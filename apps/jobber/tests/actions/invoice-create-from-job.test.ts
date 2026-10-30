@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create-from-job.ts";
 
-Deno.test("invoice-create-from-job: origin is pinned to INTEGRATIONS and is not a parameter", async () => {
+test("invoice-create-from-job: origin is pinned to INTEGRATIONS and is not a parameter", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { invoiceCreateFromJob: { invoice: { id: "i1" }, userErrors: [] } } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("invoice-create-from-job: origin is pinned to INTEGRATIONS and is not 
   assertEquals(action.params?.some((p) => p.key === "origin"), false);
 });
 
-Deno.test("invoice-create-from-job: uses the from-job mutation, not the general invoiceCreate", async () => {
+test("invoice-create-from-job: uses the from-job mutation, not the general invoiceCreate", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { invoiceCreateFromJob: { invoice: { id: "i1" }, userErrors: [] } } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("invoice-create-from-job: uses the from-job mutation, not the general 
   assert(!/\binvoiceCreate\(/.test(query));
 });
 
-Deno.test("invoice-create-from-job: nothing left to bill throws", async () => {
+test("invoice-create-from-job: nothing left to bill throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -39,6 +40,6 @@ Deno.test("invoice-create-from-job: nothing left to bill throws", async () => {
   );
 });
 
-Deno.test("invoice-create-from-job: declares itself non-idempotent", () => {
+test("invoice-create-from-job: declares itself non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

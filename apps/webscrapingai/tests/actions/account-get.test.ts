@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/account-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,14 +13,14 @@ const account = {
   remaining_concurrency: 2,
 };
 
-Deno.test("account-get: GETs /account with no extra query and returns the document", async () => {
+test("account-get: GETs /account with no extra query and returns the document", async () => {
   const { ctx, calls } = mockCtx([{ body: account }]);
   assertEquals(await action.execute({}, ctx), account);
   assertEquals(calls[0].url, "https://api.webscraping.ai/account");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("account-get: 403 is reported as a rejected key; a non-JSON 200 is an error", async () => {
+test("account-get: 403 is reported as a rejected key; a non-JSON 200 is an error", async () => {
   const bad = mockCtx([{ status: 403, body: { message: "Wrong API key." } }]);
   await assertRejects(async () => await action.execute({}, bad.ctx), Error, "Wrong API key.");
   const html = mockCtx([{ headers: { "content-type": "text/html" }, body: "<html></html>" }]);

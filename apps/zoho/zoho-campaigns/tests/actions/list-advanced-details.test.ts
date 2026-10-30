@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/list-advanced-details.ts";
 
-Deno.test("list-advanced-details: GETs getlistadvanceddetails and returns the parsed body as data", async () => {
+test("list-advanced-details: GETs getlistadvanceddetails and returns the parsed body as data", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: {

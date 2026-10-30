@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import companyUpdate from "../../actions/company-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-update: PATCH /companies/{id} sends a JSON:API document of attributes", async () => {
+test("company-update: PATCH /companies/{id} sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "companies", "attributes": { "name": "x" } } },
@@ -51,7 +52,7 @@ Deno.test("company-update: PATCH /companies/{id} sends a JSON:API document of at
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("company-update: only the fields set are sent", async () => {
+test("company-update: only the fields set are sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "companies", "attributes": { "name": "x" } } },
@@ -62,7 +63,7 @@ Deno.test("company-update: only the fields set are sent", async () => {
   });
 });
 
-Deno.test("company-update: naming no field to change fails before any request", async () => {
+test("company-update: naming no field to change fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(companyUpdate.execute({ id: "42" }, ctx)),
@@ -72,7 +73,7 @@ Deno.test("company-update: naming no field to change fails before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("company-update: a vendor error surfaces its status, title and detail", async () => {
+test("company-update: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -85,7 +86,7 @@ Deno.test("company-update: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("company-update: declares perform and idempotent=true", () => {
+test("company-update: declares perform and idempotent=true", () => {
   assertEquals(companyUpdate.type, "perform");
   assertEquals(companyUpdate.idempotent, true);
   assertEquals(companyUpdate.key, "company-update");

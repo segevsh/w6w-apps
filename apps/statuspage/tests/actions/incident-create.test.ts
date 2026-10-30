@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-create.ts";
 
@@ -6,7 +7,7 @@ const conn = { display: { pageId: "pg1" } };
 const ok = { status: 201, body: { id: "inc1", status: "investigating" } };
 
 /** Components move in the SAME request — one per second makes a loop painful. */
-Deno.test("incident-create: sets component statuses in the same request", async () => {
+test("incident-create: sets component statuses in the same request", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({
     name: "Elevated errors",
@@ -22,7 +23,7 @@ Deno.test("incident-create: sets component statuses in the same request", async 
 });
 
 /** Notifying every customer must never happen by omission. */
-Deno.test("incident-create: notifications default to off, and are always explicit", async () => {
+test("incident-create: notifications default to off, and are always explicit", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({ name: "x", status: "investigating" }, ctx);
   const sent = JSON.parse(calls[0].body!).incident;
@@ -30,13 +31,13 @@ Deno.test("incident-create: notifications default to off, and are always explici
   assertEquals(sent.deliver_notifications, false);
 });
 
-Deno.test("incident-create: asking to notify does notify", async () => {
+test("incident-create: asking to notify does notify", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({ name: "x", status: "investigating", deliverNotifications: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).incident.deliver_notifications, true);
 });
 
-Deno.test("incident-create: an unknown component status is refused with the options", async () => {
+test("incident-create: an unknown component status is refused with the options", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ name: "x", componentStatuses: '{"c1":"broken"}' }, ctx),
@@ -47,7 +48,7 @@ Deno.test("incident-create: an unknown component status is refused with the opti
 });
 
 /** A maintenance window needs both ends. */
-Deno.test("incident-create: half a maintenance window is refused", async () => {
+test("incident-create: half a maintenance window is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(
     async () =>
@@ -61,12 +62,12 @@ Deno.test("incident-create: half a maintenance window is refused", async () => {
   );
 });
 
-Deno.test("incident-create: a missing title is refused", async () => {
+test("incident-create: a missing title is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "name");
 });
 
-Deno.test("incident-create: the notify hint says it cannot be recalled", () => {
+test("incident-create: the notify hint says it cannot be recalled", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "deliverNotifications")!;
   assert(/cannot be recalled/.test(p.hint!), p.hint);

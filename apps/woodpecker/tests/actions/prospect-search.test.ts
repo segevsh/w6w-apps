@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectSearch from "../../actions/prospect-search.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-search: sends search with campaigns_details", async () => {
+test("prospect-search: sends search with campaigns_details", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ "id": 9, "email": "erlich@bachman.com" }],
@@ -25,7 +26,7 @@ Deno.test("prospect-search: sends search with campaigns_details", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("prospect-search: a bad search is surfaced from the v1 error body", async () => {
+test("prospect-search: a bad search is surfaced from the v1 error body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { "status": { "status": "ERROR", "code": "E_WRONG_PARAM", "msg": "Wrong param nope" } },

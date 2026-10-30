@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestUpdateTickets from "../../actions/guest-update-tickets.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("guest-update-tickets: maps ticketTypeIdsToAdd to tickets_to_add objects", async () => {
+test("guest-update-tickets: maps ticketTypeIdsToAdd to tickets_to_add objects", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await guestUpdateTickets.execute(
     {

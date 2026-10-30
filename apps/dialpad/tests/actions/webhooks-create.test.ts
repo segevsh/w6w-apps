@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhooksCreate from "../../actions/webhooks-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * this endpoint: `{"hook_url": "https://test.com/webhooks", "id": "193",
  * "signature": {"algo": "HS256", "secret": "test_secret", "type": "jwt"}}`.
  */
-Deno.test("webhooks-create: POSTs /webhooks and strips the vendor's own example secret", async () => {
+test("webhooks-create: POSTs /webhooks and strips the vendor's own example secret", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -29,6 +30,6 @@ Deno.test("webhooks-create: POSTs /webhooks and strips the vendor's own example 
   assertEquals(out.signature.algo, "HS256");
 });
 
-Deno.test("webhooks-create: declared non-idempotent", () => {
+test("webhooks-create: declared non-idempotent", () => {
   assertEquals(webhooksCreate.idempotent, false);
 });

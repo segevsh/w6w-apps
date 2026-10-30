@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-completion.ts";
 
-Deno.test("chat-completion: POSTs /v1/chat/completions with model + messages only", async () => {
+test("chat-completion: POSTs /v1/chat/completions with model + messages only", async () => {
   const body = { id: "cmpl-1", choices: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -23,7 +24,7 @@ Deno.test("chat-completion: POSTs /v1/chat/completions with model + messages onl
   assertEquals(result, body);
 });
 
-Deno.test("chat-completion: forwards optional params with snake_case keys", async () => {
+test("chat-completion: forwards optional params with snake_case keys", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -49,7 +50,7 @@ Deno.test("chat-completion: forwards optional params with snake_case keys", asyn
   assertEquals(sent.safe_prompt, true);
 });
 
-Deno.test("chat-completion: omits undefined optional params from the request body", async () => {
+test("chat-completion: omits undefined optional params from the request body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "m", messages: [{ role: "user", content: "x" }] },
@@ -59,7 +60,7 @@ Deno.test("chat-completion: omits undefined optional params from the request bod
   assertEquals(Object.keys(sent).sort(), ["messages", "model"]);
 });
 
-Deno.test("chat-completion: forwards tools, tool_choice and parallel_tool_calls", async () => {
+test("chat-completion: forwards tools, tool_choice and parallel_tool_calls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const tools = [{ type: "function", function: { name: "get_weather" } }];
   await action.execute!(
@@ -78,7 +79,7 @@ Deno.test("chat-completion: forwards tools, tool_choice and parallel_tool_calls"
   assertEquals(body.parallel_tool_calls, false);
 });
 
-Deno.test("chat-completion: omits the tool keys entirely when unset", async () => {
+test("chat-completion: omits the tool keys entirely when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "mistral-large-latest", messages: [] }, ctx);
   const body = JSON.parse(calls[0].body!);

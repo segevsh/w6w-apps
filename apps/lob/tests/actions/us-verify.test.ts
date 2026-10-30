@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import usVerify from "../../actions/us-verify.ts";
 import { bodyOf, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("us-verify: split fields become snake_case body fields", async () => {
+test("us-verify: split fields become snake_case body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "us_ver_1", deliverability: "deliverable" } }]);
   const out = await usVerify.execute({
     primaryLine: "210 King St",
@@ -22,14 +23,14 @@ Deno.test("us-verify: split fields become snake_case body fields", async () => {
   assertEquals(out.deliverability, "deliverable");
 });
 
-Deno.test("us-verify: a free-form address is sent alone, and proper case goes in the query", async () => {
+test("us-verify: a free-form address is sent alone, and proper case goes in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "us_ver_2" } }]);
   await usVerify.execute({ address: "210 King St, San Francisco CA 94107", properCase: true }, ctx);
   assertEquals(bodyOf(calls[0]), { address: "210 King St, San Francisco CA 94107" });
   assertEquals(queryOf(calls[0].url), { case: "proper" });
 });
 
-Deno.test("us-verify: mixing the free-form address with fields is refused before a request", async () => {
+test("us-verify: mixing the free-form address with fields is refused before a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await usVerify.execute({ address: "x", city: "y" }, ctx),
@@ -39,7 +40,7 @@ Deno.test("us-verify: mixing the free-form address with fields is refused before
   assertEquals(calls.length, 0);
 });
 
-Deno.test("us-verify: neither form given is refused", async () => {
+test("us-verify: neither form given is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await usVerify.execute({ city: "SF" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("us-verify: neither form given is refused", async () => {
   );
 });
 
-Deno.test("us-verify: an undeliverable address is a normal result, not an error", async () => {
+test("us-verify: an undeliverable address is a normal result, not an error", async () => {
   const { ctx } = mockCtx([{ body: { id: "us_ver_3", deliverability: "undeliverable" } }]);
   const out = await usVerify.execute({ primaryLine: "1 Nowhere" }, ctx) as {
     deliverability: string;
@@ -56,7 +57,7 @@ Deno.test("us-verify: an undeliverable address is a normal result, not an error"
   assertEquals(out.deliverability, "undeliverable");
 });
 
-Deno.test("us-verify: an invalid key surfaces Lob's code", async () => {
+test("us-verify: an invalid key surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_key", "Your API key is not valid.", 401),

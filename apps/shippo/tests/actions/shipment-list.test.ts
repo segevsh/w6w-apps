@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-list.ts";
 
-Deno.test("shipment-list: reads GET /shipments with pagination params", async () => {
+test("shipment-list: reads GET /shipments with pagination params", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { results: [{ object_id: "shp_1" }], next: null },
@@ -15,7 +16,7 @@ Deno.test("shipment-list: reads GET /shipments with pagination params", async ()
   assertEquals(result.results.length, 1);
 });
 
-Deno.test("shipment-list: is read-only and offers paging params", () => {
+test("shipment-list: is read-only and offers paging params", () => {
   assertEquals(action.type, "read");
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assertEquals(keys, ["results", "page"]);

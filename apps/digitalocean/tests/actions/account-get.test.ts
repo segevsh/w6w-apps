@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
@@ -18,7 +19,7 @@ const account = (attributes: Record<string, unknown> = {}) => ({
 });
 
 /** Hitting a limit is a 422 that reads as a bad size or region. */
-Deno.test("account-get: surfaces the resource limits", async () => {
+test("account-get: surfaces the resource limits", async () => {
   const { ctx, calls } = mockCtx([account()]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://api.digitalocean.com/v2/account");
@@ -32,7 +33,7 @@ Deno.test("account-get: surfaces the resource limits", async () => {
 });
 
 /** A locked account authenticates normally and refuses everything else. */
-Deno.test("account-get: an inactive account is warned about", async () => {
+test("account-get: an inactive account is warned about", async () => {
   const { ctx, logs } = mockCtx([account({ status: "locked" })]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.status, "locked");
@@ -44,12 +45,12 @@ Deno.test("account-get: an inactive account is warned about", async () => {
   assertEquals(active.logs.length, 0);
 });
 
-Deno.test("account-get: takes no parameters", () => {
+test("account-get: takes no parameters", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
 });
 
-Deno.test("account-get: a sparse response does not throw", async () => {
+test("account-get: a sparse response does not throw", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.dropletLimit, undefined);

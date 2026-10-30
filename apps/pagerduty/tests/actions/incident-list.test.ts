@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-list.ts";
 
-Deno.test("incident-list: default limit stops after the first page", async () => {
+test("incident-list: default limit stops after the first page", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { incidents: [{ id: "P1" }, { id: "P2" }], more: false } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("incident-list: default limit stops after the first page", async () =>
   assertEquals(result, [{ id: "P1" }, { id: "P2" }]);
 });
 
-Deno.test("incident-list: a small `limit` stops fetching once reached, even if `more` is true", async () => {
+test("incident-list: a small `limit` stops fetching once reached, even if `more` is true", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { incidents: [{ id: "P1" }, { id: "P2" }], more: true } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("incident-list: a small `limit` stops fetching once reached, even if `
   assertEquals(result, [{ id: "P1" }, { id: "P2" }]);
 });
 
-Deno.test("incident-list: returnAll paginates until `more` is false", async () => {
+test("incident-list: returnAll paginates until `more` is false", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { incidents: [{ id: "P1" }], more: true } },
     { status: 200, body: { incidents: [{ id: "P2" }], more: false } },
@@ -32,7 +33,7 @@ Deno.test("incident-list: returnAll paginates until `more` is false", async () =
   assertEquals(result, [{ id: "P1" }, { id: "P2" }]);
 });
 
-Deno.test("incident-list: filters map to bracketed array query params", async () => {
+test("incident-list: filters map to bracketed array query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incidents: [], more: false } }]);
   await action.execute!({
     statuses: ["triggered", "acknowledged"],
@@ -45,7 +46,7 @@ Deno.test("incident-list: filters map to bracketed array query params", async ()
   assertEquals(url.searchParams.getAll("user_ids[]"), ["U1"]);
 });
 
-Deno.test("incident-list: accept header is set", async () => {
+test("incident-list: accept header is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incidents: [], more: false } }]);
   await action.execute!({}, ctx);
   assertEquals(calls[0].headers["accept"], "application/vnd.pagerduty+json;version=2");

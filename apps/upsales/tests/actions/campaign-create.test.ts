@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-create: POSTs /projects with the mapped body", async () => {
+test("campaign-create: POSTs /projects with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await campaignCreate.execute({
     "name": "Sales campaign April",
@@ -28,7 +29,7 @@ Deno.test("campaign-create: POSTs /projects with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("campaign-create: the free-form fields object is merged and typed params win", async () => {
+test("campaign-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await campaignCreate.execute(
     {
@@ -42,7 +43,7 @@ Deno.test("campaign-create: the free-form fields object is merged and typed para
   assertEquals(sent["name"], "Sales campaign April");
 });
 
-Deno.test("campaign-create: fields may be a JSON string", async () => {
+test("campaign-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await campaignCreate.execute(
     { "name": "Sales campaign April", "fields": '{"extraKey":1}' } as never,
@@ -51,7 +52,7 @@ Deno.test("campaign-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("campaign-create: invalid fields JSON is refused before any request", async () => {
+test("campaign-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -61,12 +62,12 @@ Deno.test("campaign-create: invalid fields JSON is refused before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-create: required params are declared", () => {
+test("campaign-create: required params are declared", () => {
   const required = (campaignCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["name"]);
 });
 
-Deno.test("campaign-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("campaign-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -87,7 +88,7 @@ Deno.test("campaign-create: a rejected key surfaces Upsales' plain-text Unauthor
   );
 });
 
-Deno.test("campaign-create: a JSON error envelope surfaces the vendor key", async () => {
+test("campaign-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: POSTs /files/search_v2 with query and default options", async () => {
+test("search: POSTs /files/search_v2 with query and default options", async () => {
   const resp = { matches: [], has_more: false };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({ query: "invoice" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("search: POSTs /files/search_v2 with query and default options", async
   assertEquals(result, resp);
 });
 
-Deno.test("search: splits comma-separated extensions/categories into arrays", async () => {
+test("search: splits comma-separated extensions/categories into arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: { matches: [], has_more: false } }]);
   await action.execute!(
     {
@@ -39,7 +40,7 @@ Deno.test("search: splits comma-separated extensions/categories into arrays", as
   assertEquals(payload.options.max_results, 25);
 });
 
-Deno.test("search: switches to /files/search/continue_v2 when cursor is provided", async () => {
+test("search: switches to /files/search/continue_v2 when cursor is provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { matches: [], has_more: false } }]);
   await action.execute!({ query: "ignored-when-cursor", cursor: "cur-1" }, ctx);
   const url = new URL(calls[0].url);

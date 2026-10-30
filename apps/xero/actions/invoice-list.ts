@@ -20,7 +20,16 @@ const invoiceList: ActionDefinition<Input> = {
     {
       key: "statuses",
       label: "Statuses",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "DRAFT", label: "DRAFT" },
+        { value: "SUBMITTED", label: "SUBMITTED" },
+        { value: "DELETED", label: "DELETED" },
+        { value: "AUTHORISED", label: "AUTHORISED" },
+        { value: "PAID", label: "PAID" },
+        { value: "VOIDED", label: "VOIDED" },
+      ],
+      config: { valueFormat: "csv" },
       placeholder: "DRAFT,SUBMITTED,AUTHORISED",
       hint: "Comma-separated: DRAFT, SUBMITTED, DELETED, AUTHORISED, PAID, VOIDED.",
     },

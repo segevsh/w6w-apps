@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   formatReadAiError,
@@ -8,7 +9,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: arrays use the documented literal expand[] form", () => {
+test("buildQuery: arrays use the documented literal expand[] form", () => {
   assertEquals(
     buildQuery({ limit: 5, expand: ["summary", "metrics"], cursor: undefined }),
     "?limit=5&expand[]=summary&expand[]=metrics",
@@ -17,12 +18,12 @@ Deno.test("buildQuery: arrays use the documented literal expand[] form", () => {
   assertEquals(buildQuery({ "start_time_ms.gte": 0 }), "?start_time_ms.gte=0");
 });
 
-Deno.test("pickExpand: drops values the API does not document", () => {
+test("pickExpand: drops values the API does not document", () => {
   assertEquals(pickExpand(["summary", "bogus"], ["summary", "metrics"]), ["summary"]);
   assertEquals(pickExpand(undefined, ["summary"]), []);
 });
 
-Deno.test("timeFilters: maps camel params to dotted vendor names, rejects non-numbers", () => {
+test("timeFilters: maps camel params to dotted vendor names, rejects non-numbers", () => {
   assertEquals(timeFilters({ startTimeMsGte: 5, startTimeMsLt: "9" }), {
     "start_time_ms.gte": 5,
     "start_time_ms.lt": 9,
@@ -38,7 +39,7 @@ Deno.test("timeFilters: maps camel params to dotted vendor names, rejects non-nu
   }
 });
 
-Deno.test("formatReadAiError: reads both 401 shapes", async () => {
+test("formatReadAiError: reads both 401 shapes", async () => {
   assertEquals(
     await formatReadAiError(new Response('{"detail":"Not authenticated"}', { status: 401 })),
     "Read AI 401: Not authenticated",
@@ -53,7 +54,7 @@ Deno.test("formatReadAiError: reads both 401 shapes", async () => {
   assertEquals(await formatReadAiError(new Response("oops", { status: 500 })), "Read AI 500");
 });
 
-Deno.test("ReadAiClient: sends no credential and throws the vendor error", async () => {
+test("ReadAiClient: sends no credential and throws the vendor error", async () => {
   const { ctx, calls } = mockCtx([{ status: 404, body: { detail: "Not Found" } }]);
   await assertRejects(() => new ReadAiClient(ctx).get("/v1/meetings/x"), Error, "Read AI 404");
   assertEquals(calls[0].headers.authorization, undefined);

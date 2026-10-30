@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-delete.ts";
 
@@ -12,7 +13,7 @@ const backups = (n: number) => ({
   body: { result: Array.from({ length: n }, (_, i) => ({ id: `b-${i}` })) },
 });
 
-Deno.test("service-delete: reads the service and its backups, then deletes", async () => {
+test("service-delete: reads the service and its backups, then deletes", async () => {
   const { ctx, calls } = mockCtx([service("stopped"), backups(3), { status: 204 }], D);
   const result = await action.execute(
     { serviceId: SVC, confirmName: "prod" },
@@ -24,7 +25,7 @@ Deno.test("service-delete: reads the service and its backups, then deletes", asy
 });
 
 /** Deleting is two deliberate acts rather than one. */
-Deno.test("service-delete: refuses a service that is not stopped, and says why", async () => {
+test("service-delete: refuses a service that is not stopped, and says why", async () => {
   for (const state of ["running", "idle", "starting"]) {
     const { ctx, calls } = mockCtx([service(state)], D);
     let message = "";
@@ -40,7 +41,7 @@ Deno.test("service-delete: refuses a service that is not stopped, and says why",
 });
 
 /** The name is what a person recognises; a UUID typed twice is copied twice. */
-Deno.test("service-delete: the confirmation is the name, not the id", async () => {
+test("service-delete: the confirmation is the name, not the id", async () => {
   const { ctx, calls } = mockCtx([service("stopped")], D);
   let message = "";
   try {
@@ -55,7 +56,7 @@ Deno.test("service-delete: the confirmation is the name, not the id", async () =
 });
 
 /** "We have backups" is not a recovery plan when the backups go too. */
-Deno.test("service-delete: warns that the backups went with it", async () => {
+test("service-delete: warns that the backups went with it", async () => {
   const { ctx, logs } = mockCtx([service("stopped"), backups(2), { status: 204 }], D);
   await action.execute({ serviceId: SVC, confirmName: "prod" }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -63,7 +64,7 @@ Deno.test("service-delete: warns that the backups went with it", async () => {
   assert(/BACKUPS are deleted with it/.test(action.description!), action.description);
 });
 
-Deno.test("service-delete: an unreadable backup list does not stop the delete", async () => {
+test("service-delete: an unreadable backup list does not stop the delete", async () => {
   const { ctx } = mockCtx([service("stopped"), { status: 403, body: {} }, { status: 204 }], D);
   const result = await action.execute(
     { serviceId: SVC, confirmName: "prod" },

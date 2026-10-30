@@ -1,4 +1,5 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -7,13 +8,13 @@ const appUsage = (v: Record<string, number>) => ({
   "x-app-usage": JSON.stringify(v),
 });
 
-Deno.test("health/quota: declares quota kind and informational severity", () => {
+test("health/quota: declares quota kind and informational severity", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("health/quota: ok when every meter is well under 90%", async () => {
+test("health/quota: ok when every meter is well under 90%", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { id: "u1" },
@@ -27,7 +28,7 @@ Deno.test("health/quota: ok when every meter is well under 90%", async () => {
   assertEquals(report.quota?.find((q) => q.id === "app.call_count")?.remaining, 90);
 });
 
-Deno.test("health/quota: degraded at >=90% used, down at >=100%", async () => {
+test("health/quota: degraded at >=90% used, down at >=100%", async () => {
   const { ctx } = mockCtx([{ body: { id: "u1" }, headers: appUsage({ call_count: 95 }) }]);
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 
@@ -35,7 +36,7 @@ Deno.test("health/quota: degraded at >=90% used, down at >=100%", async () => {
   assertEquals((await quota.check!({}, ctx2)).state, "down");
 });
 
-Deno.test("health/quota: reads the business use-case meters Marketing API calls are counted against", async () => {
+test("health/quota: reads the business use-case meters Marketing API calls are counted against", async () => {
   const { ctx } = mockCtx([
     {
       body: { id: "u1" },
@@ -59,7 +60,7 @@ Deno.test("health/quota: reads the business use-case meters Marketing API calls 
   assertEquals(report.quota?.find((q) => q.id === "ads_management.call_count")?.remaining, 70);
 });
 
-Deno.test("health/quota: a non-zero regain-access estimate is a hard down with a reset time", async () => {
+test("health/quota: a non-zero regain-access estimate is a hard down with a reset time", async () => {
   const { ctx } = mockCtx([
     {
       body: { id: "u1" },
@@ -78,19 +79,19 @@ Deno.test("health/quota: a non-zero regain-access estimate is a hard down with a
   assertEquals(typeof blocked?.resetAt, "string");
 });
 
-Deno.test("health/quota: unknown when the probe fails", async () => {
+test("health/quota: unknown when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("health/quota: unknown when neither usage header is present", async () => {
+test("health/quota: unknown when neither usage header is present", async () => {
   const { ctx } = mockCtx([{ body: { id: "u1" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertStringIncludes(report.message ?? "", "X-App-Usage");
 });
 
-Deno.test("health/quota: unknown when a usage header is not valid JSON", async () => {
+test("health/quota: unknown when a usage header is not valid JSON", async () => {
   const { ctx } = mockCtx([
     { body: { id: "u1" }, headers: { "content-type": "application/json", "x-app-usage": "{oops" } },
   ]);

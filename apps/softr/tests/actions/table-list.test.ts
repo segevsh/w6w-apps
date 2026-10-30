@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tableList from "../../actions/table-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("table-list: calls GET /databases/{databaseId}/tables", async () => {
+test("table-list: calls GET /databases/{databaseId}/tables", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: "tbl1", name: "Contacts" }]) }]);
   const out = await tableList.execute({ databaseId: "db1" }, ctx) as { data: unknown[] };
 

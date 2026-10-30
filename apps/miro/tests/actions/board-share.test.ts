@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/board-share.ts";
 
-Deno.test("board-share: sends invitations and is honestly not idempotent", async () => {
+test("board-share: sends invitations and is honestly not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { successfulEmails: ["a@b.com"] } }], {
     display: {},
   });
@@ -17,7 +18,7 @@ Deno.test("board-share: sends invitations and is honestly not idempotent", async
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("board-share: at least one email is required", async () => {
+test("board-share: at least one email is required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({ boardId: "b1" }, ctx), Error, "`emails`");
   assertEquals(calls.length, 0);

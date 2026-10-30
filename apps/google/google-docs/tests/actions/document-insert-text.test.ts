@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-insert-text.ts";
 
-Deno.test("document-insert-text: emits insertText with endOfSegmentLocation default", async () => {
+test("document-insert-text: emits insertText with endOfSegmentLocation default", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   await action.execute!({ documentURL: "d-1", text: "hello" }, ctx);
   const url = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("document-insert-text: emits insertText with endOfSegmentLocation defa
   });
 });
 
-Deno.test("document-insert-text: locationChoice=location sets index", async () => {
+test("document-insert-text: locationChoice=location sets index", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { documentURL: "d-1", text: "x", locationChoice: "location", index: 7 },

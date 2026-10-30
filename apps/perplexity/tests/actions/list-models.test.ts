@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /v1/models with no query params", async () => {
+test("list-models: GETs /v1/models with no query params", async () => {
   const body = { object: "list", data: [{ id: "openai/gpt-5.6-sol", object: "model" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-models: GETs /v1/models with no query params", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-models: is a read action with no params", () => {
+test("list-models: is a read action with no params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params, []);
 });

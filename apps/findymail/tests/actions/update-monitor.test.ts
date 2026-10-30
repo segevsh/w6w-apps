@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-monitor.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("update-monitor: PATCHes the monitor path with only set fields", async () => {
+test("update-monitor: PATCHes the monitor path with only set fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 4, "name": "Renamed" } }]);
   const out = await action.execute!(
     {

@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declares an absence rather than a probe", () => {
+test("quota: declares an absence rather than a probe", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assert(quota.unavailable?.reason);
@@ -12,15 +13,15 @@ Deno.test("quota: declares an absence rather than a probe", () => {
  * outranks `ok` in the roll-up — so at any other severity this declared absence
  * would pin the App's verdict at `unknown` forever.
  */
-Deno.test("quota: is informational, so honesty does not cost the App its verdict", () => {
+test("quota: is informational, so honesty does not cost the App its verdict", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: an absence has nothing to reach, so it widens no egress", () => {
+test("quota: an absence has nothing to reach, so it widens no egress", () => {
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: the reason states the real limits, not a shrug", () => {
+test("quota: the reason states the real limits, not a shrug", () => {
   const reason = quota.unavailable!.reason;
   // The monthly allowance is the one that actually bites — 5,000/month is ~7/hour.
   assert(reason.includes("5,000"), "names the Business-plan monthly allowance");

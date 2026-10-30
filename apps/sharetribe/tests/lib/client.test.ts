@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -8,7 +9,7 @@ import {
 } from "../../lib/client.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -16,14 +17,14 @@ Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", ()
   });
 });
 
-Deno.test("toCommaList: normalises an array or a string into a comma-joined string", () => {
+test("toCommaList: normalises an array or a string into a comma-joined string", () => {
   assertEquals(toCommaList(["a", " b ", ""]), "a,b");
   assertEquals(toCommaList("a, b"), "a,b");
   assertEquals(toCommaList(undefined), undefined);
   assertEquals(toCommaList(""), undefined);
 });
 
-Deno.test("asOptionalJson: parses a JSON string, passes through an object, rejects invalid JSON", () => {
+test("asOptionalJson: parses a JSON string, passes through an object, rejects invalid JSON", () => {
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -38,7 +39,7 @@ Deno.test("asOptionalJson: parses a JSON string, passes through an object, rejec
   assertEquals(threw, true);
 });
 
-Deno.test("formatSharetribeError: joins every entry's code/title/details, with the field path", () => {
+test("formatSharetribeError: joins every entry's code/title/details, with the field path", () => {
   const raw = JSON.stringify({
     errors: [
       {
@@ -64,7 +65,7 @@ Deno.test("formatSharetribeError: joins every entry's code/title/details, with t
   assertEquals(msg.includes("lat must be a number"), true);
 });
 
-Deno.test("formatSharetribeError: falls back to the raw body when it is not the errors[] shape (5xx)", () => {
+test("formatSharetribeError: falls back to the raw body when it is not the errors[] shape (5xx)", () => {
   const msg = formatSharetribeError(
     500,
     "GET",
@@ -74,7 +75,7 @@ Deno.test("formatSharetribeError: falls back to the raw body when it is not the 
   assertEquals(msg.includes("Internal Server Error"), true);
 });
 
-Deno.test("SharetribeClient.show: GET, no expand, unwraps {data}", async () => {
+test("SharetribeClient.show: GET, no expand, unwraps {data}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "l1", type: "listing", attributes: {} } },
@@ -86,7 +87,7 @@ Deno.test("SharetribeClient.show: GET, no expand, unwraps {data}", async () => {
   assertEquals(resource, { id: "l1", type: "listing", attributes: {} });
 });
 
-Deno.test("SharetribeClient.query: GET, returns the full envelope with meta", async () => {
+test("SharetribeClient.query: GET, returns the full envelope with meta", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [{ id: "l1" }], meta: { totalItems: 1 } },
@@ -95,7 +96,7 @@ Deno.test("SharetribeClient.query: GET, returns the full envelope with meta", as
   assertEquals(page, { data: [{ id: "l1" }], meta: { totalItems: 1 } });
 });
 
-Deno.test("SharetribeClient.command: POST, always sends expand=true, unwraps {data}", async () => {
+test("SharetribeClient.command: POST, always sends expand=true, unwraps {data}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "l1", type: "listing", attributes: { title: "x" } } },
@@ -107,7 +108,7 @@ Deno.test("SharetribeClient.command: POST, always sends expand=true, unwraps {da
   assertEquals(resource, { id: "l1", type: "listing", attributes: { title: "x" } });
 });
 
-Deno.test("SharetribeClient: a non-ok response throws with the formatted error", async () => {
+test("SharetribeClient: a non-ok response throws with the formatted error", async () => {
   const { ctx } = mockCtx([
     {
       status: 409,

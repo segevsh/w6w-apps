@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-team-usage.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-team-usage: GETs the team summary", async () => {
+test("get-team-usage: GETs the team summary", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -25,7 +26,7 @@ Deno.test("get-team-usage: GETs the team summary", async () => {
   });
 });
 
-Deno.test("get-team-usage: surfaces the non-owner 403", async () => {
+test("get-team-usage: surfaces the non-owner 403", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { "error": "You must be the team owner to access this endpoint" },

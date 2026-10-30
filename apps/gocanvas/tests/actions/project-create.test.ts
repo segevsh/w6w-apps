@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/project-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: POST /api/v3/projects with the documented shape", async () => {
+test("project-create: POST /api/v3/projects with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 12 } }]);
   const out = await action.execute(
     {

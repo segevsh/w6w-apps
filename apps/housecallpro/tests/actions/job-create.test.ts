@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobCreate from "../../actions/job-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-create: POSTs customer_id and address_id, both required", async () => {
+test("job-create: POSTs customer_id and address_id, both required", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "j1" } }]);
   await jobCreate.execute({ customerId: "c1", addressId: "a1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("job-create: POSTs customer_id and address_id, both required", async (
   }
 });
 
-Deno.test("job-create: job_fields is nested, and omitted when neither id is set", async () => {
+test("job-create: job_fields is nested, and omitted when neither id is set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await jobCreate.execute({ customerId: "c1", addressId: "a1", jobTypeId: "jt1" }, ctx);
   await jobCreate.execute({ customerId: "c1", addressId: "a1" }, ctx);
@@ -24,7 +25,7 @@ Deno.test("job-create: job_fields is nested, and omitted when neither id is set"
   assertEquals("job_fields" in bodyOf(calls[1]), false);
 });
 
-Deno.test("job-create: schedule and line items pass through as parsed JSON", async () => {
+test("job-create: schedule and line items pass through as parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await jobCreate.execute({
     customerId: "c1",
@@ -40,6 +41,6 @@ Deno.test("job-create: schedule and line items pass through as parsed JSON", asy
   assertEquals(body.assigned_employee_ids, ["e1", "e2"]);
 });
 
-Deno.test("job-create: is not idempotent — the API accepts no idempotency key", () => {
+test("job-create: is not idempotent — the API accepts no idempotency key", () => {
   assertEquals(jobCreate.idempotent, false);
 });

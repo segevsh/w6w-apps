@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-contact-lists.ts";
 
-Deno.test("list-contact-lists: GETs /v3/contact_lists with the default limit", async () => {
+test("list-contact-lists: GETs /v3/contact_lists with the default limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { lists: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-contact-lists: GETs /v3/contact_lists with the default limit", a
   assertEquals(url.searchParams.get("limit"), "50");
 });
 
-Deno.test("list-contact-lists: forwards the filters under their API names", async () => {
+test("list-contact-lists: forwards the filters under their API names", async () => {
   const { ctx, calls } = mockCtx([{ body: { lists: [] } }]);
   await action.execute!({
     name: "Newsletter",
@@ -30,7 +31,7 @@ Deno.test("list-contact-lists: forwards the filters under their API names", asyn
   assertEquals(p.get("cursor"), "abc");
 });
 
-Deno.test("list-contact-lists: include_count is sent only when asked for", async () => {
+test("list-contact-lists: include_count is sent only when asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: { lists: [] } }, { body: { lists: [] } }]);
   await action.execute!({ includeCount: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("include_count"), "true");
@@ -38,7 +39,7 @@ Deno.test("list-contact-lists: include_count is sent only when asked for", async
   assert(!new URL(calls[1].url).searchParams.has("include_count"));
 });
 
-Deno.test("list-contact-lists: lifts the cursor out of _links.next", async () => {
+test("list-contact-lists: lifts the cursor out of _links.next", async () => {
   const { ctx } = mockCtx([{
     body: { lists: [], _links: { next: { href: "/v3/contact_lists?limit=50&cursor=NEXT" } } },
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/hook-delete.ts";
 
-Deno.test("hook-delete: DELETEs /v2/hooks/:hook_id with no body", async () => {
+test("hook-delete: DELETEs /v2/hooks/:hook_id with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const result = await action.execute({ hookId: "h1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("hook-delete: DELETEs /v2/hooks/:hook_id with no body", async () => {
   assertEquals(result, { success: true });
 });
 
-Deno.test("hook-delete: is an idempotent perform action", () => {
+test("hook-delete: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

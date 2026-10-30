@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberUpdate from "../../actions/subscriber-update.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { API_PATH, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * is the new one. Passing the new address in both is how you edit the wrong
  * person.
  */
-Deno.test("subscriber-update: the query carries the OLD address, the body the new one", async () => {
+test("subscriber-update: the query carries the OLD address, the body the new one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await subscriberUpdate.execute({
     listId: "lid",
@@ -22,7 +23,7 @@ Deno.test("subscriber-update: the query carries the OLD address, the body the ne
   assertEquals(out, { EmailAddress: "new@example.com" });
 });
 
-Deno.test("subscriber-update: with no new address, the current one is echoed in the body", async () => {
+test("subscriber-update: with no new address, the current one is echoed in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await subscriberUpdate.execute(
     { listId: "lid", email: "same@example.com", name: "Changed", consentToTrack: "Unchanged" },
@@ -34,7 +35,7 @@ Deno.test("subscriber-update: with no new address, the current one is echoed in 
   assertEquals(out, { EmailAddress: "same@example.com" });
 });
 
-Deno.test("subscriber-update: an empty new address is treated as absent, not as a clear", async () => {
+test("subscriber-update: an empty new address is treated as absent, not as a clear", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await subscriberUpdate.execute(
     { listId: "lid", email: "a@b.com", newEmail: "", consentToTrack: "Yes" },
@@ -43,7 +44,7 @@ Deno.test("subscriber-update: an empty new address is treated as absent, not as 
   assertEquals(bodyOf(calls[0]).EmailAddress, "a@b.com");
 });
 
-Deno.test("subscriber-update: passes a Clear entry through to the custom fields", async () => {
+test("subscriber-update: passes a Clear entry through to the custom fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await subscriberUpdate.execute({
     listId: "lid",
@@ -54,6 +55,6 @@ Deno.test("subscriber-update: passes a Clear entry through to the custom fields"
   assertEquals(bodyOf(calls[0]).CustomFields, [{ Key: "age", Value: "", Clear: true }]);
 });
 
-Deno.test("subscriber-update: is declared idempotent — an update is a set, not an increment", () => {
+test("subscriber-update: is declared idempotent — an update is a set, not an increment", () => {
   assertEquals(subscriberUpdate.idempotent, true);
 });

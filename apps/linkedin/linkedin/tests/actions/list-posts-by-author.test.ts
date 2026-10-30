@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-posts-by-author.ts";
 
-Deno.test("list-posts-by-author: FINDER query for a person author", async () => {
+test("list-posts-by-author: FINDER query for a person author", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [], paging: {} } }]);
   await action.execute!({ authorType: "person", authorId: "abc123" }, ctx);
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("list-posts-by-author: FINDER query for a person author", async () => 
   assertEquals(calls[0].headers["x-restli-method"], "FINDER");
 });
 
-Deno.test("list-posts-by-author: builds an organization URN and honors overrides", async () => {
+test("list-posts-by-author: builds an organization URN and honors overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await action.execute!(
     {

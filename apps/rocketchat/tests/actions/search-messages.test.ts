@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import a from "../../actions/search-messages.ts";
 import { BASE, run } from "../_helpers.ts";
 
-Deno.test("search-messages: GET chat.search with roomId, searchText and paging", async () => {
+test("search-messages: GET chat.search with roomId, searchText and paging", async () => {
   const { call, query } = await run(a, {
     roomId: "R",
     searchText: "from:bob deploy",
@@ -16,7 +17,7 @@ Deno.test("search-messages: GET chat.search with roomId, searchText and paging",
   assertEquals(query.get("offset"), "20");
 });
 
-Deno.test("search-messages: is a search action with both ids required", () => {
+test("search-messages: is a search action with both ids required", () => {
   assertEquals(a.type, "search");
   assertEquals(a.params?.filter((p) => p.required).map((p) => p.key), ["roomId", "searchText"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs /contacts/people with the mapped body", async () => {
+test("contact-create: POSTs /contacts/people with the mapped body", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 1, firstname: "Max", lastname: "Muster" } }]);
   const out = await action.execute({
     firstname: "Max",
@@ -24,7 +25,7 @@ Deno.test("contact-create: POSTs /contacts/people with the mapped body", async (
   assertEquals(out, { id: 1, firstname: "Max", lastname: "Muster" });
 });
 
-Deno.test("contact-create: omits unset optional fields entirely", async () => {
+test("contact-create: omits unset optional fields entirely", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 1 } }]);
   await action.execute({ firstname: "Max", lastname: "Muster" }, ctx);
   const body = JSON.parse(calls[0].body!);

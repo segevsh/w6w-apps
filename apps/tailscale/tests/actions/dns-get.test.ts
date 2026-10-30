@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dns-get.ts";
 
@@ -14,7 +15,7 @@ const responses = (
 ];
 
 /** Four endpoints that are one setting in practice. */
-Deno.test("dns-get: reads all four DNS endpoints", async () => {
+test("dns-get: reads all four DNS endpoints", async () => {
   const { ctx, calls } = mockCtx(responses(["8.8.8.8"], true));
   const result = await action.execute({}, ctx) as Record<string, unknown>;
 
@@ -30,7 +31,7 @@ Deno.test("dns-get: reads all four DNS endpoints", async () => {
 });
 
 /** Removing the last nameserver turns MagicDNS off; adding one back does not turn it on. */
-Deno.test("dns-get: flags MagicDNS on with no nameserver, and warns", async () => {
+test("dns-get: flags MagicDNS on with no nameserver, and warns", async () => {
   const { ctx, logs } = mockCtx(responses([], true));
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.magicDNSAtRisk, true);
@@ -40,7 +41,7 @@ Deno.test("dns-get: flags MagicDNS on with no nameserver, and warns", async () =
   );
 });
 
-Deno.test("dns-get: a healthy configuration warns about nothing", async () => {
+test("dns-get: a healthy configuration warns about nothing", async () => {
   const { ctx, logs } = mockCtx(responses(["1.1.1.1"], true));
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.magicDNSAtRisk, false);
@@ -48,7 +49,7 @@ Deno.test("dns-get: a healthy configuration warns about nothing", async () => {
 });
 
 /** A private resolver depends on a subnet route, and a withdrawn route looks like broken DNS. */
-Deno.test("dns-get: names split-DNS resolvers on private addresses", async () => {
+test("dns-get: names split-DNS resolvers on private addresses", async () => {
   const { ctx } = mockCtx(responses(["8.8.8.8"], true, {
     "corp.example.com": ["10.1.2.3"],
     "partner.example.com": ["9.9.9.9"],
@@ -68,7 +69,7 @@ Deno.test("dns-get: names split-DNS resolvers on private addresses", async () =>
 });
 
 /** 172.15 and 172.32 are public; only 172.16–172.31 are not. */
-Deno.test("dns-get: the private-address test does not overreach into 172.x", async () => {
+test("dns-get: the private-address test does not overreach into 172.x", async () => {
   const { ctx } = mockCtx(responses(["8.8.8.8"], true, {
     "a.example.com": ["172.15.0.1"],
     "b.example.com": ["172.32.0.1"],
@@ -80,7 +81,7 @@ Deno.test("dns-get: the private-address test does not overreach into 172.x", asy
   ]);
 });
 
-Deno.test("dns-get: takes no parameters", () => {
+test("dns-get: takes no parameters", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "read");
 });

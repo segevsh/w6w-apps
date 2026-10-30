@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-technologies.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("search-technologies: GETs with q in the query", async () => {
+test("search-technologies: GETs with q in the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "data": [{ "name": "React" }] } }]);
   const out = await action.execute!({ "q": "react" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("search-technologies: GETs with q in the query", async () => {
   assertEquals(out, { "data": [{ "name": "React" }] });
 });
 
-Deno.test("search-technologies: surfaces the 429 rate limit", async () => {
+test("search-technologies: surfaces the 429 rate limit", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { "message": "Too Many Attempts." } }]);
   const err = await assertRejects(async () => await action.execute!({ "q": "re" } as never, ctx));
   const msg = (err as Error).message;

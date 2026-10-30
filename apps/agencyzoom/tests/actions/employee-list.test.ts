@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import employeeList from "../../actions/employee-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("employee-list: GET /employees, wraps the bare array", async () => {
+test("employee-list: GET /employees, wraps the bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, firstname: "Jamie", isOwner: true }] }]);
   const result = await employeeList.execute({}, ctx);
 

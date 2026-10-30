@@ -23,8 +23,10 @@ const getUser: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
-      hint: "e.g. `assortment` to include the user's assortment package.",
+      type: "multiselect",
+      options: [{ value: "assortment", label: "Assortment" }],
+      config: { valueFormat: "csv" },
+      hint: "Include the user’s assortment package.",
     },
   ],
   output: [

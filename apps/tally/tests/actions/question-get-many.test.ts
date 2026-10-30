@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/question-get-many.ts";
 
-Deno.test("question-get-many: GETs the form's questions", async () => {
+test("question-get-many: GETs the form's questions", async () => {
   const { ctx, calls } = mockCtx([
     { body: { questions: [{ id: "q1", title: "Email" }], hasResponses: true } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("question-get-many: GETs the form's questions", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("question-get-many: tolerates a body without a questions array", async () => {
+test("question-get-many: tolerates a body without a questions array", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({ formId: "f1" }, ctx);
   assertEquals(result.questions, []);

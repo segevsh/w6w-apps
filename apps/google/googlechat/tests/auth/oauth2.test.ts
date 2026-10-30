@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the Google authorize/token endpoints", () => {
+test("oauth2: declares the Google authorize/token endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
@@ -15,7 +16,7 @@ Deno.test("oauth2: declares the Google authorize/token endpoints", () => {
   assertEquals(auth.oauth2?.pkce, true);
 });
 
-Deno.test("oauth2: requests exactly the three user-auth scopes the actions need", () => {
+test("oauth2: requests exactly the three user-auth scopes the actions need", () => {
   assertEquals(auth.oauth2?.scopes, [
     "https://www.googleapis.com/auth/chat.spaces",
     "https://www.googleapis.com/auth/chat.messages",
@@ -23,7 +24,7 @@ Deno.test("oauth2: requests exactly the three user-auth scopes the actions need"
   ]);
 });
 
-Deno.test("oauth2: asks for no app-auth, admin, delete or import scope", () => {
+test("oauth2: asks for no app-auth, admin, delete or import scope", () => {
   // These are the scopes a *Chat app* (service account) uses, plus the admin and
   // destructive ones. A user credential either cannot hold them or should not be
   // asked to. Requesting one here would over-scope every connection.
@@ -50,7 +51,7 @@ Deno.test("oauth2: asks for no app-auth, admin, delete or import scope", () => {
   }
 });
 
-Deno.test("oauth2: is the only auth method — no service-account flow is offered", () => {
+test("oauth2: is the only auth method — no service-account flow is offered", () => {
   // A bare service account has no Chat presence without a configured Chat app,
   // and the chat.app.* scopes explicitly do not support user credentials or
   // domain-wide delegation, so a service-account method could not make a call.
@@ -58,7 +59,7 @@ Deno.test("oauth2: is the only auth method — no service-account flow is offere
   assertEquals(auth.type, "oauth2");
 });
 
-Deno.test("oauth2: sign appends the Bearer access token", async () => {
+test("oauth2: sign appends the Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://chat.googleapis.com/v1/spaces",
@@ -69,7 +70,7 @@ Deno.test("oauth2: sign appends the Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: sign makes no network call", async () => {
+test("oauth2: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   await auth.sign!({
     request: { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> },
@@ -78,7 +79,7 @@ Deno.test("oauth2: sign makes no network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test with a missing accessToken reports it without a network call", async () => {
+test("oauth2: test with a missing accessToken reports it without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -86,7 +87,7 @@ Deno.test("oauth2: test with a missing accessToken reports it without a network 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes spaces.list — reachable by chat.spaces.readonly too", async () => {
+test("oauth2: test probes spaces.list — reachable by chat.spaces.readonly too", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { spaces: [] } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -98,12 +99,12 @@ Deno.test("oauth2: test probes spaces.list — reachable by chat.spaces.readonly
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test treats a user in zero spaces as healthy", async () => {
+test("oauth2: test treats a user in zero spaces as healthy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   assertEquals((await auth.test({ credential: { accessToken: "acc" } }, ctx)).ok, true);
 });
 
-Deno.test("oauth2: test surfaces the upstream status on failure", async () => {
+test("oauth2: test surfaces the upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);

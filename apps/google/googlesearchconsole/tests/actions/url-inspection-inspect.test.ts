@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/url-inspection-inspect.ts";
 
-Deno.test("url-inspection-inspect: POSTs to the v1 (not webmasters/v3) path", async () => {
+test("url-inspection-inspect: POSTs to the v1 (not webmasters/v3) path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { inspectionResult: {} } }], {
     display: { siteUrl: "https://www.example.com/" },
   });
@@ -18,7 +19,7 @@ Deno.test("url-inspection-inspect: POSTs to the v1 (not webmasters/v3) path", as
   assertEquals("languageCode" in body, false);
 });
 
-Deno.test("url-inspection-inspect: inspectionUrl is required", async () => {
+test("url-inspection-inspect: inspectionUrl is required", async () => {
   const { ctx, calls } = mockCtx([], { display: { siteUrl: "https://www.example.com/" } });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`inspectionUrl`");
   assertEquals(calls.length, 0);

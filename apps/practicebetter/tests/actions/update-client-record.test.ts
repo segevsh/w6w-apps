@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/update-client-record.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
 const updated = { id: "rec-1", isActive: false, dateModified: "2026-09-22T10:00:00Z" };
 
-Deno.test("update-client-record: PUTs to /consultant/records/{recordId}", async () => {
+test("update-client-record: PUTs to /consultant/records/{recordId}", async () => {
   const { ctx, calls } = mockCtx([{ body: updated }]);
   const result = await action.execute({
     recordId: "rec-1",
@@ -25,7 +26,7 @@ Deno.test("update-client-record: PUTs to /consultant/records/{recordId}", async 
   assertEquals(result, updated);
 });
 
-Deno.test("update-client-record: a partial body is exactly what the caller asked for", async () => {
+test("update-client-record: a partial body is exactly what the caller asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: updated }]);
   await action.execute({ recordId: "rec-1", isActive: false }, ctx);
   // The omission is deliberate and dangerous, so the body is asserted verbatim:
@@ -33,7 +34,7 @@ Deno.test("update-client-record: a partial body is exactly what the caller asked
   assertEquals(Object.keys(bodyOf(calls[0])), ["isActive"]);
 });
 
-Deno.test("update-client-record: an invalid profile string is refused", async () => {
+test("update-client-record: an invalid profile string is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -45,7 +46,7 @@ Deno.test("update-client-record: an invalid profile string is refused", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-client-record: the full-replace warning is in the description", () => {
+test("update-client-record: the full-replace warning is in the description", () => {
   assert(/FULL REPLACE/i.test(action.description!), action.description);
   assert(/erased/i.test(action.description!), action.description);
   assert(/get-client-record/.test(action.description!), action.description);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/template-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-delete: DELETE /v1/groups/{id}; 204 becomes { deleted, id }", async () => {
+test("template-delete: DELETE /v1/groups/{id}; 204 becomes { deleted, id }", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ groupId: "g1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

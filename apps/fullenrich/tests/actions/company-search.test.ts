@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/company-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("company-search: maps named filters and paging, returns metadata", async () => {
+test("company-search: maps named filters and paging, returns metadata", async () => {
   const { ctx, calls } = mockCtx([{
     body: { companies: [{ id: "c1" }], metadata: { total: 5, credits: 0.25, search_after: "n" } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("company-search: maps named filters and paging, returns metadata", asy
   assertEquals(out, { companies: [{ id: "c1" }], total: 5, credits: 0.25, searchAfter: "n" });
 });
 
-Deno.test("company-search: raw filters pass through and named params override them", async () => {
+test("company-search: raw filters pass through and named params override them", async () => {
   const { ctx, calls } = mockCtx([{ body: { companies: [] } }]);
   await action.execute!({
     domains: "a.com",
@@ -36,7 +37,7 @@ Deno.test("company-search: raw filters pass through and named params override th
   });
 });
 
-Deno.test("company-search: a 401 is thrown", async () => {
+test("company-search: a 401 is thrown", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "error.api.key", message: "Unknown api key" },

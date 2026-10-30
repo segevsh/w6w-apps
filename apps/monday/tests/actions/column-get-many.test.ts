@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/column-get-many.ts";
 
-Deno.test("column-get-many: fetches the board's columns", async () => {
+test("column-get-many: fetches the board's columns", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { boards: [{ id: "b1", columns: [{ id: "status", title: "Status" }] }] } },
   }]);

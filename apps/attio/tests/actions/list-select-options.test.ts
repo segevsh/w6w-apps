@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listSelectOptions from "../../actions/list-select-options.ts";
 import listStatuses from "../../actions/list-statuses.ts";
 
-Deno.test("list-select-options: builds the …/attributes/{attribute}/options path", async () => {
+test("list-select-options: builds the …/attributes/{attribute}/options path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await listSelectOptions.execute({
     target: "objects",
@@ -20,7 +21,7 @@ Deno.test("list-select-options: builds the …/attributes/{attribute}/options pa
  * Both endpoints share the same contract, and it is the reason to call them:
  * an unknown title is an error, not an auto-created option.
  */
-Deno.test("select options and statuses both warn that an unknown title is rejected, not created", () => {
+test("select options and statuses both warn that an unknown title is rejected, not created", () => {
   for (const action of [listSelectOptions, listStatuses]) {
     const d = action.description!;
     assert(/rejected, not created/i.test(d), `${action.key}: ${d}`);

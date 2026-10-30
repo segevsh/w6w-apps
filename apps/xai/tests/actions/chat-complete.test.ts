@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-complete.ts";
 
-Deno.test("chat-complete: calls POST /v1/chat/completions on api.x.ai and returns the body", async () => {
+test("chat-complete: calls POST /v1/chat/completions on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({
@@ -29,7 +30,7 @@ Deno.test("chat-complete: calls POST /v1/chat/completions on api.x.ai and return
   assertEquals(result, reply);
 });
 
-Deno.test("chat-complete: surfaces the vendor error code on failure", async () => {
+test("chat-complete: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {
@@ -46,7 +47,7 @@ Deno.test("chat-complete: surfaces the vendor error code on failure", async () =
   assert(message.includes("400") && message.includes("[invalid-argument]"), message);
 });
 
-Deno.test("chat-complete: messages override prompt; missing both throws; bad JSON throws", async () => {
+test("chat-complete: messages override prompt; missing both throws; bad JSON throws", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "m", prompt: "ignored", messages: '[{"role":"user","content":"x"}]' },
@@ -68,7 +69,7 @@ Deno.test("chat-complete: messages override prompt; missing both throws; bad JSO
   assert(err.includes("valid JSON"));
 });
 
-Deno.test("chat-complete: is a non-idempotent perform action", () => {
+test("chat-complete: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

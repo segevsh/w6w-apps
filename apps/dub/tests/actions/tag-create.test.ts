@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-create: sends POST /tags with the mapped input", async () => {
+test("tag-create: sends POST /tags with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "t1", "name": "promo", "color": "blue" } }]);
   const out = await action.execute!({ "name": "promo", "color": "blue" }, ctx);
   const url = new URL(calls[0].url);
@@ -17,13 +18,13 @@ Deno.test("tag-create: sends POST /tags with the mapped input", async () => {
   assertEquals(out, { "id": "t1", "name": "promo", "color": "blue" });
 });
 
-Deno.test("tag-create: sends no authorization header of its own", async () => {
+test("tag-create: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "t1", "name": "promo", "color": "blue" } }]);
   await action.execute!({ "name": "promo", "color": "blue" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("tag-create: surfaces Dub's error envelope as a thrown error", async () => {
+test("tag-create: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -35,7 +36,7 @@ Deno.test("tag-create: surfaces Dub's error envelope as a thrown error", async (
   );
 });
 
-Deno.test("tag-create: declares type, idempotency and output", () => {
+test("tag-create: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

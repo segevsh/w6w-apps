@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, json, mockCtx } from "../_helpers.ts";
 import action from "../../actions/make-call.ts";
 
@@ -8,7 +9,7 @@ const FIRED = {
   api_id: "97ceeb52-58b6-11e1-86da-77300b68f8bb",
 };
 
-Deno.test("make-call: POSTs from/to/answer_url to Call/", async () => {
+test("make-call: POSTs from/to/answer_url to Call/", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: FIRED }], CONN);
   const out = await action.execute!(
     { from: "14157654321", to: "14151234567", answerUrl: "https://example.com/answer" },
@@ -24,7 +25,7 @@ Deno.test("make-call: POSTs from/to/answer_url to Call/", async () => {
   assertEquals(out, FIRED);
 });
 
-Deno.test("make-call: bulk destinations join with `<` and options use snake_case names", async () => {
+test("make-call: bulk destinations join with `<` and options use snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: FIRED }], CONN);
   await action.execute!(
     {
@@ -59,7 +60,7 @@ Deno.test("make-call: bulk destinations join with `<` and options use snake_case
   });
 });
 
-Deno.test("make-call: an empty destination is refused before any request", async () => {
+test("make-call: an empty destination is refused before any request", async () => {
   const { ctx, calls } = mockCtx([], CONN);
   await assertRejects(
     async () => await action.execute!({ from: "1", to: [], answerUrl: "https://a" }, ctx),
@@ -69,7 +70,7 @@ Deno.test("make-call: an empty destination is refused before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("make-call: a 400 is thrown with Plivo's text", async () => {
+test("make-call: a 400 is thrown with Plivo's text", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "answer_url invalid" } }], CONN);
   await assertRejects(
     async () => await action.execute!({ from: "1", to: "2", answerUrl: "x" }, ctx),

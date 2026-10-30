@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-habit.ts";
 
-Deno.test("get-habit: GETs /habit/{id}", async () => {
+test("get-habit: GETs /habit/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "habit-1", name: "Read" } }]);
   const out = await action.execute!({ habitId: "habit-1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,13 +11,13 @@ Deno.test("get-habit: GETs /habit/{id}", async () => {
   assertEquals(out, { id: "habit-1", name: "Read" });
 });
 
-Deno.test("get-habit: the habit id is encoded", async () => {
+test("get-habit: the habit id is encoded", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ habitId: "../checkins" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/open/v1/habit/..%2Fcheckins");
 });
 
-Deno.test("get-habit: requires the habit id and points at the check-in action", () => {
+test("get-habit: requires the habit id and points at the check-in action", () => {
   assert(action.params!.find((p) => p.key === "habitId")?.required);
   assert(`${action.description}`.includes("Check-Ins"));
 });

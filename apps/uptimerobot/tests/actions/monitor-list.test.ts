@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/monitor-list.ts";
 
-Deno.test("monitor-list: POSTs /getMonitors with dash-joined statuses/types", async () => {
+test("monitor-list: POSTs /getMonitors with dash-joined statuses/types", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitors: [{ id: 1 }, { id: 2 }] } }]);
   const out = await action.execute({
     search: "example",
@@ -20,7 +21,7 @@ Deno.test("monitor-list: POSTs /getMonitors with dash-joined statuses/types", as
   assertEquals(out.monitors.length, 2);
 });
 
-Deno.test("monitor-list: omits unfilled optional fields entirely", async () => {
+test("monitor-list: omits unfilled optional fields entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitors: [] } }]);
   await action.execute({}, ctx);
   const body = new URLSearchParams(calls[0].body ?? "");

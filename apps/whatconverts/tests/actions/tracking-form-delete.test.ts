@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import trackingFormDelete from "../../actions/tracking-form-delete.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("tracking-form-delete sends DELETE and returns the deleted id", async () => {
+test("tracking-form-delete sends DELETE and returns the deleted id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { form_id: 148099 } }]);
   const out = await trackingFormDelete.execute({ formId: 148099 }, ctx);
   assertEquals(out, { form_id: 148099 });
@@ -10,6 +11,6 @@ Deno.test("tracking-form-delete sends DELETE and returns the deleted id", async 
   assertEquals(calls[0].url, `${API_ROOT}/tracking/forms/148099`);
 });
 
-Deno.test("tracking-form-delete is declared not idempotent", () => {
+test("tracking-form-delete is declared not idempotent", () => {
   assertEquals(trackingFormDelete.idempotent, false);
 });

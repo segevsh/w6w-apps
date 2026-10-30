@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowScroll from "../../actions/window-scroll.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-scroll: scrollToElement is sent alone when only it is provided", async () => {
+test("window-scroll: scrollToElement is sent alone when only it is provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: aiEnvelope("Scrolled.") }]);
   await windowScroll.execute(
     { sessionId: "s1", windowId: "w1", scrollToElement: "the footer" },
@@ -13,7 +14,7 @@ Deno.test("window-scroll: scrollToElement is sent alone when only it is provided
   assertEquals(JSON.parse(calls[0].body!), { scrollToElement: "the footer" });
 });
 
-Deno.test("window-scroll: scrollToEdge and scrollBy are nested objects, omitted when both axes are empty", async () => {
+test("window-scroll: scrollToEdge and scrollBy are nested objects, omitted when both axes are empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: aiEnvelope("Scrolled.") }]);
   await windowScroll.execute(
     { sessionId: "s1", windowId: "w1", scrollToEdgeY: "top", scrollByX: "10%" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: ok when the API component is operational", async () => {
+test("service: ok when the API component is operational", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -20,7 +21,7 @@ Deno.test("service: ok when the API component is operational", async () => {
   assertEquals(report.components?.api.state, "ok");
 });
 
-Deno.test("service: degraded when the API component alone is degraded", async () => {
+test("service: degraded when the API component alone is degraded", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -37,7 +38,7 @@ Deno.test("service: degraded when the API component alone is degraded", async ()
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: unaffected by an unrelated component's outage", async () => {
+test("service: unaffected by an unrelated component's outage", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -54,7 +55,7 @@ Deno.test("service: unaffected by an unrelated component's outage", async () => 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: falls back to the page rollup when no API component is found", async () => {
+test("service: falls back to the page rollup when no API component is found", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { status: { indicator: "none", description: "ok" }, components: [] } },
   ]);
@@ -62,13 +63,13 @@ Deno.test("service: falls back to the page rollup when no API component is found
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: unknown, never down, when the status API itself fails", async () => {
+test("service: unknown, never down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: hits status.signnow.com, unsigned", async () => {
+test("service: hits status.signnow.com, unsigned", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { status: { indicator: "none" }, components: [] } },
   ]);

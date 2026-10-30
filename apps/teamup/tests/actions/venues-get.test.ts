@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/venues-get.ts";
 
 const sample = { id: 3, object: "venue", venue_type: "online", is_online: true };
 
-Deno.test("venues-get: reads /venues/3 by id", async () => {
+test("venues-get: reads /venues/3 by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 3 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -13,14 +14,14 @@ Deno.test("venues-get: reads /venues/3 by id", async () => {
   assertEquals(result.venue_type, "online");
 });
 
-Deno.test("venues-get: unset filters are not sent", async () => {
+test("venues-get: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 3 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals(calls[0].headers["teamup-provider-id"], undefined);
 });
 
-Deno.test("venues-get: declares the venue-type and video-url-type vocabularies", () => {
+test("venues-get: declares the venue-type and video-url-type vocabularies", () => {
   const fields = action.output as Array<{ key: string; label: string }>;
   const venueType = fields.find((f) => f.key === "venue_type")!.label;
   assertEquals(venueType.includes("physical"), true, venueType);

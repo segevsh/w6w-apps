@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-delete: form_id is a query param, not a path segment", async () => {
+test("contact-delete: form_id is a query param, not a path segment", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await contactDelete.execute({ contactId: "c1", formId: "f1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

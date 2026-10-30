@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/tag-list.ts";
 
-Deno.test("tag-list: GETs /signup_tags", async () => {
+test("tag-list: GETs /signup_tags", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: [{ id: "7", type: "signup_tags", attributes: { name: "volunteer" } }] },
   }]);

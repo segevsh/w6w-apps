@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connector-create.ts";
 
-Deno.test("connector-create: sends both endpoints, which Miro requires", async () => {
+test("connector-create: sends both endpoints, which Miro requires", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }], { display: {} });
   await action.execute!({
     boardId: "b1",
@@ -20,7 +21,7 @@ Deno.test("connector-create: sends both endpoints, which Miro requires", async (
   });
 });
 
-Deno.test("connector-create: both ends are required", async () => {
+test("connector-create: both ends are required", async () => {
   const noStart = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ boardId: "b1", endItemId: "i2" }, noStart.ctx),

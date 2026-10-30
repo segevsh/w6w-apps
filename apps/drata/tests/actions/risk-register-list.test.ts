@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import riskRegisterList from "../../actions/risk-register-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const BASE = {};
 
-Deno.test("risk-register-list: GET /risk-registers sends only the page defaults and flattens the envelope", async () => {
+test("risk-register-list: GET /risk-registers sends only the page defaults and flattens the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }, { id: 2 }], "next-abc", 2) }]);
   const out = await riskRegisterList.execute(
     { ...BASE, size: 25, includeTotalCount: true },
@@ -27,7 +28,7 @@ Deno.test("risk-register-list: GET /risk-registers sends only the page defaults 
   assertEquals(out.totalCount, 2);
 });
 
-Deno.test("risk-register-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
+test("risk-register-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   const out = await riskRegisterList.execute(
     { ...BASE, ...{ "name": "Security" }, cursor: "c1" },
@@ -47,7 +48,7 @@ Deno.test("risk-register-list: filters and expand go out under their wire names;
   assertEquals(out.nextCursor, null);
 });
 
-Deno.test("risk-register-list: a 403 names the permission problem and keeps Drata's message", async () => {
+test("risk-register-list: a 403 names the permission problem and keeps Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden resource", 5) }]);
   const err = await assertRejects(
     () => Promise.resolve(riskRegisterList.execute({ ...BASE }, ctx)),

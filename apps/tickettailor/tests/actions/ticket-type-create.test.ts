@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketTypeCreate from "../../actions/ticket-type-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-type-create: sends discounts as repeated discounts[] fields", async () => {
+test("ticket-type-create: sends discounts as repeated discounts[] fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "tt_1" } }]);
   await ticketTypeCreate.execute(
     {

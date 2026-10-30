@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs a JSON body to /tasks with all five required fields", async () => {
+test("task-create: POSTs a JSON body to /tasks with all five required fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { task: { id: "t1", type: "call" } } }]);
   const out = await taskCreate.execute(
     {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/web-scrape.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("web-scrape: calls web/scraping with the nested input and shapes the output", async () => {
+test("web-scrape: calls web/scraping with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("web-scrape: calls web/scraping with the nested input and shapes the o
   assertEquals(out.output, { url: "https://example.com", content: "# Hi", title: "T" });
 });
 
-Deno.test("web-scrape: a provider failure inside a 200 is thrown", async () => {
+test("web-scrape: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "firecrawl", error: { message: "provider down" } },
   }]);
@@ -39,7 +40,7 @@ Deno.test("web-scrape: a provider failure inside a 200 is thrown", async () => {
   );
 });
 
-Deno.test("web-scrape: fallbacks and a provider model reach the request", async () => {
+test("web-scrape: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ url: "https://example.com", provider: "firecrawl" },

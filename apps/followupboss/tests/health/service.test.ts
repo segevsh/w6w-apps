@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -16,7 +17,7 @@ const FULL: Array<[string, string]> = [
   ["Follow Up Boss Public Website", "operational"],
 ];
 
-Deno.test("service: unsigned, app-scoped, and widens egress only to the status host", () => {
+test("service: unsigned, app-scoped, and widens egress only to the status host", () => {
   assertEquals(service.kind, "service");
   // Both default for kind "service"; asserted so a later edit cannot silently
   // send a credential to a third-party status host.
@@ -28,7 +29,7 @@ Deno.test("service: unsigned, app-scoped, and widens egress only to the status h
   assertEquals(service.severity, undefined);
 });
 
-Deno.test("service: reports ok when the API component is operational", async () => {
+test("service: reports ok when the API component is operational", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary(FULL) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -44,7 +45,7 @@ Deno.test("service: reports ok when the API component is operational", async () 
  * The whole point of keying on the API component: an outage of a surface this
  * app never calls must not degrade every tenant's workflows.
  */
-Deno.test("service: a mobile-app outage does NOT degrade the reported state", async () => {
+test("service: a mobile-app outage does NOT degrade the reported state", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -66,7 +67,7 @@ Deno.test("service: a mobile-app outage does NOT degrade the reported state", as
   assertEquals(report.components?.["android-app"].state, "down");
 });
 
-Deno.test("service: an API outage IS reported as down", async () => {
+test("service: an API outage IS reported as down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -80,7 +81,7 @@ Deno.test("service: an API outage IS reported as down", async () => {
   assert(report.message?.includes("major_outage"), report.message);
 });
 
-Deno.test("service: degraded API performance maps to degraded", async () => {
+test("service: degraded API performance maps to degraded", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([["API", "degraded_performance"]], "minor", "Degraded"),
@@ -88,7 +89,7 @@ Deno.test("service: degraded API performance maps to degraded", async () => {
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: maintenance on the API reads as degraded, not down", async () => {
+test("service: maintenance on the API reads as degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([["API", "under_maintenance"]], "minor", "Maintenance"),
@@ -96,7 +97,7 @@ Deno.test("service: maintenance on the API reads as degraded, not down", async (
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: falls back to the rollup — and says so — if the API component vanishes", async () => {
+test("service: falls back to the rollup — and says so — if the API component vanishes", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([["iPhone App", "operational"]], "minor", "Partial degradation"),
@@ -107,7 +108,7 @@ Deno.test("service: falls back to the rollup — and says so — if the API comp
   assert(report.message?.includes("Partial degradation"), report.message);
 });
 
-Deno.test("service: group headers are skipped, not counted as components", async () => {
+test("service: group headers are skipped, not counted as components", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -126,19 +127,19 @@ Deno.test("service: group headers are skipped, not counted as components", async
  * A status page that is itself broken says nothing about the vendor. Reporting
  * that as an outage would be a lie.
  */
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("503"), report.message);
 });
 
-Deno.test("service: unparseable JSON reports unknown rather than throwing", async () => {
+test("service: unparseable JSON reports unknown rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unrecognised component status reads as unknown, not ok", async () => {
+test("service: an unrecognised component status reads as unknown, not ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary([["API", "invented_status"]]) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

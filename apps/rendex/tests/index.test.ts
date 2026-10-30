@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDirSync, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_KEYS = [
@@ -22,14 +24,14 @@ const ACTION_KEYS = [
   "watch-delete",
 ];
 
-Deno.test("index: exports the 18 actions, one bearer auth method and two health checks", () => {
+test("index: exports the 18 actions, one bearer auth method and two health checks", () => {
   assertEquals(app.actions.map((a) => a.key), ACTION_KEYS);
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].type, "bearer");
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: action keys are unique kebab-case with type, description, output, execute", () => {
+test("index: action keys are unique kebab-case with type, description, output, execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -41,7 +43,7 @@ Deno.test("index: action keys are unique kebab-case with type, description, outp
   }
 });
 
-Deno.test("index: every perform action states idempotency; credit-spending ones are false", () => {
+test("index: every perform action states idempotency; credit-spending ones are false", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -60,16 +62,16 @@ Deno.test("index: every perform action states idempotency; credit-spending ones 
   }
 });
 
-Deno.test("index: manifest allows exactly api.rendex.dev and points at the icon", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest allows exactly api.rendex.dev and points at the icon", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["api.rendex.dev"]);
   assertEquals(pkg.w6w.id, "io.w6w.rendex");
   assertEquals(pkg.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: actions never put an Authorization header in a request", async () => {
-  for (const f of Deno.readDirSync(new URL("../actions", import.meta.url))) {
-    const src = await Deno.readTextFile(new URL(`../actions/${f.name}`, import.meta.url));
+test("index: actions never put an Authorization header in a request", async () => {
+  for (const f of denoReadDirSync(new URL("../actions", import.meta.url))) {
+    const src = await denoReadTextFile(new URL(`../actions/${f.name}`, import.meta.url));
     assert(!/authorization/i.test(src.replace(/\/\*\*[\s\S]*?\*\//g, "")), f.name);
   }
 });

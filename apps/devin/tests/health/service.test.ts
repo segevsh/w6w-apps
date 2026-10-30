@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   STATUS_URL,
@@ -23,15 +24,15 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: fetches the direct devinstatus.com host, not the redirecting status.devin.ai", () => {
+test("service: fetches the direct devinstatus.com host, not the redirecting status.devin.ai", () => {
   assertEquals(STATUS_URL, "https://www.devinstatus.com/api/v2/summary.json");
 });
 
-Deno.test("service: tracks exactly the two Cloud Agent components", () => {
+test("service: tracks exactly the two Cloud Agent components", () => {
   assertEquals(Object.keys(TRACKED_COMPONENTS).sort(), ["c20stk646s0v", "q72cy1kjpk4r"]);
 });
 
-Deno.test("mapComponentStatus: the five documented Statuspage component states", () => {
+test("mapComponentStatus: the five documented Statuspage component states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -40,7 +41,7 @@ Deno.test("mapComponentStatus: the five documented Statuspage component states",
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: ok when both tracked Cloud Agent components are operational", async () => {
+test("service: ok when both tracked Cloud Agent components are operational", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }], undefined);
   const report = await service.check!({}, ctx);
 
@@ -49,7 +50,7 @@ Deno.test("service: ok when both tracked Cloud Agent components are operational"
   assertEquals(Object.keys(report.components ?? {}).sort(), ["c20stk646s0v", "q72cy1kjpk4r"]);
 });
 
-Deno.test("service: an outage in Desktop Agent or Integrations never affects the verdict", async () => {
+test("service: an outage in Desktop Agent or Integrations never affects the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -64,7 +65,7 @@ Deno.test("service: an outage in Desktop Agent or Integrations never affects the
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: degraded when Cloud Agent is degraded", async () => {
+test("service: degraded when Cloud Agent is degraded", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -78,7 +79,7 @@ Deno.test("service: degraded when Cloud Agent is degraded", async () => {
   assert(report.message?.includes("Cloud Agent"), report.message);
 });
 
-Deno.test("service: down when Cloud Agent (Enterprise) has a major outage", async () => {
+test("service: down when Cloud Agent (Enterprise) has a major outage", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -91,13 +92,13 @@ Deno.test("service: down when Cloud Agent (Enterprise) has a major outage", asyn
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: unknown, never down, when the status API itself fails", async () => {
+test("service: unknown, never down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }], undefined);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the page no longer self-identifies as Devin's", async () => {
+test("service: unknown when the page no longer self-identifies as Devin's", async () => {
   const { ctx } = mockCtx(
     [{ body: summary({ page: { url: "https://status.example.com" } }) }],
     undefined,
@@ -106,7 +107,7 @@ Deno.test("service: unknown when the page no longer self-identifies as Devin's",
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when neither Cloud Agent component is present anymore", async () => {
+test("service: unknown when neither Cloud Agent component is present anymore", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [{ id: "d87cp5jknh1c", name: "Cloud Web Client", status: "operational" }],
@@ -116,7 +117,7 @@ Deno.test("service: unknown when neither Cloud Agent component is present anymor
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: never signs a credential and never reaches api.devin.ai", () => {
+test("service: never signs a credential and never reaches api.devin.ai", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["www.devinstatus.com"]);
 });

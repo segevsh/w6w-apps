@@ -1,5 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth, { basicHeader } from "../../auth/api-key.ts";
 
@@ -19,11 +20,11 @@ const VENDOR_HEADER = "Basic eW91cmFwaWtleTo=";
 
 const expected = `Basic ${encodeBase64(`${cred.apiKey}:`)}`;
 
-Deno.test("api-key: reproduces Close's own published Authorization vector exactly", () => {
+test("api-key: reproduces Close's own published Authorization vector exactly", () => {
   assertEquals(basicHeader(VENDOR_KEY), VENDOR_HEADER);
 });
 
-Deno.test("api-key: the encoded payload is `key:` — key as username, EMPTY password", () => {
+test("api-key: the encoded payload is `key:` — key as username, EMPTY password", () => {
   const encoded = basicHeader(cred.apiKey).slice("Basic ".length);
   const decoded = atob(encoded);
   assertEquals(decoded, "api_testkey123:");
@@ -33,13 +34,13 @@ Deno.test("api-key: the encoded payload is `key:` — key as username, EMPTY pas
   assertEquals(decoded.split(":")[1], "");
 });
 
-Deno.test("api-key: base64 of `key` WITHOUT the trailing colon is a different, wrong header", () => {
+test("api-key: base64 of `key` WITHOUT the trailing colon is a different, wrong header", () => {
   // Guards the single most likely regression: dropping the colon still produces
   // a syntactically valid Basic header, which Close rejects.
   assert(basicHeader(VENDOR_KEY) !== `Basic ${encodeBase64(VENDOR_KEY)}`);
 });
 
-Deno.test("api-key: declares one secret field and the basic wire type", () => {
+test("api-key: declares one secret field and the basic wire type", () => {
   assertEquals(auth.key, "api-key");
   // Basic is genuinely what goes over the wire, even though the credential is an
   // API key — `ApiKeyConfig` cannot express base64(`key:`).
@@ -53,7 +54,7 @@ Deno.test("api-key: declares one secret field and the basic wire type", () => {
   assertEquals(fields.length, 1);
 });
 
-Deno.test("api-key: sign stamps the Basic header and returns the request", async () => {
+test("api-key: sign stamps the Basic header and returns the request", async () => {
   const request = {
     url: "https://x",
     method: "GET" as const,
@@ -63,7 +64,7 @@ Deno.test("api-key: sign stamps the Basic header and returns the request", async
   assertEquals(out.headers["authorization"], expected);
 });
 
-Deno.test("api-key: sign makes no network call", async () => {
+test("api-key: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   await auth.sign!(
     { request: { url: "https://x", method: "GET", headers: {} }, credential: cred },
@@ -72,7 +73,7 @@ Deno.test("api-key: sign makes no network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes GET /me/ with the credential", async () => {
+test("api-key: test probes GET /me/ with the credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "user_1", email: "a@b.com" } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, true);
@@ -80,35 +81,35 @@ Deno.test("api-key: test probes GET /me/ with the credential", async () => {
   assertEquals(calls[0].headers["authorization"], expected);
 });
 
-Deno.test("api-key: test fails without a network call when the key is missing", async () => {
+test("api-key: test fails without a network call when the key is missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test reports a 401 as a rejected key", async () => {
+test("api-key: test reports a 401 as a rejected key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "authentication required" } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: test surfaces Close's own error message on other failures", async () => {
+test("api-key: test surfaces Close's own error message on other failures", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "insufficient permissions" } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assertEquals(result.message, "insufficient permissions");
 });
 
-Deno.test("api-key: test falls back to the status when the error body is not JSON", async () => {
+test("api-key: test falls back to the status when the error body is not JSON", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>oops</html>" }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("500"));
 });
 
-Deno.test("afterConnect: publishes user and organization display data, never the key", async () => {
+test("afterConnect: publishes user and organization display data, never the key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -129,7 +130,7 @@ Deno.test("afterConnect: publishes user and organization display data, never the
   assertEquals(JSON.stringify(display).includes(cred.apiKey), false);
 });
 
-Deno.test("afterConnect: falls back to memberships for the organization id", async () => {
+test("afterConnect: falls back to memberships for the organization id", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { id: "user_1", memberships: [{ organization_id: "orga_9" }] },
@@ -138,7 +139,7 @@ Deno.test("afterConnect: falls back to memberships for the organization id", asy
   assertEquals((display.organization as Record<string, unknown>).id, "orga_9");
 });
 
-Deno.test("afterConnect: degrades to empty display data rather than throwing", async () => {
+test("afterConnect: degrades to empty display data rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!({ credential: cred }, ctx);
   assertEquals(display, {});

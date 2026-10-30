@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callEventSubscriptionList from "../../actions/call-event-subscription-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test(
+test(
   "call-event-subscription-list: GETs /subscriptions/call and strips the embedded webhook secret",
   async () => {
     const { ctx, calls } = mockCtx([{
@@ -25,7 +26,7 @@ Deno.test(
   },
 );
 
-Deno.test(
+test(
   "call-event-subscription-list: an item with no webhook (websocket-backed) passes through untouched",
   async () => {
     const { ctx } = mockCtx([{ status: 200, body: page([{ id: "1", call_states: ["hangup"] }]) }]);

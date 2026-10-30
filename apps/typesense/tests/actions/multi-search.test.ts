@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/multi-search.ts";
 
@@ -8,7 +9,7 @@ const searches = JSON.stringify([
   { collection: "articles", q: "boots", query_by: "title" },
 ]);
 
-Deno.test("multi-search: posts the searches and totals what they found", async () => {
+test("multi-search: posts the searches and totals what they found", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { results: [{ found: 12, hits: [] }, { found: 3, hits: [] }] },
@@ -25,7 +26,7 @@ Deno.test("multi-search: posts the searches and totals what they found", async (
 });
 
 /** A 200 can carry a failed search, and burying it is how it gets missed. */
-Deno.test("multi-search: surfaces a search that failed inside a 200", async () => {
+test("multi-search: surfaces a search that failed inside a 200", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: {
@@ -48,7 +49,7 @@ Deno.test("multi-search: surfaces a search that failed inside a 200", async () =
   );
 });
 
-Deno.test("multi-search: shared parameters go in the query string", async () => {
+test("multi-search: shared parameters go in the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], D);
   await action.execute({ searches, commonQueryBy: "name", commonFilterBy: "in_stock:true" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -56,7 +57,7 @@ Deno.test("multi-search: shared parameters go in the query string", async () => 
   assertEquals(q.get("filter_by"), "in_stock:true");
 });
 
-Deno.test("multi-search: every search needs a collection and a q", async () => {
+test("multi-search: every search needs a collection and a q", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ searches: '[{"collection":"products"},{"q":"x"}]' }, ctx),
@@ -66,7 +67,7 @@ Deno.test("multi-search: every search needs a collection and a q", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("multi-search: refuses an empty or non-array searches value", async () => {
+test("multi-search: refuses an empty or non-array searches value", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ searches: "[]" }, ctx),

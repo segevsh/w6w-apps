@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-subscriber.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-subscriber: POSTs only the email address by default", async () => {
+test("create-subscriber: POSTs only the email address by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { subscriber: { id: 1 } } }]);
   await action.execute!({ emailAddress: "ada@example.com" }, ctx);
   assertEquals(calls[0].url, "https://api.kit.com/v4/subscribers");
@@ -10,7 +11,7 @@ Deno.test("create-subscriber: POSTs only the email address by default", async ()
   assertEquals(JSON.parse(calls[0].body!), { email_address: "ada@example.com" });
 });
 
-Deno.test("create-subscriber: maps firstName, state and fields onto Kit's names", async () => {
+test("create-subscriber: maps firstName, state and fields onto Kit's names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { subscriber: {} } }]);
   await action.execute!({
     emailAddress: "ada@example.com",
@@ -26,7 +27,7 @@ Deno.test("create-subscriber: maps firstName, state and fields onto Kit's names"
   });
 });
 
-Deno.test("create-subscriber: is marked idempotent — Kit documents it as an upsert", () => {
+test("create-subscriber: is marked idempotent — Kit documents it as an upsert", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

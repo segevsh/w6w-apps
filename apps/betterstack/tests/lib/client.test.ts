@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   BetterStackError,
   buildUrl,
@@ -16,7 +17,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("buildUrl: drops unset, null and empty query values, keeps false and 0", () => {
+test("buildUrl: drops unset, null and empty query values, keeps false and 0", () => {
   const url = buildUrl("/api/v2/monitors", {
     a: undefined,
     b: null,
@@ -29,21 +30,21 @@ Deno.test("buildUrl: drops unset, null and empty query values, keeps false and 0
   assertEquals(queryOf(url), { d: "false", e: "0", f: "x y" });
 });
 
-Deno.test("encodeId: trims and encodes, and refuses an empty id", () => {
+test("encodeId: trims and encodes, and refuses an empty id", () => {
   assertEquals(encodeId(" 12/3 "), "12%2F3");
   assertEquals(encodeId(7), "7");
   assertThrows(() => encodeId("  "));
   assertThrows(() => encodeId(undefined));
 });
 
-Deno.test("errorMessage: string, object and absent shapes", () => {
+test("errorMessage: string, object and absent shapes", () => {
   assertEquals(errorMessage({ errors: "Invalid Team API token." }), "Invalid Team API token.");
   assertEquals(errorMessage({ errors: { url: ["is invalid"] } }), '{"url":["is invalid"]}');
   assertEquals(errorMessage({}), undefined);
   assertEquals(errorMessage(null), undefined);
 });
 
-Deno.test("pick: drops undefined, null and empty string but keeps false and 0", () => {
+test("pick: drops undefined, null and empty string but keeps false and 0", () => {
   assertEquals(
     pick({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, z: 9 }, [
       "a",
@@ -57,7 +58,7 @@ Deno.test("pick: drops undefined, null and empty string but keeps false and 0", 
   );
 });
 
-Deno.test("parseJsonField: parses text, passes data through, names the field on failure", () => {
+test("parseJsonField: parses text, passes data through, names the field on failure", () => {
   assertEquals(parseJsonField("x", "[1,2]"), [1, 2]);
   assertEquals(parseJsonField("x", [1]), [1]);
   assertThrows(
@@ -67,7 +68,7 @@ Deno.test("parseJsonField: parses text, passes data through, names the field on 
   );
 });
 
-Deno.test("flatten: lifts attributes, keeps id/type, exposes relationships' data", () => {
+test("flatten: lifts attributes, keeps id/type, exposes relationships' data", () => {
   const out = flatten({
     id: "5",
     type: "incident",
@@ -83,7 +84,7 @@ Deno.test("flatten: lifts attributes, keeps id/type, exposes relationships' data
   assertEquals(flatten(null), {});
 });
 
-Deno.test("pageInfo: reads the page number from next and never needs its host", () => {
+test("pageInfo: reads the page number from next and never needs its host", () => {
   assertEquals(
     pageInfo({ next: "https://incidents.betterstack.com/api/v2/monitors?page=2" }),
     { hasMore: true, nextPage: 2 },
@@ -93,7 +94,7 @@ Deno.test("pageInfo: reads the page number from next and never needs its host", 
   assertEquals(pageInfo({ next: "not a url" }), { hasMore: true, nextPage: null });
 });
 
-Deno.test("call: sends JSON only when there is a body, and returns {} for a 204", async () => {
+test("call: sends JSON only when there is a body, and returns {} for a 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { body: { ok: true } }]);
   assertEquals(await call(ctx, "DELETE", "/api/v2/monitors/1"), {});
   assertEquals(calls[0].headers["content-type"], undefined);
@@ -104,13 +105,13 @@ Deno.test("call: sends JSON only when there is a body, and returns {} for a 204"
   assertEquals(calls[1].body, '{"url":"x"}');
 });
 
-Deno.test("call: an empty body object is not sent", async () => {
+test("call: an empty body object is not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await call(ctx, "POST", "/api/v3/incidents/1/resolve", { body: {} });
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("call: a failure carries the status and the vendor's own message", async () => {
+test("call: a failure carries the status and the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 409, body: { errors: "Incident was already acknowledged" } }]);
   const err = await assertRejects(
     () => call(ctx, "POST", "/api/v3/incidents/1/acknowledge"),
@@ -121,13 +122,13 @@ Deno.test("call: a failure carries the status and the vendor's own message", asy
   assertEquals(err.message.includes("(409)"), true);
 });
 
-Deno.test("call: a non-JSON failure body does not crash the error path", async () => {
+test("call: a non-JSON failure body does not crash the error path", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>", headers: {} }]);
   const err = await assertRejects(() => call(ctx, "GET", "/api/v2/monitors"), BetterStackError);
   assertEquals(err.status, 502);
 });
 
-Deno.test("listResources: flattens items, returns included, no pagination block means no more", async () => {
+test("listResources: flattens items, returns included, no pagination block means no more", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: [{ id: "1", type: "on_call_calendar", attributes: { name: "A" } }],
@@ -141,7 +142,7 @@ Deno.test("listResources: flattens items, returns included, no pagination block 
   assertEquals((out.included as Array<Record<string, unknown>>)[0].email, "a@example.com");
 });
 
-Deno.test("redactUserinfo: bare, scheme-prefixed and credential-free hosts", () => {
+test("redactUserinfo: bare, scheme-prefixed and credential-free hosts", () => {
   assertEquals(redactUserinfo("user:pass@proxy.example.com"), "***@proxy.example.com");
   assertEquals(
     redactUserinfo("http://u:p@proxy.example.com:8080"),
@@ -150,7 +151,7 @@ Deno.test("redactUserinfo: bare, scheme-prefixed and credential-free hosts", () 
   assertEquals(redactUserinfo("proxy.example.com"), "proxy.example.com");
 });
 
-Deno.test("scrubMonitor: only sensitive header values and env values are redacted", () => {
+test("scrubMonitor: only sensitive header values and env values are redacted", () => {
   const out = scrubMonitor({
     auth_password: "pw",
     auth_username: "bob",
@@ -172,13 +173,13 @@ Deno.test("scrubMonitor: only sensitive header values and env values are redacte
   );
 });
 
-Deno.test("scrubMonitor: tolerates a monitor with none of the sensitive fields", () => {
+test("scrubMonitor: tolerates a monitor with none of the sensitive fields", () => {
   assertEquals(scrubMonitor({ url: "https://x", proxy_host: null }), {
     url: "https://x",
     proxy_host: null,
   });
 });
 
-Deno.test("scrubPolicy: drops incident_token and nothing else", () => {
+test("scrubPolicy: drops incident_token and nothing else", () => {
   assertEquals(scrubPolicy({ name: "p", incident_token: "t" }), { name: "p" });
 });

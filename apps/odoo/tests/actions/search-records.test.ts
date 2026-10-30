@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/search-records.ts";
 import { description, executeKwArgs, mockCtx } from "../_helpers.ts";
 
-Deno.test("search-records: is a search action that pins no resource", () => {
+test("search-records: is a search action that pins no resource", () => {
   assertEquals(action.key, "search-records");
   assertEquals(action.type, "search");
   // The model is chosen at runtime, so a fixed resource would be a lie.
   assertEquals(action.resource, undefined);
 });
 
-Deno.test("search-records: runs search_read against whatever model was named", async () => {
+test("search-records: runs search_read against whatever model was named", async () => {
   const { ctx, calls } = mockCtx([{ result: [{ id: 1 }] }]);
   await action.execute({
     model: "project.task",
@@ -34,13 +35,13 @@ Deno.test("search-records: runs search_read against whatever model was named", a
   });
 });
 
-Deno.test("search-records: returns records and count", async () => {
+test("search-records: returns records and count", async () => {
   const { ctx } = mockCtx([{ result: [{ id: 1 }, { id: 2 }] }]);
   const out = await action.execute({ model: "account.move" }, ctx) as { count: number };
   assertEquals(out.count, 2);
 });
 
-Deno.test("search-records: points at the discovery actions for model and field names", () => {
+test("search-records: points at the discovery actions for model and field names", () => {
   assert(/List Models/.test(description(action)));
   assert(/Describe Model/.test(description(action)));
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/event-delete.ts";
 
-Deno.test("event-delete: DELETEs .../events/<uid> with uid+etag in eventdata", async () => {
+test("event-delete: DELETEs .../events/<uid> with uid+etag in eventdata", async () => {
   const { ctx, calls } = mockCalendarCtx([
     { body: { events: [{ uid: "e1", estatus: "deleted" }] } },
   ]);
@@ -18,7 +19,7 @@ Deno.test("event-delete: DELETEs .../events/<uid> with uid+etag in eventdata", a
   assertEquals(out, { uid: "e1", estatus: "deleted" });
 });
 
-Deno.test("event-delete: includes recurrenceId/recurrenceEditType when set", async () => {
+test("event-delete: includes recurrenceId/recurrenceEditType when set", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { events: [{ uid: "e1" }] } }]);
   await action.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("event-delete: includes recurrenceId/recurrenceEditType when set", asy
   assertEquals(sent.recurrence_edittype, "only");
 });
 
-Deno.test("event-delete: rejects without etag reaching the network", async () => {
+test("event-delete: rejects without etag reaching the network", async () => {
   const { ctx, calls } = mockCalendarCtx([]);
   await assertRejects(() =>
     Promise.resolve(action.execute({ calendarUid: "cal1", eventUid: "e1" } as never, ctx))

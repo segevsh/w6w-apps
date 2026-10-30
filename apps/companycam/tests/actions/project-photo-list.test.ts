@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import projectPhotoList from "../../actions/project-photo-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-photo-list: maps filters onto the vendor's plural query names", async () => {
+test("project-photo-list: maps filters onto the vendor's plural query names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await projectPhotoList.execute({
     projectId: "94772883",
@@ -26,7 +27,7 @@ Deno.test("project-photo-list: maps filters onto the vendor's plural query names
 });
 
 /** The cursors arrive only as headers — the body is a bare array. */
-Deno.test("project-photo-list: surfaces the cursor headers as outputs", async () => {
+test("project-photo-list: surfaces the cursor headers as outputs", async () => {
   const { ctx } = mockCtx([{
     body: [{ id: "1" }],
     headers: {
@@ -46,7 +47,7 @@ Deno.test("project-photo-list: surfaces the cursor headers as outputs", async ()
   }
 });
 
-Deno.test("project-photo-list: refuses page + cursor, which the vendor documents as illegal", async () => {
+test("project-photo-list: refuses page + cursor, which the vendor documents as illegal", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await projectPhotoList.execute({ projectId: "1", page: 2, after: "c" }, ctx),

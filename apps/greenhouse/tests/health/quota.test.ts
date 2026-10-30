@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { PROBE_URL, WARN_FRACTION } from "../../health/quota.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ function rateHeaders(limit: number, remaining: number, reset = 1786425600) {
   };
 }
 
-Deno.test("quota: is a signed connection-scoped check on the cheapest read", () => {
+test("quota: is a signed connection-scoped check on the cheapest read", () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.kind, "quota");
@@ -20,7 +21,7 @@ Deno.test("quota: is a signed connection-scoped check on the cheapest read", () 
   assert(PROBE_URL.endsWith("/v3/user_roles?per_page=1"), PROBE_URL);
 });
 
-Deno.test("quota: reads the documented triple and converts the reset to ISO", async () => {
+test("quota: reads the documented triple and converts the reset to ISO", async () => {
   const { ctx, calls } = mockCtx([{ body: [], headers: rateHeaders(75, 70) }]);
   const report = await quota.check!({}, ctx);
 
@@ -35,7 +36,7 @@ Deno.test("quota: reads the documented triple and converts the reset to ISO", as
   });
 });
 
-Deno.test("quota: a nearly-empty window degrades", async () => {
+test("quota: a nearly-empty window degrades", async () => {
   const remaining = Math.floor(75 * WARN_FRACTION);
   const { ctx } = mockCtx([{ body: [], headers: rateHeaders(75, remaining) }]);
   const report = await quota.check!({}, ctx);
@@ -48,7 +49,7 @@ Deno.test("quota: a nearly-empty window degrades", async () => {
  * than an outage. Reporting `down` here would page someone for something that
  * fixed itself before they read the alert.
  */
-Deno.test("quota: a 429 is degraded, never down, and quotes Retry-After", async () => {
+test("quota: a 429 is degraded, never down, and quotes Retry-After", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody("Too Many Requests"),
@@ -65,7 +66,7 @@ Deno.test("quota: a 429 is degraded, never down, and quotes Retry-After", async 
  * legitimately-narrow credential still get a real reading instead of a permanent
  * `unknown`.
  */
-Deno.test("quota: a 403 still yields a headroom reading, with the reason noted", async () => {
+test("quota: a 403 still yields a headroom reading, with the reason noted", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("Forbidden"),
@@ -77,14 +78,14 @@ Deno.test("quota: a 403 still yields a headroom reading, with the reason noted",
   assert(report.message?.includes("does not affect the reading"), report.message);
 });
 
-Deno.test("quota: no headers at all is unknown, and says the vendor promised otherwise", async () => {
+test("quota: no headers at all is unknown, and says the vendor promised otherwise", async () => {
   const { ctx } = mockCtx([{ body: [], headers: { "content-type": "application/json" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("every response"), report.message);
 });
 
-Deno.test("quota: an unexpected status is surfaced alongside the reading", async () => {
+test("quota: an unexpected status is surfaced alongside the reading", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: errorBody("Server error"),

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-create.ts";
 
@@ -16,26 +17,26 @@ const label = {
   },
 };
 
-Deno.test("label-create: from a rateId posts to /v2/labels/rates/:rate_id", async () => {
+test("label-create: from a rateId posts to /v2/labels/rates/:rate_id", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!({ rateId: "se-rate-1" }, ctx);
   assertEquals(calls[0].url, "https://api.shipstation.com/v2/labels/rates/se-rate-1");
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("label-create: from a shipmentId posts to /v2/labels/shipment/:shipment_id", async () => {
+test("label-create: from a shipmentId posts to /v2/labels/shipment/:shipment_id", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!({ shipmentId: "se-9" }, ctx);
   assertEquals(calls[0].url, "https://api.shipstation.com/v2/labels/shipment/se-9");
 });
 
-Deno.test("label-create: rateId wins over shipmentId when both are given", async () => {
+test("label-create: rateId wins over shipmentId when both are given", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!({ rateId: "se-rate-1", shipmentId: "se-9" }, ctx);
   assertEquals(calls[0].url, "https://api.shipstation.com/v2/labels/rates/se-rate-1");
 });
 
-Deno.test("label-create: inline details post to plain /v2/labels", async () => {
+test("label-create: inline details post to plain /v2/labels", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!(
     { carrierId: "se-carrier", serviceCode: "ups_ground", shipTo, shipFrom: shipTo, packages },
@@ -46,7 +47,7 @@ Deno.test("label-create: inline details post to plain /v2/labels", async () => {
   assertEquals(body.shipment.carrier_id, "se-carrier");
 });
 
-Deno.test("label-create: inline mode requires carrierId and serviceCode", async () => {
+test("label-create: inline mode requires carrierId and serviceCode", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ shipTo, shipFrom: shipTo, packages }, ctx),
@@ -56,7 +57,7 @@ Deno.test("label-create: inline mode requires carrierId and serviceCode", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("label-create: inline mode requires shipTo", async () => {
+test("label-create: inline mode requires shipTo", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -70,7 +71,7 @@ Deno.test("label-create: inline mode requires shipTo", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("label-create: returns labelId, trackingNumber, shipmentCost, labelDownload", async () => {
+test("label-create: returns labelId, trackingNumber, shipmentCost, labelDownload", async () => {
   const { ctx } = mockCtx([label]);
   const result = await action.execute!({ rateId: "se-rate-1" }, ctx) as {
     labelId: string;
@@ -84,7 +85,7 @@ Deno.test("label-create: returns labelId, trackingNumber, shipmentCost, labelDow
   assert(result.labelDownload.pdf.endsWith(".pdf"));
 });
 
-Deno.test("label-create: default labelFormat/labelLayout are omitted from the body, not sent literally", async () => {
+test("label-create: default labelFormat/labelLayout are omitted from the body, not sent literally", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!({ rateId: "se-rate-1", labelFormat: "pdf", labelLayout: "4x6" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -92,13 +93,13 @@ Deno.test("label-create: default labelFormat/labelLayout are omitted from the bo
   assertEquals(body.label_layout, undefined);
 });
 
-Deno.test("label-create: a non-default labelFormat IS sent", async () => {
+test("label-create: a non-default labelFormat IS sent", async () => {
   const { ctx, calls } = mockCtx([label]);
   await action.execute!({ rateId: "se-rate-1", labelFormat: "zpl" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.label_format, "zpl");
 });
 
-Deno.test("label-create: is not idempotent — it spends money", () => {
+test("label-create: is not idempotent — it spends money", () => {
   assertEquals(action.idempotent, false);
 });

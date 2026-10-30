@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentThreadDelete from "../../actions/comment-thread-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-thread-delete: DELETEs the whole thread and returns the 204 status", async () => {
+test("comment-thread-delete: DELETEs the whole thread and returns the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await commentThreadDelete.execute(
     { socialSetId: 4, draftId: 12, commentThreadId: "t1" },

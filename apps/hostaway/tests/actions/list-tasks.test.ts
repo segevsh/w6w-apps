@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: GETs /v1/tasks with the documented filters", async () => {
+test("list-tasks: GETs /v1/tasks with the documented filters", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 1, title: "Task title" }], { count: 1 })]);
   await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("list-tasks: GETs /v1/tasks with the documented filters", async () => 
   assertEquals(url.searchParams.has("shouldEndByEnd"), false);
 });
 
-Deno.test("list-tasks: the five documented statuses are the only selectable ones", () => {
+test("list-tasks: the five documented statuses are the only selectable ones", () => {
   const status = action.params?.find((p) => p.key === "status");
   assertEquals(
     (status?.options as Array<{ value: string }>).map((o) => o.value),

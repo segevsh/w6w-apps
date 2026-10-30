@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   asOptionalJson,
   BannerbearClient,
@@ -9,14 +10,14 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("asOptionalJson: parses a JSON string, passes through an object, rejects garbage", () => {
+test("asOptionalJson: parses a JSON string, passes through an object, rejects garbage", () => {
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -24,21 +25,21 @@ Deno.test("asOptionalJson: parses a JSON string, passes through an object, rejec
   assertThrows(() => asOptionalJson("{not json", "modifications"), Error, "modifications");
 });
 
-Deno.test("toList: splits comma-separated strings and passes through arrays", () => {
+test("toList: splits comma-separated strings and passes through arrays", () => {
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(undefined), undefined);
 });
 
-Deno.test("base64ToBytes: decodes plain base64 and a data: URI the same way", () => {
+test("base64ToBytes: decodes plain base64 and a data: URI the same way", () => {
   const plain = base64ToBytes("aGVsbG8=");
   const dataUri = base64ToBytes("data:image/png;base64,aGVsbG8=");
   assertEquals(new TextDecoder().decode(plain), "hello");
   assertEquals(new TextDecoder().decode(dataUri), "hello");
 });
 
-Deno.test("formatBannerbearError: surfaces the vendor message and a fix hint per status", () => {
+test("formatBannerbearError: surfaces the vendor message and a fix hint per status", () => {
   const msg = formatBannerbearError(
     402,
     "POST",
@@ -49,12 +50,12 @@ Deno.test("formatBannerbearError: surfaces the vendor message and a fix hint per
   assert(/quota is exhausted/i.test(msg));
 });
 
-Deno.test("formatBannerbearError: falls back to the raw body when it is not JSON", () => {
+test("formatBannerbearError: falls back to the raw body when it is not JSON", () => {
   const msg = formatBannerbearError(500, "GET", "/account", "upstream exploded");
   assert(msg.includes("upstream exploded"));
 });
 
-Deno.test("BannerbearClient.json: GET with query params, JSON parsed", async () => {
+test("BannerbearClient.json: GET with query params, JSON parsed", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "a" }] }]);
   const client = new BannerbearClient(ctx);
   const out = await client.json("/images", { query: { page: 2 } });
@@ -63,13 +64,13 @@ Deno.test("BannerbearClient.json: GET with query params, JSON parsed", async () 
   assertEquals(new URL(calls[0].url).searchParams.get("page"), "2");
 });
 
-Deno.test("BannerbearClient.json: a non-ok response throws a formatted error", async () => {
+test("BannerbearClient.json: a non-ok response throws a formatted error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("not found") }]);
   const client = new BannerbearClient(ctx);
   await assertRejectsMessage(() => client.json("/images/missing"), /404/);
 });
 
-Deno.test("BannerbearClient.uploadAsset: sends raw bytes with the given content type", async () => {
+test("BannerbearClient.uploadAsset: sends raw bytes with the given content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uid: "a1", url: "https://cdn/x.png" } }]);
   const client = new BannerbearClient(ctx);
   const out = await client.uploadAsset(base64ToBytes("aGVsbG8="), "image/png") as {

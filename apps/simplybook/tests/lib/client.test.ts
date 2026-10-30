@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, TEST_API_BASE } from "../_helpers.ts";
 import {
   apiBaseOf,
@@ -8,14 +9,14 @@ import {
   SimplybookError,
 } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new SimplybookClient(ctx, TEST_API_BASE);
   const result = await client.request("/admin/bookings/1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a SimplybookError carrying the vendor's flat error shape", async () => {
+test("client: throws a SimplybookError carrying the vendor's flat error shape", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { code: 400, message: "Invalid company", data: [], message_data: [] } },
   ]);
@@ -29,7 +30,7 @@ Deno.test("client: throws a SimplybookError carrying the vendor's flat error sha
   assertEquals(err.code, 400);
 });
 
-Deno.test("client: flags a 419 response as a token-expired condition in the message", async () => {
+test("client: flags a 419 response as a token-expired condition in the message", async () => {
   const { ctx } = mockCtx([{ status: 419, statusText: "Token Expired" }]);
   const client = new SimplybookClient(ctx, TEST_API_BASE);
   await assertRejects(
@@ -39,7 +40,7 @@ Deno.test("client: flags a 419 response as a token-expired condition in the mess
   );
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new SimplybookClient(ctx, TEST_API_BASE);
   await client.request("/admin/clients", {
@@ -50,7 +51,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("filter[client_id]"), false);
 });
 
-Deno.test("client: serializes array query params as repeated bracketed pairs", async () => {
+test("client: serializes array query params as repeated bracketed pairs", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new SimplybookClient(ctx, TEST_API_BASE);
   await client.request("/admin/bookings", {
@@ -60,7 +61,7 @@ Deno.test("client: serializes array query params as repeated bracketed pairs", a
   assertEquals(url.searchParams.getAll("filter[services][]"), ["10", "20"]);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new SimplybookClient(ctx, TEST_API_BASE);
   await client.request("/admin/bookings", {
@@ -71,14 +72,14 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   assertEquals(JSON.parse(calls[0].body!), { service_id: 1, provider_id: 2, client_id: 3 });
 });
 
-Deno.test("client: never sets X-Company-Login or X-Token (sign does)", async () => {
+test("client: never sets X-Company-Login or X-Token (sign does)", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new SimplybookClient(ctx, TEST_API_BASE).request("/admin/services");
   assertEquals(calls[0].headers["x-company-login"], undefined);
   assertEquals(calls[0].headers["x-token"], undefined);
 });
 
-Deno.test("client: builds requests against the given API base", async () => {
+test("client: builds requests against the given API base", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new SimplybookClient(ctx, TEST_API_BASE).request("/admin/services");
   const url = new URL(calls[0].url);
@@ -86,12 +87,12 @@ Deno.test("client: builds requests against the given API base", async () => {
   assertEquals(url.pathname, "/admin/services");
 });
 
-Deno.test("normalizeApiBase: blank input defaults to the global server", () => {
+test("normalizeApiBase: blank input defaults to the global server", () => {
   assertEquals(normalizeApiBase(undefined), DEFAULT_API_BASE);
   assertEquals(normalizeApiBase(""), DEFAULT_API_BASE);
 });
 
-Deno.test("normalizeApiBase: accepts every server the OpenAPI document publishes", () => {
+test("normalizeApiBase: accepts every server the OpenAPI document publishes", () => {
   assertEquals(
     normalizeApiBase("https://user-api-v2.simplybook.it"),
     "https://user-api-v2.simplybook.it",
@@ -102,15 +103,15 @@ Deno.test("normalizeApiBase: accepts every server the OpenAPI document publishes
   );
 });
 
-Deno.test("normalizeApiBase: refuses an arbitrary host rather than widening egress silently", () => {
+test("normalizeApiBase: refuses an arbitrary host rather than widening egress silently", () => {
   assertThrows(() => normalizeApiBase("https://evil.example"), Error, "not one of the servers");
 });
 
-Deno.test("normalizeApiBase: refuses an unparseable URL", () => {
+test("normalizeApiBase: refuses an unparseable URL", () => {
   assertThrows(() => normalizeApiBase("not a url"), Error, "not a valid URL");
 });
 
-Deno.test("apiBaseOf: falls back to the default when the connection has no display", () => {
+test("apiBaseOf: falls back to the default when the connection has no display", () => {
   assertEquals(apiBaseOf(undefined), DEFAULT_API_BASE);
   assertEquals(
     apiBaseOf({
@@ -125,7 +126,7 @@ Deno.test("apiBaseOf: falls back to the default when the connection has no displ
   );
 });
 
-Deno.test("apiBaseOf: reads the connection's echoed apiBase", () => {
+test("apiBaseOf: reads the connection's echoed apiBase", () => {
   assertEquals(
     apiBaseOf({
       id: "c",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import selfMailerDelete from "../../actions/self-mailer-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("self-mailer-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
+test("self-mailer-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sfm_abc", deleted: true } }]);
   const out = await selfMailerDelete.execute({ selfMailerId: "sfm_abc" }, ctx) as {
     id: string;
@@ -14,11 +15,11 @@ Deno.test("self-mailer-delete: sends DELETE to the resource and returns Lob's co
   assertEquals(out, { id: "sfm_abc", deleted: true });
 });
 
-Deno.test("self-mailer-delete: is declared idempotent", () => {
+test("self-mailer-delete: is declared idempotent", () => {
   assertEquals(selfMailerDelete.idempotent, true);
 });
 
-Deno.test("self-mailer-delete: a refused delete surfaces Lob's code", async () => {
+test("self-mailer-delete: a refused delete surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("not_deletable", "cannot be deleted", 422),

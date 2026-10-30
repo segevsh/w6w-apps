@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-case.ts";
 
-Deno.test("create-case: identity", () => {
+test("create-case: identity", () => {
   assertEquals(action.key, "create-case");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "support");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-case: sends POST /api/v1/support/cases", async () => {
+test("create-case: sends POST /api/v1/support/cases", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     subject: "Help",
@@ -36,7 +37,7 @@ Deno.test("create-case: sends POST /api/v1/support/cases", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("create-case: a failure names the status and the request", async () => {
+test("create-case: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

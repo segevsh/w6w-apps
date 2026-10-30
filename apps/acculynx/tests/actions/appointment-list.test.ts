@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/appointment-list.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("appointment-list: sends GET /calendars/cal1/appointments and returns the vendor body", async () => {
+test("appointment-list: sends GET /calendars/cal1/appointments and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { count: 1, pageSize: 10, pageStartIndex: 0, items: [{ id: "a1" }] },
   }]);
@@ -28,7 +29,7 @@ Deno.test("appointment-list: sends GET /calendars/cal1/appointments and returns 
   assertEquals(out, { count: 1, pageSize: 10, pageStartIndex: 0, items: [{ id: "a1" }] });
 });
 
-Deno.test("appointment-list: a vendor error surfaces its title and status", async () => {
+test("appointment-list: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>

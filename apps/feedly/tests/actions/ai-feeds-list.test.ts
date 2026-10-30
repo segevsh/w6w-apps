@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import aiFeedsList from "../../actions/ai-feeds-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ai-feeds-list: GETs /v3/alerts and passes both arrays through unchanged", async () => {
+test("ai-feeds-list: GETs /v3/alerts and passes both arrays through unchanged", async () => {
   const body = {
     userAlerts: [],
     enterpriseAlerts: [{

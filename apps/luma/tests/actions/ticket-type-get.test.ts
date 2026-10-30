@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketTypeGet from "../../actions/ticket-type-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("ticket-type-get: looks up by event_ticket_type_id", async () => {
+test("ticket-type-get: looks up by event_ticket_type_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ttype-1", name: "General" } }]);
   const out = await ticketTypeGet.execute({ eventTicketTypeId: "ttype-1" }, ctx) as {
     name: string;

@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: is a signed, connection-scoped, informational check", () => {
+test("quota: is a signed, connection-scoped, informational check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reports ok with plenty of headroom, parsing Go-style durations", async () => {
+test("quota: reports ok with plenty of headroom, parsing Go-style durations", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [] },
@@ -37,7 +38,7 @@ Deno.test("quota: reports ok with plenty of headroom, parsing Go-style durations
   assertEquals(new Date(requests!.resetAt!).getTime() > Date.now(), true);
 });
 
-Deno.test("quota: reports down when a bucket is fully exhausted", async () => {
+test("quota: reports down when a bucket is fully exhausted", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -51,7 +52,7 @@ Deno.test("quota: reports down when a bucket is fully exhausted", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: reports degraded under 10% remaining", async () => {
+test("quota: reports degraded under 10% remaining", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -65,13 +66,13 @@ Deno.test("quota: reports degraded under 10% remaining", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: reports unknown when the probe itself fails", async () => {
+test("quota: reports unknown when the probe itself fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "bad key" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: reports unknown when no rate-limit headers are present at all", async () => {
+test("quota: reports unknown when no rate-limit headers are present at all", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},

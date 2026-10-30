@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryGet from "../../actions/category-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("category-get: calls GET /categories/{id}", async () => {
+test("category-get: calls GET /categories/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 9691094, name: "Fruit" } }]);
   const out = await categoryGet.execute({ categoryId: "9691094" }, ctx) as { name: string };
 
@@ -12,12 +13,12 @@ Deno.test("category-get: calls GET /categories/{id}", async () => {
   assertEquals(out.name, "Fruit");
 });
 
-Deno.test("category-get: productIds is only sent when asked for", async () => {
+test("category-get: productIds is only sent when asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await categoryGet.execute({ categoryId: "1", productIds: true }, ctx);
   assertEquals(queryOf(calls[0].url), { productIds: "true" });
 });
 
-Deno.test("category-get: the id is required", () => {
+test("category-get: the id is required", () => {
   assertEquals(categoryGet.params?.find((p) => p.key === "categoryId")?.required, true);
 });

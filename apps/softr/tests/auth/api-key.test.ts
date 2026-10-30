@@ -1,12 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, pathOf, TABLES_API_ROOT } from "../_helpers.ts";
 
-Deno.test("api-key: authHeaders stamps softr-api-key, lowercased key", () => {
+test("api-key: authHeaders stamps softr-api-key, lowercased key", () => {
   assertEquals(authHeaders({ apiKey: "pat_123" }), { "softr-api-key": "pat_123" });
 });
 
-Deno.test("api-key: sign injects the header and returns the request", () => {
+test("api-key: sign injects the header and returns the request", () => {
   const request = {
     method: "GET",
     url: "https://tables-api.softr.io/api/v1/databases",
@@ -19,7 +20,7 @@ Deno.test("api-key: sign injects the header and returns the request", () => {
   assertEquals(out.headers["softr-api-key"], "pat_123");
 });
 
-Deno.test("api-key: test probes GET /databases", async () => {
+test("api-key: test probes GET /databases", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const result = await apiKey.test({ credential: { apiKey: "pat_123" } }, ctx);
 
@@ -29,14 +30,14 @@ Deno.test("api-key: test probes GET /databases", async () => {
   assertEquals(result, { ok: true });
 });
 
-Deno.test("api-key: a missing credential fails without a call", async () => {
+test("api-key: a missing credential fails without a call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { apiKey: "" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a rejected token surfaces the vendor's own error body, not a bare status", async () => {
+test("api-key: a rejected token surfaces the vendor's own error body, not a bare status", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { message: "Invalid or expired token", errorCode: "UNAUTHORIZED" } },
   ]);
@@ -47,7 +48,7 @@ Deno.test("api-key: a rejected token surfaces the vendor's own error body, not a
   assert(result.message?.includes("UNAUTHORIZED"));
 });
 
-Deno.test("api-key: the credential field is declared secret", () => {
+test("api-key: the credential field is declared secret", () => {
   assertEquals(apiKey.type, "apiKey");
   for (const f of apiKey.fields ?? []) {
     assertEquals(f.type, "secret", `${f.key}: credential field is not type "secret"`);

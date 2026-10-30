@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/start-individual-reveal.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const started = {
   data: { id: 5, status: "queued", is_complete: false },
 };
 
-Deno.test("start-individual-reveal: LinkedIn URL reveal posts the nested envelope", async () => {
+test("start-individual-reveal: LinkedIn URL reveal posts the nested envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: started }]);
   const out = await exec(action, {
     profileUrl: "https://www.linkedin.com/in/x/",
@@ -23,7 +24,7 @@ Deno.test("start-individual-reveal: LinkedIn URL reveal posts the nested envelop
   assertEquals(out, { id: 5, status: "queued", is_complete: false });
 });
 
-Deno.test("start-individual-reveal: name + domain with email options, callback and fair key", async () => {
+test("start-individual-reveal: name + domain with email options, callback and fair key", async () => {
   const { ctx, calls } = mockCtx([{ body: started }]);
   await exec(action, {
     fullName: "Stephen Hakami",
@@ -43,7 +44,7 @@ Deno.test("start-individual-reveal: name + domain with email options, callback a
   });
 });
 
-Deno.test("start-individual-reveal: email alone is enough; a bare name is not", async () => {
+test("start-individual-reveal: email alone is enough; a bare name is not", async () => {
   const { ctx, calls } = mockCtx([{ body: started }]);
   await exec(action, { email: "a@b.co", enrichmentLevel: "phone" }, ctx);
   assertEquals(bodyOf(calls[0]).individual_reveal, { email: "a@b.co" });
@@ -56,7 +57,7 @@ Deno.test("start-individual-reveal: email alone is enough; a bare name is not", 
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("start-individual-reveal: a 429 queue-full response fails with the vendor message", async () => {
+test("start-individual-reveal: a 429 queue-full response fails with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { code: 429, message: "Queue full" } },

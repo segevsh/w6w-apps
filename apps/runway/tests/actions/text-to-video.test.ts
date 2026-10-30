@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/text-to-video.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("text-to-video: sends the documented request and maps the answer", async () => {
+test("text-to-video: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "11111111-1111-4111-8111-111111111111" } }]);
   const out = await run(action, {
     "model": "gen4.5",
@@ -31,7 +32,7 @@ Deno.test("text-to-video: sends the documented request and maps the answer", asy
   });
 });
 
-Deno.test("text-to-video: a 401 surfaces Runway's error text", async () => {
+test("text-to-video: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },
@@ -52,7 +53,7 @@ Deno.test("text-to-video: a 401 surfaces Runway's error text", async () => {
   );
 });
 
-Deno.test("text-to-video: typed fields win over extra, and a missing model is refused", async () => {
+test("text-to-video: typed fields win over extra, and a missing model is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t" } }]);
   await run(action, {
     model: "gen4.5",

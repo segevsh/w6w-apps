@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import expenseCategoryList from "../../actions/expense-category-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("expense-category-list: GET /expenses/categories with the documented query and body", async () => {
+test("expense-category-list: GET /expenses/categories with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await expenseCategoryList.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("expense-category-list: GET /expenses/categories with the documented q
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("expense-category-list: an Everhour error surfaces its message and status", async () => {
+test("expense-category-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(expenseCategoryList.execute({}, ctx)),
@@ -30,6 +31,6 @@ Deno.test("expense-category-list: an Everhour error surfaces its message and sta
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("expense-category-list: declares search", () => {
+test("expense-category-list: declares search", () => {
   assertEquals(expenseCategoryList.type, "search");
 });

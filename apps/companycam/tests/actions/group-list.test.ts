@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupList from "../../actions/group-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-list: lists groups with their embedded members", async () => {
+test("group-list: lists groups with their embedded members", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: "1", name: "The Psych Crew", users: [{ id: "9" }] }],
   }]);

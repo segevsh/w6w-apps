@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-media-upload.ts";
 
-Deno.test("get-media-upload: GETs /media/upload/ with type", async () => {
+test("get-media-upload: GETs /media/upload/ with type", async () => {
   const { ctx, calls } = mockCtx([{ body: { upload_token: "t" } }]);
   await action.execute!({ type: "image-event-logo" }, ctx);
   const url = new URL(calls[0].url);

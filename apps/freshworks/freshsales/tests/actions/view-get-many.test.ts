@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/view-get-many.ts";
 
-Deno.test("view-get-many: GETs /contacts/filters for the contacts resource", async () => {
+test("view-get-many: GETs /contacts/filters for the contacts resource", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{
     body: { filters: [{ id: 4, name: "All Contacts" }] },
   }]);
@@ -11,7 +12,7 @@ Deno.test("view-get-many: GETs /contacts/filters for the contacts resource", asy
   assertEquals(out, { views: [{ id: 4, name: "All Contacts" }] });
 });
 
-Deno.test("view-get-many: routes accounts and deals to their own /filters path", async () => {
+test("view-get-many: routes accounts and deals to their own /filters path", async () => {
   const accounts = mockFreshsalesCtx([{ body: { filters: [] } }]);
   await action.execute({ resource: "sales_accounts" }, accounts.ctx);
   assertEquals(

@@ -16,13 +16,21 @@ async function listAll<K extends string>(
 ): Promise<Named[]> {
   const client = new EventbriteClient(ctx);
   const items: Named[] = [];
+  const seenPages = new Set<string>();
   let query: Record<string, string | number> = {};
   while (items.length < MAX_OPTIONS) {
+    const pageKey = JSON.stringify(query);
+    if (seenPages.has(pageKey) || seenPages.size >= MAX_OPTIONS) {
+      throw new Error("Eventbrite pagination did not advance while loading field options.");
+    }
+    seenPages.add(pageKey);
     const res = await client.request<EventbriteListResponse<K, Named>>(path, { query });
     items.push(...(res[key] ?? []));
     const p = res.pagination;
     if (!p?.has_more_items) break;
-    query = p.continuation ? { continuation: p.continuation } : { page: (p.page_number ?? 1) + 1 };
+    query = p.continuation
+      ? { continuation: p.continuation }
+      : { page: (p.page_number ?? Number(query.page ?? 1)) + 1 };
   }
   return items.slice(0, MAX_OPTIONS);
 }

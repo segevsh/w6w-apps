@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track-bulk-events.ts";
 
-Deno.test("track-bulk-events: metadata", () => {
+test("track-bulk-events: metadata", () => {
   assertEquals(action.key, "track-bulk-events");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals(action.params?.map((p) => p.key), ["events"]);
 });
 
-Deno.test("track-bulk-events: calls POST /events/trackBulk on the US host", async () => {
+test("track-bulk-events: calls POST /events/trackBulk on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }]);
   const out = await action.execute({ "events": [{ "x": 1 }] }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("track-bulk-events: calls POST /events/trackBulk on the US host", asyn
   assertEquals(out, { "successCount": 1, "failCount": 0 });
 });
 
-Deno.test("track-bulk-events: uses the EU host when the connection region is eu", async () => {
+test("track-bulk-events: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }], {
     connection: { display: { region: "eu" } },
   });
@@ -28,7 +29,7 @@ Deno.test("track-bulk-events: uses the EU host when the connection region is eu"
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/events/trackBulk");
 });
 
-Deno.test("track-bulk-events: rejects a missing `events` without calling Iterable", async () => {
+test("track-bulk-events: rejects a missing `events` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("track-bulk-events: rejects a missing `events` without calling Iterabl
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track-bulk-events: surfaces an HTTP error with Iterable's own code", async () => {
+test("track-bulk-events: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -51,7 +52,7 @@ Deno.test("track-bulk-events: surfaces an HTTP error with Iterable's own code", 
   );
 });
 
-Deno.test("track-bulk-events: treats a 200 carrying a non-Success code as a failure", async () => {
+test("track-bulk-events: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

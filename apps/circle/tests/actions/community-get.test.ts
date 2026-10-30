@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/community-get.ts";
 
-Deno.test("community-get: GETs /community with no parameters at all", async () => {
+test("community-get: GETs /community with no parameters at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "Acme" } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].url, `${API}/community`);
@@ -10,7 +11,7 @@ Deno.test("community-get: GETs /community with no parameters at all", async () =
   assertEquals(out, { id: 1, name: "Acme" });
 });
 
-Deno.test("community-get: takes no params — the token selects the community", () => {
+test("community-get: takes no params — the token selects the community", () => {
   assertEquals(action.params, []);
 });
 
@@ -20,6 +21,6 @@ Deno.test("community-get: takes no params — the token selects the community", 
  * surface as `auth:api-token`. Tagging this too would spend two requests per
  * sweep against a 5,000/month allowance to answer one question.
  */
-Deno.test("community-get: is not health-tagged, so the credential probe is not doubled", () => {
+test("community-get: is not health-tagged, so the credential probe is not doubled", () => {
   assertEquals(action.healthCheck, undefined);
 });

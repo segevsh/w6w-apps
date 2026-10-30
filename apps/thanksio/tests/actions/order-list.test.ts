@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderList from "../../actions/order-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("order-list: calls GET /api/v2/orders/list and shapes the output", async () => {
+test("order-list: calls GET /api/v2/orders/list and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await orderList.execute(
     { "itemsPerPage": 5, "subAccountId": 2, "type": "postcard6x9" } as never,
@@ -23,7 +24,7 @@ Deno.test("order-list: calls GET /api/v2/orders/list and shapes the output", asy
   assert((out.orders as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("order-list: a vendor error surfaces the HTTP status and message", async () => {
+test("order-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { "message": "Unauthorized" } }]);
   const err = await assertRejects(
     () =>

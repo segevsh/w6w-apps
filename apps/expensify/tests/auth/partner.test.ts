@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth, { signBody } from "../../auth/partner.ts";
 import { buildBody } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -12,7 +13,7 @@ const req = (body: string) => ({
   body,
 });
 
-Deno.test("partner: declares a custom method with an id field and a secret field", () => {
+test("partner: declares a custom method with an id field and a secret field", () => {
   assertEquals(auth.key, "partner-credentials");
   assertEquals(auth.type, "custom");
   const byKey = Object.fromEntries(auth.fields!.map((f) => [f.key, f]));
@@ -21,7 +22,7 @@ Deno.test("partner: declares a custom method with an id field and a secret field
   assertEquals(byKey.partnerUserID.required, true);
 });
 
-Deno.test("partner: sign puts the pair into the job description and keeps everything else", () => {
+test("partner: sign puts the pair into the job description and keeps everything else", () => {
   const body = buildBody(
     {
       type: "file",
@@ -48,7 +49,7 @@ Deno.test("partner: sign puts the pair into the job description and keeps everyt
   assertEquals(out.url, ENDPOINT);
 });
 
-Deno.test("partner: sign OVERWRITES a job-supplied credentials block rather than merging it", () => {
+test("partner: sign OVERWRITES a job-supplied credentials block rather than merging it", () => {
   const body = buildBody({
     type: "get",
     credentials: { authToken: "evil", feedUrl: "https://evil.example", partnerUserID: "other" },
@@ -59,7 +60,7 @@ Deno.test("partner: sign OVERWRITES a job-supplied credentials block rather than
   assert(!signed.includes("evil"));
 });
 
-Deno.test("partner: sign trims the stored fields", () => {
+test("partner: sign trims the stored fields", () => {
   const out = auth.sign!(
     {
       request: req(buildBody({ type: "get" })),
@@ -71,7 +72,7 @@ Deno.test("partner: sign trims the stored fields", () => {
   assertEquals(job.credentials, CRED);
 });
 
-Deno.test("partner: sign refuses a request with no job description rather than sending it unsigned", () => {
+test("partner: sign refuses a request with no job description rather than sending it unsigned", () => {
   let msg = "";
   try {
     auth.sign!({ request: req("a=b"), credential: CRED }, mockCtx().ctx);
@@ -87,7 +88,7 @@ Deno.test("partner: sign refuses a request with no job description rather than s
   }
 });
 
-Deno.test("partner: test passes on a policyList array and signs the probe itself", async () => {
+test("partner: test passes on a policyList array and signs the probe itself", async () => {
   const { ctx, calls } = mockCtx([{
     body: { responseCode: 200, policyList: [{ id: "P1", name: "Acme" }] },
   }]);
@@ -98,12 +99,12 @@ Deno.test("partner: test passes on a policyList array and signs the probe itself
   assertEquals(job.inputSettings, { type: "policyList" });
 });
 
-Deno.test("partner: test passes for an account with no policies (empty array)", async () => {
+test("partner: test passes for an account with no policies (empty array)", async () => {
   const { ctx } = mockCtx([{ body: { responseCode: 200, policyList: [] } }]);
   assertEquals((await auth.test!({ credential: CRED }, ctx)).ok, true);
 });
 
-Deno.test("partner: a rejected pair is HTTP 200 with responseCode 404 — classified from the body", async () => {
+test("partner: a rejected pair is HTTP 200 with responseCode 404 — classified from the body", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { responseMessage: "Authentication error", responseCode: 404 },
@@ -114,7 +115,7 @@ Deno.test("partner: a rejected pair is HTTP 200 with responseCode 404 — classi
   assert(!res.message!.includes("s3cret"));
 });
 
-Deno.test("partner: test reports other vendor codes, rate limits, and non-envelope bodies distinctly", async () => {
+test("partner: test reports other vendor codes, rate limits, and non-envelope bodies distinctly", async () => {
   const forbidden = mockCtx([{
     body: { responseMessage: "No authentication method specified", responseCode: 403 },
   }]);
@@ -135,7 +136,7 @@ Deno.test("partner: test reports other vendor codes, rate limits, and non-envelo
   assert((await auth.test!({ credential: CRED }, other.ctx)).message!.includes("500: boom"));
 });
 
-Deno.test("partner: test names a missing field and never calls the network", async () => {
+test("partner: test names a missing field and never calls the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await auth.test!({ credential: { partnerUserID: "x" } }, ctx)).ok, false);
   assertEquals(

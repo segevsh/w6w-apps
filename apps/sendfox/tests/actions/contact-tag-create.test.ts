@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactTagCreate from "../../actions/contact-tag-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-create: POSTs name and color to /contact-tags", async () => {
+test("contact-tag-create: POSTs name and color to /contact-tags", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5, name: "vip", color: "#FF644D" } }]);
   const out = await contactTagCreate.execute({ name: "vip", color: "#FF644D" }, ctx) as {
     id: number;
@@ -14,13 +15,13 @@ Deno.test("contact-tag-create: POSTs name and color to /contact-tags", async () 
   assertEquals(out.id, 5);
 });
 
-Deno.test("contact-tag-create: a color is optional and omitted when unset", async () => {
+test("contact-tag-create: a color is optional and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5, name: "vip" } }]);
   await contactTagCreate.execute({ name: "vip" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { name: "vip" });
 });
 
-Deno.test("contact-tag-create: a duplicate name surfaces the vendor's 422 message", async () => {
+test("contact-tag-create: a duplicate name surfaces the vendor's 422 message", async () => {
   const { ctx } = mockCtx([
     { status: 422, body: errorBody("The name has already been taken.", { name: ["taken"] }) },
   ]);
@@ -32,6 +33,6 @@ Deno.test("contact-tag-create: a duplicate name surfaces the vendor's 422 messag
   assertEquals(err.message.includes("validation: name: taken"), true, err.message);
 });
 
-Deno.test("contact-tag-create: is not marked idempotent", () => {
+test("contact-tag-create: is not marked idempotent", () => {
   assertEquals(contactTagCreate.idempotent, false);
 });

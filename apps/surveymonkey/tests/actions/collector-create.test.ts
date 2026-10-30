@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collector-create.ts";
 
-Deno.test("collector-create: POSTs /surveys/{id}/collectors with the mapped body", async () => {
+test("collector-create: POSTs /surveys/{id}/collectors with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1", type: "weblink" } }]);
   const result = await action.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("collector-create: POSTs /surveys/{id}/collectors with the mapped body
   assertEquals(result, { id: "c1", type: "weblink" });
 });
 
-Deno.test("collector-create: sends only the type when no extras are given", async () => {
+test("collector-create: sends only the type when no extras are given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ surveyId: "s1", type: "email" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { type: "email" });

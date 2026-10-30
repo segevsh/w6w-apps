@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display } from "./_shared.ts";
 import action from "../../actions/camera-snapshot.ts";
@@ -10,7 +11,7 @@ const image = {
 };
 
 /** Every other endpoint answers JSON; this one answers image bytes. */
-Deno.test("camera-snapshot: fetches the proxy and returns base64 with a data URL", async () => {
+test("camera-snapshot: fetches the proxy and returns base64 with a data URL", async () => {
   const { ctx, calls } = mockCtx([image], { display });
   const result = await action.execute!({ entityId: "camera.front_door" }, ctx) as {
     data: string;
@@ -25,7 +26,7 @@ Deno.test("camera-snapshot: fetches the proxy and returns base64 with a data URL
   assertEquals(result.size > 0, true);
 });
 
-Deno.test("camera-snapshot: a non-camera entity is refused before the request", async () => {
+test("camera-snapshot: a non-camera entity is refused before the request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "light.kitchen" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("camera-snapshot: a non-camera entity is refused before the request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("camera-snapshot: a friendly name is refused", async () => {
+test("camera-snapshot: a friendly name is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Front Door" }, ctx),
@@ -45,7 +46,7 @@ Deno.test("camera-snapshot: a friendly name is refused", async () => {
 });
 
 /** A 404 here means the entity exists but has no image right now. */
-Deno.test("camera-snapshot: a 404 is explained as no image rather than no camera", async () => {
+test("camera-snapshot: a 404 is explained as no image rather than no camera", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }], { display });
   const error = await assertRejects(
     async () => await action.execute!({ entityId: "camera.front_door" }, ctx),
@@ -55,7 +56,7 @@ Deno.test("camera-snapshot: a 404 is explained as no image rather than no camera
 });
 
 /** Whatever the proxy declares is what comes back, JPEG or PNG. */
-Deno.test("camera-snapshot: the declared content type is carried through", async () => {
+test("camera-snapshot: the declared content type is carried through", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "JPEGDATA",
@@ -69,18 +70,18 @@ Deno.test("camera-snapshot: the declared content type is carried through", async
   assert(result.dataUrl.startsWith("data:image/jpeg;base64,"), result.dataUrl);
 });
 
-Deno.test("camera-snapshot: needs an entity", async () => {
+test("camera-snapshot: needs an entity", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`entityId` is required");
 });
 
-Deno.test("camera-snapshot: logs size and type, never the bytes", async () => {
+test("camera-snapshot: logs size and type, never the bytes", async () => {
   const { ctx, logs } = mockCtx([image], { display });
   await action.execute!({ entityId: "camera.front_door" }, ctx);
   assertEquals(logs[0].data, { size: 7, contentType: "image/png" });
 });
 
 /** The proxy returns whatever the integration last received. */
-Deno.test("camera-snapshot: says the frame may be old", () => {
+test("camera-snapshot: says the frame may be old", () => {
   assert(/may be an old frame/.test(action.description!), action.description);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-list.ts";
 
@@ -16,7 +17,7 @@ const stories = (n: number) => ({
   headers: { total: "412", "per-page": String(n) },
 });
 
-Deno.test("story-list: defaults to 25 per page and reports the limit", async () => {
+test("story-list: defaults to 25 per page and reports the limit", async () => {
   const { ctx, calls } = mockCtx([stories(25)], D);
   const result = await action.execute({ startsWith: "blog/" }, ctx) as Record<string, unknown>;
   const q = new URL(calls[0].url).searchParams;
@@ -30,7 +31,7 @@ Deno.test("story-list: defaults to 25 per page and reports the limit", async () 
  * The insight everybody gets backwards: raising the page size lowers the rate
  * limit faster than it raises the payload.
  */
-Deno.test("story-list: a big page is flagged as slower, with the arithmetic", async () => {
+test("story-list: a big page is flagged as slower, with the arithmetic", async () => {
   const { ctx, logs } = mockCtx([stories(100)], D);
   const result = await action.execute({ perPage: 100 }, ctx) as Record<string, unknown>;
   assertEquals(result.rateLimitPerSecond, 6);
@@ -41,13 +42,13 @@ Deno.test("story-list: a big page is flagged as slower, with the arithmetic", as
   );
 });
 
-Deno.test("story-list: 25 or fewer per page says nothing", async () => {
+test("story-list: 25 or fewer per page says nothing", async () => {
   const { ctx, logs } = mockCtx([stories(25)], D);
   await action.execute({ perPage: 25 }, ctx);
   assert(!logs.some((l) => /Smaller pages/.test(l.message)), JSON.stringify(logs));
 });
 
-Deno.test("story-list: reads the total from the headers and computes hasMore", async () => {
+test("story-list: reads the total from the headers and computes hasMore", async () => {
   const { ctx } = mockCtx([stories(25)], D);
   const result = await action.execute({ page: 1 }, ctx) as Record<string, unknown>;
   assertEquals(result.total, 412);
@@ -58,7 +59,7 @@ Deno.test("story-list: reads the total from the headers and computes hasMore", a
   assertEquals(done.hasMore, false);
 });
 
-Deno.test("story-list: every filter reaches the query with Storyblok's names", async () => {
+test("story-list: every filter reaches the query with Storyblok's names", async () => {
   const { ctx, calls } = mockCtx([stories(1)], D);
   await action.execute({
     contentType: "article",
@@ -78,7 +79,7 @@ Deno.test("story-list: every filter reaches the query with Storyblok's names", a
 });
 
 /** The content is the customer's. */
-Deno.test("story-list: logs counts, never the stories", async () => {
+test("story-list: logs counts, never the stories", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { stories: [{ full_slug: "x", content: { secret: "hunter2" } }] },

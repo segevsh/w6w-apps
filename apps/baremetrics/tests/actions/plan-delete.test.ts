@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import planDelete from "../../actions/plan-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("plan-delete: DELETE /v1/src1/plans/o%201 with the documented query/body", async () => {
+test("plan-delete: DELETE /v1/src1/plans/o%201 with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: {} } }]);
   const out = await planDelete.execute({ source_id: "src1", oid: "o 1" }, ctx) as Record<
     string,
@@ -16,13 +17,13 @@ Deno.test("plan-delete: DELETE /v1/src1/plans/o%201 with the documented query/bo
   assert("result" in out);
 });
 
-Deno.test("plan-delete: declares type perform and every required param", () => {
+test("plan-delete: declares type perform and every required param", () => {
   assertEquals(planDelete.type, "perform");
   const required = (planDelete.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["oid", "source_id"]);
 });
 
-Deno.test("plan-delete: surfaces a vendor error as a thrown message", async () => {
+test("plan-delete: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

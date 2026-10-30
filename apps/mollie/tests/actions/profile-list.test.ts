@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import profileList from "../../actions/profile-list.ts";
 import { list, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("profile-list: unwraps _embedded.profiles from /profiles", async () => {
+test("profile-list: unwraps _embedded.profiles from /profiles", async () => {
   const { ctx, calls } = mockCtx([{ body: list("profiles", [{ id: "pfl_1" }]) }]);
   const out = await profileList.execute({}, ctx);
 

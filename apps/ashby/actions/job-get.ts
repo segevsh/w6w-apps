@@ -26,7 +26,13 @@ const action: ActionDefinition = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "openings", label: "Openings" },
+        { value: "location", label: "Location" },
+        { value: "compensation", label: "Compensation" },
+      ],
+      config: { valueFormat: "csv" },
       default: "openings",
       hint: "`openings`, `location`, `compensation`.",
     },

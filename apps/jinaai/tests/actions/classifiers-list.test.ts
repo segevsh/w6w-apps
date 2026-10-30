@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import classifiersList from "../../actions/classifiers-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("classifiers-list: calls POST /v1/classifiers, per the spec's operationId", async () => {
+test("classifiers-list: calls POST /v1/classifiers, per the spec's operationId", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ classifier_id: "clf-1" }] }]);
   const out = await classifiersList.execute({}, ctx) as { classifiers: unknown[] };
 

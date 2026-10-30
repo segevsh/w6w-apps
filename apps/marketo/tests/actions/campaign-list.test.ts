@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-list.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("campaign-list: GETs the Asset API browse endpoint with default paging", async () => {
+test("campaign-list: GETs the Asset API browse endpoint with default paging", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1001 }, { id: 1002 }] } },
   ], conn);
@@ -17,7 +18,7 @@ Deno.test("campaign-list: GETs the Asset API browse endpoint with default paging
   assertEquals(out, [{ id: 1001 }, { id: 1002 }]);
 });
 
-Deno.test("campaign-list: passes isActive through when set", async () => {
+test("campaign-list: passes isActive through when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, result: [] } }], conn);
   await action.execute!({ isActive: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("isActive"), "true");

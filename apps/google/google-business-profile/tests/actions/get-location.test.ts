@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-location.ts";
 
-Deno.test("get-location: GETs /v1/locations/{id} with the default readMask", async () => {
+test("get-location: GETs /v1/locations/{id} with the default readMask", async () => {
   const body = { name: "locations/1", title: "Acme Coffee" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ locationId: "1" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("get-location: GETs /v1/locations/{id} with the default readMask", asy
   assertEquals(result, body);
 });
 
-Deno.test("get-location: honors a caller-supplied readMask", async () => {
+test("get-location: honors a caller-supplied readMask", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "locations/1" } }]);
   await action.execute!({ locationId: "1", readMask: "name" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("readMask"), "name");

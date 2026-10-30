@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orgRunningContainersList from "../../actions/org-running-containers-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("org-running-containers-list: calls GET /orgs/fetch-running-containers", async () => {
+test("org-running-containers-list: calls GET /orgs/fetch-running-containers", async () => {
   const body = {
     containers: [{
       id: "c1",

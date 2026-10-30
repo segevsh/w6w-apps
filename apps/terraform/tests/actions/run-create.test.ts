@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-create.ts";
 
@@ -22,7 +23,7 @@ const queued = {
 };
 
 /** Plan-only cannot apply under any workspace setting. */
-Deno.test("run-create: defaults to plan-only", async () => {
+test("run-create: defaults to plan-only", async () => {
   const { ctx, calls } = mockCtx([workspace(true), queued]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   const attributes = JSON.parse(calls[1].body!).data.attributes;
@@ -34,7 +35,7 @@ Deno.test("run-create: defaults to plan-only", async () => {
 });
 
 /** The workspace goes in relationships; putting it in attributes is a 422. */
-Deno.test("run-create: puts the workspace in relationships, not attributes", async () => {
+test("run-create: puts the workspace in relationships, not attributes", async () => {
   const { ctx, calls } = mockCtx([workspace(false), queued]);
   await action.execute({ workspaceId: "ws-1" }, ctx);
   assertEquals(calls[1].url, "https://app.terraform.io/api/v2/runs");
@@ -45,7 +46,7 @@ Deno.test("run-create: puts the workspace in relationships, not attributes", asy
 });
 
 /** Whether this call is dangerous is a property of the workspace. */
-Deno.test("run-create: reads the workspace before submitting anything", async () => {
+test("run-create: reads the workspace before submitting anything", async () => {
   const { ctx, calls } = mockCtx([workspace(true)]);
   let message = "";
   try {
@@ -58,7 +59,7 @@ Deno.test("run-create: reads the workspace before submitting anything", async ()
   assertEquals(calls.length, 1, "the run was never created");
 });
 
-Deno.test("run-create: an applyable run on a manual workspace still needs the acknowledgement", async () => {
+test("run-create: an applyable run on a manual workspace still needs the acknowledgement", async () => {
   const { ctx } = mockCtx([workspace(false)]);
   let message = "";
   try {
@@ -69,7 +70,7 @@ Deno.test("run-create: an applyable run on a manual workspace still needs the ac
   assert(/will hold it for confirmation/.test(message), message);
 });
 
-Deno.test("run-create: an acknowledged applyable run on auto-apply warns loudly", async () => {
+test("run-create: an acknowledged applyable run on auto-apply warns loudly", async () => {
   const { ctx, calls, logs } = mockCtx([workspace(true), queued]);
   const result = await action.execute(
     { workspaceId: "ws-1", planOnly: false, confirmApplyable: true },
@@ -82,7 +83,7 @@ Deno.test("run-create: an acknowledged applyable run on auto-apply warns loudly"
 });
 
 /** A destroy run plans the removal of every resource in state. */
-Deno.test("run-create: a destroy run needs the workspace name typed back", async () => {
+test("run-create: a destroy run needs the workspace name typed back", async () => {
   for (const confirm of [undefined, "", "PROD", "prod2"]) {
     const { ctx, calls } = mockCtx([workspace(false)]);
     let message = "";
@@ -97,7 +98,7 @@ Deno.test("run-create: a destroy run needs the workspace name typed back", async
   }
 });
 
-Deno.test("run-create: a confirmed destroy is sent and warned about", async () => {
+test("run-create: a confirmed destroy is sent and warned about", async () => {
   const { ctx, calls, logs } = mockCtx([workspace(false), queued]);
   const result = await action.execute(
     { workspaceId: "ws-1", isDestroy: true, confirmDestroy: "prod" },
@@ -109,7 +110,7 @@ Deno.test("run-create: a confirmed destroy is sent and warned about", async () =
   assert(/DESTROY run/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("run-create: targets and run variables are passed through", async () => {
+test("run-create: targets and run variables are passed through", async () => {
   const { ctx, calls } = mockCtx([workspace(false), queued]);
   await action.execute({
     workspaceId: "ws-1",
@@ -121,7 +122,7 @@ Deno.test("run-create: targets and run variables are passed through", async () =
   assertEquals(attributes.variables, [{ key: "region", value: "eu-west-1" }]);
 });
 
-Deno.test("run-create: run variables must be a list", async () => {
+test("run-create: run variables must be a list", async () => {
   const { ctx } = mockCtx([workspace(false)]);
   let message = "";
   try {
@@ -132,14 +133,14 @@ Deno.test("run-create: run variables must be a list", async () => {
   assert(/must be an array/.test(message), message);
 });
 
-Deno.test("run-create: the message defaults to something a person can trace", async () => {
+test("run-create: the message defaults to something a person can trace", async () => {
   const { ctx, calls } = mockCtx([workspace(false), queued]);
   await action.execute({ workspaceId: "ws-1", message: "  " }, ctx);
   assertEquals(JSON.parse(calls[1].body!).data.attributes.message, "Queued by a w6w workflow");
 });
 
 /** A run on a `local` workspace sits in pending forever. */
-Deno.test("run-create: returns the run id and its starting status", async () => {
+test("run-create: returns the run id and its starting status", async () => {
   const { ctx } = mockCtx([workspace(false), queued]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.id, "run-1");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelAccessConfigurationGet from "../../actions/model-access-configuration-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("model-access-configuration-get: calls GET /teams/model-access/configuration", async () => {
+test("model-access-configuration-get: calls GET /teams/model-access/configuration", async () => {
   const { ctx, calls } = mockCtx([
     { body: { teamId: 7, state: "unrestricted", newProviderDefault: null, newModelDefault: null } },
   ]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tagging-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT: Record<string, unknown> = {
 
 const REPLY = { identifiers: ["action_network:abc"], x: 1, _links: {} };
 
-Deno.test("tagging-get: sends GET with the mapped input", async () => {
+test("tagging-get: sends GET with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await action.execute!(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -25,7 +26,7 @@ Deno.test("tagging-get: sends GET with the mapped input", async () => {
   });
 });
 
-Deno.test("tagging-get: sends no credential header of its own", async () => {
+test("tagging-get: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
@@ -33,7 +34,7 @@ Deno.test("tagging-get: sends no credential header of its own", async () => {
   assertEquals(calls[0].headers.accept, "application/hal+json, application/json");
 });
 
-Deno.test("tagging-get: surfaces a vendor error and never echoes the key", async () => {
+test("tagging-get: surfaces a vendor error and never echoes the key", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "API Key invalid or not present sk_live_SECRET" },
@@ -45,7 +46,7 @@ Deno.test("tagging-get: surfaces a vendor error and never echoes the key", async
   );
 });
 
-Deno.test("tagging-get: declares its type, params and output", () => {
+test("tagging-get: declares its type, params and output", () => {
   assertEquals(action.key, "tagging-get");
   assertEquals(action.resource, "tagging");
   assertEquals(action.type, "read");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import signrequestForwardSigner from "../../actions/signrequest-forward-signer.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("signrequest-forward-signer: POSTs /signrequests/{id}/forward_signer/ with both emails", async () => {
+test("signrequest-forward-signer: POSTs /signrequests/{id}/forward_signer/ with both emails", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await signrequestForwardSigner.execute({
     signrequestId: "sr-1",

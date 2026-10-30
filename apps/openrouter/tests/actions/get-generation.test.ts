@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-generation.ts";
 
-Deno.test("get-generation: GETs /generation?id=... and returns the vendor's body", async () => {
+test("get-generation: GETs /generation?id=... and returns the vendor's body", async () => {
   const body = { data: { id: "gen-abc123", total_cost: 0.0015, tokens_prompt: 10 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ id: "gen-abc123" }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptGet from "../../actions/transcript-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transcript-get: pages with cursor and page_size", async () => {
+test("transcript-get: pages with cursor and page_size", async () => {
   const page = { transcript: [{ text: "hi" }], hasMore: true, cursor: "n" };
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await transcriptGet.execute(
@@ -14,7 +15,7 @@ Deno.test("transcript-get: pages with cursor and page_size", async () => {
   assertEquals(queryOf(calls[0].url), { cursor: "p", page_size: "100" });
 });
 
-Deno.test("transcript-get: errors surface the vendor message", async () => {
+test("transcript-get: errors surface the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "NOT_FOUND", message: "gone" } }]);
   await assertRejects(
     async () => await transcriptGet.execute({ noteId: "not_x" }, ctx),

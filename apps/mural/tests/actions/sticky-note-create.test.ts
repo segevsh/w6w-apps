@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import stickyNoteCreate from "../../actions/sticky-note-create.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const INPUT = {
   "tags": '["t1"]',
 };
 
-Deno.test("sticky-note-create: POST /murals/{muralId}/widgets/sticky-note", async () => {
+test("sticky-note-create: POST /murals/{muralId}/widgets/sticky-note", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": [{ "id": "w9", "type": "sticky note" }] },
@@ -35,7 +36,7 @@ Deno.test("sticky-note-create: POST /murals/{muralId}/widgets/sticky-note", asyn
   assertEquals(out.id, "w9");
 });
 
-Deno.test("sticky-note-create: puts no credential on the request (sign owns that)", async () => {
+test("sticky-note-create: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": [{ "id": "w9", "type": "sticky note" }] },
@@ -44,7 +45,7 @@ Deno.test("sticky-note-create: puts no credential on the request (sign owns that
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("sticky-note-create: a vendor error surfaces its own code and message", async () => {
+test("sticky-note-create: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -55,7 +56,7 @@ Deno.test("sticky-note-create: a vendor error surfaces its own code and message"
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("sticky-note-create: an empty muralId is refused before any request", async () => {
+test("sticky-note-create: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await stickyNoteCreate.execute({ ...INPUT, muralId: "  " as never }, ctx)

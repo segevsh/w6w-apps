@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/coupon-create.ts";
 import { envelope, exec, mockCtx, pathOf } from "../_helpers.ts";
 
 const discounts = [{ value: "10", valueType: "fixed", perTicket: false }];
 
-Deno.test("coupon-create: builds the documented body from codes and discounts", async () => {
+test("coupon-create: builds the documented body from codes and discounts", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 77 }) }]);
   const out = await exec(action, {
     name: "Spring",
@@ -32,7 +33,7 @@ Deno.test("coupon-create: builds the documented body from codes and discounts", 
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("coupon-create: formId and expires are omitted when blank", async () => {
+test("coupon-create: formId and expires are omitted when blank", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await exec(action, {
     name: "n",
@@ -47,7 +48,7 @@ Deno.test("coupon-create: formId and expires are omitted when blank", async () =
   assert(!("formId" in sent) && !("expires" in sent));
 });
 
-Deno.test("coupon-create: no codes, or no discounts, never reaches the network", async () => {
+test("coupon-create: no codes, or no discounts, never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => exec(action, { codes: " , ", discounts }, ctx));
   await assertRejects(() => exec(action, { codes: "A", discounts: "[]" }, ctx));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import registrantCreate from "../../actions/registrant-create.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("registrant-create: posts required fields, dropping unset optionals", async () => {
+test("registrant-create: posts required fields, dropping unset optionals", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ status: 201, body: { registrantKey: 1, joinUrl: "https://x" } }],
     "org-1",

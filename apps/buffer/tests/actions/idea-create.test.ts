@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { data, gqlOf, mockCtx, param } from "../_helpers.ts";
 import ideaCreate from "../../actions/idea-create.ts";
 
@@ -8,7 +9,7 @@ function input(calls: { body: string | null }[]): Record<string, unknown> {
   return (gqlOf(calls[0] as never).variables as { input: Record<string, unknown> }).input;
 }
 
-Deno.test("idea-create: content is nested under `content`, matching Buffer's example", async () => {
+test("idea-create: content is nested under `content`, matching Buffer's example", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await ideaCreate.execute({ organizationId: "o1", title: "T", text: "B" }, ctx);
   assertEquals(input(calls), {
@@ -17,7 +18,7 @@ Deno.test("idea-create: content is nested under `content`, matching Buffer's exa
   });
 });
 
-Deno.test("idea-create: an idea with no content at all fails before the request", () => {
+test("idea-create: an idea with no content at all fails before the request", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => ideaCreate.execute({ organizationId: "o1" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("idea-create: an idea with no content at all fails before the request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("idea-create: services are an annotation array, not a channel", async () => {
+test("idea-create: services are an annotation array, not a channel", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await ideaCreate.execute(
     { organizationId: "o1", text: "x", services: ["linkedin", "bluesky"] },
@@ -39,7 +40,7 @@ Deno.test("idea-create: services are an annotation array, not a channel", async 
   );
 });
 
-Deno.test("idea-create: group placement is nested under `group`", async () => {
+test("idea-create: group placement is nested under `group`", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await ideaCreate.execute(
     { organizationId: "o1", text: "x", groupId: "g1", placeAfterId: "i9" },
@@ -48,13 +49,13 @@ Deno.test("idea-create: group placement is nested under `group`", async () => {
   assertEquals(input(calls).group, { groupId: "g1", placeAfterId: "i9" });
 });
 
-Deno.test("idea-create: no group key when neither placement field is set", async () => {
+test("idea-create: no group key when neither placement field is set", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await ideaCreate.execute({ organizationId: "o1", text: "x" }, ctx);
   assertEquals("group" in input(calls), false);
 });
 
-Deno.test("idea-create: media passes through as a raw array", async () => {
+test("idea-create: media passes through as a raw array", async () => {
   const { ctx, calls } = mockCtx([ok()]);
   await ideaCreate.execute({
     organizationId: "o1",
@@ -67,16 +68,16 @@ Deno.test("idea-create: media passes through as a raw array", async () => {
   );
 });
 
-Deno.test("idea-create: the media hint records that Buffer says `video` does not work", () => {
+test("idea-create: the media hint records that Buffer says `video` does not work", () => {
   assert(/not supported via the public API/i.test(String(param(ideaCreate, "media").hint)));
 });
 
-Deno.test("idea-create: the tags hint records that all three TagInput fields are required", () => {
+test("idea-create: the tags hint records that all three TagInput fields are required", () => {
   const hint = String(param(ideaCreate, "tags").hint);
   assert(/id, name and colour/i.test(hint), hint);
 });
 
-Deno.test("idea-create: a non-array media value is rejected", () => {
+test("idea-create: a non-array media value is rejected", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => ideaCreate.execute({ organizationId: "o1", text: "x", media: '{"url":"x"}' }, ctx),
@@ -85,7 +86,7 @@ Deno.test("idea-create: a non-array media value is rejected", () => {
   );
 });
 
-Deno.test("idea-create: both success arms are accepted — Idea and IdeaResponse", async () => {
+test("idea-create: both success arms are accepted — Idea and IdeaResponse", async () => {
   const { ctx } = mockCtx([ok()]);
   const bare = await ideaCreate.execute({ organizationId: "o1", text: "x" }, ctx);
   assertEquals((bare as { id: string }).id, "i1");
@@ -97,7 +98,7 @@ Deno.test("idea-create: both success arms are accepted — Idea and IdeaResponse
   assertEquals((wrapped as { idea: { id: string } }).idea.id, "i2");
 });
 
-Deno.test("idea-create: an error arm throws even though Buffer's own example omits one", async () => {
+test("idea-create: an error arm throws even though Buffer's own example omits one", async () => {
   const { ctx } = mockCtx([
     data({ createIdea: { __typename: "LimitReachedError", message: "Idea limit reached" } }),
   ]);
@@ -108,6 +109,6 @@ Deno.test("idea-create: an error arm throws even though Buffer's own example omi
   assert(/Idea limit reached/.test(err.message), err.message);
 });
 
-Deno.test("idea-create: not idempotent", () => {
+test("idea-create: not idempotent", () => {
   assertEquals(ideaCreate.idempotent, false);
 });

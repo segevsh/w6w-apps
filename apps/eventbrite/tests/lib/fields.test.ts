@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { resolveEventbriteFields } from "../../lib/fields.ts";
 
@@ -11,7 +12,7 @@ const input = (
 const items = (prefix: string, n: number) =>
   Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}`, name: `N${prefix}${i}` }));
 
-Deno.test("organizationId: option shape and URL", async () => {
+test("organizationId: option shape and URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: { organizations: [{ id: "1", name: "Acme" }], pagination: { has_more_items: false } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("organizationId: option shape and URL", async () => {
   assertEquals(Object.keys(out.fields), ["organizationId"]);
 });
 
-Deno.test("organizationId: page-number pagination", async () => {
+test("organizationId: page-number pagination", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -42,7 +43,7 @@ Deno.test("organizationId: page-number pagination", async () => {
   assertEquals(out.fields.organizationId?.options?.map((o) => o.value), ["1", "2"]);
 });
 
-Deno.test("organizationId: continuation pagination", async () => {
+test("organizationId: continuation pagination", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -57,7 +58,7 @@ Deno.test("organizationId: continuation pagination", async () => {
   assertEquals(out.fields.organizationId?.options?.length, 2);
 });
 
-Deno.test("organizationId: 1000 cap, no third request", async () => {
+test("organizationId: 1000 cap, no third request", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -77,7 +78,7 @@ Deno.test("organizationId: 1000 cap, no third request", async () => {
   assertEquals(out.fields.organizationId?.options?.length, 1000);
 });
 
-Deno.test("organizerId: org-scoped, id encoded, no org request", async () => {
+test("organizerId: org-scoped, id encoded, no org request", async () => {
   const { ctx, calls } = mockCtx([{
     body: { organizers: [{ id: "9", name: "Org9" }], pagination: { has_more_items: false } },
   }]);
@@ -87,7 +88,7 @@ Deno.test("organizerId: org-scoped, id encoded, no org request", async () => {
   assertEquals(out.fields.organizerId?.options, [{ value: "9", label: "Org9" }]);
 });
 
-Deno.test("organizerId: org-scoped pagination (page + continuation)", async () => {
+test("organizerId: org-scoped pagination (page + continuation)", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -109,7 +110,7 @@ Deno.test("organizerId: org-scoped pagination (page + continuation)", async () =
   assertEquals(out.fields.organizerId?.options?.length, 3);
 });
 
-Deno.test("organizerId: org-scoped 1000 cap", async () => {
+test("organizerId: org-scoped 1000 cap", async () => {
   const { ctx, calls } = mockCtx([
     { body: { organizers: items("a", 600), pagination: { has_more_items: true, page_number: 1 } } },
     { body: { organizers: items("b", 600), pagination: { has_more_items: true, page_number: 2 } } },
@@ -119,7 +120,7 @@ Deno.test("organizerId: org-scoped 1000 cap", async () => {
   assertEquals(out.fields.organizerId?.options?.length, 1000);
 });
 
-Deno.test("organizerId: no org value -> all orgs with description", async () => {
+test("organizerId: no org value -> all orgs with description", async () => {
   const noMore = { has_more_items: false };
   const { ctx, calls } = mockCtx([
     {
@@ -143,7 +144,7 @@ Deno.test("organizerId: no org value -> all orgs with description", async () => 
   ]);
 });
 
-Deno.test("organizerId: unresolved organizationId -> nothing", async () => {
+test("organizerId: unresolved organizationId -> nothing", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await resolveEventbriteFields(
     input(["organizerId"], { organizationId: "5" }, ["organizationId"]),
@@ -153,14 +154,14 @@ Deno.test("organizerId: unresolved organizationId -> nothing", async () => {
   assertEquals(out.fields, {});
 });
 
-Deno.test("unrequested keys: zero calls, empty fields", async () => {
+test("unrequested keys: zero calls, empty fields", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await resolveEventbriteFields(input(["other"]), ctx);
   assertEquals(calls.length, 0);
   assertEquals(out.fields, {});
 });
 
-Deno.test("both requested, org-scoped: orgs then scoped organizers", async () => {
+test("both requested, org-scoped: orgs then scoped organizers", async () => {
   const noMore = { has_more_items: false };
   const { ctx, calls } = mockCtx([
     { body: { organizations: [{ id: "1", name: "One" }], pagination: noMore } },
@@ -174,7 +175,7 @@ Deno.test("both requested, org-scoped: orgs then scoped organizers", async () =>
   assertEquals(Object.keys(out.fields).sort(), ["organizationId", "organizerId"]);
 });
 
-Deno.test("4xx rejects", async () => {
+test("4xx rejects", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "x" } }]);
   await assertRejects(async () => await resolveEventbriteFields(input(["organizationId"]), ctx));
 });
@@ -183,7 +184,7 @@ const dyn = { source: "resolveFields" };
 const find = (a: { params?: { key: string }[] }, k: string) =>
   a.params?.find((p) => p.key === k) as unknown as Record<string, unknown>;
 
-Deno.test("params: create-event, create-venue, update-venue, get-organizer wired", async () => {
+test("params: create-event, create-venue, update-venue, get-organizer wired", async () => {
   const { default: createEvent, eventFieldParams } = await import("../../actions/create-event.ts");
   const { default: createVenue } = await import("../../actions/create-venue.ts");
   const { default: updateVenue } = await import("../../actions/update-venue.ts");
@@ -214,7 +215,7 @@ const ORGS = {
   body: { organizations: [{ id: "o1", name: "Acme" }], pagination: { has_more_items: false } },
 };
 
-Deno.test("scopeId: organization scope lists the user's organizations", async () => {
+test("scopeId: organization scope lists the user's organizations", async () => {
   const { ctx, calls } = mockCtx([ORGS]);
   const out = await resolveEventbriteFields(input(["scopeId"], { scope: "organization" }), ctx);
   assertEquals(calls.length, 1);
@@ -222,7 +223,7 @@ Deno.test("scopeId: organization scope lists the user's organizations", async ()
   assertEquals(out.fields.scopeId?.options, [{ value: "o1", label: "Acme" }]);
 });
 
-Deno.test("scopeId: non-organization scopes yield no options and make no request", async () => {
+test("scopeId: non-organization scopes yield no options and make no request", async () => {
   for (const scope of ["event", "venue", "series", "user"]) {
     const { ctx, calls } = mockCtx([]);
     const out = await resolveEventbriteFields(input(["scopeId"], { scope }), ctx);
@@ -231,7 +232,7 @@ Deno.test("scopeId: non-organization scopes yield no options and make no request
   }
 });
 
-Deno.test("scopeId: unresolved scope leaves scopeId out", async () => {
+test("scopeId: unresolved scope leaves scopeId out", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await resolveEventbriteFields(
     input(["scopeId"], { scope: "organization" }, ["scope"]),
@@ -241,7 +242,7 @@ Deno.test("scopeId: unresolved scope leaves scopeId out", async () => {
   assertEquals("scopeId" in out.fields, false);
 });
 
-Deno.test("scopeId + organizationId requested together fetch organizations once", async () => {
+test("scopeId + organizationId requested together fetch organizations once", async () => {
   const { ctx, calls } = mockCtx([ORGS]);
   const out = await resolveEventbriteFields(
     input(["organizationId", "scopeId"], { scope: "organization" }),

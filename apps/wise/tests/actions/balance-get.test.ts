@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import balanceGet from "../../actions/balance-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("balance-get: GETs /profiles/{profileId}/balances/{balanceId}", async () => {
+test("balance-get: GETs /profiles/{profileId}/balances/{balanceId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2, currency: "EUR" } }]);
   const out = await balanceGet.execute({ profileId: 1, balanceId: 2 }, ctx) as { id: number };
 

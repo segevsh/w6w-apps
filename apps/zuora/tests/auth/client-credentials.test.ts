@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: exchange mints a token with a form-encoded body", async () => {
+test("client-credentials: exchange mints a token with a form-encoded body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { access_token: "tok-1", expires_in: 3600, token_type: "bearer" },
@@ -23,13 +24,13 @@ Deno.test("client-credentials: exchange mints a token with a form-encoded body",
   assert(!("authorization" in calls[0].headers), "must not set auth headers on the token call");
 });
 
-Deno.test("client-credentials: exchange resolves the region to its own host", async () => {
+test("client-credentials: exchange resolves the region to its own host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "t", expires_in: 3600 } }]);
   await auth.exchange!({ fields: { clientId: "c", clientSecret: "s", region: "eu" } }, ctx);
   assertEquals(calls[0].url, "https://rest.eu.zuora.com/oauth/token");
 });
 
-Deno.test("client-credentials: exchange rejects an unknown region before making a call", async () => {
+test("client-credentials: exchange rejects an unknown region before making a call", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -41,7 +42,7 @@ Deno.test("client-credentials: exchange rejects an unknown region before making 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: exchange rejects a missing client id or secret", async () => {
+test("client-credentials: exchange rejects a missing client id or secret", async () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {
@@ -52,7 +53,7 @@ Deno.test("client-credentials: exchange rejects a missing client id or secret", 
   assert(threw);
 });
 
-Deno.test("client-credentials: refresh mints a new token from the stored id/secret", async () => {
+test("client-credentials: refresh mints a new token from the stored id/secret", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { access_token: "tok-2", expires_in: 3600 },
@@ -65,14 +66,14 @@ Deno.test("client-credentials: refresh mints a new token from the stored id/secr
   assertEquals(cred.accessToken, "tok-2");
 });
 
-Deno.test("client-credentials: sign stamps a bearer authorization header", async () => {
+test("client-credentials: sign stamps a bearer authorization header", async () => {
   const request = { headers: {} as Record<string, string>, method: "GET", url: "https://x" };
   const { ctx } = mockCtx([]);
   const out = await auth.sign!({ request, credential: { accessToken: "tok-1" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("client-credentials: test succeeds on a 200 from the cheap Object Query probe", async () => {
+test("client-credentials: test succeeds on a 200 from the cheap Object Query probe", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   const result = await auth.test(
     { credential: { accessToken: "tok-1", region: "us-cloud2" } },
@@ -82,7 +83,7 @@ Deno.test("client-credentials: test succeeds on a 200 from the cheap Object Quer
   assertEquals(result.ok, true);
 });
 
-Deno.test("client-credentials: test reports a rejected token distinctly from a missing one", async () => {
+test("client-credentials: test reports a rejected token distinctly from a missing one", async () => {
   const { ctx: ctxMissing } = mockCtx([]);
   const missing = await auth.test({ credential: {} }, ctxMissing);
   assertEquals(missing.ok, false);
@@ -94,7 +95,7 @@ Deno.test("client-credentials: test reports a rejected token distinctly from a m
   assert(/rejected/.test(rejected.message!));
 });
 
-Deno.test("client-credentials: afterConnect records the region key and its display label", () => {
+test("client-credentials: afterConnect records the region key and its display label", () => {
   const result = auth.afterConnect!({ credential: { region: "eu" } }, mockCtx([]).ctx) as Record<
     string,
     unknown

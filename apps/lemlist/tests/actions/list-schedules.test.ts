@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listSchedules from "../../actions/list-schedules.ts";
 import { mockCtx, outputFields, params } from "../_helpers.ts";
 
-Deno.test("list-schedules: GETs /schedules with no invented defaults", async () => {
+test("list-schedules: GETs /schedules with no invented defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { schedules: [] } }]);
   await listSchedules.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-schedules: GETs /schedules with no invented defaults", async () 
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-schedules: forwards page, offset, limit and sort", async () => {
+test("list-schedules: forwards page, offset, limit and sort", async () => {
   const { ctx, calls } = mockCtx([{ body: { schedules: [] } }]);
   await listSchedules.execute!({
     page: 1,
@@ -27,7 +28,7 @@ Deno.test("list-schedules: forwards page, offset, limit and sort", async () => {
   assertEquals(p.get("sortOrder"), "desc");
 });
 
-Deno.test("list-schedules: returns lemlist's ENVELOPE, unlike the bare-array list routes", async () => {
+test("list-schedules: returns lemlist's ENVELOPE, unlike the bare-array list routes", async () => {
   const body = {
     schedules: [{
       _id: "skd_1",
@@ -44,7 +45,7 @@ Deno.test("list-schedules: returns lemlist's ENVELOPE, unlike the bare-array lis
   assertEquals(outputFields(listSchedules).map((o) => o.key), ["schedules"]);
 });
 
-Deno.test("list-schedules: is a search action with no required params", () => {
+test("list-schedules: is a search action with no required params", () => {
   assertEquals(listSchedules.type, "search");
   assertEquals(params(listSchedules).filter((p) => p.required).length, 0);
 });

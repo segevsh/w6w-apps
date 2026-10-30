@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import portalGet from "../../actions/portal-get.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("portal-get: GET /api/v3/portal/26828068", async () => {
+test("portal-get: GET /api/v3/portal/26828068", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "id": "26828068", "portal_name": "zylker" } }]);
   const res = await portalGet.execute({ "portalId": "26828068" } as never, ctx) as Record<
     string,

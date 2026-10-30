@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import allocationUpdate from "../../actions/allocation-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("allocation-update - PATCHes /tasks/{id}", async () => {
+test("allocation-update - PATCHes /tasks/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { task_id: 1, hours: 6 } }]);
   const out = await allocationUpdate.execute({ task_id: 1, hours: 6 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/tasks/1");

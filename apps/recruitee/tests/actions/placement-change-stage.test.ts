@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import placementChangeStage from "../../actions/placement-change-stage.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("placement-change-stage: PATCHes a flat body with the new stage", async () => {
+test("placement-change-stage: PATCHes a flat body with the new stage", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { placement: { id: 1, stage_id: 2 }, references: [] } },
   ]);
@@ -26,6 +27,6 @@ Deno.test("placement-change-stage: PATCHes a flat body with the new stage", asyn
   });
 });
 
-Deno.test("placement-change-stage: not idempotent — run_actions/position can have retry-unsafe effects", () => {
+test("placement-change-stage: not idempotent — run_actions/position can have retry-unsafe effects", () => {
   assertEquals(placementChangeStage.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-list: the documented bare array is folded into a page", async () => {
+test("user-list: the documented bare array is folded into a page", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uuid: "u1" }, { uuid: "u2" }] }]);
   const out = await userList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/users/");
@@ -14,7 +15,7 @@ Deno.test("user-list: the documented bare array is folded into a page", async ()
   });
 });
 
-Deno.test("user-list: a paginated envelope still works if Avoma starts sending one", async () => {
+test("user-list: a paginated envelope still works if Avoma starts sending one", async () => {
   const { ctx } = mockCtx([{
     body: {
       count: 9,

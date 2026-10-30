@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/request-create.ts";
 
-Deno.test("request-create: POSTs summary/description as plain strings, not ADF", async () => {
+test("request-create: POSTs summary/description as plain strings, not ADF", async () => {
   const { ctx, calls } = mockJsmCtx([{ status: 201, body: { issueId: "1", issueKey: "HD-1" } }]);
   await action.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("request-create: POSTs summary/description as plain strings, not ADF",
   });
 });
 
-Deno.test("request-create: merges additional field values and participants", async () => {
+test("request-create: merges additional field values and participants", async () => {
   const { ctx, calls } = mockJsmCtx([{ status: 201, body: {} }]);
   await action.execute(
     {

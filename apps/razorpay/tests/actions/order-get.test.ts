@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderGet from "../../actions/order-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-get: fetches /orders/{id}", async () => {
+test("order-get: fetches /orders/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "order_1", status: "paid" } }]);
   const out = await orderGet.execute({ id: "order_1" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-entry.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-entry: DELETEs /v2/entries/{id}", async () => {
+test("delete-entry: DELETEs /v2/entries/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   assertEquals(await exec(action, { id: 5 }, ctx), { success: true });
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("delete-entry: DELETEs /v2/entries/{id}", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("delete-entry: a 403 surfaces and a bad id is refused", async () => {
+test("delete-entry: a 403 surfaces and a bad id is refused", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { errors: [{ type: "Forbidden", message: "not yours" }] },

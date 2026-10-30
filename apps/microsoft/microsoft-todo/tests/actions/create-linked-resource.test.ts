@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-linked-resource.ts";
 
-Deno.test("create-linked-resource: POSTs the back-pointer to the task", async () => {
+test("create-linked-resource: POSTs the back-pointer to the task", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "lr1" } }]);
   await action.execute!({
     taskList: "L1",
@@ -25,7 +26,7 @@ Deno.test("create-linked-resource: POSTs the back-pointer to the task", async ()
   });
 });
 
-Deno.test("create-linked-resource: webUrl is optional, per Microsoft's own note", async () => {
+test("create-linked-resource: webUrl is optional, per Microsoft's own note", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ taskList: "L1", task: "T1", applicationName: "SMS app" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { applicationName: "SMS app" });

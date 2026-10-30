@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rfi-get.ts";
 
-Deno.test("rfi-get: GETs /rest/v1.0/projects/8/rfis/77", async () => {
+test("rfi-get: GETs /rest/v1.0/projects/8/rfis/77", async () => {
   const record = { id: 77, name: "x" };
   const { ctx, calls } = mockCtx([{ body: record }]);
   const out = await action.execute!({ "companyId": 5, "projectId": 8, "rfiId": 77 }, ctx);
@@ -13,7 +14,7 @@ Deno.test("rfi-get: GETs /rest/v1.0/projects/8/rfis/77", async () => {
   assertEquals(out, record);
 });
 
-Deno.test("rfi-get: surfaces a Procore error", async () => {
+test("rfi-get: surfaces a Procore error", async () => {
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: { errors: "gone" } }]);
   let message = "";
   try {

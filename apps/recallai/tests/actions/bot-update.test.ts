@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bot-update.ts";
 
-Deno.test("bot-update: PATCHes only the fields given", async () => {
+test("bot-update: PATCHes only the fields given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1" } }]);
   const out = await action.execute!({
     id: "b1",
@@ -20,7 +21,7 @@ Deno.test("bot-update: PATCHes only the fields given", async () => {
   assertEquals(out, { id: "b1" });
 });
 
-Deno.test("bot-update: a dispatched bot is refused with update_bot_failed", async () => {
+test("bot-update: a dispatched bot is refused with update_bot_failed", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { code: "update_bot_failed", detail: "Only non-dispatched bots can be updated" },

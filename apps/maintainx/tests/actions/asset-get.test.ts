@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetGet from "../../actions/asset-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("asset-get: GET /v1/assets/{id} unwraps { asset }", async () => {
+test("asset-get: GET /v1/assets/{id} unwraps { asset }", async () => {
   const { ctx, calls } = mockCtx([{ body: { asset: { id: 2, name: "Boiler" } } }]);
   const out = await assetGet.execute({ assetId: 2, organizationId: 3 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/assets/2");

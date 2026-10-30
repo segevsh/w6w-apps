@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-update.ts";
 
-Deno.test("file-update: PUTs the encoded file path, forwarding the concurrency guard", async () => {
+test("file-update: PUTs the encoded file path, forwarding the concurrency guard", async () => {
   const { ctx, calls } = mockCtx([{ body: { file_path: "docs/a.md" } }]);
   await action.execute(
     {

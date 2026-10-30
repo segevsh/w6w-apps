@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { isEndpointComponent, STATUS_HOST } from "../../health/service.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
@@ -12,13 +13,13 @@ const page = (...statuses: number[]) => ({
   ],
 });
 
-Deno.test("service: all endpoints operational is ok, and Web is ignored", async () => {
+test("service: all endpoints operational is ok, and Web is ignored", async () => {
   const { ctx, calls } = mockCtx([{ body: page(1, 1) }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
   assertEquals(calls[0].url, "https://status.enrichlayer.com/api/v1/components?per_page=100");
 });
 
-Deno.test("service: one slow endpoint is degraded and named; all-major-outage is down", async () => {
+test("service: one slow endpoint is degraded and named; all-major-outage is down", async () => {
   const slow = await service.check!({}, mockCtx([{ body: page(1, 2) }]).ctx);
   assertEquals(slow.state, "degraded");
   assertEquals(slow.message, "impaired: Company API • Thing 1 Endpoint");
@@ -26,7 +27,7 @@ Deno.test("service: one slow endpoint is degraded and named; all-major-outage is
   assertEquals((await service.check!({}, mockCtx([{ body: page(4, 4) }]).ctx)).state, "down");
 });
 
-Deno.test("service: wrong shape, no endpoints, 5xx and HTML are unknown", async () => {
+test("service: wrong shape, no endpoints, 5xx and HTML are unknown", async () => {
   for (
     const r of [
       { body: { data: [comp("Web")] } },
@@ -37,7 +38,7 @@ Deno.test("service: wrong shape, no endpoints, 5xx and HTML are unknown", async 
   ) assertEquals((await service.check!({}, mockCtx([r]).ctx)).state, "unknown");
 });
 
-Deno.test("service: declares its own host, is informational, and filters components", () => {
+test("service: declares its own host, is informational, and filters components", () => {
   assertEquals(service.network?.allow, [STATUS_HOST]);
   assertEquals(service.severity, "informational");
   assertEquals(isEndpointComponent(comp("Search API • Person Search Endpoint")), true);
@@ -45,7 +46,7 @@ Deno.test("service: declares its own host, is informational, and filters compone
   assertEquals(isEndpointComponent(comp("Jobs API • Job Search Endpoint", 1, false)), false);
 });
 
-Deno.test("api: a schema-correct 401 is a pass", async () => {
+test("api: a schema-correct 401 is a pass", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: { code: 401, description: "Invalid API key", name: "Unauthorized" },
@@ -55,7 +56,7 @@ Deno.test("api: a schema-correct 401 is a pass", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api: bare 401, 200, 5xx and a network error are not passes", async () => {
+test("api: bare 401, 200, 5xx and a network error are not passes", async () => {
   assertEquals(
     (await api.check!({}, mockCtx([{ status: 401, body: "no" }]).ctx)).state,
     "degraded",
@@ -67,7 +68,7 @@ Deno.test("api: bare 401, 200, 5xx and a network error are not passes", async ()
   assertEquals((await api.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: reports remaining credits; zero is degraded; junk is unknown", async () => {
+test("quota: reports remaining credits; zero is degraded; junk is unknown", async () => {
   const ok = await quota.check!({}, mockCtx([{ body: { credit_balance: 42 } }]).ctx);
   assertEquals(ok.state, "ok");
   assertEquals(ok.quota, [{ id: "credits", remaining: 42, unit: "credits" }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import statusGet from "../../actions/status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("status-get: GETs /status and returns tasksQueueStatus", async () => {
+test("status-get: GETs /status and returns tasksQueueStatus", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { statusCode: 200, messageCode: "success", tasksQueueStatus: "OK" },
@@ -13,7 +14,7 @@ Deno.test("status-get: GETs /status and returns tasksQueueStatus", async () => {
   assertEquals(out, { tasksQueueStatus: "OK" });
 });
 
-Deno.test("status-get: reports UNDER_MAINTENANCE verbatim", async () => {
+test("status-get: reports UNDER_MAINTENANCE verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { statusCode: 200, messageCode: "success", tasksQueueStatus: "UNDER_MAINTENANCE" },
@@ -22,6 +23,6 @@ Deno.test("status-get: reports UNDER_MAINTENANCE verbatim", async () => {
   assertEquals(out, { tasksQueueStatus: "UNDER_MAINTENANCE" });
 });
 
-Deno.test("status-get: requires auth like every other endpoint (no requiresAuth: false)", () => {
+test("status-get: requires auth like every other endpoint (no requiresAuth: false)", () => {
   assertEquals(statusGet.requiresAuth, undefined);
 });

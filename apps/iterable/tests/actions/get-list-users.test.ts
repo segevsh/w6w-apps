@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-list-users.ts";
 
-Deno.test("get-list-users: metadata", () => {
+test("get-list-users: metadata", () => {
   assertEquals(action.key, "get-list-users");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["listId", "preferUserId"]);
 });
 
-Deno.test("get-list-users: calls GET /lists/getUsers on the US host", async () => {
+test("get-list-users: calls GET /lists/getUsers on the US host", async () => {
   const { ctx, calls } = mockCtx([{
     body: "a@b.co\nc@d.co\n",
     headers: { "content-type": "text/plain" },
@@ -25,7 +26,7 @@ Deno.test("get-list-users: calls GET /lists/getUsers on the US host", async () =
   assertEquals(out, { users: ["a@b.co", "c@d.co"], text: "a@b.co\nc@d.co\n" });
 });
 
-Deno.test("get-list-users: uses the EU host when the connection region is eu", async () => {
+test("get-list-users: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{
     body: "a@b.co\nc@d.co\n",
     headers: { "content-type": "text/plain" },
@@ -37,7 +38,7 @@ Deno.test("get-list-users: uses the EU host when the connection region is eu", a
   );
 });
 
-Deno.test("get-list-users: rejects a missing `listId` without calling Iterable", async () => {
+test("get-list-users: rejects a missing `listId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -49,7 +50,7 @@ Deno.test("get-list-users: rejects a missing `listId` without calling Iterable",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-list-users: surfaces an HTTP error with Iterable's own code", async () => {
+test("get-list-users: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -60,7 +61,7 @@ Deno.test("get-list-users: surfaces an HTTP error with Iterable's own code", asy
   );
 });
 
-Deno.test("get-list-users: treats a 200 carrying a non-Success code as a failure", async () => {
+test("get-list-users: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

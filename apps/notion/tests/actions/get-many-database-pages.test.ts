@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-many-database-pages.ts";
 
-Deno.test("get-many-database-pages: POSTs /data_sources/{id}/query with filter, sorts and cursor", async () => {
+test("get-many-database-pages: POSTs /data_sources/{id}/query with filter, sorts and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", results: [], next_cursor: null, has_more: false },
   }]);

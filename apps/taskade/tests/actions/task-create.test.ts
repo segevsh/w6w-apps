@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/task-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("task-create: calls POST /projects/{projectId}/tasks/", async () => {
+test("task-create: calls POST /projects/{projectId}/tasks/", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: [{ id: "t1", text: "Buy milk" }] } }]);
   const out = await action.execute!(
     { "projectId": "projectId-1", "content": "Buy milk" },
@@ -16,7 +17,7 @@ Deno.test("task-create: calls POST /projects/{projectId}/tasks/", async () => {
   });
 });
 
-Deno.test("task-create: a failure envelope is an error", async () => {
+test("task-create: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -35,7 +36,7 @@ Deno.test("task-create: a failure envelope is an error", async () => {
   );
 });
 
-Deno.test("task-create: a reference task is sent as taskId", async () => {
+test("task-create: a reference task is sent as taskId", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: [{ id: "t2" }] } }]);
   await action.execute!(
     { projectId: "p1", content: "Sub", placement: "afterend", referenceTaskId: "t1" },
@@ -49,7 +50,7 @@ Deno.test("task-create: a reference task is sent as taskId", async () => {
   });
 });
 
-Deno.test("task-create: before/after placement without a reference is refused locally", async () => {
+test("task-create: before/after placement without a reference is refused locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>

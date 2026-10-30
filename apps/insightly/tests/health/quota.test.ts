@@ -1,19 +1,20 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx, mockInsightlyCtx } from "../_helpers.ts";
 
-Deno.test("quota: is an informational, signed connection check", () => {
+test("quota: is an informational, signed connection check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: unknown when the connection records no pod", async () => {
+test("quota: unknown when the connection records no pod", async () => {
   const { ctx } = mockCtx();
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: reads limit/remaining off X-RateLimit-* headers", async () => {
+test("quota: reads limit/remaining off X-RateLimit-* headers", async () => {
   const { ctx, calls } = mockInsightlyCtx([{
     body: { USER_ID: 1 },
     headers: {
@@ -28,7 +29,7 @@ Deno.test("quota: reads limit/remaining off X-RateLimit-* headers", async () => 
   assertEquals(r.quota, [{ id: "instance", limit: 1000, remaining: 950, unit: "requests" }]);
 });
 
-Deno.test("quota: degraded under 10% headroom, down at zero", async () => {
+test("quota: degraded under 10% headroom, down at zero", async () => {
   const low = mockInsightlyCtx([{
     body: {},
     headers: { "x-ratelimit-limit": "1000", "x-ratelimit-remaining": "50" },
@@ -42,7 +43,7 @@ Deno.test("quota: degraded under 10% headroom, down at zero", async () => {
   assertEquals((await quota.check!({}, empty.ctx)).state, "down");
 });
 
-Deno.test("quota: unknown when the header is missing or the probe fails", async () => {
+test("quota: unknown when the header is missing or the probe fails", async () => {
   const noHeader = mockInsightlyCtx([{
     body: {},
     headers: { "content-type": "application/json" },

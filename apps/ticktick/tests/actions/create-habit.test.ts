@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-habit.ts";
 
-Deno.test("create-habit: a name-only call sends a one-field body", async () => {
+test("create-habit: a name-only call sends a one-field body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "habit-1" } }]);
   await action.execute!({ name: "Read" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("create-habit: a name-only call sends a one-field body", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Read" });
 });
 
-Deno.test("create-habit: sends the documented writable fields", async () => {
+test("create-habit: sends the documented writable fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     name: "Read",
@@ -38,7 +39,7 @@ Deno.test("create-habit: sends the documented writable fields", async () => {
   });
 });
 
-Deno.test("create-habit: never sends read-only members of OpenHabit", async () => {
+test("create-habit: never sends read-only members of OpenHabit", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     { name: "Read", id: "x", totalCheckIns: 9, etag: "e" } as never,
@@ -47,7 +48,7 @@ Deno.test("create-habit: never sends read-only members of OpenHabit", async () =
   assertEquals(JSON.parse(calls[0].body!), { name: "Read" });
 });
 
-Deno.test("create-habit: enforces TickTick's documented 1000-character name limit", () => {
+test("create-habit: enforces TickTick's documented 1000-character name limit", () => {
   const name = action.params!.find((p) => p.key === "name")!;
   assert(name.required);
   assertEquals(name.validation?.maxLength, 1000);

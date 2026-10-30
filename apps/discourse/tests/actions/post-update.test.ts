@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/post-update.ts";
 
-Deno.test("post-update: PUTs /posts/{id}.json with the body nested under `post`", async () => {
+test("post-update: PUTs /posts/{id}.json with the body nested under `post`", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { post: { id: 5, raw: "new" } } }]);
   const out = await action.execute({ postId: 5, raw: "new" }, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/posts/5.json`);
@@ -12,13 +13,13 @@ Deno.test("post-update: PUTs /posts/{id}.json with the body nested under `post`"
   assertEquals(out, { id: 5, raw: "new" });
 });
 
-Deno.test("post-update: an edit reason rides inside the `post` object", async () => {
+test("post-update: an edit reason rides inside the `post` object", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute({ postId: 1, raw: "x", editReason: "typo" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { post: { raw: "x", edit_reason: "typo" } });
 });
 
-Deno.test("post-update: bypass_bump sits OUTSIDE the post object, where the schema puts it", async () => {
+test("post-update: bypass_bump sits OUTSIDE the post object, where the schema puts it", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute({ postId: 1, raw: "x", bypassBump: true }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -26,7 +27,7 @@ Deno.test("post-update: bypass_bump sits OUTSIDE the post object, where the sche
   assertEquals("bypass_bump" in body.post, false);
 });
 
-Deno.test("post-update: an unenveloped response passes through unchanged", async () => {
+test("post-update: an unenveloped response passes through unchanged", async () => {
   const { ctx } = mockDiscourseCtx([{ body: { id: 5 } }]);
   assertEquals(await action.execute({ postId: 5, raw: "x" }, ctx), { id: 5 });
 });

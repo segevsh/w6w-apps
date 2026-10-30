@@ -1,19 +1,21 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 function code(src: string): string {
   return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: 26 actions, one auth method, two health checks", () => {
+test("index: 26 actions, one auth method, two health checks", () => {
   assertEquals(app.actions.length, 26);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: keys are unique kebab-case; every action has a description and execute", () => {
+test("index: keys are unique kebab-case; every action has a description and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -25,7 +27,7 @@ Deno.test("index: keys are unique kebab-case; every action has a description and
   }
 });
 
-Deno.test("index: perform actions declare idempotency honestly", () => {
+test("index: perform actions declare idempotency honestly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -37,7 +39,7 @@ Deno.test("index: perform actions declare idempotency honestly", () => {
   }
 });
 
-Deno.test("index: no action touches credentials, global fetch, Deno.* or a host literal", async () => {
+test("index: no action touches credentials, global fetch, Deno.* or a host literal", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential|authorization|apiKey/i.test(src), `${a.key}: credential`);
@@ -47,14 +49,14 @@ Deno.test("index: no action touches credentials, global fetch, Deno.* or a host 
   }
 });
 
-Deno.test("index: connection identity is not an action param", () => {
+test("index: connection identity is not an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|token|region)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) assert(!banned.test(p.key), `${a.key}/${p.key}`);
   }
 });
 
-Deno.test("index: credential fields are secret; auth has sign and test", () => {
+test("index: credential fields are secret; auth has sign and test", () => {
   const [m] = app.auth;
   assertEquals(m.type, "bearer");
   assertEquals(m.fields!.find((f) => f.key === "apiKey")?.type, "secret");
@@ -62,7 +64,7 @@ Deno.test("index: credential fields are secret; auth has sign and test", () => {
   assertEquals(typeof m.test, "function");
 });
 
-Deno.test("index: unavailable health checks are informational; widening checks are unsigned", () => {
+test("index: unavailable health checks are informational; widening checks are unsigned", () => {
   for (const h of app.healthChecks) {
     assert((typeof h.check === "function") !== (typeof h.unavailable?.reason === "string"), h.key);
     if (h.unavailable) assertEquals(h.severity, "informational");
@@ -70,9 +72,9 @@ Deno.test("index: unavailable health checks are informational; widening checks a
   }
 });
 
-Deno.test("index: the manifest allows exactly the three API hosts", async () => {
+test("index: the manifest allows exactly the three API hosts", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] } } };
   assertEquals(manifest.w6w.id, "io.w6w.synthflow");
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rfi-list.ts";
 
-Deno.test("rfi-list: GETs /rest/v1.0/projects/8/rfis and returns a page with the Link marker", async () => {
+test("rfi-list: GETs /rest/v1.0/projects/8/rfis and returns a page with the Link marker", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: 1 }],
     headers: {
@@ -31,7 +32,7 @@ Deno.test("rfi-list: GETs /rest/v1.0/projects/8/rfis and returns a page with the
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("rfi-list: omits unset filters and reports the last page", async () => {
+test("rfi-list: omits unset filters and reports the last page", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await action.execute!({ "companyId": 5, "projectId": 8 }, ctx) as {
     hasMore: boolean;

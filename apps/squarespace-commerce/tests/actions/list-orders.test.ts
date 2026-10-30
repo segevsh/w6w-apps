@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import listOrders from "../../actions/list-orders.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-orders: GET /1.0/commerce/orders with every documented filter", async () => {
+test("list-orders: GET /1.0/commerce/orders with every documented filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), result: [] } }]);
   const out = await listOrders.execute!({
     customerId: "C1",
@@ -25,7 +26,7 @@ Deno.test("list-orders: GET /1.0/commerce/orders with every documented filter", 
   assertEquals(out.result, []);
 });
 
-Deno.test("list-orders: omitting paymentStates sends no filter at all", async () => {
+test("list-orders: omitting paymentStates sends no filter at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), result: [] } }]);
   await listOrders.execute!({}, ctx);
 
@@ -33,7 +34,7 @@ Deno.test("list-orders: omitting paymentStates sends no filter at all", async ()
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("list-orders: a date window cannot be combined with a cursor", () => {
+test("list-orders: a date window cannot be combined with a cursor", () => {
   const { ctx } = mockCtx([{ body: { pagination: pagination(), result: [] } }]);
   assertThrows(
     () =>
@@ -47,7 +48,7 @@ Deno.test("list-orders: a date window cannot be combined with a cursor", () => {
   );
 });
 
-Deno.test("list-orders: one half of the modified pair is rejected before the call", () => {
+test("list-orders: one half of the modified pair is rejected before the call", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => listOrders.execute!({ modifiedAfter: "2026-09-01T00:00:00Z" }, ctx),
@@ -56,7 +57,7 @@ Deno.test("list-orders: one half of the modified pair is rejected before the cal
   );
 });
 
-Deno.test("list-orders: an ambiguous auth body is surfaced verbatim", async () => {
+test("list-orders: an ambiguous auth body is surfaced verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("AUTHORIZATION_ERROR"),

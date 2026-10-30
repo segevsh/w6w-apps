@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/ip-enrich.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ interface Out {
   nextCursor?: string;
 }
 
-Deno.test("ip-enrich: sends GET to the documented path", async () => {
+test("ip-enrich: sends GET to the documented path", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "x1" }],
@@ -25,7 +26,7 @@ Deno.test("ip-enrich: sends GET to the documented path", async () => {
   assertEquals(out.meta.request_id, "r1");
 });
 
-Deno.test("ip-enrich: a vendor error surfaces its code", async () => {
+test("ip-enrich: a vendor error surfaces its code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {

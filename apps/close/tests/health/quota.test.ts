@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota, { parseRateLimit } from "../../health/quota.ts";
 
-Deno.test("quota: declares a signed, informational check with no extra egress", () => {
+test("quota: declares a signed, informational check with no extra egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   // A signed check must not widen egress — the spec forbids the combination.
@@ -10,7 +11,7 @@ Deno.test("quota: declares a signed, informational check with no extra egress", 
   assert(typeof quota.check === "function");
 });
 
-Deno.test("parseRateLimit: parses the COMMA form Close documents", () => {
+test("parseRateLimit: parses the COMMA form Close documents", () => {
   assertEquals(parseRateLimit("limit=100, remaining=50, reset=5"), {
     limit: 100,
     remaining: 50,
@@ -18,7 +19,7 @@ Deno.test("parseRateLimit: parses the COMMA form Close documents", () => {
   });
 });
 
-Deno.test("parseRateLimit: parses the SEMICOLON form the live API actually returns", () => {
+test("parseRateLimit: parses the SEMICOLON form the live API actually returns", () => {
   // Verified on the wire 2026-08-03: `ratelimit: limit=100; remaining=100; reset=1`.
   // Accepting only the documented comma would yield no readings against the real server.
   assertEquals(parseRateLimit("limit=100; remaining=100; reset=1"), {
@@ -28,11 +29,11 @@ Deno.test("parseRateLimit: parses the SEMICOLON form the live API actually retur
   });
 });
 
-Deno.test("parseRateLimit: keeps a fractional reset, which Close documents as a decimal", () => {
+test("parseRateLimit: keeps a fractional reset, which Close documents as a decimal", () => {
   assertEquals(parseRateLimit("limit=100; remaining=3; reset=0.5").reset, 0.5);
 });
 
-Deno.test("parseRateLimit: ignores unknown keys and junk rather than failing", () => {
+test("parseRateLimit: ignores unknown keys and junk rather than failing", () => {
   assertEquals(parseRateLimit("limit=10; future=7; garbage; =3; remaining=x"), {
     limit: 10,
     future: 7,
@@ -41,7 +42,7 @@ Deno.test("parseRateLimit: ignores unknown keys and junk rather than failing", (
   assertEquals(parseRateLimit(""), {});
 });
 
-Deno.test("quota: probes GET /me/ and reports headroom from the combined header", async () => {
+test("quota: probes GET /me/ and reports headroom from the combined header", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "user_1" },
@@ -60,7 +61,7 @@ Deno.test("quota: probes GET /me/ and reports headroom from the combined header"
   assert(typeof bucket.resetAt === "string");
 });
 
-Deno.test("quota: falls back to the discrete ratelimit-* headers", async () => {
+test("quota: falls back to the discrete ratelimit-* headers", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -77,7 +78,7 @@ Deno.test("quota: falls back to the discrete ratelimit-* headers", async () => {
   assertEquals(report.quota![0].remaining, 59);
 });
 
-Deno.test("quota: reports degraded under 10% headroom and down at zero", async () => {
+test("quota: reports degraded under 10% headroom and down at zero", async () => {
   const cases: Array<[string, string]> = [
     ["limit=100; remaining=5; reset=1", "degraded"],
     ["limit=100; remaining=0; reset=1", "down"],
@@ -94,7 +95,7 @@ Deno.test("quota: reports degraded under 10% headroom and down at zero", async (
   }
 });
 
-Deno.test("quota: reports unknown when no rate-limit header is readable", async () => {
+test("quota: reports unknown when no rate-limit header is readable", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -105,7 +106,7 @@ Deno.test("quota: reports unknown when no rate-limit header is readable", async 
   assert((report.message ?? "").includes("RateLimit"));
 });
 
-Deno.test("quota: a failed probe reports unknown, not down", async () => {
+test("quota: a failed probe reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

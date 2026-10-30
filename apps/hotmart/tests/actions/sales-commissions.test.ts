@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesCommissions from "../../actions/sales-commissions.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sales-commissions - maps every filter to its wire name", async () => {
+test("sales-commissions - maps every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ transaction: "HP1" }]) }]);
   await salesCommissions.execute({
     productId: 1,
@@ -24,7 +25,7 @@ Deno.test("sales-commissions - maps every filter to its wire name", async () => 
   });
 });
 
-Deno.test("sales-commissions - propagates the error body on failure", async () => {
+test("sales-commissions - propagates the error body on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("token_expired", "expired") }]);
   await assertRejects(
     () => Promise.resolve(salesCommissions.execute({}, ctx)),

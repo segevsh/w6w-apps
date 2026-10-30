@@ -22,7 +22,12 @@ const listCampaigns: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include related resources",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "tiers", label: "Tiers" }, { value: "creator", label: "Creator" }, {
+        value: "benefits",
+        label: "Benefits",
+      }, { value: "goals", label: "Goals" }],
+      config: { valueFormat: "csv" },
       hint: "CSV: tiers, creator, benefits, goals",
     },
     { key: "campaignFields", label: "Campaign fields", type: "string", hint: "CSV" },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 
@@ -22,7 +23,7 @@ const profile = {
 };
 
 /** The literal lowercase `token ` prefix, which is the whole point. */
-Deno.test("api-key: signs with the literal `token ` prefix, not Bearer", () => {
+test("api-key: signs with the literal `token ` prefix, not Bearer", () => {
   const signed = sign("https://api.lofty.com/v1.0/me");
   assertEquals(signed.headers["authorization"], "token LOFTY-KEY-123");
   assertEquals(authHeaders(cred), { authorization: "token LOFTY-KEY-123" });
@@ -31,7 +32,7 @@ Deno.test("api-key: signs with the literal `token ` prefix, not Bearer", () => {
   assertEquals(auth.apiKey?.name, "authorization");
 });
 
-Deno.test("api-key: the probe is the whoami, signed the same way", async () => {
+test("api-key: the probe is the whoami, signed the same way", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: profile }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].url, "https://api.lofty.com/v1.0/me");
@@ -42,20 +43,20 @@ Deno.test("api-key: the probe is the whoami, signed the same way", async () => {
 });
 
 /** A `200` that is not a profile is not a live credential. */
-Deno.test("api-key: a 200 whose body is a JSON string is a failure", async () => {
+test("api-key: a 200 whose body is a JSON string is a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: '"something went wrong"' }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(/did not return a user profile/.test(result.message!), result.message);
 });
 
-Deno.test("api-key: an object body without an id is not a profile", async () => {
+test("api-key: an object body without an id is not a profile", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { ok: true } }]);
   assertEquals((await auth.test!({ credential: cred } as never, ctx)).ok, false);
 });
 
 /** Lofty's documented 401 body is a plain JSON string. */
-Deno.test("api-key: a 401 reports Lofty's own message", async () => {
+test("api-key: a 401 reports Lofty's own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: '"invalid api token"' }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -63,7 +64,7 @@ Deno.test("api-key: a 401 reports Lofty's own message", async () => {
   assert(/invalid api token/.test(result.message!), result.message);
 });
 
-Deno.test("api-key: a missing key is refused before any request", async () => {
+test("api-key: a missing key is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: {} } as never, ctx);
   assertEquals(result.ok, false);
@@ -71,7 +72,7 @@ Deno.test("api-key: a missing key is refused before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: an unreachable host fails cleanly", async () => {
+test("api-key: an unreachable host fails cleanly", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -82,7 +83,7 @@ Deno.test("api-key: an unreachable host fails cleanly", async () => {
 });
 
 /** A probe's result is stored and displayed; it must not carry the key back. */
-Deno.test("api-key: the probe never echoes the credential", async () => {
+test("api-key: the probe never echoes the credential", async () => {
   const { ctx } = mockCtx([{ status: 200, body: profile }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assert(!JSON.stringify(result).includes("LOFTY-KEY-123"), JSON.stringify(result));
@@ -90,19 +91,19 @@ Deno.test("api-key: the probe never echoes the credential", async () => {
   assertEquals(Object.keys(profile).some((k) => /key|token|secret/i.test(k)), false);
 });
 
-Deno.test("api-key: afterConnect publishes a display name and nothing else", async () => {
+test("api-key: afterConnect publishes a display name and nothing else", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: profile }]);
   const display = await auth.afterConnect!({ credential: cred }, ctx);
   assertEquals(calls[0].url, `https://api.lofty.com/v1.0${PROBE_PATH}`);
   assertEquals(display, { firstName: "Alice", lastName: "Johnson" });
 });
 
-Deno.test("api-key: a failed afterConnect is silent, not fatal", async () => {
+test("api-key: a failed afterConnect is silent, not fatal", async () => {
   const { ctx } = mockCtx([{ status: 500, body: '"boom"' }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, ctx), {});
 });
 
-Deno.test("api-key: the field is a secret", () => {
+test("api-key: the field is a secret", () => {
   const field = auth.fields!.find((f) => f.key === "apiKey")!;
   assertEquals(field.type, "secret");
   assertEquals(field.required, true);

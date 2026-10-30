@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import userList from "../../actions/user-list.ts";
 
-Deno.test("user-list: sends every documented field in its documented place", async () => {
+test("user-list: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -30,7 +31,7 @@ Deno.test("user-list: sends every documented field in its documented place", asy
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("user-list: a minimal call sends only what was set", async () => {
+test("user-list: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -44,7 +45,7 @@ Deno.test("user-list: a minimal call sends only what was set", async () => {
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("user-list: declares its params and kind", () => {
+test("user-list: declares its params and kind", () => {
   assertEquals((userList.params ?? []).map((p) => p.key), [
     "limit",
     "cursor",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCampaigns from "../../actions/list-campaigns.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 
-Deno.test("list-campaigns: GETs /campaigns and defaults version to v2", async () => {
+test("list-campaigns: GETs /campaigns and defaults version to v2", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listCampaigns.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("list-campaigns: GETs /campaigns and defaults version to v2", async ()
   assertEquals([...url.searchParams.keys()], ["version"], "no other defaults are invented");
 });
 
-Deno.test("list-campaigns: forwards every documented filter, page and sort param", async () => {
+test("list-campaigns: forwards every documented filter, page and sort param", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listCampaigns.execute!({
     status: "running",
@@ -33,14 +34,14 @@ Deno.test("list-campaigns: forwards every documented filter, page and sort param
   assertEquals(p.get("sortOrder"), "desc");
 });
 
-Deno.test("list-campaigns: offers exactly lemlist's status enum", () => {
+test("list-campaigns: offers exactly lemlist's status enum", () => {
   assertEquals(
     [...optionValues(listCampaigns, "status")].sort(),
     ["archived", "draft", "ended", "errors", "paused", "running"],
   );
 });
 
-Deno.test("list-campaigns: is a search action returning the bare array lemlist sends", async () => {
+test("list-campaigns: is a search action returning the bare array lemlist sends", async () => {
   assertEquals(listCampaigns.type, "search");
   const body = [{ _id: "cam_1", name: "Product Launch", status: "running" }];
   const { ctx } = mockCtx([{ body }]);

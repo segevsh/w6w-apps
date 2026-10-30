@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import extractStatusGet from "../../actions/extract-status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("extract-status-get: GETs /extract/{id} and returns the body verbatim", async () => {
+test("extract-status-get: GETs /extract/{id} and returns the body verbatim", async () => {
   const statusBody = {
     success: true,
     status: "completed",
@@ -15,6 +16,6 @@ Deno.test("extract-status-get: GETs /extract/{id} and returns the body verbatim"
   assertEquals(out, statusBody);
 });
 
-Deno.test("extract-status-get: is a read", () => {
+test("extract-status-get: is a read", () => {
   assertEquals(extractStatusGet.type, "read");
 });

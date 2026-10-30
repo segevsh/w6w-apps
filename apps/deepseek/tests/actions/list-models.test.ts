@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /models and returns the body verbatim", async () => {
+test("list-models: GETs /models and returns the body verbatim", async () => {
   const body = {
     object: "list",
     data: [
@@ -20,7 +21,7 @@ Deno.test("list-models: GETs /models and returns the body verbatim", async () =>
   assertEquals(result, body);
 });
 
-Deno.test("list-models: is a read action with no params", () => {
+test("list-models: is a read action with no params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params, []);
 });

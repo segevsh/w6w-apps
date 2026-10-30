@@ -4,6 +4,7 @@ import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts"
 interface Input {
   eventId: string;
   forSale?: boolean;
+  /** Legacy saved input; ticket-class endpoints use the API's fixed page size. */
   pageSize?: number;
   continuation?: string;
 }
@@ -23,7 +24,6 @@ const listTicketClasses: ActionDefinition<Input> = {
       default: false,
       hint: "Uses /ticket_classes/for_sale/ when true.",
     },
-    { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [
@@ -33,12 +33,12 @@ const listTicketClasses: ActionDefinition<Input> = {
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
+    const id = encodeURIComponent(input.eventId);
     const path = input.forSale
-      ? `/events/${input.eventId}/ticket_classes/for_sale/`
-      : `/events/${input.eventId}/ticket_classes/`;
+      ? `/events/${id}/ticket_classes/for_sale/`
+      : `/events/${id}/ticket_classes/`;
     return client.request<EventbriteListResponse<"ticket_classes">>(path, {
       query: {
-        page_size: input.pageSize ?? 100,
         continuation: input.continuation,
       },
     });

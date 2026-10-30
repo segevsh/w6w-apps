@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { bodyOf, mockCtx, pathOf, v3Envelope } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs scope, destination and custom headers", async () => {
+test("webhook-create: POSTs scope, destination and custom headers", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Envelope({ id: 1 }) }]);
   const out = await webhookCreate.execute({
     scope: "store/order/created",
@@ -22,13 +23,13 @@ Deno.test("webhook-create: POSTs scope, destination and custom headers", async (
   assertEquals(out.id, 1);
 });
 
-Deno.test("webhook-create: omits headers entirely when none are given", async () => {
+test("webhook-create: omits headers entirely when none are given", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Envelope({}) }]);
   await webhookCreate.execute({ scope: "store/order/*", destination: "https://x/y" }, ctx);
   assertEquals(Object.keys(bodyOf(calls[0]) as object).sort(), ["destination", "scope"]);
 });
 
-Deno.test("webhook-create: names all three delivery constraints", () => {
+test("webhook-create: names all three delivery constraints", () => {
   // Each fails at delivery time, not at create time.
   const destination = webhookCreate.params?.find((p) => p.key === "destination");
   assert(destination?.hint?.includes("port 443"), destination?.hint);

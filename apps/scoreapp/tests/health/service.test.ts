@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 /**
@@ -8,7 +9,7 @@ import service from "../../health/service.ts";
  * the roll-up, so any severity but `informational` would pin this app's health at
  * `unknown` forever.
  */
-Deno.test("service: is a declared absence at informational severity", () => {
+test("service: is a declared absence at informational severity", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, undefined);
@@ -18,7 +19,7 @@ Deno.test("service: is a declared absence at informational severity", () => {
   assert((service.unavailable?.reason ?? "").length > 0);
 });
 
-Deno.test("service: no status host is claimed, and both dead ends are named", () => {
+test("service: no status host is claimed, and both dead ends are named", () => {
   const reason = service.unavailable?.reason ?? "";
 
   assert(/status\.scoreapp\.com/.test(reason), reason);
@@ -29,7 +30,7 @@ Deno.test("service: no status host is claimed, and both dead ends are named", ()
   assert(/auth:api-key/.test(reason), reason);
 });
 
-Deno.test("service: covers everything, and declares no extra egress", () => {
+test("service: covers everything, and declares no extra egress", () => {
   assertEquals(service.covers, ["*"]);
   assertEquals(service.key, "service");
   assertEquals(service.scope, undefined);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-inventory-tiers.ts";
 
-Deno.test("list-inventory-tiers: passes filters", async () => {
+test("list-inventory-tiers: passes filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tiers: [], pagination: {} } }]);
   const result = await action.execute!({
     eventId: "e1",

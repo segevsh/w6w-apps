@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { envelope, mockWrikeCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs to /contacts/{contactId} with a JSON-encoded metadata array", async () => {
+test("contact-update: PUTs to /contacts/{contactId} with a JSON-encoded metadata array", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "U1", firstName: "A", lastName: "B" }]) },
   ]);
@@ -15,6 +16,6 @@ Deno.test("contact-update: PUTs to /contacts/{contactId} with a JSON-encoded met
   assertEquals(queryOf(calls[0].url).metadata, '[{"key":"k","value":"v"}]');
 });
 
-Deno.test("contact-update: the own-contact-only scoping limit is documented on the action", () => {
+test("contact-update: the own-contact-only scoping limit is documented on the action", () => {
   assertEquals(contactUpdate.description?.includes("requesting user"), true);
 });

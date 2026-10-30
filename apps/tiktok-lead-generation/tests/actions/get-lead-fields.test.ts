@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getLeadFields from "../../actions/get-lead-fields.ts";
 import { envelope, errorEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-lead-fields: calls GET /lead/field/get/ with advertiser_id + filtering", async () => {
+test("get-lead-fields: calls GET /lead/field/get/ with advertiser_id + filtering", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ fields: [{ name: "email" }] }) },
   ]);
@@ -19,7 +20,7 @@ Deno.test("get-lead-fields: calls GET /lead/field/get/ with advertiser_id + filt
   assertEquals(out, { data: { fields: [{ name: "email" }] } });
 });
 
-Deno.test("get-lead-fields: propagates a TikTok error code", async () => {
+test("get-lead-fields: propagates a TikTok error code", async () => {
   const { ctx } = mockCtx([{ body: errorEnvelope(40002, "Missing required field(s).") }]);
   const err = await assertRejects(async () =>
     await getLeadFields.execute({ advertiserId: "adv-1" }, ctx)

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import groupGet from "../../actions/group-get.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("group-get: GET /v1/groups/g1 with the documented parameters", async () => {
+test("group-get: GET /v1/groups/g1 with the documented parameters", async () => {
   const response = { id: "g1", name: "Eng", description: "" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await groupGet.execute({ groupId: "g1" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("group-get: GET /v1/groups/g1 with the documented parameters", async (
   assertEquals(out, response);
 });
 
-Deno.test("group-get: a vendor error surfaces its own message and id", async () => {
+test("group-get: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),

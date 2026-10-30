@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectUpdateInCampaign from "../../actions/prospect-update-in-campaign.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-update-in-campaign: POSTs the documented body", async () => {
+test("prospect-update-in-campaign: POSTs the documented body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -35,7 +36,7 @@ Deno.test("prospect-update-in-campaign: POSTs the documented body", async () => 
   assertEquals((out.prospects as Array<{ id: number }>)[0].id, 1091123457);
 });
 
-Deno.test("prospect-update-in-campaign: a body-level ERROR status is a failure", async () => {
+test("prospect-update-in-campaign: a body-level ERROR status is a failure", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -77,7 +78,7 @@ Deno.test("prospect-update-in-campaign: a body-level ERROR status is a failure",
   });
 });
 
-Deno.test("prospect-update-in-campaign: an empty prospects array is refused without a request", async () => {
+test("prospect-update-in-campaign: an empty prospects array is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

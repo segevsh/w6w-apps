@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import xAuth from "../../auth/xauth.ts";
 import { buildOAuth1Header } from "../../lib/oauth1.ts";
 import { bodyOf, envelope, errorEnvelope, mockCtx, pathOf } from "../_helpers.ts";
@@ -11,7 +12,7 @@ const CRED = {
   username: "alice@example.com",
 };
 
-Deno.test("xauth: exchange signs a two-legged POST to oauth/access_token with x_auth fields", async () => {
+test("xauth: exchange signs a two-legged POST to oauth/access_token with x_auth fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "oauth_token=tk&oauth_token_secret=ts" }]);
   const credential = await xAuth.exchange!({
     fields: {
@@ -42,7 +43,7 @@ Deno.test("xauth: exchange signs a two-legged POST to oauth/access_token with x_
   });
 });
 
-Deno.test("xauth: exchange accepts an empty password — Instapaper accounts may have none", async () => {
+test("xauth: exchange accepts an empty password — Instapaper accounts may have none", async () => {
   const { ctx, calls } = mockCtx([{ body: "oauth_token=tk&oauth_token_secret=ts" }]);
   await xAuth.exchange!(
     { fields: { consumerKey: "ck", consumerSecret: "cs", username: "alice" } },
@@ -51,7 +52,7 @@ Deno.test("xauth: exchange accepts an empty password — Instapaper accounts may
   assertEquals(bodyOf(calls[0]).x_auth_password, "");
 });
 
-Deno.test("xauth: exchange requires consumerKey/consumerSecret/username", async () => {
+test("xauth: exchange requires consumerKey/consumerSecret/username", async () => {
   const { ctx } = mockCtx([]);
   await assertRejectsMessage(
     () => xAuth.exchange!({ fields: { username: "a" } }, ctx),
@@ -67,7 +68,7 @@ Deno.test("xauth: exchange requires consumerKey/consumerSecret/username", async 
   );
 });
 
-Deno.test("xauth: exchange rejects the documented error envelope", async () => {
+test("xauth: exchange rejects the documented error envelope", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorEnvelope(1042, "Application is suspended") }]);
   await assertRejectsMessage(
     () =>
@@ -76,7 +77,7 @@ Deno.test("xauth: exchange rejects the documented error envelope", async () => {
   );
 });
 
-Deno.test("xauth: exchange fails loudly if the success body has no token pair", async () => {
+test("xauth: exchange fails loudly if the success body has no token pair", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "not a qline response" }]);
   await assertRejectsMessage(
     () =>
@@ -85,7 +86,7 @@ Deno.test("xauth: exchange fails loudly if the success body has no token pair", 
   );
 });
 
-Deno.test("xauth: sign stamps a three-legged OAuth header derived from the exact outgoing body", async () => {
+test("xauth: sign stamps a three-legged OAuth header derived from the exact outgoing body", async () => {
   const request = {
     method: "POST",
     url: "https://www.instapaper.com/api/1/bookmarks/star",
@@ -116,7 +117,7 @@ Deno.test("xauth: sign stamps a three-legged OAuth header derived from the exact
   assertEquals(sigOf(signed.headers.authorization), sigOf(expected));
 });
 
-Deno.test("xauth: sign never touches the request body", async () => {
+test("xauth: sign never touches the request body", async () => {
   const request = {
     method: "POST",
     url: "https://www.instapaper.com/api/1/bookmarks/star",
@@ -127,7 +128,7 @@ Deno.test("xauth: sign never touches the request body", async () => {
   assertEquals(signed.body, "bookmark_id=42");
 });
 
-Deno.test("xauth: test signs verify_credentials and reports the username on success", async () => {
+test("xauth: test signs verify_credentials and reports the username on success", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ type: "user", user_id: 1, username: "alice" }]),
   }]);
@@ -139,28 +140,28 @@ Deno.test("xauth: test signs verify_credentials and reports the username on succ
   assert(result.message?.includes("alice"));
 });
 
-Deno.test("xauth: test fails without making a request when the credential is incomplete", async () => {
+test("xauth: test fails without making a request when the credential is incomplete", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await xAuth.test({ credential: { username: "a" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("xauth: test surfaces the vendor's error_code on a rejected token", async () => {
+test("xauth: test surfaces the vendor's error_code on a rejected token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorEnvelope(1042, "Application is suspended") }]);
   const result = await xAuth.test({ credential: CRED }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("1042"));
 });
 
-Deno.test("xauth: verify_credentials never echoes the token/secret it was signed with", async () => {
+test("xauth: verify_credentials never echoes the token/secret it was signed with", async () => {
   const { ctx } = mockCtx([{ body: envelope([{ type: "user", user_id: 1, username: "alice" }]) }]);
   const result = await xAuth.test({ credential: CRED }, ctx);
   assert(!JSON.stringify(result).includes(CRED.oauthToken));
   assert(!JSON.stringify(result).includes(CRED.oauthTokenSecret));
 });
 
-Deno.test("xauth: afterConnect returns the canonical username and user id", async () => {
+test("xauth: afterConnect returns the canonical username and user id", async () => {
   const { ctx } = mockCtx([{
     body: envelope([{ type: "user", user_id: 99, username: "alice2" }]),
   }]);
@@ -168,17 +169,17 @@ Deno.test("xauth: afterConnect returns the canonical username and user id", asyn
   assertEquals(display, { username: "alice2", userId: 99 });
 });
 
-Deno.test("xauth: afterConnect stays silent (empty object) when the probe fails", async () => {
+test("xauth: afterConnect stays silent (empty object) when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorEnvelope(1042, "Application is suspended") }]);
   assertEquals(await xAuth.afterConnect!({ credential: CRED }, ctx), {});
 });
 
-Deno.test("xauth: declares no refresh or revoke hook — neither is documented by Instapaper", () => {
+test("xauth: declares no refresh or revoke hook — neither is documented by Instapaper", () => {
   assertEquals(xAuth.refresh, undefined);
   assertEquals(xAuth.revoke, undefined);
 });
 
-Deno.test("xauth: the password field is not required — Instapaper accounts may have none", () => {
+test("xauth: the password field is not required — Instapaper accounts may have none", () => {
   const password = xAuth.fields?.find((f) => f.key === "password");
   assertEquals(password?.required, false);
   assertEquals(password?.type, "secret");

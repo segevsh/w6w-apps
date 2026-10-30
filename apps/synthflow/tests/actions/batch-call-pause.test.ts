@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import batchCallPause from "../../actions/batch-call-pause.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("batch-call-pause: POST /calls/batch/{id}/pause with no body", async () => {
+test("batch-call-pause: POST /calls/batch/{id}/pause with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ batch_call_id: "b1", status: "pause" }) }]);
   const out = await batchCallPause.execute({ batch_call_id: "b1" }, ctx);
   assertEquals(calls[0].method, "POST");

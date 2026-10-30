@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import trackedTimeReportGet from "../../actions/tracked-time-report-get.ts";
 import { hostOf, mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tracked-time-report-get: sends from/to/groupBy/subGroupBy plus repeated id filters", async () => {
+test("tracked-time-report-get: sends from/to/groupBy/subGroupBy plus repeated id filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [{ subject: "Member A" }] } }]);
   const out = await trackedTimeReportGet.execute({
     from: "2021-12-20",
@@ -28,7 +29,7 @@ Deno.test("tracked-time-report-get: sends from/to/groupBy/subGroupBy plus repeat
   assertEquals(out.items, [{ subject: "Member A" }]);
 });
 
-Deno.test("tracked-time-report-get: requires from, to, groupBy and subGroupBy", async () => {
+test("tracked-time-report-get: requires from, to, groupBy and subGroupBy", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>

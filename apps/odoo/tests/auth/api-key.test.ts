@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import type { HookContext, SignableRequest } from "@w6w/types";
 import auth, { signExecuteKw } from "../../auth/api-key.ts";
 import {
@@ -24,7 +25,7 @@ const signable = (body: string): SignableRequest => ({
   body,
 });
 
-Deno.test("api-key: declares a custom auth method with the four connect fields", () => {
+test("api-key: declares a custom auth method with the four connect fields", () => {
   assertEquals(auth.key, "api-key");
   // `custom` is the accurate type: the credential goes into a positional slot of
   // a nested JSON array, which no declarative apiKey/bearer config can express.
@@ -37,7 +38,7 @@ Deno.test("api-key: declares a custom auth method with the four connect fields",
   ]);
 });
 
-Deno.test("api-key: only the API key field is secret, and it is required", () => {
+test("api-key: only the API key field is secret, and it is required", () => {
   const fields = auth.fields ?? [];
   const key = fields.find((f) => f.key === "apiKey")!;
   assertEquals(key.type, "secret");
@@ -52,7 +53,7 @@ Deno.test("api-key: only the API key field is secret, and it is required", () =>
 
 // --- THE argument ordering, which is where this API silently fails -----------
 
-Deno.test("sign: unshifts [db, uid, apiKey] in exactly that order", () => {
+test("sign: unshifts [db, uid, apiKey] in exactly that order", () => {
   const body = buildExecuteKwBody("res.partner", "search_read", [], { limit: 5 });
   const signed = JSON.parse(signExecuteKw(body, credential() as never));
 
@@ -68,7 +69,7 @@ Deno.test("sign: unshifts [db, uid, apiKey] in exactly that order", () => {
   assertEquals(signed.params.args.length, SIGNED_ARG_COUNT);
 });
 
-Deno.test("sign: preserves the model call's own args and kwargs untouched", () => {
+test("sign: preserves the model call's own args and kwargs untouched", () => {
   // A write is the shape most sensitive to a shifted index: [ids, vals].
   const body = buildExecuteKwBody("res.partner", "write", [[42], { name: "New" }], {
     context: { lang: "en_US" },
@@ -81,7 +82,7 @@ Deno.test("sign: preserves the model call's own args and kwargs untouched", () =
   assertEquals(signed.params.args[6], { context: { lang: "en_US" } });
 });
 
-Deno.test("sign: keeps the JSON-RPC envelope's own shape", () => {
+test("sign: keeps the JSON-RPC envelope's own shape", () => {
   const signed = JSON.parse(
     signExecuteKw(buildExecuteKwBody("res.users", "search_read"), credential() as never),
   );
@@ -91,7 +92,7 @@ Deno.test("sign: keeps the JSON-RPC envelope's own shape", () => {
   assertEquals(signed.params.method, "execute_kw");
 });
 
-Deno.test("sign: is idempotent — signing an already-signed body changes nothing", () => {
+test("sign: is idempotent — signing an already-signed body changes nothing", () => {
   const once = signExecuteKw(
     buildExecuteKwBody("res.partner", "read", [[1]]),
     credential() as never,
@@ -101,7 +102,7 @@ Deno.test("sign: is idempotent — signing an already-signed body changes nothin
   assertEquals(twice, once);
 });
 
-Deno.test("sign: throws on an execute_kw envelope with an unexpected arg count", () => {
+test("sign: throws on an execute_kw envelope with an unexpected arg count", () => {
   // Neither 4 nor 7 can only mean the client and the hook have drifted apart.
   const malformed = JSON.stringify({
     jsonrpc: "2.0",
@@ -116,7 +117,7 @@ Deno.test("sign: throws on an execute_kw envelope with an unexpected arg count",
   );
 });
 
-Deno.test("sign: throws rather than sending a call with no uid", () => {
+test("sign: throws rather than sending a call with no uid", () => {
   assertThrows(
     () =>
       signExecuteKw(
@@ -128,17 +129,17 @@ Deno.test("sign: throws rather than sending a call with no uid", () => {
   );
 });
 
-Deno.test("sign: leaves a non-execute_kw body alone", () => {
+test("sign: leaves a non-execute_kw body alone", () => {
   // An unauthenticated `common` call must survive being routed through signing.
   const body = buildCommonBody("version", []);
   assertEquals(signExecuteKw(body, credential() as never), body);
 });
 
-Deno.test("sign: leaves a non-JSON body alone", () => {
+test("sign: leaves a non-JSON body alone", () => {
   assertEquals(signExecuteKw("not json at all", credential() as never), "not json at all");
 });
 
-Deno.test("sign: sets the X-Odoo-Database header, which Odoo Online requires", () => {
+test("sign: sets the X-Odoo-Database header, which Odoo Online requires", () => {
   const request = signable(buildExecuteKwBody("res.partner", "search_read"));
   const signed = auth.sign!(
     { request, credential: credential() },
@@ -147,7 +148,7 @@ Deno.test("sign: sets the X-Odoo-Database header, which Odoo Online requires", (
   assertEquals(signed.headers["x-odoo-database"], TEST_DATABASE);
 });
 
-Deno.test("sign: the hook rewrites the body through the same code path", () => {
+test("sign: the hook rewrites the body through the same code path", () => {
   const request = signable(buildExecuteKwBody("crm.lead", "search_read", [], {}));
   const signed = auth.sign!(
     { request, credential: credential() },
@@ -158,7 +159,7 @@ Deno.test("sign: the hook rewrites the body through the same code path", () => {
   assertEquals(args[3], "crm.lead");
 });
 
-Deno.test("sign: never puts the credential in a header", () => {
+test("sign: never puts the credential in a header", () => {
   const request = signable(buildExecuteKwBody("res.partner", "search_read"));
   const signed = auth.sign!(
     { request, credential: credential() },
@@ -174,7 +175,7 @@ Deno.test("sign: never puts the credential in a header", () => {
 
 // --- exchange ---------------------------------------------------------------
 
-Deno.test("exchange: resolves the uid via common.authenticate and stores it", async () => {
+test("exchange: resolves the uid via common.authenticate and stores it", async () => {
   const { ctx, calls } = mockCtx([
     { result: TEST_UID }, // authenticate
     { result: { server_version: "saas~19.3+e" } }, // version, for the label
@@ -202,7 +203,7 @@ Deno.test("exchange: resolves the uid via common.authenticate and stores it", as
   assertEquals(cred.apiKey, TEST_API_KEY);
 });
 
-Deno.test("exchange: rejects credentials Odoo refuses, with an actionable message", async () => {
+test("exchange: rejects credentials Odoo refuses, with an actionable message", async () => {
   // Odoo returns `false` rather than raising for a bad login/password.
   const { ctx } = mockCtx([{ result: false }]);
   const err = await assertRejects(() =>
@@ -220,7 +221,7 @@ Deno.test("exchange: rejects credentials Odoo refuses, with an actionable messag
   assert(/API key/i.test((err as Error).message));
 });
 
-Deno.test("exchange: still succeeds when the version lookup fails", async () => {
+test("exchange: still succeeds when the version lookup fails", async () => {
   // The version is cosmetic — a Connection with no version label is fine.
   const { ctx } = mockCtx([
     { result: TEST_UID },
@@ -238,7 +239,7 @@ Deno.test("exchange: still succeeds when the version lookup fails", async () => 
   assertEquals(cred.serverVersion, undefined);
 });
 
-Deno.test("exchange: requires every field before making a network call", async () => {
+test("exchange: requires every field before making a network call", async () => {
   for (const missing of ["instanceUrl", "database", "username", "apiKey"]) {
     const fields: Record<string, string> = {
       instanceUrl: TEST_INSTANCE,
@@ -256,27 +257,27 @@ Deno.test("exchange: requires every field before making a network call", async (
 
 // --- test -------------------------------------------------------------------
 
-Deno.test("test: reports ok for a live credential", async () => {
+test("test: reports ok for a live credential", async () => {
   const { ctx, calls } = mockCtx([{ result: TEST_UID }]);
   assertEquals(await auth.test!({ credential: credential() }, ctx), { ok: true });
   // Probes the unauthenticated `common` service — no permission required.
   assertEquals(JSON.parse(calls[0].body!).params.service, "common");
 });
 
-Deno.test("test: reports not-ok when Odoo refuses the credential", async () => {
+test("test: reports not-ok when Odoo refuses the credential", async () => {
   const { ctx } = mockCtx([{ result: false }]);
   const result = await auth.test!({ credential: credential() }, ctx);
   assertEquals(result.ok, false);
 });
 
-Deno.test("test: reports not-ok, never throws, when the instance errors", async () => {
+test("test: reports not-ok, never throws, when the instance errors", async () => {
   const { ctx } = mockCtx([{ error: { data: { name: "odoo.exceptions.AccessDenied" } } }]);
   const result = await auth.test!({ credential: credential() }, ctx);
   assertEquals(result.ok, false);
   assert(/AccessDenied/.test(result.message ?? ""));
 });
 
-Deno.test("test: reports not-ok for an incomplete credential without calling out", async () => {
+test("test: reports not-ok for an incomplete credential without calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: { instanceUrl: TEST_INSTANCE } }, ctx);
   assertEquals(result.ok, false);
@@ -285,7 +286,7 @@ Deno.test("test: reports not-ok for an incomplete credential without calling out
 
 // --- afterConnect -----------------------------------------------------------
 
-Deno.test("afterConnect: publishes identifiers and NEVER the API key", async () => {
+test("afterConnect: publishes identifiers and NEVER the API key", async () => {
   const display = await auth.afterConnect!({ credential: credential() }, {} as HookContext);
   assertEquals(display, {
     instanceUrl: TEST_INSTANCE,
@@ -299,7 +300,7 @@ Deno.test("afterConnect: publishes identifiers and NEVER the API key", async () 
   assertEquals("apiKey" in display, false);
 });
 
-Deno.test("afterConnect: the connection label uses only published fields", () => {
+test("afterConnect: the connection label uses only published fields", () => {
   const label = auth.connectionLabel ?? "";
   for (const token of label.matchAll(/\{\{\s*([\w.]+)\s*\}\}/g)) {
     assert(

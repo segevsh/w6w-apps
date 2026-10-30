@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-cancel.ts";
 
@@ -13,7 +14,7 @@ const run = (status: string, forceCancelable = false) => ({
   },
 });
 
-Deno.test("run-cancel: posts to the ordinary cancel action with a bare comment", async () => {
+test("run-cancel: posts to the ordinary cancel action with a bare comment", async () => {
   const { ctx, calls } = mockCtx([run("planning"), { status: 202, body: {} }]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[1].url, "https://app.terraform.io/api/v2/runs/run-1/actions/cancel");
@@ -24,7 +25,7 @@ Deno.test("run-cancel: posts to the ordinary cancel action with a bare comment",
 });
 
 /** An interrupted apply leaves resources that exist and are not in state. */
-Deno.test("run-cancel: forcing needs an acknowledgement, and nothing is sent without it", async () => {
+test("run-cancel: forcing needs an acknowledgement, and nothing is sent without it", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("run-cancel: forcing needs an acknowledgement, and nothing is sent wit
 });
 
 /** HCP Terraform requires an ordinary cancel first and a cool-down after it. */
-Deno.test("run-cancel: refuses to force before the API would allow it", async () => {
+test("run-cancel: refuses to force before the API would allow it", async () => {
   const { ctx, calls } = mockCtx([run("applying", false)]);
   let message = "";
   try {
@@ -51,7 +52,7 @@ Deno.test("run-cancel: refuses to force before the API would allow it", async ()
   assertEquals(calls.length, 1);
 });
 
-Deno.test("run-cancel: an allowed force uses the force-cancel endpoint", async () => {
+test("run-cancel: an allowed force uses the force-cancel endpoint", async () => {
   const { ctx, calls } = mockCtx([run("applying", true), { status: 202, body: {} }]);
   const result = await action.execute(
     { runId: "run-1", force: true, confirmForce: true },
@@ -63,7 +64,7 @@ Deno.test("run-cancel: an allowed force uses the force-cancel endpoint", async (
 });
 
 /** The dangerous case is specifically a run in `applying`. */
-Deno.test("run-cancel: only a force-cancelled apply warns about state", async () => {
+test("run-cancel: only a force-cancelled apply warns about state", async () => {
   const applying = mockCtx([run("applying", true), { status: 202, body: {} }]);
   await action.execute({ runId: "run-1", force: true, confirmForce: true }, applying.ctx);
   assertEquals(applying.logs[0].level, "warn");
@@ -81,7 +82,7 @@ Deno.test("run-cancel: only a force-cancelled apply warns about state", async ()
   assertEquals(polite.logs[0].level, "info");
 });
 
-Deno.test("run-cancel: a run id is required", async () => {
+test("run-cancel: a run id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -93,7 +94,7 @@ Deno.test("run-cancel: a run id is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("run-cancel: the description contrasts the two", () => {
+test("run-cancel: the description contrasts the two", () => {
   assert(/FORCE kills it instead of stopping safely/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

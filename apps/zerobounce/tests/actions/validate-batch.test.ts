@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/validate-batch.ts";
 
-Deno.test("validate-batch: POSTs /v2/validatebatch with an email_batch array built from emails/ipAddresses", async () => {
+test("validate-batch: POSTs /v2/validatebatch with an email_batch array built from emails/ipAddresses", async () => {
   const body = {
     email_batch: [{ address: "a@example.com", status: "valid" }],
     errors: [],
@@ -28,7 +29,7 @@ Deno.test("validate-batch: POSTs /v2/validatebatch with an email_batch array bui
   assertEquals(result, body);
 });
 
-Deno.test("validate-batch: returns the vendor's envelope verbatim, including partial errors", async () => {
+test("validate-batch: returns the vendor's envelope verbatim, including partial errors", async () => {
   const body = {
     email_batch: [{ address: "a@example.com", status: "valid" }],
     errors: [{ error: "some failure", email_address: "b@example.com" }],
@@ -38,7 +39,7 @@ Deno.test("validate-batch: returns the vendor's envelope verbatim, including par
   assertEquals(result, body);
 });
 
-Deno.test("validate-batch: is a non-idempotent perform action scoped to the email resource", () => {
+test("validate-batch: is a non-idempotent perform action scoped to the email resource", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "email");
   assertEquals(action.idempotent, false);

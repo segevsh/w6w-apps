@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-product.ts";
 
-Deno.test("get-product: GETs /products/{id}", async () => {
+test("get-product: GETs /products/{id}", async () => {
   const product = { id: 1, label: "Product 1", price_before_tax: "12.5", vat_rate: "FR_200" };
   const { ctx, calls } = mockCtx([{ body: product }]);
   const res = await action.execute({ id: "1" }, ctx);

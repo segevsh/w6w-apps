@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventUpdate from "../../actions/event-update.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("event-update: metadata — idempotent partial update", () => {
+test("event-update: metadata — idempotent partial update", () => {
   assertEquals(eventUpdate.type, "perform");
   assertEquals(eventUpdate.idempotent, true);
 });
 
-Deno.test("event-update: PUT /events/{eventId} with only the fields set", async () => {
+test("event-update: PUT /events/{eventId} with only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "e1") }]);
   const result = asMutation(
     await eventUpdate.execute({ eventId: "e1", name: "Coffee with Patrick" }, ctx),

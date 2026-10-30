@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-simple-price.ts";
 
-Deno.test("get-simple-price: calls the documented path with the mapped query", async () => {
+test("get-simple-price: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { bitcoin: { usd: 1 } } }]);
   const out = await action.execute!({
     vsCurrencies: "usd, eur",
@@ -19,7 +20,7 @@ Deno.test("get-simple-price: calls the documented path with the mapped query", a
   assert(out !== undefined);
 });
 
-Deno.test("get-simple-price: a vendor error body becomes a readable error", async () => {
+test("get-simple-price: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },
@@ -36,7 +37,7 @@ Deno.test("get-simple-price: a vendor error body becomes a readable error", asyn
   );
 });
 
-Deno.test("get-simple-price: required input is validated before any request", async () => {
+test("get-simple-price: required input is validated before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ vsCurrencies: "usd" }, ctx),

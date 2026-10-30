@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-delivery-create.ts";
 
-Deno.test("document-delivery-create: POSTs type and settings", async () => {
+test("document-delivery-create: POSTs type and settings", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "2344", success: 1 } }]);
   const out = await action.execute(
     {
@@ -24,11 +25,11 @@ Deno.test("document-delivery-create: POSTs type and settings", async () => {
   assert(out !== null);
 });
 
-Deno.test("document-delivery-create: idempotent flag is false", () => {
+test("document-delivery-create: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-delivery-create: declares key, type and a description", () => {
+test("document-delivery-create: declares key, type and a description", () => {
   assertEquals(action.key, "document-delivery-create");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

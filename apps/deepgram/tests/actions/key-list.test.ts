@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-list.ts";
 
@@ -9,7 +10,7 @@ const keys = (list: unknown[]) => ({ status: 200, body: { api_keys: list } });
  * A key with no expiry lives forever, and a key quietly given `owner` is the
  * finding an access review is looking for.
  */
-Deno.test("key-list: separates the keys with no expiry and the privileged ones", async () => {
+test("key-list: separates the keys with no expiry and the privileged ones", async () => {
   const { ctx, calls } = mockCtx([keys([
     {
       api_key: {
@@ -32,7 +33,7 @@ Deno.test("key-list: separates the keys with no expiry and the privileged ones",
   assertEquals(result.privileged, ["old-import"]);
 });
 
-Deno.test("key-list: an unnamed key falls back to its id, not to nothing", async () => {
+test("key-list: an unnamed key falls back to its id, not to nothing", async () => {
   const { ctx } = mockCtx([keys([{ api_key: { api_key_id: "k3", scopes: ["member"] } }])], {
     display,
   });
@@ -41,6 +42,6 @@ Deno.test("key-list: an unnamed key falls back to its id, not to nothing", async
 });
 
 /** Deepgram shows a key once at creation, so listing them leaks nothing. */
-Deno.test("key-list: says the values are never returned", () => {
+test("key-list: says the values are never returned", () => {
   assert(/never returned/.test(action.description!), action.description);
 });

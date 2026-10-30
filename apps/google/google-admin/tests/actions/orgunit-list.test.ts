@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/orgunit-list.ts";
 
-Deno.test("orgunit-list: GETs /customer/my_customer/orgunits with defaults", async () => {
+test("orgunit-list: GETs /customer/my_customer/orgunits with defaults", async () => {
   const body = { organizationUnits: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -15,7 +16,7 @@ Deno.test("orgunit-list: GETs /customer/my_customer/orgunits with defaults", asy
   assertEquals(result, body);
 });
 
-Deno.test("orgunit-list: forwards a custom customerId, path and scope", async () => {
+test("orgunit-list: forwards a custom customerId, path and scope", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ customerId: "C123", orgUnitPath: "/Sales", type: "all" }, ctx);
   const url = new URL(calls[0].url);

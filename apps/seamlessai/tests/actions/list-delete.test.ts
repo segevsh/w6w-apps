@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-delete.ts";
 
 const RESPONSE = { "success": true };
 
-Deno.test("list-delete: calls DELETE /api/client/v2/lists/{id} and returns the vendor body", async () => {
+test("list-delete: calls DELETE /api/client/v2/lists/{id} and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "id": "3" }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("list-delete: calls DELETE /api/client/v2/lists/{id} and returns the v
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("list-delete: sends nothing for fields left unset", async () => {
+test("list-delete: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "3" }, ctx);
   const url = new URL(calls[0].url);
@@ -26,13 +27,13 @@ Deno.test("list-delete: sends nothing for fields left unset", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("list-delete: refuses a missing id before any request", async () => {
+test("list-delete: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-delete: surfaces the vendor's error body", async () => {
+test("list-delete: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

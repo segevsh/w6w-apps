@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeFieldUpdate from "../../actions/route-field-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-field-update: PUT /api/routes/fields/{routeId}/{fieldId}", async () => {
+test("route-field-update: PUT /api/routes/fields/{routeId}/{fieldId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeFieldUpdate.execute(
     { "routeId": 13, "fieldId": 21, "name": "customer_name", "fieldMap": "Customer.Name" } as never,
@@ -18,7 +19,7 @@ Deno.test("route-field-update: PUT /api/routes/fields/{routeId}/{fieldId}", asyn
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("route-field-update: a vendor error surfaces its own message", async () => {
+test("route-field-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -39,5 +40,5 @@ Deno.test("route-field-update: a vendor error surfaces its own message", async (
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("route-field-update: idempotency is declared as true", () =>
+test("route-field-update: idempotency is declared as true", () =>
   assertEquals(routeFieldUpdate.idempotent, true));

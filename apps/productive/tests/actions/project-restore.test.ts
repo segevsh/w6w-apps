@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectRestore from "../../actions/project-restore.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-restore: PATCH /projects/{id}/restore sends no body and flattens the answer", async () => {
+test("project-restore: PATCH /projects/{id}/restore sends no body and flattens the answer", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "projects", "attributes": { "name": "x" } } },
@@ -17,7 +18,7 @@ Deno.test("project-restore: PATCH /projects/{id}/restore sends no body and flatt
   assertEquals(out.id, "42");
 });
 
-Deno.test("project-restore: a vendor error surfaces its status, title and detail", async () => {
+test("project-restore: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -30,7 +31,7 @@ Deno.test("project-restore: a vendor error surfaces its status, title and detail
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("project-restore: declares perform and idempotent=true", () => {
+test("project-restore: declares perform and idempotent=true", () => {
   assertEquals(projectRestore.type, "perform");
   assertEquals(projectRestore.idempotent, true);
   assertEquals(projectRestore.key, "project-restore");

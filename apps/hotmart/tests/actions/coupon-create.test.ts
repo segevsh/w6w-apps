@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import couponCreate from "../../actions/coupon-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("coupon-create - POSTs the product path with the coupon body, dropping unset fields", async () => {
+test("coupon-create - POSTs the product path with the coupon body, dropping unset fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await couponCreate.execute(
     { productId: 1234567, code: "SAVE10", discount: 0.1 },
@@ -14,7 +15,7 @@ Deno.test("coupon-create - POSTs the product path with the coupon body, dropping
   assertEquals(out, { ok: true });
 });
 
-Deno.test("coupon-create - sends dates, affiliate and offer_ids when provided", async () => {
+test("coupon-create - sends dates, affiliate and offer_ids when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await couponCreate.execute({
     productId: 1,
@@ -38,11 +39,11 @@ Deno.test("coupon-create - sends dates, affiliate and offer_ids when provided", 
   );
 });
 
-Deno.test("coupon-create - is declared non-idempotent", () => {
+test("coupon-create - is declared non-idempotent", () => {
   assertEquals(couponCreate.idempotent, false);
 });
 
-Deno.test("coupon-create - surfaces the vendor's internal_error verbatim (e.g. subscription products)", async () => {
+test("coupon-create - surfaces the vendor's internal_error verbatim (e.g. subscription products)", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: errorBody("internal_error", "It was not possible to save a coupon.") },
   ]);

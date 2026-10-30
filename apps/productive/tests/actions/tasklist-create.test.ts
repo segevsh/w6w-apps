@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tasklistCreate from "../../actions/tasklist-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tasklist-create: POST /task_lists sends a JSON:API document of attributes", async () => {
+test("tasklist-create: POST /task_lists sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "task_lists", "attributes": { "name": "x" } } },
@@ -29,7 +30,7 @@ Deno.test("tasklist-create: POST /task_lists sends a JSON:API document of attrib
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("tasklist-create: a vendor error surfaces its status, title and detail", async () => {
+test("tasklist-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -42,7 +43,7 @@ Deno.test("tasklist-create: a vendor error surfaces its status, title and detail
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("tasklist-create: declares perform and idempotent=false", () => {
+test("tasklist-create: declares perform and idempotent=false", () => {
   assertEquals(tasklistCreate.type, "perform");
   assertEquals(tasklistCreate.idempotent, false);
   assertEquals(tasklistCreate.key, "tasklist-create");

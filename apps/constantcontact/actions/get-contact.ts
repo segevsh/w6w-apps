@@ -29,7 +29,16 @@ const getContact: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include sub-resources",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "list_memberships", label: "List memberships" },
+        { value: "phone_numbers", label: "Phone numbers" },
+        { value: "street_addresses", label: "Street addresses" },
+        { value: "taggings", label: "Taggings" },
+        { value: "notes", label: "Notes" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated: `custom_fields`, `list_memberships`, `phone_numbers`, `street_addresses`, `taggings`, `notes`.",
     },

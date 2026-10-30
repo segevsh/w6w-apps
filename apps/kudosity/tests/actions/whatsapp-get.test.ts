@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import whatsappGet from "../../actions/whatsapp-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-get: returns the unwrapped message with events", async () => {
+test("whatsapp-get: returns the unwrapped message with events", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ id: "w1", status: "DELIVERED", events: [{ event_type: "SENT" }] }),
   }]);

@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import collectionDelete from "../../actions/collection-delete.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "collection_id": "22222222-2222-4222-8222-222222222222" };
 const RESPONSE = { "request_id": "r9" };
 
-Deno.test("collection-delete: DELETE /v2/collections/{collection_id}", async () => {
+test("collection-delete: DELETE /v2/collections/{collection_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await collectionDelete.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -18,13 +19,13 @@ Deno.test("collection-delete: DELETE /v2/collections/{collection_id}", async () 
   assertEquals(out.ok, true);
 });
 
-Deno.test("collection-delete: puts no credential on the request (sign owns that)", async () => {
+test("collection-delete: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await collectionDelete.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("collection-delete: a vendor error surfaces its own message", async () => {
+test("collection-delete: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

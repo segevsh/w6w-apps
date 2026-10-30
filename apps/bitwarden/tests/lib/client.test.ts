@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   assertUuid,
@@ -15,7 +16,7 @@ import {
 
 const UUID = "3f2b8c1e-5a4d-4e6f-9a1b-7c8d9e0f1a2b";
 
-Deno.test("client: the region comes from the connection and defaults to US", async () => {
+test("client: the region comes from the connection and defaults to US", async () => {
   assertEquals(regionFromConnection(undefined), "us");
   const { ctx, calls } = mockCtx([{ body: {} }], { display: { region: "eu" } });
   await new BitwardenClient(ctx).request("/groups");
@@ -23,12 +24,12 @@ Deno.test("client: the region comes from the connection and defaults to US", asy
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: an empty 200 body is null, not a parse error", async () => {
+test("client: an empty 200 body is null, not a parse error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await new BitwardenClient(ctx, "us").request("/x", { method: "DELETE" }), null);
 });
 
-Deno.test("client: a 400 surfaces the message and per-field errors", async () => {
+test("client: a 400 surfaces the message and per-field errors", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { object: "error", message: "The model state is invalid.", errors: { Email: ["bad"] } },
@@ -38,12 +39,12 @@ Deno.test("client: a 400 surfaces the message and per-field errors", async () =>
   assert(/Email: bad/.test((err as Error).message), (err as Error).message);
 });
 
-Deno.test("client: an empty 404 explains that Bitwarden hides the reason", () => {
+test("client: an empty 404 explains that Bitwarden hides the reason", () => {
   assert(/empty body/.test(describeError(404, "")));
   assert(/region/.test(describeError(401, "")));
 });
 
-Deno.test("client: unset query values are dropped, false and 0 are kept", async () => {
+test("client: unset query values are dropped, false and 0 are kept", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new BitwardenClient(ctx, "us").request("/events", {
     query: { a: undefined, b: "", c: 0, d: false },
@@ -51,7 +52,7 @@ Deno.test("client: unset query values are dropped, false and 0 are kept", async 
   assertEquals(new URL(calls[0].url).search, "?c=0&d=false");
 });
 
-Deno.test("helpers: region, uuid, enums, lists, dates and associations", () => {
+test("helpers: region, uuid, enums, lists, dates and associations", () => {
   assertEquals(normalizeRegion(" EU "), "eu");
   assertThrows(() => normalizeRegion("gov"));
   assertEquals(assertUuid(UUID.toUpperCase(), "x"), UUID);

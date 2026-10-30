@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardMove from "../../actions/card-move.ts";
 
-Deno.test("card-move: moves a card and returns its new phase", async () => {
+test("card-move: moves a card and returns its new phase", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { moveCardToPhase: { card: { id: "1", current_phase: { id: "10" } } } } },
   }]);
@@ -18,7 +19,7 @@ Deno.test("card-move: moves a card and returns its new phase", async () => {
   );
 });
 
-Deno.test("card-move: an invalid transition surfaces Pipefy's own error text", async () => {
+test("card-move: an invalid transition surfaces Pipefy's own error text", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: { moveCardToPhase: null },
@@ -32,7 +33,7 @@ Deno.test("card-move: an invalid transition surfaces Pipefy's own error text", a
   );
 });
 
-Deno.test("card-move: type/resource/idempotency metadata", () => {
+test("card-move: type/resource/idempotency metadata", () => {
   assertEquals(cardMove.type, "perform");
   assertEquals(cardMove.resource, "card");
   assertEquals(cardMove.idempotent, true);

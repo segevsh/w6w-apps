@@ -1,18 +1,19 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares two auth methods and the expected action/health-check counts", () => {
+test("index: declares two auth methods and the expected action/health-check counts", () => {
   assertEquals(app.auth?.map((a) => a.key), ["conversions-token", "oauth2"]);
   assertEquals(app.actions.length, 5);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action key is unique", () => {
+test("index: every action key is unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
 });
 
-Deno.test("index: every action has a title, type, description, output and execute hook", () => {
+test("index: every action has a title, type, description, output and execute hook", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(typeof action.type, "string");
@@ -22,13 +23,13 @@ Deno.test("index: every action has a title, type, description, output and execut
   }
 });
 
-Deno.test("index: every perform action declares idempotent honestly", () => {
+test("index: every perform action declares idempotent honestly", () => {
   for (const action of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof action.idempotent, "boolean", `${action.key} does not declare idempotent`);
   }
 });
 
-Deno.test("index: covers the whole Conversions API surface and nothing more", () => {
+test("index: covers the whole Conversions API surface and nothing more", () => {
   assertEquals(app.actions.map((a) => a.key), [
     "send-event",
     "send-events",
@@ -38,7 +39,7 @@ Deno.test("index: covers the whole Conversions API surface and nothing more", ()
   ]);
 });
 
-Deno.test("index: does not duplicate the sibling Meta apps' surfaces", () => {
+test("index: does not duplicate the sibling Meta apps' surfaces", () => {
   const keys = app.actions.map((a) => a.key);
   // facebook (Pages) …
   for (const k of ["create-post", "list-posts", "get-page", "get-page-insights"]) {
@@ -50,7 +51,7 @@ Deno.test("index: does not duplicate the sibling Meta apps' surfaces", () => {
   }
 });
 
-Deno.test("index: health checks are keyed service and quota", () => {
+test("index: health checks are keyed service and quota", () => {
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });
 
@@ -62,7 +63,7 @@ Deno.test("index: health checks are keyed service and quota", () => {
  * JSON editor. facebook-conversions' own group on `send-event` is a
  * legitimate group and must pass this guard, not fail it.
  */
-Deno.test('index: no `type: "group"` param is missing or has empty `children`', () => {
+test('index: no `type: "group"` param is missing or has empty `children`', () => {
   const childless: string[] = [];
   const walk = (actionKey: string, list: unknown) => {
     for (const entry of (list ?? []) as Array<Record<string, unknown>>) {
@@ -78,7 +79,7 @@ Deno.test('index: no `type: "group"` param is missing or has empty `children`', 
   assertEquals(childless, []);
 });
 
-Deno.test("index: the childless-group guard actually flags a childless group", () => {
+test("index: the childless-group guard actually flags a childless group", () => {
   const childless: string[] = [];
   const walk = (actionKey: string, list: unknown) => {
     for (const entry of (list ?? []) as Array<Record<string, unknown>>) {
@@ -94,7 +95,7 @@ Deno.test("index: the childless-group guard actually flags a childless group", (
   assertEquals(childless, ["synthetic.bad"]);
 });
 
-Deno.test("index: every write action offers the hashing control", () => {
+test("index: every write action offers the hashing control", () => {
   for (const action of app.actions.filter((a) => a.type === "perform")) {
     const hashing = action.params?.find((p) => p.key === "hashing");
     assert(hashing, `${action.key} has no hashing param`);

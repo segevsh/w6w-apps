@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callGet from "../../actions/call-get.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
 const PAGE = { total_records: 1, limit: 20, offset: 0 };
 
-Deno.test("call-get: GET /calls/{id} and unwraps the one-element calls array", async () => {
+test("call-get: GET /calls/{id} and unwraps the one-element calls array", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ pagination: PAGE, calls: [{ call_id: "c1", transcript: "hi" }] }),
   }]);

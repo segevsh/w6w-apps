@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ApiTemplateClient } from "../../lib/client.ts";
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: { status: "error", message: "not found" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v2/get-template"), true);
 });
 
-Deno.test("client: throws when the API reports a 200 with status: error", async () => {
+test("client: throws when the API reports a 200 with status: error", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { status: "error", message: "template not found" } },
   ]);
@@ -27,7 +28,7 @@ Deno.test("client: throws when the API reports a 200 with status: error", async 
   );
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new ApiTemplateClient(ctx);
   await client.request("/x", {
@@ -40,7 +41,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new ApiTemplateClient(ctx);
   await client.request("/v2/create-pdf", {
@@ -51,7 +52,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Alice" });
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new ApiTemplateClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -60,7 +61,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: non-JSON responses returned as text", async () => {
+test("client: non-JSON responses returned as text", async () => {
   const { ctx } = mockCtx([
     { body: "plain text body", headers: { "content-type": "text/plain" } },
   ]);

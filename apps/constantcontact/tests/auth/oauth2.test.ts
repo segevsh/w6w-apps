@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the authorization-code flow against the authz host", () => {
+test("oauth2: declares the authorization-code flow against the authz host", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(
@@ -16,11 +17,11 @@ Deno.test("oauth2: declares the authorization-code flow against the authz host",
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: requests offline_access so a refresh token is issued", () => {
+test("oauth2: requests offline_access so a refresh token is issued", () => {
   assert(auth.oauth2?.scopes?.includes("offline_access"));
 });
 
-Deno.test("oauth2: requests only the scopes this app uses, and no write-account scope", () => {
+test("oauth2: requests only the scopes this app uses, and no write-account scope", () => {
   assertEquals(auth.oauth2?.scopes, [
     "contact_data",
     "campaign_data",
@@ -31,11 +32,11 @@ Deno.test("oauth2: requests only the scopes this app uses, and no write-account 
   assert(!auth.oauth2?.scopes?.includes("billing_data"));
 });
 
-Deno.test("oauth2: does not use the retired idfed token host", () => {
+test("oauth2: does not use the retired idfed token host", () => {
   assert(!auth.oauth2?.tokenUrl?.includes("idfed"));
 });
 
-Deno.test("oauth2: sign injects `Authorization: Bearer <accessToken>`", async () => {
+test("oauth2: sign injects `Authorization: Bearer <accessToken>`", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.cc.email/v3/contacts",
@@ -46,7 +47,7 @@ Deno.test("oauth2: sign injects `Authorization: Bearer <accessToken>`", async ()
   assertEquals(out.headers["authorization"], "Bearer jwt-abc");
 });
 
-Deno.test("oauth2: sign makes no network call", async () => {
+test("oauth2: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   const request = {
     url: "https://api.cc.email/v3/contacts",
@@ -57,7 +58,7 @@ Deno.test("oauth2: sign makes no network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test with a missing token fails without a network call", async () => {
+test("oauth2: test with a missing token fails without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -65,7 +66,7 @@ Deno.test("oauth2: test with a missing token fails without a network call", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes /contacts?limit=1, not the account summary", async () => {
+test("oauth2: test probes /contacts?limit=1, not the account summary", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { contacts: [] } }]);
   const result = await auth.test({ credential: { accessToken: "jwt-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -77,14 +78,14 @@ Deno.test("oauth2: test probes /contacts?limit=1, not the account summary", asyn
   assertEquals(calls[0].headers["authorization"], "Bearer jwt-abc");
 });
 
-Deno.test("oauth2: test reports a 403 as a scope problem, distinct from a dead token", async () => {
+test("oauth2: test reports a 403 as a scope problem, distinct from a dead token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "narrow" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("contact_data"));
 });
 
-Deno.test("oauth2: test surfaces the upstream status on a 401", async () => {
+test("oauth2: test surfaces the upstream status on a 401", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
@@ -92,7 +93,7 @@ Deno.test("oauth2: test surfaces the upstream status on a 401", async () => {
   assert(!(result.message ?? "").includes("contact_data"));
 });
 
-Deno.test("oauth2: afterConnect labels the connection from the account summary", async () => {
+test("oauth2: afterConnect labels the connection from the account summary", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       organization_name: "Acme Co",
@@ -111,11 +112,11 @@ Deno.test("oauth2: afterConnect labels the connection from the account summary",
   assertEquals(out.account?.website, undefined, "only the label fields are carried");
 });
 
-Deno.test("oauth2: afterConnect tolerates a 403 from a connection lacking account_read", async () => {
+test("oauth2: afterConnect tolerates a 403 from a connection lacking account_read", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {});
 });
 
-Deno.test("oauth2: connectionLabel names the organisation", () => {
+test("oauth2: connectionLabel names the organisation", () => {
   assertEquals(auth.connectionLabel, "{{account.organization_name}}");
 });

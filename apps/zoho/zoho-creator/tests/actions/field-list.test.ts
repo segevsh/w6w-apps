@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/field-list.ts";
 
-Deno.test("field-list: GETs /meta/<owner>/<app>/form/<form>/fields", async () => {
+test("field-list: GETs /meta/<owner>/<app>/form/<form>/fields", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { code: 3000, fields: [{ link_name: "Email", type: 3 }] } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("field-list: GETs /meta/<owner>/<app>/form/<form>/fields", async () =>
   assertEquals(out, { fields: [{ link_name: "Email", type: 3 }] });
 });
 
-Deno.test("field-list: defaults to an empty array when the body carries none", async () => {
+test("field-list: defaults to an empty array when the body carries none", async () => {
   const { ctx } = mockCreatorCtx([{ body: { code: 3000 } }]);
   const out = await action.execute(
     { accountOwnerName: "jason18", appLinkName: "zylker-store", formLinkName: "Orders" },
@@ -24,7 +25,7 @@ Deno.test("field-list: defaults to an empty array when the body carries none", a
   assertEquals(out, { fields: [] });
 });
 
-Deno.test("field-list: sends the environment header when set", async () => {
+test("field-list: sends the environment header when set", async () => {
   const { ctx, calls } = mockCreatorCtx([{ body: { code: 3000, fields: [] } }]);
   await action.execute(
     {

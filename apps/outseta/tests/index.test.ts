@@ -1,19 +1,21 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, one auth method and two health checks", () => {
+test("index: exports actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, 39);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const k of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(k), `not kebab-case: ${k}`);
 });
 
-Deno.test("index: every action has a valid type, description, output and execute hook", () => {
+test("index: every action has a valid type, description, output and execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type`);
     assert(a.description && a.description.length > 0, `${a.key}: no description`);
@@ -22,7 +24,7 @@ Deno.test("index: every action has a valid type, description, output and execute
   }
 });
 
-Deno.test("index: every perform action states idempotency; creates are not idempotent", () => {
+test("index: every perform action states idempotency; creates are not idempotent", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   for (const a of performs) assertEquals(typeof a.idempotent, "boolean", a.key);
   for (const a of performs) {
@@ -35,7 +37,7 @@ Deno.test("index: every perform action states idempotency; creates are not idemp
   }
 });
 
-Deno.test("index: every list action carries the shared paging params", () => {
+test("index: every list action carries the shared paging params", () => {
   const lists = app.actions.filter((a) => a.key.startsWith("list-"));
   assertEquals(lists.length, 13);
   for (const a of lists) {
@@ -46,7 +48,7 @@ Deno.test("index: every list action carries the shared paging params", () => {
   }
 });
 
-Deno.test("index: every param has a key and a label, and keys are unique per action", () => {
+test("index: every param has a key and a label, and keys are unique per action", () => {
   for (const a of app.actions) {
     const keys = (a.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key}: duplicate param`);
@@ -59,9 +61,9 @@ function code(src: string): string {
   return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action touches a credential, global fetch, Deno.* or a literal host", async () => {
+test("index: no action touches a credential, global fetch, Deno.* or a literal host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -72,13 +74,13 @@ Deno.test("index: no action touches a credential, global fetch, Deno.* or a lite
   }
 });
 
-Deno.test("index: the comment stripper strips, and a URL's // survives", () => {
+test("index: the comment stripper strips, and a URL's // survives", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assert(code('const u = "https://x/y";').includes("https://x/y"));
   assert(/credential/.test(code("const c = credential;")));
 });
 
-Deno.test("index: the manifest allows only the per-account vendor domain", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: the manifest allows only the per-account vendor domain", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["*.outseta.com"]);
 });

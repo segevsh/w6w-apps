@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createEvent from "../../actions/create-event.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-event: POSTs /v1/events with required start/end dates", async () => {
+test("create-event: POSTs /v1/events with required start/end dates", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: item("1", "event", { name: "New Appointment" }),
@@ -20,7 +21,7 @@ Deno.test("create-event: POSTs /v1/events with required start/end dates", async 
   assertEquals(out.id, "1");
 });
 
-Deno.test("create-event: forwards reminder/association/host fields when set", async () => {
+test("create-event: forwards reminder/association/host fields when set", async () => {
   const { ctx, calls } = mockCtx([{ body: item("2", "event", {}) }]);
   await createEvent.execute({
     name: "Consultation",
@@ -45,12 +46,12 @@ Deno.test("create-event: forwards reminder/association/host fields when set", as
   assertEquals(body.send_invites, true);
 });
 
-Deno.test("create-event: eventable type options never include Company", () => {
+test("create-event: eventable type options never include Company", () => {
   const options = createEvent.params?.find((p) => p.key === "eventableType")?.options;
   const values = (options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values.includes("Company"), false);
 });
 
-Deno.test("create-event: is marked non-idempotent", () => {
+test("create-event: is marked non-idempotent", () => {
   assertEquals(createEvent.idempotent, false);
 });

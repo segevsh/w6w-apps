@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderCreate, { deriveExternalId } from "../../actions/order-create.ts";
 import { API_ROOT, mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const ORDER = {
   rewards: [{ id: "CED3MVGA0K9O", order_id: "PWU1IKBP333U" }],
 };
 
-Deno.test("order-create: sends a single-reward order and returns it unwrapped", async () => {
+test("order-create: sends a single-reward order and returns it unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { order: ORDER } }]);
   const result = await orderCreate.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("order-create: sends a single-reward order and returns it unwrapped", 
   assertEquals(result.duplicate, false);
 });
 
-Deno.test("order-create: a 201 status reports duplicate: true", async () => {
+test("order-create: a 201 status reports duplicate: true", async () => {
   const { ctx } = mockCtx([{ status: 201, body: { order: ORDER } }]);
   const result = await orderCreate.execute(
     {
@@ -51,7 +52,7 @@ Deno.test("order-create: a 201 status reports duplicate: true", async () => {
   assertEquals(result.duplicate, true);
 });
 
-Deno.test("order-create: derives a stable external_id from the invocation when none is given", async () => {
+test("order-create: derives a stable external_id from the invocation when none is given", async () => {
   const { ctx: ctxA, calls: callsA } = mockCtxWithInvocation(
     [{ status: 200, body: { order: ORDER } }],
     "inv-same-seed",
@@ -74,7 +75,7 @@ Deno.test("order-create: derives a stable external_id from the invocation when n
   assertEquals(idA, idB, "same invocation must derive the same external_id");
 });
 
-Deno.test("order-create: requires either campaignId or products", async () => {
+test("order-create: requires either campaignId or products", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await orderCreate.execute({ fundingSourceId: "BALANCE", denomination: 10 }, ctx),
@@ -83,7 +84,7 @@ Deno.test("order-create: requires either campaignId or products", async () => {
   );
 });
 
-Deno.test("order-create: omits empty nested objects rather than sending {}", async () => {
+test("order-create: omits empty nested objects rather than sending {}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { order: ORDER } }]);
   await orderCreate.execute(
     { fundingSourceId: "BALANCE", campaignId: "IVM0I3WNJJL0", denomination: 10 },
@@ -94,7 +95,7 @@ Deno.test("order-create: omits empty nested objects rather than sending {}", asy
   assertEquals(body.reward.delivery, undefined);
 });
 
-Deno.test("deriveExternalId: is deterministic for a given seed", async () => {
+test("deriveExternalId: is deterministic for a given seed", async () => {
   const a = await deriveExternalId("seed-1");
   const b = await deriveExternalId("seed-1");
   const c = await deriveExternalId("seed-2");

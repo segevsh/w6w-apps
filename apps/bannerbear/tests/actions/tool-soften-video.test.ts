@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolSoftenVideo from "../../actions/tool-soften-video.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-soften-video: POST /tools/soften_video, defaults strength to medium", async () => {
+test("tool-soften-video: POST /tools/soften_video, defaults strength to medium", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "soften_video" } }]);
   await toolSoftenVideo.execute({ videoUrl: "https://x/in.mp4" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("tool-soften-video: POST /tools/soften_video, defaults strength to med
   assertEquals(JSON.parse(calls[0].body!), { video_url: "https://x/in.mp4", strength: "medium" });
 });
 
-Deno.test("tool-soften-video: requires videoUrl", async () => {
+test("tool-soften-video: requires videoUrl", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolSoftenVideo.execute({ videoUrl: "" }, ctx));
 });

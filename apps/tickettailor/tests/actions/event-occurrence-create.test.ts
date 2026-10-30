@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventOccurrenceCreate from "../../actions/event-occurrence-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-occurrence-create: POSTs start/end date+time fields", async () => {
+test("event-occurrence-create: POSTs start/end date+time fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "ev_1" } }]);
   await eventOccurrenceCreate.execute(
     {

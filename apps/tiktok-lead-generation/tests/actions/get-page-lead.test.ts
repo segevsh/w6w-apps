@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getPageLead from "../../actions/get-page-lead.ts";
 import { envelope, errorEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-page-lead: calls GET /page/lead/get/ with business_id + filtering", async () => {
+test("get-page-lead: calls GET /page/lead/get/ with business_id + filtering", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ lead_id: "1" }) }]);
 
   const out = await getPageLead.execute(
@@ -17,7 +18,7 @@ Deno.test("get-page-lead: calls GET /page/lead/get/ with business_id + filtering
   assertEquals(out, { data: { lead_id: "1" } });
 });
 
-Deno.test("get-page-lead: propagates a TikTok error code", async () => {
+test("get-page-lead: propagates a TikTok error code", async () => {
   const { ctx } = mockCtx([{ body: errorEnvelope(40105, "Access token is incorrect.") }]);
   const err = await assertRejects(async () =>
     await getPageLead.execute({ businessId: "biz-1" }, ctx)

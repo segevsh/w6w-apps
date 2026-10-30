@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listUpdate from "../../actions/list-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-update: PATCHes /labels/{id}", async () => {
+test("list-update: PATCHes /labels/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { label: { id: "l1", name: "Renamed" } } }]);
   const out = await listUpdate.execute({ id: "l1", name: "Renamed" }, ctx) as {
     list: { name: string };
@@ -11,6 +12,6 @@ Deno.test("list-update: PATCHes /labels/{id}", async () => {
   assertEquals(out.list.name, "Renamed");
 });
 
-Deno.test("list-update: idempotent", () => {
+test("list-update: idempotent", () => {
   assertEquals(listUpdate.idempotent, true);
 });

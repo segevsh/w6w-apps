@@ -18,7 +18,12 @@ const unsubscribeList: ActionDefinition<Input> = {
     {
       key: "sort",
       label: "Sort field",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [{ value: "name", label: "name" }, { value: "email", label: "email" }, {
+        value: "createdAt",
+        label: "createdAt",
+      }],
       hint: "One of `name`, `email`, `createdAt`.",
     },
     { key: "sortAscending", label: "Sort ascending", type: "boolean", hint: "Sort A-Z." },

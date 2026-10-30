@@ -1,4 +1,4 @@
-import { assert } from "@std/assert";
+import { assert } from "./_assert.ts";
 import type { CallRecord } from "./_helpers.ts";
 
 export const ENDPOINT =

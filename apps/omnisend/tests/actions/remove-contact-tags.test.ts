@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import removeContactTags from "../../actions/remove-contact-tags.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("remove-contact-tags: DELETEs /contacts/tags with a JSON body, not query params", async () => {
+test("remove-contact-tags: DELETEs /contacts/tags with a JSON body, not query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await removeContactTags.execute({ tags: ["vip"], emails: ["a@b.com"] }, ctx);
 
@@ -14,12 +15,12 @@ Deno.test("remove-contact-tags: DELETEs /contacts/tags with a JSON body, not que
   assertEquals(body, { tags: ["vip"], emails: ["a@b.com"] });
 });
 
-Deno.test("remove-contact-tags: tags is required", () => {
+test("remove-contact-tags: tags is required", () => {
   const tags = removeContactTags.params?.find((p) => p.key === "tags");
   assertEquals(tags?.required, true);
 });
 
-Deno.test("remove-contact-tags: is marked idempotent", () => {
+test("remove-contact-tags: is marked idempotent", () => {
   assertEquals(removeContactTags.idempotent, true);
   assertEquals(removeContactTags.type, "perform");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadUpdate from "../../actions/lead-update.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-update: PUTs to /v2/leads/:id with a replaced tag set", async () => {
+test("lead-update: PUTs to /v2/leads/:id with a replaced tag set", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await leadUpdate.execute({ id: 1, tags: "important,friend" }, ctx);
 

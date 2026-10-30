@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 import action from "../../actions/set-messenger-profile.ts";
 
-Deno.test("set-messenger-profile: POSTs the properties as the JSON body", async () => {
+test("set-messenger-profile: POSTs the properties as the JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success" } }]);
   const props = {
     get_started: { payload: "GET_STARTED" },
@@ -15,13 +16,13 @@ Deno.test("set-messenger-profile: POSTs the properties as the JSON body", async 
   assertEquals(out, { result: "success" });
 });
 
-Deno.test("set-messenger-profile: accepts a JSON string", async () => {
+test("set-messenger-profile: accepts a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success" } }]);
   await action.execute!({ properties: '{"account_linking_url":"https://x.com/l"}' }, ctx);
   assertEquals(bodyOf(calls[0]), { account_linking_url: "https://x.com/l" });
 });
 
-Deno.test("set-messenger-profile: empty, array or non-object properties are rejected locally", async () => {
+test("set-messenger-profile: empty, array or non-object properties are rejected locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ properties: {} }, ctx),
@@ -36,6 +37,6 @@ Deno.test("set-messenger-profile: empty, array or non-object properties are reje
   assertEquals(calls.length, 0);
 });
 
-Deno.test("set-messenger-profile: idempotent", () => {
+test("set-messenger-profile: idempotent", () => {
   assertEquals(action.idempotent, true);
 });

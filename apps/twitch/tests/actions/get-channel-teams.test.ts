@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getChannelTeams from "../../actions/get-channel-teams.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-channel-teams: calls GET /helix/teams/channel", async () => {
+test("get-channel-teams: calls GET /helix/teams/channel", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "6358", team_name: "livecoders", broadcaster_id: "96909659" }] },
   }]);
@@ -16,7 +17,7 @@ Deno.test("get-channel-teams: calls GET /helix/teams/channel", async () => {
 });
 
 /** Most broadcasters belong to no team; that is an empty array, not an error. */
-Deno.test("get-channel-teams: an empty list is passed through", async () => {
+test("get-channel-teams: an empty list is passed through", async () => {
   const { ctx } = mockCtx([{ body: { data: [] } }]);
   const out = await getChannelTeams.execute({ broadcasterId: "1" }, ctx) as { data: unknown[] };
   assertEquals(out.data, []);

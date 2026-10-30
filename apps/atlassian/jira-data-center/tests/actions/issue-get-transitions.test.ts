@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueGetTransitions from "../../actions/issue-get-transitions.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("issue-get-transitions: GETs /issue/{key}/transitions", async () => {
+test("issue-get-transitions: GETs /issue/{key}/transitions", async () => {
   const { ctx, calls } = mockCtx([{ body: { transitions: [{ id: "21", name: "Done" }] } }]);
   const out = await issueGetTransitions.execute({ issueKey: "ENG-1" }, ctx) as {
     transitions: unknown[];

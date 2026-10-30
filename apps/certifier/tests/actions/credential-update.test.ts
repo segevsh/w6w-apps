@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/credential-update.ts";
 import { CREDENTIAL, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("credential-update: PATCH sends only the fields that were set", async () => {
+test("credential-update: PATCH sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: CREDENTIAL }]);
   await action.execute({
     credentialId: "c1",
@@ -20,7 +21,7 @@ Deno.test("credential-update: PATCH sends only the fields that were set", async 
   });
 });
 
-Deno.test("credential-update: clearExpiryDate sends an explicit null and wins over expiryDate", async () => {
+test("credential-update: clearExpiryDate sends an explicit null and wins over expiryDate", async () => {
   const { ctx, calls } = mockCtx([{ body: CREDENTIAL }]);
   await action.execute(
     { credentialId: "c1", clearExpiryDate: true, expiryDate: "2030-01-01" },
@@ -29,7 +30,7 @@ Deno.test("credential-update: clearExpiryDate sends an explicit null and wins ov
   assertEquals(JSON.parse(calls[0].body!), { expiryDate: null });
 });
 
-Deno.test("credential-update: refuses an empty update and a recipient change missing id or name", async () => {
+test("credential-update: refuses an empty update and a recipient change missing id or name", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ credentialId: "c1" }, ctx),

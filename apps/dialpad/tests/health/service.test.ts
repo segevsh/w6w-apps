@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -7,11 +8,11 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("STATUS_URL: is Dialpad's own Statuspage summary endpoint", () => {
+test("STATUS_URL: is Dialpad's own Statuspage summary endpoint", () => {
   assertEquals(STATUS_URL, "https://status.dialpad.com/api/v2/summary.json");
 });
 
-Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -21,7 +22,7 @@ Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("mapIndicator: the page-level roll-up vocabulary", () => {
+test("mapIndicator: the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -30,15 +31,15 @@ Deno.test("mapIndicator: the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor's id", () => {
+test("componentKey: prefers the vendor's id", () => {
   assertEquals(componentKey({ id: "abc123", name: "API Platform" }, 0), "abc123");
 });
 
-Deno.test("componentKey: falls back to a slug of the name", () => {
+test("componentKey: falls back to a slug of the name", () => {
   assertEquals(componentKey({ name: "API Platform" }, 3), "api-platform-3");
 });
 
-Deno.test("componentKey: falls back to an index when there is nothing else", () => {
+test("componentKey: falls back to an index when there is nothing else", () => {
   assertEquals(componentKey({}, 5), "component-5");
 });
 
@@ -53,7 +54,7 @@ const SUMMARY = {
   status: { indicator: "none", description: "All Systems Operational" },
 };
 
-Deno.test("check: all-operational summary reports ok with per-component detail", async () => {
+test("check: all-operational summary reports ok with per-component detail", async () => {
   const { ctx } = mockCtx([{ status: 200, body: SUMMARY }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -61,7 +62,7 @@ Deno.test("check: all-operational summary reports ok with per-component detail",
   assertEquals(report.components?.b.state, "ok");
 });
 
-Deno.test("check: a degraded component surfaces in the message", async () => {
+test("check: a degraded component surfaces in the message", async () => {
   const degraded = {
     ...SUMMARY,
     components: [
@@ -76,13 +77,13 @@ Deno.test("check: a degraded component surfaces in the message", async () => {
   assertEquals(report.message?.includes("API Platform"), true);
 });
 
-Deno.test("check: a broken status API reports unknown, never down", async () => {
+test("check: a broken status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: an unreadable body reports unknown", async () => {
+test("check: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -92,21 +93,21 @@ Deno.test("check: an unreadable body reports unknown", async () => {
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: a page that no longer self-identifies as Dialpad's reports unknown", async () => {
+test("check: a page that no longer self-identifies as Dialpad's reports unknown", async () => {
   const spoofed = { ...SUMMARY, page: { ...SUMMARY.page, url: "https://status.example.com" } };
   const { ctx } = mockCtx([{ status: 200, body: spoofed }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: a component-free page reports unknown rather than a false ok", async () => {
+test("check: a component-free page reports unknown rather than a false ok", async () => {
   const empty = { ...SUMMARY, components: [] };
   const { ctx } = mockCtx([{ status: 200, body: empty }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("declared metadata: app-scoped, unsigned, and widens egress to the status host only", () => {
+test("declared metadata: app-scoped, unsigned, and widens egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

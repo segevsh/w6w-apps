@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/reverse-lookup-domain.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("reverse-lookup-domain: sends name= and maps the company lead", async () => {
+test("reverse-lookup-domain: sends name= and maps the company lead", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -22,6 +23,6 @@ Deno.test("reverse-lookup-domain: sends name= and maps the company lead", async 
   assertEquals(out.name, "stripe.com");
 });
 
-Deno.test("reverse-lookup-domain: blank name throws", async () => {
+test("reverse-lookup-domain: blank name throws", async () => {
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "name is required");
 });

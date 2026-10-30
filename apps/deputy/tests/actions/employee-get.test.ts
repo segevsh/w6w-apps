@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/employee-get.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("employee-get: GETs /resource/Employee/{id}", async () => {
+test("employee-get: GETs /resource/Employee/{id}", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 42, FirstName: "Ada" } }],
     { display: { baseUrl: BASE_URL } },
@@ -12,7 +13,7 @@ Deno.test("employee-get: GETs /resource/Employee/{id}", async () => {
   assertEquals(calls[0].url, `${BASE_URL}/api/v1/resource/Employee/42`);
 });
 
-Deno.test("employee-get: id param is required, integer, min 1", () => {
+test("employee-get: id param is required, integer, min 1", () => {
   const idParam = action.params!.find((p) => p.key === "id")!;
   assertEquals(idParam.required, true);
   assertEquals(idParam.validation, { integer: true, min: 1 });

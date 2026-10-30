@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/event-create.ts";
 
-Deno.test("event-create: requires either a siteId or an existing pageId", async () => {
+test("event-create: requires either a siteId or an existing pageId", async () => {
   const { ctx } = mockNationBuilderCtx([]);
   await assertRejects(
     async () => {
@@ -13,7 +14,7 @@ Deno.test("event-create: requires either a siteId or an existing pageId", async 
   );
 });
 
-Deno.test("event-create: sideposts a new page when no pageId is given", async () => {
+test("event-create: sideposts a new page when no pageId is given", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "1", type: "events", attributes: { start_at: null } } },
   }]);
@@ -40,7 +41,7 @@ Deno.test("event-create: sideposts a new page when no pageId is given", async ()
   }]);
 });
 
-Deno.test("event-create: links an existing page instead, with no sidepost", async () => {
+test("event-create: links an existing page instead, with no sidepost", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{ body: { data: { id: "1", type: "events" } } }]);
   await action.execute({ name: "Rally", pageId: "77" }, ctx);
   const body = JSON.parse(calls[0].body!);

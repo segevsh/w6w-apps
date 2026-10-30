@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-datapoint.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("delete-datapoint: DELETEs the point and returns it", async () => {
+test("delete-datapoint: DELETEs the point and returns it", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "abc", value: 2, daystamp: "20120729" } }]);
   const out = await run(action, { slug: "w", id: "abc" }, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("delete-datapoint: DELETEs the point and returns it", async () => {
   assertEquals(out.daystamp, "20120729");
 });
 
-Deno.test("delete-datapoint: a missing id throws; errors surface", async () => {
+test("delete-datapoint: a missing id throws; errors surface", async () => {
   await assertRejects(() => run(action, { slug: "w" }, mockCtx().ctx), Error, "id is required");
   const bad = mockCtx([{ status: 404, body: { errors: "no point" } }]);
   await assertRejects(() => run(action, { slug: "w", id: "z" }, bad.ctx), Error, "no point");

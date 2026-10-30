@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactTagsAdd from "../../actions/contact-tags-add.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tags-add: POSTs tags to /contacts/{id}/tags/add", async () => {
+test("contact-tags-add: POSTs tags to /contacts/{id}/tags/add", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", tags: "vip,board" }) }]);
   await contactTagsAdd.execute({ id: "1", tags: "vip, board" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("contact-tags-add: POSTs tags to /contacts/{id}/tags/add", async () =>
   assertEquals(JSON.parse(calls[0].body!), { tags: ["vip", "board"] });
 });
 
-Deno.test("contact-tags-add: throws before making a request when tags is empty", async () => {
+test("contact-tags-add: throws before making a request when tags is empty", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

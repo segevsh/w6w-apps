@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-project.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-project: POSTs /v4/projects, parsing json params", async () => {
+test("create-project: POSTs /v4/projects, parsing json params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 8 } } }]);
   const out = await exec(action, {
     name: "Website",
@@ -23,7 +24,7 @@ Deno.test("create-project: POSTs /v4/projects, parsing json params", async () =>
   assertEquals(out, { data: { id: 8 } });
 });
 
-Deno.test("create-project: missing ids and a malformed budget are refused locally", async () => {
+test("create-project: missing ids and a malformed budget are refused locally", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { name: "A" }, none.ctx), Error, "customersId");
   await assertRejects(

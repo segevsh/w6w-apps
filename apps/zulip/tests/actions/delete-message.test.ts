@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-message.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 
-Deno.test("delete-message: deletes one message", async () => {
+test("delete-message: deletes one message", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }]);
   const out = await action.execute!({ message_id: 3 }, ctx);
   const url = new URL(calls[0].url);
@@ -15,13 +16,13 @@ Deno.test("delete-message: deletes one message", async () => {
   assertEquals(out, {});
 });
 
-Deno.test("delete-message: sends no authorization header of its own", async () => {
+test("delete-message: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "" } }]);
   await action.execute!({ message_id: 3 }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("delete-message: surfaces Zulip's error msg and code", async () => {
+test("delete-message: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -33,7 +34,7 @@ Deno.test("delete-message: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("delete-message: a 401 names the credential problem", async () => {
+test("delete-message: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ message_id: 3 }, ctx),
@@ -42,7 +43,7 @@ Deno.test("delete-message: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("delete-message: a connection without a subdomain is refused before any request", async () => {
+test("delete-message: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import noteCreate from "../../actions/note-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-create: POSTs to /api/v1/constituents/{id}/notes.json", async () => {
+test("note-create: POSTs to /api/v1/constituents/{id}/notes.json", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, text: "Called donor" } }]);
   await noteCreate.execute(
     { constituent_id: 7, text: "Called donor", original_date: "2026-01-01" },
@@ -12,7 +13,7 @@ Deno.test("note-create: POSTs to /api/v1/constituents/{id}/notes.json", async ()
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("note-create: sends only the required + set fields", async () => {
+test("note-create: sends only the required + set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await noteCreate.execute(
     { constituent_id: 7, text: "Called donor", original_date: "2026-01-01" },
@@ -22,7 +23,7 @@ Deno.test("note-create: sends only the required + set fields", async () => {
   assertEquals(body, { text: "Called donor", original_date: "2026-01-01" });
 });
 
-Deno.test("note-create: an optional note_type_name is included when set", async () => {
+test("note-create: an optional note_type_name is included when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await noteCreate.execute(
     {

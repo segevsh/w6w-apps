@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import resultsList from "../../actions/results-list.ts";
 import { errorOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("results-list: GET /v1/results/<parser> with every filter mapped", async () => {
+test("results-list: GET /v1/results/<parser> with every filter mapped", async () => {
   const rows = [{ document_id: "a" }, { document_id: "b" }];
   const { ctx, calls } = mockCtx([{ body: rows }]);
   const out = await resultsList.execute({
@@ -30,13 +31,13 @@ Deno.test("results-list: GET /v1/results/<parser> with every filter mapped", asy
   assertEquals(out, { items: rows, count: 2 });
 });
 
-Deno.test("results-list: defaults send no query", async () => {
+test("results-list: defaults send no query", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await resultsList.execute({ parserId: "p1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("results-list: an 'after' mode without a date fails before any request", async () => {
+test("results-list: an 'after' mode without a date fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await errorOf(() =>
     resultsList.execute({ parserId: "p1", list: "processed_after" }, ctx)

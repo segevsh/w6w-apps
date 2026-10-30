@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/location-get.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("location-get: GETs /resource/Company/{id}, not /my/location/{id}", async () => {
+test("location-get: GETs /resource/Company/{id}, not /my/location/{id}", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 1, CompanyName: "Simons Sambos" } }],
     { display: { baseUrl: BASE_URL } },

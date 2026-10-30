@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import priceBookServiceList from "../../actions/price-book-service-list.ts";
 import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("price-book-service-list: reads the bare {services} shape", async () => {
+test("price-book-service-list: reads the bare {services} shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { services: [{ id: "s1", name: "Drain clear" }] } }]);
   const out = await priceBookServiceList.execute({ q: "drain" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("price-book-service-list: reads the bare {services} shape", async () =
  * app: "Sent as repeated `expand[]` query params (e.g.
  * `expand[]=service_materials&expand[]=service_labor_rates`)".
  */
-Deno.test("price-book-service-list: expand matches the vendor's worked example exactly", async () => {
+test("price-book-service-list: expand matches the vendor's worked example exactly", async () => {
   const { ctx, calls } = mockCtx([{ body: { services: [] } }]);
   await priceBookServiceList.execute(
     { expand: ["service_materials", "service_labor_rates"] },
@@ -30,6 +31,6 @@ Deno.test("price-book-service-list: expand matches the vendor's worked example e
   assertEquals(queryAll(calls[0].url, "expand"), []);
 });
 
-Deno.test("price-book-service-list: exposes no filters param — deepObject is not implemented", () => {
+test("price-book-service-list: exposes no filters param — deepObject is not implemented", () => {
   assertEquals((priceBookServiceList.params ?? []).some((p) => p.key === "filters"), false);
 });

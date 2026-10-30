@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-create-for-model.ts";
 
 /** field_map is what tells Pinecone which of YOUR fields to embed. */
-Deno.test("index-create-for-model: the text field becomes field_map.text", async () => {
+test("index-create-for-model: the text field becomes field_map.text", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { name: "docs" } }]);
   await action.execute!({
     name: "docs",
@@ -20,7 +21,7 @@ Deno.test("index-create-for-model: the text field becomes field_map.text", async
   assertEquals("dimension" in sent, false);
 });
 
-Deno.test("index-create-for-model: model and text field are both required", async () => {
+test("index-create-for-model: model and text field are both required", async () => {
   const noModel = mockCtx();
   await assertRejects(
     async () =>
@@ -38,7 +39,7 @@ Deno.test("index-create-for-model: model and text field are both required", asyn
   assertEquals(noModel.calls.length + noField.calls.length, 0);
 });
 
-Deno.test("index-create-for-model: the model hint says it is permanent", () => {
+test("index-create-for-model: the model hint says it is permanent", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) =>
     p.key === "model"
   )!;

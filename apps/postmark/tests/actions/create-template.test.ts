@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-template.ts";
 
-Deno.test("create-template: POSTs /templates with Name/Subject/HtmlBody and default TemplateType", async () => {
+test("create-template: POSTs /templates with Name/Subject/HtmlBody and default TemplateType", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { TemplateId: 1, Name: "Welcome", Active: true },
@@ -21,7 +22,7 @@ Deno.test("create-template: POSTs /templates with Name/Subject/HtmlBody and defa
   assertEquals(body.TemplateType, "Standard");
 });
 
-Deno.test("create-template: throws when neither htmlBody nor textBody is provided", async () => {
+test("create-template: throws when neither htmlBody nor textBody is provided", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ name: "Welcome" }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("create-template: throws when neither htmlBody nor textBody is provide
   );
 });
 
-Deno.test("create-template: forwards alias, templateType, and layoutTemplate for a Layout", async () => {
+test("create-template: forwards alias, templateType, and layoutTemplate for a Layout", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     {

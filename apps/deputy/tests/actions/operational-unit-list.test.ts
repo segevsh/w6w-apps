@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/operational-unit-list.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("operational-unit-list: GETs /resource/OperationalUnit", async () => {
+test("operational-unit-list: GETs /resource/OperationalUnit", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: [{ Id: 1, OperationalUnitName: "Chef" }] }],
     { display: { baseUrl: BASE_URL } },

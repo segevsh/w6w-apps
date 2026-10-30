@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/coupon-list-global.ts";
 import { envelope, exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("coupon-list-global: sends the product and coupon filters", async () => {
+test("coupon-list-global: sends the product and coupon filters", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 1 }], { hasMore: false }) }]);
   const out = await exec(action, {
     product: "regfox.com",

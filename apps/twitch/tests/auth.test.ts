@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "./_assert.ts";
 import appAccessToken from "../auth/app-access-token.ts";
 import userAccessToken from "../auth/user-access-token.ts";
 import { helixAuthHeaders, refreshable } from "../auth/shared.ts";
@@ -36,7 +37,7 @@ const USER_VALIDATE = {
  * and they must agree. A `sign` that stamps only the bearer produces a 401 on
  * every single request.
  */
-Deno.test("sign: both methods stamp Authorization AND Client-Id", () => {
+test("sign: both methods stamp Authorization AND Client-Id", () => {
   for (const method of [appAccessToken, userAccessToken]) {
     const signed = method.sign!(
       {
@@ -51,7 +52,7 @@ Deno.test("sign: both methods stamp Authorization AND Client-Id", () => {
   }
 });
 
-Deno.test("sign: the header builder is shared, so the two methods cannot drift", () => {
+test("sign: the header builder is shared, so the two methods cannot drift", () => {
   assertEquals(helixAuthHeaders({ clientId: "c", accessToken: "t" }), {
     authorization: "Bearer t",
     "client-id": "c",
@@ -59,7 +60,7 @@ Deno.test("sign: the header builder is shared, so the two methods cannot drift",
 });
 
 /** `sign` is network-less by contract — it must never reach for ctx.fetch. */
-Deno.test("sign: makes no network call", () => {
+test("sign: makes no network call", () => {
   const { ctx, calls } = mockCtx([]);
   appAccessToken.sign!(
     {
@@ -73,7 +74,7 @@ Deno.test("sign: makes no network call", () => {
 
 // --- test: the probe ---------------------------------------------------------
 
-Deno.test("test: probes id.twitch.tv/oauth2/validate with the OAuth prefix", async () => {
+test("test: probes id.twitch.tv/oauth2/validate with the OAuth prefix", async () => {
   const { ctx, calls } = mockCtx([{ body: APP_VALIDATE }]);
   const out = await appAccessToken.test({ credential: APP_CRED }, ctx);
 
@@ -89,7 +90,7 @@ Deno.test("test: probes id.twitch.tv/oauth2/validate with the OAuth prefix", asy
  * validate body carries no token and no secret — this pins that, so a future
  * "let's include more detail" change has to argue with a test.
  */
-Deno.test("test: no message ever contains the token or the client secret", async () => {
+test("test: no message ever contains the token or the client secret", async () => {
   const cases: Array<[typeof appAccessToken, unknown, Record<string, unknown>]> = [
     [appAccessToken, APP_CRED, { status: 401, body: idError(401, "invalid access token") }],
     [appAccessToken, APP_CRED, { body: USER_VALIDATE }],
@@ -116,7 +117,7 @@ Deno.test("test: no message ever contains the token or the client secret", async
  * The mismatch Twitch only rejects per-request. Catching it at connect time is
  * the difference between one clear message and every action 401ing forever.
  */
-Deno.test("test: a token minted for a different client is rejected by both methods", async () => {
+test("test: a token minted for a different client is rejected by both methods", async () => {
   const app = mockCtx([{ body: { ...APP_VALIDATE, client_id: "someone-else" } }]);
   const appOut = await appAccessToken.test({ credential: APP_CRED }, app.ctx);
   assertEquals(appOut.ok, false);
@@ -129,7 +130,7 @@ Deno.test("test: a token minted for a different client is rejected by both metho
 });
 
 /** `user_id: null` is Twitch's documented discriminator between the two kinds. */
-Deno.test("test: each method refuses the other's token kind", async () => {
+test("test: each method refuses the other's token kind", async () => {
   const appGivenUser = mockCtx([{ body: USER_VALIDATE }]);
   const a = await appAccessToken.test({ credential: APP_CRED }, appGivenUser.ctx);
   assertEquals(a.ok, false);
@@ -141,14 +142,14 @@ Deno.test("test: each method refuses the other's token kind", async () => {
   assert(u.message!.includes("APP access token"), u.message);
 });
 
-Deno.test("test: a 401 from the validate endpoint fails with Twitch's own wording", async () => {
+test("test: a 401 from the validate endpoint fails with Twitch's own wording", async () => {
   const { ctx } = mockCtx([{ status: 401, body: idError(401, "invalid access token") }]);
   const out = await appAccessToken.test({ credential: APP_CRED }, ctx);
   assertEquals(out.ok, false);
   assert(out.message!.includes("invalid access token"), out.message);
 });
 
-Deno.test("test: a missing field fails before any request is made", async () => {
+test("test: a missing field fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await appAccessToken.test({ credential: {} }, ctx)).ok, false);
   assertEquals((await userAccessToken.test({ credential: { accessToken: "t" } }, ctx)).ok, false);
@@ -156,14 +157,14 @@ Deno.test("test: a missing field fails before any request is made", async () => 
 });
 
 /** A scope-less user token is legitimate — it just reaches less. */
-Deno.test("test: a user token with no scopes passes, with a note", async () => {
+test("test: a user token with no scopes passes, with a note", async () => {
   const { ctx } = mockCtx([{ body: { ...USER_VALIDATE, scopes: [] } }]);
   const out = await userAccessToken.test({ credential: USER_CRED }, ctx);
   assertEquals(out.ok, true);
   assert(out.message!.includes("no scopes"), out.message);
 });
 
-Deno.test("test: a user token's scopes are reported so a missing one is visible", async () => {
+test("test: a user token's scopes are reported so a missing one is visible", async () => {
   const { ctx } = mockCtx([{ body: USER_VALIDATE }]);
   const out = await userAccessToken.test({ credential: USER_CRED }, ctx);
   assertEquals(out, { ok: true, message: "scopes: moderator:read:followers" });
@@ -171,14 +172,14 @@ Deno.test("test: a user token's scopes are reported so a missing one is visible"
 
 // --- afterConnect ------------------------------------------------------------
 
-Deno.test("afterConnect: the app method labels by a client-id prefix and makes no request", async () => {
+test("afterConnect: the app method labels by a client-id prefix and makes no request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await appAccessToken.afterConnect!({ credential: APP_CRED }, ctx);
   assertEquals(out, { clientIdPrefix: "cid1" });
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: the user method publishes login, id and scopes — and nothing else", async () => {
+test("afterConnect: the user method publishes login, id and scopes — and nothing else", async () => {
   const { ctx } = mockCtx([{ body: USER_VALIDATE }]);
   const out = await userAccessToken.afterConnect!({ credential: USER_CRED }, ctx);
   assertEquals(out, {
@@ -188,14 +189,14 @@ Deno.test("afterConnect: the user method publishes login, id and scopes — and 
   });
 });
 
-Deno.test("afterConnect: a failure is silent rather than breaking a good connection", async () => {
+test("afterConnect: a failure is silent rather than breaking a good connection", async () => {
   const { ctx } = mockCtx([{ status: 500, body: idError(500, "boom") }]);
   assertEquals(await userAccessToken.afterConnect!({ credential: USER_CRED }, ctx), {});
 });
 
 // --- refresh -----------------------------------------------------------------
 
-Deno.test("refresh: the app method re-mints with grant_type=client_credentials", async () => {
+test("refresh: the app method re-mints with grant_type=client_credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "app-token-2", expires_in: 5011271 } }]);
   const out = await appAccessToken.refresh!({ credential: APP_CRED }, ctx) as {
     accessToken: string;
@@ -217,7 +218,7 @@ Deno.test("refresh: the app method re-mints with grant_type=client_credentials",
  * Twitch ROTATES the refresh token on every exchange and invalidates the old
  * one. Keeping the original is how a refresh loop works exactly once.
  */
-Deno.test("refresh: the user method stores the NEW refresh token", async () => {
+test("refresh: the user method stores the NEW refresh token", async () => {
   const { ctx, calls } = mockCtx([{
     body: { access_token: "user-token-2", refresh_token: "refresh-2", expires_in: 14124 },
   }]);
@@ -235,7 +236,7 @@ Deno.test("refresh: the user method stores the NEW refresh token", async () => {
   assertEquals(out.clientId, "cid1");
 });
 
-Deno.test("refresh: keeps the old refresh token when Twitch returns none", async () => {
+test("refresh: keeps the old refresh token when Twitch returns none", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "user-token-2" } }]);
   const out = await userAccessToken.refresh!({ credential: USER_CRED }, ctx) as {
     refreshToken: string;
@@ -243,7 +244,7 @@ Deno.test("refresh: keeps the old refresh token when Twitch returns none", async
   assertEquals(out.refreshToken, "refresh-1");
 });
 
-Deno.test("refresh: a token-endpoint failure surfaces Twitch's message", async () => {
+test("refresh: a token-endpoint failure surfaces Twitch's message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: idError(400, "invalid client") }]);
   const err = await assertRejects(
     () => Promise.resolve(appAccessToken.refresh!({ credential: APP_CRED }, ctx)),
@@ -252,7 +253,7 @@ Deno.test("refresh: a token-endpoint failure surfaces Twitch's message", async (
   assert(err.message.includes("invalid client"), err.message);
 });
 
-Deno.test("refresh: refuses without the material it needs, before any request", async () => {
+test("refresh: refuses without the material it needs, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(appAccessToken.refresh!({ credential: { accessToken: "t" } }, ctx)),

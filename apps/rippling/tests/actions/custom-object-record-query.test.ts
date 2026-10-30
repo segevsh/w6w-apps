@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import customObjectRecordQuery from "../../actions/custom-object-record-query.ts";
 
-Deno.test("custom-object-record-query: POSTs the query in the body and reads the bare cursor", async () => {
+test("custom-object-record-query: POSTs the query in the body and reads the bare cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { results: [{ id: "r1" }], cursor: "next-1" } },
   ]);
@@ -18,7 +19,7 @@ Deno.test("custom-object-record-query: POSTs the query in the body and reads the
   assertEquals(out, { results: [{ id: "r1" }], nextCursor: "next-1" });
 });
 
-Deno.test("custom-object-record-query: is a search, tolerates an empty body, needs the api name", async () => {
+test("custom-object-record-query: is a search, tolerates an empty body, needs the api name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const out = await customObjectRecordQuery.execute({ customObjectApiName: "asset" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

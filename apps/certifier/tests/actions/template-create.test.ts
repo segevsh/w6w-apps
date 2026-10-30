@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/template-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: POST /v1/groups with name, ordered designIds and learning URL", async () => {
+test("template-create: POST /v1/groups with name, ordered designIds and learning URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "g1" } }]);
   await action.execute(
     { name: " Course ", designIds: "d1, d2", learningEventUrl: "https://e.x" },
@@ -17,7 +18,7 @@ Deno.test("template-create: POST /v1/groups with name, ordered designIds and lea
   });
 });
 
-Deno.test("template-create: accepts a list and requires at least one design and a name", async () => {
+test("template-create: accepts a list and requires at least one design and a name", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "g1" } }]);
   await action.execute({ name: "C", designIds: ["d1"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "C", designIds: ["d1"] });

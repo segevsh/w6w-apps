@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
 
 interface Input {
   orderId: string;
@@ -18,7 +19,14 @@ const getOrder: ActionDefinition<Input> = {
   description: "Retrieve a single order by ID.",
   params: [
     { key: "orderId", label: "Order ID", type: "string", required: true },
-    { key: "expand", label: "Expand", type: "string", default: DEFAULT_EXPAND },
+    {
+      key: "expand",
+      label: "Expand",
+      type: "multiselect",
+      options: ORDER_EXPANSIONS,
+      config: { valueFormat: "csv" },
+      default: DEFAULT_EXPAND,
+    },
   ],
   output: [
     { key: "id", type: "string", label: "Order ID" },

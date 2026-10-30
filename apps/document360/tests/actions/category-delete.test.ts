@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryDelete from "../../actions/category-delete.ts";
 import { mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("category-delete: DELETEs and reports the id on a 204", async () => {
+test("category-delete: DELETEs and reports the id on a 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await categoryDelete.execute({ categoryId: "c1" }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("category-delete: DELETEs and reports the id on a 204", async () => {
   assertEquals(out, { deleted: true, categoryId: "c1" });
 });
 
-Deno.test("category-delete: a vendor error surfaces its code and message", async () => {
+test("category-delete: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

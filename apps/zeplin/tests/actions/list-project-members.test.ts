@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-project-members.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-project-members: GETs /projects/5db81e73e1e36ee19f138c1a/members and wraps the array with its paging position", async () => {
+test("list-project-members: GETs /projects/5db81e73e1e36ee19f138c1a/members and wraps the array with its paging position", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({ projectId: "5db81e73e1e36ee19f138c1a" }, ctx);
   const u = new URL(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("list-project-members: GETs /projects/5db81e73e1e36ee19f138c1a/members
   });
 });
 
-Deno.test("list-project-members: a full page yields next_offset; limit and offset are validated", async () => {
+test("list-project-members: a full page yields next_offset; limit and offset are validated", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     ...{ projectId: "5db81e73e1e36ee19f138c1a" },
@@ -44,7 +45,7 @@ Deno.test("list-project-members: a full page yields next_offset; limit and offse
   );
 });
 
-Deno.test("list-project-members: a vendor error is thrown with its message; a non-array body is an error", async () => {
+test("list-project-members: a vendor error is thrown with its message; a non-array body is an error", async () => {
   const bad = mockCtx([{ status: 401, body: { message: "invalid_token" } }]);
   await assertRejects(
     async () => await action.execute({ projectId: "5db81e73e1e36ee19f138c1a" }, bad.ctx),

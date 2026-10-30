@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /models with no query params by default", async () => {
+test("list-models: GETs /models with no query params by default", async () => {
   const body = { data: [{ id: "openai/gpt-5.2" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-models: GETs /models with no query params by default", async () 
   assertEquals(result, body);
 });
 
-Deno.test("list-models: forwards q, category, limit and offset as query params", async () => {
+test("list-models: forwards q, category, limit and offset as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { q: "gpt-4", category: "programming", limit: 50, offset: 10 },

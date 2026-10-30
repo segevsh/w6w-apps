@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/analytics-get-drop-off.ts";
 
-Deno.test("analytics-get-drop-off: GETs the drop-off funnel", async () => {
+test("analytics-get-drop-off: GETs the drop-off funnel", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -26,7 +27,7 @@ Deno.test("analytics-get-drop-off: GETs the drop-off funnel", async () => {
   assertEquals(result.dataAvailableSince, "2026-01-01T00:00:00.000Z");
 });
 
-Deno.test("analytics-get-drop-off: a null body means no data yet, not an error", async () => {
+test("analytics-get-drop-off: a null body means no data yet, not an error", async () => {
   // The OpenAPI declares this 200 body `nullable`.
   const { ctx } = mockCtx([{ body: null }]);
   const result = await action.execute({ formId: "f1", period: "today" }, ctx);

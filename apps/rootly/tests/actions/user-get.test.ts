@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-get: full input maps to GET /v1/users/{id}", async () => {
+test("user-get: full input maps to GET /v1/users/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -43,7 +44,7 @@ Deno.test("user-get: full input maps to GET /v1/users/{id}", async () => {
   });
 });
 
-Deno.test("user-get: required input only maps to GET /v1/users/{id}", async () => {
+test("user-get: required input only maps to GET /v1/users/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -75,7 +76,7 @@ Deno.test("user-get: required input only maps to GET /v1/users/{id}", async () =
   });
 });
 
-Deno.test("user-get: an API error rejects with the vendor's title and detail", async () => {
+test("user-get: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

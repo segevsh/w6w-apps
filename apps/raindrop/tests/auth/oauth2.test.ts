@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2, { authHeaders } from "../../auth/oauth2.ts";
 import { BAD_TOKEN_BODY, mockCtx, pathOf, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
 const TOKEN = "ae261404-11r4-47c0-bce3-unitTestFixtureNotReal";
 
-Deno.test("oauth2: sign stamps the bearer header and leaves the URL alone", () => {
+test("oauth2: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.raindrop.io/rest/v1/user",
@@ -19,7 +20,7 @@ Deno.test("oauth2: sign stamps the bearer header and leaves the URL alone", () =
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("oauth2: authHeaders is the single source of the wire format", () => {
+test("oauth2: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ accessToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
@@ -30,7 +31,7 @@ Deno.test("oauth2: authHeaders is the single source of the wire format", () => {
  * path is `/v1/oauth`, NOT `/rest/v1/oauth`. A credential-bearing POST should not
  * depend on a redirect being followed with its method and body intact.
  */
-Deno.test("oauth2: the endpoints are the api.raindrop.io targets, outside the REST prefix", () => {
+test("oauth2: the endpoints are the api.raindrop.io targets, outside the REST prefix", () => {
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://api.raindrop.io/v1/oauth/authorize");
   assertEquals(oauth2.oauth2?.tokenUrl, "https://api.raindrop.io/v1/oauth/access_token");
   assertEquals(oauth2.oauth2?.refreshUrl, "https://api.raindrop.io/v1/oauth/access_token");
@@ -40,12 +41,12 @@ Deno.test("oauth2: the endpoints are the api.raindrop.io targets, outside the RE
 });
 
 /** Raindrop documents no scope parameter and no PKCE. Inventing either is worse. */
-Deno.test("oauth2: declares no scopes and no PKCE", () => {
+test("oauth2: declares no scopes and no PKCE", () => {
   assertEquals(oauth2.oauth2?.scopes, undefined);
   assertEquals(oauth2.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: test passes when /user answers with a user", async () => {
+test("oauth2: test passes when /user answers with a user", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: true, user: { _id: 32 } } }]);
   const result = await oauth2.test({ credential: { accessToken: TOKEN } }, ctx);
 
@@ -62,7 +63,7 @@ Deno.test("oauth2: test passes when /user answers with a user", async () => {
  * credential. This branch is the app's chance to say so before any Action runs,
  * which makes its wording load-bearing.
  */
-Deno.test("oauth2: an empty credential is reported with the 200-on-failure cause", async () => {
+test("oauth2: an empty credential is reported with the 200-on-failure cause", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await oauth2.test({ credential: {} }, ctx);
 
@@ -72,7 +73,7 @@ Deno.test("oauth2: an empty credential is reported with the 200-on-failure cause
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: the two 401 bodies produce two different messages", async () => {
+test("oauth2: the two 401 bodies produce two different messages", async () => {
   const missing = mockCtx([{ status: 401, body: UNAUTHORIZED_BODY }]);
   const rejected = mockCtx([{ status: 401, body: BAD_TOKEN_BODY }]);
 
@@ -83,14 +84,14 @@ Deno.test("oauth2: the two 401 bodies produce two different messages", async () 
   assert(/access token/.test(b.message ?? ""), b.message);
 });
 
-Deno.test("oauth2: a failure message never contains the token", async () => {
+test("oauth2: a failure message never contains the token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: BAD_TOKEN_BODY }]);
   const result = await oauth2.test({ credential: { accessToken: TOKEN } }, ctx);
 
   assert(!(result.message ?? "").includes(TOKEN), result.message);
 });
 
-Deno.test("oauth2: afterConnect publishes the name and drops the email", async () => {
+test("oauth2: afterConnect publishes the name and drops the email", async () => {
   const { ctx } = mockCtx([{
     body: { result: true, user: { _id: 32, fullName: "Rustem", email: "some@email.com" } },
   }]);
@@ -105,7 +106,7 @@ Deno.test("oauth2: afterConnect publishes the name and drops the email", async (
  * client secret, which an App never holds — the host does. A hook that had to
  * invent one would be worse than absent, so `refreshUrl` is declared instead.
  */
-Deno.test("oauth2: declares refreshUrl and implements no refresh hook", () => {
+test("oauth2: declares refreshUrl and implements no refresh hook", () => {
   assertEquals(typeof oauth2.refresh, "undefined");
   assert(oauth2.oauth2?.refreshUrl, "no refreshUrl for the two-week expiry");
 });

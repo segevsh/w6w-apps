@@ -1,7 +1,8 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import spikeRate from "../../health/spike-rate.ts";
 
-Deno.test("spike-rate: it is a declared absence, not a probe", () => {
+test("spike-rate: it is a declared absence, not a probe", () => {
   assertEquals(typeof spikeRate.check, "undefined");
   assert(typeof spikeRate.unavailable?.reason === "string");
 });
@@ -11,17 +12,17 @@ Deno.test("spike-rate: it is a declared absence, not a probe", () => {
  * outranks `ok` in the roll-up, so at any other severity this would pin the
  * whole App at `unknown` forever.
  */
-Deno.test("spike-rate: the declared absence is informational", () => {
+test("spike-rate: the declared absence is informational", () => {
   assertEquals(spikeRate.severity, "informational");
 });
 
-Deno.test("spike-rate: the reason quotes the vendor and states both figures", () => {
+test("spike-rate: the reason quotes the vendor and states both figures", () => {
   const reason = spikeRate.unavailable!.reason;
   assertStringIncludes(reason, "we do not return metrics");
   assertStringIncludes(reason, "25 calls per second");
   assertStringIncludes(reason, "10/second");
 });
 
-Deno.test("spike-rate: the reason points at the three windows that ARE readable", () => {
+test("spike-rate: the reason points at the three windows that ARE readable", () => {
   assertStringIncludes(spikeRate.unavailable!.reason, "`quota` check");
 });

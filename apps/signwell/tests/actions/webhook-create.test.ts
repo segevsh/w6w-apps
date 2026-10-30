@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-create.ts";
 
-Deno.test("webhook-create: POSTs callback_url (and api_application_id when given)", async () => {
+test("webhook-create: POSTs callback_url (and api_application_id when given)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "h1", callback_url: "https://x.test/hook" },
@@ -21,7 +22,7 @@ Deno.test("webhook-create: POSTs callback_url (and api_application_id when given
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("webhook-create: callback_url is required", async () => {
+test("webhook-create: callback_url is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`callback_url`");
   assertEquals(calls.length, 0);

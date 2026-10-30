@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createPayment from "../../actions/create-payment.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const INPUT = {
   "storePaymentMethod": false,
 } as Parameters<typeof createPayment.execute>[0];
 
-Deno.test("create-payment: sends POST to the documented path and returns the response", async () => {
+test("create-payment: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -33,7 +34,7 @@ Deno.test("create-payment: sends POST to the documented path and returns the res
   assertEquals(out, { "resultCode": "Authorised", "pspReference": "851" });
 });
 
-Deno.test("create-payment: targets the connection's base URL and carries no credential", async () => {
+test("create-payment: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -48,7 +49,7 @@ Deno.test("create-payment: targets the connection's base URL and carries no cred
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("create-payment: surfaces Adyen's error code, type and message", async () => {
+test("create-payment: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -66,7 +67,7 @@ Deno.test("create-payment: surfaces Adyen's error code, type and message", async
   );
 });
 
-Deno.test("create-payment: sends the invocation id as Idempotency-Key", async () => {
+test("create-payment: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -76,11 +77,11 @@ Deno.test("create-payment: sends the invocation id as Idempotency-Key", async ()
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("create-payment: declares idempotency as false", () => {
+test("create-payment: declares idempotency as false", () => {
   assertEquals(createPayment.idempotent, false);
 });
 
-Deno.test("create-payment: an explicit merchantAccount beats the connection's", async () => {
+test("create-payment: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },

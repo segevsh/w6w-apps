@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-custom-report.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-custom-report: fetches by report id and returns rows unshaped", async () => {
+test("get-custom-report: fetches by report id and returns rows unshaped", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

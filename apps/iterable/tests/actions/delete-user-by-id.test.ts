@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-user-by-id.ts";
 
-Deno.test("delete-user-by-id: metadata", () => {
+test("delete-user-by-id: metadata", () => {
   assertEquals(action.key, "delete-user-by-id");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assertEquals(action.params?.map((p) => p.key), ["userId"]);
 });
 
-Deno.test("delete-user-by-id: calls DELETE /users/byUserId/abc on the US host", async () => {
+test("delete-user-by-id: calls DELETE /users/byUserId/abc on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({ "userId": "abc" }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("delete-user-by-id: calls DELETE /users/byUserId/abc on the US host", 
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("delete-user-by-id: uses the EU host when the connection region is eu", async () => {
+test("delete-user-by-id: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -28,7 +29,7 @@ Deno.test("delete-user-by-id: uses the EU host when the connection region is eu"
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/byUserId/abc");
 });
 
-Deno.test("delete-user-by-id: rejects a missing `userId` without calling Iterable", async () => {
+test("delete-user-by-id: rejects a missing `userId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("delete-user-by-id: rejects a missing `userId` without calling Iterabl
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete-user-by-id: surfaces an HTTP error with Iterable's own code", async () => {
+test("delete-user-by-id: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -51,7 +52,7 @@ Deno.test("delete-user-by-id: surfaces an HTTP error with Iterable's own code", 
   );
 });
 
-Deno.test("delete-user-by-id: treats a 200 carrying a non-Success code as a failure", async () => {
+test("delete-user-by-id: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

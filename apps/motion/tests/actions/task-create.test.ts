@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs /v1/tasks with content-type set", async () => {
+test("task-create: POSTs /v1/tasks with content-type set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await taskCreate.execute({ name: "Draft the brief", workspaceId: "ws1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("task-create: POSTs /v1/tasks with content-type set", async () => {
 });
 
 /** `duration` is `string | number`: minutes go as a number, the enum members as words. */
-Deno.test("task-create: duration is sent as a number when it is minutes", async () => {
+test("task-create: duration is sent as a number when it is minutes", async () => {
   const minutes = mockCtx([{ body: {} }]);
   await taskCreate.execute({ name: "n", workspaceId: "ws1", duration: "30" }, minutes.ctx);
   assertEquals((bodyOf(minutes.calls[0]) as { duration: unknown }).duration, 30);
@@ -25,7 +26,7 @@ Deno.test("task-create: duration is sent as a number when it is minutes", async 
   assertEquals((bodyOf(reminder.calls[0]) as { duration: unknown }).duration, "REMINDER");
 });
 
-Deno.test("task-create: autoScheduled is accepted as typed JSON text", async () => {
+test("task-create: autoScheduled is accepted as typed JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskCreate.execute({
     name: "n",
@@ -39,13 +40,13 @@ Deno.test("task-create: autoScheduled is accepted as typed JSON text", async () 
   });
 });
 
-Deno.test("task-create: labels are sent as a JSON array of names", async () => {
+test("task-create: labels are sent as a JSON array of names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskCreate.execute({ name: "n", workspaceId: "ws1", labels: ["Marketing", "Q3"] }, ctx);
   assertEquals((bodyOf(calls[0]) as { labels: unknown }).labels, ["Marketing", "Q3"]);
 });
 
-Deno.test("task-create: unset fields are omitted rather than sent as null", async () => {
+test("task-create: unset fields are omitted rather than sent as null", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskCreate.execute({ name: "n", workspaceId: "ws1", description: "" }, ctx);
   assertEquals(Object.keys(bodyOf(calls[0]) as object).sort(), ["name", "workspaceId"]);
@@ -56,7 +57,7 @@ Deno.test("task-create: unset fields are omitted rather than sent as null", asyn
  * second task. Marking this idempotent would license the runtime to do exactly
  * that after a dropped connection.
  */
-Deno.test("task-create: is not idempotent, and dueDate is not forced", () => {
+test("task-create: is not idempotent, and dueDate is not forced", () => {
   assertEquals(taskCreate.idempotent, false);
   const dueDate = taskCreate.params?.find((p) => p.key === "dueDate");
   assert(dueDate !== undefined);

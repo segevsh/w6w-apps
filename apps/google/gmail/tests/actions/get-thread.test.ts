@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-thread.ts";
 
-Deno.test("get-thread: GETs users/me/threads/{id} with format=full by default", async () => {
+test("get-thread: GETs users/me/threads/{id} with format=full by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({ threadId: "t1" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/remove-users.ts";
 
@@ -8,7 +9,7 @@ const reply = {
   body: { audience_id: "900", session_id: "5", num_received: 1, num_invalid_entries: 0 },
 };
 
-Deno.test("remove-users: same call with method=DELETE and the same hashing", async () => {
+test("remove-users: same call with method=DELETE and the same hashing", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute({ audienceId: "900", users: [{ email: "mary@example.com" }] }, ctx);
   assertEquals(calls[0].method, "POST");

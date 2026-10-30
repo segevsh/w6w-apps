@@ -35,7 +35,12 @@ const action: ActionDefinition = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "Active", label: "Active" }, { value: "Hired", label: "Hired" }, {
+        value: "Archived",
+        label: "Archived",
+      }, { value: "Lead", label: "Lead" }],
+      config: { valueFormat: "csv" },
       default: "Active",
       placeholder: "Active",
       hint: "`Active`, `Hired`, `Archived` or `Lead`, comma-separated. `Lead` is a sourced " +

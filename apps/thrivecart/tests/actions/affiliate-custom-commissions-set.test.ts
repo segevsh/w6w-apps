@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateCustomCommissionsSet from "../../actions/affiliate-custom-commissions-set.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("affiliate-custom-commissions-set: sends the commission object JSON-encoded", async () => {
+test("affiliate-custom-commissions-set: sends the commission object JSON-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await affiliateCustomCommissionsSet.execute(
     { affiliateId: "edward_mann", productId: "1", commissionObject: { rate: 0.5 } },
@@ -14,7 +15,7 @@ Deno.test("affiliate-custom-commissions-set: sends the commission object JSON-en
   assertEquals(JSON.parse(form.commission_object as string), { rate: 0.5 });
 });
 
-Deno.test("affiliate-custom-commissions-set: an explicit null clears the override", async () => {
+test("affiliate-custom-commissions-set: an explicit null clears the override", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await affiliateCustomCommissionsSet.execute(
     { affiliateId: "edward_mann", productId: "1", commissionObject: null },

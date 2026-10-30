@@ -95,7 +95,15 @@ const listTimeOffRequests: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Statuses",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "approved", label: "approved" },
+        { value: "denied", label: "denied" },
+        { value: "superceded", label: "superceded" },
+        { value: "requested", label: "requested" },
+        { value: "canceled", label: "canceled" },
+      ],
+      config: { valueFormat: "csv" },
       placeholder: "approved,requested",
       hint:
         "Comma-separated statuses. Accepted: `approved`, `denied`, `superceded`, `requested`, " +

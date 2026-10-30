@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-get.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("release-get: percent-encodes a version containing a slash", async () => {
+test("release-get: percent-encodes a version containing a slash", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { version: "feature/x@1" } }], { display });
   await action.execute!({ version: "feature/x@1" }, ctx);
   // The raw URL keeps the escape; a bare `/` would address a different endpoint.
@@ -17,7 +18,7 @@ Deno.test("release-get: percent-encodes a version containing a slash", async () 
   );
 });
 
-Deno.test("release-get: health data is opt-in", async () => {
+test("release-get: health data is opt-in", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }, { status: 200, body: {} }], {
     display,
   });
@@ -28,7 +29,7 @@ Deno.test("release-get: health data is opt-in", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("project"), "web");
 });
 
-Deno.test("release-get: a blank version fails before any request", async () => {
+test("release-get: a blank version fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`version` is required");
   assertEquals(calls.length, 0);

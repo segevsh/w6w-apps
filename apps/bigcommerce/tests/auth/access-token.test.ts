@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import accessToken, { PROBE_PATH } from "../../auth/access-token.ts";
 import { AUTH_HEADER } from "../../lib/client.ts";
@@ -6,7 +7,7 @@ import { mockCtx, pathOf, v3Error } from "../_helpers.ts";
 
 const CREDENTIAL = { storeHash: "abc123", accessToken: "tok-live-123" };
 
-Deno.test("auth: sign stamps X-Auth-Token, never Authorization", () => {
+test("auth: sign stamps X-Auth-Token, never Authorization", () => {
   const request: SignableRequest = {
     method: "GET",
     url: "https://api.bigcommerce.com/stores/abc123/v3/catalog/products",
@@ -26,7 +27,7 @@ Deno.test("auth: sign stamps X-Auth-Token, never Authorization", () => {
   assert(!signed.url.includes("tok-live-123"));
 });
 
-Deno.test("auth: the probe is /v2/time — cheap, authenticated, and free of PII", async () => {
+test("auth: the probe is /v2/time — cheap, authenticated, and free of PII", async () => {
   const { ctx, calls } = mockCtx([{ body: { time: 1786000000 } }]);
   assertEquals(await accessToken.test({ credential: CREDENTIAL }, ctx), { ok: true });
 
@@ -36,7 +37,7 @@ Deno.test("auth: the probe is /v2/time — cheap, authenticated, and free of PII
   assert(!calls[0].url.includes("/v2/store"), calls[0].url);
 });
 
-Deno.test("auth: test never echoes the credential back in its message", async () => {
+test("auth: test never echoes the credential back in its message", async () => {
   const cases: Array<[number, unknown]> = [
     [401, "X-Auth-Token header is required"],
     [401, v3Error(401, "Unauthorized")],
@@ -55,7 +56,7 @@ Deno.test("auth: test never echoes the credential back in its message", async ()
   }
 });
 
-Deno.test("auth: a missing header and a rejected token are told apart by the BODY", async () => {
+test("auth: a missing header and a rejected token are told apart by the BODY", async () => {
   // Both are 401. Classifying by status would merge two different fixes.
   const missing = mockCtx([{ status: 401, body: "X-Auth-Token header is required" }]);
   const rejected = mockCtx([{ status: 401, body: v3Error(401, "Unauthorized") }]);
@@ -68,7 +69,7 @@ Deno.test("auth: a missing header and a rejected token are told apart by the BOD
   assert(a.message !== b.message, "two different causes produced the same message");
 });
 
-Deno.test("auth: an empty X-Auth-Token gets its own message", async () => {
+test("auth: an empty X-Auth-Token gets its own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: "X-Auth-Token header should have correct format",
@@ -77,14 +78,14 @@ Deno.test("auth: an empty X-Auth-Token gets its own message", async () => {
   assert(result.message.includes("empty or malformed"), result.message);
 });
 
-Deno.test("auth: a 403 reports BOTH documented causes, because nothing distinguishes them", async () => {
+test("auth: a 403 reports BOTH documented causes, because nothing distinguishes them", async () => {
   const { ctx } = mockCtx([{ status: 403, body: v3Error(403, "Forbidden") }]);
   const result = await accessToken.test({ credential: CREDENTIAL }, ctx) as { message: string };
   assert(result.message.includes("store hash is wrong"), result.message);
   assert(result.message.includes("Information & Settings"), result.message);
 });
 
-Deno.test("auth: 429 and 503 say the token could not be VERIFIED, not that it is bad", async () => {
+test("auth: 429 and 503 say the token could not be VERIFIED, not that it is bad", async () => {
   for (const status of [429, 503]) {
     const { ctx } = mockCtx([{ status, body: "" }]);
     const result = await accessToken.test({ credential: CREDENTIAL }, ctx) as { message: string };
@@ -93,7 +94,7 @@ Deno.test("auth: 429 and 503 say the token could not be VERIFIED, not that it is
   }
 });
 
-Deno.test("auth: a missing or malformed field fails before any request is made", async () => {
+test("auth: a missing or malformed field fails before any request is made", async () => {
   // `mockCtx([])` throws on any fetch, so reaching the network fails the test.
   assertEquals(
     await accessToken.test({ credential: { accessToken: "x" } }, mockCtx([]).ctx),
@@ -110,7 +111,7 @@ Deno.test("auth: a missing or malformed field fails before any request is made",
   assert(bad.message.includes("not a bare hash"), bad.message);
 });
 
-Deno.test("auth: test accepts the API path a merchant pastes from the control panel", async () => {
+test("auth: test accepts the API path a merchant pastes from the control panel", async () => {
   const { ctx, calls } = mockCtx([{ body: { time: 1 } }]);
   const result = await accessToken.test({
     credential: {
@@ -122,7 +123,7 @@ Deno.test("auth: test accepts the API path a merchant pastes from the control pa
   assertEquals(pathOf(calls[0].url), "/stores/abc123/v2/time");
 });
 
-Deno.test("auth: afterConnect publishes the store hash and name — and nothing sensitive", async () => {
+test("auth: afterConnect publishes the store hash and name — and nothing sensitive", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "abc123",
@@ -151,7 +152,7 @@ Deno.test("auth: afterConnect publishes the store hash and name — and nothing 
   assertEquals(pathOf(calls[0].url), "/stores/abc123/v2/store");
 });
 
-Deno.test("auth: afterConnect still records the store hash when the scope is refused", async () => {
+test("auth: afterConnect still records the store hash when the scope is refused", async () => {
   // A token scoped away from Information & Settings is a GOOD token, and the
   // store hash is the part the client actually needs.
   const { ctx } = mockCtx([{ status: 403, body: v3Error(403, "Forbidden") }]);
@@ -160,6 +161,6 @@ Deno.test("auth: afterConnect still records the store hash when the scope is ref
   });
 });
 
-Deno.test("auth: connectionLabel renders from the display fields afterConnect sets", () => {
+test("auth: connectionLabel renders from the display fields afterConnect sets", () => {
   assertEquals(accessToken.connectionLabel, "{{storeName}} ({{storeHash}})");
 });

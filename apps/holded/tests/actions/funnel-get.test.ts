@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import funnelGet from "../../actions/funnel-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("funnel-get: metadata", () => {
+test("funnel-get: metadata", () => {
   assertEquals(funnelGet.key, "funnel-get");
   assertEquals(funnelGet.type, "read");
 });
 
-Deno.test("funnel-get: GET /funnels/{funnelId}, returns the object verbatim", async () => {
+test("funnel-get: GET /funnels/{funnelId}, returns the object verbatim", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "f1", name: "Marketing", stages: [] },
@@ -17,7 +18,7 @@ Deno.test("funnel-get: GET /funnels/{funnelId}, returns the object verbatim", as
   assertEquals(result, { id: "f1", name: "Marketing", stages: [] });
 });
 
-Deno.test("funnel-get: escapes a funnelId with path-breaking characters", async () => {
+test("funnel-get: escapes a funnelId with path-breaking characters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "x" } }]);
   await funnelGet.execute({ funnelId: "a/b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/crm/v1/funnels/a%2Fb");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/org-admin-list.ts";
 
-Deno.test("org-admin-list: GETs /orgadmins with the org header", async () => {
+test("org-admin-list: GETs /orgadmins with the org header", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {
@@ -19,7 +20,7 @@ Deno.test("org-admin-list: GETs /orgadmins with the org header", async () => {
   assertEquals(out, { orgAdmins: ["user+1@zoho.com", "user+2@zoho.com"] });
 });
 
-Deno.test("org-admin-list: falls back to the connection's default organization id", async () => {
+test("org-admin-list: falls back to the connection's default organization id", async () => {
   const { ctx, calls } = mockAnalyticsCtx(
     [{ body: { status: "success", summary: "ok", data: { orgAdmins: [] } } }],
     "analyticsapi.zoho.com",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs Subject and the optional fields to /Tasks", async () => {
+test("task-create: POSTs Subject and the optional fields to /Tasks", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "1" } }] } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("task-create: POSTs Subject and the optional fields to /Tasks", async 
   assertEquals(body.data[0].Priority, "High");
 });
 
-Deno.test("task-create: sets Who_Id / What_Id + $se_module when related records are given", async () => {
+test("task-create: sets Who_Id / What_Id + $se_module when related records are given", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: {} }] } },
   ]);

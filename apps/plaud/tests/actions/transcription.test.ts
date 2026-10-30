@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import submit from "../../actions/transcription-submit.ts";
 import get from "../../actions/transcription-get.ts";
@@ -6,7 +7,7 @@ import get from "../../actions/transcription-get.ts";
 const D = { display: { region: "us" } };
 const BASE = "https://platform-us.plaud.ai/developer/api/open/partner/ai/transcriptions";
 
-Deno.test("transcription-submit: POSTs file_url with nested params", async () => {
+test("transcription-submit: POSTs file_url with nested params", async () => {
   const { ctx, calls } = mockCtx([{
     body: { transcription_id: "task_exec_1", status: "PENDING", data: {} },
   }], D);
@@ -32,7 +33,7 @@ Deno.test("transcription-submit: POSTs file_url with nested params", async () =>
   assertEquals(out, { transcriptionId: "task_exec_1", status: "PENDING" });
 });
 
-Deno.test("transcription-submit: only the url is required; model is sent only when set", async () => {
+test("transcription-submit: only the url is required; model is sent only when set", async () => {
   const bare = mockCtx([{ body: { transcription_id: "t", status: "PENDING" } }], D);
   await submit.execute({ fileUrl: "https://example.com/a.mp3" }, bare.ctx);
   assertEquals(JSON.parse(bare.calls[0].body!), { file_url: "https://example.com/a.mp3" });
@@ -44,7 +45,7 @@ Deno.test("transcription-submit: only the url is required; model is sent only wh
   assertEquals(JSON.parse(withModel.calls[0].body!).params.transcribe.model, "plaud-fast-whisper");
 });
 
-Deno.test("transcription-submit: rejects a missing or non-http url", async () => {
+test("transcription-submit: rejects a missing or non-http url", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(() => Promise.resolve(submit.execute({}, ctx)), Error, "fileUrl");
   await assertRejects(
@@ -55,7 +56,7 @@ Deno.test("transcription-submit: rejects a missing or non-http url", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("transcription-get: SUCCESS maps text, duration and OpenAPI `results` segments", async () => {
+test("transcription-get: SUCCESS maps text, duration and OpenAPI `results` segments", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       transcription_id: "task_exec_1",
@@ -83,7 +84,7 @@ Deno.test("transcription-get: SUCCESS maps text, duration and OpenAPI `results` 
   assertEquals((out.segments as Array<Record<string, unknown>>)[0].speaker, "Speaker 1");
 });
 
-Deno.test("transcription-get: also reads the prose example's `segments`/`speaker` shape", async () => {
+test("transcription-get: also reads the prose example's `segments`/`speaker` shape", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: "SUCCESS",
@@ -96,7 +97,7 @@ Deno.test("transcription-get: also reads the prose example's `segments`/`speaker
   assertEquals(out.segments[0].speaker, "Speaker 2");
 });
 
-Deno.test("transcription-get: classifies in-progress and terminal-failure statuses", async () => {
+test("transcription-get: classifies in-progress and terminal-failure statuses", async () => {
   for (
     const [status, inProgress, failed] of [["PROGRESS", true, false], ["FAILURE", false, true], [
       "REVOKED",
@@ -111,7 +112,7 @@ Deno.test("transcription-get: classifies in-progress and terminal-failure status
   }
 });
 
-Deno.test("transcription-get: requires an id and url-encodes it", async () => {
+test("transcription-get: requires an id and url-encodes it", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "PENDING" } }], D);
   await assertRejects(() => Promise.resolve(get.execute({}, ctx)), Error, "transcriptionId");
   await get.execute({ transcriptionId: "a/b" }, ctx);

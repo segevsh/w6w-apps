@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-delete.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
 /** Naming ids IS the statement of intent, so no confirmation is demanded. */
-Deno.test("record-delete: deleting named ids needs no confirmation", async () => {
+test("record-delete: deleting named ids needs no confirmation", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: {} }]);
   const out = await action.execute!({ indexName: "idx", ids: "a,b", namespace: "ns" }, ctx);
   assertEquals(out, { ok: true, mode: "ids" });
@@ -13,7 +14,7 @@ Deno.test("record-delete: deleting named ids needs no confirmation", async () =>
 });
 
 /** A filter delete cannot say how much it removes, so it must be confirmed. */
-Deno.test("record-delete: a filter delete without confirmation is refused", async () => {
+test("record-delete: a filter delete without confirmation is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", filter: '{"year":{"$lt":2020}}' }, ctx),
@@ -23,7 +24,7 @@ Deno.test("record-delete: a filter delete without confirmation is refused", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-delete: delete-everything without confirmation is refused", async () => {
+test("record-delete: delete-everything without confirmation is refused", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", deleteAll: true }, ctx),
@@ -32,14 +33,14 @@ Deno.test("record-delete: delete-everything without confirmation is refused", as
   );
 });
 
-Deno.test("record-delete: confirmed, deleteAll goes out as camelCase", async () => {
+test("record-delete: confirmed, deleteAll goes out as camelCase", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: {} }]);
   await action.execute!({ indexName: "idx", deleteAll: true, confirm: true, namespace: "ns" }, ctx);
   assertEquals(JSON.parse(calls[1].body!), { namespace: "ns", deleteAll: true });
 });
 
 /** Pinecone rejects any two of the three together. */
-Deno.test("record-delete: combining selectors is refused with both named", async () => {
+test("record-delete: combining selectors is refused with both named", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>
@@ -53,7 +54,7 @@ Deno.test("record-delete: combining selectors is refused with both named", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-delete: selecting nothing is refused", async () => {
+test("record-delete: selecting nothing is refused", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx" }, ctx),

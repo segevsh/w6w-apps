@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamBookingList from "../../actions/team-booking-list.ts";
 import bookingList from "../../actions/booking-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("team-booking-list: calls GET /api/teams/{id}/bookings with every filter", async () => {
+test("team-booking-list: calls GET /api/teams/{id}/bookings with every filter", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await teamBookingList.execute(
     {
@@ -36,7 +37,7 @@ Deno.test("team-booking-list: calls GET /api/teams/{id}/bookings with every filt
  * about, so mixing them returns an unfiltered list instead of an error — the
  * failure mode a test is the only defence against.
  */
-Deno.test("team-booking-list: the two booking lists use different date parameter names", () => {
+test("team-booking-list: the two booking lists use different date parameter names", () => {
   const personal = (bookingList.params ?? []).map((p) => p.key);
   const team = (teamBookingList.params ?? []).map((p) => p.key);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-usage.ts";
 
-Deno.test("get-usage: GETs /v2/usage and maps character fields", async () => {
+test("get-usage: GETs /v2/usage and maps character fields", async () => {
   const body = { character_count: 1000, character_limit: 500000 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -18,7 +19,7 @@ Deno.test("get-usage: GETs /v2/usage and maps character fields", async () => {
   });
 });
 
-Deno.test("get-usage: passes through document fields when present", async () => {
+test("get-usage: passes through document fields when present", async () => {
   const body = {
     character_count: 1,
     character_limit: 2,

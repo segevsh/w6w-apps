@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionTerminate from "../../actions/session-terminate.ts";
 import { API_ROOT, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("session-terminate: DELETEs /sessions/{id} with no query by default", async () => {
+test("session-terminate: DELETEs /sessions/{id} with no query by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { session_id: "devin-1", status: "exit" } }]);
   await sessionTerminate.execute({ devinId: "devin-1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("session-terminate: DELETEs /sessions/{id} with no query by default", 
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("session-terminate: archive=true is sent when the caller opts to preserve the session", async () => {
+test("session-terminate: archive=true is sent when the caller opts to preserve the session", async () => {
   const { ctx, calls } = mockCtx([{
     body: { session_id: "devin-1", status: "exit", is_archived: true },
   }]);
@@ -19,6 +20,6 @@ Deno.test("session-terminate: archive=true is sent when the caller opts to prese
   assertEquals(queryOf(calls[0].url), { archive: "true" });
 });
 
-Deno.test("session-terminate: is marked idempotent — retrying lands on the same terminated state", () => {
+test("session-terminate: is marked idempotent — retrying lands on the same terminated state", () => {
   assertEquals(sessionTerminate.idempotent, true);
 });

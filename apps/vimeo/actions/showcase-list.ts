@@ -50,7 +50,16 @@ const showcaseList: ActionDefinition<Input, VimeoCollection> = {
     {
       key: "filterPrivacy",
       label: "Privacy",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "anybody", label: "anybody" },
+        { value: "password", label: "password" },
+        { value: "embed_only", label: "embed_only" },
+        { value: "team", label: "team" },
+        { value: "nobody", label: "nobody" },
+        { value: "unlisted", label: "unlisted" },
+      ],
+      config: { valueFormat: "csv" },
       placeholder: "anybody,password",
       hint: "Comma-separated. Vimeo accepts `anybody`, `password`, `embed_only`, `team`, " +
         "`nobody` and `unlisted` here.",

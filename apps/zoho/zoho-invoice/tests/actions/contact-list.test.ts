@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
-Deno.test("contact-list: GETs /contacts, unwraps the plural key, and passes filters through", async () => {
+test("contact-list: GETs /contacts, unwraps the plural key, and passes filters through", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("contact-list: GETs /contacts, unwraps the plural key, and passes filt
   assertEquals(out.pageContext?.has_more_page, false);
 });
 
-Deno.test("contact-list: falls back to the connection's organization id", async () => {
+test("contact-list: falls back to the connection's organization id", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", contacts: [] } },
   ]);

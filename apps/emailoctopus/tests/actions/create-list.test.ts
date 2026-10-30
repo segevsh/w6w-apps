@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-list: POSTs { name } to /lists as JSON", async () => {
+test("create-list: POSTs { name } to /lists as JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "l1", name: "New clients list" } }]);
   const out = await action.execute!({ name: "New clients list" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/lists");
@@ -12,7 +13,7 @@ Deno.test("create-list: POSTs { name } to /lists as JSON", async () => {
   assertEquals(out, { id: "l1", name: "New clients list" });
 });
 
-Deno.test("create-list: is not idempotent — EmailOctopus does not dedupe list names", () => {
+test("create-list: is not idempotent — EmailOctopus does not dedupe list names", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

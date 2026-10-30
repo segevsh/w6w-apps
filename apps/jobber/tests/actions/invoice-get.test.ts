@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-get.ts";
 
-Deno.test("invoice-get: bounds the line-item and payment-record pages", async () => {
+test("invoice-get: bounds the line-item and payment-record pages", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { invoice: { id: "i1" } } } }]);
   await action.execute({ invoiceId: "i1" }, ctx);
   const sent = JSON.parse(calls[0].body!);

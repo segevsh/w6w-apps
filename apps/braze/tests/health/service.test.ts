@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -14,7 +15,7 @@ function summaryFixture() {
   };
 }
 
-Deno.test("service: reports ok when this connection's cluster's REST APIs component is operational", async () => {
+test("service: reports ok when this connection's cluster's REST APIs component is operational", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summaryFixture() }], {
     display: { instance: "iad-01" },
   });
@@ -23,7 +24,7 @@ Deno.test("service: reports ok when this connection's cluster's REST APIs compon
   assertEquals(report.components?.["REST APIs"].state, "ok");
 });
 
-Deno.test("service: an outage on a DIFFERENT cluster does not affect this connection", async () => {
+test("service: an outage on a DIFFERENT cluster does not affect this connection", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summaryFixture() }], {
     display: { instance: "iad-01" },
   });
@@ -31,7 +32,7 @@ Deno.test("service: an outage on a DIFFERENT cluster does not affect this connec
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: reports down for a connection on the cluster that IS down", async () => {
+test("service: reports down for a connection on the cluster that IS down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summaryFixture() }], {
     display: { instance: "fra-01" },
   });
@@ -39,13 +40,13 @@ Deno.test("service: reports down for a connection on the cluster that IS down", 
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: reports unknown, not down, when the status page itself fails", async () => {
+test("service: reports unknown, not down, when the status page itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }], { display: { instance: "iad-01" } });
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: reports unknown when the status page names no such cluster", async () => {
+test("service: reports unknown when the status page names no such cluster", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { components: [] } }], {
     display: { instance: "iad-01" },
   });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-bulk-email.ts";
 import { exec, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const emails = [
   { from: { email: "a@x.com" }, to: [{ email: "q@x.com" }], subject: "2", text: "t" },
 ];
 
-Deno.test("send-bulk-email: POSTs the array as the whole body and returns the bulk id", async () => {
+test("send-bulk-email: POSTs the array as the whole body and returns the bulk id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: {
@@ -25,14 +26,14 @@ Deno.test("send-bulk-email: POSTs the array as the whole body and returns the bu
   });
 });
 
-Deno.test("send-bulk-email: refuses an empty or non-array body before calling the API", async () => {
+test("send-bulk-email: refuses an empty or non-array body before calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => exec(action, { emails: [] }, ctx), Error, "non-empty array");
   await assertRejects(() => exec(action, { emails: "x" }, ctx), Error, "non-empty array");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-bulk-email: a plan error (MS40306) is surfaced", async () => {
+test("send-bulk-email: a plan error (MS40306) is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { message: "Your plan doesn't allow to send bulk emails. #MS40306" },
@@ -41,6 +42,6 @@ Deno.test("send-bulk-email: a plan error (MS40306) is surfaced", async () => {
   assert(String(err).includes("#MS40306"));
 });
 
-Deno.test("send-bulk-email: is non-idempotent", () => {
+test("send-bulk-email: is non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

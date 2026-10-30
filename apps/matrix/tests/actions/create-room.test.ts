@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createRoom from "../../actions/create-room.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("create-room: POSTs /createRoom with the compacted body", async () => {
+test("create-room: POSTs /createRoom with the compacted body", async () => {
   const { ctx, calls } = mockMatrixCtx([{ body: { room_id: "!newroom:example.org" } }]);
   const result = await createRoom.execute(
     { name: "Team Updates", preset: "public_chat", invite: "@bob:example.org, @carol:example.org" },
@@ -19,6 +20,6 @@ Deno.test("create-room: POSTs /createRoom with the compacted body", async () => 
   assertEquals(result, { roomId: "!newroom:example.org" });
 });
 
-Deno.test("create-room: is not idempotent — a retry must not be assumed safe", () => {
+test("create-room: is not idempotent — a retry must not be assumed safe", () => {
   assertEquals(createRoom.idempotent, false);
 });

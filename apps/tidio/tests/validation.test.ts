@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "./_assert.ts";
 import contactUpdate from "../actions/contact-update.ts";
 import contactCreate from "../actions/contact-create.ts";
 import contactBatchCreate from "../actions/contact-batch-create.ts";
@@ -12,7 +13,7 @@ import { toProperties } from "../lib/client.ts";
 
 const run = (a: any, input: unknown, ctx: any) => a.execute(input, ctx);
 
-Deno.test("validation: bad input is refused before any request", async () => {
+test("validation: bad input is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => run(contactUpdate, { contact_id: "u-1" }, ctx),
@@ -46,13 +47,13 @@ Deno.test("validation: bad input is refused before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("ticket-update: unassign sends assigned: null; tag_ids may be a JSON string", async () => {
+test("ticket-update: unassign sends assigned: null; tag_ids may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await run(ticketUpdate, { ticket_id: 7, unassign: true, tag_ids: "[]" }, ctx);
   assertEquals(jsonBody(calls[0]), { assigned: null, tag_ids: [] });
 });
 
-Deno.test("toProperties: array, object and JSON string forms; rejects nameless", () => {
+test("toProperties: array, object and JSON string forms; rejects nameless", () => {
   assertEquals(toProperties({ a: "1" }), [{ name: "a", value: "1" }]);
   assertEquals(toProperties('[{"name":"a","value":null}]'), [{ name: "a", value: null }]);
   assertEquals(toProperties(undefined), undefined);
@@ -64,7 +65,7 @@ Deno.test("toProperties: array, object and JSON string forms; rejects nameless",
   }
 });
 
-Deno.test("429 surfaces the vendor code", async () => {
+test("429 surfaces the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { errors: [{ code: "too_many_requests", message: "limit" }] },

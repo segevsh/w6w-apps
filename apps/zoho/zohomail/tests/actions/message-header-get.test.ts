@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageHeaderGet from "../../actions/message-header-get.ts";
 import { envelope, mockCtx, pathOf, queryOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-header-get: fetches raw headers by default value passed through", async () => {
+test("message-header-get: fetches raw headers by default value passed through", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m1", headerContent: "Subject: Hi\r\n" }) }],
     usConnection({ accountId: "acc-1" }),
@@ -14,7 +15,7 @@ Deno.test("message-header-get: fetches raw headers by default value passed throu
   assertEquals(out, { messageId: "m1", headerContent: "Subject: Hi\r\n" });
 });
 
-Deno.test("message-header-get: raw=false returns the parsed object shape unchanged", async () => {
+test("message-header-get: raw=false returns the parsed object shape unchanged", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m1", headerContent: { Subject: ["Hi"] } }) }],
     usConnection(),
@@ -25,7 +26,7 @@ Deno.test("message-header-get: raw=false returns the parsed object shape unchang
   assertEquals(out, { messageId: "m1", headerContent: { Subject: ["Hi"] } });
 });
 
-Deno.test("message-header-get: throws when the response carries no headers", async () => {
+test("message-header-get: throws when the response carries no headers", async () => {
   const { ctx } = mockCtx(
     [{ body: { status: { code: 200, description: "success" } } }],
     usConnection(),

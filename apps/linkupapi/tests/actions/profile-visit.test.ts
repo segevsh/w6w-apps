@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import profileVisit from "../../actions/profile-visit.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("profile-visit: sends every input, unwraps data and credits", async () => {
+test("profile-visit: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("profile-visit: sends every input, unwraps data and credits", async ()
   });
 });
 
-Deno.test("profile-visit: omits optional inputs that were not given", async () => {
+test("profile-visit: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -38,7 +39,7 @@ Deno.test("profile-visit: omits optional inputs that were not given", async () =
   });
 });
 
-Deno.test("profile-visit: an error envelope is thrown with the vendor code", async () => {
+test("profile-visit: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

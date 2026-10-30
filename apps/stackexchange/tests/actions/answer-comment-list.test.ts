@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/answer-comment-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("answer-comment-list: GETs /answers/5;6/comments and returns the wrapper", async () => {
+test("answer-comment-list: GETs /answers/5;6/comments and returns the wrapper", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -31,7 +32,7 @@ Deno.test("answer-comment-list: GETs /answers/5;6/comments and returns the wrapp
   });
 });
 
-Deno.test("answer-comment-list: optional paging, filter and a different site", async () => {
+test("answer-comment-list: optional paging, filter and a different site", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await action.execute({
     ...{ "answerIds": "5,6" },
@@ -65,7 +66,7 @@ Deno.test("answer-comment-list: optional paging, filter and a different site", a
   assertEquals(u2.searchParams.get("min"), "5");
 });
 
-Deno.test("answer-comment-list: surfaces the API error body", async () => {
+test("answer-comment-list: surfaces the API error body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error_id: 400, error_name: "bad_parameter", error_message: "site" } },
   ]);

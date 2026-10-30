@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/files-retrieve.ts";
 
-Deno.test("files-retrieve: GETs /openai/v1/files/{id}", async () => {
+test("files-retrieve: GETs /openai/v1/files/{id}", async () => {
   const body = { id: "file-1", object: "file", purpose: "batch" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ fileId: "file-1" }, ctx);

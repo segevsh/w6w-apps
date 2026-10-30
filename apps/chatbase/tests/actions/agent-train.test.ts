@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import agentTrain from "../../actions/agent-train.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-train: POST /agents/{id}/train", async () => {
+test("agent-train: POST /agents/{id}/train", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await agentTrain.execute({ agentId: "a1" }, ctx) as { success: boolean };
 
@@ -11,7 +12,7 @@ Deno.test("agent-train: POST /agents/{id}/train", async () => {
   assertEquals(out.success, true);
 });
 
-Deno.test("agent-train: a retry while training surfaces AGENT_ALREADY_TRAINING", async () => {
+test("agent-train: a retry while training surfaces AGENT_ALREADY_TRAINING", async () => {
   const { ctx } = mockCtx([
     { status: 409, body: errorBody("AGENT_ALREADY_TRAINING", "Training already in progress.") },
   ]);

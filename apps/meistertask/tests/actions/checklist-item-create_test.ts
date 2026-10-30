@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import checklistItemCreate from "../../actions/checklist-item-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test(
+test(
   "checklist-item-create: POST /checklists/:checklist_id/checklist_items " +
     "(the conventional path, not the vendor's misfiled spec)",
   async () => {

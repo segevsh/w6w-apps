@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deleteLead from "../../actions/delete-lead.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("delete-lead: wraps the id in <client>, the vendor's own example shape", async () => {
+test("delete-lead: wraps the id in <client>, the vendor's own example shape", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   const out = await deleteLead.execute({ id: "MQ==" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("delete-lead: wraps the id in <client>, the vendor's own example shape
   assertEquals(out.result, null);
 });
 
-Deno.test("delete-lead: an id the vendor does not recognise surfaces 4413", async () => {
+test("delete-lead: an id the vendor does not recognise surfaces 4413", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4413, "Incorrect Client ID") }]);
   await assertRejects(
     async () => {

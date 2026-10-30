@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaList from "../../actions/media-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-list: calls GET /modern/medias with the version header", async () => {
+test("media-list: calls GET /modern/medias with the version header", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ "id": 1, "cursor": "cur1" }, { "id": 2, "cursor": "cur2" }],
   }]);
@@ -48,7 +49,7 @@ Deno.test("media-list: calls GET /modern/medias with the version header", async 
   assertEquals((out.items as unknown[]).length, 2);
 });
 
-Deno.test("media-list: surfaces a Wistia error with its code", async () => {
+test("media-list: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -78,7 +79,7 @@ Deno.test("media-list: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("media-list: array filters repeat the bracketed key", async () => {
+test("media-list: array filters repeat the bracketed key", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await mediaList.execute({ tags: ["a", "b"], hashedIds: "x1, x2" } as never, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -86,7 +87,7 @@ Deno.test("media-list: array filters repeat the bracketed key", async () => {
   assertEquals(params.getAll("hashed_ids[]"), ["x1", "x2"]);
 });
 
-Deno.test("media-list: an unset archived flag is not sent", async () => {
+test("media-list: an unset archived flag is not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await mediaList.execute({} as never, ctx) as { count: number; nextCursor: null };
   assertEquals(new URL(calls[0].url).search, "");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/timesheet-search.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("timesheet-search: POSTs a date-range search to /resource/Timesheet/QUERY", async () => {
+test("timesheet-search: POSTs a date-range search to /resource/Timesheet/QUERY", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: [{ Id: 1 }] }],
     { display: { baseUrl: BASE_URL } },

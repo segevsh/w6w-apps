@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import action from "../../actions/list-opportunities.ts";
 
-Deno.test("list-opportunities: GETs /opportunity/ mapping filters to Close's names", async () => {
+test("list-opportunities: GETs /opportunity/ mapping filters to Close's names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({
     leadId: "lead_1",
@@ -26,13 +27,13 @@ Deno.test("list-opportunities: GETs /opportunity/ mapping filters to Close's nam
   assertEquals(q.get("_limit"), "5");
 });
 
-Deno.test("list-opportunities: offers exactly Close's fixed status_type trichotomy", () => {
+test("list-opportunities: offers exactly Close's fixed status_type trichotomy", () => {
   const p = param(action, "statusType");
   assertEquals(p.type, "select");
   assertEquals(optionValues(action, "statusType"), ["active", "won", "lost"]);
 });
 
-Deno.test("list-opportunities: sends nothing when no filters are supplied", async () => {
+test("list-opportunities: sends nothing when no filters are supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

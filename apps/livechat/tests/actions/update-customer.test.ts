@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-customer.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-customer: maps camelCase inputs to the vendor's snake_case fields", async () => {
+test("update-customer: maps camelCase inputs to the vendor's snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await action.execute({
     customerId: "cust",
@@ -24,13 +25,13 @@ Deno.test("update-customer: maps camelCase inputs to the vendor's snake_case fie
   assertEquals(out, { updated: true });
 });
 
-Deno.test("update-customer: session fields may arrive as a JSON string", async () => {
+test("update-customer: session fields may arrive as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ customerId: "c", sessionFields: '[{"a":"1"},{"b":"2"}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).session_fields, [{ a: "1" }, { b: "2" }]);
 });
 
-Deno.test("update-customer: needs at least one field besides the id", async () => {
+test("update-customer: needs at least one field besides the id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ customerId: "c" }, ctx),

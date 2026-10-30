@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import operationList from "../../actions/operation-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("operation-list: GETs /v2/operations with the vendor's filter[] keys", async () => {
+test("operation-list: GETs /v2/operations with the vendor's filter[] keys", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ operation: "convert", input_format: "docx", output_format: "pdf" }] },
@@ -21,11 +22,11 @@ Deno.test("operation-list: GETs /v2/operations with the vendor's filter[] keys",
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("operation-list: requires no auth — the endpoint is genuinely public", () => {
+test("operation-list: requires no auth — the endpoint is genuinely public", () => {
   assertEquals(operationList.requiresAuth, false);
 });
 
-Deno.test("operation-list: is not chosen as the auth probe (see auth/api-token.ts)", async () => {
+test("operation-list: is not chosen as the auth probe (see auth/api-token.ts)", async () => {
   // A request with NO Authorization header must still succeed, matching the live
   // 2026-08-29 measurement that this endpoint needs no credential at all.
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);

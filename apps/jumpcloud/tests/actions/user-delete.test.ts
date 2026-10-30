@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-delete.ts";
 
 const display = { display: { region: "us" } };
 
 /** Deleting is not suspending, and JumpCloud has no undelete. */
-Deno.test("user-delete: refuses to run without an explicit confirmation", async () => {
+test("user-delete: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(
     async () => await action.execute!({ userId: "u1" }, ctx),
@@ -15,7 +16,7 @@ Deno.test("user-delete: refuses to run without an explicit confirmation", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-delete: with confirmation it DELETEs and logs at warn", async () => {
+test("user-delete: with confirmation it DELETEs and logs at warn", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 200 }], display);
   const result = await action.execute!({ userId: "u1", confirm: true }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -24,6 +25,6 @@ Deno.test("user-delete: with confirmation it DELETEs and logs at warn", async ()
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("user-delete: points at suspending as the usual offboarding verb", () => {
+test("user-delete: points at suspending as the usual offboarding verb", () => {
   assert(action.description!.includes("Suspending"), action.description);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/link-bulk-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("link-bulk-delete: sends DELETE /links/bulk with the mapped input", async () => {
+test("link-bulk-delete: sends DELETE /links/bulk with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: { "deletedCount": 2 } }]);
   const out = await action.execute!({ "linkIds": ["a", "b"] }, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("link-bulk-delete: sends DELETE /links/bulk with the mapped input", as
   assertEquals(out, { "deletedCount": 2 });
 });
 
-Deno.test("link-bulk-delete: sends no authorization header of its own", async () => {
+test("link-bulk-delete: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "deletedCount": 2 } }]);
   await action.execute!({ "linkIds": ["a", "b"] }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("link-bulk-delete: surfaces Dub's error envelope as a thrown error", async () => {
+test("link-bulk-delete: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -32,7 +33,7 @@ Deno.test("link-bulk-delete: surfaces Dub's error envelope as a thrown error", a
   );
 });
 
-Deno.test("link-bulk-delete: declares type, idempotency and output", () => {
+test("link-bulk-delete: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

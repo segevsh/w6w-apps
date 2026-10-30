@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import personalAccessToken from "../../auth/personal-access-token.ts";
 import { BASE_URL, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("personal-access-token: sign stamps a Bearer header, network-less", () => {
+test("personal-access-token: sign stamps a Bearer header, network-less", () => {
   const request = { headers: {} as Record<string, string>, url: "https://x", method: "GET" };
   const out = personalAccessToken.sign!(
     { request, credential: { baseUrl: BASE_URL, token: "secret-pat" } },
@@ -12,7 +13,7 @@ Deno.test("personal-access-token: sign stamps a Bearer header, network-less", ()
   assertEquals(out.headers["authorization"], "Bearer secret-pat");
 });
 
-Deno.test("personal-access-token: test() calls /myself with the bearer token and passes on a named user", async () => {
+test("personal-access-token: test() calls /myself with the bearer token and passes on a named user", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "jdoe", displayName: "Jane Doe" } }]);
   const result = await personalAccessToken.test(
     { credential: { baseUrl: BASE_URL, token: "secret-pat" } },
@@ -23,7 +24,7 @@ Deno.test("personal-access-token: test() calls /myself with the bearer token and
   assertEquals(result.ok, true);
 });
 
-Deno.test("personal-access-token: test() fails on a 401 without leaking the token in the message", async () => {
+test("personal-access-token: test() fails on a 401 without leaking the token in the message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errorMessages: ["Unauthorized"] } }]);
   const result = await personalAccessToken.test(
     { credential: { baseUrl: BASE_URL, token: "secret-pat" } },
@@ -33,7 +34,7 @@ Deno.test("personal-access-token: test() fails on a 401 without leaking the toke
   assert(!result.message?.includes("secret-pat"));
 });
 
-Deno.test("personal-access-token: afterConnect records the instance URL and user, never the token", async () => {
+test("personal-access-token: afterConnect records the instance URL and user, never the token", async () => {
   const { ctx } = mockCtx([{ body: { name: "jdoe", key: "JIRAUSER1", displayName: "Jane Doe" } }]);
   const display = await personalAccessToken.afterConnect!(
     { credential: { baseUrl: BASE_URL, token: "secret-pat" } },

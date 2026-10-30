@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-get-many.ts";
 
-Deno.test("organization-get-many: GETs /organizations with query params", async () => {
+test("organization-get-many: GETs /organizations with query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: [] } }]);
   await action.execute!({ userId: 2, limit: 10 }, ctx);
   const url = new URL(calls[0].url);

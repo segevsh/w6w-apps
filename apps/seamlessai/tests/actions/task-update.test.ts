@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-update.ts";
 
 const RESPONSE = { "success": true, "data": { "taskId": "9" } };
 
-Deno.test("task-update: calls PUT /api/client/v2/tasks/{id} and returns the vendor body", async () => {
+test("task-update: calls PUT /api/client/v2/tasks/{id} and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "id": "9",
@@ -31,7 +32,7 @@ Deno.test("task-update: calls PUT /api/client/v2/tasks/{id} and returns the vend
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("task-update: sends nothing for fields left unset", async () => {
+test("task-update: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "9" }, ctx);
   const url = new URL(calls[0].url);
@@ -39,13 +40,13 @@ Deno.test("task-update: sends nothing for fields left unset", async () => {
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("task-update: refuses a missing id before any request", async () => {
+test("task-update: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("task-update: surfaces the vendor's error body", async () => {
+test("task-update: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

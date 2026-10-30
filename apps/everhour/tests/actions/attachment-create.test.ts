@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import attachmentCreate from "../../actions/attachment-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("attachment-create: POST /attachments with the documented query and body", async () => {
+test("attachment-create: POST /attachments with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await attachmentCreate.execute({ "name": "a.png", "content": "aGk=" }, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("attachment-create: POST /attachments with the documented query and bo
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("attachment-create: an Everhour error surfaces its message and status", async () => {
+test("attachment-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(attachmentCreate.execute({ "name": "a.png", "content": "aGk=" }, ctx)),
@@ -33,7 +34,7 @@ Deno.test("attachment-create: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("attachment-create: declares perform and idempotent=false", () => {
+test("attachment-create: declares perform and idempotent=false", () => {
   assertEquals(attachmentCreate.type, "perform");
   assertEquals(attachmentCreate.idempotent, false);
 });

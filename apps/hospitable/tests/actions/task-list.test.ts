@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("task-list: bracketed arrays and filters reach the query", async () => {
+test("task-list: bracketed arrays and filters reach the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await taskList.execute({
     property_ids: "p1,p2",

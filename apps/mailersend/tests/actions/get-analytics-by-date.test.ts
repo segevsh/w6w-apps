@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-analytics-by-date.ts";
 import { exec, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("get-analytics-by-date: GETs /v1/analytics/date with integer Unix bounds", async () => {
+test("get-analytics-by-date: GETs /v1/analytics/date with integer Unix bounds", async () => {
   const resp = { data: { stats: [{ date: "2026-10-01", sent: 3 }] } };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const out = await exec(action, {
@@ -23,7 +24,7 @@ Deno.test("get-analytics-by-date: GETs /v1/analytics/date with integer Unix boun
   assertEquals(out, resp);
 });
 
-Deno.test("get-analytics-by-date: reads a zoned ISO date and a numeric string", async () => {
+test("get-analytics-by-date: reads a zoned ISO date and a numeric string", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await exec(action, { dateFrom: "2026-10-01T02:00:00+02:00", dateTo: "1443651141" }, ctx);
   const q = queryOf(calls[0].url);
@@ -31,7 +32,7 @@ Deno.test("get-analytics-by-date: reads a zoned ISO date and a numeric string", 
   assertEquals(q.date_to, "1443651141");
 });
 
-Deno.test("get-analytics-by-date: an unreadable date is refused before any request", async () => {
+test("get-analytics-by-date: an unreadable date is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve().then(() => exec(action, { dateFrom: "soon", dateTo: 5 }, ctx)),

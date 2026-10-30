@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import readerList from "../../actions/reader-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("reader-list: passes search_email", async () => {
+test("reader-list: passes search_email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ id: "r1" }]) }]);
   const out = await readerList.execute({ searchEmail: "r@example.com", pageSize: 5 }, ctx) as {
     items: unknown[];
@@ -24,7 +25,7 @@ Deno.test("reader-list: passes search_email", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("reader-list: a vendor error surfaces its code and message", async () => {
+test("reader-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callCreate from "../../actions/call-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-create: posts assistantId + customer to POST /call", async () => {
+test("call-create: posts assistantId + customer to POST /call", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "call1", status: "queued" } }]);
   const out = await callCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("call-create: posts assistantId + customer to POST /call", async () =>
   assertEquals(out, { id: "call1", status: "queued" });
 });
 
-Deno.test("call-create: omitting a customer number omits the customer object entirely", async () => {
+test("call-create: omitting a customer number omits the customer object entirely", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "call1" } }]);
   await callCreate.execute({ assistantId: "asst_1" }, ctx);
 
@@ -33,7 +34,7 @@ Deno.test("call-create: omitting a customer number omits the customer object ent
   assertEquals("customer" in body, false);
 });
 
-Deno.test("call-create: assistantOverrides accepts a JSON string as well as an object", async () => {
+test("call-create: assistantOverrides accepts a JSON string as well as an object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "call1" } }]);
   await callCreate.execute(
     { assistantId: "asst_1", assistantOverrides: '{"variableValues":{"name":"Ada"}}' },
@@ -44,6 +45,6 @@ Deno.test("call-create: assistantOverrides accepts a JSON string as well as an o
   assertEquals(body.assistantOverrides, { variableValues: { name: "Ada" } });
 });
 
-Deno.test("call-create: is not idempotent — every call starts a new billed run", () => {
+test("call-create: is not idempotent — every call starts a new billed run", () => {
   assertEquals(callCreate.idempotent, false);
 });

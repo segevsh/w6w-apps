@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -17,21 +18,21 @@ const OPERATIONAL = {
   ],
 };
 
-Deno.test("service: probes Loops' own status page, unsigned, host declared", async () => {
+test("service: probes Loops' own status page, unsigned, host declared", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: OPERATIONAL }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.loops.so/api/v2/components.json");
   assertEquals(service.network!.allow, ["status.loops.so"]);
 });
 
-Deno.test("service: all watched components operational is ok", async () => {
+test("service: all watched components operational is ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: OPERATIONAL }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
   assertEquals(Object.keys(report.components ?? {}).sort(), ["api", "campaigns", "transactional"]);
 });
 
-Deno.test("service: an outage on sending is down, and names the component", async () => {
+test("service: an outage on sending is down, and names the component", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -43,7 +44,7 @@ Deno.test("service: an outage on sending is down, and names the component", asyn
   assert(report.message!.includes("Transactional"), report.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { components: [component("API", "degraded_performance")] },
@@ -52,7 +53,7 @@ Deno.test("service: degraded performance is degraded, not down", async () => {
 });
 
 /** The SMTP relay and webhooks are real Loops services no action here touches. */
-Deno.test("service: an outage in a component this app does not use is not its outage", async () => {
+test("service: an outage in a component this app does not use is not its outage", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -66,7 +67,7 @@ Deno.test("service: an outage in a component this app does not use is not its ou
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: the group heading is skipped — its status is a roll-up", async () => {
+test("service: the group heading is skipped — its status is a roll-up", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -76,7 +77,7 @@ Deno.test("service: the group heading is skipped — its status is a roll-up", a
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failed = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, failed.ctx)).state, "unknown");
 
@@ -90,7 +91,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
 });
 
 /** Loops models 429s but publishes no header and no usage endpoint. */
-Deno.test("quota: is a declared absence, with the evidence in the reason", () => {
+test("quota: is a declared absence, with the evidence in the reason", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   const reason = quota.unavailable!.reason;

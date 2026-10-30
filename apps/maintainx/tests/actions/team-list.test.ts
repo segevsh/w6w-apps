@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamList from "../../actions/team-list.ts";
 import { mockCtx, pathOf, queryAll } from "../_helpers.ts";
 
-Deno.test("team-list: GET /v1/teams with paging, returns { teams, nextCursor }", async () => {
+test("team-list: GET /v1/teams with paging, returns { teams, nextCursor }", async () => {
   const { ctx, calls } = mockCtx([{
     body: { teams: [{ id: 1, name: "n" }], nextCursor: "c", nextPageUrl: "u" },
   }]);

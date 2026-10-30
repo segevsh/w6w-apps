@@ -1,17 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/copy-item.ts";
 
 const MONITOR = "https://contoso.sharepoint.com/_api/v2.0/monitor/4A3407B5";
 
-Deno.test("copy-item: POSTs to the item's copy action", async () => {
+test("copy-item: POSTs to the item's copy action", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined, headers: {} }]);
   await action.execute({ itemId: "01ABC" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/drive/items/01ABC/copy");
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("copy-item: returns the 202 monitor URL without ever calling it", async () => {
+test("copy-item: returns the 202 monitor URL without ever calling it", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: undefined,
@@ -25,7 +26,7 @@ Deno.test("copy-item: returns the 202 monitor URL without ever calling it", asyn
   assertEquals(new URL(calls[0].url).hostname, "graph.microsoft.com");
 });
 
-Deno.test("copy-item: parentReference carries both driveId and id when given", async () => {
+test("copy-item: parentReference carries both driveId and id when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined, headers: {} }]);
   await action.execute(
     { itemId: "i", targetDriveId: "b!drive", targetFolderId: "DCD0", name: "copy.txt" },
@@ -37,13 +38,13 @@ Deno.test("copy-item: parentReference carries both driveId and id when given", a
   });
 });
 
-Deno.test("copy-item: omits parentReference entirely when no destination is given", async () => {
+test("copy-item: omits parentReference entirely when no destination is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined, headers: {} }]);
   await action.execute({ itemId: "i" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("copy-item: conflictBehavior is a query parameter here, per its reference", async () => {
+test("copy-item: conflictBehavior is a query parameter here, per its reference", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined, headers: {} }]);
   await action.execute({ itemId: "i", conflictBehavior: "rename" }, ctx);
   assertEquals(
@@ -54,7 +55,7 @@ Deno.test("copy-item: conflictBehavior is a query parameter here, per its refere
   assertEquals("@microsoft.graph.conflictBehavior" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("copy-item: the boolean options are sent only when turned on", async () => {
+test("copy-item: the boolean options are sent only when turned on", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: undefined, headers: {} },
     { status: 202, body: undefined, headers: {} },
@@ -65,6 +66,6 @@ Deno.test("copy-item: the boolean options are sent only when turned on", async (
   assertEquals(JSON.parse(calls[1].body!), {});
 });
 
-Deno.test("copy-item: is not idempotent — every run enqueues another copy", () => {
+test("copy-item: is not idempotent — every run enqueues another copy", () => {
   assertEquals(action.idempotent, false);
 });

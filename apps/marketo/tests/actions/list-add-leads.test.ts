@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-add-leads.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("list-add-leads: POSTs with repeated id query params", async () => {
+test("list-add-leads: POSTs with repeated id query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1, status: "added" }, { id: 2, status: "added" }] } },
   ], conn);
@@ -17,7 +18,7 @@ Deno.test("list-add-leads: POSTs with repeated id query params", async () => {
   assertEquals(out, [{ id: 1, status: "added" }, { id: 2, status: "added" }]);
 });
 
-Deno.test("list-add-leads: requires at least one numeric lead ID", async () => {
+test("list-add-leads: requires at least one numeric lead ID", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -28,6 +29,6 @@ Deno.test("list-add-leads: requires at least one numeric lead ID", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("list-add-leads: idempotent is true — adding an existing member is a no-op", () => {
+test("list-add-leads: idempotent is true — adding an existing member is a no-op", () => {
   assertEquals(action.idempotent, true);
 });

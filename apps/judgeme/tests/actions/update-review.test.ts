@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import updateReview from "../../actions/update-review.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-review: PUTs to the correctly-slashed /reviews/{id}", async () => {
+test("update-review: PUTs to the correctly-slashed /reviews/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "Action performed successful" } }]);
   const out = await updateReview.execute({ id: 55, curated: "ok" }, ctx);
 
@@ -16,6 +17,6 @@ Deno.test("update-review: PUTs to the correctly-slashed /reviews/{id}", async ()
   assertEquals(out, { message: "Action performed successful" });
 });
 
-Deno.test("update-review: is marked idempotent — repeating a curated status is a safe overwrite", () => {
+test("update-review: is marked idempotent — repeating a curated status is a safe overwrite", () => {
   assertEquals(updateReview.idempotent, true);
 });

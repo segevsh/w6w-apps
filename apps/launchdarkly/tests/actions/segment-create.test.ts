@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/segment-create.ts";
 
 const conn = { display: { projectKey: "default", environmentKey: "production" } };
 
-Deno.test("segment-create: POSTs into one environment", async () => {
+test("segment-create: POSTs into one environment", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { key: "beta" } }], conn);
   await action.execute!({ key: "beta", name: "Beta users" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("segment-create: POSTs into one environment", async () => {
   assertEquals(JSON.parse(calls[0].body!), { key: "beta", name: "Beta users" });
 });
 
-Deno.test("segment-create: the big-segment flag is only sent when set", async () => {
+test("segment-create: the big-segment flag is only sent when set", async () => {
   const off = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ key: "k", name: "n" }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!).unbounded, undefined);
@@ -22,7 +23,7 @@ Deno.test("segment-create: the big-segment flag is only sent when set", async ()
   assertEquals(JSON.parse(on.calls[0].body!).unbounded, true);
 });
 
-Deno.test("segment-create: key and name are both required, before any request", async () => {
+test("segment-create: key and name are both required, before any request", async () => {
   const noKey = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ name: "n" }, noKey.ctx), Error, "`key`");
   const noName = mockCtx([], conn);

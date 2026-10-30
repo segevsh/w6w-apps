@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/reverse-email-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("reverse-email-get: GETs by id and shapes the result", async () => {
+test("reverse-email-get: GETs by id and shapes the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "r1",
@@ -18,7 +19,7 @@ Deno.test("reverse-email-get: GETs by id and shapes the result", async () => {
   assertEquals(out.credits, 1);
 });
 
-Deno.test("reverse-email-get: documented 402 is a result, not an error", async () => {
+test("reverse-email-get: documented 402 is a result, not an error", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { id: "r1", status: "CREDITS_INSUFFICIENT", data: [] },
@@ -27,7 +28,7 @@ Deno.test("reverse-email-get: documented 402 is a result, not an error", async (
   assertEquals(out.status, "CREDITS_INSUFFICIENT");
 });
 
-Deno.test("reverse-email-get: a 404 is thrown", async () => {
+test("reverse-email-get: a 404 is thrown", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "error.reverse.email.not_found", message: "Reverse email ID not found" },

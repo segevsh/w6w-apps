@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/kg-enhance.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const ENHANCED = {
   errors: [],
 };
 
-Deno.test("kg-enhance: GETs /kg/v3/enhance with the partial record and returns the best match", async () => {
+test("kg-enhance: GETs /kg/v3/enhance with the partial record and returns the best match", async () => {
   const { ctx, calls } = mockCtx([{ body: ENHANCED }]);
   const out = await run(action, {
     type: "Organization",
@@ -36,7 +37,7 @@ Deno.test("kg-enhance: GETs /kg/v3/enhance with the partial record and returns t
   assertEquals((out.entity as { name: string }).name, "Diffbot");
 });
 
-Deno.test("kg-enhance: no match is found=false with a null entity; refresh/search sent when on", async () => {
+test("kg-enhance: no match is found=false with a null entity; refresh/search sent when on", async () => {
   const none = mockCtx([{ body: { version: 3, hits: 0, data: [], errors: [] } }]);
   const out = await run(
     action,
@@ -50,7 +51,7 @@ Deno.test("kg-enhance: no match is found=false with a null entity; refresh/searc
   assertEquals(q.get("search"), "true");
 });
 
-Deno.test("kg-enhance: a null entity inside data is not a match; 429 insufficient credits throws", async () => {
+test("kg-enhance: a null entity inside data is not a match; 429 insufficient credits throws", async () => {
   const nul = mockCtx([{ body: { hits: 1, data: [{ score: 0.1, entity: null }] } }]);
   assertEquals((await run(action, { type: "Person", name: "x" }, nul.ctx)).found, false);
   const broke = mockCtx([{ status: 429, body: { code: 429, message: "Insufficient credits" } }]);

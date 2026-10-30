@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares one oauth2 auth method and 8 actions", () => {
+test("index: declares one oauth2 auth method and 8 actions", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "oauth2");
   assertEquals(app.actions.length, 8);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) {
@@ -15,7 +16,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares execute, and perform actions declare idempotent", () => {
+test("index: every action declares execute, and perform actions declare idempotent", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.execute, "function");
     if (action.type === "perform") {
@@ -24,7 +25,7 @@ Deno.test("index: every action declares execute, and perform actions declare ide
   }
 });
 
-Deno.test("index: declares service and quota health checks alongside the derived auth check", () => {
+test("index: declares service and quota health checks alongside the derived auth check", () => {
   const keys = app.healthChecks?.map((c) => c.key) ?? [];
   assertEquals(keys, ["service", "quota"]);
 });

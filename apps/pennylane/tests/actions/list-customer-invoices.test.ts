@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-customer-invoices.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: "abc",
 };
 
-Deno.test("list-customer-invoices: GETs /customer_invoices with the shared four params", async () => {
+test("list-customer-invoices: GETs /customer_invoices with the shared four params", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({
     cursor: "abc",
@@ -27,7 +28,7 @@ Deno.test("list-customer-invoices: GETs /customer_invoices with the shared four 
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-customer-invoices: passes `include` alongside the shared params", async () => {
+test("list-customer-invoices: passes `include` alongside the shared params", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({ include: "invoice_lines", limit: 5 }, ctx);
 

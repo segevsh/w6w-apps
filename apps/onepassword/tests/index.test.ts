@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 14 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 14 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 14);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,25 +23,25 @@ Deno.test("index: exports 14 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
-Deno.test("index: only creating an item duplicates on a retry", () => {
+test("index: only creating an item duplicates on a retry", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key);
   assertEquals(notIdempotent, ["item-create"]);
 });
 
 /** Two credentials reaching two services, deliberately not combinable. */
-Deno.test("index: exports both auth methods and all three health checks", () => {
+test("index: exports both auth methods and all three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["connect-token", "events-token"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "surface", "quota"]);
 });
 
 /** The Connect server is self-hosted, so it can be anywhere. */
-Deno.test("index: the manifest names the Events hosts and admits a self-hosted Connect", () => {
+test("index: the manifest names the Events hosts and admits a self-hosted Connect", () => {
   assertEquals(manifest.w6w.network.allow, [
     "events.1password.com",
     "events.1password.eu",
@@ -56,7 +58,7 @@ Deno.test("index: the manifest names the Events hosts and admits a self-hosted C
  * Reading a secret must be a deliberate act. `item-get` defaults to withholding
  * and `item-field-get` is the narrow path — if either changed, this fails.
  */
-Deno.test("index: reading a secret stays deliberate", () => {
+test("index: reading a secret stays deliberate", () => {
   const get = app.actions.find((a) => a.key === "item-get")!;
   const reveal = (get.params as Array<{ key: string; default?: unknown }>)
     .find((p) => p.key === "revealSecrets")!;
@@ -68,10 +70,10 @@ Deno.test("index: reading a secret stays deliberate", () => {
 });
 
 /** There is no per-action auth binding, so every action must check its surface. */
-Deno.test("index: every action asserts which surface it needs", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: every action asserts which surface it needs", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     assert(
       /requireConnect\(|requireEvents\(/.test(src),
       `${entry.name} does not check which surface the connection is for`,
@@ -93,10 +95,10 @@ const code = (src: string) =>
       "",
     );
 
-Deno.test("index: no action reaches the network except through ctx.fetch", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action reaches the network except through ctx.fetch", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(
       !/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")),
       `${entry.name} calls global fetch`,
@@ -105,10 +107,10 @@ Deno.test("index: no action reaches the network except through ctx.fetch", async
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/authorization/i.test(src), `${entry.name} sets an authorization header`);
     // The access patterns, not the bare word: these actions discuss credentials
     // constantly in their error messages, and prose is not a violation.
@@ -123,10 +125,10 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * The guarantee this whole app rests on: a run log may record ids, labels and
  * counts, and never a secret value or the title that says what it is for.
  */
-Deno.test("index: no action logs a field value, a title or a filename", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action logs a field value, a title or a filename", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
     for (const call of logs) {
       const object = call.slice(call.indexOf("{"));
@@ -147,7 +149,7 @@ Deno.test("index: no action logs a field value, a title or a filename", async ()
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

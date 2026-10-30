@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordSearch from "../../actions/record-search.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-search: POSTs to .../records/search with the filter/sorting/paging body", async () => {
+test("record-search: POSTs to .../records/search with the filter/sorting/paging body", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "rec1" }]) }]);
   const filter = { condition: { operator: "CONTAINS", leftSide: "fld1", rightSide: "acme" } };
   const sorting = [{ sortingField: "fld1", sortType: "ASC" }];
@@ -23,7 +24,7 @@ Deno.test("record-search: POSTs to .../records/search with the filter/sorting/pa
 });
 
 /** All three body fields are documented optional; an empty body matches every record. */
-Deno.test("record-search: an empty search body is valid — nothing is required", async () => {
+test("record-search: an empty search body is valid — nothing is required", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await recordSearch.execute({ databaseId: "db1", tableId: "tbl1" }, ctx);
   // JSON.stringify drops undefined-valued keys, so an all-empty input serialises

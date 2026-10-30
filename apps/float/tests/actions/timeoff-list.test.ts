@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeoffList from "../../actions/timeoff-list.ts";
 import { asListResult, mockCtx, paginationHeaders, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timeoff-list - GETs /timeoffs with the date range", async () => {
+test("timeoff-list - GETs /timeoffs with the date range", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ timeoff_id: 1 }],

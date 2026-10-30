@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-book.ts";
 
-Deno.test("appointment-book: POSTs form-data with a JSON-encoded customer_details field", async () => {
+test("appointment-book: POSTs form-data with a JSON-encoded customer_details field", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: {
@@ -37,7 +38,7 @@ Deno.test("appointment-book: POSTs form-data with a JSON-encoded customer_detail
   assertEquals(out, { booking_id: "#AN-00014", status: "upcoming" });
 });
 
-Deno.test("appointment-book: builds payment_info from costPaid only when provided", async () => {
+test("appointment-book: builds payment_info from costPaid only when provided", async () => {
   const { ctx, calls } = mockBookingsCtx([
     { body: { response: { status: "success", returnvalue: {} } } },
   ]);
@@ -55,7 +56,7 @@ Deno.test("appointment-book: builds payment_info from costPaid only when provide
   assertEquals(JSON.parse(calls[0].form!.payment_info), { cost_paid: "100.00" });
 });
 
-Deno.test("appointment-book: throws before requesting when none of staffId/resourceId/groupId is set", async () => {
+test("appointment-book: throws before requesting when none of staffId/resourceId/groupId is set", async () => {
   const { ctx, calls } = mockBookingsCtx([]);
   await assertRejects(
     () =>

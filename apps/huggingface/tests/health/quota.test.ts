@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -13,7 +14,7 @@ const withHeaders = (remaining: number, allowance = 500) => ({
 });
 
 /** The headers are named nothing like the usual ones. */
-Deno.test("quota: reads the RFC-draft headers off a cheap unauthenticated call", async () => {
+test("quota: reads the RFC-draft headers off a cheap unauthenticated call", async () => {
   const { ctx, calls } = mockCtx([withHeaders(494)]);
   const result = await quota.check!({}, ctx);
   assertEquals(calls[0].url, "https://huggingface.co/api/models?limit=1");
@@ -24,7 +25,7 @@ Deno.test("quota: reads the RFC-draft headers off a cheap unauthenticated call",
   assert(/resetting in 170s/.test(result.message!), result.message);
 });
 
-Deno.test("quota: running low is degraded, exhausted is down", async () => {
+test("quota: running low is degraded, exhausted is down", async () => {
   const low = mockCtx([withHeaders(40)]);
   assertEquals((await quota.check!({}, low.ctx)).state, "degraded");
 
@@ -35,7 +36,7 @@ Deno.test("quota: running low is degraded, exhausted is down", async () => {
 });
 
 /** A proxy forwarding only known headers strips these. */
-Deno.test("quota: absent headers are unknown, and say why they might be", async () => {
+test("quota: absent headers are unknown, and say why they might be", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }]);
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -43,7 +44,7 @@ Deno.test("quota: absent headers are unknown, and say why they might be", async 
   assert(/strips them/.test(result.message!), result.message);
 });
 
-Deno.test("quota: an unreachable Hub is unknown", async () => {
+test("quota: an unreachable Hub is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -52,7 +53,7 @@ Deno.test("quota: an unreachable Hub is unknown", async () => {
 });
 
 /** The providers have their own limits, reported in their own way or not at all. */
-Deno.test("quota: says it measures the Hub only", () => {
+test("quota: says it measures the Hub only", () => {
   assert(/says nothing about the inference providers/.test(quota.description!), quota.description);
   assertEquals(quota.credential, "context");
 });

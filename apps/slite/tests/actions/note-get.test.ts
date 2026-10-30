@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteGet from "../../actions/note-get.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-get: GET /v1/notes/n%201 with the documented parameters", async () => {
+test("note-get: GET /v1/notes/n%201 with the documented parameters", async () => {
   const response = { id: "n 1", content: "<p>x</p>" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteGet.execute({ noteId: "n 1", format: "html", css: "none" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("note-get: GET /v1/notes/n%201 with the documented parameters", async 
   assertEquals(out, response);
 });
 
-Deno.test("note-get: a vendor error surfaces its own message and id", async () => {
+test("note-get: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("note-get: a vendor error surfaces its own message and id", async () =
   );
 });
 
-Deno.test("note-get: defaults send no format query at all", async () => {
+test("note-get: defaults send no format query at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1", content: "x" } }]);
   await noteGet.execute({ noteId: "n1" }, ctx);
   assertEquals(calls[0].url, "https://api.slite.com/v1/notes/n1");

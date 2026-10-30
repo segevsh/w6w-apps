@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/records-modified-since.ts";
 
 const body = (raw: string | null) => JSON.parse(raw!);
 
-Deno.test("records-modified-since: posts `from` and `after`", async () => {
+test("records-modified-since: posts `from` and `after`", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { count: 0, changes: [] } }]);
   await action.execute({ tableId: "bck1", after: "2026-08-01T00:00:00Z" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("records-modified-since: posts `from` and `after`", async () => {
   assertEquals(body(calls[0].body), { from: "bck1", after: "2026-08-01T00:00:00Z" });
 });
 
-Deno.test("records-modified-since: forwards fieldList and includeDetails", async () => {
+test("records-modified-since: forwards fieldList and includeDetails", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute(
     { tableId: "bck1", after: "2026-08-01T00:00:00Z", fieldList: "[6,7]", includeDetails: true },
@@ -23,7 +24,7 @@ Deno.test("records-modified-since: forwards fieldList and includeDetails", async
   assertEquals(body(calls[0].body).includeDetails, true);
 });
 
-Deno.test("records-modified-since: surfaces deletions and the truncation flag", async () => {
+test("records-modified-since: surfaces deletions and the truncation flag", async () => {
   // Reporting deletions is the reason this exists — a query-based poll cannot.
   const { ctx } = mockQbCtx([{
     body: {

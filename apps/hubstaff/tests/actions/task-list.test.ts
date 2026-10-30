@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/task-list.ts";
 
-Deno.test("task-list: GETs the organization's tasks", async () => {
+test("task-list: GETs the organization's tasks", async () => {
   const body = listEnvelope("tasks", [{ id: 1, status: "active", project_id: 9 }], 4);
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({ organization_id: 13 }, ctx) as typeof body;
@@ -13,7 +14,7 @@ Deno.test("task-list: GETs the organization's tasks", async () => {
 });
 
 /** The vendor's enum has seven statuses; the operation description names three. */
-Deno.test("task-list: the status filter carries all seven documented values", () => {
+test("task-list: the status filter carries all seven documented values", () => {
   const status = action.params!.find((p) => p.key === "status")!;
   for (const value of ["active", "completed", "deleted", "archived"]) {
     assert(status.hint!.includes(value), `${value} missing from the hint`);
@@ -21,7 +22,7 @@ Deno.test("task-list: the status filter carries all seven documented values", ()
   assert(status.hint!.includes("archived_native_deleted"), status.hint!);
 });
 
-Deno.test("task-list: list filters are CSV and only_global_todos keeps a false", async () => {
+test("task-list: list filters are CSV and only_global_todos keeps a false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope("tasks", []) }]);
   await action.execute!({
     organization_id: 13,

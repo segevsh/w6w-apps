@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteCreate from "../../actions/note-create.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -18,7 +19,7 @@ const RESPONSE = {
   "updated_at": "2026-01-31T09:00:00Z",
 };
 
-Deno.test("note-create: POST /v2/notes", async () => {
+test("note-create: POST /v2/notes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await noteCreate.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -36,13 +37,13 @@ Deno.test("note-create: POST /v2/notes", async () => {
   assertEquals(out.version, 1);
 });
 
-Deno.test("note-create: puts no credential on the request (sign owns that)", async () => {
+test("note-create: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await noteCreate.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("note-create: a vendor error surfaces its own message", async () => {
+test("note-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

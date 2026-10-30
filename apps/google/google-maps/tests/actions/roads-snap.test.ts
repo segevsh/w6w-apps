@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { rpc } from "./_shared.ts";
 import action from "../../actions/roads-snap.ts";
@@ -11,7 +12,7 @@ const snapped = rpc({
   ],
 });
 
-Deno.test("roads-snap: sends the path in travel order and reports the segments", async () => {
+test("roads-snap: sends the path in travel order and reports the segments", async () => {
   const { ctx, calls } = mockCtx([snapped]);
   const result = await action.execute!({ path: "60.17,24.94|60.17,24.95|60.17,24.96" }, ctx) as {
     count: number;
@@ -28,7 +29,7 @@ Deno.test("roads-snap: sends the path in travel order and reports the segments",
  * Truncating would produce a plausible, shorter, wrong route — the failure this
  * refusal exists to prevent.
  */
-Deno.test("roads-snap: more than 100 points is refused rather than truncated", async () => {
+test("roads-snap: more than 100 points is refused rather than truncated", async () => {
   const long = Array.from({ length: 101 }, (_, i) => `60.${i},24.9`).join("|");
   const { ctx, calls } = mockCtx([]);
   const error = await assertRejects(
@@ -40,7 +41,7 @@ Deno.test("roads-snap: more than 100 points is refused rather than truncated", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("roads-snap: exactly 100 points is allowed", async () => {
+test("roads-snap: exactly 100 points is allowed", async () => {
   const hundred = Array.from({ length: 100 }, (_, i) => `60.${i},24.9`).join("|");
   const { ctx, calls } = mockCtx([snapped]);
   await action.execute!({ path: hundred }, ctx);
@@ -48,7 +49,7 @@ Deno.test("roads-snap: exactly 100 points is allowed", async () => {
 });
 
 /** Interpolation makes the output longer than the input. */
-Deno.test("roads-snap: interpolate is opt-in and sent only when on", async () => {
+test("roads-snap: interpolate is opt-in and sent only when on", async () => {
   const off = mockCtx([snapped]);
   await action.execute!({ path: "1,2|3,4" }, off.ctx);
   assertEquals(new URL(off.calls[0].url).searchParams.has("interpolate"), false);
@@ -58,13 +59,13 @@ Deno.test("roads-snap: interpolate is opt-in and sent only when on", async () =>
   assertEquals(new URL(on.calls[0].url).searchParams.get("interpolate"), "true");
 });
 
-Deno.test("roads-snap: the travel mode constrains which paths are considered", async () => {
+test("roads-snap: the travel mode constrains which paths are considered", async () => {
   const { ctx, calls } = mockCtx([snapped]);
   await action.execute!({ path: "1,2|3,4", travelMode: "cycling" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("travelMode"), "cycling");
 });
 
-Deno.test("roads-snap: Google's own warning is passed through", async () => {
+test("roads-snap: Google's own warning is passed through", async () => {
   const { ctx } = mockCtx([
     rpc({ snappedPoints: [], warningMessage: "Input path is too sparse" }),
   ]);
@@ -72,7 +73,7 @@ Deno.test("roads-snap: Google's own warning is passed through", async () => {
   assertEquals(result.warning, "Input path is too sparse");
 });
 
-Deno.test("roads-snap: a swapped point is caught before the request", async () => {
+test("roads-snap: a swapped point is caught before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ path: "60.17,24.94|124.94,60.17" }, ctx),
@@ -82,14 +83,14 @@ Deno.test("roads-snap: a swapped point is caught before the request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("roads-snap: logs sizes, never the trace", async () => {
+test("roads-snap: logs sizes, never the trace", async () => {
   const { ctx, logs } = mockCtx([snapped]);
   await action.execute!({ path: "60.17,24.94|60.17,24.95|60.17,24.96" }, ctx);
   assert(!JSON.stringify(logs).includes("60.17"), JSON.stringify(logs));
   assertEquals(logs[0].data, { inputCount: 3, count: 3, segments: 2 });
 });
 
-Deno.test("roads-snap: needs a path", async () => {
+test("roads-snap: needs a path", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`path` is required");
 });

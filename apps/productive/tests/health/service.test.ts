@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -21,14 +22,14 @@ const run = (body: unknown, status = 200) => {
   return Promise.resolve(service.check!({} as never, m.ctx)).then((r) => ({ r, ...m }));
 };
 
-Deno.test("service: declares itself, its host and no credential", () => {
+test("service: declares itself, its host and no credential", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.productive.io"]);
   assertEquals(STATUS_URL, "https://status.productive.io/statuspage/productive/ajax");
 });
 
-Deno.test("mapComponentStatus: every Uptime.com status maps, unknown values stay unknown", () => {
+test("mapComponentStatus: every Uptime.com status maps, unknown values stay unknown", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded-performance"), "degraded");
   assertEquals(mapComponentStatus("partial-outage"), "degraded");
@@ -38,14 +39,14 @@ Deno.test("mapComponentStatus: every Uptime.com status maps, unknown values stay
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: API Requests operational is ok and reads only the status host", async () => {
+test("service: API Requests operational is ok and reads only the status host", async () => {
   const { r, calls } = await run(page("operational"));
   assertEquals(r.state, "ok");
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(Object.keys(r.components ?? {}).length, 2, "group rows are not components");
 });
 
-Deno.test("service: the API component decides; other components are only detail", async () => {
+test("service: the API component decides; other components are only detail", async () => {
   const { r } = await run(
     page("operational", [{ id: 3, name: "Mailing", status: "major-outage" }]),
   );
@@ -57,14 +58,14 @@ Deno.test("service: the API component decides; other components are only detail"
   assertEquals(deg.r.state, "degraded");
 });
 
-Deno.test("service: the API component is found by name when its id changes", async () => {
+test("service: the API component is found by name when its id changes", async () => {
   const body = page("operational");
   body.data.components[1].id = 999;
   body.data.components[1].status = "major-outage";
   assertEquals((await run(body)).r.state, "down");
 });
 
-Deno.test("service: a broken or foreign status page is unknown, never down", async () => {
+test("service: a broken or foreign status page is unknown, never down", async () => {
   assertEquals((await run("nope", 500)).r.state, "unknown");
   assertEquals((await run("<html>")).r.state, "unknown");
   assertEquals((await run({ data: {} })).r.state, "unknown");
@@ -79,7 +80,7 @@ Deno.test("service: a broken or foreign status page is unknown, never down", asy
   assertEquals((await run(empty)).r.state, "unknown");
 });
 
-Deno.test("service: an active incident is reported", async () => {
+test("service: an active incident is reported", async () => {
   const body = page("operational");
   body.data.active_incidents = [{ name: "x" }] as never;
   assert(/1 active incident/.test((await run(body)).r.message ?? ""));

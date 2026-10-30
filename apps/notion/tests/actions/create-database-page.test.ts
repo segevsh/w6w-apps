@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-database-page.ts";
 
-Deno.test("create-database-page: POSTs /pages with data source parent, properties and children", async () => {
+test("create-database-page: POSTs /pages with data source parent, properties and children", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "page", id: "page-1" } }]);
   await action.execute({
     dataSourceId: "ds-1",

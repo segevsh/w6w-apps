@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-enroll.ts";
 
 const conn = { display: { schoolDomain: "https://yourschool.learnworlds.com" } };
 
-Deno.test("user-enroll: POSTs to /v2/users/{id}/enrollment", async () => {
+test("user-enroll: POSTs to /v2/users/{id}/enrollment", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   const result = await action.execute!(
     { id: "1", productId: "course-1", productType: "course", price: 0 },
@@ -23,6 +24,6 @@ Deno.test("user-enroll: POSTs to /v2/users/{id}/enrollment", async () => {
   assertEquals(result, { success: true });
 });
 
-Deno.test("user-enroll: idempotent is false", () => {
+test("user-enroll: idempotent is false", () => {
   assertEquals(action.idempotent, false);
 });

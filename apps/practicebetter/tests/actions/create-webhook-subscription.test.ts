@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/create-webhook-subscription.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const required = {
   verificationToken: "handshake-secret",
 };
 
-Deno.test("create-webhook-subscription: POSTs to /webhooks/subscription", async () => {
+test("create-webhook-subscription: POSTs to /webhooks/subscription", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const result = await action.execute(required, ctx);
   assertEquals(calls[0].method, "POST");
@@ -28,7 +29,7 @@ Deno.test("create-webhook-subscription: POSTs to /webhooks/subscription", async 
   assertEquals(result, created);
 });
 
-Deno.test("create-webhook-subscription: optional fields are sent only when set", async () => {
+test("create-webhook-subscription: optional fields are sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await action.execute({
     ...required,
@@ -50,13 +51,13 @@ Deno.test("create-webhook-subscription: optional fields are sent only when set",
   ]);
 });
 
-Deno.test("create-webhook-subscription: the scope really is `read`, as the document writes it", () => {
+test("create-webhook-subscription: the scope really is `read`, as the document writes it", () => {
   assert(/`read` scope/.test(action.description!), action.description);
   assert(/read/i.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-webhook-subscription: the handshake and the event-type source are documented", () => {
+test("create-webhook-subscription: the handshake and the event-type source are documented", () => {
   const token = action.params!.find((p) => p.key === "verificationToken")!;
   assertEquals(token.type, "secret");
   assertEquals(token.required, true);

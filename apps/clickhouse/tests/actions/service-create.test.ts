@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-create.ts";
 
@@ -26,7 +27,7 @@ const base = {
   ipAccessList: '[{"source":"203.0.113.4","description":"workflow"}]',
 };
 
-Deno.test("service-create: posts to the organisation's services", async () => {
+test("service-create: posts to the organisation's services", async () => {
   const { ctx, calls } = mockCtx([created], D);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, `https://api.clickhouse.cloud/v1/organizations/${ORG}/services`);
@@ -38,7 +39,7 @@ Deno.test("service-create: posts to the organisation's services", async () => {
 });
 
 /** Returned once by the API and never retrievable again. */
-Deno.test("service-create: returns the generated password and never logs it", async () => {
+test("service-create: returns the generated password and never logs it", async () => {
   const { ctx, logs } = mockCtx([created], D);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(result.password, "generated-once");
@@ -47,7 +48,7 @@ Deno.test("service-create: returns the generated password and never logs it", as
 });
 
 /** Both defaults are wrong, so it is required. */
-Deno.test("service-create: the IP access list is required and must be an array", async () => {
+test("service-create: the IP access list is required and must be an array", async () => {
   for (const list of [undefined, "", '{"source":"x"}']) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -62,7 +63,7 @@ Deno.test("service-create: the IP access list is required and must be an array",
   }
 });
 
-Deno.test("service-create: an open list needs an acknowledgement", async () => {
+test("service-create: an open list needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -78,7 +79,7 @@ Deno.test("service-create: an open list needs an acknowledgement", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-create: an acknowledged open list goes through and warns", async () => {
+test("service-create: an acknowledged open list goes through and warns", async () => {
   const { ctx, logs } = mockCtx([created], D);
   const result = await action.execute({
     ...base,
@@ -90,7 +91,7 @@ Deno.test("service-create: an acknowledged open list goes through and warns", as
 });
 
 /** The bill follows use rather than time. */
-Deno.test("service-create: idle scaling is on by default and sent explicitly", async () => {
+test("service-create: idle scaling is on by default and sent explicitly", async () => {
   const { ctx, calls } = mockCtx([created], D);
   await action.execute(base, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -105,7 +106,7 @@ Deno.test("service-create: idle scaling is on by default and sent explicitly", a
   assertEquals("idleTimeoutMinutes" in offBody, false);
 });
 
-Deno.test("service-create: a region is required and cannot be changed later", async () => {
+test("service-create: a region is required and cannot be changed later", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -117,6 +118,6 @@ Deno.test("service-create: a region is required and cannot be changed later", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-create: is not idempotent", () => {
+test("service-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

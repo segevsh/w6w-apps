@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignOpenersList from "../../actions/campaign-openers-list.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-openers-list: POST /api/1/getCampaignOpeners/ with the documented form fields", async () => {
+test("campaign-openers-list: POST /api/1/getCampaignOpeners/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await campaignOpenersList.execute(
     { "campaign_id": 55, "exclude_clickers": true, "block_index": 0 } as never,
@@ -23,7 +24,7 @@ Deno.test("campaign-openers-list: POST /api/1/getCampaignOpeners/ with the docum
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("campaign-openers-list: a vendor error surfaces its status and body", async () => {
+test("campaign-openers-list: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await campaignOpenersList.execute(
@@ -35,7 +36,7 @@ Deno.test("campaign-openers-list: a vendor error surfaces its status and body", 
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("campaign-openers-list: an empty campaign_id fails before any request", async () => {
+test("campaign-openers-list: an empty campaign_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -49,7 +50,7 @@ Deno.test("campaign-openers-list: an empty campaign_id fails before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-openers-list: unset optional fields are not sent", async () => {
+test("campaign-openers-list: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await campaignOpenersList.execute({ "campaign_id": 55 } as never, ctx);
   assertEquals(formOf(calls[0]), { "campaign_id": "55" });

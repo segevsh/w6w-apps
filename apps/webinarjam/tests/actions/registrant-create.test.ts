@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import registrantCreate from "../../actions/registrant-create.ts";
 import { formOf, mockWebinarJamCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("registrant-create: maps every field onto WebinarJam's documented names", async () => {
+test("registrant-create: maps every field onto WebinarJam's documented names", async () => {
   const { ctx, calls } = mockWebinarJamCtx([{ body: ok({ user: { user_id: 1234567 } }) }]);
   await registrantCreate.execute({
     product: "webinarjam",
@@ -27,7 +28,7 @@ Deno.test("registrant-create: maps every field onto WebinarJam's documented name
   assertEquals(sent.twilio_consent, "1");
 });
 
-Deno.test("registrant-create: custom fields are merged in by their configured label", async () => {
+test("registrant-create: custom fields are merged in by their configured label", async () => {
   const { ctx, calls } = mockWebinarJamCtx([{ body: ok({ user: {} }) }]);
   await registrantCreate.execute({
     product: "webinarjam",
@@ -42,7 +43,7 @@ Deno.test("registrant-create: custom fields are merged in by their configured la
   assertEquals(params.getAll("whereDidYouHearAboutUs[]"), ["id_1", "id_2"]);
 });
 
-Deno.test("registrant-create: returns the registered attendee, including room links", async () => {
+test("registrant-create: returns the registered attendee, including room links", async () => {
   const user = {
     webinar_id: 5,
     user_id: 1234567,
@@ -61,7 +62,7 @@ Deno.test("registrant-create: returns the registered attendee, including room li
   assertEquals(out.user, user);
 });
 
-Deno.test("registrant-create: is honestly not idempotent", () => {
+test("registrant-create: is honestly not idempotent", () => {
   assertEquals(registrantCreate.idempotent, false);
   assertEquals(registrantCreate.type, "perform");
 });

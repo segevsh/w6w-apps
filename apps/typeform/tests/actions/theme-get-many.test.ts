@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/theme-get-many.ts";
 
-Deno.test("theme-get-many: GETs /themes with paging", async () => {
+test("theme-get-many: GETs /themes with paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], total_items: 0 } }]);
   await action.execute({ page: 2, pageSize: 30 }, ctx);
 

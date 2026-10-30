@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldUpdate from "../../actions/field-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("field-update: sends every input as body", async () => {
+test("field-update: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await fieldUpdate.execute({
     "id": 7,
@@ -32,7 +33,7 @@ Deno.test("field-update: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("field-update: omits every unset optional", async () => {
+test("field-update: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await fieldUpdate.execute({ "id": 7 } as never, ctx);
 
@@ -41,7 +42,7 @@ Deno.test("field-update: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("field-update: declares a perform action's idempotency", () => {
+test("field-update: declares a perform action's idempotency", () => {
   assertEquals(fieldUpdate.type, "perform");
   assertEquals(fieldUpdate.idempotent, true);
   assertEquals(fieldUpdate.params!.filter((p) => p.required).map((p) => p.key), ["id"]);

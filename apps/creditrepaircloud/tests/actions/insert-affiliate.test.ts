@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import insertAffiliate from "../../actions/insert-affiliate.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("insert-affiliate: POSTs the documented document with `zip`", async () => {
+test("insert-affiliate: POSTs the documented document with `zip`", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse("<id>Ag==</id>") }]);
   const out = await insertAffiliate.execute({
     type: "Active",
@@ -24,7 +25,7 @@ Deno.test("insert-affiliate: POSTs the documented document with `zip`", async ()
   assertEquals(out.success, true);
 });
 
-Deno.test("insert-affiliate: the Insert table's name for the postal code is `zip`, not `post_code`", async () => {
+test("insert-affiliate: the Insert table's name for the postal code is `zip`, not `post_code`", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   await insertAffiliate.execute({
     type: "Pending",
@@ -41,7 +42,7 @@ Deno.test("insert-affiliate: the Insert table's name for the postal code is `zip
   assert(!xml.includes("fax"), xml);
 });
 
-Deno.test("insert-affiliate: an invalid email surfaces the vendor's 4403", async () => {
+test("insert-affiliate: an invalid email surfaces the vendor's 4403", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4403, "Email address Invalid") }]);
   await assertRejects(
     async () => {

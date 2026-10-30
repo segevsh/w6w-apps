@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-deal.ts";
 
-Deno.test("delete-deal: identity", () => {
+test("delete-deal: identity", () => {
   assertEquals(action.key, "delete-deal");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "deal");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("delete-deal: sends DELETE /api/v1/crm/deals/d1", async () => {
+test("delete-deal: sends DELETE /api/v1/crm/deals/d1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await action.execute({
     dealUid: "d1",
@@ -25,7 +26,7 @@ Deno.test("delete-deal: sends DELETE /api/v1/crm/deals/d1", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("delete-deal: a failure names the status and the request", async () => {
+test("delete-deal: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/calculate-item-price.ts";
 
-Deno.test("calculate-item-price: posts scoped body", async () => {
+test("calculate-item-price: posts scoped body", async () => {
   const { ctx, calls } = mockCtx([{ body: { item_pricing: {} } }]);
   const result = await action.execute!({
     basePrice: "USD,1000",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-chats.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-chats: POSTs list_chats and flattens the page", async () => {
+test("list-chats: POSTs list_chats and flattens the page", async () => {
   const { ctx, calls } = mockCtx([{
     body: { chats_summary: [{ id: "C1" }], found_chats: 42, next_page_id: "NEXT" },
   }]);
@@ -18,7 +19,7 @@ Deno.test("list-chats: POSTs list_chats and flattens the page", async () => {
   });
 });
 
-Deno.test("list-chats: builds filters, with group id 0 kept", async () => {
+test("list-chats: builds filters, with group id 0 kept", async () => {
   const { ctx, calls } = mockCtx([{ body: { chats_summary: [] } }]);
   await action.execute({
     state: "active",
@@ -40,19 +41,19 @@ Deno.test("list-chats: builds filters, with group id 0 kept", async () => {
   });
 });
 
-Deno.test("list-chats: inactive maps to active:false", async () => {
+test("list-chats: inactive maps to active:false", async () => {
   const { ctx, calls } = mockCtx([{ body: { chats_summary: [] } }]);
   await action.execute({ state: "inactive" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { filters: { active: false } });
 });
 
-Deno.test("list-chats: a follow-up page sends page_id alone", async () => {
+test("list-chats: a follow-up page sends page_id alone", async () => {
   const { ctx, calls } = mockCtx([{ body: { chats_summary: [] } }]);
   await action.execute({ pageId: "P2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { page_id: "P2" });
 });
 
-Deno.test("list-chats: refuses filters alongside page_id and a bad state, before any request", async () => {
+test("list-chats: refuses filters alongside page_id and a bad state, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ pageId: "P2", state: "active" }, ctx),
@@ -67,7 +68,7 @@ Deno.test("list-chats: refuses filters alongside page_id and a bad state, before
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-chats: surfaces a vendor error", async () => {
+test("list-chats: surfaces a vendor error", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { type: "authorization", message: "no" } },

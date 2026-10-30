@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listsCreate from "../../actions/lists-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lists-create: POSTs to /v2/lists/ with the technologies filter, free", async () => {
+test("lists-create: POSTs to /v2/lists/ with the technologies filter, free", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "lst_abcdef", status: "Calculating" } }]);
   const out = await listsCreate.execute(
     { technologies: JSON.stringify([{ slug: "shopify" }]) },
@@ -17,7 +18,7 @@ Deno.test("lists-create: POSTs to /v2/lists/ with the technologies filter, free"
   assertEquals(out.status, "Calculating");
 });
 
-Deno.test("lists-create: array params are cleaned and joined; company sizes become numbers", async () => {
+test("lists-create: array params are cleaned and joined; company sizes become numbers", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "lst_abcdef", status: "Calculating" } }]);
   await listsCreate.execute(
     {
@@ -40,23 +41,23 @@ Deno.test("lists-create: array params are cleaned and joined; company sizes beco
   assertEquals(body.format, "json");
 });
 
-Deno.test("lists-create: unset optional fields are dropped from the body, not sent as null", async () => {
+test("lists-create: unset optional fields are dropped from the body, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "lst_abcdef", status: "Calculating" } }]);
   await listsCreate.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("lists-create: invalid technologies JSON throws instead of sending garbage", async () => {
+test("lists-create: invalid technologies JSON throws instead of sending garbage", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await listsCreate.execute({ technologies: "{not json" }, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lists-create: is marked not idempotent — retrying would create a second list", () => {
+test("lists-create: is marked not idempotent — retrying would create a second list", () => {
   assertEquals(listsCreate.idempotent, false);
 });
 
-Deno.test("lists-create: technologies is a free-form json param, not a generated form", () => {
+test("lists-create: technologies is a free-form json param, not a generated form", () => {
   const p = listsCreate.params?.find((param) => param.key === "technologies");
   assertEquals(p?.type, "json");
   assert(!p?.required);

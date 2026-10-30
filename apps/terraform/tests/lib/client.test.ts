@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -22,7 +23,7 @@ import {
   TerraformClient,
 } from "../../lib/client.ts";
 
-Deno.test("normalizeHost: defaults to the managed service and accepts a bare hostname", () => {
+test("normalizeHost: defaults to the managed service and accepts a bare hostname", () => {
   assertEquals(normalizeHost(undefined), DEFAULT_HOST);
   assertEquals(normalizeHost(""), DEFAULT_HOST);
   assertEquals(normalizeHost("tfe.example.com"), "https://tfe.example.com");
@@ -32,7 +33,7 @@ Deno.test("normalizeHost: defaults to the managed service and accepts a bare hos
 });
 
 /** Terraform Enterprise is the same API at the customer's own address. */
-Deno.test("hostFromConnection: reads the connection's own instance", () => {
+test("hostFromConnection: reads the connection's own instance", () => {
   const managed = mockCtx([], { display: {} });
   assertEquals(hostFromConnection(managed.ctx.connection), DEFAULT_HOST);
   const enterprise = mockCtx([], { display: { host: "https://tfe.example.com" } });
@@ -40,7 +41,7 @@ Deno.test("hostFromConnection: reads the connection's own instance", () => {
 });
 
 /** `application/json` is refused on a write. */
-Deno.test("request: speaks JSON:API on the way out and the way in", async () => {
+test("request: speaks JSON:API on the way out and the way in", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }]);
   await new TerraformClient(ctx).request("/api/v2/organizations", {
     method: "POST",
@@ -50,7 +51,7 @@ Deno.test("request: speaks JSON:API on the way out and the way in", async () => 
   assertEquals(calls[0].headers["accept"], MEDIA_TYPE);
 });
 
-Deno.test("request: a GET carries no content-type at all", async () => {
+test("request: a GET carries no content-type at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new TerraformClient(ctx).request("/api/v2/organizations");
   assertEquals(calls[0].headers["content-type"], undefined);
@@ -58,19 +59,19 @@ Deno.test("request: a GET carries no content-type at all", async () => {
 });
 
 /** The auth hook signs; the client must never carry a token itself. */
-Deno.test("request: never sets an authorization header", async () => {
+test("request: never sets an authorization header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new TerraformClient(ctx).request("/api/v2/organizations");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("request: a 204 yields an empty document rather than throwing", async () => {
+test("request: a 204 yields an empty document rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new TerraformClient(ctx).request("/api/v2/ping"), {});
 });
 
 /** `x-ratelimit-reset` is fractional SECONDS. `new Date(reset*1000)` is 1970. */
-Deno.test("parseRateLimit: reads the per-second window as seconds, not a timestamp", () => {
+test("parseRateLimit: reads the per-second window as seconds, not a timestamp", () => {
   const headers = new Headers({
     "x-ratelimit-limit": "30",
     "x-ratelimit-remaining": "29",
@@ -80,7 +81,7 @@ Deno.test("parseRateLimit: reads the per-second window as seconds, not a timesta
   assert(parseRateLimit(headers).resetsIn! < 60, "a reset of 1.0 is one second, not an epoch");
 });
 
-Deno.test("parseRateLimit: absent headers give undefined rather than NaN", () => {
+test("parseRateLimit: absent headers give undefined rather than NaN", () => {
   assertEquals(parseRateLimit(new Headers()), {
     limit: undefined,
     remaining: undefined,
@@ -88,7 +89,7 @@ Deno.test("parseRateLimit: absent headers give undefined rather than NaN", () =>
   });
 });
 
-Deno.test("full: surfaces what the instance says about itself", async () => {
+test("full: surfaces what the instance says about itself", async () => {
   const { ctx } = mockCtx([{
     status: 204,
     headers: { "tfp-appname": "HCP Terraform", "tfp-api-version": "2.6" },
@@ -100,7 +101,7 @@ Deno.test("full: surfaces what the instance says about itself", async () => {
 });
 
 /** JSON:API's envelope, and the `type` is checked by the server. */
-Deno.test("document: wraps attributes and relationships in the shape writes need", () => {
+test("document: wraps attributes and relationships in the shape writes need", () => {
   assertEquals(document("workspaces", { name: "prod" }), {
     data: { type: "workspaces", attributes: { name: "prod" } },
   });
@@ -115,7 +116,7 @@ Deno.test("document: wraps attributes and relationships in the shape writes need
 });
 
 /** The fields a workflow wants are one level down, under kebab-case names. */
-Deno.test("flatten: lifts attributes up and keeps the API's own spelling", () => {
+test("flatten: lifts attributes up and keeps the API's own spelling", () => {
   assertEquals(
     flatten({ type: "workspaces", id: "ws-1", attributes: { "auto-apply": true } }),
     { id: "ws-1", type: "workspaces", "auto-apply": true },
@@ -128,7 +129,7 @@ Deno.test("flatten: lifts attributes up and keeps the API's own spelling", () =>
  * `?include=` appends a sibling array; the record keeps a pointer. Reading
  * `run.plan.x` gets undefined from a document that contains x.
  */
-Deno.test("resolve: joins a sideloaded record back onto the one pointing at it", () => {
+test("resolve: joins a sideloaded record back onto the one pointing at it", () => {
   const run = {
     type: "runs",
     id: "run-1",
@@ -143,7 +144,7 @@ Deno.test("resolve: joins a sideloaded record back onto the one pointing at it",
   assertEquals(relatedId(run, "plan"), "plan-1");
 });
 
-Deno.test("resolve: a pointer with nothing sideloaded is undefined, not an error", () => {
+test("resolve: a pointer with nothing sideloaded is undefined, not an error", () => {
   const run = { relationships: { plan: { data: { type: "plans", id: "plan-1" } } } };
   assertEquals(resolve(run, "plan", []), undefined);
   assertEquals(resolve(run, "apply", []), undefined);
@@ -151,7 +152,7 @@ Deno.test("resolve: a pointer with nothing sideloaded is undefined, not an error
 });
 
 /** Pagination is kebab-case too, and `next-page` is null on the last page. */
-Deno.test("pagination: reads meta.pagination's kebab-case fields", () => {
+test("pagination: reads meta.pagination's kebab-case fields", () => {
   assertEquals(
     pagination({
       pagination: { "current-page": 2, "next-page": 3, "total-pages": 9, "total-count": 174 },
@@ -166,7 +167,7 @@ Deno.test("pagination: reads meta.pagination's kebab-case fields", () => {
   assertEquals(pagination(undefined).page, undefined);
 });
 
-Deno.test("compact, emptyToUndefined, csv, json and query behave as the actions assume", () => {
+test("compact, emptyToUndefined, csv, json and query behave as the actions assume", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [] }), { a: 1 });
   assertEquals(emptyToUndefined({ a: "", b: undefined }), undefined);
   assertEquals(emptyToUndefined({ a: 1 }), { a: 1 });
@@ -178,7 +179,7 @@ Deno.test("compact, emptyToUndefined, csv, json and query behave as the actions 
 });
 
 /** A bare "unauthorized" is what four different problems look like. */
-Deno.test("describeError: a 401 says the message does not distinguish the causes", () => {
+test("describeError: a 401 says the message does not distinguish the causes", () => {
   const message = describeError(
     401,
     JSON.stringify({
@@ -189,19 +190,19 @@ Deno.test("describeError: a 401 says the message does not distinguish the causes
   assert(/a different instance alike/.test(message), message);
 });
 
-Deno.test("describeError: a 403 names token type as the usual cause", () => {
+test("describeError: a 403 names token type as the usual cause", () => {
   const message = describeError(403, "{}");
   assert(/organization token cannot create runs/.test(message), message);
   assert(/team token only reaches/.test(message), message);
 });
 
 /** 404 and 403 are not distinguishable here, which is deliberate on their side. */
-Deno.test("describeError: a 404 warns it may be a permission, not an absence", () => {
+test("describeError: a 404 warns it may be a permission, not an absence", () => {
   const message = describeError(404, "{}");
   assert(/may mean it does not exist OR/.test(message), message);
 });
 
-Deno.test("describeError: 409, 422 and 429 explain the shapes behind them", () => {
+test("describeError: 409, 422 and 429 explain the shapes behind them", () => {
   assert(/already been applied/.test(describeError(409, "{}")));
   const unprocessable = describeError(422, "{}");
   assert(/KEBAB-case/.test(unprocessable), unprocessable);
@@ -209,7 +210,7 @@ Deno.test("describeError: 409, 422 and 429 explain the shapes behind them", () =
   assert(/fan-out problem/.test(describeError(429, "{}")));
 });
 
-Deno.test("describeError: the detail comes out of the JSON:API errors array", () => {
+test("describeError: the detail comes out of the JSON:API errors array", () => {
   const message = describeError(
     422,
     JSON.stringify({
@@ -219,7 +220,7 @@ Deno.test("describeError: the detail comes out of the JSON:API errors array", ()
   assert(/name has already been taken/.test(message), message);
 });
 
-Deno.test("request: an error names the method, the path and the explanation", async () => {
+test("request: an error names the method, the path and the explanation", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: [{ title: "forbidden" }] } }]);
   let message = "";
   try {
@@ -232,7 +233,7 @@ Deno.test("request: an error names the method, the path and the explanation", as
   assert(/TOKEN TYPE/.test(message), message);
 });
 
-Deno.test("request: a non-JSON body fails with what came back", async () => {
+test("request: a non-JSON body fails with what came back", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>login</html>" }]);
   let message = "";
   try {

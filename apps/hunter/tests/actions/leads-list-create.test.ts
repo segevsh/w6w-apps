@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/leads-list-create.ts";
 
-Deno.test("leads-list-create: POSTs /leads_lists with the name", async () => {
+test("leads-list-create: POSTs /leads_lists with the name", async () => {
   const body = envelope({ id: 3, name: "My new leads list" });
   const { ctx, calls } = mockCtx([{ status: 201, body }]);
   const result = await action.execute!({ name: "My new leads list" }, ctx);
@@ -12,6 +13,6 @@ Deno.test("leads-list-create: POSTs /leads_lists with the name", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("leads-list-create: is not marked idempotent", () => {
+test("leads-list-create: is not marked idempotent", () => {
   assertEquals(action.idempotent, false);
 });

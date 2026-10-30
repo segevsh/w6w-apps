@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test as nodeTest } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import apiKey, { isAuthFailure, PROBE_EMAIL, PROBE_PATH, tokenFor } from "../../auth/api-key.ts";
 import { errBody, mockCtx } from "../_helpers.ts";
@@ -13,7 +14,7 @@ const sign = (url: string, credential: unknown) =>
     credential,
   } as never, mockCtx().ctx) as { headers: Record<string, string> }).headers;
 
-Deno.test("auth: one apiKey method on X-Encharge-Token with a secret API key and optional write key", () => {
+nodeTest("auth: one apiKey method on X-Encharge-Token with a secret API key and optional write key", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.apiKey, { in: "header", name: "X-Encharge-Token" });
@@ -24,7 +25,7 @@ Deno.test("auth: one apiKey method on X-Encharge-Token with a secret API key and
   assert(PROBE_PATH.includes(encodeURIComponent(PROBE_EMAIL)));
 });
 
-Deno.test("auth.sign: the API key goes to the REST host and the write key only to the ingest host", () => {
+nodeTest("auth.sign: the API key goes to the REST host and the write key only to the ingest host", () => {
   assertEquals(sign("https://api.encharge.io/v1/people", cred), {
     "x-encharge-token": "eyJ.abc.def",
   });
@@ -35,7 +36,7 @@ Deno.test("auth.sign: the API key goes to the REST host and the write key only t
   assertEquals(tokenFor({ apiKey: "  k  " }, "api.encharge.io"), "k");
 });
 
-Deno.test("auth.test: a users list passes; the key goes in the header, never the URL", async () => {
+nodeTest("auth.test: a users list passes; the key goes in the header, never the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [] } }]);
   assertEquals(await test(cred, ctx), { ok: true });
   assertEquals(calls[0].method, "GET");
@@ -44,14 +45,14 @@ Deno.test("auth.test: a users list passes; the key goes in the header, never the
   assertEquals(calls[0].url.includes(cred.apiKey), false);
 });
 
-Deno.test("auth.test: a missing key fails without a network call", async () => {
+nodeTest("auth.test: a missing key fails without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await test({ apiKey: "  " }, ctx)).ok, false);
   assertEquals((await test(undefined, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth.test: the JWT-shape rejection (10082) and the not-logged-in 401 are rejections quoting the vendor", async () => {
+nodeTest("auth.test: the JWT-shape rejection (10082) and the not-logged-in 401 are rejections quoting the vendor", async () => {
   const jwt = mockCtx([{
     status: 401,
     body: errBody("Token without payload (should be JWT token).", 10082),
@@ -71,12 +72,12 @@ Deno.test("auth.test: the JWT-shape rejection (10082) and the not-logged-in 401 
   assert(/refused/.test(o.message), o.message);
 });
 
-Deno.test("auth.test: a non-auth 404 envelope means the key got past authentication", async () => {
+nodeTest("auth.test: a non-auth 404 envelope means the key got past authentication", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errBody("Person not found") }]);
   assertEquals(await test(cred, ctx), { ok: true });
 });
 
-Deno.test("auth.test: an HTML shell, an unrecognised 200 and a 5xx are not judged valid", async () => {
+nodeTest("auth.test: an HTML shell, an unrecognised 200 and a 5xx are not judged valid", async () => {
   const html = mockCtx([{ status: 404, body: "<html>Cannot GET</html>", headers: {} }]);
   assertEquals((await test(cred, html.ctx)).ok, false);
   const odd = mockCtx([{ body: { hello: "world" } }]);
@@ -89,7 +90,7 @@ Deno.test("auth.test: an HTML shell, an unrecognised 200 and a 5xx are not judge
   assert(/not judged/.test(f.message) && !/refused/.test(f.message), f.message);
 });
 
-Deno.test("auth.isAuthFailure: 401/403, code 10082 and auth wording are failures; a plain 404 is not", () => {
+nodeTest("auth.isAuthFailure: 401/403, code 10082 and auth wording are failures; a plain 404 is not", () => {
   assertEquals(isAuthFailure(401, null), true);
   assertEquals(isAuthFailure(403, null), true);
   assertEquals(isAuthFailure(400, errBody("x", 10082)), true);

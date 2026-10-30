@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-webset.ts";
 
-Deno.test("get-webset: GETs /v0/websets/{id}", async () => {
+test("get-webset: GETs /v0/websets/{id}", async () => {
   const body = { id: "ws_1", status: "idle", title: "EU AI startups" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ id: "ws_1" }, ctx);
@@ -14,14 +15,14 @@ Deno.test("get-webset: GETs /v0/websets/{id}", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("get-webset: sets expand=items only when expandItems is set", async () => {
+test("get-webset: sets expand=items only when expandItems is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ws_1" } }]);
   await action.execute!({ id: "ws_1", expandItems: true }, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.searchParams.get("expand"), "items");
 });
 
-Deno.test("get-webset: URL-encodes the id", async () => {
+test("get-webset: URL-encodes the id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "my ref/1" } }]);
   await action.execute!({ id: "my ref/1" }, ctx);
   const url = new URL(calls[0].url);

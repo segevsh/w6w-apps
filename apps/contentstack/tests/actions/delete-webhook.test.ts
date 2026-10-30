@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-webhook.ts";
 
-Deno.test("delete-webhook: metadata", () => {
+test("delete-webhook: metadata", () => {
   assertEquals(action.key, "delete-webhook");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), ["webhookUid"]);
 });
 
-Deno.test("delete-webhook: calls DELETE /webhooks/bltw on the NA host", async () => {
+test("delete-webhook: calls DELETE /webhooks/bltw on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "The webhook was deleted successfully." } }]);
   const out = await action.execute({ "webhookUid": "bltw" }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("delete-webhook: calls DELETE /webhooks/bltw on the NA host", async ()
   assertEquals(out, { "notice": "The webhook was deleted successfully." });
 });
 
-Deno.test("delete-webhook: uses the connection's regional host", async () => {
+test("delete-webhook: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { "notice": "The webhook was deleted successfully." } }],
     {
@@ -31,7 +32,7 @@ Deno.test("delete-webhook: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/webhooks/bltw");
 });
 
-Deno.test("delete-webhook: rejects without `webhookUid` and makes no request", async () => {
+test("delete-webhook: rejects without `webhookUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -43,7 +44,7 @@ Deno.test("delete-webhook: rejects without `webhookUid` and makes no request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete-webhook: surfaces Contentstack's own error body", async () => {
+test("delete-webhook: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

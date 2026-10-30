@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import embed from "../../actions/embed-content.ts";
 
 const display = { projectId: "p1", location: "europe-west4" };
 const BASE = "https://europe-west4-aiplatform.googleapis.com/v1/projects/p1/locations/europe-west4";
 
-Deno.test("embed-content: sends embedContentConfig (not the deprecated top-level fields)", async () => {
+test("embed-content: sends embedContentConfig (not the deprecated top-level fields)", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       embedding: { values: [0.1, 0.2] },

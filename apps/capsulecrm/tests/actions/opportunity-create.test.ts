@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-create.ts";
 
-Deno.test("opportunity-create: POSTs /opportunities with party+milestone nested", async () => {
+test("opportunity-create: POSTs /opportunities with party+milestone nested", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { opportunity: { id: 83948362 } } }]);
   const out = await action.execute(
     { name: "Consulting", partyId: 581, milestoneId: 14, valueAmount: 500, valueCurrency: "GBP" },
@@ -21,7 +22,7 @@ Deno.test("opportunity-create: POSTs /opportunities with party+milestone nested"
   assertEquals(out, { opportunity: { id: 83948362 } });
 });
 
-Deno.test("opportunity-create: name/partyId/milestoneId are marked required", () => {
+test("opportunity-create: name/partyId/milestoneId are marked required", () => {
   const required = action.params!.filter((p) => p.required).map((p) => p.key);
   assertEquals(required.includes("name"), true);
   assertEquals(required.includes("partyId"), true);

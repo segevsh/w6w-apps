@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/project-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("project-list: GETs the documented path", async () => {
+test("project-list: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "p1", name: "w6w" }] } }]);
   const out = await action.execute!({ q: "w6" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("project-list: GETs the documented path", async () => {
   assertEquals(out, { data: [{ id: "p1", name: "w6w" }] });
 });
 
-Deno.test("project-list: a vendor error reports status and message", async () => {
+test("project-list: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({ q: "w6" }, ctx),

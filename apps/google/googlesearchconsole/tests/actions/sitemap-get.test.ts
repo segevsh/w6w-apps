@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sitemap-get.ts";
 
-Deno.test("sitemap-get: builds the nested sites/{siteUrl}/sitemaps/{feedpath} path", async () => {
+test("sitemap-get: builds the nested sites/{siteUrl}/sitemaps/{feedpath} path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { path: "https://www.example.com/sitemap.xml" },
@@ -16,7 +17,7 @@ Deno.test("sitemap-get: builds the nested sites/{siteUrl}/sitemaps/{feedpath} pa
   );
 });
 
-Deno.test("sitemap-get: feedpath is required", async () => {
+test("sitemap-get: feedpath is required", async () => {
   const { ctx, calls } = mockCtx([], { display: { siteUrl: "https://www.example.com/" } });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`feedpath`");
   assertEquals(calls.length, 0);

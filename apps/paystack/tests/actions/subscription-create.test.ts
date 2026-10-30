@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/subscription-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: POSTs customer, plan and optional authorization", async () => {
+test("subscription-create: POSTs customer, plan and optional authorization", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ subscription_code: "SUB_1", email_token: "t" }) }]);
   const out = await action.execute({
     customer: "CUS_1",
@@ -20,7 +21,7 @@ Deno.test("subscription-create: POSTs customer, plan and optional authorization"
   });
 });
 
-Deno.test("subscription-create: requires customer and plan", async () => {
+test("subscription-create: requires customer and plan", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ customer: "", plan: "P" }, ctx),

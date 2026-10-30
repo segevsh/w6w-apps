@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { PROBE_PATH, RATE_LIMIT_PER_WINDOW, WARN_FRACTION } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ function headers(limit: string, remaining: string, reset = "1770379510") {
   };
 }
 
-Deno.test("quota: probes the same GET /me the credential check uses", () => {
+test("quota: probes the same GET /me the credential check uses", () => {
   assertEquals(PROBE_PATH, "/me");
   assertEquals(RATE_LIMIT_PER_WINDOW, 25);
   assertEquals(quota.kind, "quota");
@@ -20,12 +21,12 @@ Deno.test("quota: probes the same GET /me the credential check uses", () => {
   assertEquals(quota.credential, "signed");
 });
 
-Deno.test("quota: informational, so a five-second window can never pin the roll-up", () => {
+test("quota: informational, so a five-second window can never pin the roll-up", () => {
   // An unreadable header reports `unknown`, and `unknown` outranks `ok`.
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: reads the ratelimit-* headers off a healthy /me call", async () => {
+test("quota: reads the ratelimit-* headers off a healthy /me call", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     headers: headers("25", "23"),
@@ -43,7 +44,7 @@ Deno.test("quota: reads the ratelimit-* headers off a healthy /me call", async (
   }]);
 });
 
-Deno.test("quota: a nearly-spent window reports the reading and degrades", async () => {
+test("quota: a nearly-spent window reports the reading and degrades", async () => {
   // 4/25 = 0.16, below the 0.2 warning fraction.
   assert(4 / 25 <= WARN_FRACTION);
   const { ctx } = mockCtx([{ status: 200, headers: headers("25", "4"), body: ME }]);
@@ -54,7 +55,7 @@ Deno.test("quota: a nearly-spent window reports the reading and degrades", async
   assert(report.message?.includes("4/25"), report.message);
 });
 
-Deno.test("quota: an exhausted window is down with the quota reading attached", async () => {
+test("quota: an exhausted window is down with the quota reading attached", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: headers("25", "0"), body: ME }]);
   const report = await quota.check!({}, ctx);
 
@@ -62,7 +63,7 @@ Deno.test("quota: an exhausted window is down with the quota reading attached", 
   assertEquals(report.quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: missing ratelimit headers are unknown, never an assumed zero", async () => {
+test("quota: missing ratelimit headers are unknown, never an assumed zero", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: { "content-type": "application/json" },
@@ -75,7 +76,7 @@ Deno.test("quota: missing ratelimit headers are unknown, never an assumed zero",
   assert(report.message?.includes("ratelimit-limit"), report.message);
 });
 
-Deno.test("quota: an unparsable reset header drops resetAt instead of inventing a date", async () => {
+test("quota: an unparsable reset header drops resetAt instead of inventing a date", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: headers("25", "23", "not-a-timestamp"),
@@ -87,7 +88,7 @@ Deno.test("quota: an unparsable reset header drops resetAt instead of inventing 
   assertEquals("resetAt" in (report.quota?.[0] ?? {}), false);
 });
 
-Deno.test("quota: a rejected token is unknown, with the vendor's own error text", async () => {
+test("quota: a rejected token is unknown, with the vendor's own error text", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "unauthorized", message: "Access token is missing or invalid" },

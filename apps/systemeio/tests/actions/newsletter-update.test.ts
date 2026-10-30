@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import newsletterUpdate from "../../actions/newsletter-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("newsletter-update: merge-patches a nested {content} object", async () => {
+test("newsletter-update: merge-patches a nested {content} object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await newsletterUpdate.execute({ id: "1", subject: "Updated subject" }, ctx);
 

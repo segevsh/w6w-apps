@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-build-status.ts";
 
 const display = { endpoint: "https://ci.example.com" };
 
-Deno.test("get-build-status: GETs /job/<name>/<buildNumber>/api/json", async () => {
+test("get-build-status: GETs /job/<name>/<buildNumber>/api/json", async () => {
   const { ctx, calls } = mockCtx([
     { body: { number: 12, result: "SUCCESS", building: false, url: "x", duration: 4200 } },
   ], { display });
@@ -20,19 +21,19 @@ Deno.test("get-build-status: GETs /job/<name>/<buildNumber>/api/json", async () 
   });
 });
 
-Deno.test("get-build-status: defaults buildNumber to lastBuild when omitted", async () => {
+test("get-build-status: defaults buildNumber to lastBuild when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ job: "my-job" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-job/lastBuild/api/json");
 });
 
-Deno.test("get-build-status: accepts a permalink such as lastSuccessfulBuild", async () => {
+test("get-build-status: accepts a permalink such as lastSuccessfulBuild", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ job: "my-job", buildNumber: "lastSuccessfulBuild" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-job/lastSuccessfulBuild/api/json");
 });
 
-Deno.test("get-build-status: expands a folder-nested job path", async () => {
+test("get-build-status: expands a folder-nested job path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ job: "my-folder/my-pipeline", buildNumber: 3 }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-folder/job/my-pipeline/3/api/json");

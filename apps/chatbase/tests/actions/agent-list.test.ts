@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentList from "../../actions/agent-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agent-list: GET /agents, defaults query untouched when omitted", async () => {
+test("agent-list: GET /agents, defaults query untouched when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "a1", name: "Bot" }]) }]);
   const out = await agentList.execute({}, ctx) as { data: unknown[] };
 
@@ -12,13 +13,13 @@ Deno.test("agent-list: GET /agents, defaults query untouched when omitted", asyn
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("agent-list: forwards cursor and limit", async () => {
+test("agent-list: forwards cursor and limit", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await agentList.execute({ cursor: "abc", limit: 5 }, ctx);
   assertEquals(queryOf(calls[0].url), { cursor: "abc", limit: "5" });
 });
 
-Deno.test("agent-list: returns the pagination envelope verbatim", async () => {
+test("agent-list: returns the pagination envelope verbatim", async () => {
   const { ctx } = mockCtx([{ body: page([{ id: "a1" }], { cursor: "next", hasMore: true }) }]);
   const out = await agentList.execute({}, ctx) as {
     pagination: { cursor: string; hasMore: boolean };

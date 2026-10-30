@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-toggle.ts";
 
 /** Deactivating loses history; muting keeps it. Different switches. */
-Deno.test("check-toggle: sends only the switch it was asked to flip", async () => {
+test("check-toggle: sends only the switch it was asked to flip", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "c1" } }]);
   await action.execute!({ checkId: "c1", muted: "true" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -12,19 +13,19 @@ Deno.test("check-toggle: sends only the switch it was asked to flip", async () =
 });
 
 /** `false` is a real setting and must not be dropped as falsy. */
-Deno.test("check-toggle: turning something off sends an explicit false", async () => {
+test("check-toggle: turning something off sends an explicit false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ checkId: "c1", activated: "false", muted: "false" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { activated: false, muted: false });
 });
 
-Deno.test("check-toggle: an unset switch is left alone", async () => {
+test("check-toggle: an unset switch is left alone", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ checkId: "c1", activated: "true", muted: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { activated: true });
 });
 
-Deno.test("check-toggle: a call that changes nothing is refused, not sent", async () => {
+test("check-toggle: a call that changes nothing is refused, not sent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ checkId: "c1" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("check-toggle: a call that changes nothing is refused, not sent", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("check-toggle: the hints explain which switch loses history", () => {
+test("check-toggle: the hints explain which switch loses history", () => {
   const params = action.params as Array<{ key: string; hint?: string }>;
   assert(params.find((p) => p.key === "activated")!.hint!.includes("no history"));
   assert(params.find((p) => p.key === "muted")!.hint!.includes("still recorded"));

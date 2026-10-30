@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-insert.ts";
 
-Deno.test("user-insert: POSTs /users with name split into given/family", async () => {
+test("user-insert: POSTs /users with name split into given/family", async () => {
   const body = { id: "u-1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({
@@ -22,7 +23,7 @@ Deno.test("user-insert: POSTs /users with name split into given/family", async (
   assertEquals(result, body);
 });
 
-Deno.test("user-insert: forwards optional fields when supplied", async () => {
+test("user-insert: forwards optional fields when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     primaryEmail: "new@example.com",
@@ -40,6 +41,6 @@ Deno.test("user-insert: forwards optional fields when supplied", async () => {
   assertEquals(sent.suspended, false);
 });
 
-Deno.test("user-insert: is not idempotent", () => {
+test("user-insert: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import adAccountList from "../../actions/ad-account-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("ad-account-list: calls GET /ad_accounts", async () => {
+test("ad-account-list: calls GET /ad_accounts", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [{ id: "1" }], bookmark: null } }]);
   const out = await adAccountList.execute({}, ctx) as { items: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("ad-account-list: calls GET /ad_accounts", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("ad-account-list: forwards include_shared_accounts and pagination", async () => {
+test("ad-account-list: forwards include_shared_accounts and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await adAccountList.execute({ includeSharedAccounts: false, pageSize: 10 }, ctx);
   const q = queryOf(calls[0].url);

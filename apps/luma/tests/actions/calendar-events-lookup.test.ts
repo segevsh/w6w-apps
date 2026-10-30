@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarEventsLookup from "../../actions/calendar-events-lookup.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("calendar-events-lookup: looks up by event_id", async () => {
+test("calendar-events-lookup: looks up by event_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { event: { id: "calev-1", status: "approved" } } }]);
   await calendarEventsLookup.execute({ eventId: "evt-1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("calendar-events-lookup: looks up by event_id", async () => {
   assertEquals(queryOf(calls[0].url), { event_id: "evt-1" });
 });
 
-Deno.test("calendar-events-lookup: looks up by external url and platform", async () => {
+test("calendar-events-lookup: looks up by external url and platform", async () => {
   const { ctx, calls } = mockCtx([{ body: { event: null } }]);
   await calendarEventsLookup.execute(
     { platform: "external", url: "https://example.com/e" },

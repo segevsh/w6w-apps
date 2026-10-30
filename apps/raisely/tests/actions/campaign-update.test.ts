@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignUpdate from "../../actions/campaign-update.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-update: PATCH /v3/campaigns/spring-appeal with the documented wrapped body", async () => {
+test("campaign-update: PATCH /v3/campaigns/spring-appeal with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "r-1" }) }]);
   const out = await campaignUpdate.execute({
     "campaign": "spring-appeal",
@@ -35,18 +36,18 @@ Deno.test("campaign-update: PATCH /v3/campaigns/spring-appeal with the documente
   assertEquals(out, { uuid: "r-1" });
 });
 
-Deno.test("campaign-update: is a perform action marked idempotent=true", () => {
+test("campaign-update: is a perform action marked idempotent=true", () => {
   assertEquals(campaignUpdate.type, "perform");
   assertEquals(campaignUpdate.idempotent, true);
 });
 
-Deno.test("campaign-update: only the fields given are sent", async () => {
+test("campaign-update: only the fields given are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await campaignUpdate.execute({ "campaign": "c" }, ctx);
   assertEquals(bodyOf(calls[0]), { "data": {} });
 });
 
-Deno.test("campaign-update: malformed JSON in a custom-field param fails before any request", async () => {
+test("campaign-update: malformed JSON in a custom-field param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -69,7 +70,7 @@ Deno.test("campaign-update: malformed JSON in a custom-field param fails before 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-update: an HTTP error becomes a readable Raisely error", async () => {
+test("campaign-update: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

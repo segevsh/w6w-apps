@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: is a bearer method exposing an `apiKey` secret field", () => {
+test("access-token: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "bearer");
   const apiKey = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +12,7 @@ Deno.test("access-token: is a bearer method exposing an `apiKey` secret field", 
   assertEquals(apiKey.required, true);
 });
 
-Deno.test("access-token: sign appends Bearer using credential.apiKey", async () => {
+test("access-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("access-token: sign appends Bearer using credential.apiKey", async () 
   assertEquals(out.headers["authorization"], "Bearer tok-xyz");
 });
 
-Deno.test("access-token: test with missing apiKey reports the failure and makes no call", async () => {
+test("access-token: test with missing apiKey reports the failure and makes no call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -30,7 +31,7 @@ Deno.test("access-token: test with missing apiKey reports the failure and makes 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test hits /user with Bearer and reports ok", async () => {
+test("access-token: test hits /user with Bearer and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { account_id: "acc-1" } }]);
   const result = await auth.test({ credential: { apiKey: "tok-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -38,7 +39,7 @@ Deno.test("access-token: test hits /user with Bearer and reports ok", async () =
   assertEquals(calls[0].headers["authorization"], "Bearer tok-abc");
 });
 
-Deno.test("access-token: test returns the upstream status on non-2xx", async () => {
+test("access-token: test returns the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);

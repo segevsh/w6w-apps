@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-goals.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-goals: maps each goal and counts them", async () => {
+test("list-goals: maps each goal and counts them", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ slug: "a", goal_type: "hustler", safebuf: 1 }, { slug: "b", pledge: 10 }],
   }]);
@@ -16,7 +17,7 @@ Deno.test("list-goals: maps each goal and counts them", async () => {
   assertEquals(out.goals[1].pledge, 10);
 });
 
-Deno.test("list-goals: a non-array body gives an empty list; errors throw", async () => {
+test("list-goals: a non-array body gives an empty list; errors throw", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals((await run(action, {}, ctx)).count, 0);
   const bad = mockCtx([{ status: 401, body: { errors: { message: "nope" } } }]);

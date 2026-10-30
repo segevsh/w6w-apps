@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/topic-create.ts";
 
-Deno.test("topic-create: POSTs /posts.json with a title and no topic_id", async () => {
+test("topic-create: POSTs /posts.json with a title and no topic_id", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { id: 9, topic_id: 4 } }]);
   const out = await action.execute({ title: "Hello", raw: "World" }, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/posts.json`);
@@ -15,7 +16,7 @@ Deno.test("topic-create: POSTs /posts.json with a title and no topic_id", async 
   assertEquals(out, { id: 9, topic_id: 4 });
 });
 
-Deno.test("topic-create: sends the category as `category`, not `category_id`", async () => {
+test("topic-create: sends the category as `category`, not `category_id`", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute({ title: "t", raw: "r", category: 12 }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("topic-create: sends the category as `category`, not `category_id`", a
   assertEquals("category_id" in body, false);
 });
 
-Deno.test("topic-create: auto_track goes on the wire as a real boolean, including false", async () => {
+test("topic-create: auto_track goes on the wire as a real boolean, including false", async () => {
   // `auto_track` is typed boolean on this endpoint — unlike `enabled` on
   // topic-set-status, which is a string enum.
   const off = mockDiscourseCtx([{ body: {} }]);
@@ -35,7 +36,7 @@ Deno.test("topic-create: auto_track goes on the wire as a real boolean, includin
   assertEquals(JSON.parse(on.calls[0].body!).auto_track, true);
 });
 
-Deno.test("topic-create: carries the external-blog fields under their API names", async () => {
+test("topic-create: carries the external-blog fields under their API names", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute(
     { title: "t", raw: "r", embedUrl: "https://blog.test/p/1", externalId: "abc" },
@@ -46,7 +47,7 @@ Deno.test("topic-create: carries the external-blog fields under their API names"
   assertEquals(body.external_id, "abc");
 });
 
-Deno.test("topic-create: is not idempotent, and says so", () => {
+test("topic-create: is not idempotent, and says so", () => {
   assertEquals(action.idempotent, false);
   assert(action.params!.some((p) => p.key === "title" && p.required));
   assert(action.params!.some((p) => p.key === "raw" && p.required));

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/blacklist-add-leads.ts";
 
 const leads = [{ profileUrl: "https://www.linkedin.com/in/john-doe/" }];
 
-Deno.test("blacklist-add-leads: POSTs the lead entries verbatim", async () => {
+test("blacklist-add-leads: POSTs the lead entries verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { added: 1 } }]);
   await action.execute!({ leads }, ctx);
   assertEquals(calls[0].url, "https://api.heyreach.io/api/public/blacklist/AddLeads");
@@ -13,7 +14,7 @@ Deno.test("blacklist-add-leads: POSTs the lead entries verbatim", async () => {
 });
 
 /** Every identifier the operation's prose documents is accepted, not just profileUrl. */
-Deno.test("blacklist-add-leads: member id, email and name identifiers are passed through", async () => {
+test("blacklist-add-leads: member id, email and name identifiers are passed through", async () => {
   const mixed = [
     { linkedInProfileId: "abc123" },
     { email: "a@b.com" },
@@ -25,7 +26,7 @@ Deno.test("blacklist-add-leads: member id, email and name identifiers are passed
 });
 
 /** A 200 does not mean every entry landed — the per-entry result is returned. */
-Deno.test("blacklist-add-leads: duplicates and validation errors come back with the counts", async () => {
+test("blacklist-add-leads: duplicates and validation errors come back with the counts", async () => {
   const body = {
     added: 1,
     duplicates: ["abc123"],

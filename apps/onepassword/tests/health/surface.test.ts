@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import surface from "../../health/surface.ts";
 import { EVENTS_HOSTS } from "../../lib/client.ts";
@@ -10,7 +11,7 @@ const connect = (vaultCount?: number) => ({
 });
 const events = (features?: string[]) => ({ surface: "events", region: "eu", features });
 
-Deno.test("surface: a Connect connection probes the Connect server", async () => {
+test("surface: a Connect connection probes the Connect server", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "v1" }] }], {
     display: connect(1),
   });
@@ -20,7 +21,7 @@ Deno.test("surface: a Connect connection probes the Connect server", async () =>
   assert(/1 vault\b/.test(result.message!), result.message);
 });
 
-Deno.test("surface: an Events connection probes introspection instead", async () => {
+test("surface: an Events connection probes introspection instead", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Features: ["auditevents"] } }], {
     display: events(["auditevents"]),
   });
@@ -34,7 +35,7 @@ Deno.test("surface: an Events connection probes introspection instead", async ()
  * A vault deleted from the token's scope keeps the token working and starts
  * producing 404s that look like wrong ids.
  */
-Deno.test("surface: a Connect scope that shrank is degraded, and says what it looks like", async () => {
+test("surface: a Connect scope that shrank is degraded, and says what it looks like", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ id: "v1" }] }], { display: connect(3) });
   const result = await surface.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -43,7 +44,7 @@ Deno.test("surface: a Connect scope that shrank is degraded, and says what it lo
 });
 
 /** Likewise a narrowed Events grant keeps working on the endpoints it kept. */
-Deno.test("surface: lost Events grants are degraded, and named", async () => {
+test("surface: lost Events grants are degraded, and named", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { Features: ["auditevents"] } }], {
     display: events(["auditevents", "itemusages"]),
   });
@@ -54,7 +55,7 @@ Deno.test("surface: lost Events grants are degraded, and named", async () => {
 });
 
 /** A credential that reaches nothing is not a working connection. */
-Deno.test("surface: an empty scope is down on either surface", async () => {
+test("surface: an empty scope is down on either surface", async () => {
   const noVaults = mockCtx([{ status: 200, body: [] }], { display: connect(2) });
   const vaultResult = await surface.check!({}, noVaults.ctx);
   assertEquals(vaultResult.state, "down");
@@ -67,7 +68,7 @@ Deno.test("surface: an empty scope is down on either surface", async () => {
 });
 
 /** A rejected token is the derived auth check's business, not an outage. */
-Deno.test("surface: a rejected credential is unknown, not down", async () => {
+test("surface: a rejected credential is unknown, not down", async () => {
   for (const status of [401, 403]) {
     const connectCtx = mockCtx([{ status, body: {} }], { display: connect() });
     assertEquals((await surface.check!({}, connectCtx.ctx)).state, "unknown");
@@ -78,7 +79,7 @@ Deno.test("surface: a rejected credential is unknown, not down", async () => {
 });
 
 /** Connect is on your own infrastructure, so unreachability is not 1Password's. */
-Deno.test("surface: an unreachable Connect server says whose problem it is", async () => {
+test("surface: an unreachable Connect server says whose problem it is", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("ECONNREFUSED")),
     log: () => {},
@@ -89,20 +90,20 @@ Deno.test("surface: an unreachable Connect server says whose problem it is", asy
   assert(/your own\s+infrastructure/.test(result.message!), result.message);
 });
 
-Deno.test("surface: a non-JSON Connect body is degraded and named as a proxy", async () => {
+test("surface: a non-JSON Connect body is degraded and named as a proxy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html/>" }], { display: connect() });
   const result = await surface.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assert(/proxy or another service/.test(result.message!), result.message);
 });
 
-Deno.test("surface: a connection with no Connect URL is unknown", async () => {
+test("surface: a connection with no Connect URL is unknown", async () => {
   const { ctx, calls } = mockCtx([], { display: { surface: "connect" } });
   assertEquals((await surface.check!({}, ctx)).state, "unknown");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("surface: is signed and per-connection", () => {
+test("surface: is signed and per-connection", () => {
   assertEquals(surface.credential, "signed");
   assertEquals(surface.scope, "connection");
   assertEquals(surface.kind, "credential");

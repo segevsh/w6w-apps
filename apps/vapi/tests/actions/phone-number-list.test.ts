@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import phoneNumberList from "../../actions/phone-number-list.ts";
 import { mockCtx, pageEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("phone-number-list: calls GET /v2/phone-number and unwraps {results, metadata}", async () => {
+test("phone-number-list: calls GET /v2/phone-number and unwraps {results, metadata}", async () => {
   const { ctx, calls } = mockCtx([
     { body: pageEnvelope([{ id: "pn1" }], { currentPage: 2, totalPages: 5, hasNextPage: true }) },
   ]);
@@ -20,7 +21,7 @@ Deno.test("phone-number-list: calls GET /v2/phone-number and unwraps {results, m
   });
 });
 
-Deno.test("phone-number-list: this is the one list action paginating by page, not createdAt", async () => {
+test("phone-number-list: this is the one list action paginating by page, not createdAt", async () => {
   const { ctx, calls } = mockCtx([{ body: pageEnvelope([]) }]);
   await phoneNumberList.execute({ search: "sales", sortBy: "cost", sortOrder: "ASC" }, ctx);
   assertEquals(queryOf(calls[0].url), { search: "sales", sortBy: "cost", sortOrder: "ASC" });

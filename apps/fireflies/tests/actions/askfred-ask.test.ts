@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/askfred-ask.ts";
 
 const OK = { data: { createAskFredThread: { message: { thread_id: "th1", answer: "..." } } } };
 
-Deno.test("askfred-ask: a single-meeting question sends transcript_id and no filters", async () => {
+test("askfred-ask: a single-meeting question sends transcript_id and no filters", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ query: "What was decided?", transcriptId: "t1" }, ctx);
   const { query, variables } = sent(calls[0]);
@@ -12,7 +13,7 @@ Deno.test("askfred-ask: a single-meeting question sends transcript_id and no fil
   assertEquals(variables.input, { query: "What was decided?", transcript_id: "t1" });
 });
 
-Deno.test("askfred-ask: filters are dropped when a transcript id is given", async () => {
+test("askfred-ask: filters are dropped when a transcript id is given", async () => {
   // Fireflies only consults `filters` when `transcript_id` is absent, so
   // sending both would quietly mislead the workflow author.
   const { ctx, calls } = mockCtx([{ body: OK }]);
@@ -24,7 +25,7 @@ Deno.test("askfred-ask: filters are dropped when a transcript id is given", asyn
   assertEquals("filters" in input, false);
 });
 
-Deno.test("askfred-ask: a filtered question builds the filters object", async () => {
+test("askfred-ask: a filtered question builds the filters object", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({
     query: "q",
@@ -40,13 +41,13 @@ Deno.test("askfred-ask: a filtered question builds the filters object", async ()
   });
 });
 
-Deno.test("askfred-ask: an unfiltered question ships no hollow filters object", async () => {
+test("askfred-ask: an unfiltered question ships no hollow filters object", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ query: "q" }, ctx);
   assertEquals(sent(calls[0]).variables.input, { query: "q" });
 });
 
-Deno.test("askfred-ask: spends AI credits, so it is a perform and not idempotent", () => {
+test("askfred-ask: spends AI credits, so it is a perform and not idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

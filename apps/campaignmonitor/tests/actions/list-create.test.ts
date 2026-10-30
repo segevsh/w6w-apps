@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCreate from "../../actions/list-create.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 /** The path id is the CLIENT, even though a list is what gets created. */
-Deno.test("list-create: POSTs to /lists/{clientid}.json", async () => {
+test("list-create: POSTs to /lists/{clientid}.json", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: JSON.stringify("a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"),
@@ -15,14 +16,14 @@ Deno.test("list-create: POSTs to /lists/{clientid}.json", async () => {
   assertEquals(out, { ListID: "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" });
 });
 
-Deno.test("list-create: defaults to AllClientLists, the vendor's recommendation", async () => {
+test("list-create: defaults to AllClientLists, the vendor's recommendation", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("lid") }]);
   await listCreate.execute({ clientId: "cid", title: "T" }, ctx);
   assertEquals(bodyOf(calls[0]).UnsubscribeSetting, "AllClientLists");
   assertEquals(bodyOf(calls[0]).ConfirmedOptIn, false);
 });
 
-Deno.test("list-create: sends every documented field", async () => {
+test("list-create: sends every documented field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JSON.stringify("lid") }]);
   await listCreate.execute({
     clientId: "cid",
@@ -42,6 +43,6 @@ Deno.test("list-create: sends every documented field", async () => {
 });
 
 /** A repeat with the same title fails with code 250, so a retry is not a no-op. */
-Deno.test("list-create: is declared NOT idempotent", () => {
+test("list-create: is declared NOT idempotent", () => {
   assertEquals(listCreate.idempotent, false);
 });

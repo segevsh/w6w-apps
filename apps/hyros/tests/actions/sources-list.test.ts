@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import sourcesList from "../../actions/sources-list.ts";
 
-Deno.test("sources-list: GET /sources, unwraps result and cursor", async () => {
+test("sources-list: GET /sources, unwraps result and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { request_id: "r", result: [{ id: "a" }], nextPageId: "n1" },
   }]);
@@ -14,19 +15,19 @@ Deno.test("sources-list: GET /sources, unwraps result and cursor", async () => {
   assertEquals(out, { result: [{ id: "a" }], nextPageId: "n1" });
 });
 
-Deno.test("sources-list: null cursor on the last page; empty filters omitted", async () => {
+test("sources-list: null cursor on the last page; empty filters omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: [] } }]);
   const out = await sourcesList.execute({}, ctx) as { nextPageId: string | null };
   assertEquals(out.nextPageId, null);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("sources-list: surfaces a Hyros error body", async () => {
+test("sources-list: surfaces a Hyros error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { result: "ERROR", message: ["bad"] } }]);
   await assertRejects(async () => await sourcesList.execute({}, ctx), Error, "bad");
 });
 
-Deno.test("sources-list: booleans, platform and ad source ids", async () => {
+test("sources-list: booleans, platform and ad source ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: [] } }]);
   await sourcesList.execute({
     includeOrganic: true,

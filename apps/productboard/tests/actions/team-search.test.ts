@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/team-search.ts";
 import { bodyOf, listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-search: POSTs filter and search", async () => {
+test("team-search: POSTs filter and search", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "t-1" }]) }]);
   const filter = { fields: { handle: ["platform", "growth"] } };
   const out = await action.execute({ filter, query: "plat" }, ctx);
@@ -17,6 +18,6 @@ Deno.test("team-search: POSTs filter and search", async () => {
  * false` over exactly `filter` and `search`, unlike the entity and note search
  * bodies. So no response-shaping param is offered.
  */
-Deno.test("team-search: offers no return-fields param, because the body has no return key", () => {
+test("team-search: offers no return-fields param, because the body has no return key", () => {
   assertEquals(action.params?.map((p) => p.key), ["filter", "query", "pageCursor"]);
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getChannelStreamSchedule from "../../actions/get-channel-stream-schedule.ts";
 import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
  * `data` here is an OBJECT, not the array every sibling endpoint returns. A
  * caller that treats it as a list gets nothing, silently.
  */
-Deno.test("get-channel-stream-schedule: data is an object whose segments are the list", async () => {
+test("get-channel-stream-schedule: data is an object whose segments are the list", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -28,7 +29,7 @@ Deno.test("get-channel-stream-schedule: data is an object whose segments are the
   assertEquals(out.data.vacation, null);
 });
 
-Deno.test("get-channel-stream-schedule: segment IDs repeat their key, and start_time is forwarded", async () => {
+test("get-channel-stream-schedule: segment IDs repeat their key, and start_time is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { segments: [] }, pagination: {} } }]);
   await getChannelStreamSchedule.execute({
     broadcasterId: "1",
@@ -43,7 +44,7 @@ Deno.test("get-channel-stream-schedule: segment IDs repeat their key, and start_
 });
 
 /** Twitch caps this endpoint's page size at 25, not the usual 100. */
-Deno.test("get-channel-stream-schedule: the page-size param declares Twitch's 25 ceiling", () => {
+test("get-channel-stream-schedule: the page-size param declares Twitch's 25 ceiling", () => {
   const first = getChannelStreamSchedule.params?.find((p) => p.key === "first");
   assertEquals(first?.validation?.max, 25);
 });

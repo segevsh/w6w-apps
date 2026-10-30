@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerSearch from "../../actions/customer-search.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-search: calls GET /customers and returns the page", async () => {
+test("customer-search: calls GET /customers and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ id: 177737165 }], { total: 2 }) }]);
   const out = await customerSearch.execute({ limit: 50 }, ctx) as {
     items: unknown[];
@@ -15,7 +16,7 @@ Deno.test("customer-search: calls GET /customers and returns the page", async ()
   assertEquals(out.total, 2);
 });
 
-Deno.test("customer-search: the filters are passed through verbatim", async () => {
+test("customer-search: the filters are passed through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await customerSearch.execute(
     {
@@ -41,7 +42,7 @@ Deno.test("customer-search: the filters are passed through verbatim", async () =
   assertEquals(query.sortBy, "LAST_ORDER_DATE_DESC");
 });
 
-Deno.test("customer-search: every sort option is one the vendor enumerates", () => {
+test("customer-search: every sort option is one the vendor enumerates", () => {
   const param = customerSearch.params?.find((p) => p.key === "sortBy");
   const options = (param?.options ?? []) as Array<{ value: string }>;
   assertEquals(options.length, 16);

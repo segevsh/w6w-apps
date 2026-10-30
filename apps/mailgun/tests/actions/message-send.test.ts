@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
@@ -13,7 +14,7 @@ function baseInput(overrides: Record<string, unknown> = {}): Record<string, unkn
   };
 }
 
-Deno.test("message-send: happy path posts multipart/form-data to /v3/{domain}/messages", async () => {
+test("message-send: happy path posts multipart/form-data to /v3/{domain}/messages", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "<abc@mg>", message: "Queued" } }]);
   const result = await action.execute!(baseInput(), ctx);
 
@@ -29,7 +30,7 @@ Deno.test("message-send: happy path posts multipart/form-data to /v3/{domain}/me
   assertEquals(result, { id: "<abc@mg>", message: "Queued" });
 });
 
-Deno.test("message-send: honors region — routes to the EU host", async () => {
+test("message-send: honors region — routes to the EU host", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     { connection: { display: { region: "eu" } } },
@@ -38,13 +39,13 @@ Deno.test("message-send: honors region — routes to the EU host", async () => {
   assertEquals(calls[0].url, "https://api.eu.mailgun.net/v3/mg.example.com/messages");
 });
 
-Deno.test("message-send: fromName wraps the address as `Name <email>`", async () => {
+test("message-send: fromName wraps the address as `Name <email>`", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(baseInput({ fromName: "Alice" }), ctx);
   assertEquals(calls[0].formData!.get("from"), "Alice <sender@example.com>");
 });
 
-Deno.test("message-send: splits comma-separated to/cc/bcc into repeated fields", async () => {
+test("message-send: splits comma-separated to/cc/bcc into repeated fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     baseInput({
@@ -59,7 +60,7 @@ Deno.test("message-send: splits comma-separated to/cc/bcc into repeated fields",
   assertEquals(form.getAll("bcc"), ["bcc@x.com"]);
 });
 
-Deno.test("message-send: replyTo, tags, testMode and tracking flags map to o:/h: fields", async () => {
+test("message-send: replyTo, tags, testMode and tracking flags map to o:/h: fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     baseInput({
@@ -81,7 +82,7 @@ Deno.test("message-send: replyTo, tags, testMode and tracking flags map to o:/h:
   assertEquals(form.get("o:tracking-clicks"), "no");
 });
 
-Deno.test("message-send: custom headers become h:<name>", async () => {
+test("message-send: custom headers become h:<name>", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     baseInput({ additionalFields: { customHeaders: [{ name: "X-Custom", value: "v1" }] } }),
@@ -90,7 +91,7 @@ Deno.test("message-send: custom headers become h:<name>", async () => {
   assertEquals(calls[0].formData!.get("h:X-Custom"), "v1");
 });
 
-Deno.test("message-send: attachments are decoded from a data URL into a Blob part", async () => {
+test("message-send: attachments are decoded from a data URL into a Blob part", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const dataUrl = `data:text/plain;base64,${btoa("hi there")}`;
   await action.execute!(
@@ -107,7 +108,7 @@ Deno.test("message-send: attachments are decoded from a data URL into a Blob par
   assertEquals(text, "hi there");
 });
 
-Deno.test("message-send: missing required fields reject with informative errors", async () => {
+test("message-send: missing required fields reject with informative errors", async () => {
   const cases: Array<[string, Record<string, unknown>]> = [
     ["domain", { domain: "" }],
     ["fromEmail", { fromEmail: "" }],
@@ -124,7 +125,7 @@ Deno.test("message-send: missing required fields reject with informative errors"
   }
 });
 
-Deno.test("message-send: rejects when neither text nor html is set", async () => {
+test("message-send: rejects when neither text nor html is set", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!(baseInput({ text: "" }), ctx),
@@ -134,14 +135,14 @@ Deno.test("message-send: rejects when neither text nor html is set", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-send: html alone (no text) is accepted", async () => {
+test("message-send: html alone (no text) is accepted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(baseInput({ text: "", html: "<p>hi</p>" }), ctx);
   assertEquals(calls[0].formData!.get("html"), "<p>hi</p>");
   assertEquals(calls[0].formData!.get("text"), null);
 });
 
-Deno.test("message-send: non-2xx response propagates as Error", async () => {
+test("message-send: non-2xx response propagates as Error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: '{"message":"Forbidden"}' }]);
   const err = await assertRejects(
     async () => await action.execute!(baseInput(), ctx),
@@ -167,7 +168,7 @@ function base(overrides: Record<string, unknown> = {}): Record<string, unknown> 
   };
 }
 
-Deno.test("message-send: cc/bcc/replyTo are read from flat params", async () => {
+test("message-send: cc/bcc/replyTo are read from flat params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "<1>" } }]);
   await action.execute!(
     base({ ccEmail: "c1@x.com, c2@x.com", bccEmail: "b@x.com", replyTo: "reply@x.com" }),
@@ -179,7 +180,7 @@ Deno.test("message-send: cc/bcc/replyTo are read from flat params", async () => 
   assertEquals(form.get("h:Reply-To"), "reply@x.com");
 });
 
-Deno.test("message-send: a flat field wins over the deprecated group", async () => {
+test("message-send: a flat field wins over the deprecated group", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     base({
@@ -194,7 +195,7 @@ Deno.test("message-send: a flat field wins over the deprecated group", async () 
   assertEquals(form.getAll("bcc"), ["kept@x.com"]);
 });
 
-Deno.test("message-send: an empty declared default does not shadow the fallback", async () => {
+test("message-send: an empty declared default does not shadow the fallback", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     base({
@@ -206,7 +207,7 @@ Deno.test("message-send: an empty declared default does not shadow the fallback"
   assertEquals((calls[0].formData!).get("h:X-A"), "1");
 });
 
-Deno.test("message-send: delivery time is sent as RFC 2822, not ISO 8601", async () => {
+test("message-send: delivery time is sent as RFC 2822, not ISO 8601", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(base({ deliveryTime: "2026-09-01T10:00:00Z" }), ctx);
   // Mailgun rejects an ISO timestamp on `o:deliverytime`.
@@ -216,7 +217,7 @@ Deno.test("message-send: delivery time is sent as RFC 2822, not ISO 8601", async
   );
 });
 
-Deno.test("message-send: an unparseable delivery time rejects before the request", async () => {
+test("message-send: an unparseable delivery time rejects before the request", async () => {
   const { ctx, calls } = mockCtx();
   let threw = false;
   try {
@@ -229,7 +230,7 @@ Deno.test("message-send: an unparseable delivery time rejects before the request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-send: custom variables are sent as v: fields", async () => {
+test("message-send: custom variables are sent as v: fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(base({ customVariables: { orderId: "42", meta: { a: 1 } } }), ctx);
   const form = calls[0].formData!;
@@ -238,7 +239,7 @@ Deno.test("message-send: custom variables are sent as v: fields", async () => {
   assertEquals(form.get("v:meta"), '{"a":1}');
 });
 
-Deno.test("message-send: no param is buried in a `group` the studio renders as JSON", () => {
+test("message-send: no param is buried in a `group` the studio renders as JSON", () => {
   const walk = (list: typeof action.params): string[] =>
     (list ?? []).flatMap((p) => [
       ...(p.type === "group" ? [p.key] : []),

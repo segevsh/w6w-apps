@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audio-translate.ts";
 
 const AUDIO_B64 = "aGVsbG8=";
 
-Deno.test("audio-translate: POSTs multipart to /audio/translations with a file", async () => {
+test("audio-translate: POSTs multipart to /audio/translations with a file", async () => {
   const { ctx, calls } = mockCtx([{ body: { text: "hello" } }]);
   await action.execute!({ file: AUDIO_B64, model: "whisper-large-v3-turbo" }, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("audio-translate: POSTs multipart to /audio/translations with a file",
   assertEquals(file.name, "audio.mp3");
 });
 
-Deno.test("audio-translate: accepts a URL instead of a file", async () => {
+test("audio-translate: accepts a URL instead of a file", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { url: "https://example.com/clip.mp3", model: "whisper-large-v3-turbo" },
@@ -27,7 +28,7 @@ Deno.test("audio-translate: accepts a URL instead of a file", async () => {
   assertEquals(form.get("file"), null);
 });
 
-Deno.test("audio-translate: forwards optional prompt/format/temperature", async () => {
+test("audio-translate: forwards optional prompt/format/temperature", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -45,7 +46,7 @@ Deno.test("audio-translate: forwards optional prompt/format/temperature", async 
   assertEquals(form.get("temperature"), "0.5");
 });
 
-Deno.test("audio-translate: rejects when neither file nor url is provided", async () => {
+test("audio-translate: rejects when neither file nor url is provided", async () => {
   const { ctx, calls } = mockCtx();
   let threw = false;
   try {

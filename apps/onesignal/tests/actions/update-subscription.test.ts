@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateSubscription from "../../actions/update-subscription.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("update-subscription: PATCHes only the fields provided", async () => {
+test("update-subscription: PATCHes only the fields provided", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ status: 200, body: {} }]);
   await updateSubscription.execute({ subscriptionId: "sub-1", enabled: false }, ctx);
   assertEquals(calls[0].method, "PATCH");

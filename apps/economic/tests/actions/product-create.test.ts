@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/product-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("product-create: POSTs name, group reference and prices; barred=false is kept", async () => {
+test("product-create: POSTs name, group reference and prices; barred=false is kept", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { productNumber: "500" } }]);
   const out = await action.execute!({
     productNumber: "500",

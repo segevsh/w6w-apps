@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workHistoryList from "../../actions/work-history-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("work-history-list: GETs /v1/people/{id}/work", async () => {
+test("work-history-list: GETs /v1/people/{id}/work", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [{ id: 1 }] } }, { body: { values: [] } }]);
   const out = await workHistoryList.execute({ employeeId: "42" }, ctx) as { values: unknown[] };
   assertEquals(calls[0].method, "GET");
@@ -13,7 +14,7 @@ Deno.test("work-history-list: GETs /v1/people/{id}/work", async () => {
   assertEquals(queryOf(calls[1].url), { includeArchived: "true" });
 });
 
-Deno.test("work-history-list: a 403 points at the missing permission", async () => {
+test("work-history-list: a 403 points at the missing permission", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "forbidden" } }]);
   let message = "";
   try {

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connection-pause.ts";
 
@@ -9,7 +10,7 @@ const connection = (status: string) => ({
   body: { name: "Postgres to Snowflake", status, schedule: { scheduleType: "cron" } },
 });
 
-Deno.test("connection-pause: patches the status and reports the change", async () => {
+test("connection-pause: patches the status and reports the change", async () => {
   const { ctx, calls } = mockCtx([connection("active"), {
     status: 200,
     body: { status: "inactive" },
@@ -25,7 +26,7 @@ Deno.test("connection-pause: patches the status and reports the change", async (
 });
 
 /** The destination goes stale with nothing marking it. */
-Deno.test("connection-pause: warns when it pauses", async () => {
+test("connection-pause: warns when it pauses", async () => {
   const { ctx, logs } = mockCtx([connection("active"), { status: 200, body: {} }], D);
   await action.execute({ connectionId: UUID, active: false }, ctx);
   assert(
@@ -35,7 +36,7 @@ Deno.test("connection-pause: warns when it pauses", async () => {
 });
 
 /** Airbyte pauses connections itself after repeated failures. */
-Deno.test("connection-pause: resuming notes that Airbyte may have paused it", async () => {
+test("connection-pause: resuming notes that Airbyte may have paused it", async () => {
   const { ctx, logs } = mockCtx([connection("inactive"), { status: 200, body: {} }], D);
   await action.execute({ connectionId: UUID }, ctx);
   assert(
@@ -44,7 +45,7 @@ Deno.test("connection-pause: resuming notes that Airbyte may have paused it", as
   );
 });
 
-Deno.test("connection-pause: a no-op writes nothing", async () => {
+test("connection-pause: a no-op writes nothing", async () => {
   const { ctx, calls } = mockCtx([connection("active")], D);
   const result = await action.execute({ connectionId: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.changed, false);
@@ -52,7 +53,7 @@ Deno.test("connection-pause: a no-op writes nothing", async () => {
 });
 
 /** A deprecated connection has been deleted and cannot come back. */
-Deno.test("connection-pause: refuses a deprecated connection", async () => {
+test("connection-pause: refuses a deprecated connection", async () => {
   const { ctx, calls } = mockCtx([connection("deprecated")], D);
   const err = await assertRejects(
     async () => await action.execute({ connectionId: UUID }, ctx),

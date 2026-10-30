@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadGet from "../../actions/thread-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("thread-get: GET /api/v3/threads/getone with every documented parameter", async () => {
+test("thread-get: GET /api/v3/threads/getone with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadGet.execute({ "threadId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,14 +15,14 @@ Deno.test("thread-get: GET /api/v3/threads/getone with every documented paramete
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("thread-get: sends no credential of its own", async () => {
+test("thread-get: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadGet.execute({ "threadId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-get: surfaces Twist's error body", async () => {
+test("thread-get: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

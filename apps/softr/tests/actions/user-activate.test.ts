@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userActivate from "../../actions/user-activate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-activate: POSTs /users/{email}/activate", async () => {
+test("user-activate: POSTs /users/{email}/activate", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userActivate.execute({ domain: "yourdomain.com", email: "user@softr.io" }, ctx);
 
@@ -10,6 +11,6 @@ Deno.test("user-activate: POSTs /users/{email}/activate", async () => {
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("user-activate: is marked idempotent", () => {
+test("user-activate: is marked idempotent", () => {
   assertEquals(userActivate.idempotent, true);
 });

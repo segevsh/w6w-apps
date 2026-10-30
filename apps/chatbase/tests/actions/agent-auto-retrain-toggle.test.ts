@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentAutoRetrainToggle from "../../actions/agent-auto-retrain-toggle.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-auto-retrain-toggle: PUT /agents/{id}/auto-retrain with enabled body", async () => {
+test("agent-auto-retrain-toggle: PUT /agents/{id}/auto-retrain with enabled body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await agentAutoRetrainToggle.execute({ agentId: "a1", enabled: true }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("agent-auto-retrain-toggle: PUT /agents/{id}/auto-retrain with enabled
   assertEquals(JSON.parse(calls[0].body!), { enabled: true });
 });
 
-Deno.test("agent-auto-retrain-toggle: enabled:false is sent, not dropped", async () => {
+test("agent-auto-retrain-toggle: enabled:false is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await agentAutoRetrainToggle.execute({ agentId: "a1", enabled: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { enabled: false });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { bodyOf, errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-update: POSTs emailmarketing/editcontact.json with the documented parameters", async () => {
+test("contact-update: POSTs emailmarketing/editcontact.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope([]) }]);
   const out = await contactUpdate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("contact-update: POSTs emailmarketing/editcontact.json with the docume
   assertEquals(out, { "ok": true, "data": [] });
 });
 
-Deno.test("contact-update: sends a form-encoded body, not a query string", async () => {
+test("contact-update: sends a form-encoded body, not a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope([]) }]);
   await contactUpdate.execute(
     {
@@ -46,11 +47,11 @@ Deno.test("contact-update: sends a form-encoded body, not a query string", async
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("contact-update: is declared idempotent", () => {
+test("contact-update: is declared idempotent", () => {
   assertEquals(contactUpdate.idempotent, true);
 });
 
-Deno.test("contact-update: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("contact-update: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () =>

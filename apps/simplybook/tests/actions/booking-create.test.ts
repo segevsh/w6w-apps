@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/booking-create.ts";
 
-Deno.test("booking-create: POSTs /admin/bookings with the required fields", async () => {
+test("booking-create: POSTs /admin/bookings with the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { bookings: [{ id: 1 }] } }], { display: TEST_DISPLAY });
   await action.execute({
     startDatetime: "2026-09-05 11:15:00",
@@ -20,7 +21,7 @@ Deno.test("booking-create: POSTs /admin/bookings with the required fields", asyn
   assertEquals(body.client_id, 12);
 });
 
-Deno.test("booking-create: includes optional fields when supplied", async () => {
+test("booking-create: includes optional fields when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { bookings: [] } }], { display: TEST_DISPLAY });
   await action.execute({
     startDatetime: "2026-09-05 11:15:00",

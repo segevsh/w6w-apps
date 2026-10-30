@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileDownload from "../../actions/file-download.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-download: returns the bundle_url and does not fetch it", async () => {
+test("file-download: returns the bundle_url and does not fetch it", async () => {
   const { ctx, calls } = mockCtx([
     { body: { project_id: "p1", bundle_url: "https://s3-eu-west-1.amazonaws.com/x/y.zip" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("file-download: returns the bundle_url and does not fetch it", async (
   assertEquals(out.bundle_url, "https://s3-eu-west-1.amazonaws.com/x/y.zip");
 });
 
-Deno.test("file-download: forwards named export options", async () => {
+test("file-download: forwards named export options", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await fileDownload.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("file-download: forwards named export options", async () => {
   });
 });
 
-Deno.test("file-download: format cannot be overridden by extraOptions", async () => {
+test("file-download: format cannot be overridden by extraOptions", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await fileDownload.execute(
     { projectId: "p1", format: "json", extraOptions: '{"format":"xml","all_platforms":true}' },
@@ -46,6 +47,6 @@ Deno.test("file-download: format cannot be overridden by extraOptions", async ()
   assertEquals(body.all_platforms, true);
 });
 
-Deno.test("file-download: is a read action — an export creates no persistent state to retry into", () => {
+test("file-download: is a read action — an export creates no persistent state to retry into", () => {
   assertEquals(fileDownload.type, "read");
 });

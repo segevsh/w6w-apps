@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recurringTaskList from "../../actions/recurring-task-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
  * ordinary task list uses, for a different kind of object. Reading
  * `recurringTasks` returns an empty page forever without erroring.
  */
-Deno.test("recurring-task-list: reads the `tasks` key, which is what the vendor names it", async () => {
+test("recurring-task-list: reads the `tasks` key, which is what the vendor names it", async () => {
   const { ctx, calls } = mockCtx([
     { body: page("tasks", [{ id: "r1", frequency: "weekly_any_day" }], { nextCursor: "c2" }) },
   ]);
@@ -23,6 +24,6 @@ Deno.test("recurring-task-list: reads the `tasks` key, which is what the vendor 
 });
 
 /** Unlike tasks and projects, this endpoint requires a workspace. */
-Deno.test("recurring-task-list: workspaceId is required here", () => {
+test("recurring-task-list: workspaceId is required here", () => {
   assertEquals(recurringTaskList.params?.find((p) => p.key === "workspaceId")?.required, true);
 });

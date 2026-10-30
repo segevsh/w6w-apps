@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/recording-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("recording-list: sends every filter as the documented query name and returns the next cursor", async () => {
+test("recording-list: sends every filter as the documented query name and returns the next cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       next: "https://us-west-2.recall.ai/api/v1/recording/?cursor=CUR2",
@@ -29,7 +30,7 @@ Deno.test("recording-list: sends every filter as the documented query name and r
   assertEquals(out, { recordings: [{ id: "i1" }], nextCursor: "CUR2" });
 });
 
-Deno.test("recording-list: the last page has no nextCursor and unset filters are not sent", async () => {
+test("recording-list: the last page has no nextCursor and unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { next: null, previous: null, results: [] } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(out, { recordings: [] });
@@ -37,7 +38,7 @@ Deno.test("recording-list: the last page has no nextCursor and unset filters are
   assertEquals([...q.keys()], []);
 });
 
-Deno.test("recording-list: an authentication failure is reported by code", async () => {
+test("recording-list: an authentication failure is reported by code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "authentication_failed", detail: "Invalid API token." },

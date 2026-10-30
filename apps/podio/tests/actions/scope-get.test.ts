@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import scopeGet from "../../actions/scope-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const SPACE = [{
   ref_data: { name: "Sales" },
 }];
 
-Deno.test("scope-get: GETs /oauth/scope with no parameters", async () => {
+test("scope-get: GETs /oauth/scope with no parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: SPACE }]);
   assertEquals(await scopeGet.execute({}, ctx), { scope: SPACE });
   assertEquals(pathOf(calls[0].url), "/oauth/scope");
@@ -18,17 +19,17 @@ Deno.test("scope-get: GETs /oauth/scope with no parameters", async () => {
 });
 
 /** The degenerate global grant is a real, documented answer, not an empty one. */
-Deno.test("scope-get: a global grant comes through as Podio spells it", async () => {
+test("scope-get: a global grant comes through as Podio spells it", async () => {
   const { ctx } = mockCtx([{ body: GLOBAL }]);
   assertEquals(await scopeGet.execute({}, ctx), { scope: GLOBAL });
 });
 
-Deno.test("scope-get: declares no params, so a host can invoke it with {}", () => {
+test("scope-get: declares no params, so a host can invoke it with {}", () => {
   assertEquals(scopeGet.params, []);
   assertEquals(scopeGet.type, "read");
 });
 
-Deno.test("scope-get: an empty body yields an empty list", async () => {
+test("scope-get: an empty body yields an empty list", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await scopeGet.execute({}, ctx), { scope: [] });
 });

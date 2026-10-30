@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("message-send: posts appid, message, title, priority and extras", async () => {
+test("message-send: posts appid, message, title, priority and extras", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 1, appid: 5, message: "hi", title: "t", priority: 4, date: "2026-01-01T00:00:00Z" },
@@ -27,7 +28,7 @@ Deno.test("message-send: posts appid, message, title, priority and extras", asyn
   assertEquals(body.extras, { "client::display": { contentType: "text/markdown" } });
 });
 
-Deno.test("message-send: omits title/priority/extras when unset, rather than sending nulls", async () => {
+test("message-send: omits title/priority/extras when unset, rather than sending nulls", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }], conn);
   await action.execute!({ applicationId: 5, message: "hi" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -37,7 +38,7 @@ Deno.test("message-send: omits title/priority/extras when unset, rather than sen
   assertEquals(body.appid, 5);
 });
 
-Deno.test("message-send: requires a non-empty message before any fetch", async () => {
+test("message-send: requires a non-empty message before any fetch", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {
@@ -49,7 +50,7 @@ Deno.test("message-send: requires a non-empty message before any fetch", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-send: rejects extras that are not valid JSON", async () => {
+test("message-send: rejects extras that are not valid JSON", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {

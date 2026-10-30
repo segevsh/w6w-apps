@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentGet from "../../actions/document-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-get: fetches GET /docs/{id} and returns the parsed body", async () => {
+test("document-get: fetches GET /docs/{id} and returns the parsed body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -26,12 +27,12 @@ Deno.test("document-get: fetches GET /docs/{id} and returns the parsed body", as
   assertEquals(result.credits, 1);
 });
 
-Deno.test("document-get: URL-encodes the document id", async () => {
+test("document-get: URL-encodes the document id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _id: "x" } }]);
   await documentGet.execute({ documentId: "id/with space" }, ctx);
   assertEquals(pathOf(calls[0].url), "/docs/id%2Fwith%20space");
 });
 
-Deno.test("document-get: read, no idempotency to declare", () => {
+test("document-get: read, no idempotency to declare", () => {
   assertEquals(documentGet.type, "read");
 });

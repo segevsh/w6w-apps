@@ -46,5 +46,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
   }
 }

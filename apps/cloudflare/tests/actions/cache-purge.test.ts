@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { cfOk, mockCtx } from "../_helpers.ts";
 import action from "../../actions/cache-purge.ts";
 
-Deno.test("cache-purge: everything posts purge_everything", async () => {
+test("cache-purge: everything posts purge_everything", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: cfOk({ id: "z1" }) }]);
   await action.execute!({ zoneId: "z1", purgeType: "everything" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("cache-purge: everything posts purge_everything", async () => {
   assertEquals(body, { purge_everything: true });
 });
 
-Deno.test("cache-purge: files posts the file list", async () => {
+test("cache-purge: files posts the file list", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: cfOk({ id: "z1" }) }]);
   await action.execute!(
     {
@@ -27,7 +28,7 @@ Deno.test("cache-purge: files posts the file list", async () => {
   assertEquals(body, { files: ["https://example.com/a.css", "https://example.com/b.js"] });
 });
 
-Deno.test("cache-purge: files mode with no URLs rejects", async () => {
+test("cache-purge: files mode with no URLs rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "z1", purgeType: "files", files: [] }, ctx),
@@ -36,7 +37,7 @@ Deno.test("cache-purge: files mode with no URLs rejects", async () => {
   );
 });
 
-Deno.test("cache-purge: missing zoneId rejects", async () => {
+test("cache-purge: missing zoneId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "", purgeType: "everything" }, ctx),

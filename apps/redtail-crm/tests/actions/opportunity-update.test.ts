@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityUpdate from "../../actions/opportunity-update.ts";
 import { mockCtx, NO_CONTENT_204 } from "../_helpers.ts";
 
-Deno.test("opportunity-update: PUTs /opportunities/:id — e.g. moving to a new stage", async () => {
+test("opportunity-update: PUTs /opportunities/:id — e.g. moving to a new stage", async () => {
   const { ctx, calls } = mockCtx([NO_CONTENT_204]);
   const out = await opportunityUpdate.execute({ opportunityId: 6, stageId: 9 }, ctx);
   assertEquals(calls[0].method, "PUT");

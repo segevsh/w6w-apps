@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workflowRunGet from "../../actions/workflow-run-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workflow-run-get: GET /workflow_runs/{uid}", async () => {
+test("workflow-run-get: GET /workflow_runs/{uid}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { uid: "wr1", status: "completed", outputs: { image: { uid: "i1" } } } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("workflow-run-get: GET /workflow_runs/{uid}", async () => {
   assertEquals(out.status, "completed");
 });
 
-Deno.test("workflow-run-get: requires uid", async () => {
+test("workflow-run-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => workflowRunGet.execute({ uid: "" }, ctx));
 });

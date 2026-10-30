@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import crawl from "../../actions/crawl.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("crawl: maps camelCase params to the documented body", async () => {
+test("crawl: maps camelCase params to the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { base_url: "https://d.com", results: [] } }]);
   await crawl.execute({
     url: " https://d.com ",
@@ -33,7 +34,7 @@ Deno.test("crawl: maps camelCase params to the documented body", async () => {
   });
 });
 
-Deno.test("crawl: omitted options are left to the vendor defaults", async () => {
+test("crawl: omitted options are left to the vendor defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   await crawl.execute({ url: "https://d.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { url: "https://d.com" });

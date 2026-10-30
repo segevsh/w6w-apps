@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import customerEventsList from "../../actions/customer-events-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-events-list: GET /v1/src1/customers/o%201/events with the documented query/body", async () => {
+test("customer-events-list: GET /v1/src1/customers/o%201/events with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [] } }]);
   const out = await customerEventsList.execute({
     source_id: "src1",
@@ -23,14 +24,14 @@ Deno.test("customer-events-list: GET /v1/src1/customers/o%201/events with the do
   assert("events" in out);
 });
 
-Deno.test("customer-events-list: declares type search and every required param", () => {
+test("customer-events-list: declares type search and every required param", () => {
   assertEquals(customerEventsList.type, "search");
   const required = (customerEventsList.params ?? []).filter((p) => p.required).map((p) => p.key)
     .sort();
   assertEquals(required, ["oid", "source_id"]);
 });
 
-Deno.test("customer-events-list: surfaces a vendor error as a thrown message", async () => {
+test("customer-events-list: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

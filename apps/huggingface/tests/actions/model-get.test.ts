@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/model-get.ts";
 
-Deno.test("model-get: reads one model", async () => {
+test("model-get: reads one model", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "openai-community/gpt2", sha: "e7da7f2", downloads: 100, siblings: [] },
@@ -17,7 +18,7 @@ Deno.test("model-get: reads one model", async () => {
 });
 
 /** Neither field exists on the search endpoint's summaries. */
-Deno.test("model-get: the file list and config come back, unlike from a search", async () => {
+test("model-get: the file list and config come back, unlike from a search", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -35,7 +36,7 @@ Deno.test("model-get: the file list and config come back, unlike from a search",
   assert(model.config, "config carries the architecture");
 });
 
-Deno.test("model-get: a URL is refused with the id to use instead", async () => {
+test("model-get: a URL is refused with the id to use instead", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -47,7 +48,7 @@ Deno.test("model-get: a URL is refused with the id to use instead", async () => 
   assertEquals(calls.length, 0, "nothing is requested for an id that cannot be one");
 });
 
-Deno.test("model-get: a missing model reports the rename trap", async () => {
+test("model-get: a missing model reports the rename trap", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "Repo not found" } }]);
   let message = "";
   try {
@@ -58,7 +59,7 @@ Deno.test("model-get: a missing model reports the rename trap", async () => {
   assert(/renamed/.test(message), message);
 });
 
-Deno.test("model-get: is a read of one model", () => {
+test("model-get: is a read of one model", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "model");
 });

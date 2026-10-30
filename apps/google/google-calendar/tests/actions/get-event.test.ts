@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-event.ts";
 
-Deno.test("get-event: GETs /calendars/{id}/events/{eventId}", async () => {
+test("get-event: GETs /calendars/{id}/events/{eventId}", async () => {
   const body = { id: "evt-1", summary: "Party" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -13,7 +14,7 @@ Deno.test("get-event: GETs /calendars/{id}/events/{eventId}", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("get-event: forwards optional query params", async () => {
+test("get-event: forwards optional query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -26,7 +27,7 @@ Deno.test("get-event: forwards optional query params", async () => {
   assertEquals(params.get("maxAttendees"), "5");
 });
 
-Deno.test("get-event: omits unset query params", async () => {
+test("get-event: omits unset query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({ calendarId: "primary", eventId: "evt-1" }, ctx);
   const params = new URL(calls[0].url).searchParams;

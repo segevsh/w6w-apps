@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import urlParse from "../../actions/url-parse.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("url-parse: GETs /import/url/parse with the url as a query parameter", async () => {
+test("url-parse: GETs /import/url/parse with the url as a query parameter", async () => {
   const { ctx, calls } = mockCtx([
     { body: { result: true, item: { title: "Example", type: "link" } } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("url-parse: GETs /import/url/parse with the url as a query parameter",
  * vendor saying "here is the best I could do"; throwing on it would turn "that
  * page is down" into a failed workflow run.
  */
-Deno.test("url-parse: an unreachable page is data, not a thrown error", async () => {
+test("url-parse: an unreachable page is data, not a thrown error", async () => {
   const { ctx } = mockCtx([{
     body: {
       error: "not_found",
@@ -45,7 +46,7 @@ Deno.test("url-parse: an unreachable page is data, not a thrown error", async ()
 });
 
 /** The invalid-URL variant of the same shape. */
-Deno.test("url-parse: an invalid URL also returns an item plus the error code", async () => {
+test("url-parse: an invalid URL also returns an item plus the error code", async () => {
   const { ctx } = mockCtx([{
     body: {
       error: "not_found",
@@ -59,7 +60,7 @@ Deno.test("url-parse: an invalid URL also returns an item plus the error code", 
   assertEquals(out.parseErrorMessage, "invalid_url");
 });
 
-Deno.test("url-parse: refuses an empty url without making a request", async () => {
+test("url-parse: refuses an empty url without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => Promise.resolve(urlParse.execute({ url: "  " }, ctx)), Error);
   assertEquals(calls.length, 0);

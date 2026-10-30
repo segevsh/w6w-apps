@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-task-project.ts";
 
-Deno.test("add-task-project: POSTs /tasks/{id}/addProject with project", async () => {
+test("add-task-project: POSTs /tasks/{id}/addProject with project", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ id: "t-1", project: "p-9" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("add-task-project: POSTs /tasks/{id}/addProject with project", async (
   assertEquals(JSON.parse(calls[0].body!), { data: { project: "p-9" } });
 });
 
-Deno.test("add-task-project: forwards insert_after / insert_before / section when set", async () => {
+test("add-task-project: forwards insert_after / insert_before / section when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({
     id: "t-1",

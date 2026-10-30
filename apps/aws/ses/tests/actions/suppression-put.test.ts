@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/suppression-put.ts";
 
-Deno.test("suppression-put: PUT /v2/email/suppression/addresses and maps the response", async () => {
+test("suppression-put: PUT /v2/email/suppression/addresses and maps the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ emailAddress: "a@x.com", reason: "COMPLAINT" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("suppression-put: PUT /v2/email/suppression/addresses and maps the res
   });
 });
 
-Deno.test("suppression-put: uses the connection's region for the host", async () => {
+test("suppression-put: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     mockConnection({ region: "eu-west-1" }),
@@ -33,7 +34,7 @@ Deno.test("suppression-put: uses the connection's region for the host", async ()
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("suppression-put: surfaces the vendor's error type and message", async () => {
+test("suppression-put: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

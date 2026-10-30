@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getFileUrls from "../../actions/get-file-urls.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-file-urls: POSTs /v1/files with { url } and returns fileUrl/storageUrl", async () => {
+test("get-file-urls: POSTs /v1/files with { url } and returns fileUrl/storageUrl", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({
@@ -22,6 +23,6 @@ Deno.test("get-file-urls: POSTs /v1/files with { url } and returns fileUrl/stora
   assertEquals(out.storageUrl, "https://s3.amazonaws.com/paperform/file.pdf");
 });
 
-Deno.test("get-file-urls: declares type read, despite the POST verb", () => {
+test("get-file-urls: declares type read, despite the POST verb", () => {
   assertEquals(getFileUrls.type, "read");
 });

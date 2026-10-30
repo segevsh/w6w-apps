@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-create.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("product-create: POSTs /products with only the required name", async () => {
+test("product-create: POSTs /products with only the required name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }], { display });
   const result = await action.execute!({ name: "Widget" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("product-create: POSTs /products with only the required name", async (
   assertEquals(result, { id: 1 });
 });
 
-Deno.test("product-create: maps camelCase inputs, categories/tags to {id} objects", async () => {
+test("product-create: maps camelCase inputs, categories/tags to {id} objects", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2 } }], { display });
   await action.execute!(
     {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-void.ts";
 
-Deno.test("label-void: PUTs to /v2/labels/:id/void", async () => {
+test("label-void: PUTs to /v2/labels/:id/void", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { approved: true, message: "Request for refund submitted." } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("label-void: PUTs to /v2/labels/:id/void", async () => {
   assertEquals(result.approved, true);
 });
 
-Deno.test("label-void: requires labelId", async () => {
+test("label-void: requires labelId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "labelId");
   assertEquals(calls.length, 0);

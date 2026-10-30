@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT,
   componentKey,
@@ -34,14 +35,14 @@ function withStatus(name: string, status: string) {
   return body;
 }
 
-Deno.test("service: probes the status host, not the API host, unsigned", () => {
+test("service: probes the status host, not the API host, unsigned", () => {
   assertEquals(STATUS_URL, "https://status.simplero.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.simplero.com"]);
   assertEquals(service.credential, "none");
   assertEquals(API_COMPONENT, "API");
 });
 
-Deno.test("service: an all-operational page reports ok and tolerates null incident lists", async () => {
+test("service: an all-operational page reports ok and tolerates null incident lists", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -50,14 +51,14 @@ Deno.test("service: an all-operational page reports ok and tolerates null incide
   assertEquals(Object.keys(report.components ?? {}).length, 4);
 });
 
-Deno.test("service: an API major outage is down and names the component", async () => {
+test("service: an API major outage is down and names the component", async () => {
   const { ctx } = mockCtx([{ body: withStatus("API", "major_outage") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(/API \(major_outage\)/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a non-API outage is capped at degraded", async () => {
+test("service: a non-API outage is capped at degraded", async () => {
   const { ctx } = mockCtx([{ body: withStatus("Stripe", "major_outage") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "degraded");
@@ -65,7 +66,7 @@ Deno.test("service: a non-API outage is capped at degraded", async () => {
   assertEquals(stripe?.state, "down");
 });
 
-Deno.test("service: API degraded performance is degraded, and incidents are counted", async () => {
+test("service: API degraded performance is degraded, and incidents are counted", async () => {
   const body = withStatus("API", "degraded_performance") as Record<string, unknown>;
   body.incidents = [{ name: "Slow API", status: "investigating" }];
   const { ctx } = mockCtx([{ body }]);
@@ -74,17 +75,17 @@ Deno.test("service: API degraded performance is degraded, and incidents are coun
   assert(/1 open incident/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a failing status page is unknown, never down", async () => {
+test("service: a failing status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that does not name itself Simplero is unknown", async () => {
+test("service: a page that does not name itself Simplero is unknown", async () => {
   const body = summary({ page: { name: "Someone Else", url: "https://status.simplero.com/" } });
   const { ctx } = mockCtx([{ body }]);
   const report = await service.check!({}, ctx);
@@ -92,7 +93,7 @@ Deno.test("service: a page that does not name itself Simplero is unknown", async
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page with no components, or no API component, is unknown", async () => {
+test("service: a page with no components, or no API component, is unknown", async () => {
   const empty = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 
@@ -104,7 +105,7 @@ Deno.test("service: a page with no components, or no API component, is unknown",
   assert(/no "API" component/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: mapComponentStatus and componentKey", () => {
+test("service: mapComponentStatus and componentKey", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");

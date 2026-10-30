@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sectionUpdate from "../../actions/section-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("section-update: PUT /sections/{sectionId} with the documented query and body", async () => {
+test("section-update: PUT /sections/{sectionId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await sectionUpdate.execute({
     "sectionId": 349235,
@@ -27,7 +28,7 @@ Deno.test("section-update: PUT /sections/{sectionId} with the documented query a
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("section-update: an Everhour error surfaces its message and status", async () => {
+test("section-update: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -40,7 +41,7 @@ Deno.test("section-update: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("section-update: declares perform and idempotent=true", () => {
+test("section-update: declares perform and idempotent=true", () => {
   assertEquals(sectionUpdate.type, "perform");
   assertEquals(sectionUpdate.idempotent, true);
 });

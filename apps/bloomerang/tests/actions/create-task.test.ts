@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: is a non-idempotent perform", () => {
+test("create-task: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-task: POSTs /task with the mapped body", async () => {
+test("create-task: POSTs /task with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Id: 1 } }]);
   await action.execute({
     subject: "Follow up",
@@ -29,7 +30,7 @@ Deno.test("create-task: POSTs /task with the mapped body", async () => {
   });
 });
 
-Deno.test("create-task: works unlinked to any constituent", async () => {
+test("create-task: works unlinked to any constituent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ subject: "Reminder" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { Subject: "Reminder" });

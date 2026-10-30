@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import browserProfileList from "../../actions/browser-profile-list.ts";
 
-Deno.test("browser-profile-list: query mapping and array wrapping", async () => {
+test("browser-profile-list: query mapping and array wrapping", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ browser_profile_id: "bp_1" }] }]);
   const out = await browserProfileList.execute(
     { page: 1, pageSize: 20, searchKey: "gmail", managed: "false" },

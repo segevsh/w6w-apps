@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderCreate from "../../actions/folder-create.ts";
 import { envelope, mockCtx, pathOf, usConnection } from "../_helpers.ts";
 
-Deno.test("folder-create: POSTs folderName and parentFolderId", async () => {
+test("folder-create: POSTs folderName and parentFolderId", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 201, body: envelope({ folderId: "f2", folderName: "new" }) }],
     usConnection({ accountId: "acc-1" }),
@@ -18,7 +19,7 @@ Deno.test("folder-create: POSTs folderName and parentFolderId", async () => {
   assertEquals(out, { folderId: "f2", folderName: "new" });
 });
 
-Deno.test("folder-create: omits parentFolderId when not given", async () => {
+test("folder-create: omits parentFolderId when not given", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 201, body: envelope({ folderId: "f3", folderName: "top" }) }],
     usConnection(),
@@ -27,6 +28,6 @@ Deno.test("folder-create: omits parentFolderId when not given", async () => {
   assertEquals(JSON.parse(calls[0].body!), { folderName: "top" });
 });
 
-Deno.test("folder-create: is not idempotent", () => {
+test("folder-create: is not idempotent", () => {
   assertEquals(folderCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-embed-contents.ts";
 
-Deno.test("batch-embed-contents: builds one request per text, all sharing the batch model", async () => {
+test("batch-embed-contents: builds one request per text, all sharing the batch model", async () => {
   const { ctx, calls } = mockCtx([{ body: { embeddings: [] } }]);
   await action.execute!(
     { model: "gemini-embedding-001", texts: ["a", "b", "c"] },
@@ -22,7 +23,7 @@ Deno.test("batch-embed-contents: builds one request per text, all sharing the ba
   ]);
 });
 
-Deno.test("batch-embed-contents: applies taskType to every request when supplied", async () => {
+test("batch-embed-contents: applies taskType to every request when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "gemini-embedding-001", texts: ["a", "b"], taskType: "CLUSTERING" },

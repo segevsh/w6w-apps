@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-account.ts";
 
-Deno.test("create-account: is a non-idempotent perform action requiring code", () => {
+test("create-account: is a non-idempotent perform action requiring code", () => {
   assertEquals(action.key, "create-account");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -10,7 +11,7 @@ Deno.test("create-account: is a non-idempotent perform action requiring code", (
   assertEquals(p.required, true);
 });
 
-Deno.test("create-account: POSTs /accounts with a JSON body", async () => {
+test("create-account: POSTs /accounts with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "a1", code: "bob", state: "active" },
@@ -25,14 +26,14 @@ Deno.test("create-account: POSTs /accounts with a JSON body", async () => {
   assertEquals(body.first_name, "Bob");
 });
 
-Deno.test("create-account: omits unset optional fields entirely", async () => {
+test("create-account: omits unset optional fields entirely", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ code: "bob" }, connected(ctx));
   const body = JSON.parse(calls[0].body ?? "{}");
   assertEquals(Object.keys(body), ["code"]);
 });
 
-Deno.test("create-account: returns the created account", async () => {
+test("create-account: returns the created account", async () => {
   const created = { id: "a1", code: "bob", state: "active" };
   const { ctx } = mockCtx([{ status: 201, body: created }]);
   assertEquals(await action.execute({ code: "bob" }, connected(ctx)), created);

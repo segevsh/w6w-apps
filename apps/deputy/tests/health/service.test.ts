@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   STATUS_URL,
@@ -22,7 +23,7 @@ function summary(
   };
 }
 
-Deno.test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -32,7 +33,7 @@ Deno.test("mapComponentStatus: maps Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("something_new"), "unknown");
 });
 
-Deno.test("check: all tracked components operational -> ok", async () => {
+test("check: all tracked components operational -> ok", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: summary([
@@ -47,7 +48,7 @@ Deno.test("check: all tracked components operational -> ok", async () => {
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("check: a major outage on one tracked region reports down, worst-state wins", async () => {
+test("check: a major outage on one tracked region reports down, worst-state wins", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary([
@@ -62,7 +63,7 @@ Deno.test("check: a major outage on one tracked region reports down, worst-state
   assertEquals(result.message?.includes("Deputy - USA"), true);
 });
 
-Deno.test("check: third-party components (Pusher, Twilio, Xero, Zuora) never affect the verdict", async () => {
+test("check: third-party components (Pusher, Twilio, Xero, Zuora) never affect the verdict", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -82,13 +83,13 @@ Deno.test("check: third-party components (Pusher, Twilio, Xero, Zuora) never aff
   assertEquals(result.state, "ok");
 });
 
-Deno.test("check: a non-ok status response is unknown, never down", async () => {
+test("check: a non-ok status response is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("check: a page that no longer self-identifies as Deputy's is refused", async () => {
+test("check: a page that no longer self-identifies as Deputy's is refused", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -100,7 +101,7 @@ Deno.test("check: a page that no longer self-identifies as Deputy's is refused",
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("check: a page that dropped every tracked component id is unknown, not ok", async () => {
+test("check: a page that dropped every tracked component id is unknown, not ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -114,7 +115,7 @@ Deno.test("check: a page that dropped every tracked component id is unknown, not
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("manifest shape: unsigned, service-kind, scoped to status.deputy.com only", () => {
+test("manifest shape: unsigned, service-kind, scoped to status.deputy.com only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.deputy.com"]);

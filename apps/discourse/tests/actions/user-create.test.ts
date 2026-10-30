@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
@@ -9,7 +10,7 @@ const REQUIRED = {
   password: "correct-horse-battery-staple",
 };
 
-Deno.test("user-create: POSTs /users.json with all four required fields", async () => {
+test("user-create: POSTs /users.json with all four required fields", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { success: true, user_id: 9 } }]);
   const out = await action.execute(REQUIRED, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/users.json`);
@@ -17,7 +18,7 @@ Deno.test("user-create: POSTs /users.json with all four required fields", async 
   assertEquals(out, { success: true, user_id: 9 });
 });
 
-Deno.test("user-create: the endpoint's four required fields are all required in the form", () => {
+test("user-create: the endpoint's four required fields are all required in the form", () => {
   // There is no invite-only mode on this route: name, email, password and
   // username are all required by Discourse's own schema.
   assertEquals(
@@ -26,18 +27,18 @@ Deno.test("user-create: the endpoint's four required fields are all required in 
   );
 });
 
-Deno.test("user-create: the new account's password is masked", () => {
+test("user-create: the new account's password is masked", () => {
   const password = action.params!.find((p) => p.key === "password")!;
   assertEquals(password.type, "secret");
 });
 
-Deno.test("user-create: `active` warns that a non-admin key silently ignores it", () => {
+test("user-create: `active` warns that a non-admin key silently ignores it", () => {
   const active = action.params!.find((p) => p.key === "active")!;
   assert(/admin/i.test(active.hint!));
   assert(/ignore|silently/i.test(active.hint!));
 });
 
-Deno.test("user-create: optional flags and custom fields use the API's names", async () => {
+test("user-create: optional flags and custom fields use the API's names", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute(
     { ...REQUIRED, active: true, approved: true, userFields: { "1": true } },
@@ -49,6 +50,6 @@ Deno.test("user-create: optional flags and custom fields use the API's names", a
   assertEquals(body.user_fields, { "1": true });
 });
 
-Deno.test("user-create: is not idempotent — email and username are unique", () => {
+test("user-create: is not idempotent — email and username are unique", () => {
   assertEquals(action.idempotent, false);
 });

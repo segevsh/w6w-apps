@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-list: uses the v3 path, not the deprecated /v2/customers", async () => {
+test("customer-list: uses the v3 path, not the deprecated /v2/customers", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: 12 }],
@@ -15,7 +16,7 @@ Deno.test("customer-list: uses the v3 path, not the deprecated /v2/customers", a
   assertEquals(out.data, [{ id: 12 }]);
 });
 
-Deno.test("customer-list: returns BOTH pagination blocks, because the meta shape varies", async () => {
+test("customer-list: returns BOTH pagination blocks, because the meta shape varies", async () => {
   // The vendor documents: both on page 1, only `pagination` when page > 1, only
   // `cursor_pagination` when after/before was supplied. Flattening loses one.
   const { ctx } = mockCtx([{
@@ -29,7 +30,7 @@ Deno.test("customer-list: returns BOTH pagination blocks, because the meta shape
   assertEquals(out.cursor, { end_cursor: "zzz" });
 });
 
-Deno.test("customer-list: every filter is an :in list form", async () => {
+test("customer-list: every filter is an :in list form", async () => {
   // There is no singular `email` filter on this endpoint.
   const { ctx, calls } = mockCtx([{ body: { data: [], meta: {} } }]);
   await customerList.execute({
@@ -49,7 +50,7 @@ Deno.test("customer-list: every filter is an :in list form", async () => {
   });
 });
 
-Deno.test("customer-list: sort tokens carry their own direction, unlike Orders", () => {
+test("customer-list: sort tokens carry their own direction, unlike Orders", () => {
   const sort = customerList.params?.find((p) => p.key === "sort");
   const values = (sort?.options as Array<{ value: string }>).map((o) => o.value);
   assert(values.every((v) => v.includes(":")), values.join(","));

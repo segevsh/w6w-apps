@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscriber-upsert.ts";
 
-Deno.test("subscriber-upsert: POSTs the documented body keys", async () => {
+test("subscriber-upsert: POSTs the documented body keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "9", email: "a@example.com" } }]);
   const out = await action.execute(
     {
@@ -25,13 +26,13 @@ Deno.test("subscriber-upsert: POSTs the documented body keys", async () => {
   assertEquals(out, { subscriber: { id: "9", email: "a@example.com" } });
 });
 
-Deno.test("subscriber-upsert: needs an email or an SMS number", async () => {
+test("subscriber-upsert: needs an email or an SMS number", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "email or an SMS number");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscriber-upsert: field validation errors name the field", async () => {
+test("subscriber-upsert: field validation errors name the field", async () => {
   const { ctx } = mockCtx([{
     status: 406,
     body: { error: 8, name: "fieldLeadValue", reason: "must be a numeric value", field_value: "A" },

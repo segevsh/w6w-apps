@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sourceDelete from "../../actions/source-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("source-delete: DELETE .../sources/{id}", async () => {
+test("source-delete: DELETE .../sources/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "s1", status: "toBeDeleted" } }]);
   const out = await sourceDelete.execute({ agentId: "a1", sourceId: "s1" }, ctx) as {
     status: string;

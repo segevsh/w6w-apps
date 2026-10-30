@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-content-types.ts";
 
-Deno.test("list-content-types: GETs /content_types with default paging", async () => {
+test("list-content-types: GETs /content_types with default paging", async () => {
   const body = { items: [], total: 0, skip: 0, limit: 100 };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("list-content-types: GETs /content_types with default paging", async (
   assertEquals(url.searchParams.get("limit"), "100");
 });
 
-Deno.test("list-content-types: honors order and skip", async () => {
+test("list-content-types: honors order and skip", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     { spaceId: "sp", environmentId: "master", skip: 10, order: "sys.createdAt" },

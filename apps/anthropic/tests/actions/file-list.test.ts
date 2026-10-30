@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-list.ts";
 
-Deno.test("file-list: GETs /v1/files with files-api beta flag", async () => {
+test("file-list: GETs /v1/files with files-api beta flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], has_more: false } }]);
   await action.execute!({}, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("file-list: GETs /v1/files with files-api beta flag", async () => {
   assertEquals(calls[0].headers["anthropic-beta"], "files-api-2025-04-14");
 });
 
-Deno.test("file-list: forwards pagination params", async () => {
+test("file-list: forwards pagination params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ limit: 25, after_id: "f_a", before_id: "f_b" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -21,7 +22,7 @@ Deno.test("file-list: forwards pagination params", async () => {
   assertEquals(params.get("before_id"), "f_b");
 });
 
-Deno.test("file-list: omits pagination params when undefined", async () => {
+test("file-list: omits pagination params when undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;

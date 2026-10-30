@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/form-user-assign.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-user-assign: POST /api/v3/forms/4639578/assigned_users with the documented shape", async () => {
+test("form-user-assign: POST /api/v3/forms/4639578/assigned_users with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": 1 } }]);
   const out = await action.execute(
     { "formId": 4639578, "userId": 114, "departmentId": 2 } as never,

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-sender-action.ts";
 
-Deno.test("send-sender-action: typing_on carries only recipient and sender_action", async () => {
+test("send-sender-action: typing_on carries only recipient and sender_action", async () => {
   const { ctx, calls } = mockCtx([{ body: { recipient_id: "p" } }]);
   const out = await action.execute!({ recipientId: "p", action: "typing_on" }, ctx);
   assertEquals(bodyOf(calls[0]), { recipient: { id: "p" }, sender_action: "typing_on" });
@@ -10,13 +11,13 @@ Deno.test("send-sender-action: typing_on carries only recipient and sender_actio
   assertEquals(out, { recipient_id: "p" });
 });
 
-Deno.test("send-sender-action: mark_seen", async () => {
+test("send-sender-action: mark_seen", async () => {
   const { ctx, calls } = mockCtx([{ body: { recipient_id: "p" } }]);
   await action.execute!({ recipientId: "p", action: "mark_seen" }, ctx);
   assertEquals(bodyOf(calls[0]).sender_action, "mark_seen");
 });
 
-Deno.test("send-sender-action: react puts message_id and reaction in payload", async () => {
+test("send-sender-action: react puts message_id and reaction in payload", async () => {
   const { ctx, calls } = mockCtx([{ body: { recipient_id: "p" } }]);
   await action.execute!(
     { recipientId: "p", action: "react", messageId: "m1", reaction: "🎉" },
@@ -29,7 +30,7 @@ Deno.test("send-sender-action: react puts message_id and reaction in payload", a
   });
 });
 
-Deno.test("send-sender-action: unreact sends message_id only", async () => {
+test("send-sender-action: unreact sends message_id only", async () => {
   const { ctx, calls } = mockCtx([{ body: { recipient_id: "p" } }]);
   await action.execute!(
     { recipientId: "p", action: "unreact", messageId: "m1", reaction: "x" },
@@ -38,7 +39,7 @@ Deno.test("send-sender-action: unreact sends message_id only", async () => {
   assertEquals(bodyOf(calls[0]).payload, { message_id: "m1" });
 });
 
-Deno.test("send-sender-action: react without message or emoji fails locally", async () => {
+test("send-sender-action: react without message or emoji fails locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ recipientId: "p", action: "react", reaction: "x" }, ctx),
@@ -53,6 +54,6 @@ Deno.test("send-sender-action: react without message or emoji fails locally", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-sender-action: idempotent", () => {
+test("send-sender-action: idempotent", () => {
   assertEquals(action.idempotent, true);
 });

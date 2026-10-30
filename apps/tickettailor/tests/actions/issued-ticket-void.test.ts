@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issuedTicketVoid from "../../actions/issued-ticket-void.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("issued-ticket-void: POSTs to the nested void path", async () => {
+test("issued-ticket-void: POSTs to the nested void path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "it_1", object: "issued_ticket", voided: "true" } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("issued-ticket-void: POSTs to the nested void path", async () => {
   assertEquals(result.voided, "true");
 });
 
-Deno.test("issued-ticket-void: can turn the voided ticket's allocation into a hold", async () => {
+test("issued-ticket-void: can turn the voided ticket's allocation into a hold", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "it_1", hold_id: "ho_9" } }]);
   await issuedTicketVoid.execute({ issuedTicketId: "it_1", voidToHold: "true" }, ctx);
   const body = new URLSearchParams(calls[0].body ?? "");

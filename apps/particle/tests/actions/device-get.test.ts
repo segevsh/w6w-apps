@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-get.ts";
 
@@ -19,7 +20,7 @@ const device = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("device-get: reads one device", async () => {
+test("device-get: reads one device", async () => {
   const { ctx, calls } = mockCtx([device()]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, `https://api.particle.io/v1/devices/${ID}`);
@@ -29,7 +30,7 @@ Deno.test("device-get: reads one device", async () => {
 });
 
 /** The only place the firmware's contract is written down. */
-Deno.test("device-get: returns the variables with their types, and the functions", async () => {
+test("device-get: returns the variables with their types, and the functions", async () => {
   const { ctx } = mockCtx([device()]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.variables, { temperature: "double", status: "string" });
@@ -38,7 +39,7 @@ Deno.test("device-get: returns the variables with their types, and the functions
 });
 
 /** Offline is normal for a battery-powered device. */
-Deno.test("device-get: an offline device is noted at info, not warned about", async () => {
+test("device-get: an offline device is noted at info, not warned about", async () => {
   const { ctx, logs } = mockCtx([device({ connected: false })]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.connected, false);
@@ -50,14 +51,14 @@ Deno.test("device-get: an offline device is noted at info, not warned about", as
   assertEquals(online.logs.length, 0);
 });
 
-Deno.test("device-get: a device with no declared variables is not an error", async () => {
+test("device-get: a device with no declared variables is not an error", async () => {
   const { ctx } = mockCtx([device({ variables: undefined, functions: undefined })]);
   const result = await action.execute({ deviceId: ID }, ctx) as Record<string, unknown>;
   assertEquals(result.variables, {});
   assertEquals(result.functions, []);
 });
 
-Deno.test("device-get: a name instead of an id is refused before the request", async () => {
+test("device-get: a name instead of an id is refused before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

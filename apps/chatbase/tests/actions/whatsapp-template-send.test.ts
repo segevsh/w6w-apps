@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import whatsappTemplateSend from "../../actions/whatsapp-template-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-template-send: POST .../whatsapp/messages/template, nests template", async () => {
+test("whatsapp-template-send: POST .../whatsapp/messages/template, nests template", async () => {
   const { ctx, calls } = mockCtx([
     { body: { messageId: "wamid.1", conversationId: "c1", to: "14155552671" } },
   ]);
@@ -29,7 +30,7 @@ Deno.test("whatsapp-template-send: POST .../whatsapp/messages/template, nests te
   assertEquals(out.messageId, "wamid.1");
 });
 
-Deno.test("whatsapp-template-send: from and variables are optional", async () => {
+test("whatsapp-template-send: from and variables are optional", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: null, conversationId: "c1", to: "1" } }]);
   await whatsappTemplateSend.execute({ agentId: "a1", to: "1", templateName: "hello" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { to: "1", template: { name: "hello" } });

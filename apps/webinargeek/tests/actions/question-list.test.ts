@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import questionList from "../../actions/question-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("question-list: hits GET /questions with scope filters", async () => {
+test("question-list: hits GET /questions with scope filters", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

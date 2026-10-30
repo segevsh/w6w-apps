@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: is a service check, unsigned, scoped to the whole app", () => {
+test("service: is a service check, unsigned, scoped to the whole app", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.recurly.com"]);
 });
 
-Deno.test("service: maps the Statuspage 'none' indicator to ok", async () => {
+test("service: maps the Statuspage 'none' indicator to ok", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -20,7 +21,7 @@ Deno.test("service: maps the Statuspage 'none' indicator to ok", async () => {
   assertEquals(calls[0].url, "https://status.recurly.com/api/v2/summary.json");
 });
 
-Deno.test("service: maps minor/major/critical indicators", async () => {
+test("service: maps minor/major/critical indicators", async () => {
   for (
     const [indicator, expected] of [["minor", "degraded"], ["major", "down"], [
       "critical",
@@ -33,19 +34,19 @@ Deno.test("service: maps minor/major/critical indicators", async () => {
   }
 });
 
-Deno.test("service: reports unknown, never down, when the status API itself fails", async () => {
+test("service: reports unknown, never down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: reports unknown for an unrecognised indicator rather than guessing", async () => {
+test("service: reports unknown for an unrecognised indicator rather than guessing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { status: { indicator: "something-new" } } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: omits `components` entirely when Recurly reports none (its live shape today)", async () => {
+test("service: omits `components` entirely when Recurly reports none (its live shape today)", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { status: { indicator: "none" }, components: [] } },
   ]);
@@ -53,7 +54,7 @@ Deno.test("service: omits `components` entirely when Recurly reports none (its l
   assertEquals(report.components, undefined);
 });
 
-Deno.test("service: maps per-component states when Recurly ever reports them", async () => {
+test("service: maps per-component states when Recurly ever reports them", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,

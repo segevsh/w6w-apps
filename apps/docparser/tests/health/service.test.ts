@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -21,21 +22,21 @@ function body(overrides: Record<string, string> = {}, pageName = "Docparser") {
   };
 }
 
-Deno.test("service: service check on the status host, no credential", () => {
+test("service: service check on the status host, no credential", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.docparser.com"]);
   assertEquals(new URL(STATUS_URL).host, "status.docparser.com");
 });
 
-Deno.test("service: maps Statuspage vocabulary", () => {
+test("service: maps Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("nonsense"), "unknown");
 });
 
-Deno.test("service: all operational is ok", async () => {
+test("service: all operational is ok", async () => {
   const { ctx, calls } = mockCtx([{ body: body() }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -43,7 +44,7 @@ Deno.test("service: all operational is ok", async () => {
   assertEquals(Object.keys(out.components!).length, 4);
 });
 
-Deno.test("service: the HTTP REST API component decides; others never move the verdict", async () => {
+test("service: the HTTP REST API component decides; others never move the verdict", async () => {
   const down = mockCtx([{ body: body({ [API_COMPONENT]: "major_outage" }) }]);
   const out = await service.check!({} as never, down.ctx);
   assertEquals(out.state, "down");
@@ -55,7 +56,7 @@ Deno.test("service: the HTTP REST API component decides; others never move the v
   assertEquals(out2.components!["id-Webhook Integrations"].state, "down");
 });
 
-Deno.test("service: a broken, foreign or API-less page is unknown, never down", async () => {
+test("service: a broken, foreign or API-less page is unknown, never down", async () => {
   for (
     const r of [
       { status: 503, body: "x" },

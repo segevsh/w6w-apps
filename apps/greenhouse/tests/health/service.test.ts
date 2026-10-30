@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   findHarvestGroup,
@@ -53,14 +54,14 @@ function summary(overrides: Record<string, unknown> = {}): {
   };
 }
 
-Deno.test("service: declares an unsigned posture and its own status host", () => {
+test("service: declares an unsigned posture and its own status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.greenhouse.io"]);
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: maps the Statuspage component vocabulary", () => {
+test("service: maps the Statuspage component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -69,14 +70,14 @@ Deno.test("service: maps the Statuspage component vocabulary", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: maps the page-level indicator vocabulary", () => {
+test("service: maps the page-level indicator vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("critical"), "down");
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: resolves the Harvest group by id, then by name", () => {
+test("service: resolves the Harvest group by id, then by name", () => {
   assertEquals(findHarvestGroup(summary().components)?.id, HARVEST_GROUP_ID);
   const renamed = summary().components.map((c) =>
     c.id === HARVEST_GROUP_ID ? { ...c, id: "new-id" } : c
@@ -85,13 +86,13 @@ Deno.test("service: resolves the Harvest group by id, then by name", () => {
   assertEquals(findHarvestGroup([{ name: "Something else", group: true }]), undefined);
 });
 
-Deno.test("service: keys components by the vendor id, never by the ambiguous name", () => {
+test("service: keys components by the vendor id, never by the ambiguous name", () => {
   assertEquals(componentKey({ id: "hv-1", name: "Silo 1" }, 0), "hv-1");
   assertEquals(componentKey({ name: "Silo 1" }, 3), "silo-1-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: a healthy page reports ok and publishes every non-group component", async () => {
+test("service: a healthy page reports ok and publishes every non-group component", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -105,12 +106,12 @@ Deno.test("service: a healthy page reports ok and publishes every non-group comp
  * Three components are called "Silo 1". Without the group prefix a reader cannot
  * tell which one an amber row belongs to.
  */
-Deno.test("service: component messages disambiguate the repeated names by group", () => {
+test("service: component messages disambiguate the repeated names by group", () => {
   const keys = summary().components.filter((c) => !c.group).map((c) => c.name);
   assertEquals(keys.filter((n) => n === "Silo 1").length, 2);
 });
 
-Deno.test("service: the group prefix appears in each component message", async () => {
+test("service: the group prefix appears in each component message", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.components?.["hv-1"].message, "Greenhouse Harvest API — Silo 1");
@@ -122,7 +123,7 @@ Deno.test("service: the group prefix appears in each component message", async (
  * components — Fastly PoPs, AWS regions, LinkedIn, OpenAI — that this app never
  * calls. A Fastly incident must not report the Harvest API down.
  */
-Deno.test("service: a third-party outage is reported but does not set the verdict", async () => {
+test("service: a third-party outage is reported but does not set the verdict", async () => {
   const page = summary({
     status: { indicator: "major", description: "Partial System Outage" },
   });
@@ -138,7 +139,7 @@ Deno.test("service: a third-party outage is reported but does not set the verdic
   assert(report.message?.includes("AWS S3 (us-east-1)"), report.message);
 });
 
-Deno.test("service: an outage inside the Harvest group DOES set the verdict", async () => {
+test("service: an outage inside the Harvest group DOES set the verdict", async () => {
   const page = summary();
   page.components = page.components.map((c) =>
     c.id === "hv-2" ? { ...c, status: "major_outage" } : c
@@ -148,7 +149,7 @@ Deno.test("service: an outage inside the Harvest group DOES set the verdict", as
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a degraded Harvest silo degrades rather than downs the verdict", async () => {
+test("service: a degraded Harvest silo degrades rather than downs the verdict", async () => {
   const page = summary();
   page.components = page.components.map((c) =>
     c.id === "hv-1" ? { ...c, status: "degraded_performance" } : c
@@ -158,7 +159,7 @@ Deno.test("service: a degraded Harvest silo degrades rather than downs the verdi
 });
 
 /** Without the group there is nothing better than the page-wide roll-up. */
-Deno.test("service: a missing Harvest group falls back to the indicator and says so", async () => {
+test("service: a missing Harvest group falls back to the indicator and says so", async () => {
   const page = summary({ status: { indicator: "minor", description: "Degraded" } });
   page.components = page.components.filter((c) =>
     c.id !== HARVEST_GROUP_ID && c.group_id !== HARVEST_GROUP_ID
@@ -170,12 +171,12 @@ Deno.test("service: a missing Harvest group falls back to the indicator and says
 });
 
 /** A broken status API says nothing about Greenhouse — never `down`. */
-Deno.test("service: a failing status page is unknown, not down", async () => {
+test("service: a failing status page is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
@@ -184,7 +185,7 @@ Deno.test("service: an unreadable body is unknown", async () => {
  * The failure mode where a healthy, claimed status page belongs to an entirely
  * different product after a redirect or a rebrand.
  */
-Deno.test("service: a page that no longer self-identifies as Greenhouse is unknown", async () => {
+test("service: a page that no longer self-identifies as Greenhouse is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -193,7 +194,7 @@ Deno.test("service: a page that no longer self-identifies as Greenhouse is unkno
   assert(report.message?.includes("self-identifies"), report.message);
 });
 
-Deno.test("service: open incidents and maintenance windows are counted in the message", async () => {
+test("service: open incidents and maintenance windows are counted in the message", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       incidents: [{ name: "MS Teams Missing When Scheduling", status: "identified" }],

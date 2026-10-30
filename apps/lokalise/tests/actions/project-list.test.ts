@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-list: lists projects with a default limit and no extra filters", async () => {
+test("project-list: lists projects with a default limit and no extra filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { projects: [{ project_id: "p1" }] } }]);
   const out = await projectList.execute({ limit: 100 }, ctx) as { items: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("project-list: lists projects with a default limit and no extra filter
   assertEquals(out.items, [{ project_id: "p1" }]);
 });
 
-Deno.test("project-list: forwards filters and include flags", async () => {
+test("project-list: forwards filters and include flags", async () => {
   const { ctx, calls } = mockCtx([{ body: { projects: [] } }]);
   await projectList.execute(
     { filterTeamId: 5, filterNames: "a,b", includeStatistics: true, includeSettings: false },
@@ -25,7 +26,7 @@ Deno.test("project-list: forwards filters and include flags", async () => {
   });
 });
 
-Deno.test("project-list: cursor pagination switches the query and reports nextCursor", async () => {
+test("project-list: cursor pagination switches the query and reports nextCursor", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { projects: [] },

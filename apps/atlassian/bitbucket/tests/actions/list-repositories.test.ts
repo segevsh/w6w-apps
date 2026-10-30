@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-repositories.ts";
 
-Deno.test("list-repositories: hits /repositories/{workspace} with default pagelen", async () => {
+test("list-repositories: hits /repositories/{workspace} with default pagelen", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await action.execute({ workspace: "acme" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-repositories: hits /repositories/{workspace} with default pagele
   assertEquals(url.searchParams.get("pagelen"), "100");
 });
 
-Deno.test("list-repositories: forwards all optional filters", async () => {
+test("list-repositories: forwards all optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await action.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("list-repositories: forwards all optional filters", async () => {
   assertEquals(p.get("pagelen"), "10");
 });
 
-Deno.test("list-repositories: omits undefined optionals", async () => {
+test("list-repositories: omits undefined optionals", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await action.execute({ workspace: "acme" }, ctx);
   const p = new URL(calls[0].url).searchParams;

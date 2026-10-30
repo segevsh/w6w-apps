@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   mapComponentStatus,
@@ -37,13 +38,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, unsigned", () => {
+test("service: probes the status host, unsigned", () => {
   assertEquals(STATUS_URL, "https://status.heygen.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.heygen.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an all-operational page reports ok", async () => {
+test("service: an all-operational page reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -56,7 +57,7 @@ Deno.test("service: an all-operational page reports ok", async () => {
  * The failure this app actually calls into is `https://api.heygen.com` — an outage confined to a
  * different product (here, LiveAvatar) is real information but must not read as this app down.
  */
-Deno.test("service: an outage in a different product caps at degraded, not down", async () => {
+test("service: an outage in a different product caps at degraded, not down", async () => {
   const body = summary();
   (body.components[2] as { status: string }).status = "major_outage"; // liveavatar www
   const { ctx } = mockCtx([{ body }]);
@@ -66,7 +67,7 @@ Deno.test("service: an outage in a different product caps at degraded, not down"
   assertEquals(report.components?.[API_COMPONENT_ID]?.state, "ok");
 });
 
-Deno.test("service: an outage in the API component itself reports down", async () => {
+test("service: an outage in the API component itself reports down", async () => {
   const body = summary();
   (body.components[1] as { status: string }).status = "major_outage"; // https://api.heygen.com
   const { ctx } = mockCtx([{ body }]);
@@ -76,7 +77,7 @@ Deno.test("service: an outage in the API component itself reports down", async (
   assertEquals(report.components?.[API_COMPONENT_ID]?.state, "down");
 });
 
-Deno.test("service: an incident is reported with the affected components named", async () => {
+test("service: an incident is reported with the affected components named", async () => {
   const body = summary({
     status: { indicator: "major", description: "Partial System Outage" },
     incidents: [{ name: "Elevated API errors", status: "investigating" }],
@@ -92,22 +93,22 @@ Deno.test("service: an incident is reported with the affected components named",
   assert(/1 open incident/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page with no components reports unknown", async () => {
+test("service: a page with no components reports unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer lists the API component reports unknown", async () => {
+test("service: a page that no longer lists the API component reports unknown", async () => {
   const body = summary();
   body.components = body.components.filter((c) => c.id !== API_COMPONENT_ID);
   const { ctx } = mockCtx([{ body }]);
@@ -118,7 +119,7 @@ Deno.test("service: a page that no longer lists the API component reports unknow
 });
 
 /** Guards against a future redirect/rebrand silently pointing this probe at someone else's page. */
-Deno.test("service: a page that stops self-identifying as HeyGen's reports unknown", async () => {
+test("service: a page that stops self-identifying as HeyGen's reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({ page: { id: "x", name: "Somebody Else", url: "https://status.other.com" } }),
@@ -130,7 +131,7 @@ Deno.test("service: a page that stops self-identifying as HeyGen's reports unkno
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: Statuspage's component vocabulary maps to the four health states", () => {
+test("service: Statuspage's component vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -139,7 +140,7 @@ Deno.test("service: Statuspage's component vocabulary maps to the four health st
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: the page indicator maps to the four health states", () => {
+test("service: the page indicator maps to the four health states", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");

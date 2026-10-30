@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-list.ts";
 
@@ -13,7 +14,7 @@ const page = (n: number, isLastPage = false) => ({
 });
 
 /** Sixty requests a minute makes a bigger page straightforwardly better. */
-Deno.test("record-list: defaults to a page of 200 rather than NocoDB's 25", async () => {
+test("record-list: defaults to a page of 200 rather than NocoDB's 25", async () => {
   const { ctx, calls } = mockCtx([page(200)], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/tables/mtbl1/records");
@@ -23,7 +24,7 @@ Deno.test("record-list: defaults to a page of 200 rather than NocoDB's 25", asyn
 });
 
 /** With spaces the filter matches nothing and returns 200. */
-Deno.test("record-list: refuses a spaced filter before the request", async () => {
+test("record-list: refuses a spaced filter before the request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", where: "(Status, eq, Active)" }, ctx),
@@ -33,7 +34,7 @@ Deno.test("record-list: refuses a spaced filter before the request", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-list: a valid filter, sort and field list reach the query", async () => {
+test("record-list: a valid filter, sort and field list reach the query", async () => {
   const { ctx, calls } = mockCtx([page(10, true)], D);
   await action.execute({
     tableId: "mtbl1",
@@ -48,7 +49,7 @@ Deno.test("record-list: a valid filter, sort and field list reach the query", as
 });
 
 /** NocoDB applies your filter on top of the view's, not instead of it. */
-Deno.test("record-list: says a view's filters are applied underneath", async () => {
+test("record-list: says a view's filters are applied underneath", async () => {
   const { ctx, logs } = mockCtx([page(5, true)], D);
   const result = await action.execute(
     { tableId: "mtbl1", viewId: "vw1", where: "(Status,eq,Active)" },
@@ -61,7 +62,7 @@ Deno.test("record-list: says a view's filters are applied underneath", async () 
   );
 });
 
-Deno.test("record-list: computes the next offset until the last page", async () => {
+test("record-list: computes the next offset until the last page", async () => {
   const more = mockCtx([page(200)], D);
   const first = await action.execute({ tableId: "mtbl1" }, more.ctx) as Record<string, unknown>;
   assertEquals(first.nextOffset, 200);
@@ -76,14 +77,14 @@ Deno.test("record-list: computes the next offset until the last page", async () 
   assertEquals(done.nextOffset, undefined);
 });
 
-Deno.test("record-list: the page size is clamped", async () => {
+test("record-list: the page size is clamped", async () => {
   const { ctx, calls } = mockCtx([page(1, true)], D);
   await action.execute({ tableId: "mtbl1", limit: 99999 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "1000");
 });
 
 /** The rows are the customer's data. */
-Deno.test("record-list: logs counts, never the rows", async () => {
+test("record-list: logs counts, never the rows", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { list: [{ Id: 1, Email: "ada@example.com" }], pageInfo: {} },
@@ -92,7 +93,7 @@ Deno.test("record-list: logs counts, never the rows", async () => {
   assert(!/ada@example\.com/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("record-list: requires a table id", async () => {
+test("record-list: requires a table id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`tableId` is required");
 });

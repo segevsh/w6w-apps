@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import draftList from "../../actions/draft-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("draft-list: fetches the social set's drafts with filters and pagination", async () => {
+test("draft-list: fetches the social set's drafts with filters and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, status: "draft" }]) }]);
   await draftList.execute({
     socialSetId: 4,
@@ -20,7 +21,7 @@ Deno.test("draft-list: fetches the social set's drafts with filters and paginati
   assertEquals(queryAllOf(calls[0].url, "tag"), ["marketing", "product"]);
 });
 
-Deno.test("draft-list: omits filters that were never set", async () => {
+test("draft-list: omits filters that were never set", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await draftList.execute({ socialSetId: 4 }, ctx);
   const q = queryOf(calls[0].url);
@@ -28,7 +29,7 @@ Deno.test("draft-list: omits filters that were never set", async () => {
   assertEquals("tag" in q, false);
 });
 
-Deno.test("draft-list: default order is -updated_at, matching the vendor's own default", () => {
+test("draft-list: default order is -updated_at, matching the vendor's own default", () => {
   const orderBy = draftList.params?.find((p) => p.key === "orderBy");
   assertEquals(orderBy?.default, "-updated_at");
 });

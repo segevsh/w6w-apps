@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/datasource-refresh-many.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const RESPONSE = {
   },
 };
 
-Deno.test("datasource-refresh-many: sends POST /datasources/@/refresh with the mapped input", async () => {
+test("datasource-refresh-many: sends POST /datasources/@/refresh with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -40,7 +41,7 @@ Deno.test("datasource-refresh-many: sends POST /datasources/@/refresh with the m
   });
 });
 
-Deno.test("datasource-refresh-many: sends no optional field when only required input is given", async () => {
+test("datasource-refresh-many: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "datasources": "d1,d2" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -48,13 +49,13 @@ Deno.test("datasource-refresh-many: sends no optional field when only required i
   assertEquals(JSON.parse(calls[0].body!), { "datasources": ["d1", "d2"] });
 });
 
-Deno.test("datasource-refresh-many: sends no credential header of its own", async () => {
+test("datasource-refresh-many: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("datasource-refresh-many: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("datasource-refresh-many: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -68,7 +69,7 @@ Deno.test("datasource-refresh-many: surfaces Klipfolio's error envelope as a thr
   );
 });
 
-Deno.test("datasource-refresh-many: declares type, idempotency and output", () => {
+test("datasource-refresh-many: declares type, idempotency and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(Array.isArray(action.output) && action.output.length > 0);

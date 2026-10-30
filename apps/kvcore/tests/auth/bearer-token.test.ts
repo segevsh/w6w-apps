@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import kvcoreBearer, { authHeaders, PROBE_PATH } from "../../auth/bearer-token.ts";
 import { errorsBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const TOKEN = "unit.test.fixture.not.a.real.token";
 
-Deno.test("bearer-token: sign stamps the bearer header and nothing else", () => {
+test("bearer-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.kvcore.com/v2/public/contacts",
@@ -20,15 +21,15 @@ Deno.test("bearer-token: sign stamps the bearer header and nothing else", () => 
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("bearer-token: authHeaders is the single source of the wire format", () => {
+test("bearer-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("bearer-token: the probe path is /contacts", () => {
+test("bearer-token: the probe path is /contacts", () => {
   assertEquals(PROBE_PATH, "/contacts");
 });
 
-Deno.test("bearer-token: test passes when the contacts read answers", async () => {
+test("bearer-token: test passes when the contacts read answers", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   const result = await kvcoreBearer.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("bearer-token: test passes when the contacts read answers", async () =
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("bearer-token: test fails with no token, without making a request", async () => {
+test("bearer-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await kvcoreBearer.test({ credential: {} }, ctx);
 
@@ -47,7 +48,7 @@ Deno.test("bearer-token: test fails with no token, without making a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bearer-token: a 401 is reported as a rejected token, with the vendor's message", async () => {
+test("bearer-token: a 401 is reported as a rejected token, with the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorsBody("Authentication Failed") }]);
   const result = await kvcoreBearer.test({ credential: { apiToken: "garbage" } }, ctx);
 
@@ -61,7 +62,7 @@ Deno.test("bearer-token: a 401 is reported as a rejected token, with the vendor'
  * /contacts, and the message must say so rather than reporting a flat
  * "invalid credential".
  */
-Deno.test("bearer-token: a 403 explains the Users-only-scope caveat, not a bad credential", async () => {
+test("bearer-token: a 403 explains the Users-only-scope caveat, not a bad credential", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorsBody("Insufficient scope") }]);
   const result = await kvcoreBearer.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -70,7 +71,7 @@ Deno.test("bearer-token: a 403 explains the Users-only-scope caveat, not a bad c
   assert(/may still be live/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("bearer-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("bearer-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await kvcoreBearer.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -78,7 +79,7 @@ Deno.test("bearer-token: a 500 is reported as an HTTP failure, not a credential 
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("bearer-token: no fields are anything but secret", () => {
+test("bearer-token: no fields are anything but secret", () => {
   for (const f of kvcoreBearer.fields ?? []) {
     assertEquals(f.type, "secret", f.key);
   }

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email-with-template.ts";
 
-Deno.test("send-email-with-template: POSTs /email/withTemplate with TemplateAlias + TemplateModel", async () => {
+test("send-email-with-template: POSTs /email/withTemplate with TemplateAlias + TemplateModel", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { To: "bob@x.com", SubmittedAt: "now", MessageID: "abc", ErrorCode: 0, Message: "OK" },
@@ -24,7 +25,7 @@ Deno.test("send-email-with-template: POSTs /email/withTemplate with TemplateAlia
   assertEquals(body.TemplateModel, { name: "Bob" });
 });
 
-Deno.test("send-email-with-template: accepts templateId instead of templateAlias", async () => {
+test("send-email-with-template: accepts templateId instead of templateAlias", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     { from: "ada@x.com", to: "bob@x.com", templateId: 12345, templateModel: {} },
@@ -34,7 +35,7 @@ Deno.test("send-email-with-template: accepts templateId instead of templateAlias
   assertEquals(body.TemplateId, 12345);
 });
 
-Deno.test("send-email-with-template: throws when neither templateId nor templateAlias is set", async () => {
+test("send-email-with-template: throws when neither templateId nor templateAlias is set", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     () =>

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tagRemove from "../../actions/tag-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * per-contact result map, remove answers 204 with no body at all. Reading a
  * result map off this response is the mistake the asymmetry invites.
  */
-Deno.test("tag-remove: a 204 with no body is the documented success", async () => {
+test("tag-remove: a 204 with no body is the documented success", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await tagRemove.execute({ tagId: "7", contactIds: "1,2" }, ctx) as {
     status: number;
@@ -21,7 +22,7 @@ Deno.test("tag-remove: a 204 with no body is the documented success", async () =
   assertEquals(out.requested, ["1", "2"]);
 });
 
-Deno.test("tag-remove: an empty id list is refused before any request", async () => {
+test("tag-remove: an empty id list is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await tagRemove.execute({ tagId: "7", contactIds: "" }, ctx),
@@ -31,6 +32,6 @@ Deno.test("tag-remove: an empty id list is refused before any request", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tag-remove: is declared idempotent", () => {
+test("tag-remove: is declared idempotent", () => {
   assertEquals(tagRemove.idempotent, true);
 });

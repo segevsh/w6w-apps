@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-delete-columns.ts";
 
-Deno.test("sheet-delete-columns: converts letter to zero-based half-open range", async () => {
+test("sheet-delete-columns: converts letter to zero-based half-open range", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   // Delete 2 columns starting at C (index 2) → [2, 4).
   await action.execute(

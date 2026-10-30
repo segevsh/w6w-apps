@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventUpdate from "../../actions/event-update.ts";
 import { mockCtx, pathOf, validationErrorBody } from "../_helpers.ts";
 
-Deno.test("event-update: PATCHes only the fields provided, keyed off the id in the path", async () => {
+test("event-update: PATCHes only the fields provided, keyed off the id in the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "evt-1", title: "New title" } }]);
 
   const out = await eventUpdate.execute({ eventId: "evt-1", title: "New title" }, ctx) as {
@@ -17,7 +18,7 @@ Deno.test("event-update: PATCHes only the fields provided, keyed off the id in t
   assertEquals(out.title, "New title");
 });
 
-Deno.test("event-update: a 400 validation error surfaces the field-level reasons", async () => {
+test("event-update: a 400 validation error surfaces the field-level reasons", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: validationErrorBody([{ name: "rrule", reason: "Not a valid RRule" }]) },
   ]);
@@ -28,6 +29,6 @@ Deno.test("event-update: a 400 validation error surfaces the field-level reasons
   assertEquals(err.message.includes("rrule: Not a valid RRule"), true, err.message);
 });
 
-Deno.test("event-update: is declared idempotent — a PATCH re-applying the same fields is safe to retry", () => {
+test("event-update: is declared idempotent — a PATCH re-applying the same fields is safe to retry", () => {
   assertEquals(eventUpdate.idempotent, true);
 });

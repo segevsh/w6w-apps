@@ -1,17 +1,18 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { data, gqlOf, mockCtx, param } from "../_helpers.ts";
 import dailyPostingLimitList from "../../actions/daily-posting-limit-list.ts";
 
 const empty = () => data({ dailyPostingLimits: [] });
 
-Deno.test("daily-posting-limit-list: channel ids are required and go out as an array", async () => {
+test("daily-posting-limit-list: channel ids are required and go out as an array", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await dailyPostingLimitList.execute({ channelIds: "c1, c2" }, ctx);
   assertEquals(gqlOf(calls[0]).variables, { input: { channelIds: ["c1", "c2"] } });
   assertEquals(param(dailyPostingLimitList, "channelIds").required, true);
 });
 
-Deno.test("daily-posting-limit-list: date rides along when set, absent otherwise", async () => {
+test("daily-posting-limit-list: date rides along when set, absent otherwise", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await dailyPostingLimitList.execute({ channelIds: "c1", date: "2026-05-01T00:00:00Z" }, ctx);
   assertEquals(
@@ -24,7 +25,7 @@ Deno.test("daily-posting-limit-list: date rides along when set, absent otherwise
   assertEquals("date" in (gqlOf(calls2[0]).variables as { input: object }).input, false);
 });
 
-Deno.test("daily-posting-limit-list: an empty channel field fails locally, not on the server", () => {
+test("daily-posting-limit-list: an empty channel field fails locally, not on the server", () => {
   const { ctx, calls } = mockCtx([]);
   // `channelIds` is `[ChannelId!]!` — there is no all-channels form, and
   // sending `[]` would be a server round-trip to learn nothing.
@@ -36,7 +37,7 @@ Deno.test("daily-posting-limit-list: an empty channel field fails locally, not o
   assertEquals(calls.length, 0);
 });
 
-Deno.test("daily-posting-limit-list: selects the flag a workflow branches on", async () => {
+test("daily-posting-limit-list: selects the flag a workflow branches on", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await dailyPostingLimitList.execute({ channelIds: "c1" }, ctx);
   const { query } = gqlOf(calls[0]);
@@ -45,6 +46,6 @@ Deno.test("daily-posting-limit-list: selects the flag a workflow branches on", a
   assert(/\bsent\b/.test(query) && /\bscheduled\b/.test(query), query);
 });
 
-Deno.test("daily-posting-limit-list: the hint warns about the same-organization rule", () => {
+test("daily-posting-limit-list: the hint warns about the same-organization rule", () => {
   assert(/same organization/i.test(String(param(dailyPostingLimitList, "channelIds").hint)));
 });

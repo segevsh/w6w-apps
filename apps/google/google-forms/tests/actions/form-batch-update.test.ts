@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-batch-update.ts";
 
-Deno.test("form-batch-update: POSTs the raw requests array verbatim", async () => {
+test("form-batch-update: POSTs the raw requests array verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   const requests = [
     { createItem: { item: { title: "Q1" }, location: { index: 0 } } },
@@ -16,7 +17,7 @@ Deno.test("form-batch-update: POSTs the raw requests array verbatim", async () =
   assertEquals(JSON.parse(calls[0].body!), { requests });
 });
 
-Deno.test("form-batch-update: targetRevisionId wins over requiredRevisionId", async () => {
+test("form-batch-update: targetRevisionId wins over requiredRevisionId", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     formId: "f1",
@@ -31,7 +32,7 @@ Deno.test("form-batch-update: targetRevisionId wins over requiredRevisionId", as
   assertEquals(body.writeControl, { targetRevisionId: "t1" });
 });
 
-Deno.test("form-batch-update: rejects an empty request array without calling the API", () => {
+test("form-batch-update: rejects an empty request array without calling the API", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ formId: "f1", requests: [] }, ctx),

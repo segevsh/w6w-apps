@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sourceRestore from "../../actions/source-restore.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("source-restore: POST .../sources/{id}/restore", async () => {
+test("source-restore: POST .../sources/{id}/restore", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "s1", status: "trained" } }]);
   const out = await sourceRestore.execute({ agentId: "a1", sourceId: "s1" }, ctx) as {
     status: string;
@@ -13,7 +14,7 @@ Deno.test("source-restore: POST .../sources/{id}/restore", async () => {
   assertEquals(out.status, "trained");
 });
 
-Deno.test("source-restore: surfaces SOURCE_NOT_RESTORABLE when not pending deletion", async () => {
+test("source-restore: surfaces SOURCE_NOT_RESTORABLE when not pending deletion", async () => {
   const { ctx } = mockCtx([
     { status: 409, body: errorBody("SOURCE_NOT_RESTORABLE", "Source is not pending deletion.") },
   ]);

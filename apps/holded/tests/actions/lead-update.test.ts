@@ -1,13 +1,14 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import leadUpdate from "../../actions/lead-update.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-update: metadata — idempotent partial update", () => {
+test("lead-update: metadata — idempotent partial update", () => {
   assertEquals(leadUpdate.type, "perform");
   assertEquals(leadUpdate.idempotent, true);
 });
 
-Deno.test("lead-update: PUT /leads/{leadId} with the fields set", async () => {
+test("lead-update: PUT /leads/{leadId} with the fields set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "l1") }]);
   const result = asMutation(
     await leadUpdate.execute({ leadId: "l1", name: "Gumersindo", value: 48000 }, ctx),
@@ -17,7 +18,7 @@ Deno.test("lead-update: PUT /leads/{leadId} with the fields set", async () => {
   assertEquals(result.info, "Updated");
 });
 
-Deno.test("lead-update: customFields is parsed from a JSON string", async () => {
+test("lead-update: customFields is parsed from a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "l1") }]);
   await leadUpdate.execute({
     leadId: "l1",
@@ -28,13 +29,13 @@ Deno.test("lead-update: customFields is parsed from a JSON string", async () => 
   });
 });
 
-Deno.test("lead-update: status 0 survives compact() (falsy but meaningful)", async () => {
+test("lead-update: status 0 survives compact() (falsy but meaningful)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "l1") }]);
   await leadUpdate.execute({ leadId: "l1", status: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { status: 0 });
 });
 
-Deno.test("lead-update: bad JSON in customFields throws a labelled error", () => {
+test("lead-update: bad JSON in customFields throws a labelled error", () => {
   const { ctx } = mockCtx([]);
   // asOptionalJson throws synchronously (execute is not `async`), so this is
   // a thrown exception, not a rejected promise.

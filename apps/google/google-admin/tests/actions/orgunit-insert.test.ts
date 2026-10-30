@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/orgunit-insert.ts";
 
-Deno.test("orgunit-insert: POSTs /customer/my_customer/orgunits", async () => {
+test("orgunit-insert: POSTs /customer/my_customer/orgunits", async () => {
   const body = { orgUnitId: "id:1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({
@@ -17,7 +18,7 @@ Deno.test("orgunit-insert: POSTs /customer/my_customer/orgunits", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("orgunit-insert: forwards a description and custom customerId", async () => {
+test("orgunit-insert: forwards a description and custom customerId", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     customerId: "C123",
@@ -30,6 +31,6 @@ Deno.test("orgunit-insert: forwards a description and custom customerId", async 
   assertEquals(JSON.parse(calls[0].body!).description, "Support team");
 });
 
-Deno.test("orgunit-insert: is not idempotent", () => {
+test("orgunit-insert: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

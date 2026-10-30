@@ -5,7 +5,8 @@
  * `sha256Hex` — a test that hashes with the code under test proves only that
  * the code is self-consistent.
  */
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import {
   HASHED_KEYS,
   prepareEvent,
@@ -31,25 +32,25 @@ const H = {
   obrien: "65b87174be3b1b122e2b0929f0b84888637d31a4a83bb96a860bcff411f5e668", // o'brien
 };
 
-Deno.test("sha256Hex: matches an independently computed digest", async () => {
+test("sha256Hex: matches an independently computed digest", async () => {
   assertEquals(await sha256Hex("test@example.com"), H.email);
 });
 
 // ------------------------------------------------------------ normalisation --
 
-Deno.test("normalisation: email is trimmed and lowercased before hashing", async () => {
+test("normalisation: email is trimmed and lowercased before hashing", async () => {
   const out = await prepareUserData({ em: "  TEST@Example.COM  " });
   assertEquals(out.em, H.email);
 });
 
-Deno.test("normalisation: phone strips symbols and a leading + or 00", async () => {
+test("normalisation: phone strips symbols and a leading + or 00", async () => {
   for (const raw of ["+1 (650) 555-1234", "001-650-555-1234", "1-650-555-1234"]) {
     const out = await prepareUserData({ ph: raw });
     assertEquals(out.ph, H.phone, `failed for ${raw}`);
   }
 });
 
-Deno.test("normalisation: a national-format phone (trunk zero) is rejected", async () => {
+test("normalisation: a national-format phone (trunk zero) is rejected", async () => {
   // "020 7946 0958" → strip symbols → "02079460958" → the leading 00-strip rule
   // removes at most two zeros, leaving "79460958"... so use a number that still
   // starts with 0 after the rule: three leading zeros.
@@ -60,11 +61,11 @@ Deno.test("normalisation: a national-format phone (trunk zero) is rejected", asy
   );
 });
 
-Deno.test("normalisation: a phone too short to be international is rejected", async () => {
+test("normalisation: a phone too short to be international is rejected", async () => {
   await assertRejects(() => prepareUserData({ ph: "12345" }), UserDataError, "ph");
 });
 
-Deno.test("normalisation: names are lowercased and trimmed, punctuation kept (Meta SDK rule)", async () => {
+test("normalisation: names are lowercased and trimmed, punctuation kept (Meta SDK rule)", async () => {
   const out = await prepareUserData({ fn: " John ", ln: "Doe" });
   assertEquals(out.fn, H.john);
   assertEquals(out.ln, H.doe);
@@ -74,35 +75,35 @@ Deno.test("normalisation: names are lowercased and trimmed, punctuation kept (Me
   assertEquals(punctuated.ln, H.obrien);
 });
 
-Deno.test("normalisation: date of birth accepts punctuation and emits YYYYMMDD", async () => {
+test("normalisation: date of birth accepts punctuation and emits YYYYMMDD", async () => {
   for (const raw of ["19850412", "1985-04-12", "1985/04/12"]) {
     const out = await prepareUserData({ db: raw });
     assertEquals(out.db, H.dob, `failed for ${raw}`);
   }
 });
 
-Deno.test("normalisation: an implausible date of birth is rejected", async () => {
+test("normalisation: an implausible date of birth is rejected", async () => {
   await assertRejects(() => prepareUserData({ db: "1985-13-40" }), UserDataError, "db");
   await assertRejects(() => prepareUserData({ db: "12 April 1985" }), UserDataError, "db");
 });
 
-Deno.test("normalisation: gender collapses to the f/m initial", async () => {
+test("normalisation: gender collapses to the f/m initial", async () => {
   assertEquals((await prepareUserData({ ge: "Female" })).ge, H.female);
   assertEquals((await prepareUserData({ ge: "F" })).ge, H.female);
   await assertRejects(() => prepareUserData({ ge: "nonbinary" }), UserDataError, '"f" or "m"');
 });
 
-Deno.test("normalisation: city and state drop digits, spaces, periods, dashes and parens", async () => {
+test("normalisation: city and state drop digits, spaces, periods, dashes and parens", async () => {
   assertEquals((await prepareUserData({ ct: "New York" })).ct, H.city);
   assertEquals((await prepareUserData({ st: "C.A." })).st, H.state);
 });
 
-Deno.test("normalisation: zip drops whitespace and the ZIP+4 suffix", async () => {
+test("normalisation: zip drops whitespace and the ZIP+4 suffix", async () => {
   assertEquals((await prepareUserData({ zp: "94025-1234" })).zp, H.zip);
   assertEquals((await prepareUserData({ zp: " 94025 " })).zp, H.zip);
 });
 
-Deno.test("normalisation: country must be a two-letter code", async () => {
+test("normalisation: country must be a two-letter code", async () => {
   assertEquals((await prepareUserData({ country: "US" })).country, H.country);
   await assertRejects(
     () => prepareUserData({ country: "United States" }),
@@ -111,19 +112,19 @@ Deno.test("normalisation: country must be a two-letter code", async () => {
   );
 });
 
-Deno.test("normalisation: an already-hashed value passes through untouched", async () => {
+test("normalisation: an already-hashed value passes through untouched", async () => {
   const out = await prepareUserData({ em: H.email.toUpperCase() });
   assertEquals(out.em, H.email);
 });
 
-Deno.test("normalisation: identity fields accept and dedupe arrays", async () => {
+test("normalisation: identity fields accept and dedupe arrays", async () => {
   const out = await prepareUserData({ em: ["TEST@example.com", "test@example.com "] });
   assertEquals(out.em, [H.email]);
 });
 
 // ------------------------------------------------------- raw PII is refused --
 
-Deno.test("every required-hashed field emits a SHA-256 digest, never a raw value", async () => {
+test("every required-hashed field emits a SHA-256 digest, never a raw value", async () => {
   const out = await prepareUserData({
     em: "test@example.com",
     ph: "+1 650 555 1234",
@@ -147,7 +148,7 @@ Deno.test("every required-hashed field emits a SHA-256 digest, never a raw value
   }
 });
 
-Deno.test("pre-hashed mode: a raw email is rejected loudly and named as such", async () => {
+test("pre-hashed mode: a raw email is rejected loudly and named as such", async () => {
   const err = await assertRejects(
     () => prepareUserData({ em: "test@example.com" }, "pre-hashed"),
     UserDataError,
@@ -158,7 +159,7 @@ Deno.test("pre-hashed mode: a raw email is rejected loudly and named as such", a
   assertEquals(err.message.includes("test@example.com"), false);
 });
 
-Deno.test("pre-hashed mode: any non-digest value is rejected, not forwarded", async () => {
+test("pre-hashed mode: any non-digest value is rejected, not forwarded", async () => {
   for (const key of HASHED_KEYS) {
     await assertRejects(
       () => prepareUserData({ [key]: "definitely-not-a-digest" }, "pre-hashed"),
@@ -168,12 +169,12 @@ Deno.test("pre-hashed mode: any non-digest value is rejected, not forwarded", as
   }
 });
 
-Deno.test("pre-hashed mode: an existing digest is accepted", async () => {
+test("pre-hashed mode: an existing digest is accepted", async () => {
   const out = await prepareUserData({ em: H.email, ph: H.phone }, "pre-hashed");
   assertEquals(out, { em: H.email, ph: H.phone });
 });
 
-Deno.test("an MD5 digest is rejected rather than re-hashed", async () => {
+test("an MD5 digest is rejected rather than re-hashed", async () => {
   const md5 = "d41d8cd98f00b204e9800998ecf8427e";
   for (const mode of ["auto", "pre-hashed"] as const) {
     const err = await assertRejects(
@@ -184,7 +185,7 @@ Deno.test("an MD5 digest is rejected rather than re-hashed", async () => {
   }
 });
 
-Deno.test("hashing a field Meta needs in the clear is rejected", async () => {
+test("hashing a field Meta needs in the clear is rejected", async () => {
   const err = await assertRejects(
     () => prepareUserData({ client_ip_address: H.email }),
     UserDataError,
@@ -194,7 +195,7 @@ Deno.test("hashing a field Meta needs in the clear is rejected", async () => {
 
 // ------------------------------------------------------------- pass-through --
 
-Deno.test("do-not-hash fields are forwarded verbatim", async () => {
+test("do-not-hash fields are forwarded verbatim", async () => {
   const raw: Record<string, unknown> = {
     client_ip_address: "203.0.113.7",
     client_user_agent: "Mozilla/5.0",
@@ -208,7 +209,7 @@ Deno.test("do-not-hash fields are forwarded verbatim", async () => {
   for (const key of Object.keys(raw)) assert((RAW_KEYS as readonly string[]).includes(key));
 });
 
-Deno.test("external_id is forwarded verbatim — the Business SDK does not hash it", async () => {
+test("external_id is forwarded verbatim — the Business SDK does not hash it", async () => {
   const out = await prepareUserData({ external_id: "customer-42" }, "auto");
   assertEquals(out.external_id, "customer-42");
   // …and pre-hashed mode does not demand a digest for it either, because Meta
@@ -217,24 +218,24 @@ Deno.test("external_id is forwarded verbatim — the Business SDK does not hash 
   assertEquals(strict.external_id, "customer-42");
 });
 
-Deno.test("unknown user_data keys are passed through rather than dropped", async () => {
+test("unknown user_data keys are passed through rather than dropped", async () => {
   const out = await prepareUserData({ em: H.email, ig_sid: "17841400000000000" });
   assertEquals(out.ig_sid, "17841400000000000");
 });
 
-Deno.test("an empty user_data object is rejected", async () => {
+test("an empty user_data object is rejected", async () => {
   await assertRejects(() => prepareUserData({}), Error, "at least one identifier");
   await assertRejects(() => prepareUserData({ em: "" }), Error, "at least one identifier");
 });
 
-Deno.test("user_data must be an object", async () => {
+test("user_data must be an object", async () => {
   await assertRejects(() => prepareUserData("nope"), Error, "must be an object");
   await assertRejects(() => prepareUserData([]), Error, "must be an object");
 });
 
 // -------------------------------------------------------------- prepareEvent --
 
-Deno.test("prepareEvent: hashes user_data and leaves every other member alone", async () => {
+test("prepareEvent: hashes user_data and leaves every other member alone", async () => {
   const event = await prepareEvent({
     event_name: "Purchase",
     event_time: 1762902353,
@@ -247,17 +248,17 @@ Deno.test("prepareEvent: hashes user_data and leaves every other member alone", 
   assertEquals(event.custom_data, { currency: "usd", value: 123.45 });
 });
 
-Deno.test("prepareEvent: does not mutate its input", async () => {
+test("prepareEvent: does not mutate its input", async () => {
   const input = { event_name: "Lead", user_data: { em: "test@example.com" } };
   await prepareEvent(input);
   assertEquals(input.user_data.em, "test@example.com");
 });
 
-Deno.test("prepareEvent: an event without user_data is rejected", async () => {
+test("prepareEvent: an event without user_data is rejected", async () => {
   await assertRejects(() => prepareEvent({ event_name: "Lead" }, "auto", 3), Error, "data[3]");
 });
 
-Deno.test("prepareEvent: a bad value names the offending index", async () => {
+test("prepareEvent: a bad value names the offending index", async () => {
   const err = await assertRejects(
     () => prepareEvent({ event_name: "Lead", user_data: { em: "nope" } }, "auto", 7),
     Error,

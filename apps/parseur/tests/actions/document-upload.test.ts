@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import documentUpload from "../../actions/document-upload.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
 const FILE = new Blob(["%PDF-fake"], { type: "application/pdf" });
 
-Deno.test("document-upload: POSTs multipart/form-data to /parser/{id}/upload", async () => {
+test("document-upload: POSTs multipart/form-data to /parser/{id}/upload", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -25,7 +26,7 @@ Deno.test("document-upload: POSTs multipart/form-data to /parser/{id}/upload", a
   assertEquals(out.attachments[0].DocumentID, "abc123");
 });
 
-Deno.test("document-upload: custom parameters become query-string params", async () => {
+test("document-upload: custom parameters become query-string params", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { message: "OK", attachments: [] } }]);
   await documentUpload.execute(
     { mailboxId: "42", file: FILE, customParams: { "user.name": "John", "user.tags": ["a", "b"] } },
@@ -36,6 +37,6 @@ Deno.test("document-upload: custom parameters become query-string params", async
   assertEquals(queryAllOf(calls[0].url, "user.tags"), ["a", "b"]);
 });
 
-Deno.test("document-upload: is not idempotent", () => {
+test("document-upload: is not idempotent", () => {
   assertEquals(documentUpload.idempotent, false);
 });

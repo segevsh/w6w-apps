@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-complete.ts";
 
-Deno.test("chat-complete: POSTs to /chat/completions with model + messages", async () => {
+test("chat-complete: POSTs to /chat/completions with model + messages", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cmpl-1", choices: [] } }]);
   await action.execute!(
     {
@@ -19,7 +20,7 @@ Deno.test("chat-complete: POSTs to /chat/completions with model + messages", asy
   assertEquals(body.messages, [{ role: "user", content: "hi" }]);
 });
 
-Deno.test("chat-complete: forwards optional params using snake_case names", async () => {
+test("chat-complete: forwards optional params using snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -49,7 +50,7 @@ Deno.test("chat-complete: forwards optional params using snake_case names", asyn
   assertEquals(body.response_format, { type: "json_object" });
 });
 
-Deno.test("chat-complete: omits optional params when not provided", async () => {
+test("chat-complete: omits optional params when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "gpt-4o-mini", messages: [{ role: "user", content: "hi" }] },
@@ -66,7 +67,7 @@ Deno.test("chat-complete: omits optional params when not provided", async () => 
 // This action could not call a tool at all, while Anthropic's `message-create`
 // in the same pack always could. These cover the gap being closed.
 
-Deno.test("chat-complete: forwards tools, tool_choice and parallel_tool_calls", async () => {
+test("chat-complete: forwards tools, tool_choice and parallel_tool_calls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const tools = [
     { type: "function", function: { name: "get_weather", parameters: { type: "object" } } },
@@ -87,7 +88,7 @@ Deno.test("chat-complete: forwards tools, tool_choice and parallel_tool_calls", 
   assertEquals(body.parallel_tool_calls, false);
 });
 
-Deno.test("chat-complete: omits the tool keys entirely when unset", async () => {
+test("chat-complete: omits the tool keys entirely when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "gpt-4o", messages: [] }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -96,7 +97,7 @@ Deno.test("chat-complete: omits the tool keys entirely when unset", async () => 
   assertEquals(body.parallel_tool_calls, undefined);
 });
 
-Deno.test("chat-complete: json_schema response format carries the schema", async () => {
+test("chat-complete: json_schema response format carries the schema", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const jsonSchema = { name: "answer", schema: { type: "object" }, strict: true };
   await action.execute!(
@@ -109,7 +110,7 @@ Deno.test("chat-complete: json_schema response format carries the schema", async
   });
 });
 
-Deno.test("chat-complete: json_schema without a schema rejects before the request", async () => {
+test("chat-complete: json_schema without a schema rejects before the request", async () => {
   const { ctx, calls } = mockCtx();
   let threw = false;
   try {
@@ -122,7 +123,7 @@ Deno.test("chat-complete: json_schema without a schema rejects before the reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("chat-complete: the simpler response formats keep their old shape", async () => {
+test("chat-complete: the simpler response formats keep their old shape", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "gpt-4o", messages: [], responseFormat: "json_object" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).response_format, { type: "json_object" });

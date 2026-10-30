@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sequenceStateCreate from "../../actions/sequence-state-create.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("sequence-state-create: relates prospect, sequence and mailbox and sends no attributes", async () => {
+test("sequence-state-create: relates prospect, sequence and mailbox and sends no attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("sequenceState", 11, { state: "active" }),
@@ -27,12 +28,12 @@ Deno.test("sequence-state-create: relates prospect, sequence and mailbox and sen
   assertEquals(out.data.attributes.state, "active");
 });
 
-Deno.test("sequence-state-create: prospect, sequence and mailbox are all required params", () => {
+test("sequence-state-create: prospect, sequence and mailbox are all required params", () => {
   const required = sequenceStateCreate.params!.filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["prospectId", "sequenceId", "mailboxId"]);
 });
 
-Deno.test("sequence-state-create: a malformed id never reaches the network", async () => {
+test("sequence-state-create: a malformed id never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

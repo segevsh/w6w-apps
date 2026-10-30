@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-list.ts";
 
-Deno.test("shipment-list: sends filters as query params", async () => {
+test("shipment-list: sends filters as query params", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { shipments: [], total: 0, page: 1, pages: 0 } },
   ]);
@@ -18,7 +19,7 @@ Deno.test("shipment-list: sends filters as query params", async () => {
   assertEquals(url.searchParams.get("page_size"), "10");
 });
 
-Deno.test("shipment-list: omits unset filters rather than sending empty strings", async () => {
+test("shipment-list: omits unset filters rather than sending empty strings", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { shipments: [], total: 0, page: 1, pages: 0 } },
   ]);
@@ -28,7 +29,7 @@ Deno.test("shipment-list: omits unset filters rather than sending empty strings"
   assertEquals(url.searchParams.has("batch_id"), false);
 });
 
-Deno.test("shipment-list: returns pagination fields alongside the results", async () => {
+test("shipment-list: returns pagination fields alongside the results", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { shipments: [{ shipment_id: "se-1" }], total: 5, page: 1, pages: 3 } },
   ]);

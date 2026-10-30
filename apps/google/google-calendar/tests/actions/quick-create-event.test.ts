@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/quick-create-event.ts";
 
-Deno.test("quick-create-event: POSTs to /events/quickAdd with text as a query param", async () => {
+test("quick-create-event: POSTs to /events/quickAdd with text as a query param", async () => {
   const created = { id: "evt-1", summary: "Coffee with Sam" };
   const { ctx, calls } = mockCtx([{ body: created }]);
   const result = await action.execute!(
@@ -17,7 +18,7 @@ Deno.test("quick-create-event: POSTs to /events/quickAdd with text as a query pa
   assertEquals(result, created);
 });
 
-Deno.test("quick-create-event: forwards sendUpdates", async () => {
+test("quick-create-event: forwards sendUpdates", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ok } from "./_shared.ts";
 import action from "../../actions/connection-schema-get.ts";
 
 /** "Why is that column missing" is usually disabled rather than broken. */
-Deno.test("connection-schema-get: counts the enabled and disabled tables", async () => {
+test("connection-schema-get: counts the enabled and disabled tables", async () => {
   const { ctx, calls } = mockCtx([ok({
     schema_change_handling: "ALLOW_ALL",
     schemas: {
@@ -30,18 +31,18 @@ Deno.test("connection-schema-get: counts the enabled and disabled tables", async
   assertEquals(result.disabledTables, 2);
 });
 
-Deno.test("connection-schema-get: a config with no schemas counts to zero", async () => {
+test("connection-schema-get: a config with no schemas counts to zero", async () => {
   const { ctx } = mockCtx([ok({})]);
   const result = await action.execute!({ connectionId: "c1" }, ctx) as { schemaCount: number };
   assertEquals(result.schemaCount, 0);
 });
 
-Deno.test("connection-schema-get: needs a connection id", async () => {
+test("connection-schema-get: needs a connection id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "connectionId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("connection-schema-get: names the question it answers", () => {
+test("connection-schema-get: names the question it answers", () => {
   assert(/why is that column missing/i.test(action.description!), action.description);
 });

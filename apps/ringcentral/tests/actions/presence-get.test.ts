@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import presenceGet from "../../actions/presence-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("presence-get: builds the presence path", async () => {
+test("presence-get: builds the presence path", async () => {
   const { ctx, calls } = mockCtx([{ body: { presenceStatus: "Available" } }]);
   const out = await presenceGet.execute({}, ctx) as Record<string, unknown>;
 
@@ -10,7 +11,7 @@ Deno.test("presence-get: builds the presence path", async () => {
   assertEquals(out.presenceStatus, "Available");
 });
 
-Deno.test("presence-get: boolean flags are only sent when true", async () => {
+test("presence-get: boolean flags are only sent when true", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await presenceGet.execute({ detailedTelephonyState: false, sipData: false }, ctx);
   assertEquals(queryOf(calls[0].url), {});

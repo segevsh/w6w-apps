@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-update.ts";
 
-Deno.test("user-update: PATCHes /users/{id} with only the provided fields", async () => {
+test("user-update: PATCHes /users/{id} with only the provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "USR-1" } }]);
   await action.execute({ id: "USR-1", firstName: "Andrea" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("user-update: PATCHes /users/{id} with only the provided fields", asyn
   assertEquals(JSON.parse(calls[0].body!), { first_name: "Andrea" });
 });
 
-Deno.test("user-update: teams replaces the full list", async () => {
+test("user-update: teams replaces the full list", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ id: "USR-1", teams: ["TM-1", "TM-2"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { teams: ["TM-1", "TM-2"] });

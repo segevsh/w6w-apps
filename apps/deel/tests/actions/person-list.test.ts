@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-list.ts";
 
 /** HRIS collections page by offset — a cursor here returns page one forever. */
-Deno.test("person-list: uses the OFFSET pager", async () => {
+test("person-list: uses the OFFSET pager", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "p1" }], page: { total_rows: 2 } } },
     { status: 200, body: { data: [{ id: "p2" }], page: { total_rows: 2 } } },
@@ -15,7 +16,7 @@ Deno.test("person-list: uses the OFFSET pager", async () => {
   assertEquals(result, [{ id: "p1" }, { id: "p2" }]);
 });
 
-Deno.test("person-list: search and team filters reach the wire", async () => {
+test("person-list: search and team filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], page: {} } }], { display: {} });
   await action.execute!({ search: "ann", teams: "t1,t2" }, ctx);
   const q = new URL(calls[0].url).searchParams;

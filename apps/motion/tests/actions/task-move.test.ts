@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskMove from "../../actions/task-move.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-move: PATCHes /v1/tasks/{id}/move with the destination workspace", async () => {
+test("task-move: PATCHes /v1/tasks/{id}/move with the destination workspace", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await taskMove.execute({ id: "t1", workspaceId: "ws2" }, ctx);
 
@@ -13,12 +14,12 @@ Deno.test("task-move: PATCHes /v1/tasks/{id}/move with the destination workspace
 });
 
 /** An assignee is workspace-scoped, which is why this endpoint takes a new one. */
-Deno.test("task-move: an assignee can be set in the same request", async () => {
+test("task-move: an assignee can be set in the same request", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskMove.execute({ id: "t1", workspaceId: "ws2", assigneeId: "u9" }, ctx);
   assertEquals(bodyOf(calls[0]), { workspaceId: "ws2", assigneeId: "u9" });
 });
 
-Deno.test("task-move: is idempotent", () => {
+test("task-move: is idempotent", () => {
   assertEquals(taskMove.idempotent, true);
 });

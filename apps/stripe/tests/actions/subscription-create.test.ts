@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscription-create.ts";
 
-Deno.test("subscription-create: encodes the price as items[0][price]", async () => {
+test("subscription-create: encodes the price as items[0][price]", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_1" } }]);
   await action.execute({ customerId: "cus_1", priceId: "price_1", quantity: 2 }, ctx);
   assertEquals(calls[0].url, "https://api.stripe.com/v1/subscriptions");
@@ -12,13 +13,13 @@ Deno.test("subscription-create: encodes the price as items[0][price]", async () 
   );
 });
 
-Deno.test("subscription-create: passes the trial through", async () => {
+test("subscription-create: passes the trial through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ customerId: "cus_1", priceId: "price_1", trialPeriodDays: 14 }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).get("trial_period_days"), "14");
 });
 
-Deno.test("subscription-create: promotionCode nests under discounts, never as a flat promotion_code", async () => {
+test("subscription-create: promotionCode nests under discounts, never as a flat promotion_code", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { customerId: "cus_1", priceId: "price_1", promotionCode: "promo_x" },
@@ -29,7 +30,7 @@ Deno.test("subscription-create: promotionCode nests under discounts, never as a 
   assertEquals(body.has("promotion_code"), false);
 });
 
-Deno.test("subscription-create: coupon, trialEnd, default_payment_method and proration_behavior forward", async () => {
+test("subscription-create: coupon, trialEnd, default_payment_method and proration_behavior forward", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     {
@@ -49,7 +50,7 @@ Deno.test("subscription-create: coupon, trialEnd, default_payment_method and pro
   assertEquals(body.get("proration_behavior"), "none");
 });
 
-Deno.test("subscription-create: omits the new fields entirely when unset", async () => {
+test("subscription-create: omits the new fields entirely when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ customerId: "cus_1", priceId: "price_1" }, ctx);
   const keys = [...new URLSearchParams(calls[0].body!).keys()];

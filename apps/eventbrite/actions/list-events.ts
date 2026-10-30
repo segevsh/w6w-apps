@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
@@ -69,9 +70,19 @@ const listEvents: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "draft", label: "Draft" },
+        { value: "live", label: "Live" },
+        { value: "started", label: "Started" },
+        { value: "ended", label: "Ended" },
+        { value: "completed", label: "Completed" },
+        { value: "canceled", label: "Canceled" },
+        { value: "all", label: "All" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
-        "Comma-separated, e.g. `live,draft`. Organization: defaults to `live`. Venue: optional. Ignored for series.",
+        "Select one or more statuses. Organization: defaults to live. Venue: optional. Ignored for series.",
       default: "live",
     },
     { key: "nameFilter", label: "Name filter", type: "string", hint: "Organization scope only." },
@@ -125,9 +136,17 @@ const listEvents: ActionDefinition<Input> = {
       type: "number",
       default: 100,
       hint: "Organization scope.",
+      showIf: { field: "scope", equals: "organization" },
     },
     { key: "continuation", label: "Continuation token", type: "string" },
-    { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
+    {
+      key: "expand",
+      label: "Expand",
+      type: "multiselect",
+      options: EVENT_EXPANSIONS,
+      config: { valueFormat: "csv" },
+      default: "venue,ticket_classes",
+    },
   ],
   resolveFields: resolveEventbriteFields,
   output: [
@@ -139,8 +158,19 @@ const listEvents: ActionDefinition<Input> = {
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     const scope = input.scope ?? "organization";
-    const id = encodeURIComponent((input.scopeId ?? input.organizationId ?? "") as string);
-    if (!id) throw new Error("list-events: scopeId (or organizationId) is required");
+    const id = encodeURIComponent(
+      input.scopeId || (scope === "organization" ? input.organizationId ?? "" : ""),
+    );
+    if (!id) {
+      throw new Error(
+        scope === "organization"
+          ? "list-events: scopeId (or organizationId) is required"
+          : "list-events: scopeId is required for venue or series scope",
+      );
+    }
+    if (scope !== "organization" && ["name_asc", "name_desc"].includes(input.orderBy ?? "")) {
+      throw new Error("Sorting events by name is only supported with Organization scope.");
+    }
     const common = {
       order_by: input.orderBy,
       continuation: input.continuation,
@@ -153,7 +183,6 @@ const listEvents: ActionDefinition<Input> = {
           ...common,
           status: input.status,
           only_public: input.onlyPublic,
-          page_size: input.pageSize,
         },
       });
     }

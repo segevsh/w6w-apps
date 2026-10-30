@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-absence-periods.ts";
 import { mockCtx, pathOf, queryAllOf } from "../_helpers.ts";
 
-Deno.test("list-absence-periods: maps the hourly-absence shape, distinct from TimeOffPeriod", async () => {
+test("list-absence-periods: maps the hourly-absence shape, distinct from TimeOffPeriod", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -49,7 +50,7 @@ Deno.test("list-absence-periods: maps the hourly-absence shape, distinct from Ti
   assertEquals(Array.isArray(period.breakdowns), true);
 });
 
-Deno.test("list-absence-periods: repeats absence_types[] and employees[]", async () => {
+test("list-absence-periods: repeats absence_types[] and employees[]", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: [] } }]);
   await action.execute({ employeeIds: [1], absenceTypeIds: ["a", "b"] }, ctx);
   assertEquals(queryAllOf(calls[0].url, "employees[]"), ["1"]);

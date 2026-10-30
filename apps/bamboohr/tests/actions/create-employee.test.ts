@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import createEmployee from "../../actions/create-employee.ts";
 import { mockCtx, param } from "../_helpers.ts";
 
-Deno.test("create-employee: POSTs to /employees and is non-idempotent", async () => {
+test("create-employee: POSTs to /employees and is non-idempotent", async () => {
   assertEquals(createEmployee.type, "perform");
   assertEquals(createEmployee.idempotent, false);
 
@@ -15,18 +16,18 @@ Deno.test("create-employee: POSTs to /employees and is non-idempotent", async ()
   assertEquals(out, { status: 201 });
 });
 
-Deno.test("create-employee: only the two documented minimums are required", () => {
+test("create-employee: only the two documented minimums are required", () => {
   const required = (createEmployee.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["firstName", "lastName"]);
 });
 
-Deno.test("create-employee: unset optional params are omitted, not sent as null", async () => {
+test("create-employee: unset optional params are omitted, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: "" }]);
   await createEmployee.execute({ firstName: "Ava", lastName: "Ng", jobTitle: undefined }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), ["firstName", "lastName"]);
 });
 
-Deno.test("create-employee: additional fields merge in, and named params win", async () => {
+test("create-employee: additional fields merge in, and named params win", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: "" }]);
   await createEmployee.execute({
     firstName: "Ava",
@@ -43,7 +44,7 @@ Deno.test("create-employee: additional fields merge in, and named params win", a
   });
 });
 
-Deno.test("create-employee: names the 409-on-duplicate-email behaviour at the form", () => {
+test("create-employee: names the 409-on-duplicate-email behaviour at the form", () => {
   // The only duplicate protection this endpoint has, and the reason a retry
   // without an email creates a second person.
   assert(/409|duplicate/i.test(param(createEmployee, "workEmail").hint ?? ""));

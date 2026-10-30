@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import instantUrlUpdate from "../../actions/instant-url-update.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("instant-url-update: PATCH /instant_urls/{uid}, resends name and template", async () => {
+test("instant-url-update: PATCH /instant_urls/{uid}, resends name and template", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "iu1", status: "disabled" } }]);
   await instantUrlUpdate.execute(
     { uid: "iu1", name: "Card URL", template: "t1", status: "disabled" },
@@ -16,7 +17,7 @@ Deno.test("instant-url-update: PATCH /instant_urls/{uid}, resends name and templ
   assertEquals(body.status, "disabled");
 });
 
-Deno.test("instant-url-update: requires uid, name and template", async () => {
+test("instant-url-update: requires uid, name and template", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => instantUrlUpdate.execute({ uid: "", name: "n", template: "t" }, ctx));
   await assertRejects(() => instantUrlUpdate.execute({ uid: "u", name: "", template: "t" }, ctx));

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateAffiliate from "../../actions/update-affiliate.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("update-affiliate: POSTs the id and the Update table's `post_code`", async () => {
+test("update-affiliate: POSTs the id and the Update table's `post_code`", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse("<id>Ag==</id>") }]);
   const out = await updateAffiliate.execute({
     id: "Ag==",
@@ -21,7 +22,7 @@ Deno.test("update-affiliate: POSTs the id and the Update table's `post_code`", a
   assertEquals(out.success, true);
 });
 
-Deno.test("update-affiliate: `post_code`, never `zip` — the vendor's own inconsistency, kept", async () => {
+test("update-affiliate: `post_code`, never `zip` — the vendor's own inconsistency, kept", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   await updateAffiliate.execute({
     id: "Ag==",
@@ -39,7 +40,7 @@ Deno.test("update-affiliate: `post_code`, never `zip` — the vendor's own incon
   }
 });
 
-Deno.test("update-affiliate: an unknown affiliate surfaces 4417", async () => {
+test("update-affiliate: an unknown affiliate surfaces 4417", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4417, "Incorrect Affiliate ID") }]);
   await assertRejects(
     async () => {

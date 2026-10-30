@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderReplay from "../../actions/order-replay.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-replay: calls POST /api/v2/orders/42/replay and shapes the output", async () => {
+test("order-replay: calls POST /api/v2/orders/42/replay and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 43, "status": "reviewing", "replayed_from_order_id": 42 },
   }]);
@@ -27,7 +28,7 @@ Deno.test("order-replay: calls POST /api/v2/orders/42/replay and shapes the outp
   assert(out.orderId === 43, JSON.stringify(out));
 });
 
-Deno.test("order-replay: a vendor error surfaces the HTTP status and message", async () => {
+test("order-replay: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -55,7 +56,7 @@ Deno.test("order-replay: a vendor error surfaces the HTTP status and message", a
   );
 });
 
-Deno.test("order-replay: is a non-idempotent perform whose description warns about spend", () => {
+test("order-replay: is a non-idempotent perform whose description warns about spend", () => {
   assertEquals(orderReplay.idempotent, false);
   assert(/real money/i.test(orderReplay.description ?? ""));
 });

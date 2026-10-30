@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-reopen.ts";
 
-Deno.test("task-reopen: POSTs /tasks/{id}/reopen and reports success on 204", async () => {
+test("task-reopen: POSTs /tasks/{id}/reopen and reports success on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, headers: {} }]);
   const result = await action.execute!({ taskId: "9" }, ctx);
   const url = new URL(calls[0].url);

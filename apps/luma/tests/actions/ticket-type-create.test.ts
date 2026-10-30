@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketTypeCreate from "../../actions/ticket-type-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-type-create: posts event_id + the required fields", async () => {
+test("ticket-type-create: posts event_id + the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ttype-1", name: "Standard" } }]);
   const out = await ticketTypeCreate.execute(
     { eventId: "evt-1", name: "Standard", type: "free" },
@@ -14,7 +15,7 @@ Deno.test("ticket-type-create: posts event_id + the required fields", async () =
   assertEquals(out.id, "ttype-1");
 });
 
-Deno.test("ticket-type-create: paid fields are included when set", async () => {
+test("ticket-type-create: paid fields are included when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ttype-2" } }]);
   await ticketTypeCreate.execute(
     { eventId: "evt-1", name: "VIP", type: "paid", cents: 5000, currency: "usd" },

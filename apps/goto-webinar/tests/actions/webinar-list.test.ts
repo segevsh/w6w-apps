@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarList from "../../actions/webinar-list.ts";
 import { mockCtxWithOrganizer, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webinar-list: requires fromTime/toTime and pages with `size`, not `limit`", async () => {
+test("webinar-list: requires fromTime/toTime and pages with `size`, not `limit`", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([
     { body: { _embedded: { webinars: [{ webinarKey: "1" }] } } },
   ], "org-1");
@@ -22,7 +23,7 @@ Deno.test("webinar-list: requires fromTime/toTime and pages with `size`, not `li
   assertEquals(out.webinars, [{ webinarKey: "1" }]);
 });
 
-Deno.test("webinar-list: unwraps _embedded.webinars, defaulting to an empty array", async () => {
+test("webinar-list: unwraps _embedded.webinars, defaulting to an empty array", async () => {
   const { ctx } = mockCtxWithOrganizer([{ body: {} }], "org-1");
   const out = await webinarList.execute(
     { fromTime: "2026-01-01T00:00:00Z", toTime: "2026-02-01T00:00:00Z" },

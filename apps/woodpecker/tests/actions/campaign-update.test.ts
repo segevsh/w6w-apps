@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignUpdate from "../../actions/campaign-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-update: PATCHes name and nests settings", async () => {
+test("campaign-update: PATCHes name and nests settings", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "id": 77, "name": "Renamed", "settings": { "daily_enroll": 30 } },
@@ -35,7 +36,7 @@ Deno.test("campaign-update: PATCHes name and nests settings", async () => {
   assertEquals(out.name, "Renamed");
 });
 
-Deno.test("campaign-update: sends no settings object when none is set", async () => {
+test("campaign-update: sends no settings object when none is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 77 } }]);
   await campaignUpdate.execute({ "campaign_id": "77", "email_account_ids": [1, 2] } as never, ctx);
   assertEquals(calls.length, 1);
@@ -48,7 +49,7 @@ Deno.test("campaign-update: sends no settings object when none is set", async ()
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("campaign-update: a validation failure surfaces the vendor message", async () => {
+test("campaign-update: a validation failure surfaces the vendor message", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: {

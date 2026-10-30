@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import modelAccessConfigurationUpdate from "../../actions/model-access-configuration-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("model-access-configuration-update: sends { state: unrestricted } verbatim", async () => {
+test("model-access-configuration-update: sends { state: unrestricted } verbatim", async () => {
   const { ctx, calls } = mockCtx([
     { body: { teamId: 7, state: "unrestricted", newProviderDefault: null, newModelDefault: null } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("model-access-configuration-update: sends { state: unrestricted } verb
   assertEquals(JSON.parse(calls[0].body!), { state: "unrestricted" });
 });
 
-Deno.test("model-access-configuration-update: sends defaults when state is not unrestricted", async () => {
+test("model-access-configuration-update: sends defaults when state is not unrestricted", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -33,7 +34,7 @@ Deno.test("model-access-configuration-update: sends defaults when state is not u
   );
 });
 
-Deno.test("model-access-configuration-update: rejects when nothing is set", async () => {
+test("model-access-configuration-update: rejects when nothing is set", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await modelAccessConfigurationUpdate.execute({}, ctx));
 });

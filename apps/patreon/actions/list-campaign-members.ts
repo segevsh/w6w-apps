@@ -26,7 +26,15 @@ const listCampaignMembers: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include related resources",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "address", label: "Address" },
+        { value: "campaign", label: "Campaign" },
+        { value: "currently_entitled_tiers", label: "Currently entitled tiers" },
+        { value: "user", label: "User" },
+        { value: "pledge_history", label: "Pledge history" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "CSV: address, campaign, currently_entitled_tiers, user, pledge_history",
       default: "currently_entitled_tiers",
     },

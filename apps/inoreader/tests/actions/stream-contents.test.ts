@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contents from "../../actions/stream-contents.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const page = {
   continuation: "gmMZ",
 };
 
-Deno.test("stream-contents: encodes the stream id into the path and returns the page", async () => {
+test("stream-contents: encodes the stream id into the path and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await contents.execute(
     { streamId: "feed/http://feeds.arstechnica.com/a" },
@@ -26,7 +27,7 @@ Deno.test("stream-contents: encodes the stream id into the path and returns the 
   assertEquals(out.title, "Reading");
 });
 
-Deno.test("stream-contents: maps every option to the documented query parameter", async () => {
+test("stream-contents: maps every option to the documented query parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await contents.execute({
     streamId: "user/-/label/Tech",
@@ -53,7 +54,7 @@ Deno.test("stream-contents: maps every option to the documented query parameter"
   });
 });
 
-Deno.test("stream-contents: liked filter, newest order sends no r; missing items is empty", async () => {
+test("stream-contents: liked filter, newest order sends no r; missing items is empty", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await contents.execute(
     { streamId: "s", order: "newest", onlyLabel: "like" },
@@ -63,7 +64,7 @@ Deno.test("stream-contents: liked filter, newest order sends no r; missing items
   assertEquals(out.items, []);
 });
 
-Deno.test("stream-contents: requires a stream id", async () => {
+test("stream-contents: requires a stream id", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await contents.execute({ streamId: "" }, ctx), Error, "streamId");
 });

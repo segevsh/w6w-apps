@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsStatus from "../../actions/jobs-status.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-status: sends job_id as a query param and returns the full status", async () => {
+test("jobs-status: sends job_id as a query param and returns the full status", async () => {
   const body = {
     status: "success",
     id: 277461,

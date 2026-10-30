@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealCreate from "../../actions/deal-create.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("deal-create: sends value as a string and posts meta.type", async () => {
+test("deal-create: sends value as a string and posts meta.type", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1, name: "Website Redesign" }) }]);
   await dealCreate.execute({ name: "Website Redesign", contactId: 1, value: "1000.50" }, ctx);
 

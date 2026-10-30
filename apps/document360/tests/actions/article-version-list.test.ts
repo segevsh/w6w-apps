@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleVersionList from "../../actions/article-version-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("article-version-list: lists versions", async () => {
+test("article-version-list: lists versions", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ version_number: 1 }, { version_number: 2 }]),
@@ -27,7 +28,7 @@ Deno.test("article-version-list: lists versions", async () => {
   assertEquals(out.items.length, 2);
 });
 
-Deno.test("article-version-list: a vendor error surfaces its code and message", async () => {
+test("article-version-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

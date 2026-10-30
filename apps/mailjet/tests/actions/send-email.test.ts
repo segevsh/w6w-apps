@@ -1,17 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email.ts";
 
 const OK = { body: { Messages: [{ Status: "success", To: [{ MessageID: 1 }] }] } };
 
-Deno.test("send-email: POSTs to the v3.1 send endpoint", async () => {
+test("send-email: POSTs to the v3.1 send endpoint", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({ from: "a@x.com", to: "b@x.com", textPart: "hi" }, ctx);
   assertEquals(calls[0].url, "https://api.mailjet.com/v3.1/send");
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("send-email: wraps one message in the Messages array with capitalised fields", async () => {
+test("send-email: wraps one message in the Messages array with capitalised fields", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!(
     { from: "Ada <a@x.com>", to: "b@x.com", subject: "Hi", textPart: "t", htmlPart: "<p>h</p>" },
@@ -28,7 +29,7 @@ Deno.test("send-email: wraps one message in the Messages array with capitalised 
   });
 });
 
-Deno.test("send-email: parses multi-recipient To, Cc and Bcc", async () => {
+test("send-email: parses multi-recipient To, Cc and Bcc", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({
     from: "a@x.com",
@@ -43,7 +44,7 @@ Deno.test("send-email: parses multi-recipient To, Cc and Bcc", async () => {
   assertEquals(msg.Bcc, [{ Email: "e@x.com" }]);
 });
 
-Deno.test("send-email: omits Cc/Bcc/ReplyTo entirely when not supplied", async () => {
+test("send-email: omits Cc/Bcc/ReplyTo entirely when not supplied", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({ from: "a@x.com", to: "b@x.com", textPart: "t" }, ctx);
   const msg = JSON.parse(calls[0].body!).Messages[0];
@@ -52,7 +53,7 @@ Deno.test("send-email: omits Cc/Bcc/ReplyTo entirely when not supplied", async (
   assert(!("ReplyTo" in msg));
 });
 
-Deno.test("send-email: forwards CustomID, Variables and attachments", async () => {
+test("send-email: forwards CustomID, Variables and attachments", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({
     from: "a@x.com",
@@ -68,7 +69,7 @@ Deno.test("send-email: forwards CustomID, Variables and attachments", async () =
   assertEquals(msg.Attachments.length, 1);
 });
 
-Deno.test("send-email: SandboxMode rides on the envelope, not the message", async () => {
+test("send-email: SandboxMode rides on the envelope, not the message", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({ from: "a@x.com", to: "b@x.com", textPart: "t", sandboxMode: true }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -76,7 +77,7 @@ Deno.test("send-email: SandboxMode rides on the envelope, not the message", asyn
   assert(!("SandboxMode" in body.Messages[0]), "SandboxMode belongs on the envelope");
 });
 
-Deno.test("send-email: omits SandboxMode when false or absent", async () => {
+test("send-email: omits SandboxMode when false or absent", async () => {
   const { ctx, calls } = mockCtx([OK, OK]);
   await action.execute!({ from: "a@x.com", to: "b@x.com", textPart: "t" }, ctx);
   assert(!("SandboxMode" in JSON.parse(calls[0].body!)));
@@ -84,7 +85,7 @@ Deno.test("send-email: omits SandboxMode when false or absent", async () => {
   assert(!("SandboxMode" in JSON.parse(calls[1].body!)));
 });
 
-Deno.test("send-email: a per-message error inside HTTP 200 is returned, not thrown", async () => {
+test("send-email: a per-message error inside HTTP 200 is returned, not thrown", async () => {
   // This is the trap the action's description warns about — the client must not
   // treat the 200 as a failure, and must not swallow the Errors array either.
   const { ctx } = mockCtx([{

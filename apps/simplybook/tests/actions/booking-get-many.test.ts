@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/booking-get-many.ts";
 
-Deno.test("booking-get-many: GETs /admin/bookings with no filters by default", async () => {
+test("booking-get-many: GETs /admin/bookings with no filters by default", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("booking-get-many: GETs /admin/bookings with no filters by default", a
   assertEquals(query["filter[status]"], undefined);
 });
 
-Deno.test("booking-get-many: builds every documented filter", async () => {
+test("booking-get-many: builds every documented filter", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({
     page: 2,
@@ -43,7 +44,7 @@ Deno.test("booking-get-many: builds every documented filter", async () => {
   assertEquals(query["filter[search]"], "jane");
 });
 
-Deno.test("booking-get-many: an empty select value omits the status filter", async () => {
+test("booking-get-many: an empty select value omits the status filter", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({ status: "" }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[status]"], undefined);

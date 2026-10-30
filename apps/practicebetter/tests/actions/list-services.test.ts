@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-services.ts";
 import { API_ROOT, mockCtx, page, queryOf, urlOf } from "../_helpers.ts";
 
 const sample = page([{ id: "svc-1", name: "Initial consultation" }], { count: 1 });
 
-Deno.test("list-services: reads /consultant/services", async () => {
+test("list-services: reads /consultant/services", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("list-services: reads /consultant/services", async () => {
   assertEquals(result, sample);
 });
 
-Deno.test("list-services: team_for and the pagination controls go through", async () => {
+test("list-services: team_for and the pagination controls go through", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({ team_for: "team-1", limit: 20, skip: 20 }, ctx);
   const query = queryOf(calls[0].url);
@@ -21,7 +22,7 @@ Deno.test("list-services: team_for and the pagination controls go through", asyn
   assertEquals(query.skip, "20");
 });
 
-Deno.test("list-services: it is the source of a session's serviceId", () => {
+test("list-services: it is the source of a session's serviceId", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "service");
   assertEquals(/serviceId/.test(action.description!), true, action.description);

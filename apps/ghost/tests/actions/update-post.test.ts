@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-post.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("update-post: PUTs /posts/:id/ with updatedAt always present (collision guard)", async () => {
+test("update-post: PUTs /posts/:id/ with updatedAt always present (collision guard)", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [{ id: "1", title: "New" }] } }], { display });
   const result = await action.execute!(
     { postId: "1", updatedAt: "2026-01-01T00:00:00Z", title: "New" },
@@ -18,7 +19,7 @@ Deno.test("update-post: PUTs /posts/:id/ with updatedAt always present (collisio
   assertEquals(result, { id: "1", title: "New" });
 });
 
-Deno.test("update-post: sets ?source=html only when html is present", async () => {
+test("update-post: sets ?source=html only when html is present", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: [{ id: "1" }] } }], { display });
   await action.execute!(
     { postId: "1", updatedAt: "2026-01-01T00:00:00Z", html: "<p>x</p>" },

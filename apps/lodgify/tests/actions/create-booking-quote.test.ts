@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import createBookingQuote from "../../actions/create-booking-quote.ts";
 
-Deno.test("create-booking-quote: POSTs only the fields set and returns the new id", async () => {
+test("create-booking-quote: POSTs only the fields set and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 31 }]);
   const out = await createBookingQuote.execute({
     bookingId: 4,

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dataset-rows.ts";
 
@@ -12,7 +13,7 @@ const page = {
 };
 
 /** Rows come from a different host to everything else in this app. */
-Deno.test("dataset-rows: reads the datasets-server, not the Hub", async () => {
+test("dataset-rows: reads the datasets-server, not the Hub", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ dataset: "rajpurkar/squad", config: "plain_text", split: "train" }, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("dataset-rows: reads the datasets-server, not the Hub", async () => {
 });
 
 /** Each entry wraps the row, which is rarely what a caller wants. */
-Deno.test("dataset-rows: unwraps the rows and reports the split's real total", async () => {
+test("dataset-rows: unwraps the rows and reports the split's real total", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute(
     { dataset: "rajpurkar/squad", config: "plain_text", split: "train" },
@@ -36,7 +37,7 @@ Deno.test("dataset-rows: unwraps the rows and reports the split's real total", a
   assertEquals(result.hasMore, true);
 });
 
-Deno.test("dataset-rows: the last page reports no more", async () => {
+test("dataset-rows: the last page reports no more", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { rows: [{ row: { q: "z" } }], num_rows_total: 11 },
@@ -49,7 +50,7 @@ Deno.test("dataset-rows: the last page reports no more", async () => {
 });
 
 /** The service caps a page at 100, and a larger request is not an error. */
-Deno.test("dataset-rows: the page size is clamped to what the service allows", async () => {
+test("dataset-rows: the page size is clamped to what the service allows", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute(
     { dataset: "d/s", config: "c", split: "train", length: 5000, offset: -3 },
@@ -64,7 +65,7 @@ Deno.test("dataset-rows: the page size is clamped to what the service allows", a
  * The names are the dataset author's own and vary completely, so guessing
  * `train` works often enough to be misleading.
  */
-Deno.test("dataset-rows: config and split are demanded, and the error says where to find them", async () => {
+test("dataset-rows: config and split are demanded, and the error says where to find them", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -78,7 +79,7 @@ Deno.test("dataset-rows: config and split are demanded, and the error says where
 });
 
 /** The Hub would have redirected; this host answers 404 with a message. */
-Deno.test("dataset-rows: a renamed dataset fails here rather than redirecting", async () => {
+test("dataset-rows: a renamed dataset fails here rather than redirecting", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: "The dataset has been renamed" },
@@ -93,7 +94,7 @@ Deno.test("dataset-rows: a renamed dataset fails here rather than redirecting", 
   assert(/rajpurkar\/squad/.test(message), message);
 });
 
-Deno.test("dataset-rows: logs the count and the offset, never the rows", async () => {
+test("dataset-rows: logs the count and the offset, never the rows", async () => {
   const { ctx, logs } = mockCtx([page]);
   await action.execute({ dataset: "d/s", config: "c", split: "train" }, ctx);
   assertEquals(logs[0].data, { count: 2, offset: 0 });

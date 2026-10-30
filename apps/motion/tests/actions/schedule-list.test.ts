@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import scheduleList from "../../actions/schedule-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("schedule-list: calls GET /v1/schedules and wraps the bare array", async () => {
+test("schedule-list: calls GET /v1/schedules and wraps the bare array", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [
@@ -25,6 +26,6 @@ Deno.test("schedule-list: calls GET /v1/schedules and wraps the bare array", asy
   assertEquals(out.items[0].name, "Work Hours");
 });
 
-Deno.test("schedule-list: takes no parameters — it answers for the key's owner", () => {
+test("schedule-list: takes no parameters — it answers for the key's owner", () => {
   assertEquals(scheduleList.params, []);
 });

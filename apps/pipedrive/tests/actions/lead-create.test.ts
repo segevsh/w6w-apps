@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: POSTs /leads and nests value under { amount, currency }", async () => {
+test("lead-create: POSTs /leads and nests value under { amount, currency }", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: "uuid" } } }]);
   await action.execute!(
     { title: "Warm lead", personId: 3, amount: 1000, currency: "EUR" },
@@ -16,7 +17,7 @@ Deno.test("lead-create: POSTs /leads and nests value under { amount, currency }"
   assertEquals(body.value, { amount: 1000, currency: "EUR" });
 });
 
-Deno.test("lead-create: omits value when no amount is supplied", async () => {
+test("lead-create: omits value when no amount is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: "uuid" } } }]);
   await action.execute!({ title: "Bare lead", organizationId: 5 }, ctx);
   const body = JSON.parse(calls[0].body!);

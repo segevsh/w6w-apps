@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { EU, mockCtx, US } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
 const CRED = { apiUser: "api-user", apiPassword: "api-pass" };
 
-Deno.test("basic: is the documented method with region, user and password fields", () => {
+test("basic: is the documented method with region, user and password fields", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
 
@@ -26,7 +27,7 @@ Deno.test("basic: is the documented method with region, user and password fields
   assertEquals(password?.row, "creds");
 });
 
-Deno.test("basic: sign sets only the authorization header", async () => {
+test("basic: sign sets only the authorization header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: `${US}/api/sites/multiscreen`,
@@ -41,7 +42,7 @@ Deno.test("basic: sign sets only the authorization header", async () => {
   assertEquals(out.url, `${US}/api/sites/multiscreen`);
 });
 
-Deno.test("basic: test probes the site list on the US host by default", async () => {
+test("basic: test probes the site list on the US host by default", async () => {
   const { ctx, calls } = mockCtx([{
     body: { limit: 1, offset: 0, total_responses: 12, results: [{ site_name: "abc" }] },
   }]);
@@ -55,7 +56,7 @@ Deno.test("basic: test probes the site list on the US host by default", async ()
   assert(/12 site/.test(result.message!), result.message);
 });
 
-Deno.test("basic: test honours an EU region", async () => {
+test("basic: test honours an EU region", async () => {
   const { ctx, calls } = mockCtx([{
     body: { limit: 1, offset: 0, total_responses: 0, results: [] },
   }]);
@@ -71,7 +72,7 @@ Deno.test("basic: test honours an EU region", async () => {
  * is no vendor error code to read, and the classification must not depend on
  * one, nor on echoing the credential back.
  */
-Deno.test("basic: test classifies the real empty-body 401 as a rejected credential", async () => {
+test("basic: test classifies the real empty-body 401 as a rejected credential", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "www-authenticate": 'Basic realm="DM API"' },
@@ -84,7 +85,7 @@ Deno.test("basic: test classifies the real empty-body 401 as a rejected credenti
   assert(!result.message!.includes("api-pass"), result.message);
 });
 
-Deno.test("basic: test does not trust a bare 200 — the documented shape has to be there", async () => {
+test("basic: test does not trust a bare 200 — the documented shape has to be there", async () => {
   // A captive portal / proxy answering 200 with HTML is the case this catches.
   const { ctx } = mockCtx([{ status: 200, body: "<html>ok</html>" }]);
   const result = await auth.test({ credential: CRED }, ctx);
@@ -93,13 +94,13 @@ Deno.test("basic: test does not trust a bare 200 — the documented shape has to
   assert(/not with the documented paginated site list/.test(result.message!), result.message);
 });
 
-Deno.test("basic: test also refuses an envelope missing total_responses", async () => {
+test("basic: test also refuses an envelope missing total_responses", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: CRED }, ctx);
   assertEquals(result.ok, false);
 });
 
-Deno.test("basic: test reports a missing credential without calling out", async () => {
+test("basic: test reports a missing credential without calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test({ credential: { region: "US" } }, ctx);
   assertEquals(result.ok, false);
@@ -107,7 +108,7 @@ Deno.test("basic: test reports a missing credential without calling out", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: afterConnect records the region and nothing else", async () => {
+test("basic: afterConnect records the region and nothing else", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.afterConnect!({ credential: { ...CRED, region: "EU" } }, ctx), {
     region: "EU",
@@ -116,14 +117,14 @@ Deno.test("basic: afterConnect records the region and nothing else", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: afterConnect normalises an unknown region onto US", async () => {
+test("basic: afterConnect normalises an unknown region onto US", async () => {
   const { ctx } = mockCtx([]);
   assertEquals(await auth.afterConnect!({ credential: { ...CRED, region: "apac" } }, ctx), {
     region: "US",
   });
 });
 
-Deno.test("basic: afterConnect output is what the connection label renders", async () => {
+test("basic: afterConnect output is what the connection label renders", async () => {
   const { ctx } = mockCtx([]);
   const display = await auth.afterConnect!({ credential: { ...CRED, region: "US" } }, ctx);
   assert(auth.connectionLabel!.includes("{{region}}"), auth.connectionLabel);

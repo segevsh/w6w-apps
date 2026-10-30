@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listNotifications from "../../actions/list-notifications.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const FEED = {
   ],
 };
 
-Deno.test("list-notifications: passes updated_after and limit through", async () => {
+test("list-notifications: passes updated_after and limit through", async () => {
   const { ctx, calls } = mockCtx([{ body: FEED }]);
   await listNotifications.execute({ updated_after: "2026-08-01T00:00:00Z", limit: 50 }, ctx);
 
@@ -26,7 +27,7 @@ Deno.test("list-notifications: passes updated_after and limit through", async ()
  * vendor's default is 0, which is the opposite of every other paging default in
  * this API — so no limit is prefilled, and a caller asking for 0 gets it.
  */
-Deno.test("list-notifications: prefills no limit, and 0 survives to the query", async () => {
+test("list-notifications: prefills no limit, and 0 survives to the query", async () => {
   assertEquals(listNotifications.params?.find((p) => p.key === "limit")?.default, undefined);
 
   const { ctx, calls } = mockCtx([{ body: FEED }]);
@@ -39,7 +40,7 @@ Deno.test("list-notifications: prefills no limit, and 0 survives to the query", 
  * is passed through rather than mapped, because a mapping that swallowed an
  * unknown code would be worse than the number.
  */
-Deno.test("list-notifications: the numeric type is passed through unmapped", async () => {
+test("list-notifications: the numeric type is passed through unmapped", async () => {
   const { ctx } = mockCtx([{ body: { notifications: [{ id: 1, type: 99 }] } }]);
   const out = await listNotifications.execute({}, ctx) as {
     notifications: Array<{ type: number }>;
@@ -47,7 +48,7 @@ Deno.test("list-notifications: the numeric type is passed through unmapped", asy
   assertEquals(out.notifications[0].type, 99);
 });
 
-Deno.test("list-notifications: an empty request sends no query at all", async () => {
+test("list-notifications: an empty request sends no query at all", async () => {
   const { ctx, calls } = mockCtx([{ body: FEED }]);
   await listNotifications.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

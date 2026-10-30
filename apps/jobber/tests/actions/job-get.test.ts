@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-get.ts";
 
 const bounded = (query: string, field: string) =>
   new RegExp(`${field}\\(first: \\d+\\)`).test(query);
 
-Deno.test("job-get: every nested connection carries an explicit bound", async () => {
+test("job-get: every nested connection carries an explicit bound", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { job: { id: "j1" } } } }]);
   await action.execute({ jobId: "j1" }, ctx);
   const query = JSON.parse(calls[0].body!).query as string;
@@ -18,7 +19,7 @@ Deno.test("job-get: every nested connection carries an explicit bound", async ()
   assert(!/\w+\s*\{\s*nodes/.test(query), "a connection was selected with no bound");
 });
 
-Deno.test("job-get: passes the id through and treats a null job as an answer", async () => {
+test("job-get: passes the id through and treats a null job as an answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { job: null } } }]);
   const out = await action.execute({ jobId: "j9" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables, { id: "j9" });

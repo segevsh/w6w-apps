@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-get-many.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("product-get-many: GETs /products with defaults (per_page=10, page=1)", async () => {
+test("product-get-many: GETs /products with defaults (per_page=10, page=1)", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("product-get-many: GETs /products with defaults (per_page=10, page=1)"
   assertEquals(url.searchParams.get("page"), "1");
 });
 
-Deno.test("product-get-many: forwards filters with snake_case mapping", async () => {
+test("product-get-many: forwards filters with snake_case mapping", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!(
     {
@@ -53,7 +54,7 @@ Deno.test("product-get-many: forwards filters with snake_case mapping", async ()
   assertEquals(p.get("page"), "2");
 });
 
-Deno.test("product-get-many: omits filters left unset", async () => {
+test("product-get-many: omits filters left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const p = new URL(calls[0].url).searchParams;

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { bodyOf, mockAdsCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/performance-report.ts";
 
 const OK = { status: 200, body: { results: [] } };
 
-Deno.test("performance-report: defaults to campaign level over the last 30 days", async () => {
+test("performance-report: defaults to campaign level over the last 30 days", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -13,7 +14,7 @@ Deno.test("performance-report: defaults to campaign level over the last 30 days"
   assert(q.includes("ORDER BY metrics.impressions DESC"));
 });
 
-Deno.test("performance-report: selects the core metric set", async () => {
+test("performance-report: selects the core metric set", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -30,7 +31,7 @@ Deno.test("performance-report: selects the core metric set", async () => {
   ) assert(q.includes(m), `missing ${m}`);
 });
 
-Deno.test("performance-report: explicit dates win over the predefined range", async () => {
+test("performance-report: explicit dates win over the predefined range", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({
     dateRange: "LAST_7_DAYS",
@@ -42,18 +43,18 @@ Deno.test("performance-report: explicit dates win over the predefined range", as
   assert(!q.includes("DURING"));
 });
 
-Deno.test("performance-report: a half-supplied custom range falls back to the range", async () => {
+test("performance-report: a half-supplied custom range falls back to the range", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ dateRange: "TODAY", startDate: "2026-07-01" }, ctx);
   assert(queryOf(calls[0]).includes("segments.date DURING TODAY"));
 });
 
-Deno.test("performance-report: refuses a date range outside Google's closed set", () => {
+test("performance-report: refuses a date range outside Google's closed set", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(() => action.execute({ dateRange: "LAST_45_DAYS" }, ctx), Error, "dateRange");
 });
 
-Deno.test("performance-report: refuses a start date that is not yyyy-MM-dd", () => {
+test("performance-report: refuses a start date that is not yyyy-MM-dd", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(
     () => action.execute({ startDate: "2026-07-01' OR '1", endDate: "2026-07-31" }, ctx),
@@ -62,7 +63,7 @@ Deno.test("performance-report: refuses a start date that is not yyyy-MM-dd", () 
   );
 });
 
-Deno.test("performance-report: segments.date is opt-in — it changes the row count", async () => {
+test("performance-report: segments.date is opt-in — it changes the row count", async () => {
   const { ctx, calls } = mockAdsCtx([OK, OK]);
   await action.execute({}, ctx);
   assert(!queryOf(calls[0]).includes("segments.date,"));
@@ -71,7 +72,7 @@ Deno.test("performance-report: segments.date is opt-in — it changes the row co
   assert(queryOf(calls[1]).includes("segments.date, metrics.impressions"));
 });
 
-Deno.test("performance-report: each level selects identity columns that make it readable", async () => {
+test("performance-report: each level selects identity columns that make it readable", async () => {
   const cases: Array<[string, string]> = [
     ["customer", "customer.descriptive_name"],
     ["campaign", "campaign.name"],
@@ -88,12 +89,12 @@ Deno.test("performance-report: each level selects identity columns that make it 
   }
 });
 
-Deno.test("performance-report: refuses a resource that is not a snake_case name", () => {
+test("performance-report: refuses a resource that is not a snake_case name", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(() => action.execute({ resource: "campaign WHERE 1=1" }, ctx), Error, "snake_case");
 });
 
-Deno.test("performance-report: appends a raw WHERE, extra fields, order and limit", async () => {
+test("performance-report: appends a raw WHERE, extra fields, order and limit", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({
     where: "campaign.status = ENABLED",
@@ -109,6 +110,6 @@ Deno.test("performance-report: appends a raw WHERE, extra fields, order and limi
   assertEquals(bodyOf(calls[0]).pageToken, "tok");
 });
 
-Deno.test("performance-report: is a read", () => {
+test("performance-report: is a read", () => {
   assertEquals(action.type, "read");
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/inbox-get-conversations.ts";
 
 const URL_UNDER_TEST = "https://api.heyreach.io/api/public/inbox/GetConversationsV3";
 
-Deno.test("inbox-get-conversations: POSTs the limit and an (empty) filter object", async () => {
+test("inbox-get-conversations: POSTs the limit and an (empty) filter object", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { items: [], totalCount: 0, nextCursor: null, hasNextPage: false },
@@ -15,7 +16,7 @@ Deno.test("inbox-get-conversations: POSTs the limit and an (empty) filter object
   assertEquals(jsonBody(calls[0]), { limit: 10, filters: {} });
 });
 
-Deno.test("inbox-get-conversations: the cursor is a body field, not an offset", async () => {
+test("inbox-get-conversations: the cursor is a body field, not an offset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ limit: 10, cursor: "opaque-token" }, ctx);
   const body = jsonBody(calls[0]);
@@ -24,7 +25,7 @@ Deno.test("inbox-get-conversations: the cursor is a body field, not an offset", 
 });
 
 /** `seen: false` means "unread only" and must survive compaction. */
-Deno.test("inbox-get-conversations: seen=false is sent, and unset means null/both", async () => {
+test("inbox-get-conversations: seen=false is sent, and unset means null/both", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }, { status: 200, body: {} }]);
   await action.execute!({ limit: 10, seen: false }, ctx);
   await action.execute!({ limit: 10 }, ctx);
@@ -35,7 +36,7 @@ Deno.test("inbox-get-conversations: seen=false is sent, and unset means null/bot
   assertEquals("seen" in (jsonBody(calls[1]).filters as Record<string, unknown>), false);
 });
 
-Deno.test("inbox-get-conversations: filters and the window are passed through", async () => {
+test("inbox-get-conversations: filters and the window are passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     limit: 25,

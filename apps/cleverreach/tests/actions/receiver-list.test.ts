@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/receiver-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("receiver-list: calls the group receivers list with every filter", async () => {
+test("receiver-list: calls the group receivers list with every filter", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: 1, email: "a@b.co" }, { id: 2, email: "c@d.co" }],
   }]);
@@ -30,7 +31,7 @@ Deno.test("receiver-list: calls the group receivers list with every filter", asy
   assertEquals(out.nextPage, 2);
 });
 
-Deno.test("receiver-list: a short page ends the pagination", async () => {
+test("receiver-list: a short page ends the pagination", async () => {
   const { ctx } = mockCtx([{ body: [{ id: 1 }] }]);
   const out = await action.execute({ groupId: "5", pageSize: 10 }, ctx) as {
     nextPage: number | null;
@@ -38,7 +39,7 @@ Deno.test("receiver-list: a short page ends the pagination", async () => {
   assertEquals(out.nextPage, null);
 });
 
-Deno.test("receiver-list: validates the page size and type before any request", async () => {
+test("receiver-list: validates the page size and type before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "5", pageSize: 5001 }, ctx),

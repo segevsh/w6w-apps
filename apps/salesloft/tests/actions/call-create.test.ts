@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/call-create.ts";
 
-Deno.test("call-create: POSTs /activities/calls with a JSON body", async () => {
+test("call-create: POSTs /activities/calls with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const result = await action.execute!(
     { personId: 4, to: "+15551234567", duration: 90, disposition: "Connected" },

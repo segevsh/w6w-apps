@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, OK, pathOf } from "../_helpers.ts";
 import clickCreate from "../../actions/click-create.ts";
 
-Deno.test("click-create: POST /clicks with the documented body", async () => {
+test("click-create: POST /clicks with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await clickCreate.execute({
     referrerUrl: "https://x.io",
@@ -21,7 +22,7 @@ Deno.test("click-create: POST /clicks with the documented body", async () => {
   assertEquals(out, { requestId: "req1", result: "OK" });
 });
 
-Deno.test("click-create: a platform without adSourceId is refused", async () => {
+test("click-create: a platform without adSourceId is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>

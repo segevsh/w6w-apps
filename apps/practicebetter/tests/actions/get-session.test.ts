@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-session.ts";
 import { API_ROOT, mockCtx, queryOf, urlOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const session = {
   cancelled: false,
 };
 
-Deno.test("get-session: reads /consultant/sessions/{sessionId}", async () => {
+test("get-session: reads /consultant/sessions/{sessionId}", async () => {
   const { ctx, calls } = mockCtx([{ body: session }]);
   const result = await action.execute({ sessionId: "sess-1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -17,7 +18,7 @@ Deno.test("get-session: reads /consultant/sessions/{sessionId}", async () => {
   assertEquals(result, session);
 });
 
-Deno.test("get-session: recordId is sent only when supplied", async () => {
+test("get-session: recordId is sent only when supplied", async () => {
   const bare = mockCtx([{ body: session }]);
   await action.execute({ sessionId: "sess-1" }, bare.ctx);
   assertEquals(new URL(bare.calls[0].url).search, "");
@@ -27,7 +28,7 @@ Deno.test("get-session: recordId is sent only when supplied", async () => {
   assertEquals(queryOf(scoped.calls[0].url).recordId, "rec-1");
 });
 
-Deno.test("get-session: output names the scheduling fields a follow-up step reads", () => {
+test("get-session: output names the scheduling fields a follow-up step reads", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "session");
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), [

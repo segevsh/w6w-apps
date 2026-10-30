@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import { linkHeader, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-list: builds the query from snake_case wire names and returns nextPage", async () => {
+test("customer-list: builds the query from snake_case wire names and returns nextPage", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: "cu_1" }], headers: { link: linkHeader(2, "/1.6/customers/") } },
   ]);
@@ -31,7 +32,7 @@ Deno.test("customer-list: builds the query from snake_case wire names and return
   assertEquals(out.nextPage, 2);
 });
 
-Deno.test("customer-list: an empty input sends no query parameters", async () => {
+test("customer-list: an empty input sends no query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await customerList.execute({}, ctx) as Record<string, unknown>;
   assertEquals(queryOf(calls[0].url), {});

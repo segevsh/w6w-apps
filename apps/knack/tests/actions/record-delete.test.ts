@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordDelete from "../../actions/record-delete.ts";
 import { mockKnackCtx } from "../_helpers.ts";
 
-Deno.test("record-delete: DELETEs the record and returns Knack's {delete: true}", async () => {
+test("record-delete: DELETEs the record and returns Knack's {delete: true}", async () => {
   const { ctx, calls } = mockKnackCtx([{ body: { delete: true } }]);
   const result = await recordDelete.execute(
     { objectKey: "object_1", recordId: "58645233669adec2460888c4" },

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import password from "../../auth/password.ts";
 import { ACCESS_TOKEN, HOMESERVER, matrixError, mockCtx } from "../_helpers.ts";
 
-Deno.test("auth: is a custom login flow, not the fixed-endpoint oauth2 shape", () => {
+test("auth: is a custom login flow, not the fixed-endpoint oauth2 shape", () => {
   assertEquals(password.key, "password");
   assertEquals(password.type, "custom");
   const fields = password.fields ?? [];
@@ -15,7 +16,7 @@ Deno.test("auth: is a custom login flow, not the fixed-endpoint oauth2 shape", (
   assertEquals(fields.find((f) => f.key === "userPassword")?.type, "secret");
 });
 
-Deno.test("exchange: POSTs m.login.password with an m.id.user identifier", async () => {
+test("exchange: POSTs m.login.password with an m.id.user identifier", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -48,7 +49,7 @@ Deno.test("exchange: POSTs m.login.password with an m.id.user identifier", async
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("exchange: rejects a missing username or password without a request", async () => {
+test("exchange: rejects a missing username or password without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await Promise.resolve(
     password.exchange!({ fields: { homeserverUrl: HOMESERVER, userId: "alice" } }, ctx),
@@ -60,7 +61,7 @@ Deno.test("exchange: rejects a missing username or password without a request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("exchange: a homeserver rejection surfaces the errcode", async () => {
+test("exchange: a homeserver rejection surfaces the errcode", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: matrixError("M_FORBIDDEN", "Invalid password") },
   ]);
@@ -76,7 +77,7 @@ Deno.test("exchange: a homeserver rejection surfaces the errcode", async () => {
     .catch((err: unknown) => assert(String(err).includes("M_FORBIDDEN")));
 });
 
-Deno.test("refresh: spends the stored refresh token for a new access token", async () => {
+test("refresh: spends the stored refresh token for a new access token", async () => {
   const { ctx, calls } = mockCtx([
     { body: { access_token: "second_token", refresh_token: "refresh2", expires_in_ms: 1_800_000 } },
   ]);
@@ -90,7 +91,7 @@ Deno.test("refresh: spends the stored refresh token for a new access token", asy
   assertEquals(next.refreshToken, "refresh2");
 });
 
-Deno.test("refresh: re-uses the old refresh token when the homeserver issues none", async () => {
+test("refresh: re-uses the old refresh token when the homeserver issues none", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "second_token" } }]);
   const next = await password.refresh!(
     { credential: { homeserverUrl: HOMESERVER, refreshToken: "refresh1", accessToken: "stale" } },
@@ -99,7 +100,7 @@ Deno.test("refresh: re-uses the old refresh token when the homeserver issues non
   assertEquals(next.refreshToken, "refresh1");
 });
 
-Deno.test("refresh: refuses to guess when there is no refresh token on file", async () => {
+test("refresh: refuses to guess when there is no refresh token on file", async () => {
   const { ctx, calls } = mockCtx([]);
   await Promise.resolve(password.refresh!({ credential: { homeserverUrl: HOMESERVER } }, ctx))
     .then(() => {
@@ -109,7 +110,7 @@ Deno.test("refresh: refuses to guess when there is no refresh token on file", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sign: stamps the bearer header", () => {
+test("sign: stamps the bearer header", () => {
   const { ctx } = mockCtx([]);
   const request = {
     url: `${HOMESERVER}/_matrix/client/v3/joined_rooms`,
@@ -122,7 +123,7 @@ Deno.test("sign: stamps the bearer header", () => {
   assertEquals(signed.headers["authorization"], `Bearer ${ACCESS_TOKEN}`);
 });
 
-Deno.test("test: probes account/whoami on the credential's own homeserver", async () => {
+test("test: probes account/whoami on the credential's own homeserver", async () => {
   const { ctx, calls } = mockCtx([{ body: { user_id: "@alice:example.org" } }]);
   const result = await password.test!(
     { credential: { homeserverUrl: HOMESERVER, accessToken: ACCESS_TOKEN } } as never,
@@ -132,7 +133,7 @@ Deno.test("test: probes account/whoami on the credential's own homeserver", asyn
   assertEquals(calls[0].url, `${HOMESERVER}/_matrix/client/v3/account/whoami`);
 });
 
-Deno.test("revoke: POSTs logout with the connection's own token, and never throws", async () => {
+test("revoke: POSTs logout with the connection's own token, and never throws", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await password.revoke!(
     { credential: { homeserverUrl: HOMESERVER, accessToken: ACCESS_TOKEN } } as never,

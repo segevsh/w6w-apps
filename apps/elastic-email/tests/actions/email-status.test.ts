@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/email-status.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-status: GET /emails/{id}/status passes only the switched-on flags", async () => {
+test("email-status: GET /emails/{id}/status passes only the switched-on flags", async () => {
   const { ctx, calls } = mockCtx([{ body: { ID: "t/1", Status: "Complete", DeliveredCount: 2 } }]);
   const out = await action.execute({
     transactionId: "t/1",
@@ -15,6 +16,6 @@ Deno.test("email-status: GET /emails/{id}/status passes only the switched-on fla
   assertEquals(queryOf(calls[0].url), { showDelivered: "true" });
 });
 
-Deno.test("email-status: requires a transaction id", async () => {
+test("email-status: requires a transaction id", async () => {
   await assertRejects(async () => await action.execute({}, mockCtx().ctx), Error, "required");
 });

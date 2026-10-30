@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import adjustInventory from "../../actions/adjust-inventory.ts";
 import {
   API_ROOT,
@@ -9,7 +10,7 @@ import {
   UUID_V4,
 } from "../_helpers.ts";
 
-Deno.test("adjust-inventory: POST /1.0/commerce/inventory/adjustments answers 204", async () => {
+test("adjust-inventory: POST /1.0/commerce/inventory/adjustments answers 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await adjustInventory.execute!({
     decrementOperations: [{ quantity: 2, variantId: "V1" }],
@@ -26,7 +27,7 @@ Deno.test("adjust-inventory: POST /1.0/commerce/inventory/adjustments answers 20
   assertEquals(out, { ok: true });
 });
 
-Deno.test("adjust-inventory: the four operation arrays are all optional on their own", async () => {
+test("adjust-inventory: the four operation arrays are all optional on their own", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await adjustInventory.execute!({
     incrementOperations: [{ quantity: 1, variantId: "V1" }],
@@ -39,14 +40,14 @@ Deno.test("adjust-inventory: the four operation arrays are all optional on their
   });
 });
 
-Deno.test("adjust-inventory: an Idempotency-Key is stamped from the invocation", async () => {
+test("adjust-inventory: an Idempotency-Key is stamped from the invocation", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ status: 204 }], "inv-inventory-1");
   await adjustInventory.execute!({ setUnlimitedOperations: ["V2"] }, ctx);
 
   assertEquals(calls[0].headers["idempotency-key"], "inv-inventory-1");
 });
 
-Deno.test("adjust-inventory: without an invocation the key is a fresh UUID", async () => {
+test("adjust-inventory: without an invocation the key is a fresh UUID", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { status: 204 }]);
   await adjustInventory.execute!({ setUnlimitedOperations: ["V2"] }, ctx);
   await adjustInventory.execute!({ setUnlimitedOperations: ["V2"] }, ctx);
@@ -56,7 +57,7 @@ Deno.test("adjust-inventory: without an invocation the key is a fresh UUID", asy
   assert(calls[0].headers["idempotency-key"] !== calls[1].headers["idempotency-key"]);
 });
 
-Deno.test("adjust-inventory: an empty adjustment is refused before the request", async () => {
+test("adjust-inventory: an empty adjustment is refused before the request", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await adjustInventory.execute!({}, ctx),
@@ -65,7 +66,7 @@ Deno.test("adjust-inventory: an empty adjustment is refused before the request",
   );
 });
 
-Deno.test("adjust-inventory: a 400 INSUFFICIENT_STOCK body is surfaced", async () => {
+test("adjust-inventory: a 400 INSUFFICIENT_STOCK body is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

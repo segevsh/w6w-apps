@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-message.ts";
 
-Deno.test("create-message: POSTs to spaces/{space}/messages with just the text", async () => {
+test("create-message: POSTs to spaces/{space}/messages with just the text", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/A1/messages/B1" } }]);
   await action.execute!({ space: "A1", text: "hello" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,25 +11,25 @@ Deno.test("create-message: POSTs to spaces/{space}/messages with just the text",
   assertEquals(JSON.parse(calls[0].body!), { text: "hello" });
 });
 
-Deno.test("create-message: accepts a qualified space name without doubling the prefix", async () => {
+test("create-message: accepts a qualified space name without doubling the prefix", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "spaces/A1", text: "hi" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/A1/messages");
 });
 
-Deno.test("create-message: a thread id becomes a full thread resource name in the body", async () => {
+test("create-message: a thread id becomes a full thread resource name in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", text: "hi", thread: "T1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).thread, { name: "spaces/A1/threads/T1" });
 });
 
-Deno.test("create-message: a full thread resource name is used as given", async () => {
+test("create-message: a full thread resource name is used as given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", text: "hi", thread: "spaces/A9/threads/T9" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).thread, { name: "spaces/A9/threads/T9" });
 });
 
-Deno.test("create-message: threadKey is used only when no thread name is given", async () => {
+test("create-message: threadKey is used only when no thread name is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute!({ space: "A1", text: "hi", threadKey: "k" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).thread, { threadKey: "k" });
@@ -37,13 +38,13 @@ Deno.test("create-message: threadKey is used only when no thread name is given",
   assertEquals(JSON.parse(calls[1].body!).thread, { name: "spaces/A1/threads/T1" });
 });
 
-Deno.test("create-message: privateMessageViewer is wrapped as a User object", async () => {
+test("create-message: privateMessageViewer is wrapped as a User object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", text: "hi", privateMessageViewer: "users/123" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).privateMessageViewer, { name: "users/123" });
 });
 
-Deno.test("create-message: messageId and messageReplyOption are query params", async () => {
+test("create-message: messageId and messageReplyOption are query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "A1",
@@ -61,14 +62,14 @@ Deno.test("create-message: messageId and messageReplyOption are query params", a
   assertEquals("messageReplyOption" in sent, false);
 });
 
-Deno.test("create-message: sends the invocation id as requestId so a retry does not double-post", async () => {
+test("create-message: sends the invocation id as requestId so a retry does not double-post", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const withInvocation = { ...ctx, invocation: { invocationId: "inv-9" } };
   await action.execute!({ space: "A1", text: "hi" }, withInvocation as typeof ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("requestId"), "inv-9");
 });
 
-Deno.test("create-message: never sends cards or attachments — they need app authentication", async () => {
+test("create-message: never sends cards or attachments — they need app authentication", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", text: "hi" }, ctx);
   const sent = JSON.parse(calls[0].body!);

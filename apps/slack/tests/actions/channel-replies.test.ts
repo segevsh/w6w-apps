@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/channel-replies.ts";
 
-Deno.test("channel-replies: GETs /conversations.replies with channel and ts", async () => {
+test("channel-replies: GETs /conversations.replies with channel and ts", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, messages: [] } }]);
   await action.execute!({ channelId: "C1", ts: "123.456" }, ctx);
   const url = new URL(calls[0].url);

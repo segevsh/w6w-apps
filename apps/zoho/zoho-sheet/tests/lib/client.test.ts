@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import {
   apiHostFromConnection,
   compact,
@@ -7,18 +8,18 @@ import {
 } from "../../lib/client.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 
-Deno.test("apiHostFromConnection: reads the recorded region host", () => {
+test("apiHostFromConnection: reads the recorded region host", () => {
   assertEquals(
     apiHostFromConnection({ display: { apiHost: "sheet.zoho.eu" } } as never),
     "sheet.zoho.eu",
   );
 });
 
-Deno.test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
+test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
   assertEquals(apiHostFromConnection(undefined), "sheet.zoho.com");
 });
 
-Deno.test("formatSheetError: includes the vendor error_code and error_message", () => {
+test("formatSheetError: includes the vendor error_code and error_message", () => {
   const msg = formatSheetError(
     401,
     "workbook.list",
@@ -34,19 +35,19 @@ Deno.test("formatSheetError: includes the vendor error_code and error_message", 
   );
 });
 
-Deno.test("formatSheetError: falls back to the raw body when it is not JSON", () => {
+test("formatSheetError: falls back to the raw body when it is not JSON", () => {
   const msg = formatSheetError(500, "worksheet.list", "<html>oops</html>");
   assertEquals(msg, "Zoho Sheet 500 for worksheet.list: <html>oops</html>");
 });
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("ZohoSheetClient: addresses /api/v2/<pathSegment> on the connection's region host", async () => {
+test("ZohoSheetClient: addresses /api/v2/<pathSegment> on the connection's region host", async () => {
   const { ctx, calls } = mockSheetCtx(
     [{ body: { status: "success", method: "worksheet.list", worksheet_names: [] } }],
     "sheet.zoho.eu",
@@ -62,7 +63,7 @@ Deno.test("ZohoSheetClient: addresses /api/v2/<pathSegment> on the connection's 
   assertEquals(body, { status: "success", method: "worksheet.list", worksheet_names: [] });
 });
 
-Deno.test("ZohoSheetClient: JSON.stringifies object/array-valued params into the form body", async () => {
+test("ZohoSheetClient: JSON.stringifies object/array-valued params into the form body", async () => {
   const { ctx, calls } = mockSheetCtx([
     { body: { status: "success", method: "worksheet.jsondata.append" } },
   ]);
@@ -75,7 +76,7 @@ Deno.test("ZohoSheetClient: JSON.stringifies object/array-valued params into the
   assertEquals(body.get("header_row"), "1");
 });
 
-Deno.test("ZohoSheetClient: drops undefined/null/empty-string params", async () => {
+test("ZohoSheetClient: drops undefined/null/empty-string params", async () => {
   const { ctx, calls } = mockSheetCtx([
     { body: { status: "success", method: "worksheet.usedarea" } },
   ]);
@@ -88,7 +89,7 @@ Deno.test("ZohoSheetClient: drops undefined/null/empty-string params", async () 
   assertEquals(body.get("worksheet_name"), "Sheet1");
 });
 
-Deno.test("ZohoSheetClient: throws a formatted error on a non-ok response", async () => {
+test("ZohoSheetClient: throws a formatted error on a non-ok response", async () => {
   const { ctx } = mockSheetCtx([
     { status: 401, body: { error_code: 2401, error_message: "no token" } },
   ]);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import memberList from "../../actions/member-list.ts";
 import { linkHeader, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 type ListResult = { items: unknown[]; nextToken?: string };
 
-Deno.test("member-list: lists members and strips each TeamUser's token", async () => {
+test("member-list: lists members and strips each TeamUser's token", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [{ id: "u1", token: "live-collection-token", user: { firstName: "Ada" } }],

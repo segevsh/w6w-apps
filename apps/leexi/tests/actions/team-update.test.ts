@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/team-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("team-update: full input maps to PATCH /teams/{uuid}", async () => {
+test("team-update: full input maps to PATCH /teams/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -19,7 +20,7 @@ Deno.test("team-update: full input maps to PATCH /teams/{uuid}", async () => {
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("team-update: required input only maps to PATCH /teams/{uuid}", async () => {
+test("team-update: required input only maps to PATCH /teams/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -32,13 +33,13 @@ Deno.test("team-update: required input only maps to PATCH /teams/{uuid}", async 
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("team-update: sends no authorization header of its own", async () => {
+test("team-update: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({ "uuid": "11111111-aaaa", "name": "sample-name", "active": true }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("team-update: surfaces a JSON error body as a thrown error", async () => {
+test("team-update: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -51,7 +52,7 @@ Deno.test("team-update: surfaces a JSON error body as a thrown error", async () 
   );
 });
 
-Deno.test("team-update: an empty 401 body still reads as an auth failure", async () => {
+test("team-update: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -64,7 +65,7 @@ Deno.test("team-update: an empty 401 body still reads as an auth failure", async
   );
 });
 
-Deno.test("team-update: declares type, params and output", () => {
+test("team-update: declares type, params and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.key, "team-update");
   assert(Array.isArray(action.output) && action.output.length > 0);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listRefunds from "../../actions/list-refunds.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const page = listEnvelope("refunds", [{ id: "RF1", amount: 500 }]);
 
-Deno.test("list-refunds: GET /refunds", async () => {
+test("list-refunds: GET /refunds", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await listRefunds.execute!({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("list-refunds: GET /refunds", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("list-refunds: payment, mandate, refund_type and created_at filters", async () => {
+test("list-refunds: payment, mandate, refund_type and created_at filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await listRefunds.execute!({
     payment: "PM1",

@@ -1,19 +1,20 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 29 actions, one auth method and three health checks", () => {
+test("index: exports 29 actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, 29);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), `not kebab-case: ${key}`);
 });
 
-Deno.test("index: every action has a type, description, output, resource and execute hook", () => {
+test("index: every action has a type, description, output, resource and execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type`);
     assert(a.description && a.description.length > 0, `${a.key}: no description`);
@@ -23,7 +24,7 @@ Deno.test("index: every action has a type, description, output, resource and exe
   }
 });
 
-Deno.test("index: every perform action states idempotency; creates are not idempotent", () => {
+test("index: every perform action states idempotency; creates are not idempotent", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   for (const a of performs) assertEquals(typeof a.idempotent, "boolean", `${a.key}`);
   const byKey = new Map(app.actions.map((a) => [a.key, a]));
@@ -43,7 +44,7 @@ Deno.test("index: every perform action states idempotency; creates are not idemp
   }
 });
 
-Deno.test("index: every required param has a label and every action param key is unique", () => {
+test("index: every required param has a label and every action param key is unique", () => {
   for (const a of app.actions) {
     const keys = a.params!.map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key}: duplicate param key`);
@@ -51,7 +52,7 @@ Deno.test("index: every required param has a label and every action param key is
   }
 });
 
-Deno.test("index: no action exposes a body or query field the reference marks deprecated", () => {
+test("index: no action exposes a body or query field the reference marks deprecated", () => {
   // `tagId` is absent from this list on purpose: it is deprecated on the link
   // endpoints (use `tagIds`) but is the current filter on analytics and events,
   // and the path-ID param of tag-update. Link actions are checked for it below.

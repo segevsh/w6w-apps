@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-cancel.ts";
 
-Deno.test("batch-cancel: POSTs to /openai/v1/batches/{id}/cancel", async () => {
+test("batch-cancel: POSTs to /openai/v1/batches/{id}/cancel", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "batch_1", status: "cancelling" } }]);
   const result = await action.execute!({ batchId: "batch_1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,6 +11,6 @@ Deno.test("batch-cancel: POSTs to /openai/v1/batches/{id}/cancel", async () => {
   assertEquals(result, { id: "batch_1", status: "cancelling" });
 });
 
-Deno.test("batch-cancel: is marked idempotent", () => {
+test("batch-cancel: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-list.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("lead-list: sends filter/select/order/start and returns total + next", async () => {
+test("lead-list: sends filter/select/order/start and returns total + next", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: [{ ID: "1" }], total: 51, next: 50, time: {} } },
   ], { display });
@@ -26,7 +27,7 @@ Deno.test("lead-list: sends filter/select/order/start and returns total + next",
   assertEquals(out.next, 50);
 });
 
-Deno.test("lead-list: next is absent once every match has been returned", async () => {
+test("lead-list: next is absent once every match has been returned", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { result: [], total: 0, time: {} } },
   ], { display });
@@ -34,7 +35,7 @@ Deno.test("lead-list: next is absent once every match has been returned", async 
   assertEquals(out.next, undefined);
 });
 
-Deno.test("lead-list: rejects a filter that is not a JSON object", async () => {
+test("lead-list: rejects a filter that is not a JSON object", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ filter: '["not","an","object"]' }, ctx);

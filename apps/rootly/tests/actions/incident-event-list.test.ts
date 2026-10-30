@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/incident-event-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("incident-event-list: full input maps to GET /v1/incidents/{incident_id}/events", async () => {
+test("incident-event-list: full input maps to GET /v1/incidents/{incident_id}/events", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -81,7 +82,7 @@ Deno.test("incident-event-list: full input maps to GET /v1/incidents/{incident_i
   });
 });
 
-Deno.test("incident-event-list: required input only maps to GET /v1/incidents/{incident_id}/events", async () => {
+test("incident-event-list: required input only maps to GET /v1/incidents/{incident_id}/events", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -149,7 +150,7 @@ Deno.test("incident-event-list: required input only maps to GET /v1/incidents/{i
   });
 });
 
-Deno.test("incident-event-list: an API error rejects with the vendor's title and detail", async () => {
+test("incident-event-list: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

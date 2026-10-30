@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-get.ts";
 
-Deno.test("workspace-get: GETs /workspaces/<id> with no org header, unwraps the single workspace object", async () => {
+test("workspace-get: GETs /workspaces/<id> with no org header, unwraps the single workspace object", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {

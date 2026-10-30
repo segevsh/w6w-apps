@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/row-update.ts";
 
-Deno.test("row-update: marked idempotent", () => {
+test("row-update: marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("row-update: PUTs with CONFIG.columns/criteria and the org header", async () => {
+test("row-update: PUTs with CONFIG.columns/criteria and the org header", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {
@@ -37,7 +38,7 @@ Deno.test("row-update: PUTs with CONFIG.columns/criteria and the org header", as
   assertEquals(out, { updatedColumns: { Region: "East" }, updatedRows: 27, invalidColumns: {} });
 });
 
-Deno.test("row-update: updateAllRows and addIfNotExist are only sent when explicitly set", async () => {
+test("row-update: updateAllRows and addIfNotExist are only sent when explicitly set", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {

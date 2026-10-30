@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageAppCardUpdate from "../../actions/message-app-card-update.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-app-card-update: POSTs to /api/messages/{handle}/update-app-card", async () => {
+test("message-app-card-update: POSTs to /api/messages/{handle}/update-app-card", async () => {
   const { ctx, calls } = mockCtx([{ body: { message_handle: "m2", status: "QUEUED" } }]);
   await messageAppCardUpdate.execute({
     messageHandle: "m1",

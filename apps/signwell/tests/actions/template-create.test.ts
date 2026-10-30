@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-create.ts";
 
-Deno.test("template-create: POSTs files and placeholders to /document_templates", async () => {
+test("template-create: POSTs files and placeholders to /document_templates", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "t1", name: "NDA" } }]);
   const out = await action.execute!({
     files: [{ name: "n.pdf", file_base64: "QUJD" }],
@@ -22,7 +23,7 @@ Deno.test("template-create: POSTs files and placeholders to /document_templates"
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("template-create: files and placeholders are required", async () => {
+test("template-create: files and placeholders are required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ placeholders: [] }, ctx),

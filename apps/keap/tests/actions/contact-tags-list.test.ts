@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagsList from "../../actions/contact-tags-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const PAGE = {
   next_page_token: "t2",
 };
 
-Deno.test("contact-tags-list: reads the per-contact tag path", async () => {
+test("contact-tags-list: reads the per-contact tag path", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await contactTagsList.execute({ contactId: "42" }, ctx);
   assertEquals(pathOf(calls[0].url), "/crm/rest/v2/contacts/42/tags");
@@ -20,7 +21,7 @@ Deno.test("contact-tags-list: reads the per-contact tag path", async () => {
  * The rows are `AppliedTag`, so the tag's own id is one level deeper than the
  * `tags` response key suggests — `tags[i].tag.id`, not `tags[i].id`.
  */
-Deno.test("contact-tags-list: flattens the tag ids out of the AppliedTag wrapper", async () => {
+test("contact-tags-list: flattens the tag ids out of the AppliedTag wrapper", async () => {
   const { ctx } = mockCtx([{ body: PAGE }]);
   const out = await contactTagsList.execute({ contactId: "42" }, ctx) as {
     tagIds: string[];
@@ -32,13 +33,13 @@ Deno.test("contact-tags-list: flattens the tag ids out of the AppliedTag wrapper
   assertEquals(out.nextPageToken, "t2");
 });
 
-Deno.test("contact-tags-list: a row with no nested tag does not produce an undefined id", async () => {
+test("contact-tags-list: a row with no nested tag does not produce an undefined id", async () => {
   const { ctx } = mockCtx([{ body: { tags: [{ applied_time: "x" }, { tag: { id: "9" } }] } }]);
   const out = await contactTagsList.execute({ contactId: "42" }, ctx) as { tagIds: string[] };
   assertEquals(out.tagIds, ["9"]);
 });
 
-Deno.test("contact-tags-list: the NONE sentinel is passed through as a filter clause", async () => {
+test("contact-tags-list: the NONE sentinel is passed through as a filter clause", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await contactTagsList.execute({ contactId: "42", categoryId: "NONE" }, ctx);
   assertEquals(queryOf(calls[0].url).filter, "category_id==NONE");

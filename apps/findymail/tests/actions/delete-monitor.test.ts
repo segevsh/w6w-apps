@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-monitor.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-monitor: DELETEs the monitor (204, empty body)", async () => {
+test("delete-monitor: DELETEs the monitor (204, empty body)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ "id": 4 } as never, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("delete-monitor: DELETEs the monitor (204, empty body)", async () => {
   assertEquals(out, { "deleted": true, "id": 4 });
 });
 
-Deno.test("delete-monitor: surfaces a 403", async () => {
+test("delete-monitor: surfaces a 403", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { "message": "This action is unauthorized." } }]);
   const err = await assertRejects(async () => await action.execute!({ "id": 4 } as never, ctx));
   const msg = (err as Error).message;

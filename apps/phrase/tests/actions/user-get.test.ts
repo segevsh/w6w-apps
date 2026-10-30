@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-get: sends GET /v2/user", async () => {
+test("user-get: sends GET /v2/user", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {};
   const out = await userGet.execute(input, ctx) as Record<string, unknown>;
@@ -14,7 +15,7 @@ Deno.test("user-get: sends GET /v2/user", async () => {
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("user-get: surfaces Phrase's validation message on a 422", async () => {
+test("user-get: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await userGet.execute({}, ctx);
@@ -22,7 +23,7 @@ Deno.test("user-get: surfaces Phrase's validation message on a 422", async () =>
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("user-get: declares key, type and every param it reads", () => {
+test("user-get: declares key, type and every param it reads", () => {
   assertEquals(userGet.key, "user-get");
   assertEquals(userGet.type, "read");
   const declared = new Set((userGet.params ?? []).map((p) => p.key));

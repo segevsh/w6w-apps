@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   buildBody,
   compact,
@@ -13,7 +14,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("readError: reads the envelope, the fields and the OAuth server shape", () => {
+test("readError: reads the envelope, the fields and the OAuth server shape", () => {
   assertEquals(
     readError({ success: false, error: { code: "error", message: "m", fields: { a: ["x"] } } }),
     { code: "error", message: "m", fields: { a: ["x"] } },
@@ -26,7 +27,7 @@ Deno.test("readError: reads the envelope, the fields and the OAuth server shape"
   assertEquals(readError("nope"), undefined);
 });
 
-Deno.test("isMissingScope: only the documented scope message", () => {
+test("isMissingScope: only the documented scope message", () => {
   assert(
     isMissingScope({ message: "The access token should have access to one of those scopes: x" }),
   );
@@ -34,7 +35,7 @@ Deno.test("isMissingScope: only the documented scope message", () => {
   assert(!isMissingScope(undefined));
 });
 
-Deno.test("compact / jsonObject / toArray / buildBody", () => {
+test("compact / jsonObject / toArray / buildBody", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -52,7 +53,7 @@ Deno.test("compact / jsonObject / toArray / buildBody", () => {
   assertEquals(buildBody({ a: 1, b: undefined }, '{"a":9,"z":2}'), { a: 1, z: 2 });
 });
 
-Deno.test("perPage: accepts 1..60 and refuses anything else", () => {
+test("perPage: accepts 1..60 and refuses anything else", () => {
   assertEquals(perPage(undefined), undefined);
   assertEquals(perPage(60), 60);
   assertEquals(perPage(1), 1);
@@ -61,11 +62,11 @@ Deno.test("perPage: accepts 1..60 and refuses anything else", () => {
   assertThrows(() => perPage(2.5), Error);
 });
 
-Deno.test("seg: encodes a path segment", () => {
+test("seg: encodes a path segment", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
 });
 
-Deno.test("client: array query params use the bracket form and unset ones are dropped", async () => {
+test("client: array query params use the bracket form and unset ones are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await new SallaClient(ctx).get("/orders", { status: [1, 2], keyword: "", page: undefined, x: 0 });
   assertEquals(
@@ -74,7 +75,7 @@ Deno.test("client: array query params use the bracket form and unset ones are dr
   );
 });
 
-Deno.test("client: a GET carries no content-type, a POST does", async () => {
+test("client: a GET carries no content-type, a POST does", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }, { body: { success: true } }]);
   const c = new SallaClient(ctx);
   await c.get("/store/info");
@@ -83,7 +84,7 @@ Deno.test("client: a GET carries no content-type, a POST does", async () => {
   assertEquals(calls[1].headers["content-type"], "application/json");
 });
 
-Deno.test("client: a 2xx whose body says success:false is an error, not trusted on status", async () => {
+test("client: a 2xx whose body says success:false is an error, not trusted on status", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: 422, success: false, error: { code: "error", message: "bad" } },
@@ -93,7 +94,7 @@ Deno.test("client: a 2xx whose body says success:false is an error, not trusted 
   assertEquals(e.message, "Salla 422 for /x: bad");
 });
 
-Deno.test("client: a non-JSON 2xx body throws; a non-JSON error status still surfaces the status", async () => {
+test("client: a non-JSON 2xx body throws; a non-JSON error status still surfaces the status", async () => {
   const a = mockCtx([{ body: "<html>" }]);
   await assertRejects(() => new SallaClient(a.ctx).get("/x"), Error, "non-JSON body for /x");
   const b = mockCtx([{ status: 502, body: "Bad gateway" }]);
@@ -101,7 +102,7 @@ Deno.test("client: a non-JSON 2xx body throws; a non-JSON error status still sur
   assertEquals(e.status, 502);
 });
 
-Deno.test("client: field errors are listed in the message", async () => {
+test("client: field errors are listed in the message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {
@@ -113,7 +114,7 @@ Deno.test("client: field errors are listed in the message", async () => {
   assert(e.message.includes("[name: a, b]"), e.message);
 });
 
-Deno.test("client: delete reports deleted on 202 and 200", async () => {
+test("client: delete reports deleted on 202 and 200", async () => {
   const { ctx } = mockCtx([{ status: 202, body: { status: 202, success: true } }, { status: 200 }]);
   const c = new SallaClient(ctx);
   assertEquals(await c.delete("/products/1"), { deleted: true });

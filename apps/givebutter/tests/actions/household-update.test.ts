@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import householdUpdate from "../../actions/household-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("household-update: PUTs to /households/{id}", async () => {
+test("household-update: PUTs to /households/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 1 }) }]);
   await householdUpdate.execute({ id: "1", note: "updated" }, ctx);
 

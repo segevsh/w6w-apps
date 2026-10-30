@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const comps = (status: string, website = "OPERATIONAL") => ({
   ],
 });
 
-Deno.test("service: reads summary.json and components.json on status.twist.io", async () => {
+test("service: reads summary.json and components.json on status.twist.io", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }, { body: comps("OPERATIONAL") }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls.map((c) => c.url), [
@@ -20,7 +21,7 @@ Deno.test("service: reads summary.json and components.json on status.twist.io", 
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: an API outage maps to down, a partial one to degraded", async () => {
+test("service: an API outage maps to down, a partial one to degraded", async () => {
   const major = mockCtx([{ body: SUMMARY }, { body: comps("MAJOROUTAGE") }]);
   const down = await service.check!({}, major.ctx);
   assertEquals(down.state, "down");
@@ -29,26 +30,26 @@ Deno.test("service: an API outage maps to down, a partial one to degraded", asyn
   assertEquals((await service.check!({}, partial.ctx)).state, "degraded");
 });
 
-Deno.test("service: a Website-only incident does not move the API verdict", async () => {
+test("service: a Website-only incident does not move the API verdict", async () => {
   const { ctx } = mockCtx([{ body: SUMMARY }, { body: comps("OPERATIONAL", "MAJOROUTAGE") }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: the component is found by name when its id changes", async () => {
+test("service: the component is found by name when its id changes", async () => {
   const { ctx } = mockCtx([{ body: SUMMARY }, {
     body: { components: [{ id: "new-id", name: "Web application & API", status: "MAJOROUTAGE" }] },
   }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: a page that is not Twist's is unknown, never trusted", async () => {
+test("service: a page that is not Twist's is unknown, never trusted", async () => {
   const { ctx, calls } = mockCtx([{ body: { page: { name: "Doist", status: "UP" } } }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "unknown");
   assertEquals(calls.length, 1);
 });
 
-Deno.test("service: without the API component it falls back to the page, capped at degraded", async () => {
+test("service: without the API component it falls back to the page, capped at degraded", async () => {
   const { ctx } = mockCtx([{ body: { page: { ...SUMMARY.page, status: "HASISSUES" } } }, {
     body: { components: [] },
   }]);
@@ -57,12 +58,12 @@ Deno.test("service: without the API component it falls back to the page, capped 
   assertEquals((await service.check!({}, up.ctx)).state, "ok");
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: declares the status host on its own allowlist, unsigned", () => {
+test("service: declares the status host on its own allowlist, unsigned", () => {
   assertEquals(service.network?.allow, ["status.twist.io"]);
   assertEquals(service.kind, "service");
 });

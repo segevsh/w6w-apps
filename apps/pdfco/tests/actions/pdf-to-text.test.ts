@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import pdfToText from "../../actions/pdf-to-text.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pdf-to-text: posts to /v1/pdf/convert/to/text and returns the body text", async () => {
+test("pdf-to-text: posts to /v1/pdf/convert/to/text and returns the body text", async () => {
   const { ctx, calls } = mockCtx([
     { body: { body: "hello world", pageCount: 1, error: false, status: 200 } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("pdf-to-text: posts to /v1/pdf/convert/to/text and returns the body te
   assertEquals(out.pageCount, 1);
 });
 
-Deno.test("pdf-to-text: drops unset optional fields from the request body", async () => {
+test("pdf-to-text: drops unset optional fields from the request body", async () => {
   const { ctx, calls } = mockCtx([{ body: { body: "x" } }]);
   await pdfToText.execute({ url: "https://example.com/a.pdf" }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("pdf-to-text: drops unset optional fields from the request body", asyn
   assertEquals("password" in sent, false);
 });
 
-Deno.test("pdf-to-text: an invalid-password failure surfaces PDF.co's message", async () => {
+test("pdf-to-text: an invalid-password failure surfaces PDF.co's message", async () => {
   const { ctx } = mockCtx([
     { status: 441, body: errorBody("Invalid Password. Password protected document.") },
   ]);

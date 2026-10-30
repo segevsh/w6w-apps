@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import notesCreate from "../../actions/notes-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("notes-create: POSTs content and entity ids", async () => {
+test("notes-create: POSTs content and entity ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 22985, content: "Had a lunch meeting" } }]);
   await notesCreate.execute(
     {
@@ -20,13 +21,13 @@ Deno.test("notes-create: POSTs content and entity ids", async () => {
   assertEquals(body.opportunity_ids, [167]);
 });
 
-Deno.test("notes-create: a parent_id alone satisfies the 'at least one' requirement", async () => {
+test("notes-create: a parent_id alone satisfies the 'at least one' requirement", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 22987 } }]);
   await notesCreate.execute({ content: "This is a reply.", parentId: 22984 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).parent_id, 22984);
 });
 
-Deno.test("notes-create: rejects when no entity or parent is given", async () => {
+test("notes-create: rejects when no entity or parent is given", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listGetAll from "../../actions/list-get-all.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-get-all: POST /api/1/getLists/ with the documented form fields", async () => {
+test("list-get-all: POST /api/1/getLists/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await listGetAll.execute({} as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("list-get-all: POST /api/1/getLists/ with the documented form fields",
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("list-get-all: a vendor error surfaces its status and body", async () => {
+test("list-get-all: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () => await listGetAll.execute({} as never, ctx));
   assert(String((err as Error).message).includes("(400)"));

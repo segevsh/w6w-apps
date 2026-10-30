@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookSubscribe from "../../actions/webhook-subscribe.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-subscribe: POST /api/v3/hooks/subscribe with every documented parameter", async () => {
+test("webhook-subscribe: POST /api/v3/hooks/subscribe with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await webhookSubscribe.execute({
     "targetUrl": "sample targetUrl",
@@ -28,7 +29,7 @@ Deno.test("webhook-subscribe: POST /api/v3/hooks/subscribe with every documented
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("webhook-subscribe: sends a form body, never a query string", async () => {
+test("webhook-subscribe: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await webhookSubscribe.execute({
     "targetUrl": "sample targetUrl",
@@ -43,7 +44,7 @@ Deno.test("webhook-subscribe: sends a form body, never a query string", async ()
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("webhook-subscribe: omits optional parameters that are not set", async () => {
+test("webhook-subscribe: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await webhookSubscribe.execute(
     { "targetUrl": "sample targetUrl", "event": "workspace_added" },
@@ -56,11 +57,11 @@ Deno.test("webhook-subscribe: omits optional parameters that are not set", async
   });
 });
 
-Deno.test("webhook-subscribe: is declared non-idempotent", () => {
+test("webhook-subscribe: is declared non-idempotent", () => {
   assertEquals(webhookSubscribe.idempotent, false);
 });
 
-Deno.test("webhook-subscribe: sends no credential of its own", async () => {
+test("webhook-subscribe: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await webhookSubscribe.execute({
     "targetUrl": "sample targetUrl",
@@ -74,7 +75,7 @@ Deno.test("webhook-subscribe: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("webhook-subscribe: surfaces Twist's error body", async () => {
+test("webhook-subscribe: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

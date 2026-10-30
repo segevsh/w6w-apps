@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-seat-maps.ts";
 
-Deno.test("list-seat-maps: passes venue filters", async () => {
+test("list-seat-maps: passes venue filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { seatmaps: [] } }]);
   const result = await action.execute!({
     organizationId: "o1",

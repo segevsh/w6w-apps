@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-comment-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("page-comment-list: reads the footer thread, not inline comments", async () => {
+test("page-comment-list: reads the footer thread, not inline comments", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ id: "c1" }], _links: {} } }], {
     display,
   });
@@ -15,7 +16,7 @@ Deno.test("page-comment-list: reads the footer thread, not inline comments", asy
   assertEquals(result, [{ id: "c1" }]);
 });
 
-Deno.test("page-comment-list: a blank id fails before any request", async () => {
+test("page-comment-list: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`pageId` is required");
   assertEquals(calls.length, 0);

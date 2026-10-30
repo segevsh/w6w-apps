@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesBillet from "../../actions/sales-billet.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sales-billet - PUTs to the transaction's billet path and returns the URL", async () => {
+test("sales-billet - PUTs to the transaction's billet path and returns the URL", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { billet_url: "https://example.com/x.pdf" },
@@ -13,11 +14,11 @@ Deno.test("sales-billet - PUTs to the transaction's billet path and returns the 
   assertEquals(out, { billet_url: "https://example.com/x.pdf" });
 });
 
-Deno.test("sales-billet - is declared idempotent (safe to retry)", () => {
+test("sales-billet - is declared idempotent (safe to retry)", () => {
   assertEquals(salesBillet.idempotent, true);
 });
 
-Deno.test("sales-billet - surfaces purchase_not_found", async () => {
+test("sales-billet - surfaces purchase_not_found", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("purchase_not_found", "Purchase not found for the given transaction."),

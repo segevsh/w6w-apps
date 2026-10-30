@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/me-get.ts";
 
-Deno.test("me-get: reads the whoami and returns the profile", async () => {
+test("me-get: reads the whoami and returns the profile", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 11, teamId: 12345, roleName: "Agent", assignedLeadCount: 42 },
@@ -14,6 +15,6 @@ Deno.test("me-get: reads the whoami and returns the profile", async () => {
   assertEquals(result.teamId, 12345);
 });
 
-Deno.test("me-get: declares no params", () => {
+test("me-get: declares no params", () => {
   assertEquals(action.params, []);
 });

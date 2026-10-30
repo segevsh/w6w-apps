@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactTagRemove from "../../actions/contact-tag-remove.ts";
 
-Deno.test("contact-tag-remove: sends every documented field in its documented place", async () => {
+test("contact-tag-remove: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("contact-tag-remove: sends every documented field in its documented pl
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-tag-remove: declares its params and kind", () => {
+test("contact-tag-remove: declares its params and kind", () => {
   assertEquals((contactTagRemove.params ?? []).map((p) => p.key), ["identifier", "uid"]);
   assertEquals((contactTagRemove.params ?? []).filter((p) => p.required).map((p) => p.key), [
     "identifier",

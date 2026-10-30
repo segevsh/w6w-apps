@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import productOrderList from "../../actions/product-order-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const RESPONSE = {
   "pagination": { "next": "https://api.samcart.com/v1/x?offset=99&dir=next", "prev": null },
 };
 
-Deno.test("product-order-list: sends GET /v1/products/1337/orders with the mapped parameters", async () => {
+test("product-order-list: sends GET /v1/products/1337/orders with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await productOrderList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -34,7 +35,7 @@ Deno.test("product-order-list: sends GET /v1/products/1337/orders with the mappe
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("product-order-list: returns the documented result shape", async () => {
+test("product-order-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await productOrderList.execute(INPUT, ctx), {
     "data": [{ "id": 1 }],
@@ -44,7 +45,7 @@ Deno.test("product-order-list: returns the documented result shape", async () =>
   });
 });
 
-Deno.test("product-order-list: an error surfaces SamCart's own message", async () => {
+test("product-order-list: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(productOrderList.execute(INPUT, ctx)),
@@ -53,7 +54,7 @@ Deno.test("product-order-list: an error surfaces SamCart's own message", async (
   assertEquals(err.message.includes("Object could not be found"), true, err.message);
 });
 
-Deno.test("product-order-list: a non-integer productId is refused before any request", async () => {
+test("product-order-list: a non-integer productId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

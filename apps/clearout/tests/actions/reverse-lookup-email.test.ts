@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/reverse-lookup-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("reverse-lookup-email: sends email_address and maps the lead (contructed_title typo fixed)", async () => {
+test("reverse-lookup-email: sends email_address and maps the lead (contructed_title typo fixed)", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -31,7 +32,7 @@ Deno.test("reverse-lookup-email: sends email_address and maps the lead (contruct
   assertEquals(out.emailAddress, "a@x.com");
 });
 
-Deno.test("reverse-lookup-email: no lead gives null; blank email throws", async () => {
+test("reverse-lookup-email: no lead gives null; blank email throws", async () => {
   const { ctx } = mockCtx([{ body: { status: "success", data: {} } }]);
   assertEquals((await run(action, { email: "a@x.com" }, ctx)).lead, null);
   await assertRejects(() => run(action, { email: "" }, mockCtx().ctx), Error, "email is required");

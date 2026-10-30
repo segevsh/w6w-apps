@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/work-item-create.ts";
@@ -9,7 +10,7 @@ const created = one({ id: 101, url: "https://dev.azure.com/…/101" });
  * The only part of the API that takes a JSON Patch document, sent as
  * application/json-patch+json.
  */
-Deno.test("work-item-create: builds a patch document with the right content type", async () => {
+test("work-item-create: builds a patch document with the right content type", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({ project: "P", type: "Bug", title: "Fix login" }, ctx);
   assertEquals(
@@ -23,7 +24,7 @@ Deno.test("work-item-create: builds a patch document with the right content type
   ]);
 });
 
-Deno.test("work-item-create: short names are qualified and extra fields pass through", async () => {
+test("work-item-create: short names are qualified and extra fields pass through", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({
     project: "P",
@@ -40,7 +41,7 @@ Deno.test("work-item-create: short names are qualified and extra fields pass thr
 });
 
 /** A dry run for values that came from outside. */
-Deno.test("work-item-create: validateOnly creates nothing and says so", async () => {
+test("work-item-create: validateOnly creates nothing and says so", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   const result = await action.execute!({
     project: "P",
@@ -52,7 +53,7 @@ Deno.test("work-item-create: validateOnly creates nothing and says so", async ()
   assertEquals(result.validatedOnly, true);
 });
 
-Deno.test("work-item-create: every required field is checked before the request", async () => {
+test("work-item-create: every required field is checked before the request", async () => {
   const base = { project: "P", type: "Bug", title: "x" };
   for (const missing of ["project", "type", "title"]) {
     const { ctx, calls } = mockCtx([], { display });
@@ -65,7 +66,7 @@ Deno.test("work-item-create: every required field is checked before the request"
   }
 });
 
-Deno.test("work-item-create: logs the id and type, not the field values", async () => {
+test("work-item-create: logs the id and type, not the field values", async () => {
   const { ctx, logs } = mockCtx([created], { display });
   await action.execute!({ project: "P", type: "Bug", title: "confidential summary" }, ctx);
   assert(!JSON.stringify(logs).includes("confidential"), JSON.stringify(logs));
@@ -73,7 +74,7 @@ Deno.test("work-item-create: logs the id and type, not the field values", async 
 });
 
 /** Agile has User Story; Scrum has Product Backlog Item. */
-Deno.test("work-item-create: warns that types depend on the process", () => {
+test("work-item-create: warns that types depend on the process", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "type")!;
   assert(/Product Backlog Item/.test(p.hint!), p.hint);
 });

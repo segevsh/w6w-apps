@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-videos.ts";
 
-Deno.test("get-videos: hits /youtube/v3/videos with part and a comma-joined id list", async () => {
+test("get-videos: hits /youtube/v3/videos with part and a comma-joined id list", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: ["snippet", "statistics"], id: ["v1", "v2"] }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("get-videos: hits /youtube/v3/videos with part and a comma-joined id l
   assertEquals(url.searchParams.getAll("id"), ["v1,v2"]);
 });
 
-Deno.test("get-videos: accepts the chart filter", async () => {
+test("get-videos: accepts the chart filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "snippet", chart: "mostPopular", regionCode: "GB" }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -20,13 +21,13 @@ Deno.test("get-videos: accepts the chart filter", async () => {
   assertEquals(p.get("id"), null);
 });
 
-Deno.test("get-videos: accepts the myRating filter", async () => {
+test("get-videos: accepts the myRating filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "id", myRating: "like" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("myRating"), "like");
 });
 
-Deno.test("get-videos: rejects zero filters before spending a request", async () => {
+test("get-videos: rejects zero filters before spending a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -38,7 +39,7 @@ Deno.test("get-videos: rejects zero filters before spending a request", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-videos: rejects two filters at once", async () => {
+test("get-videos: rejects two filters at once", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -50,7 +51,7 @@ Deno.test("get-videos: rejects two filters at once", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-videos: forwards the remaining documented parameters", async () => {
+test("get-videos: forwards the remaining documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "player",
@@ -71,7 +72,7 @@ Deno.test("get-videos: forwards the remaining documented parameters", async () =
   assertEquals(p.get("maxHeight"), "480");
 });
 
-Deno.test("get-videos: defaults part to the three sections most callers need", () => {
+test("get-videos: defaults part to the three sections most callers need", () => {
   const part = action.params!.find((p) => p.key === "part");
   assertEquals(part?.default, "snippet,contentDetails,statistics");
   assertEquals(part?.required, true);

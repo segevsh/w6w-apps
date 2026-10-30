@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/business-unit-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-unit-search: sends query/country/page and lower-cased perpage", async () => {
+test("business-unit-search: sends query/country/page and lower-cased perpage", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { businessUnits: [{ id: "abc", displayName: "Acme" }] } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("business-unit-search: sends query/country/page and lower-cased perpag
   assertEquals(out.items[0].id, "abc");
 });
 
-Deno.test("business-unit-search: an empty businessUnits list becomes an empty items array", async () => {
+test("business-unit-search: an empty businessUnits list becomes an empty items array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute({ query: "nobody" }, ctx);
   assertEquals(out.items, []);

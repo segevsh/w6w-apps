@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolTrimVideo from "../../actions/tool-trim-video.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-trim-video: POST /tools/trim_video", async () => {
+test("tool-trim-video: POST /tools/trim_video", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "trim_video" } }]);
   await toolTrimVideo.execute({ videoUrl: "https://x/in.mp4", start: 1, end: 5 }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("tool-trim-video: POST /tools/trim_video", async () => {
   });
 });
 
-Deno.test("tool-trim-video: requires start and end", async () => {
+test("tool-trim-video: requires start and end", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolTrimVideo.execute({ videoUrl: "https://x/in.mp4" } as never, ctx));
 });

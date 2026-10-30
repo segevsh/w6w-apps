@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import removeSubscriberFromWorkflow from "../../actions/remove-subscriber-from-workflow.ts";
 
-Deno.test("remove-subscriber-from-workflow: both ids are PATH segments here", async () => {
+test("remove-subscriber-from-workflow: both ids are PATH segments here", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await removeSubscriberFromWorkflow.execute(
     { workflowId: "wf1", idOrEmail: "ada@example.com" },
@@ -18,11 +19,11 @@ Deno.test("remove-subscriber-from-workflow: both ids are PATH segments here", as
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("remove-subscriber-from-workflow: IS idempotent — removal converges", () => {
+test("remove-subscriber-from-workflow: IS idempotent — removal converges", () => {
   assertEquals(removeSubscriberFromWorkflow.idempotent, true);
 });
 
-Deno.test("remove-subscriber-from-workflow: raises on a non-2xx", async () => {
+test("remove-subscriber-from-workflow: raises on a non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "bad" } }]);
   await assertRejects(
     () =>

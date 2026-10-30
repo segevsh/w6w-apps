@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import productCreate from "../../actions/product-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -23,7 +24,7 @@ const INPUT = {
   "draft": true,
 };
 
-Deno.test("product-create: sends POST /v2/products with the mapped parameters", async () => {
+test("product-create: sends POST /v2/products with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "product": { "id": "x1", "marker": true } },
   }]);
@@ -56,14 +57,14 @@ Deno.test("product-create: sends POST /v2/products with the mapped parameters", 
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("product-create: returns the documented result shape", async () => {
+test("product-create: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{
     body: { "success": true, "product": { "id": "x1", "marker": true } },
   }]);
   assertEquals(await productCreate.execute(INPUT, ctx), { "id": "x1", "marker": true });
 });
 
-Deno.test("product-create: a 404 surfaces Gumroad's own message", async () => {
+test("product-create: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -72,7 +73,7 @@ Deno.test("product-create: a 404 surfaces Gumroad's own message", async () => {
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("product-create: a 200 carrying success:false is still a failure", async () => {
+test("product-create: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(() => Promise.resolve(productCreate.execute(INPUT, ctx)), Error, "refused");
 });

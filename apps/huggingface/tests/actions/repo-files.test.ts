@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/repo-files.ts";
 
@@ -11,7 +12,7 @@ const tree = {
   ],
 };
 
-Deno.test("repo-files: walks the tree at a revision", async () => {
+test("repo-files: walks the tree at a revision", async () => {
   const { ctx, calls } = mockCtx([tree]);
   await action.execute({ id: "openai-community/gpt2", revision: "main" }, ctx);
   assertEquals(
@@ -20,7 +21,7 @@ Deno.test("repo-files: walks the tree at a revision", async () => {
   );
 });
 
-Deno.test("repo-files: the kind selects the endpoint, and a path scopes it", async () => {
+test("repo-files: the kind selects the endpoint, and a path scopes it", async () => {
   const { ctx, calls } = mockCtx([tree]);
   await action.execute({ kind: "datasets", id: "d/s", path: "/data", recursive: true }, ctx);
   const url = new URL(calls[0].url);
@@ -29,7 +30,7 @@ Deno.test("repo-files: the kind selects the endpoint, and a path scopes it", asy
 });
 
 /** Summing `size` is wrong by orders of magnitude and looks plausible. */
-Deno.test("repo-files: the total takes LFS entries from lfs.size", async () => {
+test("repo-files: the total takes LFS entries from lfs.size", async () => {
   const { ctx } = mockCtx([tree]);
   const result = await action.execute({ id: "openai-community/gpt2" }, ctx) as Record<
     string,
@@ -41,7 +42,7 @@ Deno.test("repo-files: the total takes LFS entries from lfs.size", async () => {
 });
 
 /** Loading a pickle runs whatever is in it; the model card does not say. */
-Deno.test("repo-files: flags safetensors and pickles from the file names", async () => {
+test("repo-files: flags safetensors and pickles from the file names", async () => {
   const safe = mockCtx([tree]);
   const safeResult = await action.execute({ id: "a/b" }, safe.ctx) as Record<string, unknown>;
   assertEquals(safeResult.hasSafetensors, true);
@@ -56,7 +57,7 @@ Deno.test("repo-files: flags safetensors and pickles from the file names", async
   assertEquals(pickledResult.hasPickle, true);
 });
 
-Deno.test("repo-files: an empty or non-list body yields nothing rather than throwing", async () => {
+test("repo-files: an empty or non-list body yields nothing rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { error: "nope" } }]);
   const result = await action.execute({ id: "a/b" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
@@ -64,7 +65,7 @@ Deno.test("repo-files: an empty or non-list body yields nothing rather than thro
 });
 
 /** A workflow pinned to `main` gets different weights on different days. */
-Deno.test("repo-files: the revision hint says main moves", () => {
+test("repo-files: the revision hint says main moves", () => {
   const revision = action.params!.find((p) => p.key === "revision")!;
   assert(/MOVES/.test(revision.hint!), revision.hint);
   assert(/LFS POINTER/.test(action.description!), action.description);

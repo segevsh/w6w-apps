@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateVersionCreate from "../../actions/template-version-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-version-create: POSTs the new html under the template's versions", async () => {
+test("template-version-create: POSTs the new html under the template's versions", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "vrsn_2", object: "version" } }]);
   const out = await templateVersionCreate.execute({
     templateId: "tmpl_1",
@@ -15,11 +16,11 @@ Deno.test("template-version-create: POSTs the new html under the template's vers
   assertEquals(out.id, "vrsn_2");
 });
 
-Deno.test("template-version-create: is declared non-idempotent", () => {
+test("template-version-create: is declared non-idempotent", () => {
   assertEquals(templateVersionCreate.idempotent, false);
 });
 
-Deno.test("template-version-create: a missing template surfaces not_found", async () => {
+test("template-version-create: a missing template surfaces not_found", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("not_found", "template not found", 404),

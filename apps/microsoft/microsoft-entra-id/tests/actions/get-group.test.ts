@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-group.ts";
 
-Deno.test("get-group: GETs /groups/{id} with $select", async () => {
+test("get-group: GETs /groups/{id} with $select", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "g1", displayName: "Sales" } }]);
   const out = await action.execute({ groupId: "g1", select: ["id", "mail"] }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("get-group: GETs /groups/{id} with $select", async () => {
   assertEquals(out.displayName, "Sales");
 });
 
-Deno.test("get-group: a 404 surfaces Graph's code", async () => {
+test("get-group: a 404 surfaces Graph's code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: { code: "Request_ResourceNotFound", message: "missing" } },

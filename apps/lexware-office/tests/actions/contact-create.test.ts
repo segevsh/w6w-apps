@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const result = { id: "c1", resourceUri: "https://api.lexware.io/v1/contacts/c1", version: 1 };
 
-Deno.test("contact-create: a person customer is POSTed with version 0 and an empty role object", async () => {
+test("contact-create: a person customer is POSTed with version 0 and an empty role object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: result }]);
   const out = await action.execute({
     contactType: "person",
@@ -36,7 +37,7 @@ Deno.test("contact-create: a person customer is POSTed with version 0 and an emp
   assertEquals(out.id, "c1");
 });
 
-Deno.test("contact-create: a company vendor carries name and one contact person; extra merges on top", async () => {
+test("contact-create: a company vendor carries name and one contact person; extra merges on top", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: result }]);
   await action.execute({
     contactType: "company",
@@ -53,7 +54,7 @@ Deno.test("contact-create: a company vendor carries name and one contact person;
   assertEquals(body.xRechnung.buyerReference, "04011000-1234512345-35");
 });
 
-Deno.test("contact-create: validates role, names and address country before the network", async () => {
+test("contact-create: validates role, names and address country before the network", async () => {
   const n = mockCtx();
   await assertRejects(
     async () => await action.execute({ contactType: "person", lastName: "X" }, n.ctx),

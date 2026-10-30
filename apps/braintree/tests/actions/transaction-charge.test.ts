@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transaction-charge.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const DATA = {
   },
 };
 
-Deno.test("transaction-charge: POSTs one GraphQL document to the production endpoint with the mapped variables", async () => {
+test("transaction-charge: POSTs one GraphQL document to the production endpoint with the mapped variables", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   const out = await action.execute!(INPUT as never, ctx);
   assertEquals(calls.length, 1);
@@ -47,20 +48,20 @@ Deno.test("transaction-charge: POSTs one GraphQL document to the production endp
   });
 });
 
-Deno.test("transaction-charge: sends no authorization header of its own", async () => {
+test("transaction-charge: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   await action.execute!(INPUT as never, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("transaction-charge: routes to the sandbox host when the connection says so", async () => {
+test("transaction-charge: routes to the sandbox host when the connection says so", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   (ctx as { connection?: unknown }).connection = { display: { environment: "sandbox" } };
   await action.execute!(INPUT as never, ctx);
   assertEquals(calls[0].url, "https://payments.sandbox.braintree-api.com/graphql");
 });
 
-Deno.test("transaction-charge: an HTTP 200 carrying GraphQL errors is thrown with the error class", async () => {
+test("transaction-charge: an HTTP 200 carrying GraphQL errors is thrown with the error class", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: null,
@@ -82,7 +83,7 @@ Deno.test("transaction-charge: an HTTP 200 carrying GraphQL errors is thrown wit
   );
 });
 
-Deno.test("transaction-charge: declares type, params, output and honest idempotency", () => {
+test("transaction-charge: declares type, params, output and honest idempotency", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(Array.isArray(action.output) && action.output.length > 0);
   assertEquals(action.idempotent, true);

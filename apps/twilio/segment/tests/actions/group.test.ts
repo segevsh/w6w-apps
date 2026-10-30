@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group.ts";
 
-Deno.test("group: posts groupId + userId + traits to /group", async () => {
+test("group: posts groupId + userId + traits to /group", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!(
     { groupId: "g1", userId: "u1", traits: { name: "Acme" } },
@@ -17,7 +18,7 @@ Deno.test("group: posts groupId + userId + traits to /group", async () => {
   assertEquals(result, { success: true });
 });
 
-Deno.test("group: rejects a blank groupId", async () => {
+test("group: rejects a blank groupId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ groupId: "  ", userId: "u1" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("group: rejects a blank groupId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("group: rejects when neither userId nor anonymousId is set", async () => {
+test("group: rejects when neither userId nor anonymousId is set", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ groupId: "g1" }, ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/whatsapp-message-send.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-message-send: POST with the documented query parameters", async () => {
+test("whatsapp-message-send: POST with the documented query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", request_id: "r" } }]);
   const out = await action.execute({
     integratedNumber: "15550236673",
@@ -21,13 +22,13 @@ Deno.test("whatsapp-message-send: POST with the documented query parameters", as
   assertEquals(out, { response: { status: "success", request_id: "r" } });
 });
 
-Deno.test("whatsapp-message-send: every field is required", async () => {
+test("whatsapp-message-send: every field is required", async () => {
   await assertRejects(async () =>
     await action.execute({ integratedNumber: "1", recipientNumber: "2" }, mockCtx([]).ctx)
   );
 });
 
-Deno.test("whatsapp-message-send: puts no credential on the request (sign owns that)", async () => {
+test("whatsapp-message-send: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await action.execute({ integratedNumber: "9199", recipientNumber: "9188", text: "hi" }, ctx);
   assertEquals(calls[0].headers.authkey, undefined);
@@ -35,7 +36,7 @@ Deno.test("whatsapp-message-send: puts no credential on the request (sign owns t
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("whatsapp-message-send: a vendor error surfaces its own message", async () => {
+test("whatsapp-message-send: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ integratedNumber: "9199", recipientNumber: "9188", text: "hi" }, ctx)

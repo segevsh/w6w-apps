@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
 const RESPONSE = { "success": true, "data": { "taskId": "10" } };
 
-Deno.test("task-create: calls POST /api/client/v2/tasks and returns the vendor body", async () => {
+test("task-create: calls POST /api/client/v2/tasks and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "name": "Call Jane",
@@ -34,7 +35,7 @@ Deno.test("task-create: calls POST /api/client/v2/tasks and returns the vendor b
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("task-create: sends nothing for fields left unset", async () => {
+test("task-create: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "name": "Call Jane", "taskType": "call", "contactId": 11 }, ctx);
   const url = new URL(calls[0].url);
@@ -46,7 +47,7 @@ Deno.test("task-create: sends nothing for fields left unset", async () => {
   });
 });
 
-Deno.test("task-create: refuses a missing name before any request", async () => {
+test("task-create: refuses a missing name before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await action.execute!({ "taskType": "call", "contactId": 11 } as never, ctx)
@@ -54,7 +55,7 @@ Deno.test("task-create: refuses a missing name before any request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("task-create: surfaces the vendor's error body", async () => {
+test("task-create: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-get.ts";
 
-Deno.test("post-get: fetches by fullname via /api/info", async () => {
+test("post-get: fetches by fullname via /api/info", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       kind: "Listing",
@@ -14,7 +15,7 @@ Deno.test("post-get: fetches by fullname via /api/info", async () => {
   assertEquals(out, { id: "abc", title: "hi" });
 });
 
-Deno.test("post-get: doesn't double-prefix an id that already carries t3_", async () => {
+test("post-get: doesn't double-prefix an id that already carries t3_", async () => {
   const { ctx, calls } = mockCtx([{
     body: { kind: "Listing", data: { children: [{ kind: "t3", data: { id: "abc" } }] } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("post-get: doesn't double-prefix an id that already carries t3_", asyn
   assertEquals(calls[0].url, "https://oauth.reddit.com/api/info?id=t3_abc");
 });
 
-Deno.test("post-get: throws when no post is found", async () => {
+test("post-get: throws when no post is found", async () => {
   const { ctx } = mockCtx([{ body: { kind: "Listing", data: { children: [] } } }]);
   await assertRejects(
     async () => {

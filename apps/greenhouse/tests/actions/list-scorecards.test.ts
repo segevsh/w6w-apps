@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listScorecards from "../../actions/list-scorecards.ts";
 import { scorecardStatusOptions } from "../../lib/params.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-scorecards: calls GET /v3/scorecards", async () => {
+test("list-scorecards: calls GET /v3/scorecards", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listScorecards.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/scorecards");
 });
 
-Deno.test("list-scorecards: status is draft or complete", () => {
+test("list-scorecards: status is draft or complete", () => {
   assertEquals(scorecardStatusOptions.map((o) => o.value), ["draft", "complete"]);
 });
 
@@ -18,7 +19,7 @@ Deno.test("list-scorecards: status is draft or complete", () => {
  * can file feedback on someone's behalf — so both are offered rather than one
  * "who" field that answers the wrong question half the time.
  */
-Deno.test("list-scorecards: interviewer and submitter are separate filters", async () => {
+test("list-scorecards: interviewer and submitter are separate filters", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listScorecards.execute({
     applicationIds: "1",
@@ -40,12 +41,12 @@ Deno.test("list-scorecards: interviewer and submitter are separate filters", asy
   });
 });
 
-Deno.test("list-scorecards: the status hint warns that drafts are included by default", () => {
+test("list-scorecards: the status hint warns that drafts are included by default", () => {
   const param = (listScorecards.params ?? []).find((p) => p.key === "status");
   assert(param?.hint?.includes("drafts"), param?.hint);
 });
 
-Deno.test("list-scorecards: a cursor rejects the application filter it already carries", () => {
+test("list-scorecards: a cursor rejects the application filter it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(
     () => listScorecards.execute({ cursor: "N", applicationIds: "1" }, ctx),

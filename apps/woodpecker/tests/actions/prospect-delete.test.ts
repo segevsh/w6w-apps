@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectDelete from "../../actions/prospect-delete.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-delete: DELETE with ids and campaigns", async () => {
+test("prospect-delete: DELETE with ids and campaigns", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await prospectDelete.execute(
     { "id": "1,2", "campaigns_id": "9" } as never,
@@ -19,7 +20,7 @@ Deno.test("prospect-delete: DELETE with ids and campaigns", async () => {
   assertEquals(out.campaigns_id, "9");
 });
 
-Deno.test("prospect-delete: global delete leaves campaigns_id unset", async () => {
+test("prospect-delete: global delete leaves campaigns_id unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await prospectDelete.execute({ "id": ["5"] } as never, ctx) as Record<
     string,
@@ -36,7 +37,7 @@ Deno.test("prospect-delete: global delete leaves campaigns_id unset", async () =
   assertEquals(out.campaigns_id, null);
 });
 
-Deno.test("prospect-delete: refuses an empty id list", async () => {
+test("prospect-delete: refuses an empty id list", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await prospectDelete.execute({ "id": "" } as never, ctx),

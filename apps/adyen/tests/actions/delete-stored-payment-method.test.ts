@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import deleteStoredPaymentMethod from "../../actions/delete-stored-payment-method.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "storedPaymentMethodId": "tok 1", "shopperReference": "s-1" } as
   typeof deleteStoredPaymentMethod.execute
 >[0];
 
-Deno.test("delete-stored-payment-method: sends DELETE to the documented path and returns the response", async () => {
+test("delete-stored-payment-method: sends DELETE to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{ status: 204 }]);
   const out = await deleteStoredPaymentMethod.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("delete-stored-payment-method: sends DELETE to the documented path and
   assertEquals(out, { "deleted": true, "storedPaymentMethodId": "tok 1" });
 });
 
-Deno.test("delete-stored-payment-method: targets the connection's base URL and carries no credential", async () => {
+test("delete-stored-payment-method: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{ status: 204 }], "live");
   await deleteStoredPaymentMethod.execute(INPUT, ctx);
   assert(
@@ -32,7 +33,7 @@ Deno.test("delete-stored-payment-method: targets the connection's base URL and c
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("delete-stored-payment-method: surfaces Adyen's error code, type and message", async () => {
+test("delete-stored-payment-method: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -50,11 +51,11 @@ Deno.test("delete-stored-payment-method: surfaces Adyen's error code, type and m
   );
 });
 
-Deno.test("delete-stored-payment-method: declares idempotency as false", () => {
+test("delete-stored-payment-method: declares idempotency as false", () => {
   assertEquals(deleteStoredPaymentMethod.idempotent, false);
 });
 
-Deno.test("delete-stored-payment-method: an explicit merchantAccount beats the connection's", async () => {
+test("delete-stored-payment-method: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{ status: 204 }]);
   await deleteStoredPaymentMethod.execute({ ...INPUT, merchantAccount: "OtherMerchant" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("merchantAccount"), "OtherMerchant");

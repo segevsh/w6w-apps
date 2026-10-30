@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-search.ts";
 
-Deno.test("post-search: searches all of Reddit when no subreddit is given", async () => {
+test("post-search: searches all of Reddit when no subreddit is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { kind: "Listing", data: { children: [], after: null } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("post-search: searches all of Reddit when no subreddit is given", asyn
   );
 });
 
-Deno.test("post-search: restricts to a subreddit and sets restrict_sr", async () => {
+test("post-search: restricts to a subreddit and sets restrict_sr", async () => {
   const { ctx, calls } = mockCtx([{
     body: { kind: "Listing", data: { children: [], after: null } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("post-search: restricts to a subreddit and sets restrict_sr", async ()
   );
 });
 
-Deno.test("post-search: returns posts and the pagination cursor", async () => {
+test("post-search: returns posts and the pagination cursor", async () => {
   const { ctx } = mockCtx([{
     body: {
       kind: "Listing",

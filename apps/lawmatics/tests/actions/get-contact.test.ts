@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getContact from "../../actions/get-contact.ts";
 import { item, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-contact: hits GET /v1/contacts/:id and unwraps the single-resource envelope", async () => {
+test("get-contact: hits GET /v1/contacts/:id and unwraps the single-resource envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: item("136", "contact", { first_name: "Linda", last_name: "Baker" }),
   }]);
@@ -13,7 +14,7 @@ Deno.test("get-contact: hits GET /v1/contacts/:id and unwraps the single-resourc
   assertEquals(out.type, "contact");
 });
 
-Deno.test("get-contact: URL-encodes the id and forwards fields", async () => {
+test("get-contact: URL-encodes the id and forwards fields", async () => {
   const { ctx, calls } = mockCtx([{ body: item("a b", "contact", {}) }]);
   await getContact.execute({ contactId: "a b", fields: "all" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/contacts/a%20b");

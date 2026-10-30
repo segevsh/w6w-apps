@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelUnfavorite from "../../actions/channel-unfavorite.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("channel-unfavorite: POST /api/v3/channels/unfavorite with every documented parameter", async () => {
+test("channel-unfavorite: POST /api/v3/channels/unfavorite with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await channelUnfavorite.execute({ "channelId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("channel-unfavorite: POST /api/v3/channels/unfavorite with every docum
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("channel-unfavorite: sends a form body, never a query string", async () => {
+test("channel-unfavorite: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUnfavorite.execute({ "channelId": 100 }, ctx);
 
@@ -22,18 +23,18 @@ Deno.test("channel-unfavorite: sends a form body, never a query string", async (
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("channel-unfavorite: is declared idempotent", () => {
+test("channel-unfavorite: is declared idempotent", () => {
   assertEquals(channelUnfavorite.idempotent, true);
 });
 
-Deno.test("channel-unfavorite: sends no credential of its own", async () => {
+test("channel-unfavorite: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUnfavorite.execute({ "channelId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("channel-unfavorite: surfaces Twist's error body", async () => {
+test("channel-unfavorite: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

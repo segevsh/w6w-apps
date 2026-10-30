@@ -1,7 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   // Flodesk publishes exactly 22 documented REST operations; one Action each.
   assertEquals(app.actions.length, 22);
@@ -9,7 +11,7 @@ Deno.test("index: exports actions, auth and health checks", () => {
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -17,7 +19,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -29,30 +31,30 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every action file is named after its key", async () => {
+test("index: every action file is named after its key", async () => {
   for (const a of app.actions) {
     const path = new URL(`../actions/${a.key}.ts`, import.meta.url);
-    const stat = await Deno.stat(path);
+    const stat = await denoStat(path);
     assert(stat.isFile, `${a.key}: no matching action file`);
   }
 });
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
     assert(!/authorization/i.test(src), `${a.key}: sets an auth header itself`);
     assert(!/btoa|Basic /.test(src), `${a.key}: builds a Basic header itself`);
   }
 });
 
-Deno.test("index: every action covers a real, documented Flodesk endpoint", () => {
+test("index: every action covers a real, documented Flodesk endpoint", () => {
   // The 22 operations published under Flodesk's own `x-tagGroups` → "REST API",
   // read off developers.flodesk.com's embedded OpenAPI document on 2026-08-03.
   // If this app ever grows an action, it must map onto one of these.
@@ -84,7 +86,7 @@ Deno.test("index: every action covers a real, documented Flodesk endpoint", () =
   assertEquals(app.actions.length, documented.size, "one action per documented operation");
 });
 
-Deno.test("index: both documented auth methods are offered", () => {
+test("index: both documented auth methods are offered", () => {
   const byKey = Object.fromEntries(app.auth.map((a) => [a.key, a]));
   // HTTP Basic with the API key as username — Flodesk's private-integration path.
   assertEquals(byKey["api-key"].type, "basic");

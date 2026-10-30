@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteDelete from "../../actions/note-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-delete: DELETE /api/v1/note/n1 on the workspace host", async () => {
+test("note-delete: DELETE /api/v1/note/n1 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: "deleted" } }]);
   const out = await noteDelete.execute({ noteId: "n1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("note-delete: DELETE /api/v1/note/n1 on the workspace host", async () 
   assertEquals((out as { message: string }).message, "deleted");
 });
 
-Deno.test("note-delete: a Fellow error surfaces its detail and status", async () => {
+test("note-delete: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(noteDelete.execute({ noteId: "n1" }, ctx)),

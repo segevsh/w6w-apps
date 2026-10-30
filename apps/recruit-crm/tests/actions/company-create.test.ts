@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/company-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("company-create: POSTs JSON with the vendor's snake_case names", async () => {
+test("company-create: POSTs JSON with the vendor's snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { company_name: "Acme", slug: "1" } }]);
   const out = await action.execute({ companyName: "Acme", industryId: 4, website: "" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("company-create: POSTs JSON with the vendor's snake_case names", async
   assertEquals(out, { company_name: "Acme", slug: "1" });
 });
 
-Deno.test("company-create: refuses an empty form", async () => {
+test("company-create: refuses an empty form", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await (action.execute({}, ctx)), Error, "at least one");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: builds the documented body, snake_cased", async () => {
+test("project-create: builds the documented body, snake_cased", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1" } }]);
   await projectCreate.execute({
     name: "Roof Job 4132",
@@ -38,19 +39,19 @@ Deno.test("project-create: builds the documented body, snake_cased", async () =>
   });
 });
 
-Deno.test("project-create: sends only the name when nothing else is set", async () => {
+test("project-create: sends only the name when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1" } }]);
   await projectCreate.execute({ name: "Bare" }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "Bare" });
 });
 
-Deno.test("project-create: sends coordinates only when both halves are present", async () => {
+test("project-create: sends coordinates only when both halves are present", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await projectCreate.execute({ name: "Half", lat: 28.4 }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "Half" });
 });
 
-Deno.test("project-create: accepts a geofence as JSON text or as a parsed array", async () => {
+test("project-create: accepts a geofence as JSON text or as a parsed array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }, { status: 201, body: {} }]);
   const points = [{ lat: 1, lon: 2 }, { lat: 3, lon: 4 }];
   await projectCreate.execute({ name: "A", geofence: JSON.stringify(points) }, ctx);
@@ -59,7 +60,7 @@ Deno.test("project-create: accepts a geofence as JSON text or as a parsed array"
   assertEquals(bodyOf(calls[1]).geofence, points);
 });
 
-Deno.test("project-create: rejects an unparseable geofence before calling the API", async () => {
+test("project-create: rejects an unparseable geofence before calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await projectCreate.execute({ name: "A", geofence: "{oops" }, ctx),
@@ -69,12 +70,12 @@ Deno.test("project-create: rejects an unparseable geofence before calling the AP
   assertEquals(calls.length, 0);
 });
 
-Deno.test("project-create: sends the impersonation header when a user is named", async () => {
+test("project-create: sends the impersonation header when a user is named", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await projectCreate.execute({ name: "A", actAs: "crew@example.com" }, ctx);
   assertEquals(calls[0].headers["x-companycam-user"], "crew@example.com");
 });
 
-Deno.test("project-create: is declared non-idempotent — this API has no idempotency key", () => {
+test("project-create: is declared non-idempotent — this API has no idempotency key", () => {
   assertEquals(projectCreate.idempotent, false);
 });

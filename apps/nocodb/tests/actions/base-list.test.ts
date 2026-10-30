@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/base-list.ts";
 
@@ -14,7 +15,7 @@ const bases = {
 };
 
 /** A write against an external base goes through to somebody's Postgres. */
-Deno.test("base-list: flags bases backed by an external database", async () => {
+test("base-list: flags bases backed by an external database", async () => {
   const { ctx, calls, logs } = mockCtx([bases], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/meta/bases");
@@ -25,14 +26,14 @@ Deno.test("base-list: flags bases backed by an external database", async () => {
   );
 });
 
-Deno.test("base-list: returns the ids table-list takes", async () => {
+test("base-list: returns the ids table-list takes", async () => {
   const { ctx } = mockCtx([bases], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.ids, ["p1", "p2"]);
   assertEquals(result.titles, ["CRM", "Warehouse"]);
 });
 
-Deno.test("base-list: filters on the name here, case-insensitively", async () => {
+test("base-list: filters on the name here, case-insensitively", async () => {
   const { ctx, calls } = mockCtx([bases], D);
   const result = await action.execute({ nameContains: "crm" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -40,6 +41,6 @@ Deno.test("base-list: filters on the name here, case-insensitively", async () =>
 });
 
 /** A token has no scope of its own. */
-Deno.test("base-list: says the token's reach is its creator's", () => {
+test("base-list: says the token's reach is its creator's", () => {
   assert(/no scope of its own/.test(action.description!), action.description);
 });

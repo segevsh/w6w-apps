@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: is an unsigned, app-scoped check that widens egress to the status host only", () => {
+test("service: is an unsigned, app-scoped check that widens egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["issquareup.com"]);
   // Scope/credential are left at this kind's defaults (`app` / `none`), which
@@ -14,7 +15,7 @@ Deno.test("service: is an unsigned, app-scoped check that widens egress to the s
   assert(!service.network!.allow!.some((h) => h.includes("squareup.com/")));
 });
 
-Deno.test("service: probes Square's status.json rollup", async () => {
+test("service: probes Square's status.json rollup", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: { indicator: "none", description: "All Systems Operational" } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("service: probes Square's status.json rollup", async () => {
   assertEquals(report.components, undefined);
 });
 
-Deno.test("service: maps each Statuspage indicator onto a health state", async () => {
+test("service: maps each Statuspage indicator onto a health state", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -40,19 +41,19 @@ Deno.test("service: maps each Statuspage indicator onto a health state", async (
   }
 });
 
-Deno.test("service: an unrecognised indicator is unknown, not ok", async () => {
+test("service: an unrecognised indicator is unknown, not ok", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "maintenance-ish" } } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("503"));
 });
 
-Deno.test("service: a non-JSON 200 reports unknown rather than throwing", async () => {
+test("service: a non-JSON 200 reports unknown rather than throwing", async () => {
   const { ctx } = mockCtx([{ body: "<html>nope</html>", headers: {} }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/template-list.ts";
 
-Deno.test("template-list: GETs the account's templates", async () => {
+test("template-list: GETs the account's templates", async () => {
   const { ctx, calls } = mockCtx([{ body: { envelopeTemplates: [{ templateId: "t1" }] } }]);
   const out = await action.execute({}, ctx) as { envelopeTemplates: Array<{ templateId: string }> };
 
@@ -12,7 +13,7 @@ Deno.test("template-list: GETs the account's templates", async () => {
   assertEquals(out.envelopeTemplates[0].templateId, "t1");
 });
 
-Deno.test("template-list: maps every filter to Docusign's query names", async () => {
+test("template-list: maps every filter to Docusign's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     searchText: "nda",
@@ -40,7 +41,7 @@ Deno.test("template-list: maps every filter to Docusign's query names", async ()
   assertEquals(q.get("start_position"), "25");
 });
 
-Deno.test("template-list: is a search action grouped under template", () => {
+test("template-list: is a search action grouped under template", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "template");
 });

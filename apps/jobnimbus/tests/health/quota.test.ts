@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: is a declared absence, not a probe", () => {
+test("quota: is a declared absence, not a probe", () => {
   assertEquals(typeof quota.check, "undefined");
   assert(quota.unavailable?.reason && quota.unavailable.reason.length > 0);
 });
@@ -11,6 +12,6 @@ Deno.test("quota: is a declared absence, not a probe", () => {
  * — so at any severity but `informational` this would pin the App's verdict
  * at `unknown` forever.
  */
-Deno.test("quota: severity is informational", () => {
+test("quota: severity is informational", () => {
   assertEquals(quota.severity, "informational");
 });

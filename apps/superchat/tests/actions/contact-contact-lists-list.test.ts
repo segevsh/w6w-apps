@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-contact-lists-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("contact-contact-lists-list: requests one page and surfaces the next cursor", async () => {
+test("contact-contact-lists-list: requests one page and surfaces the next cursor", async () => {
   const { ctx, calls } = mockCtx([{
     "body": {
       "url": "u",
@@ -55,7 +56,7 @@ Deno.test("contact-contact-lists-list: requests one page and surfaces the next c
   });
 });
 
-Deno.test("contact-contact-lists-list: rejects after + before together", async () => {
+test("contact-contact-lists-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>

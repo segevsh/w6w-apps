@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
 const D = { display: { host: "wd2-impl-services1.workday.com", tenant: "acme_impl1" } };
 
-Deno.test("organization-list: calls the documented URL and returns a page", async () => {
+test("organization-list: calls the documented URL and returns a page", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { total: 1, data: [{ id: "x1", descriptor: "One" }] } }],
     D,
@@ -25,7 +26,7 @@ Deno.test("organization-list: calls the documented URL and returns a page", asyn
   assertEquals(result.hasMore, false);
 });
 
-Deno.test("organization-list: surfaces a Workday error body", async () => {
+test("organization-list: surfaces a Workday error body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "Access denied" } }], D);
   await assertRejects(
     async () => await action.execute({ "organizationType": "Cost_Center=CC" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("organization-list: surfaces a Workday error body", async () => {
   );
 });
 
-Deno.test("organization-list: an organization type is required", async () => {
+test("organization-list: an organization type is required", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "organizationType");
   assertEquals(calls.length, 0);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignSendPreview, {
   MAX_PREVIEW_RECIPIENTS,
 } from "../../actions/campaign-send-preview.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-send-preview: POSTs the recipients under PreviewRecipients", async () => {
+test("campaign-send-preview: POSTs the recipients under PreviewRecipients", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await campaignSendPreview.execute(
     { campaignId: "cmp", previewRecipients: ["a@example.com", "b@example.com"] },
@@ -16,7 +17,7 @@ Deno.test("campaign-send-preview: POSTs the recipients under PreviewRecipients",
   assertEquals(out, { recipients: 2 });
 });
 
-Deno.test("campaign-send-preview: refuses more than the documented 15", async () => {
+test("campaign-send-preview: refuses more than the documented 15", async () => {
   const { ctx, calls } = mockCtx([]);
   const tooMany = Array.from(
     { length: MAX_PREVIEW_RECIPIENTS + 1 },
@@ -31,7 +32,7 @@ Deno.test("campaign-send-preview: refuses more than the documented 15", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-send-preview: refuses an empty list, which the API answers with 370", async () => {
+test("campaign-send-preview: refuses an empty list, which the API answers with 370", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -43,12 +44,12 @@ Deno.test("campaign-send-preview: refuses an empty list, which the API answers w
 });
 
 /** Every call delivers mail and burns a rationed daily allowance. */
-Deno.test("campaign-send-preview: is declared NOT idempotent", () => {
+test("campaign-send-preview: is declared NOT idempotent", () => {
   assertEquals(campaignSendPreview.idempotent, false);
 });
 
 /** The vendor documents Personalize as ignored, so it must not be offered. */
-Deno.test("campaign-send-preview: does not expose the deprecated Personalize parameter", () => {
+test("campaign-send-preview: does not expose the deprecated Personalize parameter", () => {
   const keys = (campaignSendPreview.params ?? []).map((p) => p.key.toLowerCase());
   assert(!keys.includes("personalize"), "Personalize is deprecated and ignored by the vendor");
 });

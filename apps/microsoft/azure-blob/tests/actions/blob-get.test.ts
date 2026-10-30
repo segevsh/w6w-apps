@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-get.ts";
 
@@ -19,7 +20,7 @@ const props = (headers: Record<string, string> = {}) => ({
 });
 
 /** The one call with nothing to parse — the body is empty by design. */
-Deno.test("blob-get: HEADs the blob and reads everything from the headers", async () => {
+test("blob-get: HEADs the blob and reads everything from the headers", async () => {
   const { ctx, calls } = mockCtx([props()], D);
   const result = await action.execute(
     { container: "uploads", blob: "logs/a.log" },
@@ -34,7 +35,7 @@ Deno.test("blob-get: HEADs the blob and reads everything from the headers", asyn
 });
 
 /** An unencoded slash addresses a different URL. */
-Deno.test("blob-get: encodes the blob's slashes into the path", async () => {
+test("blob-get: encodes the blob's slashes into the path", async () => {
   const { ctx, calls } = mockCtx([props()], D);
   await action.execute({ container: "uploads", blob: "logs/2026/a.log" }, ctx);
   assertEquals(
@@ -44,7 +45,7 @@ Deno.test("blob-get: encodes the blob's slashes into the path", async () => {
 });
 
 /** Archive is not slow storage; it is offline. */
-Deno.test("blob-get: an archived blob is reported as unreadable, and warned about", async () => {
+test("blob-get: an archived blob is reported as unreadable, and warned about", async () => {
   const { ctx, logs } = mockCtx([props({ "x-ms-access-tier": "Archive" })], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log" },
@@ -56,7 +57,7 @@ Deno.test("blob-get: an archived blob is reported as unreadable, and warned abou
   assert(/up to 15 hours/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("blob-get: any other tier is readable and does not warn", async () => {
+test("blob-get: any other tier is readable and does not warn", async () => {
   const { ctx, logs } = mockCtx([props({ "x-ms-access-tier": "Cool" })], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log" },
@@ -66,7 +67,7 @@ Deno.test("blob-get: any other tier is readable and does not warn", async () => 
   assertEquals(logs.length, 0);
 });
 
-Deno.test("blob-get: a rehydration in progress is surfaced", async () => {
+test("blob-get: a rehydration in progress is surfaced", async () => {
   const { ctx } = mockCtx([props({
     "x-ms-access-tier": "Archive",
     "x-ms-archive-status": "rehydrate-pending-to-hot",
@@ -79,7 +80,7 @@ Deno.test("blob-get: a rehydration in progress is surfaced", async () => {
 });
 
 /** HTTP lowercases header names, so the metadata's case does not survive. */
-Deno.test("blob-get: metadata comes back with the prefix stripped and lowercased", async () => {
+test("blob-get: metadata comes back with the prefix stripped and lowercased", async () => {
   const { ctx } = mockCtx([props({ "x-ms-meta-uploadedby": "workflow" })], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log" },
@@ -92,7 +93,7 @@ Deno.test("blob-get: metadata comes back with the prefix stripped and lowercased
   ));
 });
 
-Deno.test("blob-get: a snapshot or version is passed as a query parameter", async () => {
+test("blob-get: a snapshot or version is passed as a query parameter", async () => {
   const { ctx, calls } = mockCtx([props()], D);
   await action.execute(
     { container: "uploads", blob: "a.log", snapshot: "2026-08-19T10:00:00.0000000Z" },

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-time-off.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-time-off: fetches by id and flattens the response", async () => {
+test("get-time-off: fetches by id and flattens the response", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -23,7 +24,7 @@ Deno.test("get-time-off: fetches by id and flattens the response", async () => {
   assertEquals(out.timeOff.status, "approved");
 });
 
-Deno.test("get-time-off: surfaces a 404 not-found message", async () => {
+test("get-time-off: surfaces a 404 not-found message", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,

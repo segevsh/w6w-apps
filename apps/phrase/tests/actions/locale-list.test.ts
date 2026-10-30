@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import localeList from "../../actions/locale-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("locale-list: sends GET /v2/projects/project%201%2Fx/locales", async () => {
+test("locale-list: sends GET /v2/projects/project%201%2Fx/locales", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "x1" }] }]);
   const input = {
     "projectId": "project 1/x",
@@ -27,7 +28,7 @@ Deno.test("locale-list: sends GET /v2/projects/project%201%2Fx/locales", async (
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("locale-list: surfaces Phrase's validation message on a 422", async () => {
+test("locale-list: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await localeList.execute({
@@ -42,7 +43,7 @@ Deno.test("locale-list: surfaces Phrase's validation message on a 422", async ()
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("locale-list: declares key, type and every param it reads", () => {
+test("locale-list: declares key, type and every param it reads", () => {
   assertEquals(localeList.key, "locale-list");
   assertEquals(localeList.type, "search");
   const declared = new Set((localeList.params ?? []).map((p) => p.key));
@@ -58,7 +59,7 @@ Deno.test("locale-list: declares key, type and every param it reads", () => {
   ) assert(declared.has(k), `missing param ${k}`);
 });
 
-Deno.test("locale-list: lifts the Pagination header into the output", async () => {
+test("locale-list: lifts the Pagination header into the output", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",
@@ -89,7 +90,7 @@ Deno.test("locale-list: lifts the Pagination header into the output", async () =
   ]);
 });
 
-Deno.test("locale-list: falls back to the Link header for the next page", async () => {
+test("locale-list: falls back to the Link header for the next page", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",

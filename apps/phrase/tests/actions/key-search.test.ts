@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import keySearch from "../../actions/key-search.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("key-search: sends POST /v2/projects/project%201%2Fx/keys/search", async () => {
+test("key-search: sends POST /v2/projects/project%201%2Fx/keys/search", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "x1" }] }]);
   const input = {
     "projectId": "project 1/x",
@@ -29,7 +30,7 @@ Deno.test("key-search: sends POST /v2/projects/project%201%2Fx/keys/search", asy
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("key-search: surfaces Phrase's validation message on a 422", async () => {
+test("key-search: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await keySearch.execute({
@@ -46,7 +47,7 @@ Deno.test("key-search: surfaces Phrase's validation message on a 422", async () 
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("key-search: declares key, type and every param it reads", () => {
+test("key-search: declares key, type and every param it reads", () => {
   assertEquals(keySearch.key, "key-search");
   assertEquals(keySearch.type, "search");
   const declared = new Set((keySearch.params ?? []).map((p) => p.key));
@@ -64,7 +65,7 @@ Deno.test("key-search: declares key, type and every param it reads", () => {
   ) assert(declared.has(k), `missing param ${k}`);
 });
 
-Deno.test("key-search: lifts the Pagination header into the output", async () => {
+test("key-search: lifts the Pagination header into the output", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",
@@ -97,7 +98,7 @@ Deno.test("key-search: lifts the Pagination header into the output", async () =>
   ]);
 });
 
-Deno.test("key-search: falls back to the Link header for the next page", async () => {
+test("key-search: falls back to the Link header for the next page", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",

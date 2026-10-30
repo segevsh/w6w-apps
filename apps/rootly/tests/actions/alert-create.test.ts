@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/alert-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("alert-create: full input maps to POST /v1/alerts", async () => {
+test("alert-create: full input maps to POST /v1/alerts", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -110,7 +111,7 @@ Deno.test("alert-create: full input maps to POST /v1/alerts", async () => {
   });
 });
 
-Deno.test("alert-create: required input only maps to POST /v1/alerts", async () => {
+test("alert-create: required input only maps to POST /v1/alerts", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -150,7 +151,7 @@ Deno.test("alert-create: required input only maps to POST /v1/alerts", async () 
   });
 });
 
-Deno.test("alert-create: an API error rejects with the vendor's title and detail", async () => {
+test("alert-create: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { errors: [{ title: "Resource not found", status: "422", detail: "no such id" }] },

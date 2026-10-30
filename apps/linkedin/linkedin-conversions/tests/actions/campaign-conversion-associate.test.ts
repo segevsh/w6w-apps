@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignConversionAssociate from "../../actions/campaign-conversion-associate.ts";
 import { mockCtx, noContentResponse } from "../_helpers.ts";
 
-Deno.test("campaign-conversion-associate: PUTs the compound key with both URNs in the body", async () => {
+test("campaign-conversion-associate: PUTs the compound key with both URNs in the body", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await campaignConversionAssociate.execute(
     { campaignId: "337643194", conversionId: "70203" },
@@ -23,7 +24,7 @@ Deno.test("campaign-conversion-associate: PUTs the compound key with both URNs i
   assertEquals(result, { ok: true });
 });
 
-Deno.test("campaign-conversion-associate: accepts a full URN as well as a bare id", async () => {
+test("campaign-conversion-associate: accepts a full URN as well as a bare id", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   await campaignConversionAssociate.execute(
     {
@@ -37,6 +38,6 @@ Deno.test("campaign-conversion-associate: accepts a full URN as well as a bare i
   assertEquals(body.conversion, "urn:lla:llaPartnerConversion:2");
 });
 
-Deno.test("campaign-conversion-associate: is idempotent", () => {
+test("campaign-conversion-associate: is idempotent", () => {
   assertEquals(campaignConversionAssociate.idempotent, true);
 });

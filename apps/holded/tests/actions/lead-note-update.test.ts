@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadNoteUpdate from "../../actions/lead-note-update.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-note-update: metadata — idempotent", () => {
+test("lead-note-update: metadata — idempotent", () => {
   assertEquals(leadNoteUpdate.type, "perform");
   assertEquals(leadNoteUpdate.idempotent, true);
 });
 
-Deno.test("lead-note-update: PUT /leads/{leadId}/notes with noteId + fields", async () => {
+test("lead-note-update: PUT /leads/{leadId}/notes with noteId + fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: writeResult("Updated", "note-1") }]);
   const result = asMutation(
     await leadNoteUpdate.execute({

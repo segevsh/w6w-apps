@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/hook-create.ts";
 
-Deno.test("hook-create: sends Recording Include for recording_added", async () => {
+test("hook-create: sends Recording Include for recording_added", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "h1", hook_type: "recording_added" } }]);
   await action.execute({
     hookUrl: "https://example.com/hook",
@@ -20,7 +21,7 @@ Deno.test("hook-create: sends Recording Include for recording_added", async () =
   });
 });
 
-Deno.test("hook-create: sends Highlight Include for highlight_updated", async () => {
+test("hook-create: sends Highlight Include for highlight_updated", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "h1" } }]);
   await action.execute({
     hookUrl: "https://example.com/hook",
@@ -38,7 +39,7 @@ Deno.test("hook-create: sends Highlight Include for highlight_updated", async ()
   });
 });
 
-Deno.test("hook-create: omits include entirely for a type documented as N/A", async () => {
+test("hook-create: omits include entirely for a type documented as N/A", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "h1" } }]);
   await action.execute({
     hookUrl: "https://example.com/hook",
@@ -50,12 +51,12 @@ Deno.test("hook-create: omits include entirely for a type documented as N/A", as
   assertEquals(body, { hook_url: "https://example.com/hook", hook_type: "upload_status" });
 });
 
-Deno.test("hook-create: exposes all 10 documented hook types", () => {
+test("hook-create: exposes all 10 documented hook types", () => {
   const options = action.params?.find((p) => p.key === "hookType")?.options;
   assertEquals(Array.isArray(options) ? options.length : 0, 10);
 });
 
-Deno.test("hook-create: is a non-idempotent perform action", () => {
+test("hook-create: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

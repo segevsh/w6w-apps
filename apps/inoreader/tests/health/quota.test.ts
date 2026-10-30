@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { WARN_REMAINING_FRACTION } from "../../health/quota.ts";
 import { mockCtx, type MockResponse, text } from "../_helpers.ts";
 
@@ -16,14 +17,14 @@ const run = async (r: MockResponse) => {
   return { report: await quota.check!({}, ctx), calls };
 };
 
-Deno.test("quota: signed, informational, polled at most every 6 hours", () => {
+test("quota: signed, informational, polled at most every 6 hours", () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.minIntervalSeconds, 21600);
   assertEquals(WARN_REMAINING_FRACTION, 0.1);
 });
 
-Deno.test("quota: healthy usage reports both zones with a reset instant", async () => {
+test("quota: healthy usage reports both zones with a reset instant", async () => {
   const { report, calls } = await run({ body: { userId: "1" }, headers: headers(7, 3) });
   assertEquals(calls[0].url, "https://www.inoreader.com/reader/api/0/user-info");
   assertEquals(report.state, "ok");
@@ -34,14 +35,14 @@ Deno.test("quota: healthy usage reports both zones with a reset instant", async 
   assertEquals(typeof report.quota?.[0].resetAt, "string");
 });
 
-Deno.test("quota: <=10% left is degraded, an empty zone is down", async () => {
+test("quota: <=10% left is degraded, an empty zone is down", async () => {
   const low = await run({ body: { userId: "1" }, headers: headers(95, 0) });
   assertEquals(low.report.state, "degraded");
   const empty = await run({ body: { userId: "1" }, headers: headers(10, 100) });
   assertEquals(empty.report.state, "down");
 });
 
-Deno.test("quota: no headers or a failed call is unknown", async () => {
+test("quota: no headers or a failed call is unknown", async () => {
   assertEquals((await run({ body: { userId: "1" } })).report.state, "unknown");
   assertEquals((await run(text("Error=x", 401))).report.state, "unknown");
 });

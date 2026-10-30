@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transcriptList from "../../actions/transcript-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const PAGE = {
   transcripts: [{ id: "t1", status: "completed" }],
 };
 
-Deno.test("transcript-list: GETs /v2/transcript with the filter query params", async () => {
+test("transcript-list: GETs /v2/transcript with the filter query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: PAGE }]);
   const out = await transcriptList.execute(
     { limit: 5, status: "completed", beforeId: "t9" },
@@ -28,6 +29,6 @@ Deno.test("transcript-list: GETs /v2/transcript with the filter query params", a
   assertEquals(out.transcripts.length, 1);
 });
 
-Deno.test("transcript-list: is a search action", () => {
+test("transcript-list: is a search action", () => {
   assertEquals(transcriptList.type, "search");
 });

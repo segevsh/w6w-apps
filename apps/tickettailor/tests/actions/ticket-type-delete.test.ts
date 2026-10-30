@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketTypeDelete from "../../actions/ticket-type-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-type-delete: DELETEs the nested ticket type path", async () => {
+test("ticket-type-delete: DELETEs the nested ticket type path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "tt_1", object: "ticket_type", deleted: "true" } },
   ]);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pull-request-get.ts";
 
 const conn = { display: { baseUrl: "https://git.example.com", owner: "acme" } };
 
-Deno.test("pull-request-get: reads one pull request by number", async () => {
+test("pull-request-get: reads one pull request by number", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { number: 4, mergeable: null } }], conn);
   const result = await action.execute!({ repo: "web", pullNumber: 4 }, ctx) as Record<
     string,
@@ -15,12 +16,12 @@ Deno.test("pull-request-get: reads one pull request by number", async () => {
 });
 
 /** null means "still computing", and treating it as false refuses good PRs. */
-Deno.test("pull-request-get: the output says null is not false", () => {
+test("pull-request-get: the output says null is not false", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "mergeable")!.label.includes("null while Gitea"));
 });
 
-Deno.test("pull-request-get: a missing number fails before any request", async () => {
+test("pull-request-get: a missing number fails before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web" }, ctx),

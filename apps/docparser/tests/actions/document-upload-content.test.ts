@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import documentUploadContent from "../../actions/document-upload-content.ts";
 import { errorOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-upload-content: POSTs base64 content as a form to /v1/document/upload/<id>", async () => {
+test("document-upload-content: POSTs base64 content as a form to /v1/document/upload/<id>", async () => {
   const resp = { id: "doc1", file_size: 12, quota_used: 1, quota_left: 9, quota_refill: "x" };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const b64 = "JVBERi0+/w==";
@@ -19,7 +20,7 @@ Deno.test("document-upload-content: POSTs base64 content as a form to /v1/docume
   assertEquals(form.get("remote_id"), "r");
 });
 
-Deno.test("document-upload-content: requires content, is not idempotent", async () => {
+test("document-upload-content: requires content, is not idempotent", async () => {
   assertEquals(documentUploadContent.idempotent, false);
   const { ctx, calls } = mockCtx([]);
   const err = await errorOf(() =>

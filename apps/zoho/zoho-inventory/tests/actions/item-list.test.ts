@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/item-list.ts";
 
-Deno.test("item-list: GETs /items with organization_id and pagination", async () => {
+test("item-list: GETs /items with organization_id and pagination", async () => {
   const { ctx, calls } = mockInventoryCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("item-list: GETs /items with organization_id and pagination", async ()
   assertEquals(out.pageContext, { page: 1, per_page: 200, has_more_page: false });
 });
 
-Deno.test("item-list: no organization on the connection and none passed is an actionable error", async () => {
+test("item-list: no organization on the connection and none passed is an actionable error", async () => {
   const { ctx } = mockInventoryCtx([], "www.zohoapis.com", "");
   let message = "";
   try {

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import personalAccessToken, { basicHeader, PROBE_URL } from "../../auth/personal-access-token.ts";
 import type { HookContext, SignableRequest } from "@w6w/types";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
 const CRED = { clientId: "my_client_id", secret: "my_secret" };
 
-Deno.test("sign: stamps the Basic header in the conventional client_id:secret order", () => {
+test("sign: stamps the Basic header in the conventional client_id:secret order", () => {
   const request = {
     url: "https://api.planningcenteronline.com/people/v2/people",
     method: "GET",
@@ -19,7 +20,7 @@ Deno.test("sign: stamps the Basic header in the conventional client_id:secret or
   assertEquals(signed.headers["authorization"], `Basic ${btoa("my_client_id:my_secret")}`);
 });
 
-Deno.test("sign: sets a User-Agent when the caller has not already set one", () => {
+test("sign: sets a User-Agent when the caller has not already set one", () => {
   const request = {
     url: "https://api.planningcenteronline.com/people/v2/people",
     method: "GET",
@@ -33,7 +34,7 @@ Deno.test("sign: sets a User-Agent when the caller has not already set one", () 
   assert(signed.headers["user-agent"]!.length > 0);
 });
 
-Deno.test("test: probes GET /current/v2/me with the signed header", async () => {
+test("test: probes GET /current/v2/me with the signed header", async () => {
   const { ctx, calls } = mockCtx([
     { body: single("Person", "1", { name: "Jane Church" }) },
   ]);
@@ -47,7 +48,7 @@ Deno.test("test: probes GET /current/v2/me with the signed header", async () => 
   assert(calls[0].headers["user-agent"]!.length > 0);
 });
 
-Deno.test("test: a missing half fails without making a request", async () => {
+test("test: a missing half fails without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await personalAccessToken.test({ credential: { clientId: "only-the-id" } }, ctx);
 
@@ -64,7 +65,7 @@ Deno.test("test: a missing half fails without making a request", async () => {
  * meaning of the status code alone ("You did not use the proper API token
  * and/or secret").
  */
-Deno.test("test: 401 is read as 'the credential was rejected', from the status alone", async () => {
+test("test: 401 is read as 'the credential was rejected', from the status alone", async () => {
   const { ctx } = mockCtx([{ status: 401, body: undefined }]);
   const out = await personalAccessToken.test({ credential: CRED }, ctx);
 
@@ -72,7 +73,7 @@ Deno.test("test: 401 is read as 'the credential was rejected', from the status a
   assert(out.message!.includes("rejected the client_id/secret pair"), out.message);
 });
 
-Deno.test("test: 403 is read as a permission problem, not a bad credential", async () => {
+test("test: 403 is read as a permission problem, not a bad credential", async () => {
   const { ctx } = mockCtx([{ status: 403, body: undefined }]);
   const out = await personalAccessToken.test({ credential: CRED }, ctx);
 
@@ -80,7 +81,7 @@ Deno.test("test: 403 is read as a permission problem, not a bad credential", asy
   assert(out.message!.includes("this user's role lacks access"), out.message);
 });
 
-Deno.test("afterConnect: labels the connection with the token owner's name", async () => {
+test("afterConnect: labels the connection with the token owner's name", async () => {
   const { ctx } = mockCtx([
     { body: single("Person", "1", { name: "Jane Church" }) },
   ]);
@@ -92,7 +93,7 @@ Deno.test("afterConnect: labels the connection with the token owner's name", asy
   assertEquals(out.label, "Planning Center (Jane Church)");
 });
 
-Deno.test("afterConnect: never throws when the probe fails, and reveals no credential", async () => {
+test("afterConnect: never throws when the probe fails, and reveals no credential", async () => {
   const { ctx } = mockCtx([{ status: 401, body: undefined }]);
   const out = await personalAccessToken.afterConnect!({ credential: CRED }, ctx) as Record<
     string,

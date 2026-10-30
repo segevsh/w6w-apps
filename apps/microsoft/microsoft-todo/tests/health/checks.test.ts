@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 import app from "../../index.ts";
 
-Deno.test("service: declared unavailable, with the evidence in the reason", () => {
+test("service: declared unavailable, with the evidence in the reason", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
@@ -23,7 +24,7 @@ Deno.test("service: declared unavailable, with the evidence in the reason", () =
   }
 });
 
-Deno.test("quota: declared unavailable, with the documented ceilings recorded", () => {
+test("quota: declared unavailable, with the documented ceilings recorded", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(typeof quota.check, "undefined");
@@ -31,7 +32,7 @@ Deno.test("quota: declared unavailable, with the documented ceilings recorded", 
   assert((quota.unavailable?.reason ?? "").includes("Retry-After"));
 });
 
-Deno.test("health: every unavailable check is informational", () => {
+test("health: every unavailable check is informational", () => {
   // An `unavailable` entry always reports `unknown`. The default severity is
   // `degraded`, which would pin this App's roll-up verdict at `unknown`
   // permanently — so a declared absence MUST be informational.
@@ -42,7 +43,7 @@ Deno.test("health: every unavailable check is informational", () => {
   }
 });
 
-Deno.test("health: no unavailable check widens egress or declares a feed", () => {
+test("health: no unavailable check widens egress or declares a feed", () => {
   for (const check of app.healthChecks!) {
     if (!check.unavailable) continue;
     assertEquals(check.network, undefined, `${check.key} widens egress but never calls out`);

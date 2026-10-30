@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templatesList from "../../actions/templates-list.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("templates-list: POST /api/1/getTemplates/ with the documented form fields", async () => {
+test("templates-list: POST /api/1/getTemplates/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await templatesList.execute({} as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("templates-list: POST /api/1/getTemplates/ with the documented form fi
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("templates-list: a vendor error surfaces its status and body", async () => {
+test("templates-list: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () => await templatesList.execute({} as never, ctx));
   assert(String((err as Error).message).includes("(400)"));

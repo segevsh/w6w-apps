@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-search.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
 /** snake_case here, camelCase on /query — Pinecone's own inconsistency. */
-Deno.test("record-search: sends snake_case top_k and the text query", async () => {
+test("record-search: sends snake_case top_k and the text query", async () => {
   const { ctx, calls } = mockCtx([describe, { status: 200, body: { result: { hits: [] } } }]);
   await action.execute!({ indexName: "idx", namespace: "docs", query: "how do I…", topK: 20 }, ctx);
   const sent = JSON.parse(calls[1].body!);
@@ -14,7 +15,7 @@ Deno.test("record-search: sends snake_case top_k and the text query", async () =
   assertEquals(new URL(calls[1].url).pathname, "/records/namespaces/docs/search");
 });
 
-Deno.test("record-search: reranking is off unless a model is named", async () => {
+test("record-search: reranking is off unless a model is named", async () => {
   const off = mockCtx([describe, { status: 200, body: {} }]);
   await action.execute!({ indexName: "idx", query: "x" }, off.ctx);
   assertEquals("rerank" in JSON.parse(off.calls[1].body!), false);
@@ -36,7 +37,7 @@ Deno.test("record-search: reranking is off unless a model is named", async () =>
   });
 });
 
-Deno.test("record-search: an empty query is refused", async () => {
+test("record-search: an empty query is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ indexName: "idx", query: " " }, ctx),
@@ -47,7 +48,7 @@ Deno.test("record-search: an empty query is refused", async () => {
 });
 
 /** Pinecone's rerank default is `text`, which is wrong for most field maps. */
-Deno.test("record-search: the rerank-fields hint warns about the default", () => {
+test("record-search: the rerank-fields hint warns about the default", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "rerankFields")!;
   assert(/defaults to `text`|defaults to .text./.test(p.hint!), p.hint);

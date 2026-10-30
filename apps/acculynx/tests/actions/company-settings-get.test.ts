@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/company-settings-get.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("company-settings-get: sends GET /company-settings and returns the vendor body", async () => {
+test("company-settings-get: sends GET /company-settings and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: { companyId: "co1", name: "Acme Roofing" } }]);
   const out = await action.execute({} as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("company-settings-get: sends GET /company-settings and returns the ven
   assertEquals(out, { companyId: "co1", name: "Acme Roofing" });
 });
 
-Deno.test("company-settings-get: a vendor error surfaces its title and status", async () => {
+test("company-settings-get: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({} as never, ctx),

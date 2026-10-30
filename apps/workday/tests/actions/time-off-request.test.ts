@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-off-request.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "wd2-impl-services1.workday.com", tenant: "acme_imp
 const W = "a3f1c2d4e5b6478990a1b2c3d4e5f607";
 const days = [{ date: "2026-11-02", dailyQuantity: 1, timeOffType: "t1", comment: "trip" }];
 
-Deno.test("time-off-request: POSTs days plus the Submitted action", async () => {
+test("time-off-request: POSTs days plus the Submitted action", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "evt1", overallStatus: "Submitted" },
@@ -26,7 +27,7 @@ Deno.test("time-off-request: POSTs days plus the Submitted action", async () => 
   assertEquals(result.record, { id: "evt1", overallStatus: "Submitted" });
 });
 
-Deno.test("time-off-request: submit off omits the business process action; warnings header is opt-in", async () => {
+test("time-off-request: submit off omits the business process action; warnings header is opt-in", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], D);
   await action.execute({
     workerId: W,
@@ -38,12 +39,12 @@ Deno.test("time-off-request: submit off omits the business process action; warni
   assertEquals(calls[0].headers["wd-warning-action"], "updateonwarning");
 });
 
-Deno.test("time-off-request: is declared non-idempotent", () => {
+test("time-off-request: is declared non-idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("time-off-request: refuses bad days without calling Workday", async () => {
+test("time-off-request: refuses bad days without calling Workday", async () => {
   for (
     const bad of [
       [],
@@ -60,7 +61,7 @@ Deno.test("time-off-request: refuses bad days without calling Workday", async ()
   }
 });
 
-Deno.test("time-off-request: a 400 carries the field errors", async () => {
+test("time-off-request: a 400 carries the field errors", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: "Validation error", errors: [{ error: "Date is not valid", field: "date" }] },

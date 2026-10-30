@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productList from "../../actions/product-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("product-list: hits GET /products with comma-separated external ids", async () => {
+test("product-list: hits GET /products with comma-separated external ids", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("products", [{ id: 1 }]) }]);
   const out = await productList.execute({ externalProductIds: "123,223" }, ctx) as {
     items: unknown[];

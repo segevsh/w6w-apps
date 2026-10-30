@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/credential-send.ts";
 import { CREDENTIAL, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("credential-send: POST /v1/credentials/{id}/send with deliveryMethod email", async () => {
+test("credential-send: POST /v1/credentials/{id}/send with deliveryMethod email", async () => {
   const { ctx, calls } = mockCtx([{ body: { ...CREDENTIAL, status: "issued" } }]);
   await action.execute({ credentialId: "c1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,6 +11,6 @@ Deno.test("credential-send: POST /v1/credentials/{id}/send with deliveryMethod e
   assertEquals(JSON.parse(calls[0].body!), { deliveryMethod: "email" });
 });
 
-Deno.test("credential-send: is not idempotent, because every call emails the recipient", () => {
+test("credential-send: is not idempotent, because every call emails the recipient", () => {
   assertEquals(action.idempotent, false);
 });

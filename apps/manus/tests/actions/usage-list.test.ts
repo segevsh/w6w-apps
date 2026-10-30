@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usageList from "../../actions/usage-list.ts";
 import { mockCtx, okBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("usage-list: maps has_more/next_cursor onto { items, nextCursor }", async () => {
+test("usage-list: maps has_more/next_cursor onto { items, nextCursor }", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({
       data: [{ task_id: "t1", credits: -10, created_at: 1, type: "cost" }],
@@ -16,7 +17,7 @@ Deno.test("usage-list: maps has_more/next_cursor onto { items, nextCursor }", as
   assertEquals(out.nextCursor, "c2");
 });
 
-Deno.test("usage-list: sends cursor/limit query params", async () => {
+test("usage-list: sends cursor/limit query params", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ data: [] }) }]);
   await usageList.execute({ cursor: "c1", limit: 10 }, ctx);
   assertEquals(queryOf(calls[0].url), { cursor: "c1", limit: "10" });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api-key: sign stamps X-Phantombuster-Key", () => {
+test("api-key: sign stamps X-Phantombuster-Key", () => {
   const request = {
     method: "GET",
     url: "https://api.phantombuster.com/api/v2/agents/fetch-all",
@@ -15,7 +16,7 @@ Deno.test("api-key: sign stamps X-Phantombuster-Key", () => {
   assertEquals(signed.headers["x-phantombuster-key"], "abc123");
 });
 
-Deno.test("api-key: sign also stamps X-Phantombuster-Org when orgId is set", () => {
+test("api-key: sign also stamps X-Phantombuster-Org when orgId is set", () => {
   const request = {
     method: "GET",
     url: "https://api.phantombuster.com/api/v2/agents/fetch-all",
@@ -28,7 +29,7 @@ Deno.test("api-key: sign also stamps X-Phantombuster-Org when orgId is set", () 
   assertEquals(signed.headers["x-phantombuster-org"], "org1");
 });
 
-Deno.test("api-key: sign omits X-Phantombuster-Org when no orgId is set", () => {
+test("api-key: sign omits X-Phantombuster-Org when no orgId is set", () => {
   const request = {
     method: "GET",
     url: "https://api.phantombuster.com/api/v2/agents/fetch-all",
@@ -41,7 +42,7 @@ Deno.test("api-key: sign omits X-Phantombuster-Org when no orgId is set", () => 
   assertEquals("x-phantombuster-org" in signed.headers, false);
 });
 
-Deno.test("api-key: test() probes /orgs/fetch-resources, not a whoami", async () => {
+test("api-key: test() probes /orgs/fetch-resources, not a whoami", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { dailyExecutionTime: 100 } }]);
   const result = await apiKey.test({ credential: { apiKey: "abc123" } }, ctx);
 
@@ -50,14 +51,14 @@ Deno.test("api-key: test() probes /orgs/fetch-resources, not a whoami", async ()
   assertEquals(result, { ok: true });
 });
 
-Deno.test("api-key: test() reports missing credential without a network call", async () => {
+test("api-key: test() reports missing credential without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { apiKey: "" } }, ctx);
   assertEquals(calls.length, 0);
   assertEquals(result.ok, false);
 });
 
-Deno.test("api-key: test() surfaces the vendor's own error message on a 401", async () => {
+test("api-key: test() surfaces the vendor's own error message on a 401", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: "error", error: "API key not found" } }]);
   const result = await apiKey.test({ credential: { apiKey: "wrong" } }, ctx);
   assertEquals(result.ok, false);
@@ -69,11 +70,11 @@ Deno.test("api-key: test() surfaces the vendor's own error message on a 401", as
  * is a real code string that *names* `/users/fetch-me` for documentation, and a
  * bare substring ban would flag that constant as if it were a live probe.
  */
-Deno.test("api-key: PROBE_PATH is not pointed at the whoami", () => {
+test("api-key: PROBE_PATH is not pointed at the whoami", () => {
   assertEquals(PROBE_PATH, "/orgs/fetch-resources");
 });
 
-Deno.test("authHeaders: builds exactly the documented header names", () => {
+test("authHeaders: builds exactly the documented header names", () => {
   assertEquals(authHeaders({ apiKey: "k" }), { "x-phantombuster-key": "k" });
   assertEquals(authHeaders({ apiKey: "k", orgId: "o" }), {
     "x-phantombuster-key": "k",
@@ -81,7 +82,7 @@ Deno.test("authHeaders: builds exactly the documented header names", () => {
   });
 });
 
-Deno.test("api-key: the credential field is declared secret, orgId is not", () => {
+test("api-key: the credential field is declared secret, orgId is not", () => {
   const secretField = apiKey.fields?.find((f) => f.key === "apiKey");
   const orgField = apiKey.fields?.find((f) => f.key === "orgId");
   assertEquals(secretField?.type, "secret");

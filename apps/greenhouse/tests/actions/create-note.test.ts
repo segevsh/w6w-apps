@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import createNote from "../../actions/create-note.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-note: POSTs a plain note with the required trio", async () => {
+test("create-note: POSTs a plain note with the required trio", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 3 } }]);
   await createNote.execute({ candidateId: 1, body: "Great call" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("create-note: POSTs a plain note with the required trio", async () => 
  * produced by Greenhouse features. Offering all thirteen here would be a form
  * that 422s on ten of its own options.
  */
-Deno.test("create-note: offers only the three creatable types", () => {
+test("create-note: offers only the three creatable types", () => {
   const options = (createNote.params ?? []).find((p) => p.key === "noteType")?.options;
   assertEquals(
     (options as Array<{ value: string }>).map((o) => o.value),
@@ -30,7 +31,7 @@ Deno.test("create-note: offers only the three creatable types", () => {
 });
 
 /** The create side spells visibility differently from the read side. */
-Deno.test("create-note: uses the write-side visibility vocabulary", () => {
+test("create-note: uses the write-side visibility vocabulary", () => {
   const options = (createNote.params ?? []).find((p) => p.key === "visibility")?.options;
   assertEquals(
     (options as Array<{ value: string }>).map((o) => o.value),
@@ -38,7 +39,7 @@ Deno.test("create-note: uses the write-side visibility vocabulary", () => {
   );
 });
 
-Deno.test("create-note: an e-mail note sends all four required e-mail fields", async () => {
+test("create-note: an e-mail note sends all four required e-mail fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 3 } }]);
   await createNote.execute({
     candidateId: 1,
@@ -64,7 +65,7 @@ Deno.test("create-note: an e-mail note sends all four required e-mail fields", a
   });
 });
 
-Deno.test("create-note: an e-mail note without a subject fails locally", () => {
+test("create-note: an e-mail note without a subject fails locally", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () =>
@@ -80,7 +81,7 @@ Deno.test("create-note: an e-mail note without a subject fails locally", () => {
   );
 });
 
-Deno.test("create-note: an e-mail note without From or To fails locally", () => {
+test("create-note: an e-mail note without From or To fails locally", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () =>
@@ -100,7 +101,7 @@ Deno.test("create-note: an e-mail note without From or To fails locally", () => 
  * The conditional cuts both ways in the vendor's schema: the e-mail fields are
  * required on an EMAIL note and forbidden on the others.
  */
-Deno.test("create-note: e-mail fields on a plain note are refused, not silently dropped", () => {
+test("create-note: e-mail fields on a plain note are refused, not silently dropped", () => {
   const { ctx, calls } = mockCtx([]);
   const err = assertThrows(
     () =>
@@ -116,6 +117,6 @@ Deno.test("create-note: e-mail fields on a plain note are refused, not silently 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-note: is honestly declared non-idempotent", () => {
+test("create-note: is honestly declared non-idempotent", () => {
   assertEquals(createNote.idempotent, false);
 });

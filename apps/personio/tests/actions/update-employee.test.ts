@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-employee.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-employee: PATCHes only the fields provided", async () => {
+test("update-employee: PATCHes only the fields provided", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { success: true, data: { message: "updated" } } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("update-employee: PATCHes only the fields provided", async () => {
   assertEquals(out, { message: "updated" });
 });
 
-Deno.test("update-employee: never sends an email field — the endpoint does not accept one", async () => {
+test("update-employee: never sends an email field — the endpoint does not accept one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: {} } }]);
   await action.execute({ employeeId: 1, firstName: "X" }, ctx);
   const body = JSON.parse(calls[0].body!);

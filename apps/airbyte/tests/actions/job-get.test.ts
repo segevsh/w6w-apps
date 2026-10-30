@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-get.ts";
 
@@ -18,7 +19,7 @@ const job = (status: string, extra: Record<string, unknown> = {}) => ({
 });
 
 /** Finished and succeeded are two different questions. */
-Deno.test("job-get: a succeeded job is both finished and succeeded", async () => {
+test("job-get: a succeeded job is both finished and succeeded", async () => {
   const { ctx, calls } = mockCtx([job("succeeded")], D);
   const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/jobs/42");
@@ -29,7 +30,7 @@ Deno.test("job-get: a succeeded job is both finished and succeeded", async () =>
 });
 
 /** The trap: over, and not fine. */
-Deno.test("job-get: an incomplete job is finished and NOT succeeded", async () => {
+test("job-get: an incomplete job is finished and NOT succeeded", async () => {
   const { ctx, logs } = mockCtx([job("incomplete")], D);
   const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
   assertEquals(result.finished, true);
@@ -41,7 +42,7 @@ Deno.test("job-get: an incomplete job is finished and NOT succeeded", async () =
   );
 });
 
-Deno.test("job-get: a running job is neither finished nor succeeded", async () => {
+test("job-get: a running job is neither finished nor succeeded", async () => {
   for (const status of ["pending", "running"]) {
     const { ctx, logs } = mockCtx([job(status)], D);
     const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
@@ -51,7 +52,7 @@ Deno.test("job-get: a running job is neither finished nor succeeded", async () =
   }
 });
 
-Deno.test("job-get: a failure logs the reason Airbyte gave", async () => {
+test("job-get: a failure logs the reason Airbyte gave", async () => {
   const { ctx, logs } = mockCtx([
     job("failed", { failureReason: { failureType: "system_error" } }),
   ], D);
@@ -62,7 +63,7 @@ Deno.test("job-get: a failure logs the reason Airbyte gave", async () => {
   );
 });
 
-Deno.test("job-get: requires a numeric id", async () => {
+test("job-get: requires a numeric id", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "numeric id");
   await assertRejects(async () => await action.execute({ jobId: 0 }, ctx), Error, "numeric id");

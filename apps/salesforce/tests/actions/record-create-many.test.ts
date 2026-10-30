@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockSalesforceCtx } from "../_helpers.ts";
 import action from "../../actions/record-create-many.ts";
 
-Deno.test("record-create-many: POSTs the composite collection with per-record attributes", async () => {
+test("record-create-many: POSTs the composite collection with per-record attributes", async () => {
   const { ctx, calls } = mockSalesforceCtx([{ body: [{ id: "00Q1", success: true }] }]);
   await action.execute({ sobject: "Lead", records: [{ LastName: "A" }, { LastName: "B" }] }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/services/data/v60.0/composite/sobjects");
@@ -15,13 +16,13 @@ Deno.test("record-create-many: POSTs the composite collection with per-record at
   });
 });
 
-Deno.test("record-create-many: allOrNone:false allows partial success", async () => {
+test("record-create-many: allOrNone:false allows partial success", async () => {
   const { ctx, calls } = mockSalesforceCtx([{ body: [] }]);
   await action.execute({ sobject: "Lead", records: [{ a: 1 }], allOrNone: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).allOrNone, false);
 });
 
-Deno.test("record-create-many: enforces Salesforce's 200-record cap before sending", () => {
+test("record-create-many: enforces Salesforce's 200-record cap before sending", () => {
   const { ctx, calls } = mockSalesforceCtx();
   const tooMany = Array.from({ length: 201 }, () => ({ LastName: "x" }));
   assertThrows(
@@ -32,7 +33,7 @@ Deno.test("record-create-many: enforces Salesforce's 200-record cap before sendi
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-create-many: rejects an empty or non-array payload", () => {
+test("record-create-many: rejects an empty or non-array payload", () => {
   const { ctx } = mockSalesforceCtx();
   assertThrows(() => action.execute({ sobject: "Lead", records: [] }, ctx), Error, "is empty");
   assertThrows(

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import itemValuesGet from "../../actions/item-values-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const VALUES = [
   { field_id: 2, type: "money", label: "Deal", values: [{ value: "500.00", currency: "USD" }] },
 ];
 
-Deno.test("item-values-get: GETs the v1 value endpoint, not the /v2 variant", async () => {
+test("item-values-get: GETs the v1 value endpoint, not the /v2 variant", async () => {
   const { ctx, calls } = mockCtx([{ body: VALUES }]);
   assertEquals(await itemValuesGet.execute({ itemId: "9" }, ctx), { values: VALUES });
   assertEquals(pathOf(calls[0].url), "/item/9/value");
@@ -17,7 +18,7 @@ Deno.test("item-values-get: GETs the v1 value endpoint, not the /v2 variant", as
   );
 });
 
-Deno.test("item-values-get: money keeps its currency sub_id", async () => {
+test("item-values-get: money keeps its currency sub_id", async () => {
   const { ctx } = mockCtx([{ body: VALUES }]);
   const out = await itemValuesGet.execute({ itemId: "9" }, ctx) as {
     values: Array<Record<string, unknown>>;
@@ -25,7 +26,7 @@ Deno.test("item-values-get: money keeps its currency sub_id", async () => {
   assertEquals(out.values[1].values, [{ value: "500.00", currency: "USD" }]);
 });
 
-Deno.test("item-values-get: an empty body yields an empty list", async () => {
+test("item-values-get: an empty body yields an empty list", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await itemValuesGet.execute({ itemId: "9" }, ctx), { values: [] });
 });

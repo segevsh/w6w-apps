@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -14,7 +15,7 @@ const headers = (over: Record<string, string> = {}) => ({
   ...over,
 });
 
-Deno.test("quota: is a signed, per-connection quota check", () => {
+test("quota: is a signed, per-connection quota check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.covers, ["*"]);
   assertEquals(quota.unavailable, undefined);
@@ -23,14 +24,14 @@ Deno.test("quota: is a signed, per-connection quota check", () => {
   assertEquals(quota.credential, undefined);
 });
 
-Deno.test("quota: probes Accounts:get on the connection's own regional host", async () => {
+test("quota: probes Accounts:get on the connection's own regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { accountName: "Example" }, headers: headers() }]);
   await quota.check!({}, ctx);
   assertEquals(calls[0].url, "https://na4.docusign.net/restapi/v2.1/accounts/acc-1");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("quota: reads both the hourly and the 30-second burst buckets", async () => {
+test("quota: reads both the hourly and the 30-second burst buckets", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: headers() }]);
   const report = await quota.check!({}, ctx);
 
@@ -48,20 +49,20 @@ Deno.test("quota: reads both the hourly and the 30-second burst buckets", async 
   assertEquals(report.message, "2500 of 3000 hourly requests left.");
 });
 
-Deno.test("quota: degrades below a tenth of the hourly allowance", async () => {
+test("quota: degrades below a tenth of the hourly allowance", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: headers({ "x-ratelimit-remaining": "120" }) }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "degraded");
   assertEquals(report.message, "Only 120 of 3000 hourly requests left.");
 });
 
-Deno.test("quota: an exhausted hourly bucket is down", async () => {
+test("quota: an exhausted hourly bucket is down", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: headers({ "x-ratelimit-remaining": "0" }) }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: a 429 is itself the answer", async () => {
+test("quota: a 429 is itself the answer", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: {},
@@ -73,7 +74,7 @@ Deno.test("quota: a 429 is itself the answer", async () => {
   assertEquals(report.quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: reports unknown — not ok — when Docusign omits the headers", async () => {
+test("quota: reports unknown — not ok — when Docusign omits the headers", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: { "content-type": "application/json" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -81,7 +82,7 @@ Deno.test("quota: reports unknown — not ok — when Docusign omits the headers
   assertEquals(report.quota, undefined);
 });
 
-Deno.test("quota: a burst-only response still reports the bucket it got", async () => {
+test("quota: a burst-only response still reports the bucket it got", async () => {
   const { ctx } = mockCtx([{
     body: {},
     headers: { "x-burstlimit-limit": "200", "x-burstlimit-remaining": "199" },
@@ -92,14 +93,14 @@ Deno.test("quota: a burst-only response still reports the bucket it got", async 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("quota: any other error status is unknown, not down", async () => {
+test("quota: any other error status is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertEquals(report.message?.includes("500"), true);
 });
 
-Deno.test("quota: refuses to guess a URL when the connection was never resolved", async () => {
+test("quota: refuses to guess a URL when the connection was never resolved", async () => {
   const { ctx } = mockCtx([], { display: null });
   await assertRejects(() => Promise.resolve(quota.check!({}, ctx)));
 });

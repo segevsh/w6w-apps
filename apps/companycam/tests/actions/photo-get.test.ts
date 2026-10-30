@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import photoGet from "../../actions/photo-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("photo-get: reads one photo with its processing status", async () => {
+test("photo-get: reads one photo with its processing status", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "4782987471",
@@ -17,7 +18,7 @@ Deno.test("photo-get: reads one photo with its processing status", async () => {
   assertEquals(photo.processing_status, "pending");
 });
 
-Deno.test("photo-get: declares uris, since there is no single photo URL field", () => {
+test("photo-get: declares uris, since there is no single photo URL field", () => {
   const keys = (photoGet.output as Array<{ key: string }>).map((o) => o.key);
   assertEquals(keys.includes("uris"), true);
   assertEquals(keys.includes("processing_status"), true);

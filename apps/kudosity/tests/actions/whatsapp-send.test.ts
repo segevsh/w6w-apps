@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import whatsappSend, { buildContent } from "../../actions/whatsapp-send.ts";
 import { bodyOf, envelope, mockCtx, pathOf, problem } from "../_helpers.ts";
 
-Deno.test("whatsapp-send: template content is keyed by content type and unwrapped", async () => {
+test("whatsapp-send: template content is keyed by content type and unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "w1", content_type: "template" }) }]);
   const out = await whatsappSend.execute({
     recipient: "+14155238886",
@@ -24,7 +25,7 @@ Deno.test("whatsapp-send: template content is keyed by content type and unwrappe
   assertEquals(out.id, "w1");
 });
 
-Deno.test("whatsapp-send: text and custom content", () => {
+test("whatsapp-send: text and custom content", () => {
   assertEquals(buildContent({ recipient: "r", contentType: "text", text: "hi" }), {
     text: { message: "hi" },
   });
@@ -34,7 +35,7 @@ Deno.test("whatsapp-send: text and custom content", () => {
   );
 });
 
-Deno.test("whatsapp-send: missing content for the chosen type is refused before any request", () => {
+test("whatsapp-send: missing content for the chosen type is refused before any request", () => {
   assertThrows(() => buildContent({ recipient: "r", contentType: "text" }), Error, "text");
   assertThrows(
     () => buildContent({ recipient: "r", contentType: "template" }),
@@ -44,7 +45,7 @@ Deno.test("whatsapp-send: missing content for the chosen type is refused before 
   assertThrows(() => buildContent({ recipient: "r", contentType: "custom" }), Error, "custom");
 });
 
-Deno.test("whatsapp-send: RFC 9457 errors surface with title and detail", async () => {
+test("whatsapp-send: RFC 9457 errors surface with title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: problem(400, "Invalid Request", "bad recipient"),
@@ -59,4 +60,4 @@ Deno.test("whatsapp-send: RFC 9457 errors surface with title and detail", async 
   );
 });
 
-Deno.test("whatsapp-send: is not idempotent", () => assertEquals(whatsappSend.idempotent, false));
+test("whatsapp-send: is not idempotent", () => assertEquals(whatsappSend.idempotent, false));

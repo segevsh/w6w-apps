@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-delete-table-column.ts";
 
-Deno.test("document-delete-table-column: emits deleteTableColumn with tableCellLocation", async () => {
+test("document-delete-table-column: emits deleteTableColumn with tableCellLocation", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { documentURL: "d-1", index: 4, rowIndex: 0, columnIndex: 3 },

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getKakaoChannel from "../../actions/get-kakao-channel.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => getKakaoChannel.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("get-kakao-channel: declares a read action with a description, params and output", () => {
+test("get-kakao-channel: declares a read action with a description, params and output", () => {
   assertEquals(getKakaoChannel.key, "get-kakao-channel");
   assertEquals(getKakaoChannel.type, "read");
   assert((getKakaoChannel.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("get-kakao-channel: declares a read action with a description, params 
   assertEquals(getKakaoChannel.idempotent, undefined);
 });
 
-Deno.test("get-kakao-channel: sends the documented request and returns the documented shape", async () => {
+test("get-kakao-channel: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "channelId": "KA01PF1",
@@ -43,7 +44,7 @@ Deno.test("get-kakao-channel: sends the documented request and returns the docum
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("get-kakao-channel: a SOLAPI error body is thrown with its code and message", async () => {
+test("get-kakao-channel: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

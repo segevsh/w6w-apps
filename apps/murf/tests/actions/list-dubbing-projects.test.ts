@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-dubbing-projects.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("list-dubbing-projects: passes limit and next as query and returns the page", async () => {
+test("list-dubbing-projects: passes limit and next as query and returns the page", async () => {
   const body = {
     projects: [{ project_id: "p1", dubbing_type: "AUTOMATED", target_locales: [] }],
     next: "tok2",
@@ -13,7 +14,7 @@ Deno.test("list-dubbing-projects: passes limit and next as query and returns the
   assertEquals(out, body);
 });
 
-Deno.test("list-dubbing-projects: no params sends no query; a 403 fails", async () => {
+test("list-dubbing-projects: no params sends no query; a 403 fails", async () => {
   const { ctx, calls } = mockCtx([{ body: { projects: [] } }]);
   await exec(action, {}, ctx);
   assertEquals(calls[0].url, "https://api.murf.ai/v1/murfdub/projects/list");

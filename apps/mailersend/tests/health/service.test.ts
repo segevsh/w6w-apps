@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import check, { mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,12 +16,12 @@ const summary = (over: Record<string, string> = {}) => ({
   ],
 });
 
-Deno.test("service: declares credential none and its own host", () => {
+test("service: declares credential none and its own host", () => {
   assertEquals(check.credential, "none");
   assertEquals(check.network, { allow: ["status.mailersend.com"] });
 });
 
-Deno.test("service: all operational is ok and calls the summary on the status host", async () => {
+test("service: all operational is ok and calls the summary on the status host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await check.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -28,7 +29,7 @@ Deno.test("service: all operational is ok and calls the summary on the status ho
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/summary.json");
 });
 
-Deno.test("service: the worst deciding component wins; a non-deciding one never moves it", async () => {
+test("service: the worst deciding component wins; a non-deciding one never moves it", async () => {
   const a = mockCtx([{ body: summary({ bulk: "partial_outage" }) }]);
   assertEquals((await check.check!({}, a.ctx)).state, "degraded");
   const b = mockCtx([{ body: summary({ send: "full_outage", bulk: "partial_outage" }) }]);
@@ -39,20 +40,20 @@ Deno.test("service: the worst deciding component wins; a non-deciding one never 
   assertEquals(r.components!["smtp"].state, "down");
 });
 
-Deno.test("service: another page id reads unknown", async () => {
+test("service: another page id reads unknown", async () => {
   const body = { ...summary(), page: { id: "other", name: "Other" } };
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await check.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a failing or unreadable page reads unknown, never down", async () => {
+test("service: a failing or unreadable page reads unknown, never down", async () => {
   const a = mockCtx([{ status: 500, body: "x" }]);
   assertEquals((await check.check!({}, a.ctx)).state, "unknown");
   const b = mockCtx([{ body: "not json" }]);
   assertEquals((await check.check!({}, b.ctx)).state, "unknown");
 });
 
-Deno.test("service: with no deciding component the page indicator decides", async () => {
+test("service: with no deciding component the page indicator decides", async () => {
   const body = {
     page: PAGE,
     status: { indicator: "critical" },
@@ -62,7 +63,7 @@ Deno.test("service: with no deciding component the page indicator decides", asyn
   assertEquals((await check.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: status mappings", () => {
+test("service: status mappings", () => {
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("weird"), "unknown");

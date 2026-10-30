@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardUpdate from "../../actions/card-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-update: PUTs the extended card and strips the response token", async () => {
+test("card-update: PUTs the extended card and strips the response token", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "c1", preferredPhrase: "New title", collection: { id: "co1", token: "t" } } },
   ]);
@@ -20,7 +21,7 @@ Deno.test("card-update: PUTs the extended card and strips the response token", a
   assertEquals(result, { id: "c1", preferredPhrase: "New title", collection: { id: "co1" } });
 });
 
-Deno.test("card-update: never sends a tags field — see the action's own doc comment", async () => {
+test("card-update: never sends a tags field — see the action's own doc comment", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await cardUpdate.execute({ cardId: "c1", title: "T", content: "c" }, ctx);
   assertEquals("tags" in JSON.parse(calls[0].body!), false);

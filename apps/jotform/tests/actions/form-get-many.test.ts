@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-get-many.ts";
 
-Deno.test("form-get-many: GETs /user/forms passing every pagination param", async () => {
+test("form-get-many: GETs /user/forms passing every pagination param", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([{ id: "31504059977966" }], {
@@ -36,7 +37,7 @@ Deno.test("form-get-many: GETs /user/forms passing every pagination param", asyn
   });
 });
 
-Deno.test("form-get-many: omits unset params", async () => {
+test("form-get-many: omits unset params", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

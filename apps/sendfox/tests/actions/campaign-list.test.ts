@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { mockCtx, page } from "../_helpers.ts";
 
-Deno.test("campaign-list: GETs /campaigns with no parameters", async () => {
+test("campaign-list: GETs /campaigns with no parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, title: "August" }], { total: 12 }) }]);
   const out = await campaignList.execute({}, ctx) as { total: number };
 

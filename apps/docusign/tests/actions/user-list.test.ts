@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: GETs the account's users", async () => {
+test("user-list: GETs the account's users", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [{ userId: "u-1" }] } }]);
   const out = await action.execute({}, ctx) as { users: Array<{ userId: string }> };
 
@@ -12,7 +13,7 @@ Deno.test("user-list: GETs the account's users", async () => {
   assertEquals(out.users[0].userId, "u-1");
 });
 
-Deno.test("user-list: maps every filter to Docusign's query names", async () => {
+test("user-list: maps every filter to Docusign's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     email: "a@b.com",
@@ -38,7 +39,7 @@ Deno.test("user-list: maps every filter to Docusign's query names", async () => 
   assertEquals(q.get("start_position"), "0");
 });
 
-Deno.test("user-list: is a read-only search — no user administration is exposed", () => {
+test("user-list: is a read-only search — no user administration is exposed", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "user");
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/trigger-build.ts";
 
 const display = { endpoint: "https://ci.example.com" };
 
-Deno.test("trigger-build: POSTs /job/<name>/build with no body when parameters are omitted", async () => {
+test("trigger-build: POSTs /job/<name>/build with no body when parameters are omitted", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, headers: { location: "https://ci.example.com/queue/item/1543/" } },
   ], { display });
@@ -18,13 +19,13 @@ Deno.test("trigger-build: POSTs /job/<name>/build with no body when parameters a
   });
 });
 
-Deno.test("trigger-build: POSTs /job/<name>/build when parameters is an empty object", async () => {
+test("trigger-build: POSTs /job/<name>/build when parameters is an empty object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201 }], { display });
   await action.execute({ job: "my-job", parameters: {} }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-job/build");
 });
 
-Deno.test("trigger-build: switches to /job/<name>/buildWithParameters with a form body when parameters is given", async () => {
+test("trigger-build: switches to /job/<name>/buildWithParameters with a form body when parameters is given", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, headers: { location: "https://ci.example.com/queue/item/7/" } },
   ], { display });
@@ -41,13 +42,13 @@ Deno.test("trigger-build: switches to /job/<name>/buildWithParameters with a for
   assertEquals(result.queueId, 7);
 });
 
-Deno.test("trigger-build: expands a folder-nested job path", async () => {
+test("trigger-build: expands a folder-nested job path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201 }], { display });
   await action.execute({ job: "my-folder/my-pipeline" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-folder/job/my-pipeline/build");
 });
 
-Deno.test("trigger-build: returns undefined queueId/queueUrl when no Location header is present", async () => {
+test("trigger-build: returns undefined queueId/queueUrl when no Location header is present", async () => {
   const { ctx } = mockCtx([{ status: 201 }], { display });
   const result = await action.execute({ job: "my-job" }, ctx);
   assertEquals(result, { queueId: undefined, queueUrl: undefined });

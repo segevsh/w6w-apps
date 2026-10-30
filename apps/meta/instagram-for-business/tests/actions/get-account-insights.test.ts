@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-account-insights.ts";
 
-Deno.test("get-account-insights: GET /17/insights with the documented query params", async () => {
+test("get-account-insights: GET /17/insights with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ igUserId: "17", metric: ["reach", "views"], since: "5" }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("get-account-insights: GET /17/insights with the documented query para
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-account-insights: surfaces a Graph error body", async () => {
+test("get-account-insights: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

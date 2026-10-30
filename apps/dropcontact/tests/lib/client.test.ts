@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { compact, DropcontactClient, isNotReady, parseEnvelope } from "../../lib/client.ts";
 import { buildContact, primaryEmail } from "../../lib/contact.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: a 200 error:false success:false body is 'not ready', not an error", async () => {
+test("client: a 200 error:false success:false body is 'not ready', not an error", async () => {
   const { ctx } = mockCtx([{
     body: {
       error: false,
@@ -17,7 +18,7 @@ Deno.test("client: a 200 error:false success:false body is 'not ready', not an e
   assertEquals(isNotReady({ error: true, success: false }), false);
 });
 
-Deno.test("client: a refusal throws with the vendor reason and a hint", async () => {
+test("client: a refusal throws with the vendor reason and a hint", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: true, reason: "Unknown account", success: false },
@@ -29,14 +30,14 @@ Deno.test("client: a refusal throws with the vendor reason and a hint", async ()
   );
 });
 
-Deno.test("client: error:true on a 200 still throws; non-JSON bodies are tolerated", async () => {
+test("client: error:true on a 200 still throws; non-JSON bodies are tolerated", async () => {
   const { ctx } = mockCtx([{ body: { error: true, reason: "bad", success: false } }]);
   await assertRejects(() => new DropcontactClient(ctx).request("GET", "/x"), Error, "bad");
   assertEquals(parseEnvelope("<html>").reason, "<html>");
   assertEquals(parseEnvelope(""), {});
 });
 
-Deno.test("client: sends JSON, query params, and no credential header", async () => {
+test("client: sends JSON, query params, and no credential header", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, success: true } }]);
   await new DropcontactClient(ctx).request("POST", "/v1/enrich/all", {
     body: { data: [] },
@@ -47,7 +48,7 @@ Deno.test("client: sends JSON, query params, and no credential header", async ()
   assertEquals(calls[0].headers["x-access-token"], undefined);
 });
 
-Deno.test("contact: buildContact maps camelCase to the vendor fields and drops empties", () => {
+test("contact: buildContact maps camelCase to the vendor fields and drops empties", () => {
   assertEquals(
     buildContact({ firstName: " John ", lastName: "Smith", website: "", numSiren: "123" }),
     { first_name: "John", last_name: "Smith", num_siren: "123" },
@@ -55,7 +56,7 @@ Deno.test("contact: buildContact maps camelCase to the vendor fields and drops e
   assertEquals(compact({ a: "", b: null, c: 0 }), { c: 0 });
 });
 
-Deno.test("contact: primaryEmail prefers nominative over generic", () => {
+test("contact: primaryEmail prefers nominative over generic", () => {
   assertEquals(
     primaryEmail([
       { email: "contact@x.com", qualification: "generic@pro" },

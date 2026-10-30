@@ -1,18 +1,19 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import get from "../../actions/contact-get.ts";
 
 const B = "https://acme.salesmate.io/apis/contact/v4";
 const ok = (Data: unknown) => ({ body: { Status: "success", Data } });
 
-Deno.test("contact-get: GETs /contact/v4/:id and unwraps Data", async () => {
+test("contact-get: GETs /contact/v4/:id and unwraps Data", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ id: 3 })]);
   assertEquals(await get.execute({ contactId: 3 }, ctx), { id: 3 });
   assertEquals(calls[0].url, `${B}/3`);
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("contact-get: an ObjectNotFound failure body rejects", async () => {
+test("contact-get: an ObjectNotFound failure body rejects", async () => {
   const { ctx } = mockSalesmateCtx([{
     status: 404,
     body: {

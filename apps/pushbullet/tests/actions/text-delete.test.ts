@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import textDelete from "../../actions/text-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * field table), unlike `delete-device`'s self-contradicting docs. See
  * `actions/text-delete.ts` for the full comparison.
  */
-Deno.test("text-delete: POSTs {iden} to /v2/texts/{iden} — verified, not a copy-paste of DELETE", async () => {
+test("text-delete: POSTs {iden} to /v2/texts/{iden} — verified, not a copy-paste of DELETE", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await textDelete.execute({ iden: "t1" }, ctx) as { deleted: boolean };
 
@@ -18,6 +19,6 @@ Deno.test("text-delete: POSTs {iden} to /v2/texts/{iden} — verified, not a cop
   assertEquals(out.deleted, true);
 });
 
-Deno.test("text-delete: is declared idempotent", () => {
+test("text-delete: is declared idempotent", () => {
   assertEquals(textDelete.idempotent, true);
 });

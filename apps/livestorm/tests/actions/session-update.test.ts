@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionUpdate from "../../actions/session-update.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("session-update: PATCHes only the set fields", async () => {
+test("session-update: PATCHes only the set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: single("sessions", "s1", { name: "New" }) }]);
   const result = await sessionUpdate.execute({ id: "s1", name: "New" }, ctx);
 

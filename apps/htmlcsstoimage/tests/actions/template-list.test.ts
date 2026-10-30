@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateList from "../../actions/template-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("template-list: GETs /template with count and max_version", async () => {
+test("template-list: GETs /template with count and max_version", async () => {
   const body = {
     data: [{ id: "t-1", version: 5, template_type: "html_css" }],
     pagination: { next_page_start: 4 },
@@ -14,7 +15,7 @@ Deno.test("template-list: GETs /template with count and max_version", async () =
   assertEquals(out, body);
 });
 
-Deno.test("template-list: no params means no query string", async () => {
+test("template-list: no params means no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pagination: { next_page_start: null } } }]);
   await templateList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

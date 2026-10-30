@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/booking-update.ts";
 
-Deno.test("booking-update: PUTs /admin/bookings/{id} with the core fields", async () => {
+test("booking-update: PUTs /admin/bookings/{id} with the core fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { bookings: [{ id: 42 }] } }], {
     display: TEST_DISPLAY,
   });

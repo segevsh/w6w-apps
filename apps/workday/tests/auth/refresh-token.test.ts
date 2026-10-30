@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/refresh-token.ts";
 
@@ -11,7 +12,7 @@ const fields = {
   refreshToken: "r-1",
 };
 
-Deno.test("exchange: posts a refresh_token grant with Basic client auth to the tenant's token URL", async () => {
+test("exchange: posts a refresh_token grant with Basic client auth to the tenant's token URL", async () => {
   const { ctx, calls } = mockCtx([{ body: TOKEN }]);
   const cred = await auth.exchange!({ fields } as never, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://wd2-impl-services1.workday.com/ccx/oauth2/acme_impl1/token");
@@ -30,7 +31,7 @@ Deno.test("exchange: posts a refresh_token grant with Basic client auth to the t
   assert(ms > 55 * 60_000 && ms < 60 * 60_000, String(ms));
 });
 
-Deno.test("exchange: a host off the Workday suffixes is refused before any request", async () => {
+test("exchange: a host off the Workday suffixes is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   for (const host of ["evil.com", "https://wd2.workday.com", "wd2.workday.com.evil.com"]) {
     await assertRejects(
@@ -42,7 +43,7 @@ Deno.test("exchange: a host off the Workday suffixes is refused before any reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("exchange: missing secrets are refused", async () => {
+test("exchange: missing secrets are refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await auth.exchange!({ fields: { ...fields, refreshToken: "" } } as never, ctx),
@@ -52,7 +53,7 @@ Deno.test("exchange: missing secrets are refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("exchange: classifies from the body's OAuth error code, whatever the status", async () => {
+test("exchange: classifies from the body's OAuth error code, whatever the status", async () => {
   for (
     const [status, error, hint] of [[400, "invalid_grant", "refresh token"], [
       401,
@@ -74,7 +75,7 @@ Deno.test("exchange: classifies from the body's OAuth error code, whatever the s
   );
 });
 
-Deno.test("exchange: a 200 with no access_token is an error", async () => {
+test("exchange: a 200 with no access_token is an error", async () => {
   const { ctx } = mockCtx([{ body: { token_type: "Bearer" } }]);
   await assertRejects(
     async () => await auth.exchange!({ fields } as never, ctx),
@@ -83,7 +84,7 @@ Deno.test("exchange: a 200 with no access_token is an error", async () => {
   );
 });
 
-Deno.test("refresh: mints again from the stored refresh token and keeps the rest", async () => {
+test("refresh: mints again from the stored refresh token and keeps the rest", async () => {
   const { ctx, calls } = mockCtx([{ body: { ...TOKEN, access_token: "tok-2", expires_in: 3600 } }]);
   const out = await auth.refresh!(
     { credential: { ...fields, accessToken: "old" } } as never,
@@ -95,7 +96,7 @@ Deno.test("refresh: mints again from the stored refresh token and keeps the rest
   assertEquals(out.tenant, "acme_impl1");
 });
 
-Deno.test("sign: stamps the bearer, keeps other headers, and the stored host is the only target", async () => {
+test("sign: stamps the bearer, keeps other headers, and the stored host is the only target", async () => {
   const cred = { ...fields, accessToken: "tok-1" };
   const req = {
     url: "https://wd2-impl-services1.workday.com/ccx/api/staffing/v7/acme_impl1/workers",
@@ -115,7 +116,7 @@ Deno.test("sign: stamps the bearer, keeps other headers, and the stored host is 
   );
 });
 
-Deno.test("sign: leaves the token endpoint's own Basic header alone", async () => {
+test("sign: leaves the token endpoint's own Basic header alone", async () => {
   const req = {
     url: "https://wd2-impl-services1.workday.com/ccx/oauth2/acme_impl1/token",
     method: "POST",
@@ -128,7 +129,7 @@ Deno.test("sign: leaves the token endpoint's own Basic header alone", async () =
   assertEquals(signed.headers.authorization, "Basic abc");
 });
 
-Deno.test("test: 200 proves the credential; the probe sends no credential of its own", async () => {
+test("test: 200 proves the credential; the probe sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 1, data: [{ id: "w" }] } }]);
   const r = await auth.test({ credential: { ...fields, accessToken: "t" } } as never, ctx);
   assertEquals(r.ok, true);
@@ -139,7 +140,7 @@ Deno.test("test: 200 proves the credential; the probe sends no credential of its
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("test: 401 fails, 403 is authenticated-but-unscoped, a bad host fails without a call", async () => {
+test("test: 401 fails, 403 is authenticated-but-unscoped, a bad host fails without a call", async () => {
   const cred = { ...fields, accessToken: "t" };
   const a = mockCtx([{ status: 401, body: { error: "invalid_token" } }]);
   const r401 = await auth.test({ credential: cred } as never, a.ctx);
@@ -155,7 +156,7 @@ Deno.test("test: 401 fails, 403 is authenticated-but-unscoped, a bad host fails 
   assertEquals(c.calls.length, 0);
 });
 
-Deno.test("afterConnect: publishes host and tenant, never a secret", async () => {
+test("afterConnect: publishes host and tenant, never a secret", async () => {
   const out = await auth.afterConnect!(
     { credential: { ...fields, accessToken: "t" } } as never,
     mockCtx().ctx,

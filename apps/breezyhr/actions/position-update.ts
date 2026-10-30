@@ -57,7 +57,17 @@ const positionUpdate: ActionDefinition<Input> = {
     {
       key: "experience",
       label: "Experience",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [
+        { value: "na", label: "na" },
+        { value: "internship", label: "internship" },
+        { value: "entry-level", label: "entry-level" },
+        { value: "associate", label: "associate" },
+        { value: "mid-level", label: "mid-level" },
+        { value: "senior-level", label: "senior-level" },
+        { value: "executive", label: "executive" },
+      ],
       hint: "na, internship, entry-level, associate, mid-level, senior-level or executive.",
     },
     { key: "education", label: "Education", type: "string", hint: "e.g. bachelors-degree." },

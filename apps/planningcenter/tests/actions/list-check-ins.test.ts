@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCheckIns from "../../actions/list-check-ins.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-check-ins: calls GET /check-ins/v2/check_ins", async () => {
+test("list-check-ins: calls GET /check-ins/v2/check_ins", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: collection("CheckIn", [
@@ -31,7 +32,7 @@ Deno.test("list-check-ins: calls GET /check-ins/v2/check_ins", async () => {
  * `emergency_contact_phone_number` and `medical_notes` — this action must
  * never surface them, regardless of what the vendor's response contains.
  */
-Deno.test("list-check-ins: never surfaces emergency-contact or medical-notes fields", async () => {
+test("list-check-ins: never surfaces emergency-contact or medical-notes fields", async () => {
   const { ctx } = mockCtx([
     {
       body: collection("CheckIn", [
@@ -55,7 +56,7 @@ Deno.test("list-check-ins: never surfaces emergency-contact or medical-notes fie
   assertEquals(serialized.includes("peanut allergy"), false);
 });
 
-Deno.test("list-check-ins: eventId maps to where[event_id]", async () => {
+test("list-check-ins: eventId maps to where[event_id]", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("CheckIn", []) }]);
   await listCheckIns.execute({ eventId: "event_1" }, ctx);
 

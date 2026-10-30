@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import service, {
   API_COMPONENT_ID,
@@ -29,7 +30,7 @@ function components(overrides: Record<string, string> = {}) {
   };
 }
 
-Deno.test("service: declared as an unauthenticated service check on the status host only", () => {
+test("service: declared as an unauthenticated service check on the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.paystack.com"]);
@@ -37,7 +38,7 @@ Deno.test("service: declared as an unauthenticated service check on the status h
   assertEquals(new URL(COMPONENTS_URL).host, "status.paystack.com");
 });
 
-Deno.test("service: maps Instatus's vocabulary", () => {
+test("service: maps Instatus's vocabulary", () => {
   assertEquals(mapStatus("OPERATIONAL"), "ok");
   assertEquals(mapStatus("DEGRADEDPERFORMANCE"), "degraded");
   assertEquals(mapStatus("PARTIALOUTAGE"), "degraded");
@@ -47,7 +48,7 @@ Deno.test("service: maps Instatus's vocabulary", () => {
   assertEquals(mapStatus(undefined), "unknown");
 });
 
-Deno.test("service: all operational is ok and reports every component", async () => {
+test("service: all operational is ok and reports every component", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }, { body: components() }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(calls.map((c) => c.url), [SUMMARY_URL, COMPONENTS_URL]);
@@ -55,7 +56,7 @@ Deno.test("service: all operational is ok and reports every component", async ()
   assertEquals(Object.keys(out.components!).length, 5);
 });
 
-Deno.test("service: the API component alone decides the verdict", async () => {
+test("service: the API component alone decides the verdict", async () => {
   const down = mockCtx([{ body: SUMMARY }, { body: components({ API: "MAJOROUTAGE" }) }]);
   const d = await service.check!({} as never, down.ctx);
   assertEquals(d.state, "down");
@@ -65,7 +66,7 @@ Deno.test("service: the API component alone decides the verdict", async () => {
   assertEquals((await service.check!({} as never, deg.ctx)).state, "degraded");
 });
 
-Deno.test("service: an unrelated component is detail, never the verdict", async () => {
+test("service: an unrelated component is detail, never the verdict", async () => {
   const { ctx } = mockCtx([
     { body: SUMMARY },
     { body: components({ Cards: "MAJOROUTAGE", Webhooks: "PARTIALOUTAGE" }) },
@@ -76,7 +77,7 @@ Deno.test("service: an unrelated component is detail, never the verdict", async 
   assert(out.message!.includes("NIGERIA / Cards (MAJOROUTAGE)"));
 });
 
-Deno.test("service: a page that is not Paystack's, or an unreadable one, is unknown, never down", async () => {
+test("service: a page that is not Paystack's, or an unreadable one, is unknown, never down", async () => {
   for (
     const responses of [
       [{ body: { page: { name: "Someone Else" } } }],
@@ -94,7 +95,7 @@ Deno.test("service: a page that is not Paystack's, or an unreadable one, is unkn
   }
 });
 
-Deno.test("quota: a declared absence, informational, with no check hook", () => {
+test("quota: a declared absence, informational, with no check hook", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assert(typeof quota.unavailable?.reason === "string" && quota.unavailable.reason.length > 0);

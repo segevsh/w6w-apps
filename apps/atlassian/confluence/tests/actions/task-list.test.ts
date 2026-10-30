@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("task-list: filters inline tasks by status, space and assignee", async () => {
+test("task-list: filters inline tasks by status, space and assignee", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ id: "t1" }], _links: {} } }], {
     display,
   });

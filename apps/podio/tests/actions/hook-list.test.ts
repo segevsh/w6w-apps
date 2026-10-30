@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import hookList from "../../actions/hook-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const HOOKS = [
   { hook_id: 2, status: "inactive", type: "item.update", url: "https://example.com/b" },
 ];
 
-Deno.test("hook-list: GETs the hooks on an app or workspace", async () => {
+test("hook-list: GETs the hooks on an app or workspace", async () => {
   const { ctx, calls } = mockCtx([{ body: HOOKS }]);
   assertEquals(await hookList.execute({ refType: "app", refId: "123" }, ctx), { hooks: HOOKS });
   assertEquals(pathOf(calls[0].url), "/hook/app/123/");
@@ -18,7 +19,7 @@ Deno.test("hook-list: GETs the hooks on an app or workspace", async () => {
 });
 
 /** Podio attaches webhooks to an app or a workspace, and nothing else. */
-Deno.test("hook-list: the reference vocabulary is exactly app and space", () => {
+test("hook-list: the reference vocabulary is exactly app and space", () => {
   const refType = hookList.params!.find((p) => p.key === "refType")!;
   assertEquals(refType.validation?.enum, ["app", "space"]);
 });
@@ -27,11 +28,11 @@ Deno.test("hook-list: the reference vocabulary is exactly app and space", () => 
  * An unverified hook is `inactive` and delivers nothing while looking
  * well-formed. The description is where a reader finds that out.
  */
-Deno.test("hook-list: the description explains what an inactive hook means", () => {
+test("hook-list: the description explains what an inactive hook means", () => {
   assertEquals((hookList.description ?? "").includes("delivering nothing"), true);
 });
 
-Deno.test("hook-list: an empty body yields an empty list", async () => {
+test("hook-list: an empty body yields an empty list", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await hookList.execute({ refType: "app", refId: "1" }, ctx), { hooks: [] });
 });

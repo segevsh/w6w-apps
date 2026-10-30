@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   API_COMPONENT,
@@ -21,7 +22,7 @@ const healthy = page([
   ["Wi-Fi Connectivity", "operational"],
 ]);
 
-Deno.test("service: reads the summary route", async () => {
+test("service: reads the summary route", async () => {
   const { ctx, calls } = mockCtx([healthy]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -29,7 +30,7 @@ Deno.test("service: reads the summary route", async () => {
 });
 
 /** The API being out leaves every device running its firmware. */
-Deno.test("service: an API outage says devices are unaffected", async () => {
+test("service: an API outage says devices are unaffected", async () => {
   const { ctx } = mockCtx([page([
     ["REST API", "major_outage"],
     ["Cellular Connectivity", "operational"],
@@ -48,7 +49,7 @@ Deno.test("service: an API outage says devices are unaffected", async () => {
  * The distinction this check exists for: connectivity out, API answering
  * normally, and nothing about the API looking wrong.
  */
-Deno.test("service: a connectivity outage says the API will answer normally", async () => {
+test("service: a connectivity outage says the API will answer normally", async () => {
   const { ctx } = mockCtx([page([
     ["REST API", "operational"],
     ["Cellular Connectivity", "major_outage"],
@@ -62,7 +63,7 @@ Deno.test("service: a connectivity outage says the API will answer normally", as
 });
 
 /** A cellular outage is usually partial, and the names are how you tell. */
-Deno.test("service: names the affected hardware families rather than counting them", async () => {
+test("service: names the affected hardware families rather than counting them", async () => {
   const { ctx } = mockCtx([page([
     ["REST API", "operational"],
     ["E Series LTE (E402), Boron LTE, B Series B402 SoM", "partial_outage"],
@@ -72,7 +73,7 @@ Deno.test("service: names the affected hardware families rather than counting th
   assert(/Boron LTE/.test(result.message!), result.message);
 });
 
-Deno.test("service: unrelated components do not affect the result", async () => {
+test("service: unrelated components do not affect the result", async () => {
   const { ctx } = mockCtx([page([
     ["REST API", "operational"],
     ["Cellular Connectivity", "operational"],
@@ -82,14 +83,14 @@ Deno.test("service: unrelated components do not affect the result", async () => 
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a board without the API component is unknown", async () => {
+test("service: a board without the API component is unknown", async () => {
   const { ctx } = mockCtx([page([["community.particle.io", "operational"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/is not on the status page/.test(result.message!), result.message);
 });
 
-Deno.test("service: an empty, broken or unreachable page is unknown", async () => {
+test("service: an empty, broken or unreachable page is unknown", async () => {
   const empty = mockCtx([page([])]);
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 
@@ -106,7 +107,7 @@ Deno.test("service: an empty, broken or unreachable page is unknown", async () =
   assertEquals((await service.check!({}, offline)).state, "unknown");
 });
 
-Deno.test("service: the connectivity pattern matches what Particle actually lists", () => {
+test("service: the connectivity pattern matches what Particle actually lists", () => {
   assertEquals(API_COMPONENT, "REST API");
   for (
     const name of [
@@ -125,7 +126,7 @@ Deno.test("service: the connectivity pattern matches what Particle actually list
   }
 });
 
-Deno.test("service: maps Statuspage's vocabulary", () => {
+test("service: maps Statuspage's vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");

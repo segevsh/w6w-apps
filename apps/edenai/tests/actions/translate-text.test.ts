@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/translate-text.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("translate-text: calls translation/automatic_translation with the nested input and shapes the output", async () => {
+test("translate-text: calls translation/automatic_translation with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("translate-text: calls translation/automatic_translation with the nest
   assertEquals(out.output, { text: "bonjour" });
 });
 
-Deno.test("translate-text: a provider failure inside a 200 is thrown", async () => {
+test("translate-text: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "deepl", error: { message: "provider down" } },
   }]);
@@ -40,7 +41,7 @@ Deno.test("translate-text: a provider failure inside a 200 is thrown", async () 
   );
 });
 
-Deno.test("translate-text: fallbacks and a provider model reach the request", async () => {
+test("translate-text: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ text: "hello", targetLanguage: "fr", provider: "deepl" },

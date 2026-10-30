@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param, run } from "../_helpers.ts";
 import getEntry from "../../actions/get-entry.ts";
 
 const env = { active_from: "2023-04-03T15:21:06.447000000Z", active_until: null };
 
-Deno.test("get-entry: needs both the list and the entry id", async () => {
+test("get-entry: needs both the list and the entry id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {

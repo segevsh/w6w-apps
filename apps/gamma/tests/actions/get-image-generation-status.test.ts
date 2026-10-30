@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getImageGenerationStatus from "../../actions/get-image-generation-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-image-generation-status: calls GET /images/{id}", async () => {
+test("get-image-generation-status: calls GET /images/{id}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

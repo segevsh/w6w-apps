@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { parseAdminApiKey, signAdminApiJwt } from "../../lib/jwt.ts";
 
 const VALID_SECRET = "0123456789abcdef".repeat(4); // 64 hex chars
@@ -25,23 +26,23 @@ function hexToBytes(hex: string): Uint8Array {
   return bytes;
 }
 
-Deno.test("parseAdminApiKey: splits a valid `id:secret` key", () => {
+test("parseAdminApiKey: splits a valid `id:secret` key", () => {
   const { id, secret } = parseAdminApiKey(VALID_KEY);
   assertEquals(id, "5f3a1b2c3d4e5f6a7b8c9d0e");
   assertEquals(secret, VALID_SECRET);
 });
 
-Deno.test("parseAdminApiKey: trims surrounding whitespace", () => {
+test("parseAdminApiKey: trims surrounding whitespace", () => {
   const { id } = parseAdminApiKey(`  ${VALID_KEY}  `);
   assertEquals(id, "5f3a1b2c3d4e5f6a7b8c9d0e");
 });
 
-Deno.test("parseAdminApiKey: rejects a malformed key with a clear message", () => {
+test("parseAdminApiKey: rejects a malformed key with a clear message", () => {
   assertThrows(() => parseAdminApiKey("not-a-key"), Error, "Admin API Key");
   assertThrows(() => parseAdminApiKey("abc:def"), Error, "Admin API Key");
 });
 
-Deno.test("signAdminApiJwt: header is HS256/JWT with the key id as `kid`", async () => {
+test("signAdminApiJwt: header is HS256/JWT with the key id as `kid`", async () => {
   const now = 1_700_000_000;
   const jwt = await signAdminApiJwt(VALID_KEY, now);
   const parts = jwt.split(".");
@@ -51,7 +52,7 @@ Deno.test("signAdminApiJwt: header is HS256/JWT with the key id as `kid`", async
   assertEquals(header, { alg: "HS256", typ: "JWT", kid: "5f3a1b2c3d4e5f6a7b8c9d0e" });
 });
 
-Deno.test("signAdminApiJwt: claim carries iat/exp within Ghost's 5-minute cap and aud=/admin/", async () => {
+test("signAdminApiJwt: claim carries iat/exp within Ghost's 5-minute cap and aud=/admin/", async () => {
   const now = 1_700_000_000;
   const jwt = await signAdminApiJwt(VALID_KEY, now);
   const claim = base64UrlDecodeJson(jwt.split(".")[1]) as {
@@ -64,7 +65,7 @@ Deno.test("signAdminApiJwt: claim carries iat/exp within Ghost's 5-minute cap an
   assertEquals(claim.aud, "/admin/");
 });
 
-Deno.test("signAdminApiJwt: signature verifies against the hex-decoded secret via HMAC-SHA256", async () => {
+test("signAdminApiJwt: signature verifies against the hex-decoded secret via HMAC-SHA256", async () => {
   const jwt = await signAdminApiJwt(VALID_KEY, 1_700_000_000);
   const [headerB64, claimB64, sigB64] = jwt.split(".");
   const signingInput = new TextEncoder().encode(`${headerB64}.${claimB64}`);
@@ -81,6 +82,6 @@ Deno.test("signAdminApiJwt: signature verifies against the hex-decoded secret vi
   assert(ok, "JWT signature must verify against the key's secret half");
 });
 
-Deno.test("signAdminApiJwt: rejects a malformed key with a clear message", async () => {
+test("signAdminApiJwt: rejects a malformed key with a clear message", async () => {
   await assertRejects(() => signAdminApiJwt("bad-key"), Error, "Admin API Key");
 });

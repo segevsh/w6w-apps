@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quotePdfGet from "../../actions/quote-pdf-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const PDF = "%PDF-1.4\n1 0 obj\n<<>>\nendobj\n";
 
-Deno.test("quote-pdf-get: base64-encodes the PDF bytes", async () => {
+test("quote-pdf-get: base64-encodes the PDF bytes", async () => {
   const { ctx, calls } = mockCtx([
     { body: PDF, headers: { "content-type": "application/pdf" } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("quote-pdf-get: base64-encodes the PDF bytes", async () => {
   assertEquals(atob(result.content as string), PDF);
 });
 
-Deno.test("quote-pdf-get: a PDF is not JSON, and nothing tries to parse it", async () => {
+test("quote-pdf-get: a PDF is not JSON, and nothing tries to parse it", async () => {
   const { ctx } = mockCtx([{ body: PDF, headers: { "content-type": "application/pdf" } }]);
   const result = await quotePdfGet.execute({ quoteId: 201 }, ctx) as Record<string, unknown>;
   assert(typeof result.content === "string");

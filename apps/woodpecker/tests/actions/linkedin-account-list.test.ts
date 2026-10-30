@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkedinAccountList from "../../actions/linkedin-account-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("linkedin-account-list: filters by session status", async () => {
+test("linkedin-account-list: filters by session status", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -28,7 +29,7 @@ Deno.test("linkedin-account-list: filters by session status", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("linkedin-account-list: no accounts is an empty list", async () => {
+test("linkedin-account-list: no accounts is an empty list", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "linkedin_accounts": [] } }]);
   const out = await linkedinAccountList.execute({} as never, ctx) as Record<string, unknown>;
   assertEquals(calls.length, 1);

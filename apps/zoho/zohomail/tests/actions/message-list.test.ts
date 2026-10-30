@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { envelope, mockCtx, pathOf, queryOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-list: fetches messages/view with the given filters", async () => {
+test("message-list: fetches messages/view with the given filters", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope([{ messageId: "m1", subject: "Hi" }]) }],
     usConnection({ accountId: "acc-1" }),
@@ -22,13 +23,13 @@ Deno.test("message-list: fetches messages/view with the given filters", async ()
   assertEquals(out, [{ messageId: "m1", subject: "Hi" }]);
 });
 
-Deno.test("message-list: sends no query params beyond what was set", async () => {
+test("message-list: sends no query params beyond what was set", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }], usConnection());
   await messageList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("message-list: returns an empty array when the envelope carries no data", async () => {
+test("message-list: returns an empty array when the envelope carries no data", async () => {
   const { ctx } = mockCtx(
     [{ body: { status: { code: 200, description: "success" } } }],
     usConnection(),

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import quotationList from "../../actions/quotation-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const INPUT = {
   "date_after": "2026-01-01",
 };
 
-Deno.test("quotation-list: GET /api/v2/quotations with the documented query, header and body", async () => {
+test("quotation-list: GET /api/v2/quotations with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await quotationList.execute(INPUT as never, ctx);
 
@@ -35,13 +36,13 @@ Deno.test("quotation-list: GET /api/v2/quotations with the documented query, hea
   assertEquals(out, { items: [{ id: 1 }, { id: 2 }], count: 2, page: 2, nextPage: 3 });
 });
 
-Deno.test("quotation-list: an Axonaut error surfaces its message and status", async () => {
+test("quotation-list: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await quotationList.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("quotation-list: an empty page ends the list and the first page is the default", async () => {
+test("quotation-list: an empty page ends the list and the first page is the default", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await quotationList.execute({} as never, ctx);
   assertEquals(calls[0].headers["page"], undefined);

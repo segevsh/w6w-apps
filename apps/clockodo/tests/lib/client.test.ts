@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   buildQuery,
   ClockodoClient,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: scalars, deepObject, arrays; empty values dropped", () => {
+test("buildQuery: scalars, deepObject, arrays; empty values dropped", () => {
   assertEquals(buildQuery({}), "");
   assertEquals(
     buildQuery({
@@ -28,7 +29,7 @@ Deno.test("buildQuery: scalars, deepObject, arrays; empty values dropped", () =>
   );
 });
 
-Deno.test("call: GET carries no body; POST sends JSON with a content-type", async () => {
+test("call: GET carries no body; POST sends JSON with a content-type", async () => {
   const get = mockCtx([{ body: { ok: 1 } }]);
   await new ClockodoClient(get.ctx).call("/v3/customers", { query: { page: 2 } });
   assertEquals(get.calls[0].method, "GET");
@@ -42,7 +43,7 @@ Deno.test("call: GET carries no body; POST sends JSON with a content-type", asyn
   assertEquals(post.calls[0].body, '{"a":1}');
 });
 
-Deno.test("call: both error envelopes and non-JSON bodies are reported with status and message", async () => {
+test("call: both error envelopes and non-JSON bodies are reported with status and message", async () => {
   const a = mockCtx([{
     status: 401,
     body: { errors: [{ type: "General", message: "Authentication failed" }] },
@@ -59,7 +60,7 @@ Deno.test("call: both error envelopes and non-JSON bodies are reported with stat
   );
 });
 
-Deno.test("messageOf: errors array, path suffix, string error, null", () => {
+test("messageOf: errors array, path suffix, string error, null", () => {
   assertEquals(
     messageOf({ errors: [{ message: "m", path: "time_since" }, { type: "T" }] }),
     "m (time_since); T",
@@ -70,7 +71,7 @@ Deno.test("messageOf: errors array, path suffix, string error, null", () => {
   assertEquals(messageOf({}), undefined);
 });
 
-Deno.test("helpers: ids, optional ints, strings, json, compact, paging", () => {
+test("helpers: ids, optional ints, strings, json, compact, paging", () => {
   assertEquals(intId("12", "id"), 12);
   assertThrows(() => intId("1.5", "id"), Error, "positive integer");
   assertThrows(() => intId(0, "id"), Error, "positive integer");

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-compose.ts";
 
@@ -13,7 +14,7 @@ const base = {
   destination: "full.log",
 };
 
-Deno.test("object-compose: posts the sources in order to the destination's compose path", async () => {
+test("object-compose: posts the sources in order to the destination's compose path", async () => {
   const { ctx, calls } = mockCtx([composed]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(
@@ -30,7 +31,7 @@ Deno.test("object-compose: posts the sources in order to the destination's compo
 });
 
 /** Compose in rounds; the error says so rather than reporting a count. */
-Deno.test("object-compose: refuses more than 32 sources, saying how to do it anyway", async () => {
+test("object-compose: refuses more than 32 sources, saying how to do it anyway", async () => {
   const many = Array.from({ length: 33 }, (_, i) => `part-${i}`).join(",");
   const { ctx, calls } = mockCtx([]);
   let message = "";
@@ -44,14 +45,14 @@ Deno.test("object-compose: refuses more than 32 sources, saying how to do it any
   assertEquals(calls.length, 0);
 });
 
-Deno.test("object-compose: exactly 32 is allowed", async () => {
+test("object-compose: exactly 32 is allowed", async () => {
   const thirtyTwo = Array.from({ length: 32 }, (_, i) => `part-${i}`).join(",");
   const { ctx, calls } = mockCtx([composed]);
   await action.execute({ ...base, sources: thirtyTwo }, ctx);
   assertEquals(JSON.parse(calls[0].body!).sourceObjects.length, 32);
 });
 
-Deno.test("object-compose: at least one source is required", async () => {
+test("object-compose: at least one source is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -64,7 +65,7 @@ Deno.test("object-compose: at least one source is required", async () => {
 });
 
 /** The type is not inherited from the sources. */
-Deno.test("object-compose: the content type is set explicitly or left unset", async () => {
+test("object-compose: the content type is set explicitly or left unset", async () => {
   const typed = mockCtx([composed]);
   await action.execute({ ...base, contentType: "text/plain" }, typed.ctx);
   assertEquals(JSON.parse(typed.calls[0].body!).destination, { contentType: "text/plain" });
@@ -75,7 +76,7 @@ Deno.test("object-compose: the content type is set explicitly or left unset", as
 });
 
 /** Essential when appending to the destination itself. */
-Deno.test("object-compose: a generation precondition is passed through", async () => {
+test("object-compose: a generation precondition is passed through", async () => {
   const { ctx, calls } = mockCtx([composed]);
   await action.execute({ ...base, ifGenerationMatch: "1700000000000001" }, ctx);
   assertEquals(
@@ -85,7 +86,7 @@ Deno.test("object-compose: a generation precondition is passed through", async (
 });
 
 /** A pipeline verifying by MD5 breaks on objects it assembled itself. */
-Deno.test("object-compose: reports CRC32C, and says there is no MD5", async () => {
+test("object-compose: reports CRC32C, and says there is no MD5", async () => {
   const { ctx } = mockCtx([composed]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(result.crc32c, "AAAAAA==");
@@ -95,6 +96,6 @@ Deno.test("object-compose: reports CRC32C, and says there is no MD5", async () =
 });
 
 /** The only way to append in a store whose objects are immutable. */
-Deno.test("object-compose: says what it is for", () => {
+test("object-compose: says what it is for", () => {
   assert(/the only way to append/.test(action.description!), action.description);
 });

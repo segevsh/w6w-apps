@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/message-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-create: posts account and channel fields", async () => {
+test("message-create: posts account and channel fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { messages: { id: "m1" } } }]);
   const out = await action.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("message-create: posts account and channel fields", async () => {
   assertEquals(out, { messages: { id: "m1" } });
 });
 
-Deno.test("message-create: requires account", async () => {
+test("message-create: requires account", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ account: "" }, ctx));
 });

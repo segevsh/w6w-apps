@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2Methods, { SCOPES } from "../../auth/oauth2.ts";
 import { REGIONS } from "../../lib/regions.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -9,7 +10,7 @@ function findRegion(key: string) {
   return oauth2Methods.find((m) => m.key === key)!;
 }
 
-Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
+test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
   assertEquals(oauth2Methods.length, 9);
   assertEquals(oauth2Methods.length, REGIONS.length);
   const keys = oauth2Methods.map((m) => m.key);
@@ -24,18 +25,18 @@ Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctl
   }
 });
 
-Deno.test("oauth2-ca: authorizes against accounts.zohocloud.ca, not accounts.zoho.ca", () => {
+test("oauth2-ca: authorizes against accounts.zohocloud.ca, not accounts.zoho.ca", () => {
   assertEquals(
     findRegion("oauth2-ca").oauth2?.authorizationUrl,
     "https://accounts.zohocloud.ca/oauth/v2/auth",
   );
 });
 
-Deno.test("oauth2-uk: the UK data centre is present", () => {
+test("oauth2-uk: the UK data centre is present", () => {
   assertEquals(findRegion("oauth2-uk").oauth2?.tokenUrl, "https://accounts.zoho.uk/oauth/v2/token");
 });
 
-Deno.test("oauth2: every method requests offline+consent and the documented Cliq scopes", () => {
+test("oauth2: every method requests offline+consent and the documented Cliq scopes", () => {
   for (const method of oauth2Methods) {
     assertEquals(method.oauth2?.extraAuthParams, { access_type: "offline", prompt: "consent" });
     assertEquals(method.oauth2?.scopes, SCOPES);
@@ -44,7 +45,7 @@ Deno.test("oauth2: every method requests offline+consent and the documented Cliq
   assert(SCOPES.every((s) => s.startsWith("ZohoCliq.")));
 });
 
-Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and leaves the URL alone", () => {
+test("oauth2-us: sign stamps the Zoho-oauthtoken header and leaves the URL alone", () => {
   const request = { method: "GET", url: "https://cliq.zoho.com/api/v2/channels", headers: {} };
   const signed = findRegion("oauth2-us").sign!(
     { request, credential: { accessToken: TOKEN } },
@@ -54,7 +55,7 @@ Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and leaves the URL 
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("oauth2-us: test passes when /channels answers, signed, against the US host", async () => {
+test("oauth2-us: test passes when /channels answers, signed, against the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { channels: [] } }]);
   const result = await findRegion("oauth2-us").test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(result, { ok: true });
@@ -65,20 +66,20 @@ Deno.test("oauth2-us: test passes when /channels answers, signed, against the US
   assertEquals(calls[0].headers.authorization, `Zoho-oauthtoken ${TOKEN}`);
 });
 
-Deno.test("oauth2-ca: test addresses cliq.zohocloud.ca", async () => {
+test("oauth2-ca: test addresses cliq.zohocloud.ca", async () => {
   const { ctx, calls } = mockCtx([{ body: { channels: [] } }]);
   await findRegion("oauth2-ca").test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(new URL(calls[0].url).host, "cliq.zohocloud.ca");
 });
 
-Deno.test("oauth2-us: test fails with no token, without making a request", async () => {
+test("oauth2-us: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await findRegion("oauth2-us").test!({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2-us: a dead token is reported with the vendor's own code and message", async () => {
+test("oauth2-us: a dead token is reported with the vendor's own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "oauthtoken_invalid", message: "Invalid OAuth token passed." },
@@ -89,7 +90,7 @@ Deno.test("oauth2-us: a dead token is reported with the vendor's own code and me
   assert(/Invalid OAuth token/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: the blank two-byte 401 Cliq sends for a missing token is a rejection, not a crash", async () => {
+test("oauth2-us: the blank two-byte 401 Cliq sends for a missing token is a rejection, not a crash", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: "\n\n",
@@ -100,13 +101,13 @@ Deno.test("oauth2-us: the blank two-byte 401 Cliq sends for a missing token is a
   assert(/HTTP 401/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: the credential never appears in a failure message", async () => {
+test("oauth2-us: the credential never appears in a failure message", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await findRegion("oauth2-us").test!({ credential: { accessToken: TOKEN } }, ctx);
   assert(!(result.message ?? "").includes(TOKEN));
 });
 
-Deno.test("oauth2: afterConnect records each region's apiHost", async () => {
+test("oauth2: afterConnect records each region's apiHost", async () => {
   for (const region of REGIONS) {
     const display = await findRegion(`oauth2-${region.key}`).afterConnect!(
       { credential: { accessToken: TOKEN } },

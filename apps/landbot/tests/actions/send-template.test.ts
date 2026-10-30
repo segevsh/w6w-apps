@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sendTemplate from "../../actions/send-template.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("send-template: POST /customers/42/send_template/ with the documented query and body", async () => {
+test("send-template: POST /customers/42/send_template/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await sendTemplate.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("send-template: POST /customers/42/send_template/ with the documented 
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("send-template: a Landbot error surfaces its status and message", async () => {
+test("send-template: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -56,7 +57,7 @@ Deno.test("send-template: a Landbot error surfaces its status and message", asyn
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("send-template: declares perform", () => {
+test("send-template: declares perform", () => {
   assertEquals(sendTemplate.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

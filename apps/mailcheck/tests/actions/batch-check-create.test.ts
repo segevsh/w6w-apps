@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-check-create.ts";
 
-Deno.test("batch-check-create: POSTs /v1/emails:check with the emails array and returns the operation verbatim", async () => {
+test("batch-check-create: POSTs /v1/emails:check with the emails array and returns the operation verbatim", async () => {
   const body = { name: "operations/op-1", done: false, metadata: { totalCount: 2 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ emails: ["a@example.com", "b@example.com"] }, ctx);
@@ -15,7 +16,7 @@ Deno.test("batch-check-create: POSTs /v1/emails:check with the emails array and 
   assertEquals(result, body);
 });
 
-Deno.test("batch-check-create: is a non-idempotent perform action scoped to batch", () => {
+test("batch-check-create: is a non-idempotent perform action scoped to batch", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "batch");
   assertEquals(action.idempotent, false);

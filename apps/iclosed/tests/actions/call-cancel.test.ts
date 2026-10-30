@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callCancel from "../../actions/call-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("call-cancel: sends every input as body", async () => {
+test("call-cancel: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await callCancel.execute({ "id": 7, "cancelReason": "x-cancelReason" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("call-cancel: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("call-cancel: omits every unset optional", async () => {
+test("call-cancel: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await callCancel.execute({ "id": 7 } as never, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("call-cancel: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("call-cancel: declares a perform action's idempotency", () => {
+test("call-cancel: declares a perform action's idempotency", () => {
   assertEquals(callCancel.type, "perform");
   assertEquals(callCancel.idempotent, true);
   assertEquals(callCancel.params!.filter((p) => p.required).map((p) => p.key), ["id"]);

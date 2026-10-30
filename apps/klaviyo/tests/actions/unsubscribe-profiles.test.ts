@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unsubscribe-profiles.ts";
 
-Deno.test("unsubscribe-profiles: POSTs a bulk-delete-job for the selected channels", async () => {
+test("unsubscribe-profiles: POSTs a bulk-delete-job for the selected channels", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { id: "job-x" } } }]);
   await action.execute!(
     { profiles: [{ email: "a@x.com" }], channels: ["email", "sms"] },

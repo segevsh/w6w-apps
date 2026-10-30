@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -21,7 +22,7 @@ const RESPONSE = {
   "data": {},
 };
 
-Deno.test("user-create: sends POST /users with the mapped input", async () => {
+test("user-create: sends POST /users with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -40,7 +41,7 @@ Deno.test("user-create: sends POST /users with the mapped input", async () => {
   assertEquals(JSON.parse(JSON.stringify(out)), { "id": "new123", "location": "/users/new123" });
 });
 
-Deno.test("user-create: sends no optional field when only required input is given", async () => {
+test("user-create: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(
     {
@@ -61,13 +62,13 @@ Deno.test("user-create: sends no optional field when only required input is give
   });
 });
 
-Deno.test("user-create: sends no credential header of its own", async () => {
+test("user-create: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("user-create: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("user-create: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -81,7 +82,7 @@ Deno.test("user-create: surfaces Klipfolio's error envelope as a thrown error", 
   );
 });
 
-Deno.test("user-create: declares type, idempotency and output", () => {
+test("user-create: declares type, idempotency and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(Array.isArray(action.output) && action.output.length > 0);

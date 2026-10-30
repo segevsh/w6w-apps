@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfToCsv from "../../actions/pdf-to-csv.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pdf-to-csv: posts to /v1/pdf/convert/to/csv and returns the CSV body", async () => {
+test("pdf-to-csv: posts to /v1/pdf/convert/to/csv and returns the CSV body", async () => {
   const { ctx, calls } = mockCtx([{ body: { body: "a,b\n1,2", pageCount: 1 } }]);
   const out = await pdfToCsv.execute({ url: "https://example.com/a.pdf" }, ctx);
 

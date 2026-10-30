@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bookList from "../../actions/book-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("book-list: GETs the books collection", async () => {
+test("book-list: GETs the books collection", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ id: 1776, title: "Early Retirement Extreme" }]),
   }]);
@@ -12,7 +13,7 @@ Deno.test("book-list: GETs the books collection", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("book-list: forwards category (including supplementals) and source", async () => {
+test("book-list: forwards category (including supplementals) and source", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await bookList.execute({ category: "supplementals", source: "kindle" }, ctx);
   const q = queryOf(calls[0].url);
@@ -20,7 +21,7 @@ Deno.test("book-list: forwards category (including supplementals) and source", a
   assertEquals(q.source, "kindle");
 });
 
-Deno.test("book-list: forwards last_highlight_at filters", async () => {
+test("book-list: forwards last_highlight_at filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await bookList.execute({ last_highlight_at__gt: "2020-01-01T00:00:00Z" }, ctx);
   assertEquals(queryOf(calls[0].url).last_highlight_at__gt, "2020-01-01T00:00:00Z");

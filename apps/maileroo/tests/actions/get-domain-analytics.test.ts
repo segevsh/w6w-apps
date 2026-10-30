@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-domain-analytics.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-domain-analytics: maps aggregate, timeline and providers", async () => {
+test("get-domain-analytics: maps aggregate, timeline and providers", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -19,7 +20,7 @@ Deno.test("get-domain-analytics: maps aggregate, timeline and providers", async 
   assertEquals(out.timeline.length, 1);
 });
 
-Deno.test("get-domain-analytics: errors throw", async () => {
+test("get-domain-analytics: errors throw", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { message: "no domains.analytics.read" } },

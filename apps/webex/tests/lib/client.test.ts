@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -9,7 +10,7 @@ import {
   WebexClient,
 } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined, null and empty-string keys", () => {
+test("compact: drops undefined, null and empty-string keys", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -17,19 +18,19 @@ Deno.test("compact: drops undefined, null and empty-string keys", () => {
   });
 });
 
-Deno.test("unset: treats a blank string as absent", () => {
+test("unset: treats a blank string as absent", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("x"), "x");
   assertEquals(unset(undefined), undefined);
 });
 
-Deno.test("toList: splits and trims a comma-separated field", () => {
+test("toList: splits and trims a comma-separated field", () => {
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(undefined), undefined);
 });
 
-Deno.test("stripWebhookSecret: removes the secret field only", () => {
+test("stripWebhookSecret: removes the secret field only", () => {
   const stripped = stripWebhookSecret<{ id: string; secret?: string; name: string }>({
     id: "1",
     secret: "shh",
@@ -38,12 +39,12 @@ Deno.test("stripWebhookSecret: removes the secret field only", () => {
   assertEquals(stripped, { id: "1", name: "hook" });
 });
 
-Deno.test("stripWebhookSecret: passes through a non-object unchanged", () => {
+test("stripWebhookSecret: passes through a non-object unchanged", () => {
   assertEquals(stripWebhookSecret(null), null);
   assertEquals(stripWebhookSecret(undefined), undefined);
 });
 
-Deno.test("formatWebexError: surfaces message, errors[].description and trackingId", () => {
+test("formatWebexError: surfaces message, errors[].description and trackingId", () => {
   const msg = formatWebexError(
     401,
     "GET",
@@ -61,25 +62,25 @@ Deno.test("formatWebexError: surfaces message, errors[].description and tracking
   );
 });
 
-Deno.test("formatWebexError: falls back to the raw body when it isn't the documented shape", () => {
+test("formatWebexError: falls back to the raw body when it isn't the documented shape", () => {
   const msg = formatWebexError(500, "GET", "/rooms", "<html>oops</html>");
   assertEquals(msg, "Webex 500 for GET /rooms: <html>oops</html>");
 });
 
-Deno.test("WebexClient.request: GET builds the URL and query string", async () => {
+test("WebexClient.request: GET builds the URL and query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await new WebexClient(ctx).request("/rooms", { query: { max: 10, type: "group" } });
   assertEquals(calls[0].method, "GET");
   assertEquals(calls[0].url, "https://webexapis.com/v1/rooms?max=10&type=group");
 });
 
-Deno.test("WebexClient.request: drops unset query values", async () => {
+test("WebexClient.request: drops unset query values", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new WebexClient(ctx).request("/rooms", { query: { teamId: undefined, max: 5 } });
   assertEquals(calls[0].url, "https://webexapis.com/v1/rooms?max=5");
 });
 
-Deno.test("WebexClient.request: POST sends a compacted JSON body", async () => {
+test("WebexClient.request: POST sends a compacted JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await new WebexClient(ctx).request("/rooms", {
     method: "POST",
@@ -89,13 +90,13 @@ Deno.test("WebexClient.request: POST sends a compacted JSON body", async () => {
   assertEquals(JSON.parse(calls[0].body!), { title: "x" });
 });
 
-Deno.test("WebexClient.request: 204 resolves to undefined", async () => {
+test("WebexClient.request: 204 resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const result = await new WebexClient(ctx).request("/rooms/1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("WebexClient.request: throws a formatted error on a non-2xx response", async () => {
+test("WebexClient.request: throws a formatted error on a non-2xx response", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

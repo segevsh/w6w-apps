@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileGet from "../../actions/file-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-get: reads a file's metadata and download URL", async () => {
+test("file-get: reads a file's metadata and download URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({
       id: "f1",

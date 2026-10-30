@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/moderations-create.ts";
 
-Deno.test("moderations-create: POSTs to /moderations with default model", async () => {
+test("moderations-create: POSTs to /moderations with default model", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   await action.execute!({ input: "hi" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("moderations-create: POSTs to /moderations with default model", async 
   assertEquals(body.model, "omni-moderation-latest");
 });
 
-Deno.test("moderations-create: honors caller-provided model", async () => {
+test("moderations-create: honors caller-provided model", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ input: "hi", model: "text-moderation-latest" }, ctx);
   const body = JSON.parse(calls[0].body!);

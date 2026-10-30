@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteList from "../../actions/note-list.ts";
 import { bodyOf, mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("note-list: POST /api/v1/notes on the workspace host", async () => {
+test("note-list: POST /api/v1/notes on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { notes: page([{ id: "n1" }]) } }]);
   const out = await noteList.execute({
     includeContentFellowMarkdown: true,
@@ -22,7 +23,7 @@ Deno.test("note-list: POST /api/v1/notes on the workspace host", async () => {
   assertEquals((out as { items: unknown[] }).items.length, 1);
 });
 
-Deno.test("note-list: a Fellow error surfaces its detail and status", async () => {
+test("note-list: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () =>

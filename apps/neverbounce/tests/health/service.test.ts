@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: reports ok when the NeverBounce component is operational", async () => {
+test("service: reports ok when the NeverBounce component is operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -19,7 +20,7 @@ Deno.test("service: reports ok when the NeverBounce component is operational", a
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: reports degraded when the NeverBounce component is degraded, ignoring unrelated products", async () => {
+test("service: reports degraded when the NeverBounce component is degraded, ignoring unrelated products", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "major", description: "Enrich outage" },
@@ -35,7 +36,7 @@ Deno.test("service: reports degraded when the NeverBounce component is degraded,
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: reports unknown when the NeverBounce component is missing from the page", async () => {
+test("service: reports unknown when the NeverBounce component is missing from the page", async () => {
   const { ctx } = mockCtx([{
     body: { components: [{ name: "Sales", status: "operational" }] },
   }]);
@@ -43,13 +44,13 @@ Deno.test("service: reports unknown when the NeverBounce component is missing fr
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: reports unknown when the status API itself fails", async () => {
+test("service: reports unknown when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is app-scoped, unsigned, and allowlists only the status host", () => {
+test("service: is app-scoped, unsigned, and allowlists only the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.zoominfo.com"]);
 });

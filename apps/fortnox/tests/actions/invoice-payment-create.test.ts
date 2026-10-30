@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-payment-create.ts";
 
-Deno.test("invoice-payment-create: POST /3/invoicepayments with a wrapped body", async () => {
+test("invoice-payment-create: POST /3/invoicepayments with a wrapped body", async () => {
   const reply = { "InvoicePayment": { "Id": 1 } };
   const { ctx, calls } = mockCtx([{ status: 201, body: reply }]);
   const result = await action.execute!({
@@ -37,7 +38,7 @@ Deno.test("invoice-payment-create: POST /3/invoicepayments with a wrapped body",
   assertEquals(Object.fromEntries(new URL(bare.calls[0].url).searchParams), {});
 });
 
-Deno.test("invoice-payment-create: rejects an additionalFields that is not a JSON object", async () => {
+test("invoice-payment-create: rejects an additionalFields that is not a JSON object", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

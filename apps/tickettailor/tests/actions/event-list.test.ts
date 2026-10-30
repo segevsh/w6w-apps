@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventList from "../../actions/event-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("event-list: hits GET /events, box-office-wide", async () => {
+test("event-list: hits GET /events, box-office-wide", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ id: "ev_1" }]) }]);
   await eventList.execute({ venue: "Hackney Downs" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/events");

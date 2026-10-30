@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import iterationCreate from "../../actions/iteration-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 /** `start_date`/`end_date` are plain dates, sent exactly as the caller typed them. */
-Deno.test("iteration-create: posts name, start_date and end_date verbatim", async () => {
+test("iteration-create: posts name, start_date and end_date verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await iterationCreate.execute(
     { name: "Sprint 1", startDate: "2026-09-15", endDate: "2026-09-29" },

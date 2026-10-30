@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentLogList from "../../actions/document-log-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-log-list: GETs /document/{id}/log_set", async () => {
+test("document-log-list: GETs /document/{id}/log_set", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: 1, status: "ERROR", source: "DOCUMENT" }]) },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import heartbeatList from "../../actions/heartbeat-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("heartbeat-list: GET /api/v2/heartbeats", async () => {
+test("heartbeat-list: GET /api/v2/heartbeats", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -38,7 +39,7 @@ Deno.test("heartbeat-list: GET /api/v2/heartbeats", async () => {
   assertEquals((out.items as Array<Record<string, unknown>>)[0].name, "Nightly backup");
 });
 
-Deno.test("heartbeat-list: puts no credential on the request (sign owns that)", async () => {
+test("heartbeat-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -63,7 +64,7 @@ Deno.test("heartbeat-list: puts no credential on the request (sign owns that)", 
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("heartbeat-list: a vendor error surfaces its own message", async () => {
+test("heartbeat-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () => await heartbeatList.execute({}, ctx)) as Error;
   assertEquals(err.message.includes("(401)"), true);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/project-share-link-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("project-share-link-get: calls GET /projects/{projectId}/shareLink", async () => {
+test("project-share-link-get: calls GET /projects/{projectId}/shareLink", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: { id: "x1" } } }]);
   const out = await action.execute!({ "projectId": "projectId-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("project-share-link-get: calls GET /projects/{projectId}/shareLink", a
   assertEquals(out.item, { id: "x1" });
 });
 
-Deno.test("project-share-link-get: a failure envelope is an error", async () => {
+test("project-share-link-get: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

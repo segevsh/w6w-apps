@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-create.ts";
 
@@ -9,7 +10,7 @@ const created = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("workspace-create: posts a JSON:API document to the organisation", async () => {
+test("workspace-create: posts a JSON:API document to the organisation", async () => {
   const { ctx, calls } = mockCtx([created()]);
   const result = await action.execute({ organization: "acme", name: "prod" }, ctx) as Record<
     string,
@@ -24,7 +25,7 @@ Deno.test("workspace-create: posts a JSON:API document to the organisation", asy
 });
 
 /** Attribute names are kebab-case; snake_case is accepted and ignored. */
-Deno.test("workspace-create: sends kebab-case attribute names", async () => {
+test("workspace-create: sends kebab-case attribute names", async () => {
   const { ctx, calls } = mockCtx([created()]);
   await action.execute({
     organization: "acme",
@@ -41,7 +42,7 @@ Deno.test("workspace-create: sends kebab-case attribute names", async () => {
 });
 
 /** A dropped `auto-apply: false` would be the dangerous direction. */
-Deno.test("workspace-create: auto-apply is sent explicitly, false included", async () => {
+test("workspace-create: auto-apply is sent explicitly, false included", async () => {
   const off = mockCtx([created()]);
   await action.execute({ organization: "acme", name: "prod" }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!).data.attributes["auto-apply"], false);
@@ -58,14 +59,14 @@ Deno.test("workspace-create: auto-apply is sent explicitly, false included", asy
   assert(/apply themselves/.test(on.logs[0].message), on.logs[0].message);
 });
 
-Deno.test("workspace-create: defaults execution mode to remote", async () => {
+test("workspace-create: defaults execution mode to remote", async () => {
   const { ctx, calls } = mockCtx([created()]);
   await action.execute({ organization: "acme", name: "prod" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).data.attributes["execution-mode"], "remote");
 });
 
 /** A new minor version can break a configuration that planned cleanly. */
-Deno.test("workspace-create: an unpinned version is left unset, and the hint says why", async () => {
+test("workspace-create: an unpinned version is left unset, and the hint says why", async () => {
   const { ctx, calls } = mockCtx([created()]);
   await action.execute({ organization: "acme", name: "prod", terraformVersion: "" }, ctx);
   assertEquals("terraform-version" in JSON.parse(calls[0].body!).data.attributes, false);
@@ -73,7 +74,7 @@ Deno.test("workspace-create: an unpinned version is left unset, and the hint say
   assert(/tracks the newest release/.test(version.hint!), version.hint);
 });
 
-Deno.test("workspace-create: an organisation and a name are both required", async () => {
+test("workspace-create: an organisation and a name are both required", async () => {
   for (const input of [{ name: "prod" }, { organization: "acme" }]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -87,6 +88,6 @@ Deno.test("workspace-create: an organisation and a name are both required", asyn
   }
 });
 
-Deno.test("workspace-create: is not idempotent", () => {
+test("workspace-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

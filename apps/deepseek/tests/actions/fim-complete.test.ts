@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/fim-complete.ts";
 
-Deno.test("fim-complete: POSTs /beta/completions with model + prompt only", async () => {
+test("fim-complete: POSTs /beta/completions with model + prompt only", async () => {
   const body = { id: "cmpl-1", choices: [{ text: "hello" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -21,7 +22,7 @@ Deno.test("fim-complete: POSTs /beta/completions with model + prompt only", asyn
   assertEquals(result, body);
 });
 
-Deno.test("fim-complete: forwards suffix and sampling params", async () => {
+test("fim-complete: forwards suffix and sampling params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -47,13 +48,13 @@ Deno.test("fim-complete: forwards suffix and sampling params", async () => {
   assertEquals(sent.logprobs, 5);
 });
 
-Deno.test("fim-complete: omits undefined optional params from the request body", async () => {
+test("fim-complete: omits undefined optional params from the request body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "deepseek-v4-pro", prompt: "x" }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assertEquals(Object.keys(sent).sort(), ["model", "prompt"]);
 });
 
-Deno.test("fim-complete: is marked non-idempotent", () => {
+test("fim-complete: is marked non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/receipt-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("receipt-list: GET /receipts maps params to the vendor's query names", async () => {
+test("receipt-list: GET /receipts maps params to the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: { receipts: [{ id: "a" }], cursor: "c2" } }]);
   const out = await action.execute({
     receiptNumbers: "1-1001,1-1002",
@@ -24,7 +25,7 @@ Deno.test("receipt-list: GET /receipts maps params to the vendor's query names",
   assertEquals(out.cursor, "c2");
 });
 
-Deno.test("receipt-list: no params sends no query string", async () => {
+test("receipt-list: no params sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { receipts: [] } }]);
   const out = await action.execute({}, ctx) as { cursor?: string };
   assertEquals(new URL(calls[0].url).search, "");

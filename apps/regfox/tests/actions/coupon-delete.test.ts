@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/coupon-delete.ts";
 import { exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("coupon-delete: DELETE answering 204 with no body reports deleted", async () => {
+test("coupon-delete: DELETE answering 204 with no body reports deleted", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await exec(action, { couponId: "4" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("coupon-delete: DELETE answering 204 with no body reports deleted", as
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("coupon-delete: a vendor error is not reported as deleted", async () => {
+test("coupon-delete: a vendor error is not reported as deleted", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { responseCode: 404, error: { code: 4404, description: "coupon not found" } },

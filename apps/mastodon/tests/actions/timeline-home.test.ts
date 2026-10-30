@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, paged, STATUS } from "./_shared.ts";
 import action from "../../actions/timeline-home.ts";
 
 const feed = paged([STATUS, { ...STATUS, id: "s2", content: "<p>second</p>" }]);
 
-Deno.test("timeline-home: reads the feed and returns the paging ids", async () => {
+test("timeline-home: reads the feed and returns the paging ids", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -24,7 +25,7 @@ Deno.test("timeline-home: reads the feed and returns the paging ids", async () =
  * `min_id` walks forward without gaps; `since_id` drops the middle. Only the
  * first is offered, because there is no non-buggy use for the second here.
  */
-Deno.test("timeline-home: offers minId and never since_id", async () => {
+test("timeline-home: offers minId and never since_id", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ minId: "500" }, ctx);
   const url = new URL(calls[0].url);
@@ -35,7 +36,7 @@ Deno.test("timeline-home: offers minId and never since_id", async () => {
   assert(!keys.includes("sinceId"), keys.join(","));
 });
 
-Deno.test("timeline-home: the limit is clamped and maxId passed", async () => {
+test("timeline-home: the limit is clamped and maxId passed", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ limit: 500, maxId: "50" }, ctx);
   const url = new URL(calls[0].url);
@@ -43,20 +44,20 @@ Deno.test("timeline-home: the limit is clamped and maxId passed", async () => {
   assertEquals(url.searchParams.get("max_id"), "50");
 });
 
-Deno.test("timeline-home: an empty timeline is a count of zero", async () => {
+test("timeline-home: an empty timeline is a count of zero", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }], { display });
   const result = await action.execute!({}, ctx) as { count: number; newestId?: string };
   assertEquals(result.count, 0);
   assertEquals(result.newestId, undefined);
 });
 
-Deno.test("timeline-home: logs a count, never the posts", async () => {
+test("timeline-home: logs a count, never the posts", async () => {
   const { ctx, logs } = mockCtx([feed], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("hello"), JSON.stringify(logs));
   assertEquals(logs[0].data, { count: 2 });
 });
 
-Deno.test("timeline-home: says which parameter 'since last run' wants", () => {
+test("timeline-home: says which parameter 'since last run' wants", () => {
   assert(/walks forward without gaps/.test(action.description!), action.description);
 });

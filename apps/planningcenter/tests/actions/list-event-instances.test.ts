@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listEventInstances from "../../actions/list-event-instances.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-event-instances: calls /calendar/v2/event_instances, NOT /events", async () => {
+test("list-event-instances: calls /calendar/v2/event_instances, NOT /events", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: collection("EventInstance", [
@@ -21,7 +22,7 @@ Deno.test("list-event-instances: calls /calendar/v2/event_instances, NOT /events
   assertEquals(out.eventInstances[0].eventId, "e1");
 });
 
-Deno.test("list-event-instances: orders by starts_at and filters a date range", async () => {
+test("list-event-instances: orders by starts_at and filters a date range", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("EventInstance", []) }]);
   await listEventInstances.execute({ startsAfter: "2026-09-01T00:00:00Z" }, ctx);
 

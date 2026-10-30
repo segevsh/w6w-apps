@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-delete.ts";
 
-Deno.test("check-delete: refuses to run without an explicit confirmation", async () => {
+test("check-delete: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ checkId: "c1" }, ctx),
@@ -12,7 +13,7 @@ Deno.test("check-delete: refuses to run without an explicit confirmation", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("check-delete: with confirmation it DELETEs, logging at warn", async () => {
+test("check-delete: with confirmation it DELETEs, logging at warn", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ checkId: "c1", confirm: true }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -21,6 +22,6 @@ Deno.test("check-delete: with confirmation it DELETEs, logging at warn", async (
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("check-delete: points at deactivating as the reversible option", () => {
+test("check-delete: points at deactivating as the reversible option", () => {
   assert(action.description!.includes("Deactivating keeps both"), action.description);
 });

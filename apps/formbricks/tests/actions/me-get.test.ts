@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/me-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("me-get: full input maps to the documented request", async () => {
+test("me-get: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "x1", "type": "production" } }]);
   const out = await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,14 +14,14 @@ Deno.test("me-get: full input maps to the documented request", async () => {
   assertEquals(out, { "me": { "id": "x1", "type": "production" } });
 });
 
-Deno.test("me-get: sends x-api-key never itself and no authorization header", async () => {
+test("me-get: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "x1", "type": "production" } }]);
   await action.execute!({}, ctx);
   assert(!("x-api-key" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("me-get: surfaces a Formbricks error body as a thrown error", async () => {
+test("me-get: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

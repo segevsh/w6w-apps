@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-page-content.ts";
 
-Deno.test("update-page-content: PATCHes the page's content endpoint with the commands array", async () => {
+test("update-page-content: PATCHes the page's content endpoint with the commands array", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const commands = [{ target: "body", action: "append" as const, content: "<p>more</p>" }];
   const out = await action.execute({ pageId: "p1", commands }, ctx);
@@ -12,7 +13,7 @@ Deno.test("update-page-content: PATCHes the page's content endpoint with the com
   assertEquals(out.status, 204);
 });
 
-Deno.test("update-page-content: an empty commands array is rejected before any request", async () => {
+test("update-page-content: an empty commands array is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   try {
     await action.execute({ pageId: "p1", commands: [] }, ctx);
@@ -23,6 +24,6 @@ Deno.test("update-page-content: an empty commands array is rejected before any r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-page-content: does not declare idempotent true — append/prepend are not safe to retry", () => {
+test("update-page-content: does not declare idempotent true — append/prepend are not safe to retry", () => {
   assertEquals(action.idempotent, false);
 });

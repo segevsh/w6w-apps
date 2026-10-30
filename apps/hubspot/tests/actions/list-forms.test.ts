@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-forms.ts";
 
-Deno.test("list-forms: GETs /marketing/v3/forms/", async () => {
+test("list-forms: GETs /marketing/v3/forms/", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   await action.execute!({ limit: 25 }, ctx);
   const url = new URL(calls[0].url);

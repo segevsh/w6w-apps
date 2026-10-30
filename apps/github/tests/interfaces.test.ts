@@ -1,4 +1,5 @@
-import { assertEquals, assertFalse } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertFalse } from "./_assert.ts";
 import type { InterfaceConformance, InterfaceMethodImpl } from "@w6w/types";
 import app from "../index.ts";
 import refGet from "../actions/ref-get.ts";
@@ -51,14 +52,14 @@ function conformance(): InterfaceConformance {
   return conformances[0];
 }
 
-Deno.test("interfaces: exactly one blob-store@1 conformance with the seven method keys", () => {
+test("interfaces: exactly one blob-store@1 conformance with the seven method keys", () => {
   const conformances: InterfaceConformance[] = app.interfaces ?? [];
   assertEquals(conformances.length, 1);
   assertEquals(conformances[0].interfaceId, INTERFACE_ID);
   assertEquals(Object.keys(conformances[0].methods).sort(), [...METHOD_KEYS].sort());
 });
 
-Deno.test("interfaces: every uses.action names an action this app actually has", () => {
+test("interfaces: every uses.action names an action this app actually has", () => {
   const actionKeys = new Set(app.actions.map((a) => a.key));
   const methods = conformance().methods;
   for (const method of METHOD_KEYS) {
@@ -71,7 +72,7 @@ Deno.test("interfaces: every uses.action names an action this app actually has",
   }
 });
 
-Deno.test("interfaces: headRef and put/delete outputMaps are pinned exactly", () => {
+test("interfaces: headRef and put/delete outputMaps are pinned exactly", () => {
   const methods = conformance().methods;
   assertEquals(methods.headRef.outputMap, { sha: { "$": "output.object.sha" } });
   assertEquals(methods.headRef.with, undefined);
@@ -85,7 +86,7 @@ Deno.test("interfaces: headRef and put/delete outputMaps are pinned exactly", ()
   });
 });
 
-Deno.test("interfaces: createRef and openPullRequest are declared as pinned", () => {
+test("interfaces: createRef and openPullRequest are declared as pinned", () => {
   const methods = conformance().methods;
   assertEquals(methods.createRef.with, undefined);
   assertEquals(methods.createRef.outputMap, { sha: { "$": "output.object.sha" } });
@@ -94,7 +95,7 @@ Deno.test("interfaces: createRef and openPullRequest are declared as pinned", ()
   assertEquals(methods.delete.with?.branch, { "$": "inputs.branch" });
 });
 
-Deno.test("interfaces: put/delete carry the literal commitMessage; delete's sha is wired", () => {
+test("interfaces: put/delete carry the literal commitMessage; delete's sha is wired", () => {
   const methods = conformance().methods;
   assertEquals(typeof methods.put.with?.commitMessage, "string");
   assertEquals(methods.put.with?.commitMessage, "w6w interface sync");
@@ -103,14 +104,14 @@ Deno.test("interfaces: put/delete carry the literal commitMessage; delete's sha 
   assertEquals(methods.delete.with?.sha, { "$": "inputs.expectedSha" });
 });
 
-Deno.test("interfaces: no method binding names an app", () => {
+test("interfaces: no method binding names an app", () => {
   const methods = conformance().methods;
   for (const method of METHOD_KEYS) {
     assertFalse("app" in methods[method].uses, `${method}.uses must not carry an "app" key`);
   }
 });
 
-Deno.test("interfaces: every required param of the bound action is covered", () => {
+test("interfaces: every required param of the bound action is covered", () => {
   const methods = conformance().methods;
   for (const method of METHOD_KEYS) {
     const impl: InterfaceMethodImpl = methods[method];
@@ -130,7 +131,7 @@ Deno.test("interfaces: every required param of the bound action is covered", () 
   }
 });
 
-Deno.test("interfaces: the rest of the app export is unchanged", () => {
+test("interfaces: the rest of the app export is unchanged", () => {
   assertEquals(app.actions.length, 27);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 2);

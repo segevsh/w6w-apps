@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/text-anonymize.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("text-anonymize: calls text/anonymization with the nested input and shapes the output", async () => {
+test("text-anonymize: calls text/anonymization with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("text-anonymize: calls text/anonymization with the nested input and sh
   assertEquals(out.output, { result: "Call [NAME]" });
 });
 
-Deno.test("text-anonymize: a provider failure inside a 200 is thrown", async () => {
+test("text-anonymize: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "amazon", error: { message: "provider down" } },
   }]);
@@ -39,7 +40,7 @@ Deno.test("text-anonymize: a provider failure inside a 200 is thrown", async () 
   );
 });
 
-Deno.test("text-anonymize: fallbacks and a provider model reach the request", async () => {
+test("text-anonymize: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ text: "Call Bob", language: "en", provider: "amazon" },

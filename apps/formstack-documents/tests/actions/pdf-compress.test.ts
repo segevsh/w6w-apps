@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse, PDF_BYTES } from "../_helpers.ts";
 import action from "../../actions/pdf-compress.ts";
 
-Deno.test("pdf-compress: POSTs the file to /tools/compress_pdf and returns it base64-encoded", async () => {
+test("pdf-compress: POSTs the file to /tools/compress_pdf and returns it base64-encoded", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "application/pdf" },
     body: PDF_BYTES,
@@ -25,11 +26,11 @@ Deno.test("pdf-compress: POSTs the file to /tools/compress_pdf and returns it ba
   assertEquals(atob(file.contentBase64), new TextDecoder().decode(PDF_BYTES));
 });
 
-Deno.test("pdf-compress: idempotent flag is true", () => {
+test("pdf-compress: idempotent flag is true", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("pdf-compress: declares key, type and a description", () => {
+test("pdf-compress: declares key, type and a description", () => {
   assertEquals(action.key, "pdf-compress");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

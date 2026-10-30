@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceSearch from "../../actions/sequence-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sequence-search: POSTs to /emailer_campaigns/search with query params", async () => {
+test("sequence-search: POSTs to /emailer_campaigns/search with query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { emailer_campaigns: [{ id: "seq1" }], pagination: { total_entries: 1 } } },
   ]);

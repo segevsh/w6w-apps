@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaStatsSummaryGet from "../../actions/media-stats-summary-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-stats-summary-get: calls GET /modern/medias/abc/stats with the version header", async () => {
+test("media-stats-summary-get: calls GET /modern/medias/abc/stats with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await mediaStatsSummaryGet.execute({ "mediaId": "abc" } as never, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("media-stats-summary-get: calls GET /modern/medias/abc/stats with the 
   assert(out.ok === true);
 });
 
-Deno.test("media-stats-summary-get: surfaces a Wistia error with its code", async () => {
+test("media-stats-summary-get: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },

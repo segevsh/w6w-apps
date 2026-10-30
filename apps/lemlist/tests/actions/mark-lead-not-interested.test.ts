@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import markLeadNotInterested from "../../actions/mark-lead-not-interested.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("mark-lead-not-interested: the path segment is `notinterested` — one lowercase word", async () => {
+test("mark-lead-not-interested: the path segment is `notinterested` — one lowercase word", async () => {
   // lemlist camelCases `notInterested` as a lead STATE but flattens it in the
   // URL. Getting this wrong is a 404.
   const { ctx, calls } = mockCtx([{ body: [] }]);
@@ -13,7 +14,7 @@ Deno.test("mark-lead-not-interested: the path segment is `notinterested` — one
   assert(!path.includes("notInterested"));
 });
 
-Deno.test("mark-lead-not-interested: campaign-scoped route keeps the same spelling", async () => {
+test("mark-lead-not-interested: campaign-scoped route keeps the same spelling", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await markLeadNotInterested.execute!({ leadIdOrEmail: "lea_1", campaignId: "cam_1" }, ctx);
   assertEquals(

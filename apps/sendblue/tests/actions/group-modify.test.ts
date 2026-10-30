@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupModify from "../../actions/group-modify.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-modify: POSTs to /api/modify-group with the modify_type verbatim", async () => {
+test("group-modify: POSTs to /api/modify-group with the modify_type verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "SUCCESS" } }]);
   await groupModify.execute({
     groupId: "g1",

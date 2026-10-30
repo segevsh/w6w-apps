@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/intellimatch-status.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("intellimatch-status: GETs status with the hash in the query", async () => {
+test("intellimatch-status: GETs status with the hash in the query", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": "processing", "progress": 45 },

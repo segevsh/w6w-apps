@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import permissions from "../../health/permissions.ts";
 import quota from "../../health/quota.ts";
@@ -8,7 +9,7 @@ const keyInfo = (scopes: string[], title = "Automation Bot") => ({
   body: { success: true, results: { title, scopes } },
 });
 
-Deno.test("permissions: reports how many scopes and how many allow writing", async () => {
+test("permissions: reports how many scopes and how many allow writing", async () => {
   const { ctx, calls } = mockCtx([keyInfo(["candidates:read", "candidates:write", "jobs:read"])]);
   const result = await permissions.check!({}, ctx);
   assertEquals(calls[0].url, "https://api.ashbyhq.com/apiKey.info");
@@ -22,14 +23,14 @@ Deno.test("permissions: reports how many scopes and how many allow writing", asy
  * The failure this check exists for: a read-only key authenticates flawlessly
  * and is refused by every write.
  */
-Deno.test("permissions: a read-only key is flagged in the message", async () => {
+test("permissions: a read-only key is flagged in the message", async () => {
   const { ctx } = mockCtx([keyInfo(["candidates:read", "jobs:read"])]);
   const result = await permissions.check!({}, ctx);
   assertEquals(result.state, "ok");
   assert(/all read-only/.test(result.message!), result.message);
 });
 
-Deno.test("permissions: a key with no scopes at all is down", async () => {
+test("permissions: a key with no scopes at all is down", async () => {
   const { ctx } = mockCtx([keyInfo([])]);
   const result = await permissions.check!({}, ctx);
   assertEquals(result.state, "down");
@@ -37,7 +38,7 @@ Deno.test("permissions: a key with no scopes at all is down", async () => {
 });
 
 /** A narrow key without `apiKeysRead` is working as intended, not broken. */
-Deno.test("permissions: a 403 is unknown with the reason, not down", async () => {
+test("permissions: a 403 is unknown with the reason, not down", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "Forbidden" }]);
   const result = await permissions.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -45,17 +46,17 @@ Deno.test("permissions: a 403 is unknown with the reason, not down", async () =>
 });
 
 /** The derived auth check owns credential failures. */
-Deno.test("permissions: a 401 is unknown rather than down", async () => {
+test("permissions: a 401 is unknown rather than down", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   assertEquals((await permissions.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("permissions: a success:false refusal is unknown too", async () => {
+test("permissions: a success:false refusal is unknown too", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { success: false, errorInfo: { code: "x" } } }]);
   assertEquals((await permissions.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("permissions: any other failure is down", async () => {
+test("permissions: any other failure is down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await permissions.check!({}, ctx)).state, "down");
 });
@@ -64,7 +65,7 @@ Deno.test("permissions: any other failure is down", async () => {
  * Ashby documents a limit for the report endpoints only, and this app
  * implements neither.
  */
-Deno.test("quota: is a declared absence naming what Ashby does publish", () => {
+test("quota: is a declared absence naming what Ashby does publish", () => {
   assertEquals(quota.check, undefined);
   assert(quota.unavailable, "quota should declare its absence");
   const reason = quota.unavailable!.reason;

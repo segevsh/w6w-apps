@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tags.ts";
 
-Deno.test("list-tags: GETs /tags and unwraps _embedded.tags", async () => {
+test("list-tags: GETs /tags and unwraps _embedded.tags", async () => {
   const { ctx, calls } = mockCtx([{
     body: { _embedded: { tags: [{ id: 1, name: "Dark Side" }] } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("list-tags: GETs /tags and unwraps _embedded.tags", async () => {
   assertEquals(out, { tags: [{ id: 1, name: "Dark Side" }] });
 });
 
-Deno.test("list-tags: returns an empty array when _embedded is absent", async () => {
+test("list-tags: returns an empty array when _embedded is absent", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await action.execute({}, ctx), { tags: [] });
 });

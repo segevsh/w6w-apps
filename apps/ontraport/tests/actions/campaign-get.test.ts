@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignGet from "../../actions/campaign-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-get: calls GET /1/CampaignBuilderItem?id=...", async () => {
+test("campaign-get: calls GET /1/CampaignBuilderItem?id=...", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", name: "Test Campaign" }) }]);
   const out = await campaignGet.execute({ id: "1" }, ctx) as { name: string };
 

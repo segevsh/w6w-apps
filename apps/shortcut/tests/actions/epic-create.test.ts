@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import epicCreate from "../../actions/epic-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("epic-create: posts only name when nothing else is set", async () => {
+test("epic-create: posts only name when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await epicCreate.execute({ name: "Q4 Launch" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("epic-create: posts only name when nothing else is set", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Q4 Launch" });
 });
 
-Deno.test("epic-create: converts multiselect ids to arrays under wire names", async () => {
+test("epic-create: converts multiselect ids to arrays under wire names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await epicCreate.execute({ name: "Q4 Launch", ownerIds: "u1,u2", groupIds: ["g1"] }, ctx);
 

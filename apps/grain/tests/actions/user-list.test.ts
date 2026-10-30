@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: POSTs /v2/users with an empty body and no params", async () => {
+test("user-list: POSTs /v2/users with an empty body and no params", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [{ id: "u1", name: "Luke Skywalker" }] } }]);
   const result = await action.execute({}, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("user-list: POSTs /v2/users with an empty body and no params", async (
   assertEquals(action.params, []);
 });
 
-Deno.test("user-list: defaults to an empty array when Grain omits users", async () => {
+test("user-list: defaults to an empty array when Grain omits users", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({}, ctx);
   assertEquals(result, { users: [] });

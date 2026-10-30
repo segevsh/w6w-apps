@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceCreate from "../../actions/workspace-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-create: POST /workspaces with the name, returns the 201 body", async () => {
+test("workspace-create: POST /workspaces with the name, returns the 201 body", async () => {
   const created = { id: "w2", name: "Client", plan: "FREE", submissionsQuota: 250 };
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   const out = await workspaceCreate.execute({ name: "Client" }, ctx);
@@ -13,6 +14,6 @@ Deno.test("workspace-create: POST /workspaces with the name, returns the 201 bod
   assertEquals(out, created);
 });
 
-Deno.test("workspace-create: is declared non-idempotent", () => {
+test("workspace-create: is declared non-idempotent", () => {
   assertEquals(workspaceCreate.idempotent, false);
 });

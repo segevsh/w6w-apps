@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/list-event-actions.ts";
 
-Deno.test("list-event-actions: GETs /event_actions with pagination params", async () => {
+test("list-event-actions: GETs /event_actions with pagination params", async () => {
   const { ctx, calls } = mockDripCtx([{
     body: { event_actions: ["Ate a sandwich", "Started a trial"] },
   }]);
@@ -14,7 +15,7 @@ Deno.test("list-event-actions: GETs /event_actions with pagination params", asyn
   assertEquals(out, { eventActions: ["Ate a sandwich", "Started a trial"] });
 });
 
-Deno.test("list-event-actions: defaults to an empty array", async () => {
+test("list-event-actions: defaults to an empty array", async () => {
   const { ctx } = mockDripCtx([{ body: {} }]);
   assertEquals(await action.execute({}, ctx), { eventActions: [] });
 });

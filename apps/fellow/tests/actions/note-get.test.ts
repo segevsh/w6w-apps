@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteGet from "../../actions/note-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-get: GET /api/v1/note/n1 on the workspace host", async () => {
+test("note-get: GET /api/v1/note/n1 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { note: { id: "n1", title: "T" } } }]);
   const out = await noteGet.execute({ noteId: "n1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("note-get: GET /api/v1/note/n1 on the workspace host", async () => {
   assertEquals((out as { id: string }).id, "n1");
 });
 
-Deno.test("note-get: a Fellow error surfaces its detail and status", async () => {
+test("note-get: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(noteGet.execute({ noteId: "n1" }, ctx)),

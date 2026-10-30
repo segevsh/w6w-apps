@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("comment-create: posts to /v1/comments/create", async () => {
+test("comment-create: posts to /v1/comments/create", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cm1" } }]);
   const out = await commentCreate.execute(
     { authorID: "u1", postID: "p1", value: "Great idea!" },
@@ -14,6 +15,6 @@ Deno.test("comment-create: posts to /v1/comments/create", async () => {
   assertEquals(out.id, "cm1");
 });
 
-Deno.test("comment-create: is not idempotent", () => {
+test("comment-create: is not idempotent", () => {
   assertEquals(commentCreate.idempotent, false);
 });

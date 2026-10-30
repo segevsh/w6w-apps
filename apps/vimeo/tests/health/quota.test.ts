@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { ACCEPT, USER_AGENT } from "../../lib/client.ts";
 import { errorBody, mockCtx, q, url } from "../_helpers.ts";
@@ -14,7 +15,7 @@ const RATE_HEADERS = {
  * A signed check must not widen egress — that pairing is banned precisely
  * because a widened host would then see the credential.
  */
-Deno.test("quota: is a signed, connection-scoped check that widens no egress", () => {
+test("quota: is a signed, connection-scoped check that widens no egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");
@@ -27,7 +28,7 @@ Deno.test("quota: is a signed, connection-scoped check that widens no egress", (
  * call. At the default `degraded` severity that would pin the App's verdict at
  * `unknown` forever.
  */
-Deno.test("quota: is informational, so an unknown cannot pin the app's verdict", () => {
+test("quota: is informational, so an unknown cannot pin the app's verdict", () => {
   assertEquals(quota.severity, "informational");
 });
 
@@ -36,7 +37,7 @@ Deno.test("quota: is informational, so an unknown cannot pin the app's verdict",
  * already-doubled field-filtering figure, and an unfiltered /me would carry
  * `preferences.videos.password`.
  */
-Deno.test("quota: probes /me?fields=uri with the versioned Accept", async () => {
+test("quota: probes /me?fields=uri with the versioned Accept", async () => {
   const { ctx, calls } = mockCtx([{ headers: RATE_HEADERS, body: { uri: "/users/152184" } }]);
   await quota.check!({}, ctx);
   assertEquals(url(calls[0]).pathname, "/me");
@@ -47,7 +48,7 @@ Deno.test("quota: probes /me?fields=uri with the versioned Accept", async () => 
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("quota: reports the reading and says the figure already assumes field filtering", async () => {
+test("quota: reports the reading and says the figure already assumes field filtering", async () => {
   const { ctx } = mockCtx([{ headers: RATE_HEADERS, body: { uri: "/users/152184" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -63,7 +64,7 @@ Deno.test("quota: reports the reading and says the figure already assumes field 
 });
 
 /** Vimeo's window refills whole every 60 seconds, so a low reading is not a fault. */
-Deno.test("quota: a nearly-exhausted allowance is still ok, not degraded", async () => {
+test("quota: a nearly-exhausted allowance is still ok, not degraded", async () => {
   const { ctx } = mockCtx([{
     headers: { ...RATE_HEADERS, "x-ratelimit-remaining": "1" },
     body: { uri: "/users/152184" },
@@ -74,7 +75,7 @@ Deno.test("quota: a nearly-exhausted allowance is still ok, not degraded", async
 });
 
 /** 429 with error code 9000 is Vimeo actively refusing — that IS degraded. */
-Deno.test("quota: a 429 reports degraded with zero remaining", async () => {
+test("quota: a 429 reports degraded with zero remaining", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { ...RATE_HEADERS, "x-ratelimit-remaining": "0" },
@@ -91,7 +92,7 @@ Deno.test("quota: a 429 reports degraded with zero remaining", async () => {
  * Measured: a live unauthenticated api.vimeo.com response carried none of the
  * three headers. Reporting a number here would be inventing one.
  */
-Deno.test("quota: no rate-limit headers means unknown, not a fabricated number", async () => {
+test("quota: no rate-limit headers means unknown, not a fabricated number", async () => {
   const { ctx } = mockCtx([{ body: { uri: "/users/152184" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -100,14 +101,14 @@ Deno.test("quota: no rate-limit headers means unknown, not a fabricated number",
 });
 
 /** Whether the credential itself is any good is the derived auth check's job. */
-Deno.test("quota: a rejected credential is unknown here, not degraded", async () => {
+test("quota: a rejected credential is unknown here, not degraded", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody(8003, "nope") }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(report.message?.includes("401"), report.message);
 });
 
-Deno.test("quota: a partial reading still reports what Vimeo sent", async () => {
+test("quota: a partial reading still reports what Vimeo sent", async () => {
   const { ctx } = mockCtx([{
     headers: { "content-type": "application/json", "x-ratelimit-remaining": "12" },
     body: { uri: "/users/152184" },

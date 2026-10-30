@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 10 actions, one auth method and one health check", () => {
+test("index: exports 10 actions, one auth method and one health check", () => {
   assertEquals(app.actions.length, 10);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 1);
 });
 
-Deno.test("index: action keys are unique kebab-case with description, output and execute", () => {
+test("index: action keys are unique kebab-case with description, output and execute", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -20,7 +22,7 @@ Deno.test("index: action keys are unique kebab-case with description, output and
   }
 });
 
-Deno.test("index: perform actions declare idempotency; importers are not retryable", () => {
+test("index: perform actions declare idempotency; importers are not retryable", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -29,7 +31,7 @@ Deno.test("index: perform actions declare idempotency; importers are not retryab
   }
 });
 
-Deno.test("index: no action takes a credential-shaped parameter", () => {
+test("index: no action takes a credential-shaped parameter", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(!/token|authorization|api[-_]?key|secret/i.test(p.key), `${a.key}/${p.key}`);
@@ -37,8 +39,8 @@ Deno.test("index: no action takes a credential-shaped parameter", () => {
   }
 });
 
-Deno.test("index: manifest identity and egress", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest identity and egress", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["api.docparser.com"]);
   assertEquals(pkg.w6w.id, "io.w6w.docparser");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFormPartialSubmissions from "../../actions/list-form-partial-submissions.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-form-partial-submissions: reads the HYPHENATED 'partial-submissions' results key", async () => {
+test("list-form-partial-submissions: reads the HYPHENATED 'partial-submissions' results key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope({ "partial-submissions": [{ id: "ps1" }] }, { total: 1 }),
@@ -16,7 +17,7 @@ Deno.test("list-form-partial-submissions: reads the HYPHENATED 'partial-submissi
   assertEquals(out.total, 1);
 });
 
-Deno.test("list-form-partial-submissions: an underscore key (not what the vendor sends) yields no results", async () => {
+test("list-form-partial-submissions: an underscore key (not what the vendor sends) yields no results", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: listEnvelope({ partial_submissions: [{ id: "ps1" }] }),

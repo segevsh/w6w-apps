@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/creator-access-token.ts";
 
-Deno.test("creator-access-token: declares a required secret field", () => {
+test("creator-access-token: declares a required secret field", () => {
   assertEquals(auth.key, "creator-access-token");
   assertEquals(auth.type, "bearer");
   assertEquals(auth.fields?.length, 1);
@@ -10,7 +11,7 @@ Deno.test("creator-access-token: declares a required secret field", () => {
   assertEquals(auth.fields?.[0].required, true);
 });
 
-Deno.test("creator-access-token: sign appends Bearer apiKey", async () => {
+test("creator-access-token: sign appends Bearer apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -21,14 +22,14 @@ Deno.test("creator-access-token: sign appends Bearer apiKey", async () => {
   assertEquals(out.headers["authorization"], "Bearer creator-token-123");
 });
 
-Deno.test("creator-access-token: test with missing apiKey reports the failure without a request", async () => {
+test("creator-access-token: test with missing apiKey reports the failure without a request", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("creator-access-token: test issues GET /identity with Bearer token", async () => {
+test("creator-access-token: test issues GET /identity with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "u1", type: "user" } } }]);
   const result = await auth.test({ credential: { apiKey: "creator-token-123" } }, ctx);
   assertEquals(result.ok, true);
@@ -36,7 +37,7 @@ Deno.test("creator-access-token: test issues GET /identity with Bearer token", a
   assertEquals(calls[0].headers["authorization"], "Bearer creator-token-123");
 });
 
-Deno.test("creator-access-token: test classifies failure from the JSON:API error body", async () => {
+test("creator-access-token: test classifies failure from the JSON:API error body", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errors: [{ status: "401", title: "Unauthorized", detail: "Invalid access token" }] },
@@ -46,13 +47,13 @@ Deno.test("creator-access-token: test classifies failure from the JSON:API error
   assert((result.message ?? "").includes("Invalid access token"));
 });
 
-Deno.test("creator-access-token: test never echoes the credential back in its message", async () => {
+test("creator-access-token: test never echoes the credential back in its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: [{ title: "Unauthorized" }] } }]);
   const result = await auth.test({ credential: { apiKey: "super-secret-token" } }, ctx);
   assert(!(result.message ?? "").includes("super-secret-token"));
 });
 
-Deno.test("creator-access-token: afterConnect extracts { id, full_name, email }", async () => {
+test("creator-access-token: afterConnect extracts { id, full_name, email }", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

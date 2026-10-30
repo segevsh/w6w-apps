@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-send-create.ts";
 
-Deno.test("bulk-send-create: POSTs template_ids and the base64 CSV to /bulk_sends", async () => {
+test("bulk-send-create: POSTs template_ids and the base64 CSV to /bulk_sends", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "b1", status: "Created", documents_count: 2 },
@@ -25,7 +26,7 @@ Deno.test("bulk-send-create: POSTs template_ids and the base64 CSV to /bulk_send
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("bulk-send-create: template_ids and the CSV are required; a 422 surfaces", async () => {
+test("bulk-send-create: template_ids and the CSV are required; a 422 surfaces", async () => {
   const { ctx, calls } = mockCtx([{
     status: 422,
     body: { errors: { bulk_send_csv: ["is invalid"] } },

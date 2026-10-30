@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { mockCtx, optionValues, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: calls GET /tags", async () => {
+test("tag-list: calls GET /tags", async () => {
   const { ctx, calls } = mockCtx([{ body: page("tags", [{ id: "t1", name: "VIP" }]) }]);
   const out = await tagList.execute({ sortBy: "name", sortDirection: "asc" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("tag-list: calls GET /tags", async () => {
   assertEquals(out.items, [{ id: "t1", name: "VIP" }]);
 });
 
-Deno.test("tag-list: offers only the two documented sort keys", () => {
+test("tag-list: offers only the two documented sort keys", () => {
   const values = optionValues(tagList.params?.find((p) => p.key === "sortBy"));
   assertEquals(values, ["created_at", "name"]);
 });

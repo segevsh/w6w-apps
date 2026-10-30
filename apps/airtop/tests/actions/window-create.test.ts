@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowCreate from "../../actions/window-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-create: POSTs to the session's windows collection", async () => {
+test("window-create: POSTs to the session's windows collection", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ windowId: "w1", targetId: "t1", title: "", url: "https://example.com" }),
@@ -18,6 +19,6 @@ Deno.test("window-create: POSTs to the session's windows collection", async () =
   assertEquals(out.windowId, "w1");
 });
 
-Deno.test("window-create: is declared non-idempotent — every call opens a new window", () => {
+test("window-create: is declared non-idempotent — every call opens a new window", () => {
   assertEquals(windowCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getChannelFollowers from "../../actions/get-channel-followers.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-channel-followers: calls GET /helix/channels/followers", async () => {
+test("get-channel-followers: calls GET /helix/channels/followers", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       total: 8,
@@ -24,7 +25,7 @@ Deno.test("get-channel-followers: calls GET /helix/channels/followers", async ()
  * `total` populated and `data` empty. The action must pass that through
  * faithfully rather than mistaking it for "nobody follows this channel".
  */
-Deno.test("get-channel-followers: a scope-less 200 with an empty list keeps its total", async () => {
+test("get-channel-followers: a scope-less 200 with an empty list keeps its total", async () => {
   const { ctx } = mockCtx([{ body: { total: 4127, data: [], pagination: {} } }]);
   const out = await getChannelFollowers.execute({ broadcasterId: "1" }, ctx) as {
     total: number;
@@ -34,7 +35,7 @@ Deno.test("get-channel-followers: a scope-less 200 with an empty list keeps its 
   assertEquals(out.data, []);
 });
 
-Deno.test("get-channel-followers: the follow check narrows by user_id", async () => {
+test("get-channel-followers: the follow check narrows by user_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 8, data: [], pagination: {} } }]);
   await getChannelFollowers.execute({ broadcasterId: "1", userId: "2", first: 5 }, ctx);
   assertEquals(queryOf(calls[0].url), { broadcaster_id: "1", user_id: "2", first: "5" });

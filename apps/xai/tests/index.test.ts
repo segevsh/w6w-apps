@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exactly one auth method (api-key, bearer)", () => {
+test("index: exactly one auth method (api-key, bearer)", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.auth?.[0].type, "bearer");
 });
 
-Deno.test("index: unique kebab-case keys, valid types, titles and params", () => {
+test("index: unique kebab-case keys, valid types, titles and params", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   assertEquals(keys.length, 14);
@@ -18,18 +20,18 @@ Deno.test("index: unique kebab-case keys, valid types, titles and params", () =>
   }
 });
 
-Deno.test("index: generation actions are explicitly non-idempotent", () => {
+test("index: generation actions are explicitly non-idempotent", () => {
   for (const key of ["chat-complete", "create-response", "create-message", "generate-image"]) {
     assertEquals(app.actions.find((a) => a.key === key)?.idempotent, false, key);
   }
 });
 
-Deno.test("index: service and quota health checks are declared", () => {
+test("index: service and quota health checks are declared", () => {
   const keys = app.healthChecks?.map((h) => h.key) ?? [];
   assertEquals(keys, ["service", "quota"]);
 });
 
-Deno.test("index: network.allow is exactly api.x.ai (status host rides on the feed)", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: network.allow is exactly api.x.ai (status host rides on the feed)", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["api.x.ai"]);
 });

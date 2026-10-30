@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-list.ts";
 
-Deno.test("channel-list: lists channels, maps next_token", async () => {
+test("channel-list: lists channels, maps next_token", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "channels": [{ "channel_id": "O1" }], "next_token": "n" },
@@ -30,6 +31,6 @@ Deno.test("channel-list: lists channels, maps next_token", async () => {
   });
 });
 
-Deno.test("channel-list: is a read action", () => {
+test("channel-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

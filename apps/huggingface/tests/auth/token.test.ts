@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
 const cred = { token: "hf_test" };
 
-Deno.test("token: signs as a bearer", () => {
+test("token: signs as a bearer", () => {
   const request = {
     url: "https://huggingface.co/api/models",
     headers: {} as Record<string, string>,
@@ -17,7 +18,7 @@ Deno.test("token: signs as a bearer", () => {
   assertEquals(auth.type, "bearer");
 });
 
-Deno.test("token: the test reports the identity and what it may do", async () => {
+test("token: the test reports the identity and what it may do", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -36,14 +37,14 @@ Deno.test("token: the test reports the identity and what it may do", async () =>
 });
 
 /** The rejection message mentions a username and a password, and there are neither. */
-Deno.test("token: a rejection explains the misleading message", async () => {
+test("token: a rejection explains the misleading message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Invalid username or password." } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(/says nothing\s+about tokens/.test(result.message!), result.message);
 });
 
-Deno.test("token: a missing token or an unreachable Hub fails cleanly", async () => {
+test("token: a missing token or an unreachable Hub fails cleanly", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);
@@ -55,13 +56,13 @@ Deno.test("token: a missing token or an unreachable Hub fails cleanly", async ()
   assertEquals((await auth.test!({ credential: cred } as never, offline)).ok, false);
 });
 
-Deno.test("token: a non-JSON body fails rather than throwing", async () => {
+test("token: a non-JSON body fails rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html/>" }]);
   assertEquals((await auth.test!({ credential: cred } as never, ctx)).ok, false);
 });
 
 /** The role is what makes a later 403 explicable. */
-Deno.test("token: afterConnect records the account, role and organisations", async () => {
+test("token: afterConnect records the account, role and organisations", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -77,13 +78,13 @@ Deno.test("token: afterConnect records the account, role and organisations", asy
   assertEquals(display.orgs, ["acme", "other"]);
 });
 
-Deno.test("token: afterConnect survives the call failing", async () => {
+test("token: afterConnect survives the call failing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, ctx), {});
 });
 
 /** A fine-grained token fails per repository, which reads as intermittent. */
-Deno.test("token: the hint recommends fine-grained tokens and says how they fail", () => {
+test("token: the hint recommends fine-grained tokens and says how they fail", () => {
   const field = auth.fields!.find((f) => f.key === "token")!;
   assert(/Fine-grained tokens list the/.test(field.hint!), field.hint);
   assertEquals(field.type, "secret");

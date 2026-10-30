@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-ad-campaigns.ts";
 
-Deno.test("list-ad-campaigns: GETs /{adAccountId}/campaigns with default fields", async () => {
+test("list-ad-campaigns: GETs /{adAccountId}/campaigns with default fields", async () => {
   const body = { data: [{ id: "camp-1", name: "Spring Sale" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ adAccountId: "act_12345" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("list-ad-campaigns: GETs /{adAccountId}/campaigns with default fields"
   assertEquals(result, body);
 });
 
-Deno.test("list-ad-campaigns: honours a custom fields override and pagination", async () => {
+test("list-ad-campaigns: honours a custom fields override and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!(
     { adAccountId: "act_12345", fields: "id,name", cursor: "abc", limit: 5 },

@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 25;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.length, 1);
   assertEquals(app.healthChecks?.length, 3);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) {
@@ -18,12 +19,12 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: auth method is basic", () => {
+test("index: auth method is basic", () => {
   assertEquals(app.auth?.[0].key, "basic");
   assertEquals(app.auth?.[0].type, "basic");
 });
 
-Deno.test("index: health check keys are unique", () => {
+test("index: health check keys are unique", () => {
   const keys = app.healthChecks?.map((h) => h.key) ?? [];
   assertEquals(new Set(keys).size, keys.length);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/upload-document.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("upload-document: POSTs multipart/form-data to /company/documents", async () => {
+test("upload-document: POSTs multipart/form-data to /company/documents", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -38,7 +39,7 @@ Deno.test("upload-document: POSTs multipart/form-data to /company/documents", as
   assertEquals(out.employee.id, 1);
 });
 
-Deno.test("upload-document: surfaces a 422 unsupported-file-type error", async () => {
+test("upload-document: surfaces a 422 unsupported-file-type error", async () => {
   const { ctx } = mockCtx([
     {
       status: 422,

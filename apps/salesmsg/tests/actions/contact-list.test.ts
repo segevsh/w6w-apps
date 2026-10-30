@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { API_ROOT, bodyOf, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-list: sends the documented request and returns the answer", async () => {
+test("contact-list: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: 1 }, { id: 2 }], meta: { current_page: 1, total: 2 } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("contact-list: sends the documented request and returns the answer", a
   assertEquals(result.items.length, 2);
 });
 
-Deno.test("contact-list: a refused token surfaces the vendor message", async () => {
+test("contact-list: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageDelete from "../../actions/image-delete.ts";
 import pdfDelete from "../../actions/pdf-delete.ts";
 import videoDelete from "../../actions/video-delete.ts";
 import { assertRejects, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-delete / pdf-delete / video-delete: DELETE, 204 and 404", async () => {
+test("image-delete / pdf-delete / video-delete: DELETE, 204 and 404", async () => {
   for (
     const [action, path] of [[imageDelete, "/images/3"], [pdfDelete, "/pdfs/3"], [
       videoDelete,

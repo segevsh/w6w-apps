@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventTagAssign from "../../actions/event-tag-assign.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("event-tag-assign: POSTs a tags body", async () => {
+test("event-tag-assign: POSTs a tags body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("tags", "t1", { title: "launch" }),

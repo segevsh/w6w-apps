@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-list.ts";
 
-Deno.test("check-list: reads the bare-array check collection", async () => {
+test("check-list: reads the bare-array check collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "c1", name: "Homepage" }] }]);
   assertEquals(await action.execute!({}, ctx), [{ id: "c1", name: "Homepage" }]);
   assertEquals(new URL(calls[0].url).pathname, "/v1/checks");
   assertEquals(new URL(calls[0].url).searchParams.get("page"), "1");
 });
 
-Deno.test("check-list: the filters reach the wire", async () => {
+test("check-list: the filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!({ checkType: "API", tag: "production", search: "home" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -18,7 +19,7 @@ Deno.test("check-list: the filters reach the wire", async () => {
   assertEquals(q.get("search"), "home");
 });
 
-Deno.test("check-list: returnAll walks pages until a short one", async () => {
+test("check-list: returnAll walks pages until a short one", async () => {
   const full = Array.from({ length: 100 }, (_, i) => ({ id: `c${i}` }));
   const { ctx, calls } = mockCtx([
     { status: 200, body: full },

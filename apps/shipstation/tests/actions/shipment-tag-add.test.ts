@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-tag-add.ts";
 
-Deno.test("shipment-tag-add: posts to /v2/shipments/:id/tags/:tag_name", async () => {
+test("shipment-tag-add: posts to /v2/shipments/:id/tags/:tag_name", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { shipment_id: "se-1", tag: { name: "east_warehouse" } } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("shipment-tag-add: posts to /v2/shipments/:id/tags/:tag_name", async (
   assertEquals(result.tagName, "east_warehouse");
 });
 
-Deno.test("shipment-tag-add: requires shipmentId and tagName", async () => {
+test("shipment-tag-add: requires shipmentId and tagName", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ tagName: "x" }, ctx),

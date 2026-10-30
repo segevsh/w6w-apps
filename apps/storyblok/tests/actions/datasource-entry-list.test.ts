@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/datasource-entry-list.ts";
 
@@ -16,7 +17,7 @@ const entries = {
 };
 
 /** This is what turns `de` into `Germany`. */
-Deno.test("datasource-entry-list: builds the value-to-name lookup", async () => {
+test("datasource-entry-list: builds the value-to-name lookup", async () => {
   const { ctx, calls } = mockCtx([entries], D);
   const result = await action.execute({ datasource: "countries" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("datasource"), "countries");
@@ -25,7 +26,7 @@ Deno.test("datasource-entry-list: builds the value-to-name lookup", async () => 
 });
 
 /** A dimension value takes precedence over the default name. */
-Deno.test("datasource-entry-list: a dimension replaces the names it has", async () => {
+test("datasource-entry-list: a dimension replaces the names it has", async () => {
   const { ctx, calls, logs } = mockCtx([{
     status: 200,
     body: {
@@ -47,13 +48,13 @@ Deno.test("datasource-entry-list: a dimension replaces the names it has", async 
   );
 });
 
-Deno.test("datasource-entry-list: pages to 1000, unlike stories", async () => {
+test("datasource-entry-list: pages to 1000, unlike stories", async () => {
   const { ctx, calls } = mockCtx([entries], D);
   await action.execute({ datasource: "countries" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("per_page"), "1000");
 });
 
-Deno.test("datasource-entry-list: requires a datasource", async () => {
+test("datasource-entry-list: requires a datasource", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`datasource` is required");
   assertEquals(calls.length, 0);

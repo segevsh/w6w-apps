@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   API_BASE,
   asJsonText,
@@ -11,11 +12,11 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("client: API_BASE has no path prefix", () => {
+test("client: API_BASE has no path prefix", () => {
   assertEquals(API_BASE, "https://api-v2.mindee.net");
 });
 
-Deno.test("client: json() parses a successful JSON body", async () => {
+test("client: json() parses a successful JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { hello: "world" } }]);
   const result = await new MindeeClient(ctx).json("/v2/search/models");
 
@@ -23,7 +24,7 @@ Deno.test("client: json() parses a successful JSON body", async () => {
   assertEquals(pathOf(calls[0].url), "/v2/search/models");
 });
 
-Deno.test("client: query params are set on the URL, blank values dropped", async () => {
+test("client: query params are set on the URL, blank values dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MindeeClient(ctx).json("/v2/search/models", {
     query: { name: "invoice", filename: undefined, page: 2, redirect: false },
@@ -36,7 +37,7 @@ Deno.test("client: query params are set on the URL, blank values dropped", async
   assertEquals(url.searchParams.get("redirect"), "false");
 });
 
-Deno.test("client: a FormData body is sent as-is, no content-type override", async () => {
+test("client: a FormData body is sent as-is, no content-type override", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: {} }]);
   const form = new FormData();
   form.append("model_id", "abc");
@@ -47,7 +48,7 @@ Deno.test("client: a FormData body is sent as-is, no content-type override", asy
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("client: a JSON body sets content-type and serializes", async () => {
+test("client: a JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MindeeClient(ctx).json("/v2/products/extraction/rag-documents/x", {
     method: "PATCH",
@@ -58,7 +59,7 @@ Deno.test("client: a JSON body sets content-type and serializes", async () => {
   assertEquals(calls[0].body, JSON.stringify({ status: "Active" }));
 });
 
-Deno.test("client: a non-ok response throws a formatted error", async () => {
+test("client: a non-ok response throws a formatted error", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -82,12 +83,12 @@ async function assertRejectsWith(fn: () => Promise<unknown>, pattern: RegExp) {
   throw new Error("expected fn() to reject");
 }
 
-Deno.test("formatMindeeError: falls back to the raw body when it isn't the error envelope", () => {
+test("formatMindeeError: falls back to the raw body when it isn't the error envelope", () => {
   const message = formatMindeeError(500, "GET", "/v2/jobs/x", "upstream exploded");
   assertEquals(message, "Mindee 500 for GET /v2/jobs/x: upstream exploded");
 });
 
-Deno.test("formatMindeeError: surfaces pointer-level validation detail", () => {
+test("formatMindeeError: surfaces pointer-level validation detail", () => {
   const body = errorBody(
     422,
     "422-001",
@@ -108,7 +109,7 @@ Deno.test("formatMindeeError: surfaces pointer-level validation detail", () => {
   assert(message.includes("/model_id: must be a valid UUID"));
 });
 
-Deno.test("formatMindeeError: a 429 gets a backoff hint appended", () => {
+test("formatMindeeError: a 429 gets a backoff hint appended", () => {
   const body = errorBody(429, "429-001", "Too Many Requests", "Rate limit exceeded.");
   const message = formatMindeeError(
     429,
@@ -119,24 +120,24 @@ Deno.test("formatMindeeError: a 429 gets a backoff hint appended", () => {
   assert(/rate-limits/i.test(message));
 });
 
-Deno.test("truncate: leaves short text alone, trims long text with a byte count", () => {
+test("truncate: leaves short text alone, trims long text with a byte count", () => {
   assertEquals(truncate("short"), "short");
   const long = "x".repeat(950);
   const out = truncate(long, 900);
   assertEquals(out.length, 900 + "… (950 bytes truncated)".length);
 });
 
-Deno.test("base64ToBytes: decodes plain base64", () => {
+test("base64ToBytes: decodes plain base64", () => {
   const bytes = new Uint8Array(base64ToBytes(btoa("hello")));
   assertEquals(new TextDecoder().decode(bytes), "hello");
 });
 
-Deno.test("base64ToBytes: strips a data-URL prefix", () => {
+test("base64ToBytes: strips a data-URL prefix", () => {
   const bytes = new Uint8Array(base64ToBytes(`data:application/pdf;base64,${btoa("hi")}`));
   assertEquals(new TextDecoder().decode(bytes), "hi");
 });
 
-Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -144,20 +145,20 @@ Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () =>
   });
 });
 
-Deno.test("asOptionalJsonValue: passes an already-parsed value through", () => {
+test("asOptionalJsonValue: passes an already-parsed value through", () => {
   assertEquals(asOptionalJsonValue({ a: 1 }, "x"), { a: 1 });
 });
 
-Deno.test("asOptionalJsonValue: parses a JSON string", () => {
+test("asOptionalJsonValue: parses a JSON string", () => {
   assertEquals(asOptionalJsonValue('{"a":1}', "x"), { a: 1 });
 });
 
-Deno.test("asOptionalJsonValue: undefined/empty stays undefined", () => {
+test("asOptionalJsonValue: undefined/empty stays undefined", () => {
   assertEquals(asOptionalJsonValue(undefined, "x"), undefined);
   assertEquals(asOptionalJsonValue("", "x"), undefined);
 });
 
-Deno.test("asOptionalJsonValue: throws on unparseable text, naming the field", () => {
+test("asOptionalJsonValue: throws on unparseable text, naming the field", () => {
   assertThrows(
     () => asOptionalJsonValue("{not json", "Annotation"),
     Error,
@@ -165,12 +166,12 @@ Deno.test("asOptionalJsonValue: throws on unparseable text, naming the field", (
   );
 });
 
-Deno.test("asJsonText: stringifies an object, passes a string through unchanged", () => {
+test("asJsonText: stringifies an object, passes a string through unchanged", () => {
   assertEquals(asJsonText({ a: 1 }, "x"), '{"a":1}');
   assertEquals(asJsonText('{"a":1}', "x"), '{"a":1}');
 });
 
-Deno.test("asJsonText: throws on unparseable text", () => {
+test("asJsonText: throws on unparseable text", () => {
   assertThrows(
     () => asJsonText("{not json", "Data schema"),
     Error,

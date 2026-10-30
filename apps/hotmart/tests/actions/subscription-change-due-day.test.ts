@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionChangeDueDay from "../../actions/subscription-change-due-day.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-change-due-day - PATCHes the subscriber path with due_day in the body", async () => {
+test("subscription-change-due-day - PATCHes the subscriber path with due_day in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await subscriptionChangeDueDay.execute(
     { subscriberCode: "B2HNQAXJ", dueDay: 5 },
@@ -14,11 +15,11 @@ Deno.test("subscription-change-due-day - PATCHes the subscriber path with due_da
   assertEquals(out, { ok: true });
 });
 
-Deno.test("subscription-change-due-day - is declared non-idempotent", () => {
+test("subscription-change-due-day - is declared non-idempotent", () => {
   assertEquals(subscriptionChangeDueDay.idempotent, false);
 });
 
-Deno.test("subscription-change-due-day - surfaces subscription_in_trial_period", async () => {
+test("subscription-change-due-day - surfaces subscription_in_trial_period", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: errorBody("subscription_in_trial_period", "cannot change during trial") },
   ]);

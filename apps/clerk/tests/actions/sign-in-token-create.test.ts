@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sign-in-token-create.ts";
 
-Deno.test("sign-in-token-create: POSTs userId to /sign_in_tokens", async () => {
+test("sign-in-token-create: POSTs userId to /sign_in_tokens", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "sit_1", token: "tok_abc", url: "https://example.com/redeem" },
@@ -13,7 +14,7 @@ Deno.test("sign-in-token-create: POSTs userId to /sign_in_tokens", async () => {
   assertEquals(out.token, "tok_abc");
 });
 
-Deno.test("sign-in-token-create: requires a userId", async () => {
+test("sign-in-token-create: requires a userId", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute!({}, ctx), Error);
   assert(/userId/.test(String(err)));

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-coin-history.ts";
 
-Deno.test("get-coin-history: calls the documented path with the mapped query", async () => {
+test("get-coin-history: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "bitcoin" } }]);
   const out = await action.execute!({ id: "bitcoin", date: "30-12-2024" }, ctx);
   assertEquals(calls.length, 1);
@@ -15,7 +16,7 @@ Deno.test("get-coin-history: calls the documented path with the mapped query", a
   assert(out !== undefined);
 });
 
-Deno.test("get-coin-history: a vendor error body becomes a readable error", async () => {
+test("get-coin-history: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },
@@ -27,7 +28,7 @@ Deno.test("get-coin-history: a vendor error body becomes a readable error", asyn
   );
 });
 
-Deno.test("get-coin-history: required input is validated before any request", async () => {
+test("get-coin-history: required input is validated before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ id: "bitcoin" }, ctx), Error, "required");
   assertEquals(calls.length, 0);

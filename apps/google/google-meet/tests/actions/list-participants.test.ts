@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-participants.ts";
 
-Deno.test("list-participants: GETs participants under a conference record", async () => {
+test("list-participants: GETs participants under a conference record", async () => {
   const { ctx, calls } = mockCtx([
     { body: { participants: [{ name: "p1" }], nextPageToken: "t" } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("list-participants: GETs participants under a conference record", asyn
   assertEquals(new URL(calls[0].url).pathname, "/v2/conferenceRecords/cr1/participants");
 });
 
-Deno.test("list-participants: forwards filter, pageSize and pageToken", async () => {
+test("list-participants: forwards filter, pageSize and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { participants: [] } }]);
   await action.execute!(
     {

@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares storeUrl / consumerKey / consumerSecret fields", () => {
+test("api-key: declares storeUrl / consumerKey / consumerSecret fields", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "basic");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -15,7 +16,7 @@ Deno.test("api-key: declares storeUrl / consumerKey / consumerSecret fields", ()
   assertEquals(secret?.required, true);
 });
 
-Deno.test("api-key: sign injects a Basic Authorization header from ck:cs", async () => {
+test("api-key: sign injects a Basic Authorization header from ck:cs", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -29,7 +30,7 @@ Deno.test("api-key: sign injects a Basic Authorization header from ck:cs", async
   assertEquals(out.headers["authorization"], `Basic ${encodeBase64("ck_123:cs_456")}`);
 });
 
-Deno.test("api-key: test hits <storeUrl>/wp-json/wc/v3/system_status with Basic auth", async () => {
+test("api-key: test hits <storeUrl>/wp-json/wc/v3/system_status with Basic auth", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { environment: {} } }]);
   const result = await auth.test(
     {
@@ -46,14 +47,14 @@ Deno.test("api-key: test hits <storeUrl>/wp-json/wc/v3/system_status with Basic 
   assertEquals(calls[0].headers["authorization"], `Basic ${encodeBase64("ck_123:cs_456")}`);
 });
 
-Deno.test("api-key: test reports failure without a network call when fields are missing", async () => {
+test("api-key: test reports failure without a network call when fields are missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { consumerKey: "ck_123" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test surfaces upstream status on failure", async () => {
+test("api-key: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     {
@@ -69,7 +70,7 @@ Deno.test("api-key: test surfaces upstream status on failure", async () => {
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: afterConnect republishes storeUrl and store.host", async () => {
+test("api-key: afterConnect republishes storeUrl and store.host", async () => {
   const { ctx } = mockCtx();
   const display = await auth.afterConnect!(
     {

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastOpens from "../../actions/broadcast-opens.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * cursor and page_size, not the ws.start/ws.size pair every other
  * collection in this app uses.
  */
-Deno.test("broadcast-opens: pages with after/before/page_size, not ws.start/ws.size", async () => {
+test("broadcast-opens: pages with after/before/page_size, not ws.start/ws.size", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ email: "a@b.com" }]) }]);
   await broadcastOpens.execute(
     { accountId: "1", listId: "2", broadcastId: "1", after: "cursor-abc", pageSize: 50 },

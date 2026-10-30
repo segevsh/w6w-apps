@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import labelsList from "../../actions/labels-list.ts";
 
-Deno.test("labels-list: lists labels", async () => {
+test("labels-list: lists labels", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "labels": ["a"] } } }]);
   const out = await labelsList.execute!({ "chatId": 4 } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("labels-list: lists labels", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("labels-list: refuses an empty path id before the network", async () => {
+test("labels-list: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await labelsList.execute!({ "chatId": "" } as never, ctx);
@@ -26,7 +27,7 @@ Deno.test("labels-list: refuses an empty path id before the network", async () =
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("labels-list: surfaces a vendor error envelope", async () => {
+test("labels-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   encodeId,
@@ -13,7 +14,7 @@ import {
 import { bodyParams, coerceValue, fieldBody, fieldPath } from "../../lib/fields.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("client: errorText flattens the errors map and the DRF detail", () => {
+test("client: errorText flattens the errors map and the DRF detail", () => {
   assertEquals(errorText({ detail: "Invalid token." }), "Invalid token.");
   assertEquals(
     errorText({ errors: { message: ["required", "too long"], url: ["bad"] } }),
@@ -22,13 +23,13 @@ Deno.test("client: errorText flattens the errors map and the DRF detail", () => 
   assertEquals(errorText("nope"), undefined);
 });
 
-Deno.test("client: redactToken hides a non-empty token and leaves the rest", () => {
+test("client: redactToken hides a non-empty token and leaves the rest", () => {
   assertEquals(redactToken({ id: 1, token: "abc" }), { id: 1, token: "[redacted]" });
   assertEquals(redactToken({ id: 1, token: null }), { id: 1, token: null });
   assertEquals(redactToken({ id: 1 }), { id: 1 });
 });
 
-Deno.test("client: list computes nextOffset from total and offset", async () => {
+test("client: list computes nextOffset from total and offset", async () => {
   const more = mockCtx([{ body: { success: true, total: 5, customers: [{}, {}] } }]);
   const r = await new LandbotClient(more.ctx).list("/customers/", "customers", {
     query: { offset: 2, limit: 2 },
@@ -43,7 +44,7 @@ Deno.test("client: list computes nextOffset from total and offset", async () => 
   );
 });
 
-Deno.test("client: list and get reject a body without the documented key", async () => {
+test("client: list and get reject a body without the documented key", async () => {
   await assertRejects(
     () => new LandbotClient(mockCtx([{ body: { nope: 1 } }]).ctx).list("/x/", "customers"),
     Error,
@@ -56,7 +57,7 @@ Deno.test("client: list and get reject a body without the documented key", async
   );
 });
 
-Deno.test("client: done tolerates an empty 200, a 204 and a non-JSON 200, and merges an object", async () => {
+test("client: done tolerates an empty 200, a 204 and a non-JSON 200, and merges an object", async () => {
   for (const r of [{ status: 200 }, { status: 204 }, { status: 200, body: "OK", headers: {} }]) {
     assertEquals(await new LandbotClient(mockCtx([r]).ctx).done("/x/"), { ok: true });
   }
@@ -66,7 +67,7 @@ Deno.test("client: done tolerates an empty 200, a 204 and a non-JSON 200, and me
   );
 });
 
-Deno.test("client: a non-JSON error body falls back to the text", async () => {
+test("client: a non-JSON error body falls back to the text", async () => {
   await assertRejects(
     () =>
       new LandbotClient(mockCtx([{ status: 502, body: "Bad gateway", headers: {} }]).ctx).done(
@@ -77,7 +78,7 @@ Deno.test("client: a non-JSON error body falls back to the text", async () => {
   );
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
   assertEquals(compact({ a: 1, b: "", c: null, d: false }), { a: 1, d: false });
   assertEquals(queryString({ a: "x y", b: undefined }), "?a=x+y");
@@ -96,7 +97,7 @@ Deno.test("client: helpers", () => {
   }
 });
 
-Deno.test("fields: names are validated, values coerced by type", () => {
+test("fields: names are validated, values coerced by type", () => {
   assertEquals(fieldPath(" plan_2 "), "plan_2");
   for (const bad of ["Plan", "a-b", "", "a/b"]) {
     try {

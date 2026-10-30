@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import programCommissionTypesList from "../../actions/program-commission-types-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("program-commission-types-list: lists commission types for a program", async () => {
+test("program-commission-types-list: lists commission types for a program", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ title: "standard", identifier: "standard", commission_value: 10 }],
   }]);

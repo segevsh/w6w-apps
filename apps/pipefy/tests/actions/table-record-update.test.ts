@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import tableRecordUpdate from "../../actions/table-record-update.ts";
 
-Deno.test("table-record-update: renames a record", async () => {
+test("table-record-update: renames a record", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { updateTableRecord: { table_record: { id: "1", title: "New title" } } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("table-record-update: renames a record", async () => {
   assert(q.startsWith("mutation { updateTableRecord(input: { id: 1, title:"));
 });
 
-Deno.test("table-record-update: type/resource/idempotency metadata", () => {
+test("table-record-update: type/resource/idempotency metadata", () => {
   assertEquals(tableRecordUpdate.type, "perform");
   assertEquals(tableRecordUpdate.resource, "table-record");
   assertEquals(tableRecordUpdate.idempotent, true);

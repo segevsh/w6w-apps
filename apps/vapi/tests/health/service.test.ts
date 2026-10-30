@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapAggregateState,
   mapResourceStatus,
@@ -41,13 +42,13 @@ function page(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.vapi.ai/index.json");
   assertEquals(service.network?.allow, ["status.vapi.ai"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an operational page reports ok", async () => {
+test("service: an operational page reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: page() }]);
   const report = await service.check!({}, ctx);
 
@@ -57,13 +58,13 @@ Deno.test("service: an operational page reports ok", async () => {
 });
 
 /** `not_monitored` is neither operational nor down — it must not read as healthy. */
-Deno.test("service: a not_monitored provider reports unknown, not ok", async () => {
+test("service: a not_monitored provider reports unknown, not ok", async () => {
   const { ctx } = mockCtx([{ body: page() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.components?.["anthropic"]?.state, "unknown");
 });
 
-Deno.test("service: a downtime resource reports down, aggregate wins over the fallback", async () => {
+test("service: a downtime resource reports down, aggregate wins over the fallback", async () => {
   const body = page();
   (body.included[0].attributes as { status: string }).status = "downtime";
   (body.data.attributes as { aggregate_state: string }).aggregate_state = "downtime";
@@ -77,23 +78,23 @@ Deno.test("service: a downtime resource reports down, aggregate wins over the fa
 });
 
 /** A broken status page says nothing about Vapi — never `down`. */
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page with no attributes reports unknown", async () => {
+test("service: a page with no attributes reports unknown", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** Guards against a redirect/rebrand silently pointing this probe elsewhere. */
-Deno.test("service: a page that stops self-identifying as Vapi's reports unknown", async () => {
+test("service: a page that stops self-identifying as Vapi's reports unknown", async () => {
   const body = page({
     data: {
       type: "status_page",
@@ -107,7 +108,7 @@ Deno.test("service: a page that stops self-identifying as Vapi's reports unknown
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: Better Stack's resource vocabulary maps to the four health states", () => {
+test("service: Better Stack's resource vocabulary maps to the four health states", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("resolved"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
@@ -118,7 +119,7 @@ Deno.test("service: Better Stack's resource vocabulary maps to the four health s
   assertEquals(mapResourceStatus(undefined), "unknown");
 });
 
-Deno.test("service: the page-level aggregate_state maps to the four health states", () => {
+test("service: the page-level aggregate_state maps to the four health states", () => {
   assertEquals(mapAggregateState("operational"), "ok");
   assertEquals(mapAggregateState("degraded"), "degraded");
   assertEquals(mapAggregateState("maintenance"), "degraded");
@@ -126,14 +127,14 @@ Deno.test("service: the page-level aggregate_state maps to the four health state
   assertEquals(mapAggregateState(undefined), "unknown");
 });
 
-Deno.test("resourceKey: prefers the public_name slug, falls back to the vendor id", () => {
+test("resourceKey: prefers the public_name slug, falls back to the vendor id", () => {
   assertEquals(resourceKey({ attributes: { public_name: "Vapi API" } }, 0), "vapi-api");
   assertEquals(resourceKey({ id: "abc" }, 3), "abc");
   assertEquals(resourceKey({}, 7), "resource-7");
 });
 
 /** With no page-level indicator the verdict falls back to the worst component. */
-Deno.test("service: with no aggregate_state the verdict is the worst component", async () => {
+test("service: with no aggregate_state the verdict is the worst component", async () => {
   const body = page({
     data: {
       type: "status_page",

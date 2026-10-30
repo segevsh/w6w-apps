@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-event-retry.ts";
 
-Deno.test("webhook-event-retry: POSTs to the event and handles the empty 204", async () => {
+test("webhook-event-retry: POSTs to the event and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ webhookId: "wh1", eventId: "e1" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("webhook-event-retry: POSTs to the event and handles the empty 204", a
   assertEquals(result, { eventId: "e1", retried: true });
 });
 
-Deno.test("webhook-event-retry: is NOT idempotent — each call redelivers", () => {
+test("webhook-event-retry: is NOT idempotent — each call redelivers", () => {
   assertEquals(action.idempotent, false);
 });

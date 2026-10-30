@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-channels.ts";
 
-Deno.test("get-channels: hits /youtube/v3/channels with part and a comma-joined id list", async () => {
+test("get-channels: hits /youtube/v3/channels with part and a comma-joined id list", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: ["snippet", "statistics"], id: ["UC1", "UC2"] }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("get-channels: hits /youtube/v3/channels with part and a comma-joined 
   assertEquals(url.searchParams.getAll("id"), ["UC1,UC2"]);
 });
 
-Deno.test("get-channels: supports mine, forHandle and forUsername as alternatives", async () => {
+test("get-channels: supports mine, forHandle and forUsername as alternatives", async () => {
   for (
     const [input, key, value] of [
       [{ part: "id", mine: true }, "mine", "true"],
@@ -27,7 +28,7 @@ Deno.test("get-channels: supports mine, forHandle and forUsername as alternative
   }
 });
 
-Deno.test("get-channels: rejects zero filters and several filters alike", async () => {
+test("get-channels: rejects zero filters and several filters alike", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -46,7 +47,7 @@ Deno.test("get-channels: rejects zero filters and several filters alike", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-channels: mine=false is not a filter", async () => {
+test("get-channels: mine=false is not a filter", async () => {
   // A falsy `mine` must not be counted as a supplied filter, or a plain id
   // lookup with mine explicitly off would be rejected.
   const { ctx, calls } = mockCtx([{ body: {} }]);
@@ -55,7 +56,7 @@ Deno.test("get-channels: mine=false is not a filter", async () => {
   assertEquals(calls.length, 1);
 });
 
-Deno.test("get-channels: forwards paging and localisation parameters", async () => {
+test("get-channels: forwards paging and localisation parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "snippet",
@@ -70,7 +71,7 @@ Deno.test("get-channels: forwards paging and localisation parameters", async () 
   assertEquals(p.get("hl"), "fr");
 });
 
-Deno.test("get-channels: offers contentDetails, which carries the uploads playlist ID", () => {
+test("get-channels: offers contentDetails, which carries the uploads playlist ID", () => {
   const part = action.params!.find((p) => p.key === "part");
   const values = (part!.options as Array<{ value: string }>).map((o) => o.value);
   assertEquals(values.includes("contentDetails"), true);

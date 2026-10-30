@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptSubmitAndWait from "../../actions/transcript-submit-and-wait.ts";
 import { hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transcript-submit-and-wait: submits then polls to completed", async () => {
+test("transcript-submit-and-wait: submits then polls to completed", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "t1", status: "queued" } }, // POST /transcript
     { status: 200, body: { id: "t1", status: "processing" } }, // poll 1
@@ -22,7 +23,7 @@ Deno.test("transcript-submit-and-wait: submits then polls to completed", async (
   assertEquals(out.text, "hello world");
 });
 
-Deno.test("transcript-submit-and-wait: returns immediately when already terminal on submit", async () => {
+test("transcript-submit-and-wait: returns immediately when already terminal on submit", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "t1", status: "completed", text: "fast" } },
   ]);
@@ -34,7 +35,7 @@ Deno.test("transcript-submit-and-wait: returns immediately when already terminal
   assertEquals(out.text, "fast");
 });
 
-Deno.test("transcript-submit-and-wait: throws on a terminal error status, with the vendor's error", async () => {
+test("transcript-submit-and-wait: throws on a terminal error status, with the vendor's error", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { id: "t1", status: "processing" } },
     {
@@ -53,7 +54,7 @@ Deno.test("transcript-submit-and-wait: throws on a terminal error status, with t
   );
 });
 
-Deno.test("transcript-submit-and-wait: throws a timeout error once the deadline passes", async () => {
+test("transcript-submit-and-wait: throws a timeout error once the deadline passes", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { id: "t1", status: "processing" } }, // POST /transcript
     { status: 200, body: { id: "t1", status: "processing" } }, // one poll, still not terminal
@@ -71,7 +72,7 @@ Deno.test("transcript-submit-and-wait: throws a timeout error once the deadline 
   );
 });
 
-Deno.test("transcript-submit-and-wait: is declared non-idempotent, a perform action", () => {
+test("transcript-submit-and-wait: is declared non-idempotent, a perform action", () => {
   assertEquals(transcriptSubmitAndWait.idempotent, false);
   assertEquals(transcriptSubmitAndWait.type, "perform");
 });

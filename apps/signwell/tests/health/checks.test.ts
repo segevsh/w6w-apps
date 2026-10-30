@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { mapComponentStatus, mapIndicator, STATUS_URL } from "../../health/service.ts";
 import api from "../../health/api.ts";
@@ -20,7 +21,7 @@ const SUMMARY = {
 // deno-lint-ignore no-explicit-any
 const run = (check: any, ctx: any) => check.check({}, ctx);
 
-Deno.test("service: reads the Statuspage summary and passes on indicator none", async () => {
+test("service: reads the Statuspage summary and passes on indicator none", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }]);
   const out = await run(service, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -29,13 +30,13 @@ Deno.test("service: reads the Statuspage summary and passes on indicator none", 
   assertEquals(out.components.rmblmhzjvg3d, { state: "ok", message: "Docsketch Service" });
 });
 
-Deno.test("service: is informational, unsigned, and scoped to the status host", () => {
+test("service: is informational, unsigned, and scoped to the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.signwell.com"] });
 });
 
-Deno.test("service: the page-level indicator is the verdict", async () => {
+test("service: the page-level indicator is the verdict", async () => {
   for (
     const [indicator, state] of [["minor", "degraded"], ["major", "degraded"], ["critical", "down"]]
   ) {
@@ -55,7 +56,7 @@ Deno.test("service: the page-level indicator is the verdict", async () => {
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
 });
 
-Deno.test("service: a page that is not SignWell's, or not Statuspage-shaped, is unknown", async () => {
+test("service: a page that is not SignWell's, or not Statuspage-shaped, is unknown", async () => {
   const other = mockCtx([{ body: { ...SUMMARY, page: { name: "Someone Else" } } }]);
   assertEquals((await run(service, other.ctx)).state, "unknown");
   const shapeless = mockCtx([{ body: { page: { name: "SignWell" } } }]);
@@ -66,7 +67,7 @@ Deno.test("service: a page that is not SignWell's, or not Statuspage-shaped, is 
   assertEquals((await run(service, unreadable.ctx)).state, "unknown");
 });
 
-Deno.test("api: a schema-correct 401 is a pass, from the body, with no credential sent", async () => {
+test("api: a schema-correct 401 is a pass, from the body, with no credential sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: {
@@ -82,7 +83,7 @@ Deno.test("api: a schema-correct 401 is a pass, from the body, with no credentia
   assertEquals(api.kind, "dependency");
 });
 
-Deno.test("api: a 5xx, an HTML shell, and a foreign JSON body are not passes", async () => {
+test("api: a 5xx, an HTML shell, and a foreign JSON body are not passes", async () => {
   const down = mockCtx([{ status: 502, body: { message: "bad gateway" } }]);
   assertEquals((await run(api, down.ctx)).state, "down");
   const shell = mockCtx([{ status: 200, body: "<html>shell</html>" }]);
@@ -91,7 +92,7 @@ Deno.test("api: a 5xx, an HTML shell, and a foreign JSON body are not passes", a
   assertEquals((await run(api, foreign.ctx)).state, "unknown");
 });
 
-Deno.test("quota: a declared absence with informational severity (else unknown pins forever)", () => {
+test("quota: a declared absence with informational severity (else unknown pins forever)", () => {
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.length > 0);
   assertEquals(quota.check, undefined);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-list.ts";
 
 const conn = { display: { tenantId: "42", environment: "production" } };
 
-Deno.test("lead-list: GETs /crm/v2/tenant/{t}/leads by status", async () => {
+test("lead-list: GETs /crm/v2/tenant/{t}/leads by status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], conn);
   await action.execute!({ status: "Open", leadPhone: "555" }, ctx);
   const url = new URL(calls[0].url);

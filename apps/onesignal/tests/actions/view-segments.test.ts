@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import viewSegments from "../../actions/view-segments.ts";
 import { APP_ID, mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("view-segments: defaults limit 300, offset 0", async () => {
+test("view-segments: defaults limit 300, offset 0", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 200, body: { total_count: 0, segments: [] } },
   ]);

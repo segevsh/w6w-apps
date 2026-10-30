@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display } from "./_shared.ts";
 import action from "../../actions/instance-info.ts";
@@ -8,7 +9,7 @@ import action from "../../actions/instance-info.ts";
  * every other endpoint uses — the client returns the body as-is when there is
  * no `result` key.
  */
-Deno.test("instance-info: reads the unenveloped root response", async () => {
+test("instance-info: reads the unenveloped root response", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -22,12 +23,12 @@ Deno.test("instance-info: reads the unenveloped root response", async () => {
 });
 
 /** Version drift is real on a self-hosted database. */
-Deno.test("instance-info: says why the version matters", () => {
+test("instance-info: says why the version matters", () => {
   assert(/points\/query/.test(action.description!), action.description);
   assertEquals(action.params?.length ?? 0, 0);
 });
 
-Deno.test("instance-info: a rejected key still fails rather than reading as an old version", async () => {
+test("instance-info: a rejected key still fails rather than reading as an old version", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: { error: "Invalid api key" } } }], {
     display,
   });
@@ -35,7 +36,7 @@ Deno.test("instance-info: a rejected key still fails rather than reading as an o
   assert(/read-only/.test(error.message), error.message);
 });
 
-Deno.test("instance-info: needs a connection carrying a URL", async () => {
+test("instance-info: needs a connection carrying a URL", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "no Qdrant URL recorded");
 });

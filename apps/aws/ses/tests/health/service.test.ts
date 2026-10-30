@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -20,7 +21,7 @@ const feed = (events: unknown[]) => ({
   headers: {},
 });
 
-Deno.test("service: unsigned, scoped to the AWS health host, and ok on an empty feed", async () => {
+test("service: unsigned, scoped to the AWS health host, and ok on an empty feed", async () => {
   const { ctx, calls } = mockCtx([feed([])]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://health.aws.amazon.com/public/currentevents");
@@ -30,7 +31,7 @@ Deno.test("service: unsigned, scoped to the AWS health host, and ok on an empty 
   assertEquals(r.components, {});
 });
 
-Deno.test("service: only `ses-` events count — s3 and sesv2-lookalikes are ignored", async () => {
+test("service: only `ses-` events count — s3 and sesv2-lookalikes are ignored", async () => {
   const { ctx } = mockCtx([feed([
     { service: "s3-us-east-1", status: "1", summary: "s3 issue" },
     { service: "ses-eu-west-1", status: "0", region_name: "Ireland", summary: "resolved" },
@@ -40,7 +41,7 @@ Deno.test("service: only `ses-` events count — s3 and sesv2-lookalikes are ign
   assertEquals(r.components, { "eu-west-1": { state: "ok", message: "resolved" } });
 });
 
-Deno.test("service: an open SES event is degraded for that region only, naming the region", async () => {
+test("service: an open SES event is degraded for that region only, naming the region", async () => {
   const { ctx } = mockCtx([feed([
     {
       service: "ses-us-east-1",
@@ -57,7 +58,7 @@ Deno.test("service: an open SES event is degraded for that region only, naming t
   assertEquals(r.message, "N. Virginia: Elevated send latency");
 });
 
-Deno.test("service: a resolved event listed after an open one does not hide the open one", async () => {
+test("service: a resolved event listed after an open one does not hide the open one", async () => {
   const { ctx } = mockCtx([feed([
     { service: "ses-us-east-1", status: "1", summary: "open" },
     { service: "ses-us-east-1", status: "0", summary: "older, resolved" },
@@ -66,7 +67,7 @@ Deno.test("service: a resolved event listed after an open one does not hide the 
   assertEquals(r.components?.["us-east-1"], { state: "degraded", message: "open" });
 });
 
-Deno.test("service: a feed failure or garbage is unknown, never down", async () => {
+test("service: a feed failure or garbage is unknown, never down", async () => {
   const bad = mockCtx([{ status: 503, body: "", headers: {} }]);
   assertEquals((await service.check!({}, bad.ctx)).state, "unknown");
   const junk = mockCtx([{ status: 200, body: new ArrayBuffer(4), headers: {} }]);

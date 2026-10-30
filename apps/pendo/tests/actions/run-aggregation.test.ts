@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-aggregation.ts";
 
@@ -8,7 +9,7 @@ const pipeline = [
   { reduce: [{ totalEvents: { sum: "numEvents" } }] },
 ];
 
-Deno.test("run-aggregation: posts the wrapped pipeline and returns results + startTime", async () => {
+test("run-aggregation: posts the wrapped pipeline and returns results + startTime", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { startTime: 1690171200000, results: [{ count: 19 }] } },
   ]);
@@ -27,7 +28,7 @@ Deno.test("run-aggregation: posts the wrapped pipeline and returns results + sta
   assertEquals(result.startTime, 1690171200000);
 });
 
-Deno.test("run-aggregation: `pipeline` must be a non-empty array", async () => {
+test("run-aggregation: `pipeline` must be a non-empty array", async () => {
   await assertRejects(
     async () => await action.execute!({ pipeline: "[]" }, mockCtx([]).ctx),
     Error,
@@ -40,7 +41,7 @@ Deno.test("run-aggregation: `pipeline` must be a non-empty array", async () => {
   );
 });
 
-Deno.test("run-aggregation: an absent `name` is omitted rather than sent as undefined", async () => {
+test("run-aggregation: an absent `name` is omitted rather than sent as undefined", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   await action.execute!({ pipeline: JSON.stringify(pipeline) }, ctx);
   const body = JSON.parse(calls[0].body!);

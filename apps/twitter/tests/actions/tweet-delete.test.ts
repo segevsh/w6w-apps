@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tweet-delete.ts";
 
-Deno.test("tweet-delete: DELETEs /tweets/{id}", async () => {
+test("tweet-delete: DELETEs /tweets/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { deleted: true } } }]);
   const out = await action.execute({ tweetId: "123" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("tweet-delete: DELETEs /tweets/{id}", async () => {
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("tweet-delete: is idempotent", () => {
+test("tweet-delete: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-opportunity.ts";
 
-Deno.test("delete-opportunity: is an idempotent perform", () => {
+test("delete-opportunity: is an idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("delete-opportunity: DELETEs /opportunities/{id}", async () => {
+test("delete-opportunity: DELETEs /opportunities/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute({ opportunityId: 3 }, ctx);
   assertEquals(calls[0].method, "DELETE");

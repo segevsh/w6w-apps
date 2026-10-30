@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadMarkUnread from "../../actions/thread-mark-unread.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("thread-mark-unread: POST /api/v3/threads/mark_unread with every documented parameter", async () => {
+test("thread-mark-unread: POST /api/v3/threads/mark_unread with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadMarkUnread.execute({ "threadId": 100, "objIndex": 101 }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("thread-mark-unread: POST /api/v3/threads/mark_unread with every docum
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("thread-mark-unread: sends a form body, never a query string", async () => {
+test("thread-mark-unread: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadMarkUnread.execute({ "threadId": 100, "objIndex": 101 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("thread-mark-unread: sends a form body, never a query string", async (
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("thread-mark-unread: is declared idempotent", () => {
+test("thread-mark-unread: is declared idempotent", () => {
   assertEquals(threadMarkUnread.idempotent, true);
 });
 
-Deno.test("thread-mark-unread: sends no credential of its own", async () => {
+test("thread-mark-unread: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadMarkUnread.execute({ "threadId": 100, "objIndex": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-mark-unread: surfaces Twist's error body", async () => {
+test("thread-mark-unread: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

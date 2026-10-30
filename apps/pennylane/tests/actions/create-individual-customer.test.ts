@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-individual-customer.ts";
 
@@ -9,7 +10,7 @@ const BILLING = {
   country_alpha2: "FR",
 };
 
-Deno.test("create-individual-customer: POSTs /individual_customers, not /company_customers", async () => {
+test("create-individual-customer: POSTs /individual_customers, not /company_customers", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }]);
   await action.execute({ first_name: "Marie", last_name: "Curie", billing_address: BILLING }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("create-individual-customer: POSTs /individual_customers, not /company
   });
 });
 
-Deno.test("create-individual-customer: forwards the optional contact and ledger fields", async () => {
+test("create-individual-customer: forwards the optional contact and ledger fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }]);
   await action.execute({
     first_name: "Marie",

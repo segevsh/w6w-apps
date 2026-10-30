@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roleGet from "../../actions/role-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("role-get fetches by id and returns the full permission grid", async () => {
+test("role-get fetches by id and returns the full permission grid", async () => {
   const body = {
     role_id: 42390328,
     role_type: "master_account_role",

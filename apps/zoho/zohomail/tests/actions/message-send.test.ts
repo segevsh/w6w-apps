@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { envelope, mockCtx, pathOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-send: POSTs the compacted message body", async () => {
+test("message-send: POSTs the compacted message body", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m1", subject: "Hello" }) }],
     usConnection({ accountId: "acc-1" }),
@@ -30,7 +31,7 @@ Deno.test("message-send: POSTs the compacted message body", async () => {
   assertEquals(out, { messageId: "m1", subject: "Hello" });
 });
 
-Deno.test("message-send: passes scheduling fields through when set", async () => {
+test("message-send: passes scheduling fields through when set", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ messageId: "m2", subject: "Later" }) }],
     usConnection(),
@@ -53,6 +54,6 @@ Deno.test("message-send: passes scheduling fields through when set", async () =>
   assertEquals(body.scheduleTime, "09/15/2026 14:30:28");
 });
 
-Deno.test("message-send: is not idempotent — retrying would send a second email", () => {
+test("message-send: is not idempotent — retrying would send a second email", () => {
   assertEquals(messageSend.idempotent, false);
 });

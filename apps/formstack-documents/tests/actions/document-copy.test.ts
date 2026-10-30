@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-copy.ts";
 
-Deno.test("document-copy: POSTs the new name to /documents/{id}/copy", async () => {
+test("document-copy: POSTs the new name to /documents/{id}/copy", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "789789", key: "asdl4k" } }]);
   const out = await action.execute(
     { id: "436346", name: "1040 EZier - CA" } as never,
@@ -17,11 +18,11 @@ Deno.test("document-copy: POSTs the new name to /documents/{id}/copy", async () 
   assert(out !== null);
 });
 
-Deno.test("document-copy: idempotent flag is false", () => {
+test("document-copy: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-copy: declares key, type and a description", () => {
+test("document-copy: declares key, type and a description", () => {
   assertEquals(action.key, "document-copy");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

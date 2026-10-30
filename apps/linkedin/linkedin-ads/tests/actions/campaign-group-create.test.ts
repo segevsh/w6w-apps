@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignGroupCreate from "../../actions/campaign-group-create.ts";
 import { createdResponse, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-group-create: a plain single POST (no batch wrapper), account URN built from accountId", async () => {
+test("campaign-group-create: a plain single POST (no batch wrapper), account URN built from accountId", async () => {
   const { ctx, calls } = mockCtx([createdResponse("512358882")]);
   const result = await campaignGroupCreate.execute(
     { accountId: "512352200", name: "CampaignGroup1", runScheduleStart: "2016-02-12" },
@@ -21,7 +22,7 @@ Deno.test("campaign-group-create: a plain single POST (no batch wrapper), accoun
   assertEquals(result, { id: "512358882" });
 });
 
-Deno.test("campaign-group-create: includes runSchedule.end and totalBudget when provided", async () => {
+test("campaign-group-create: includes runSchedule.end and totalBudget when provided", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await campaignGroupCreate.execute(
     {
@@ -39,6 +40,6 @@ Deno.test("campaign-group-create: includes runSchedule.end and totalBudget when 
   assertEquals(body.totalBudget, { amount: "60000", currencyCode: "USD" });
 });
 
-Deno.test("campaign-group-create: is not idempotent", () => {
+test("campaign-group-create: is not idempotent", () => {
   assertEquals(campaignGroupCreate.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_URL,
   formatGotoError,
@@ -8,12 +9,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, mockCtxWithOrganizer, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client: API_URL and IDENTITY_URL are the vendor's verified base URLs", () => {
+test("client: API_URL and IDENTITY_URL are the vendor's verified base URLs", () => {
   assertEquals(API_URL, "https://api.getgo.com/G2W/rest/v2");
   assertEquals(IDENTITY_URL, "https://api.getgo.com/identity/v1");
 });
 
-Deno.test("client: request() builds the URL, method and JSON body", async () => {
+test("client: request() builds the URL, method and JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { webinarKey: "1" } }]);
   const client = new GotoWebinarClient(ctx);
   const out = await client.request("/organizers/1/webinars", {
@@ -30,13 +31,13 @@ Deno.test("client: request() builds the URL, method and JSON body", async () => 
   assertEquals(out, { webinarKey: "1" });
 });
 
-Deno.test("client: request() returns undefined for a 204", async () => {
+test("client: request() returns undefined for a 204", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const out = await new GotoWebinarClient(ctx).request("/organizers/1/webinars/2");
   assertEquals(out, undefined);
 });
 
-Deno.test("client: status() returns the actual HTTP status", async () => {
+test("client: status() returns the actual HTTP status", async () => {
   const { ctx } = mockCtx([{ status: 202 }]);
   const status = await new GotoWebinarClient(ctx).status("/organizers/1/webinars/2", {
     method: "PUT",
@@ -44,7 +45,7 @@ Deno.test("client: status() returns the actual HTTP status", async () => {
   assertEquals(status, 202);
 });
 
-Deno.test("client: a non-2xx throws, formatted from the vendor's error body", async () => {
+test("client: a non-2xx throws, formatted from the vendor's error body", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: { int_err_code: "InvalidToken", msg: "Invalid token passed" } },
   ]);
@@ -55,7 +56,7 @@ Deno.test("client: a non-2xx throws, formatted from the vendor's error body", as
   );
 });
 
-Deno.test("formatGotoError: reads int_err_code and msg, verified live shape", () => {
+test("formatGotoError: reads int_err_code and msg, verified live shape", () => {
   const msg = formatGotoError(
     403,
     "GET",
@@ -68,21 +69,21 @@ Deno.test("formatGotoError: reads int_err_code and msg, verified live shape", ()
   );
 });
 
-Deno.test("formatGotoError: falls back to the raw body when it is not the vendor's error shape", () => {
+test("formatGotoError: falls back to the raw body when it is not the vendor's error shape", () => {
   const msg = formatGotoError(500, "GET", "/organizers/1/webinars", "upstream exploded");
   assertEquals(msg, "GoTo Webinar 500 for GET /organizers/1/webinars: upstream exploded");
 });
 
-Deno.test("resolveOrganizerKey: an explicit param wins over the connection", () => {
+test("resolveOrganizerKey: an explicit param wins over the connection", () => {
   const { ctx } = mockCtxWithOrganizer([], "from-connection");
   assertEquals(resolveOrganizerKey(ctx.connection, "from-param"), "from-param");
 });
 
-Deno.test("resolveOrganizerKey: falls back to the connection's captured key", () => {
+test("resolveOrganizerKey: falls back to the connection's captured key", () => {
   const { ctx } = mockCtxWithOrganizer([], "from-connection");
   assertEquals(resolveOrganizerKey(ctx.connection, undefined), "from-connection");
 });
 
-Deno.test("resolveOrganizerKey: throws an actionable error when neither is set", () => {
+test("resolveOrganizerKey: throws an actionable error when neither is set", () => {
   assertThrows(() => resolveOrganizerKey(undefined, undefined), Error, "organizerKey");
 });

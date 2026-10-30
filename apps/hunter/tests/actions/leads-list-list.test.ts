@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/leads-list-list.ts";
 
-Deno.test("leads-list-list: GETs /leads_lists (underscore, not /leads-lists)", async () => {
+test("leads-list-list: GETs /leads_lists (underscore, not /leads-lists)", async () => {
   const body = envelope({ leads_lists: [] }, { total: 0 });
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ limit: 10, offset: 5 }, ctx);

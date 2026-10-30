@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolJobGet from "../../actions/tool-job-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-job-get: GET /tool_jobs/{uid}", async () => {
+test("tool-job-get: GET /tool_jobs/{uid}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -19,7 +20,7 @@ Deno.test("tool-job-get: GET /tool_jobs/{uid}", async () => {
   assertEquals(out.status, "completed");
 });
 
-Deno.test("tool-job-get: requires uid", async () => {
+test("tool-job-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolJobGet.execute({ uid: "" }, ctx));
 });

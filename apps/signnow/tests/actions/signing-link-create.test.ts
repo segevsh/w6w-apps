@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import signingLinkCreate from "../../actions/signing-link-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("signing-link-create: POSTs document_id to /link", async () => {
+test("signing-link-create: POSTs document_id to /link", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

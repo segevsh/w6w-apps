@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-import.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "https://search.internal:8108" } };
 const documents = JSON.stringify([{ id: "1", name: "a" }, { id: "2", name: "b" }]);
 
 /** JSONL out, one line per document, in order. */
-Deno.test("document-import: sends JSONL and the chosen action", async () => {
+test("document-import: sends JSONL and the chosen action", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: '{"success":true}\n{"success":true}',
@@ -27,7 +28,7 @@ Deno.test("document-import: sends JSONL and the chosen action", async () => {
  * The trap: Typesense answers 200 while rejecting every document, so a step
  * that checks the status reports a successful import of nothing.
  */
-Deno.test("document-import: fails the step when a 200 hides a rejection", async () => {
+test("document-import: fails the step when a 200 hides a rejection", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: '{"success":true}\n{"success":false,"error":"Bad JSON."}',
@@ -44,7 +45,7 @@ Deno.test("document-import: fails the step when a 200 hides a rejection", async 
   );
 });
 
-Deno.test("document-import: allowPartial accepts the incomplete write and reports it", async () => {
+test("document-import: allowPartial accepts the incomplete write and reports it", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: '{"success":true}\n{"success":false,"error":"Bad JSON."}',
@@ -60,7 +61,7 @@ Deno.test("document-import: allowPartial accepts the incomplete write and report
 });
 
 /** An upsert cannot match a generated id, so a re-run duplicates. */
-Deno.test("document-import: notes documents with no id", async () => {
+test("document-import: notes documents with no id", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: '{"success":true}' }], D);
   const result = await action.execute(
     { collection: "products", documents: '[{"name":"a"}]' },
@@ -73,7 +74,7 @@ Deno.test("document-import: notes documents with no id", async () => {
   );
 });
 
-Deno.test("document-import: the write mode and dirty_values reach the query", async () => {
+test("document-import: the write mode and dirty_values reach the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: '{"success":true}\n{"success":true}' }], D);
   await action.execute(
     { collection: "products", documents, action: "emplace", dirtyValues: "coerce_or_drop" },
@@ -84,7 +85,7 @@ Deno.test("document-import: the write mode and dirty_values reach the query", as
   assertEquals(q.get("dirty_values"), "coerce_or_drop");
 });
 
-Deno.test("document-import: requires a collection and a non-empty array", async () => {
+test("document-import: requires a collection and a non-empty array", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ documents }, ctx),

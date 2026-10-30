@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationMessagesList from "../../actions/conversation-messages-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-messages-list: GET .../messages, forwards cursor for the next OLDER page", async () => {
+test("conversation-messages-list: GET .../messages, forwards cursor for the next OLDER page", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ id: "m1" }], { cursor: "older", hasMore: true }),
   }]);

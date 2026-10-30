@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listStatsGet from "../../actions/list-stats-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-stats-get: GETs /lists/{listid}/stats.json", async () => {
+test("list-stats-get: GETs /lists/{listid}/stats.json", async () => {
   const stats = {
     TotalActiveSubscribers: 6,
     NewActiveSubscribersToday: 0,

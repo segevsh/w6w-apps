@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeOffCreate from "../../actions/time-off-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("time-off-create: a FullDay request sends startDate/endDate, not startTime/endTime", async () => {
+test("time-off-create: a FullDay request sends startDate/endDate, not startTime/endTime", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "to1" } }]);
   await timeOffCreate.execute({
     personId: "p1",
@@ -18,7 +19,7 @@ Deno.test("time-off-create: a FullDay request sends startDate/endDate, not start
   assertEquals("startTime" in body, false);
 });
 
-Deno.test("time-off-create: an Hours request sends startTime/endTime, not startDate/endDate", async () => {
+test("time-off-create: an Hours request sends startTime/endTime, not startDate/endDate", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "to2" } }]);
   await timeOffCreate.execute({
     personId: "p1",
@@ -32,7 +33,7 @@ Deno.test("time-off-create: an Hours request sends startTime/endTime, not startD
   assertEquals("startDate" in body, false);
 });
 
-Deno.test("time-off-create: refuses a FullDay request missing startDate/endDate", async () => {
+test("time-off-create: refuses a FullDay request missing startDate/endDate", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>
@@ -44,7 +45,7 @@ Deno.test("time-off-create: refuses a FullDay request missing startDate/endDate"
   );
 });
 
-Deno.test("time-off-create: refuses an Hours request missing startTime/endTime", async () => {
+test("time-off-create: refuses an Hours request missing startTime/endTime", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>

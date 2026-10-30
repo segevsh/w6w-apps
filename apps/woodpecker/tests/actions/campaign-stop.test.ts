@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignStop from "../../actions/campaign-stop.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-stop: POST /rest/v2/campaigns/{id}/stop answers 200 with no body", async () => {
+test("campaign-stop: POST /rest/v2/campaigns/{id}/stop answers 200 with no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await campaignStop.execute({ "campaign_id": "55" } as never, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("campaign-stop: POST /rest/v2/campaigns/{id}/stop answers 200 with no 
   assertEquals(out.requested, "stop");
 });
 
-Deno.test("campaign-stop: an unknown campaign is an error", async () => {
+test("campaign-stop: an unknown campaign is an error", async () => {
   const { ctx, calls } = mockCtx([{
     status: 404,
     body: { "code": "CAMPAIGN_NOT_EXIST", "message": "Campaign not found", "details": null },

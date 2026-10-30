@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-get.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("job-get: sends GET /jobs/j%201 and returns the vendor body", async () => {
+test("job-get: sends GET /jobs/j%201 and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "j 1", jobNumber: "42" } }]);
   const out = await action.execute({ jobId: "j 1", includes: "contact" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("job-get: sends GET /jobs/j%201 and returns the vendor body", async ()
   assertEquals(out, { id: "j 1", jobNumber: "42" });
 });
 
-Deno.test("job-get: a vendor error surfaces its title and status", async () => {
+test("job-get: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () => await action.execute({ jobId: "j 1", includes: "contact" } as never, ctx),

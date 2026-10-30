@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-email-campaign.ts";
 
@@ -11,14 +12,14 @@ const required = {
   htmlContent: "<html><body>hi [[trackingImage]]</body></html>",
 };
 
-Deno.test("create-email-campaign: POSTs /v3/emails", async () => {
+test("create-email-campaign: POSTs /v3/emails", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaign_id: "e1", current_status: "Draft" } }]);
   await action.execute!(required, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(new URL(calls[0].url).pathname, "/v3/emails");
 });
 
-Deno.test("create-email-campaign: assembles the one-element email_campaign_activities array", async () => {
+test("create-email-campaign: assembles the one-element email_campaign_activities array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(required, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -34,7 +35,7 @@ Deno.test("create-email-campaign: assembles the one-element email_campaign_activ
   });
 });
 
-Deno.test("create-email-campaign: adds the preheader and footer address when supplied", async () => {
+test("create-email-campaign: adds the preheader and footer address when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     ...required,
@@ -46,7 +47,7 @@ Deno.test("create-email-campaign: adds the preheader and footer address when sup
   assertEquals(activity.physical_address_in_footer.city, "London");
 });
 
-Deno.test("create-email-campaign: the raw activities escape hatch wins over the lifted fields", async () => {
+test("create-email-campaign: the raw activities escape hatch wins over the lifted fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     ...required,
@@ -56,6 +57,6 @@ Deno.test("create-email-campaign: the raw activities escape hatch wins over the 
   assertEquals(body.email_campaign_activities, [{ format_type: 5, subject: "Raw" }]);
 });
 
-Deno.test("create-email-campaign: is not idempotent — the campaign name must be unique", () => {
+test("create-email-campaign: is not idempotent — the campaign name must be unique", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listAgents from "../../actions/list-agents.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-agents: posts to /v2/list-agents with pagination in the QUERY string", async () => {
+test("list-agents: posts to /v2/list-agents with pagination in the QUERY string", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listAgents.execute({ limit: 10, sortOrder: "ascending", paginationKey: "cur" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("list-agents: posts to /v2/list-agents with pagination in the QUERY st
   });
 });
 
-Deno.test("list-agents: the channel filter lives in the JSON body, not the query string", async () => {
+test("list-agents: the channel filter lives in the JSON body, not the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listAgents.execute({ channel: "voice" }, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("list-agents: the channel filter lives in the JSON body, not the query
   });
 });
 
-Deno.test("list-agents: sends an empty body when no channel filter is given", async () => {
+test("list-agents: sends an empty body when no channel filter is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await listAgents.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

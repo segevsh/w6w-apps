@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { API_ROOT, mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: posts to /v2/task.create with only the fields the caller set", async () => {
+test("task-create: posts to /v2/task.create with only the fields the caller set", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ task_id: "t1" }) }]);
   await taskCreate.execute({ content: "Do the thing" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("task-create: posts to /v2/task.create with only the fields the caller
   assertEquals(body, { message: { content: "Do the thing" } });
 });
 
-Deno.test("task-create: maps camelCase params onto Manus's snake_case body fields", async () => {
+test("task-create: maps camelCase params onto Manus's snake_case body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ task_id: "t1" }) }]);
   await taskCreate.execute({
     content: "Ship it",
@@ -49,7 +50,7 @@ Deno.test("task-create: maps camelCase params onto Manus's snake_case body field
   });
 });
 
-Deno.test("task-create: a file attachment builds a text + file content array", async () => {
+test("task-create: a file attachment builds a text + file content array", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ task_id: "t1" }) }]);
   await taskCreate.execute({ content: "Read this", fileId: "file-1" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -59,18 +60,18 @@ Deno.test("task-create: a file attachment builds a text + file content array", a
   ]);
 });
 
-Deno.test("task-create: returns the create response verbatim", async () => {
+test("task-create: returns the create response verbatim", async () => {
   const { ctx } = mockCtx([{ body: okBody({ task_id: "t1", task_title: "Hi" }) }]);
   const out = await taskCreate.execute({ content: "hi" }, ctx);
   assertEquals(out.task_id, "t1");
   assertEquals(out.task_title, "Hi");
 });
 
-Deno.test("task-create: is not idempotent — every retry starts a new billed task", () => {
+test("task-create: is not idempotent — every retry starts a new billed task", () => {
   assertEquals(taskCreate.idempotent, false);
 });
 
-Deno.test("task-create: requires content", () => {
+test("task-create: requires content", () => {
   const content = taskCreate.params?.find((p) => p.key === "content");
   assertEquals(content?.required, true);
 });

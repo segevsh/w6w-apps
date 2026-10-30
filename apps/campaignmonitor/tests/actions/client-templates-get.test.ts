@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clientTemplatesGet from "../../actions/client-templates-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("client-templates-get: GETs /clients/{clientid}/templates.json", async () => {
+test("client-templates-get: GETs /clients/{clientid}/templates.json", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await clientTemplatesGet.execute({ clientId: "cid" }, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/clients/cid/templates.json`);
@@ -13,7 +14,7 @@ Deno.test("client-templates-get: GETs /clients/{clientid}/templates.json", async
  * from network.allow — they are returned as data and never fetched. One request
  * total is what proves that.
  */
-Deno.test("client-templates-get: returns preview URLs without fetching them", async () => {
+test("client-templates-get: returns preview URLs without fetching them", async () => {
   const templates = [{
     TemplateID: "t1",
     Name: "Template One",

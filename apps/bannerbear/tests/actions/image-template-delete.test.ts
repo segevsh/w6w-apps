@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageTemplateDelete from "../../actions/image-template-delete.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-template-delete: DELETE /image_templates/{uid}", async () => {
+test("image-template-delete: DELETE /image_templates/{uid}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await imageTemplateDelete.execute({ uid: "t1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("image-template-delete: DELETE /image_templates/{uid}", async () => {
   assertEquals(out, { uid: "t1", deleted: true });
 });
 
-Deno.test("image-template-delete: requires uid", async () => {
+test("image-template-delete: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => imageTemplateDelete.execute({ uid: "" }, ctx));
 });

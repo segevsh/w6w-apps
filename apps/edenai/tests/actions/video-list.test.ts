@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoList from "../../actions/video-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("video-list: sends the cursor and returns the page cursor", async () => {
+test("video-list: sends the cursor and returns the page cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "list",
@@ -30,7 +31,7 @@ Deno.test("video-list: sends the cursor and returns the page cursor", async () =
   assertEquals(out.lastId, "v1");
 });
 
-Deno.test("video-list: asks for 20 by default and an empty list ends paging", async () => {
+test("video-list: asks for 20 by default and an empty list ends paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], has_more: false } }]);
   const out = await videoList.execute({}, ctx) as Record<string, unknown>;
   assertEquals(queryOf(calls[0].url), { limit: "20" });

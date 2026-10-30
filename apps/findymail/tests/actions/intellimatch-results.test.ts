@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/intellimatch-results.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("intellimatch-results: GETs one page of results", async () => {
+test("intellimatch-results: GETs one page of results", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": [{ "id": 1, "domain": "acme.com" }] },
@@ -23,7 +24,7 @@ Deno.test("intellimatch-results: GETs one page of results", async () => {
   assertEquals(out, { "data": [{ "id": 1, "domain": "acme.com" }] });
 });
 
-Deno.test("intellimatch-results: surfaces the not-ready 404", async () => {
+test("intellimatch-results: surfaces the not-ready 404", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { "status": "error", "message": "Export not found or not ready yet" },

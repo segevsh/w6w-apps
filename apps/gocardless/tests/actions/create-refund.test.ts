@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createRefund from "../../actions/create-refund.ts";
 import { envelope, errorBody, mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
 const created = envelope("refunds", { id: "RF1", amount: 500, currency: "GBP" });
 
-Deno.test("create-refund: POST /refunds against the payment, with the double-refund guard", async () => {
+test("create-refund: POST /refunds against the payment, with the double-refund guard", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const out = await createRefund.execute!({
     amount: 500,
@@ -31,20 +32,20 @@ Deno.test("create-refund: POST /refunds against the payment, with the double-ref
  * separately restricted GoCardless feature, so nothing here can send
  * `links.mandate`.
  */
-Deno.test("create-refund: never sends a mandate link", async () => {
+test("create-refund: never sends a mandate link", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await createRefund.execute!({ amount: 500, paymentId: "PM1" }, ctx);
   const body = JSON.parse(calls[0].body!) as { refunds: { links: Record<string, unknown> } };
   assertEquals(Object.keys(body.refunds.links), ["payment"]);
 });
 
-Deno.test("create-refund: the invocation id keys the retry when none was typed", async () => {
+test("create-refund: the invocation id keys the retry when none was typed", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: created }], "inv-refund-1");
   await createRefund.execute!({ amount: 500, paymentId: "PM1" }, ctx);
   assertEquals(calls[0].headers["idempotency-key"], "inv-refund-1");
 });
 
-Deno.test("create-refund: a mismatched confirmation is refused by the vendor, verbatim", async () => {
+test("create-refund: a mismatched confirmation is refused by the vendor, verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("validation_failed", {

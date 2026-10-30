@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/job-opening-status-change.ts";
 
-Deno.test("job-opening-status-change: PUTs /Job_Openings/status with Job_Opening_Status", async () => {
+test("job-opening-status-change: PUTs /Job_Openings/status with Job_Opening_Status", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [[{ code: "SUCCESS", status: "success", details: { id: "1" } }]] } },
   ]);
@@ -16,6 +17,6 @@ Deno.test("job-opening-status-change: PUTs /Job_Openings/status with Job_Opening
   assertEquals(out.results.length, 1);
 });
 
-Deno.test("job-opening-status-change: idempotent — re-applying the same status converges", () => {
+test("job-opening-status-change: idempotent — re-applying the same status converges", () => {
   assertEquals(action.idempotent, true);
 });

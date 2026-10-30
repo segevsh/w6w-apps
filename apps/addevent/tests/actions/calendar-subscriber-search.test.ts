@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarSubscriberSearch from "../../actions/calendar-subscriber-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("calendar-subscriber-search: comma-joins the multiselect status filter", async () => {
+test("calendar-subscriber-search: comma-joins the multiselect status filter", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { subscribers: [], pagination: {}, links: {} } },
   ]);
@@ -18,7 +19,7 @@ Deno.test("calendar-subscriber-search: comma-joins the multiselect status filter
   assertEquals(q.status, "active,inactive");
 });
 
-Deno.test("calendar-subscriber-search: a zero-match result is a plain empty array, not an error", async () => {
+test("calendar-subscriber-search: a zero-match result is a plain empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { subscribers: [] } }]);
   const out = await calendarSubscriberSearch.execute({}, ctx) as { subscribers: unknown[] };
   assertEquals(out.subscribers.length, 0);

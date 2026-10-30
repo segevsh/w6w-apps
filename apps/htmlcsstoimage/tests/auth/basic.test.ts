@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import basic, { authHeader, PROBE_PATH } from "../../auth/basic.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const CRED = { apiId: "user-id-1", apiKey: "unit-test-fixture-not-a-key" };
 const EXPECTED = `Basic ${btoa("user-id-1:unit-test-fixture-not-a-key")}`;
 
-Deno.test("basic: sign stamps Basic base64(id:key) and leaves the URL alone", () => {
+test("basic: sign stamps Basic base64(id:key) and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://hcti.io/v1/images",
@@ -17,11 +18,11 @@ Deno.test("basic: sign stamps Basic base64(id:key) and leaves the URL alone", ()
   assertEquals(authHeader(CRED), EXPECTED);
 });
 
-Deno.test("basic: the probe is /v1/usage, never the credit-spending POST /v1/image", () => {
+test("basic: the probe is /v1/usage, never the credit-spending POST /v1/image", () => {
   assertEquals(PROBE_PATH, "/v1/usage");
 });
 
-Deno.test("basic: test passes on a 200 with the documented usage body", async () => {
+test("basic: test passes on a 200 with the documented usage body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { hour: {}, day: {}, month: {} }, per_billing_period: [] },
   }]);
@@ -31,7 +32,7 @@ Deno.test("basic: test passes on a 200 with the documented usage body", async ()
   assertEquals(calls[0].headers.authorization, EXPECTED);
 });
 
-Deno.test("basic: a 401 'API Key is Invalid' fails and quotes the vendor message", async () => {
+test("basic: a 401 'API Key is Invalid' fails and quotes the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("Unauthorized", "API Key is Invalid", 401),
@@ -42,7 +43,7 @@ Deno.test("basic: a 401 'API Key is Invalid' fails and quotes the vendor message
   assert(!r.message?.includes(CRED.apiKey));
 });
 
-Deno.test("basic: a 403 from a key scoped away from usage:read still proves a live credential", async () => {
+test("basic: a 403 from a key scoped away from usage:read still proves a live credential", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("Forbidden", "Requires usage:read", 403),
@@ -50,14 +51,14 @@ Deno.test("basic: a 403 from a key scoped away from usage:read still proves a li
   assertEquals(await basic.test({ credential: CRED }, ctx), { ok: true });
 });
 
-Deno.test("basic: other failures name the status and vendor message", async () => {
+test("basic: other failures name the status and vendor message", async () => {
   const { ctx } = mockCtx([{ status: 500, body: errorBody("Server Error", "boom", 500) }]);
   const r = await basic.test({ credential: CRED }, ctx);
   assertEquals(r.ok, false);
   assert(r.message?.includes("500") && r.message.includes("boom"), r.message);
 });
 
-Deno.test("basic: a missing half of the credential fails without any request", async () => {
+test("basic: a missing half of the credential fails without any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await basic.test({ credential: { apiId: "x" } }, ctx);
   assertEquals(r.ok, false);

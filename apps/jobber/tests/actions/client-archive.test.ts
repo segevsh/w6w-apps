@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-archive.ts";
 
-Deno.test("client-archive: calls clientArchive with the client id", async () => {
+test("client-archive: calls clientArchive with the client id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientArchive: { client: { id: "c1", isArchived: true }, userErrors: [] } } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("client-archive: calls clientArchive with the client id", async () => 
   assertEquals((out as { client: { isArchived: boolean } }).client.isArchived, true);
 });
 
-Deno.test("client-archive: never calls clientDelete", async () => {
+test("client-archive: never calls clientDelete", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientArchive: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("client-archive: never calls clientDelete", async () => {
   assert(!JSON.parse(calls[0].body!).query.includes("clientDelete"));
 });
 
-Deno.test("client-archive: a refusal to archive open work throws", async () => {
+test("client-archive: a refusal to archive open work throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

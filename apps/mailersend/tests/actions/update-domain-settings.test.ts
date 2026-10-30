@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-domain-settings.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-domain-settings: PUTs only the fields set, keeping explicit false", async () => {
+test("update-domain-settings: PUTs only the fields set, keeping explicit false", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "d1" } } }]);
   await exec(action, { domainId: "d1", sendPaused: false, trackOpens: true }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("update-domain-settings: PUTs only the fields set, keeping explicit fa
   assertEquals(bodyOf(calls[0]), { send_paused: false, track_opens: true });
 });
 
-Deno.test("update-domain-settings: maps every setting to its wire name", async () => {
+test("update-domain-settings: maps every setting to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await exec(action, {
     domainId: "d1",
@@ -37,4 +38,4 @@ Deno.test("update-domain-settings: maps every setting to its wire name", async (
   ]);
 });
 
-Deno.test("update-domain-settings: is idempotent", () => assertEquals(action.idempotent, true));
+test("update-domain-settings: is idempotent", () => assertEquals(action.idempotent, true));

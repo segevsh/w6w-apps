@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/call-log.ts";
 
 const RESPONSE = { "success": true, "data": { "callLogId": "1" } };
 
-Deno.test("call-log: calls POST /api/client/v2/calls/log and returns the vendor body", async () => {
+test("call-log: calls POST /api/client/v2/calls/log and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "contactId": 11,
@@ -38,7 +39,7 @@ Deno.test("call-log: calls POST /api/client/v2/calls/log and returns the vendor 
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("call-log: sends nothing for fields left unset", async () => {
+test("call-log: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "contactId": 11 }, ctx);
   const url = new URL(calls[0].url);
@@ -46,13 +47,13 @@ Deno.test("call-log: sends nothing for fields left unset", async () => {
   assertEquals(JSON.parse(calls[0].body!), { "contactId": 11 });
 });
 
-Deno.test("call-log: refuses a missing contactId before any request", async () => {
+test("call-log: refuses a missing contactId before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("call-log: surfaces the vendor's error body", async () => {
+test("call-log: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

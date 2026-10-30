@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-create.ts";
 
-Deno.test("time-entry-create: POSTs /workspaces/{id}/time-entries", async () => {
+test("time-entry-create: POSTs /workspaces/{id}/time-entries", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "te1" } }]);
   await action.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("time-entry-create: POSTs /workspaces/{id}/time-entries", async () => 
   });
 });
 
-Deno.test("time-entry-create: omitting end starts a running timer (no end in body)", async () => {
+test("time-entry-create: omitting end starts a running timer (no end in body)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "te1" } }]);
   await action.execute({ workspaceId: "ws1", start: "2026-07-01T08:00:00Z" }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateFormField from "../../actions/update-form-field.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-form-field: PUTs standard properties plus the parsed type-specific JSON merged in", async () => {
+test("update-form-field: PUTs standard properties plus the parsed type-specific JSON merged in", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ field: { key: "3jbh8" } }) }]);
   await updateFormField.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("update-form-field: PUTs standard properties plus the parsed type-spec
   });
 });
 
-Deno.test("update-form-field: accepts typeOptions already parsed (an object, not a string)", async () => {
+test("update-form-field: accepts typeOptions already parsed (an object, not a string)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ field: {} }) }]);
   await updateFormField.execute(
     { slugOrId: "f1", fieldKey: "k1", typeOptions: { calculations: { calculation: "1 + 2" } } },
@@ -33,7 +34,7 @@ Deno.test("update-form-field: accepts typeOptions already parsed (an object, not
   assertEquals(JSON.parse(calls[0].body!), { calculations: { calculation: "1 + 2" } });
 });
 
-Deno.test("update-form-field: throws a labelled error on invalid typeOptions JSON", async () => {
+test("update-form-field: throws a labelled error on invalid typeOptions JSON", async () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {
@@ -45,6 +46,6 @@ Deno.test("update-form-field: throws a labelled error on invalid typeOptions JSO
   assertEquals(threw, true);
 });
 
-Deno.test("update-form-field: declares idempotent true", () => {
+test("update-form-field: declares idempotent true", () => {
   assertEquals(updateFormField.idempotent, true);
 });

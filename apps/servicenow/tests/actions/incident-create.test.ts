@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/incident-create.ts";
 
-Deno.test("incident-create: POSTs /table/incident with the compacted body", async () => {
+test("incident-create: POSTs /table/incident with the compacted body", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: { sys_id: "1" } } }]);
   await action.execute({ shortDescription: "Server down" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("incident-create: POSTs /table/incident with the compacted body", asyn
   assertEquals(JSON.parse(calls[0].body!), { short_description: "Server down" });
 });
 
-Deno.test("incident-create: includes optional fields only when set", async () => {
+test("incident-create: includes optional fields only when set", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("incident-create: includes optional fields only when set", async () =>
   });
 });
 
-Deno.test("incident-create: merges additionalFields into the body", async () => {
+test("incident-create: merges additionalFields into the body", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute(
     { shortDescription: "s", additionalFields: { state: "2", close_code: "Solved" } },
@@ -40,7 +41,7 @@ Deno.test("incident-create: merges additionalFields into the body", async () => 
   assertEquals(body.close_code, "Solved");
 });
 
-Deno.test("incident-create: accepts additionalFields as a JSON string", async () => {
+test("incident-create: accepts additionalFields as a JSON string", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute(
     { shortDescription: "s", additionalFields: '{"state": "3"}' },

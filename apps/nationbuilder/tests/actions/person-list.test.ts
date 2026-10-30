@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/person-list.ts";
 
-Deno.test("person-list: GETs /signups with pagination and sort", async () => {
+test("person-list: GETs /signups with pagination and sort", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{ body: { data: [], meta: {} } }]);
   await action.execute({ pageSize: 10, pageNumber: 2, sort: "-created_at" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("person-list: GETs /signups with pagination and sort", async () => {
   assertEquals(url.searchParams.get("sort"), "-created_at");
 });
 
-Deno.test("person-list: applies a JSON filter and flattens the results", async () => {
+test("person-list: applies a JSON filter and flattens the results", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: {
       data: [{ id: "1", type: "signups", attributes: { email: "a@b.com" } }],

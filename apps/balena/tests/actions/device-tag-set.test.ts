@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-tag-set.ts";
 
@@ -8,7 +9,7 @@ const none = { status: 200, body: { d: [] } };
 const existing = { status: 200, body: { d: [{ id: 10, value: "berlin" }] } };
 const ok = { status: 200, body: {} };
 
-Deno.test("device-tag-set: creates a tag that does not exist", async () => {
+test("device-tag-set: creates a tag that does not exist", async () => {
   const { ctx, calls } = mockCtx([device, none, ok]);
   const result = await action.execute({ uuid: UUID, key: "site", value: "berlin" }, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("device-tag-set: creates a tag that does not exist", async () => {
 });
 
 /** balena's composite key addresses the row without its numeric id. */
-Deno.test("device-tag-set: updates through the (device, tag_key) path", async () => {
+test("device-tag-set: updates through the (device, tag_key) path", async () => {
   const { ctx, calls } = mockCtx([device, existing, ok]);
   const result = await action.execute({ uuid: UUID, key: "site", value: "munich" }, ctx) as Record<
     string,
@@ -33,7 +34,7 @@ Deno.test("device-tag-set: updates through the (device, tag_key) path", async ()
   assertEquals(result.action, "updated");
 });
 
-Deno.test("device-tag-set: setting the same value writes nothing", async () => {
+test("device-tag-set: setting the same value writes nothing", async () => {
   const { ctx, calls } = mockCtx([device, existing]);
   const result = await action.execute({ uuid: UUID, key: "site", value: "berlin" }, ctx) as Record<
     string,
@@ -44,7 +45,7 @@ Deno.test("device-tag-set: setting the same value writes nothing", async () => {
   assertEquals(calls.length, 2);
 });
 
-Deno.test("device-tag-set: removing deletes by id", async () => {
+test("device-tag-set: removing deletes by id", async () => {
   const { ctx, calls } = mockCtx([device, existing, ok]);
   const result = await action.execute({ uuid: UUID, key: "site", remove: true }, ctx) as Record<
     string,
@@ -55,7 +56,7 @@ Deno.test("device-tag-set: removing deletes by id", async () => {
   assertEquals(result.action, "removed");
 });
 
-Deno.test("device-tag-set: a value with a quote is escaped for OData", async () => {
+test("device-tag-set: a value with a quote is escaped for OData", async () => {
   const { ctx, calls } = mockCtx([device, none, ok]);
   await action.execute({ uuid: UUID, key: "owner's", value: "x" }, ctx);
   assert(
@@ -65,12 +66,12 @@ Deno.test("device-tag-set: a value with a quote is escaped for OData", async () 
 });
 
 /** The practical difference from an environment variable. */
-Deno.test("device-tag-set: says a tag restarts nothing and needs no online device", () => {
+test("device-tag-set: says a tag restarts nothing and needs no online device", () => {
   assert(/RESTARTS NOTHING/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("device-tag-set: requires a key", async () => {
+test("device-tag-set: requires a key", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ uuid: UUID }, ctx), Error, "`key`");
 });

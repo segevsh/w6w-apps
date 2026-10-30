@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import followUpGet from "../../actions/follow-up-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const RESPONSE = {
   },
 };
 
-Deno.test("follow-up-get: GET /v2/follow-ups/{follow_up_id}", async () => {
+test("follow-up-get: GET /v2/follow-ups/{follow_up_id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await followUpGet.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -31,13 +32,13 @@ Deno.test("follow-up-get: GET /v2/follow-ups/{follow_up_id}", async () => {
   assertEquals(out.status, "pending");
 });
 
-Deno.test("follow-up-get: puts no credential on the request (sign owns that)", async () => {
+test("follow-up-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await followUpGet.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("follow-up-get: a vendor error surfaces its own message", async () => {
+test("follow-up-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reports the per-minute window parsed out of ratelimit-limit", async () => {
+test("quota: reports the per-minute window parsed out of ratelimit-limit", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [] },
@@ -21,7 +22,7 @@ Deno.test("quota: reports the per-minute window parsed out of ratelimit-limit", 
   assertEquals(report.quota?.[0].remaining, 49500);
 });
 
-Deno.test("quota: degrades when remaining headroom drops under 5%", async () => {
+test("quota: degrades when remaining headroom drops under 5%", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [] },
@@ -37,7 +38,7 @@ Deno.test("quota: degrades when remaining headroom drops under 5%", async () => 
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: reports unknown when Zuora omits the rate-limit headers", async () => {
+test("quota: reports unknown when Zuora omits the rate-limit headers", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] }, headers: {} }], {
     display: { region: "us-cloud2" },
   });
@@ -45,6 +46,6 @@ Deno.test("quota: reports unknown when Zuora omits the rate-limit headers", asyn
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: is informational severity — a low count is never itself a fatal verdict", () => {
+test("quota: is informational severity — a low count is never itself a fatal verdict", () => {
   assertEquals(quota.severity, "informational");
 });

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import bearerToken, { authHeaders, PROBE_PATH } from "../../auth/bearer-token.ts";
 import { mockCtx, pathOf, problemBody } from "../_helpers.ts";
 
 const TOKEN = "unitTestFixtureNotARealApiKey00000";
 
-Deno.test("bearer-token: sign stamps the bearer header and nothing else", () => {
+test("bearer-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.acculynx.com/api/v2/jobs",
@@ -18,11 +19,11 @@ Deno.test("bearer-token: sign stamps the bearer header and nothing else", () => 
 });
 
 /** /diagnostics/ping answers 200 with no key at all, so it can prove nothing about a credential. */
-Deno.test("bearer-token: the probe is company-settings, never the unauthenticated ping", () => {
+test("bearer-token: the probe is company-settings, never the unauthenticated ping", () => {
   assertEquals(PROBE_PATH, "/company-settings");
 });
 
-Deno.test("bearer-token: test passes when the probe answers, and sends the key", async () => {
+test("bearer-token: test passes when the probe answers, and sends the key", async () => {
   const { ctx, calls } = mockCtx([{ body: { companyId: "co1", name: "Acme" } }]);
   const result = await bearerToken.test({ credential: { apiKey: TOKEN } }, ctx);
 
@@ -31,14 +32,14 @@ Deno.test("bearer-token: test passes when the probe answers, and sends the key",
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("bearer-token: test fails with no key, without making a request", async () => {
+test("bearer-token: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await bearerToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bearer-token: a rejected key is recognised by the vendor's body title", async () => {
+test("bearer-token: a rejected key is recognised by the vendor's body title", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "application/problem+json" },
@@ -50,7 +51,7 @@ Deno.test("bearer-token: a rejected key is recognised by the vendor's body title
   assert(!result.message!.includes(TOKEN));
 });
 
-Deno.test("bearer-token: a 401 that is not the vendor's body is reported as unexpected", async () => {
+test("bearer-token: a 401 that is not the vendor's body is reported as unexpected", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "<html>Access denied</html>" }]);
   const result = await bearerToken.test({ credential: { apiKey: TOKEN } }, ctx);
   assertEquals(result.ok, false);
@@ -58,7 +59,7 @@ Deno.test("bearer-token: a 401 that is not the vendor's body is reported as unex
   assert(result.message!.includes("HTTP 401"));
 });
 
-Deno.test("bearer-token: a 429 proves the key was accepted", async () => {
+test("bearer-token: a 429 proves the key was accepted", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "text/plain", "retry-after": "60" },
@@ -67,7 +68,7 @@ Deno.test("bearer-token: a 429 proves the key was accepted", async () => {
   assertEquals(await bearerToken.test({ credential: { apiKey: TOKEN } }, ctx), { ok: true });
 });
 
-Deno.test("bearer-token: a 403 is a permissions problem, not a bad key", async () => {
+test("bearer-token: a 403 is a permissions problem, not a bad key", async () => {
   const { ctx } = mockCtx([{ status: 403, body: problemBody(403, "Forbidden") }]);
   const result = await bearerToken.test({ credential: { apiKey: TOKEN } }, ctx);
   assertEquals(result.ok, false);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-edit.ts";
 
-Deno.test("message-edit: edits (204) and can notify", async () => {
+test("message-edit: edits (204) and can notify", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     { "chatId": "CT_1", "messageId": "m1", "text": "fixed", "notifyEdit": true } as never,
@@ -19,7 +20,7 @@ Deno.test("message-edit: edits (204) and can notify", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("message-edit: idempotent is declared as true", () => {
+test("message-edit: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

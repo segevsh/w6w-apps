@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-get-many.ts";
 
@@ -11,7 +12,7 @@ const BODY = {
   submissions: [{ id: "s1", isCompleted: true }],
 };
 
-Deno.test("submission-get-many: GETs the form's submissions with every filter", async () => {
+test("submission-get-many: GETs the form's submissions with every filter", async () => {
   const { ctx, calls } = mockCtx([{ body: BODY }]);
   const result = await action.execute({
     formId: "f1",
@@ -37,13 +38,13 @@ Deno.test("submission-get-many: GETs the form's submissions with every filter", 
   assertEquals(result.hasMore, true);
 });
 
-Deno.test("submission-get-many: omits unset params", async () => {
+test("submission-get-many: omits unset params", async () => {
   const { ctx, calls } = mockCtx([{ body: BODY }]);
   await action.execute({ formId: "f1" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("submission-get-many: offers exactly Tally's three filter values", () => {
+test("submission-get-many: offers exactly Tally's three filter values", () => {
   const filter = action.params?.find((p) => p.key === "filter");
   assertEquals(
     (filter?.options as Array<{ value: string }>).map((o) => o.value),
@@ -51,7 +52,7 @@ Deno.test("submission-get-many: offers exactly Tally's three filter values", () 
   );
 });
 
-Deno.test("submission-get-many: tolerates an empty body", async () => {
+test("submission-get-many: tolerates an empty body", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({ formId: "f1" }, ctx);
   assertEquals(result.submissions, []);

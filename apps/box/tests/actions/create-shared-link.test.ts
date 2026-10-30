@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-shared-link.ts";
 
-Deno.test("create-shared-link: PUTs /files/{id} with a shared_link body by default", async () => {
+test("create-shared-link: PUTs /files/{id} with a shared_link body by default", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "1", shared_link: { url: "https://box.com/s/x" } },
   }]);
@@ -15,14 +16,14 @@ Deno.test("create-shared-link: PUTs /files/{id} with a shared_link body by defau
   assertEquals(payload.shared_link.permissions, { can_download: true });
 });
 
-Deno.test("create-shared-link: routes to /folders/{id} for itemType folder", async () => {
+test("create-shared-link: routes to /folders/{id} for itemType folder", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ itemType: "folder", itemId: "42" }, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.pathname, "/2.0/folders/42");
 });
 
-Deno.test("create-shared-link: forwards access, password, canDownload and unsharedAt", async () => {
+test("create-shared-link: forwards access, password, canDownload and unsharedAt", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

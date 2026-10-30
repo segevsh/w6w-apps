@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-get: full input maps to GET /users/{uuid}", async () => {
+test("user-get: full input maps to GET /users/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -15,7 +16,7 @@ Deno.test("user-get: full input maps to GET /users/{uuid}", async () => {
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("user-get: required input only maps to GET /users/{uuid}", async () => {
+test("user-get: required input only maps to GET /users/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -28,13 +29,13 @@ Deno.test("user-get: required input only maps to GET /users/{uuid}", async () =>
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("user-get: sends no authorization header of its own", async () => {
+test("user-get: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({ "uuid": "11111111-aaaa" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("user-get: surfaces a JSON error body as a thrown error", async () => {
+test("user-get: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () => await action.execute!({ "uuid": "11111111-aaaa" }, ctx),
@@ -43,7 +44,7 @@ Deno.test("user-get: surfaces a JSON error body as a thrown error", async () => 
   );
 });
 
-Deno.test("user-get: an empty 401 body still reads as an auth failure", async () => {
+test("user-get: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ "uuid": "11111111-aaaa" }, ctx),
@@ -52,7 +53,7 @@ Deno.test("user-get: an empty 401 body still reads as an auth failure", async ()
   );
 });
 
-Deno.test("user-get: declares type, params and output", () => {
+test("user-get: declares type, params and output", () => {
   assertEquals(action.type, "read");
   assertEquals(action.key, "user-get");
   assert(Array.isArray(action.output) && action.output.length > 0);

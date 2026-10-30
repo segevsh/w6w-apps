@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("task-update: PATCH sends only what changed; unassign sends an explicit null", async () => {
+test("task-update: PATCH sends only what changed; unassign sends an explicit null", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }, { body: { data: {} } }]);
   await taskUpdate.execute(
     { id: "k1", note: "moved", payment_amount: 0, payment_currency: "USD" },

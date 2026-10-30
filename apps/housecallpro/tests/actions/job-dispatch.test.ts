@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobDispatch from "../../actions/job-dispatch.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-dispatch: PUTs the wrapped employee list", async () => {
+test("job-dispatch: PUTs the wrapped employee list", async () => {
   const { ctx, calls } = mockCtx([{ body: { assigned_employees: [] } }]);
   await jobDispatch.execute({ jobId: "j1", employeeIds: ["e1", "e2"] }, ctx);
 
@@ -13,12 +14,12 @@ Deno.test("job-dispatch: PUTs the wrapped employee list", async () => {
   });
 });
 
-Deno.test("job-dispatch: an empty list still sends the required array key", async () => {
+test("job-dispatch: an empty list still sends the required array key", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await jobDispatch.execute({ jobId: "j1", employeeIds: "" }, ctx);
   assertEquals(bodyOf(calls[0]), { dispatched_employees: [] });
 });
 
-Deno.test("job-dispatch: is idempotent — it replaces the assignment rather than appending", () => {
+test("job-dispatch: is idempotent — it replaces the assignment rather than appending", () => {
   assertEquals(jobDispatch.idempotent, true);
 });

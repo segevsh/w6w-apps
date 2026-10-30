@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import upsertEntry from "../../actions/upsert-entry.ts";
 
-Deno.test("upsert-entry: PUTs to the collection url, matching on the parent record", async () => {
+test("upsert-entry: PUTs to the collection url, matching on the parent record", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: { entry_id: "e1" } } } }]);
   await upsertEntry.execute({
     list: "sales",
@@ -23,7 +24,7 @@ Deno.test("upsert-entry: PUTs to the collection url, matching on the parent reco
   });
 });
 
-Deno.test("upsert-entry: has no matching-attribute param — the parent record IS the key", () => {
+test("upsert-entry: has no matching-attribute param — the parent record IS the key", () => {
   const keys = (upsertEntry.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("matchingAttribute"), false);
   assert(/match key/i.test(param(upsertEntry, "parentRecordId").hint!));
@@ -33,12 +34,12 @@ Deno.test("upsert-entry: has no matching-attribute param — the parent record I
  * Multiselect handling is fixed to overwrite on this endpoint and choosable on
  * Update Entry. Saying so on the param is the only place a user would find out.
  */
-Deno.test("upsert-entry: states that multiselects are always overwritten here", () => {
+test("upsert-entry: states that multiselects are always overwritten here", () => {
   assert(/always overwritten/i.test(param(upsertEntry, "entryValues").hint!));
   assert(/MULTIPLE_MATCH_RESULTS/.test(upsertEntry.description!));
 });
 
-Deno.test("upsert-entry: rejects a doubly-wrapped payload before sending", async () => {
+test("upsert-entry: rejects a doubly-wrapped payload before sending", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

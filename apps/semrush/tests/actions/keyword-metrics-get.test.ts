@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keywordMetricsGet from "../../actions/keyword-metrics-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("keyword-metrics-get: GETs the metrics and unwraps data", async () => {
+test("keyword-metrics-get: GETs the metrics and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -35,7 +36,7 @@ Deno.test("keyword-metrics-get: GETs the metrics and unwraps data", async () => 
   assertEquals((out.data.trends as number[]).length, 12);
 });
 
-Deno.test("keyword-metrics-get: `month` is optional and omitted when unset", async () => {
+test("keyword-metrics-get: `month` is optional and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ search_volume: "10" }) }]);
 
   await keywordMetricsGet.execute({ keyword: "seo", country: "uk" }, ctx);
@@ -43,7 +44,7 @@ Deno.test("keyword-metrics-get: `month` is optional and omitted when unset", asy
   assertEquals(queryOf(calls[0].url), { keyword: "seo", country: "uk" });
 });
 
-Deno.test("keyword-metrics-get: keyword and country are required, month is not", () => {
+test("keyword-metrics-get: keyword and country are required, month is not", () => {
   const params = keywordMetricsGet.params ?? [];
   assertEquals(params.find((p) => p.key === "keyword")?.required, true);
   assertEquals(params.find((p) => p.key === "country")?.required, true);

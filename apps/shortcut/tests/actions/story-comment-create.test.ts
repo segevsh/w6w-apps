@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import storyCommentCreate from "../../actions/story-comment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("story-comment-create: posts text, and parentId for a reply", async () => {
+test("story-comment-create: posts text, and parentId for a reply", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 2 } }]);
   await storyCommentCreate.execute({ storyId: 123, text: "On it", parentId: 1 }, ctx);
 

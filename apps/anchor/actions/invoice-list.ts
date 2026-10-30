@@ -31,7 +31,20 @@ const invoiceList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "issued", label: "issued" },
+        { value: "pending", label: "pending" },
+        { value: "overdue", label: "overdue" },
+        { value: "processing", label: "processing" },
+        { value: "paid", label: "paid" },
+        { value: "refundFailed", label: "refundFailed" },
+        { value: "refunded", label: "refunded" },
+        { value: "partiallyRefunded", label: "partiallyRefunded" },
+        { value: "voided", label: "voided" },
+        { value: "disputed", label: "disputed" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated display statuses: issued, pending, overdue, processing, paid, refundFailed, refunded, partiallyRefunded, voided, disputed.",
     },

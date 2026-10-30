@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-entry.ts";
 
-Deno.test("delete-entry: DELETEs on Management API and returns ok on 204", async () => {
+test("delete-entry: DELETEs on Management API and returns ok on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!(
     { entryId: "e-1", spaceId: "sp", environmentId: "master" },
@@ -15,6 +16,6 @@ Deno.test("delete-entry: DELETEs on Management API and returns ok on 204", async
   assertEquals(result, { ok: true });
 });
 
-Deno.test("delete-entry: is marked idempotent", () => {
+test("delete-entry: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listDonations from "../../actions/list-donations.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-donations: calls GET /giving/v2/donations and keeps amounts in cents", async () => {
+test("list-donations: calls GET /giving/v2/donations and keeps amounts in cents", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: collection("Donation", [
@@ -26,7 +27,7 @@ Deno.test("list-donations: calls GET /giving/v2/donations and keeps amounts in c
   assertEquals(out.donations[0].personId, "7");
 });
 
-Deno.test("list-donations: a date range renders as nested where[received_at][gte/lte]", async () => {
+test("list-donations: a date range renders as nested where[received_at][gte/lte]", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Donation", []) }]);
   await listDonations.execute({ receivedAtGte: "2026-01-01", receivedAtLte: "2026-01-31" }, ctx);
 
@@ -35,7 +36,7 @@ Deno.test("list-donations: a date range renders as nested where[received_at][gte
   assertEquals(q["where[received_at][lte]"], "2026-01-31");
 });
 
-Deno.test("list-donations: fundId maps to where[fund_id]", async () => {
+test("list-donations: fundId maps to where[fund_id]", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Donation", []) }]);
   await listDonations.execute({ fundId: "fund_1" }, ctx);
 

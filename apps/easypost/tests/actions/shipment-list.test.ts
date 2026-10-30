@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-list.ts";
 
@@ -7,7 +8,7 @@ const list = (shipments: unknown[], has_more = false) => ({
   body: { shipments, has_more },
 });
 
-Deno.test("shipment-list: unfiltered, it sends no purchased filter", async () => {
+test("shipment-list: unfiltered, it sends no purchased filter", async () => {
   const { ctx, calls } = mockCtx([list([{ id: "shp_1" }])]);
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(calls[0].url.split("?")[0], "https://api.easypost.com/v2/shipments");
@@ -16,7 +17,7 @@ Deno.test("shipment-list: unfiltered, it sends no purchased filter", async () =>
 });
 
 /** Quotes that were abandoned are what a cancelled order leaves behind. */
-Deno.test("shipment-list: the unpurchased filter sends a real false", async () => {
+test("shipment-list: the unpurchased filter sends a real false", async () => {
   const unbought = mockCtx([list([])]);
   await action.execute!({ purchased: "false" }, unbought.ctx);
   assertEquals(new URL(unbought.calls[0].url).searchParams.get("purchased"), "false");
@@ -26,20 +27,20 @@ Deno.test("shipment-list: the unpurchased filter sends a real false", async () =
   assertEquals(new URL(boughtOnly.calls[0].url).searchParams.get("purchased"), "true");
 });
 
-Deno.test("shipment-list: the page size is capped at EasyPost's maximum", async () => {
+test("shipment-list: the page size is capped at EasyPost's maximum", async () => {
   const { ctx, calls } = mockCtx([list([])]);
   await action.execute!({ limit: 5000 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("page_size"), "100");
 });
 
-Deno.test("shipment-list: has_more is reported so a caller knows it truncated", async () => {
+test("shipment-list: has_more is reported so a caller knows it truncated", async () => {
   const { ctx } = mockCtx([list([{ id: "shp_1" }], true)]);
   const result = await action.execute!({}, ctx) as { has_more: boolean };
   assertEquals(result.has_more, true);
 });
 
 /** Five requests a second across list endpoints makes a paging loop a 429. */
-Deno.test("shipment-list: says why it fetches one page rather than walking", () => {
+test("shipment-list: says why it fetches one page rather than walking", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) =>
     p.key === "limit"
   )!;

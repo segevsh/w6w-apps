@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cadence-membership-list.ts";
 
-Deno.test("cadence-membership-list: GETs /cadence_memberships with query filters", async () => {
+test("cadence-membership-list: GETs /cadence_memberships with query filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ cadenceId: 20, currentlyOnCadence: true }, ctx);
   const url = new URL(calls[0].url);

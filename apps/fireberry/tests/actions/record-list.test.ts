@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/record-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const PAGE = {
   message: "",
 };
 
-Deno.test("record-list: sends GET /api/record/{object} with lowercase paging params", async () => {
+test("record-list: sends GET /api/record/{object} with lowercase paging params", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await action.execute!({ object: "account", pageSize: 50, pageNumber: 1 }, ctx);
   const url = new URL(calls[0].url);
@@ -35,7 +36,7 @@ Deno.test("record-list: sends GET /api/record/{object} with lowercase paging par
   });
 });
 
-Deno.test("record-list: hasMore is false on the last page and a custom object number is encoded", async () => {
+test("record-list: hasMore is false on the last page and a custom object number is encoded", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { Total_Records: 3, Page_Size: 50, Page_Number: 1, Records: [] } },
   }]);
@@ -45,14 +46,14 @@ Deno.test("record-list: hasMore is false on the last page and a custom object nu
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("record-list: sends no tokenid header of its own", async () => {
+test("record-list: sends no tokenid header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute!({ object: "account" }, ctx);
   assert(!("tokenid" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("record-list: surfaces Fireberry's capital-M Message as a thrown error", async () => {
+test("record-list: surfaces Fireberry's capital-M Message as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { Message: "Invalid Object Name" } }]);
   await assertRejects(
     async () => await action.execute!({ object: "nope" }, ctx),
@@ -61,7 +62,7 @@ Deno.test("record-list: surfaces Fireberry's capital-M Message as a thrown error
   );
 });
 
-Deno.test("record-list: declares type and output", () => {
+test("record-list: declares type and output", () => {
   assertEquals(action.type, "search");
   assert(action.params!.some((p) => p.key === "object" && p.required));
   assert(Array.isArray(action.output) && action.output.length > 0);

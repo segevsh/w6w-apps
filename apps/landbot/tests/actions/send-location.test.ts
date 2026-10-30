@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sendLocation from "../../actions/send-location.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("send-location: POST /customers/42/send_location/ with the documented query and body", async () => {
+test("send-location: POST /customers/42/send_location/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await sendLocation.execute(
     { "customerId": 42, "latitude": 40.4168, "longitude": -3.7038 } as never,
@@ -21,7 +22,7 @@ Deno.test("send-location: POST /customers/42/send_location/ with the documented 
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("send-location: a Landbot error surfaces its status and message", async () => {
+test("send-location: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -37,7 +38,7 @@ Deno.test("send-location: a Landbot error surfaces its status and message", asyn
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("send-location: declares perform", () => {
+test("send-location: declares perform", () => {
   assertEquals(sendLocation.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

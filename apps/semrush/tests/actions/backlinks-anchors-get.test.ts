@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksAnchorsGet from "../../actions/backlinks-anchors-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-anchors-get: GETs the anchor rows and unwraps data", async () => {
+test("backlinks-anchors-get: GETs the anchor rows and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([{ anchor: "example", backlinks_count: 5, domains_count: 3 }]) },
   ]);
@@ -17,14 +18,14 @@ Deno.test("backlinks-anchors-get: GETs the anchor rows and unwraps data", async 
   assertEquals(out.data[0].anchor, "example");
 });
 
-Deno.test("backlinks-anchors-get: sorts by domains_count DESC by default", () => {
+test("backlinks-anchors-get: sorts by domains_count DESC by default", () => {
   const orderBy = backlinksAnchorsGet.params?.find((p) => p.key === "order_by");
   const direction = backlinksAnchorsGet.params?.find((p) => p.key === "direction");
   assertEquals(orderBy?.default, "domains_count");
   assertEquals(direction?.default, "DESC");
 });
 
-Deno.test("backlinks-anchors-get: forwards direction and paging", async () => {
+test("backlinks-anchors-get: forwards direction and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await backlinksAnchorsGet.execute(

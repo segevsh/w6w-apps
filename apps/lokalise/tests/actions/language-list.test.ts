@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import languageList from "../../actions/language-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("language-list: lists a project's configured languages", async () => {
+test("language-list: lists a project's configured languages", async () => {
   const { ctx, calls } = mockCtx([{ body: { languages: [{ lang_iso: "en" }] } }]);
   const out = await languageList.execute({ projectId: "p1", limit: 50 }, ctx) as {
     items: unknown[];

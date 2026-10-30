@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomTaskList from "../../actions/room-task-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("room-task-list: passes all three filters through as query params", async () => {
+test("room-task-list: passes all three filters through as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await roomTaskList.execute({
     roomId: "5",
@@ -18,7 +19,7 @@ Deno.test("room-task-list: passes all three filters through as query params", as
   });
 });
 
-Deno.test("room-task-list: a 204 (no tasks) normalises to an empty array", async () => {
+test("room-task-list: a 204 (no tasks) normalises to an empty array", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const out = await roomTaskList.execute({ roomId: "5" }, ctx);
   assertEquals(out, []);

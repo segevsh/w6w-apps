@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberDelete from "../../actions/subscriber-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-delete: deletes by id and reports the status", async () => {
+test("subscriber-delete: deletes by id and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await subscriberDelete.execute(
     { accountId: "1", listId: "2", subscriberId: "789" },

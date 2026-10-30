@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-user.ts";
 
-Deno.test("update-user: metadata", () => {
+test("update-user: metadata", () => {
   assertEquals(action.key, "update-user");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
@@ -16,7 +17,7 @@ Deno.test("update-user: metadata", () => {
   ]);
 });
 
-Deno.test("update-user: calls POST /users/update on the US host", async () => {
+test("update-user: calls POST /users/update on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "email": "abc",
@@ -41,7 +42,7 @@ Deno.test("update-user: calls POST /users/update on the US host", async () => {
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("update-user: uses the EU host when the connection region is eu", async () => {
+test("update-user: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -56,7 +57,7 @@ Deno.test("update-user: uses the EU host when the connection region is eu", asyn
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/update");
 });
 
-Deno.test("update-user: rejects an input with no identifier without calling Iterable", async () => {
+test("update-user: rejects an input with no identifier without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -68,7 +69,7 @@ Deno.test("update-user: rejects an input with no identifier without calling Iter
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-user: surfaces an HTTP error with Iterable's own code", async () => {
+test("update-user: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -86,7 +87,7 @@ Deno.test("update-user: surfaces an HTTP error with Iterable's own code", async 
   );
 });
 
-Deno.test("update-user: treats a 200 carrying a non-Success code as a failure", async () => {
+test("update-user: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

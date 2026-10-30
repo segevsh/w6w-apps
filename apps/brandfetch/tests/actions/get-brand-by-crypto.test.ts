@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-brand-by-crypto.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { BRAND } from "../_fixtures.ts";
 
-Deno.test("get-brand-by-crypto: calls /v2/brands/crypto/BTC and maps the brand", async () => {
+test("get-brand-by-crypto: calls /v2/brands/crypto/BTC and maps the brand", async () => {
   const { ctx, calls } = mockCtx([{ body: BRAND }]);
   const out = await run(action, { symbol: "BTC" }, ctx);
   assertEquals(calls[0].url, "https://api.brandfetch.io/v2/brands/crypto/BTC");
@@ -12,7 +13,7 @@ Deno.test("get-brand-by-crypto: calls /v2/brands/crypto/BTC and maps the brand",
   assertEquals(out.name, "Nike");
 });
 
-Deno.test("get-brand-by-crypto: cachedOnly 204 is notIndexed; a plain 404 throws", async () => {
+test("get-brand-by-crypto: cachedOnly 204 is notIndexed; a plain 404 throws", async () => {
   const none = mockCtx([{ status: 204 }]);
   assertEquals(await run(action, { symbol: "BTC", cachedOnly: true }, none.ctx), {
     found: false,

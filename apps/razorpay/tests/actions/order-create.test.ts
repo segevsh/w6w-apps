@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderCreate from "../../actions/order-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-create: posts amount/currency/receipt/notes to /orders", async () => {
+test("order-create: posts amount/currency/receipt/notes to /orders", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "order_1", status: "created" } }]);
   const out = await orderCreate.execute(
     { amount: 50000, currency: "INR", receipt: "receipt_001", partialPayment: false },
@@ -20,6 +21,6 @@ Deno.test("order-create: posts amount/currency/receipt/notes to /orders", async 
   assertEquals(out, { id: "order_1", status: "created" });
 });
 
-Deno.test("order-create: is not idempotent — every call starts a separate order", () => {
+test("order-create: is not idempotent — every call starts a separate order", () => {
   assertEquals(orderCreate.idempotent, false);
 });

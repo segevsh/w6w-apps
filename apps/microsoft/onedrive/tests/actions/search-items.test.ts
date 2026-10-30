@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-items.ts";
 
-Deno.test("search-items: calls the search function on the drive root", async () => {
+test("search-items: calls the search function on the drive root", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ query: "quarterly report" }, ctx);
   assertEquals(
@@ -11,7 +12,7 @@ Deno.test("search-items: calls the search function on the drive root", async () 
   );
 });
 
-Deno.test("search-items: escapes an apostrophe, per OData", async () => {
+test("search-items: escapes an apostrophe, per OData", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ query: "Bob's plan" }, ctx);
   assert(
@@ -20,7 +21,7 @@ Deno.test("search-items: escapes an apostrophe, per OData", async () => {
   );
 });
 
-Deno.test("search-items: searches inside another drive when one is given", async () => {
+test("search-items: searches inside another drive when one is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ driveId: "d7", query: "x" }, ctx);
   assertEquals(
@@ -29,7 +30,7 @@ Deno.test("search-items: searches inside another drive when one is given", async
   );
 });
 
-Deno.test("search-items: maps $select, $orderby and $top", async () => {
+test("search-items: maps $select, $orderby and $top", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ query: "x", select: ["id"], orderby: "name asc", top: 3 }, ctx);
   const url = new URL(calls[0].url);
@@ -38,19 +39,19 @@ Deno.test("search-items: maps $select, $orderby and $top", async () => {
   assertEquals(url.searchParams.get("$top"), "3");
 });
 
-Deno.test("search-items: offers no $filter — the endpoint does not document one", () => {
+test("search-items: offers no $filter — the endpoint does not document one", () => {
   const keys = (action.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("filter"), false);
 });
 
-Deno.test("search-items: replays a nextLink verbatim", async () => {
+test("search-items: replays a nextLink verbatim", async () => {
   const link = "https://graph.microsoft.com/v1.0/me/drive/root/search(q='x')?$skiptoken=abc";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ query: "ignored", nextLink: link }, ctx);
   assertEquals(calls[0].url, link);
 });
 
-Deno.test("search-items: follows every page when `all` is set", async () => {
+test("search-items: follows every page when `all` is set", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drive/root/search(q='x')?$skiptoken=1";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },
@@ -61,6 +62,6 @@ Deno.test("search-items: follows every page when `all` is set", async () => {
   assertEquals(out.value.length, 2);
 });
 
-Deno.test("search-items: is declared a search action", () => {
+test("search-items: is declared a search action", () => {
   assertEquals(action.type, "search");
 });

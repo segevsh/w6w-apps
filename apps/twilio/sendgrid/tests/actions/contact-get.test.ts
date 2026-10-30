@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: by id → GETs /marketing/contacts/{id}", async () => {
+test("contact-get: by id → GETs /marketing/contacts/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "abc-123", email: "a@x.com" } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("contact-get: by id → GETs /marketing/contacts/{id}", async () => {
   assertEquals(result, { id: "abc-123", email: "a@x.com" });
 });
 
-Deno.test("contact-get: by email → POSTs SGQL to /marketing/contacts/search", async () => {
+test("contact-get: by email → POSTs SGQL to /marketing/contacts/search", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: [{ id: "abc-123", email: "a@x.com" }] } },
   ]);
@@ -28,7 +29,7 @@ Deno.test("contact-get: by email → POSTs SGQL to /marketing/contacts/search", 
   assertEquals(result, { id: "abc-123", email: "a@x.com" });
 });
 
-Deno.test("contact-get: missing contactId when by=id rejects", async () => {
+test("contact-get: missing contactId when by=id rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ by: "id", contactId: "" }, ctx),
@@ -37,7 +38,7 @@ Deno.test("contact-get: missing contactId when by=id rejects", async () => {
   );
 });
 
-Deno.test("contact-get: missing email when by=email rejects", async () => {
+test("contact-get: missing email when by=email rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ by: "email", email: "" }, ctx),

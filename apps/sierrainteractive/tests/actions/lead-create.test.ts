@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import leadCreate from "../../actions/lead-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-create: POST /zapier/leads sends only set fields, lists split, JSON parsed", async () => {
+test("lead-create: POST /zapier/leads sends only set fields, lists split, JSON parsed", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, leadId: 9 } }]);
   const out = await leadCreate.execute({
     firstName: "Ann",
@@ -28,7 +29,7 @@ Deno.test("lead-create: POST /zapier/leads sends only set fields, lists split, J
   assertEquals(out, { data: { success: true, leadId: 9 } });
 });
 
-Deno.test("lead-create: bad JSON fails before any request; a 400 surfaces errorMessage", async () => {
+test("lead-create: bad JSON fails before any request; a 400 surfaces errorMessage", async () => {
   const none = mockCtx();
   await assertRejects(
     () => Promise.resolve(leadCreate.execute({ lender: "{" }, none.ctx)),

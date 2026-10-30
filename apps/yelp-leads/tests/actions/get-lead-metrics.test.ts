@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getLeadMetrics from "../../actions/get-lead-metrics.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-lead-metrics: reads cost_per_lead for a lead", async () => {
+test("get-lead-metrics: reads cost_per_lead for a lead", async () => {
   const body = { metrics: { cost_per_lead: { value: 0, currency_code: "USD" } } };
   const { ctx, calls } = mockCtx([{ body }]);
 

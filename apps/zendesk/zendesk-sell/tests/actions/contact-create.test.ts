@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: posts to /v2/contacts with meta.type and mapped fields", async () => {
+test("contact-create: posts to /v2/contacts with meta.type and mapped fields", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: dataEnvelope({ id: 2, name: "Mark Johnson" }) },
   ]);
@@ -25,7 +26,7 @@ Deno.test("contact-create: posts to /v2/contacts with meta.type and mapped field
   assertEquals(out.id, 2);
 });
 
-Deno.test("contact-create: extraFields overrides the typed fields", async () => {
+test("contact-create: extraFields overrides the typed fields", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await contactCreate.execute({
     lastName: "Johnson",
@@ -37,7 +38,7 @@ Deno.test("contact-create: extraFields overrides the typed fields", async () => 
   assertEquals(body.data.fax, "+1-555-0100");
 });
 
-Deno.test("contact-create: omits unset optional fields rather than sending them as null/undefined", async () => {
+test("contact-create: omits unset optional fields rather than sending them as null/undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1 }) }]);
   await contactCreate.execute({ lastName: "Johnson" }, ctx);
 

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tts from "../../actions/text-to-speech-with-timestamps.ts";
 import { jsonBodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const RESPONSE = {
  * The one TTS endpoint that answers JSON — the audio arrives already
  * base64-encoded by the vendor, so nothing here decodes or re-encodes it.
  */
-Deno.test("tts-with-timestamps: returns the vendor's JSON verbatim", async () => {
+test("tts-with-timestamps: returns the vendor's JSON verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await tts.execute({ voiceId: "v1", text: "Hi" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/text-to-speech/v1/with-timestamps");
@@ -21,7 +22,7 @@ Deno.test("tts-with-timestamps: returns the vendor's JSON verbatim", async () =>
   assertEquals(out, RESPONSE);
 });
 
-Deno.test("tts-with-timestamps: shares the TTS body builder", async () => {
+test("tts-with-timestamps: shares the TTS body builder", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await tts.execute({
     voiceId: "v1",
@@ -40,12 +41,12 @@ Deno.test("tts-with-timestamps: shares the TTS body builder", async () => {
   assertEquals(queryOf(calls[0].url), { output_format: "mp3_22050_32" });
 });
 
-Deno.test("tts-with-timestamps: declares both alignment fields as output", () => {
+test("tts-with-timestamps: declares both alignment fields as output", () => {
   const keys = (tts.output as Array<{ key: string }>).map((o) => o.key);
   assertEquals(keys, ["audio_base64", "alignment", "normalized_alignment"]);
 });
 
-Deno.test("tts-with-timestamps: is a non-idempotent perform — every call bills characters", () => {
+test("tts-with-timestamps: is a non-idempotent perform — every call bills characters", () => {
   assertEquals(tts.type, "perform");
   assertEquals(tts.idempotent, false);
 });

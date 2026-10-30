@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import invoiceExport from "../../actions/invoice-export.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-export: POST /invoices/{invoiceId}/export with the documented query and body", async () => {
+test("invoice-export: POST /invoices/{invoiceId}/export with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await invoiceExport.execute({ "invoiceId": 11903 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("invoice-export: POST /invoices/{invoiceId}/export with the documented
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("invoice-export: an Everhour error surfaces its message and status", async () => {
+test("invoice-export: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(invoiceExport.execute({ "invoiceId": 11903 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("invoice-export: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("invoice-export: declares perform and idempotent=false", () => {
+test("invoice-export: declares perform and idempotent=false", () => {
   assertEquals(invoiceExport.type, "perform");
   assertEquals(invoiceExport.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import loggedTimeCreate from "../../actions/logged-time-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("logged-time-create: POSTs the entry in minutes, against a job item user", async () => {
+test("logged-time-create: POSTs the entry in minutes, against a job item user", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 555, minutes: 90 } }]);
   const result = await loggedTimeCreate.execute({
     minutes: 90,
@@ -24,14 +25,14 @@ Deno.test("logged-time-create: POSTs the entry in minutes, against a job item us
   assertEquals(result.id, 555);
 });
 
-Deno.test("logged-time-create: minutes is required and integer-validated", () => {
+test("logged-time-create: minutes is required and integer-validated", () => {
   const param = (loggedTimeCreate.params ?? []).find((p) => p.key === "minutes");
   assertEquals(param?.required, true);
   assertEquals(param?.validation, { integer: true, min: 1 });
   assertEquals(/a full day is not 8/.test(param?.hint ?? ""), true);
 });
 
-Deno.test("logged-time-create: the computed totals are read-only", () => {
+test("logged-time-create: the computed totals are read-only", () => {
   const keys = (loggedTimeCreate.params ?? []).map((p) => p.key);
   for (const readonly of ["cost", "totalCostExTax", "totalExTax", "completedDatetime"]) {
     assertEquals(keys.includes(readonly), false, readonly);

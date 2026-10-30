@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-ticket-class-to-ticket-groups.ts";
 
-Deno.test("add-ticket-class-to-ticket-groups: POST /organizations/o1/events/e1/ticket_classes/t1/ticket_groups/", async () => {
+test("add-ticket-class-to-ticket-groups: POST /organizations/o1/events/e1/ticket_classes/t1/ticket_groups/", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({
     "organizationId": "o1",

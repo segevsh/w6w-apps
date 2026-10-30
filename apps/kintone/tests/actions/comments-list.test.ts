@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comments-list.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("comments-list: GETs /k/v1/record/comments.json with paging params", async () => {
+test("comments-list: GETs /k/v1/record/comments.json with paging params", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { comments: [{ id: "1" }], older: false, newer: false } }],
     conn,

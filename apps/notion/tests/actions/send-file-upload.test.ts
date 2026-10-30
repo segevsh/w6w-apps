@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import upload from "../../actions/send-file-upload.ts";
 
-Deno.test("Send File Upload sends binary multipart bytes and lets fetch set the boundary", async () => {
+test("Send File Upload sends binary multipart bytes and lets fetch set the boundary", async () => {
   const { ctx } = mockCtx();
   let captured: RequestInit | undefined;
   ctx.fetch = ((_url: RequestInfo | URL, init?: RequestInit) => {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import generativeJobGet from "../../actions/generative-job-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("generative-job-get: GETs the job and returns the concluded result verbatim", async () => {
+test("generative-job-get: GETs the job and returns the concluded result verbatim", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

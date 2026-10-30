@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import basic, { basicHeader, classifyProbe, PROBE_PATH } from "../../auth/basic.ts";
 import type { HookContext, SignableRequest } from "@w6w/types";
 import { edgeErrorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const CRED = { apiId: "my_api_id", apiToken: "my_api_token" };
 
-Deno.test("basic: sign stamps the Base64 pair on the Authorization header", () => {
+test("basic: sign stamps the Base64 pair on the Authorization header", () => {
   const request = { url: "https://api.aircall.io/v1/calls", method: "GET", headers: {} };
   const signed = basic.sign!(
     { request: request as unknown as SignableRequest, credential: CRED },
@@ -23,7 +24,7 @@ Deno.test("basic: sign stamps the Base64 pair on the Authorization header", () =
  * workflow host logs request URLs and does not log request headers, so the
  * credential must never reach the URL.
  */
-Deno.test("basic: sign never touches the request URL", () => {
+test("basic: sign never touches the request URL", () => {
   const request = { url: "https://api.aircall.io/v1/calls", method: "GET", headers: {} };
   const signed = basic.sign!(
     { request: request as unknown as SignableRequest, credential: CRED },
@@ -35,7 +36,7 @@ Deno.test("basic: sign never touches the request URL", () => {
   assert(!signed.url.includes("my_api_token"), signed.url);
 });
 
-Deno.test("basic: the probe is GET /v1/ping and carries the signed header", async () => {
+test("basic: the probe is GET /v1/ping and carries the signed header", async () => {
   const { ctx, calls } = mockCtx([{ body: { ping: "pong" } }]);
   const out = await basic.test({ credential: CRED }, ctx);
 
@@ -45,7 +46,7 @@ Deno.test("basic: the probe is GET /v1/ping and carries the signed header", asyn
   assertEquals(calls[0].headers["authorization"], basicHeader(CRED));
 });
 
-Deno.test("basic: a missing half fails without making a request", async () => {
+test("basic: a missing half fails without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await basic.test({ credential: { apiId: "only-the-id" } }, ctx);
 
@@ -64,7 +65,7 @@ Deno.test("basic: a missing half fails without making a request", async () => {
  * appears in the documented table. Classifying 403 the conventional way
  * ("authenticated but not permitted") reports a dead credential as a live one.
  */
-Deno.test("basic: 401 is read as 'the credential never arrived'", async () => {
+test("basic: 401 is read as 'the credential never arrived'", async () => {
   const { ctx } = mockCtx([{ status: 401, body: edgeErrorBody("Unauthorized") }]);
   const out = await basic.test({ credential: CRED }, ctx);
 
@@ -73,7 +74,7 @@ Deno.test("basic: 401 is read as 'the credential never arrived'", async () => {
   assert(out.message!.includes("reconnect"), out.message);
 });
 
-Deno.test("basic: 403 is read as 'the credential is wrong', not 'no permission'", async () => {
+test("basic: 403 is read as 'the credential is wrong', not 'no permission'", async () => {
   const { ctx } = mockCtx([{ status: 403, body: edgeErrorBody("Forbidden") }]);
   const out = await basic.test({ credential: CRED }, ctx);
 
@@ -89,7 +90,7 @@ Deno.test("basic: 403 is read as 'the credential is wrong', not 'no permission'"
  * A 429 and a 5xx are verdicts about Aircall, not about the credential. Saying
  * "your token is bad" for either sends someone to rotate a working key.
  */
-Deno.test("basic: 429 and 5xx do not blame the credential", () => {
+test("basic: 429 and 5xx do not blame the credential", () => {
   const limited = classifyProbe(429, null);
   assert(limited.includes("says nothing about the credential"), limited);
 
@@ -97,7 +98,7 @@ Deno.test("basic: 429 and 5xx do not blame the credential", () => {
   assert(broken.includes("not a verdict on the credential"), broken);
 });
 
-Deno.test("basic: classifyProbe reads both error-body shapes", () => {
+test("basic: classifyProbe reads both error-body shapes", () => {
   // The documented application-tier shape.
   const documented = classifyProbe(403, { error: "Forbidden", troubleshoot: "Invalid API key" });
   assert(documented.includes("Invalid API key"), documented);
@@ -111,11 +112,11 @@ Deno.test("basic: classifyProbe reads both error-body shapes", () => {
  * tempting alternative — it proves list access works too — and it returns every
  * webhook's shared authentication token in the process.
  */
-Deno.test("basic: the probe path is /ping and nothing else", () => {
+test("basic: the probe path is /ping and nothing else", () => {
   assertEquals(PROBE_PATH, "/ping");
 });
 
-Deno.test("basic: both credential halves are declared secret", () => {
+test("basic: both credential halves are declared secret", () => {
   assertEquals(basic.key, "basic");
   assertEquals(basic.type, "basic");
   const keys = (basic.fields ?? []).map((f) => f.key).sort();
@@ -131,6 +132,6 @@ Deno.test("basic: both credential halves are declared secret", () => {
  * user and number counts, and that is a lot to copy into ambient Connection
  * metadata for a display string. Asserted so its absence stays a decision.
  */
-Deno.test("basic: declares no afterConnect", () => {
+test("basic: declares no afterConnect", () => {
   assertEquals(basic.afterConnect, undefined);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/customer-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("customer-get: sends GET /customers/ext_42 with the mapped input", async () => {
+test("customer-get: sends GET /customers/ext_42 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "cus_1" } }]);
   const out = await action.execute!({ "customerId": "ext_42", "includeExpandedFields": true }, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("customer-get: sends GET /customers/ext_42 with the mapped input", asy
   assertEquals(out, { "id": "cus_1" });
 });
 
-Deno.test("customer-get: sends no authorization header of its own", async () => {
+test("customer-get: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "cus_1" } }]);
   await action.execute!({ "customerId": "ext_42", "includeExpandedFields": true }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("customer-get: surfaces Dub's error envelope as a thrown error", async () => {
+test("customer-get: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -33,7 +34,7 @@ Deno.test("customer-get: surfaces Dub's error envelope as a thrown error", async
   );
 });
 
-Deno.test("customer-get: declares type, idempotency and output", () => {
+test("customer-get: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

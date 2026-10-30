@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const authErr = { status: 401, error: { type: ["authentication_error"], message: "missing" } };
 
-Deno.test("api: declares an unsigned dependency check", () => {
+test("api: declares an unsigned dependency check", () => {
   assertEquals(api.kind, "dependency");
   assertEquals(api.credential, "none");
 });
 
-Deno.test("api: PDL's 401 authentication_error envelope proves reachability", async () => {
+test("api: PDL's 401 authentication_error envelope proves reachability", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: authErr }]);
   const r = await api.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -17,7 +18,7 @@ Deno.test("api: PDL's 401 authentication_error envelope proves reachability", as
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("api: a bare 401, a 200, a 5xx and a network error are not healthy", async () => {
+test("api: a bare 401, a 200, a 5xx and a network error are not healthy", async () => {
   assertEquals(
     (await api.check!({} as never, mockCtx([{ status: 401, body: "<html/>" }]).ctx)).state,
     "degraded",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-contact.ts";
 
-Deno.test("update-contact: PUTs /v3/contacts/{id} with the update payload", async () => {
+test("update-contact: PUTs /v3/contacts/{id} with the update payload", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!(
     { identifier: "ada@x.com", attributes: { FIRSTNAME: "Ada" }, listIds: [7] },
@@ -17,7 +18,7 @@ Deno.test("update-contact: PUTs /v3/contacts/{id} with the update payload", asyn
   assertEquals(result, { success: true });
 });
 
-Deno.test("update-contact: sends an empty body when no updates provided", async () => {
+test("update-contact: sends an empty body when no updates provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ identifier: "1234" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

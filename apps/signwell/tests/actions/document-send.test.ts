@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-send.ts";
 
-Deno.test("document-send: POSTs only the supplied options to /documents/{id}/send", async () => {
+test("document-send: POSTs only the supplied options to /documents/{id}/send", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "d1", status: "Sent" } }]);
   const out = await action.execute!({
     id: "d1",
@@ -22,7 +23,7 @@ Deno.test("document-send: POSTs only the supplied options to /documents/{id}/sen
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-send: with no options the body is an empty object, and id is required", async () => {
+test("document-send: with no options the body is an empty object, and id is required", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "d1" } }]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`id` is required");
   await action.execute!({ id: "d1" }, ctx);

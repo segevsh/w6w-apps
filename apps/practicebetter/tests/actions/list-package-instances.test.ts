@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-package-instances.ts";
 import { API_ROOT, mockCtx, page, queryAllOf, queryOf, urlOf } from "../_helpers.ts";
 
 const sample = page([{ id: "pi-1" }], { count: 1 });
 
-Deno.test("list-package-instances: reads /consultant/packages/instances", async () => {
+test("list-package-instances: reads /consultant/packages/instances", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   const result = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("list-package-instances: reads /consultant/packages/instances", async 
   assertEquals(result, sample);
 });
 
-Deno.test("list-package-instances: the documented filters are passed through", async () => {
+test("list-package-instances: the documented filters are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({
     consultants: ["c-1"],
@@ -30,7 +31,7 @@ Deno.test("list-package-instances: the documented filters are passed through", a
   assertEquals(all.status, ["active", "expired"]);
 });
 
-Deno.test("list-package-instances: unset filters are not sent", async () => {
+test("list-package-instances: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: sample }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookmarksArchive from "../../actions/bookmarks-archive.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-archive: posts bookmark_id and returns the modified bookmark", async () => {
+test("bookmarks-archive: posts bookmark_id and returns the modified bookmark", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "bookmark", bookmark_id: 4 }]) }]);
   const result = await bookmarksArchive.execute({ bookmarkId: 4 }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("bookmarks-archive: posts bookmark_id and returns the modified bookmar
   assertEquals(result, { type: "bookmark", bookmark_id: 4 });
 });
 
-Deno.test("bookmarks-archive: throws if Instapaper returns no bookmark", async () => {
+test("bookmarks-archive: throws if Instapaper returns no bookmark", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
   await assertRejects(
     async () => await bookmarksArchive.execute({ bookmarkId: 4 }, ctx),

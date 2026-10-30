@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadConvert from "../../actions/lead-convert.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 /** The UUID this returns is the NEW JOB's, not the lead's. */
-Deno.test("lead-convert: POSTs UUID and auth_secret and returns the new job identity", async () => {
+test("lead-convert: POSTs UUID and auth_secret and returns the new job identity", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ ClientId: "42", UUID: "j1", link: "x" }] }]);
   const out = await leadConvert.execute({ uuid: "l1", authSecret: "sec_1" }, ctx);
 
@@ -17,11 +18,11 @@ Deno.test("lead-convert: POSTs UUID and auth_secret and returns the new job iden
  * Not idempotent, deliberately: a retry whose repeat behaviour the vendor does
  * not document could create a second job.
  */
-Deno.test("lead-convert: converting is not idempotent", () => {
+test("lead-convert: converting is not idempotent", () => {
   assertEquals(leadConvert.idempotent, false);
 });
 
-Deno.test("lead-convert: an empty answer becomes an empty array", async () => {
+test("lead-convert: an empty answer becomes an empty array", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await leadConvert.execute({ uuid: "l1", authSecret: "s" }, ctx), []);
 });

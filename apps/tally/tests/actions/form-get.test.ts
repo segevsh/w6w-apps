@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-get.ts";
 
-Deno.test("form-get: GETs one form and surfaces blocks and settings", async () => {
+test("form-get: GETs one form and surfaces blocks and settings", async () => {
   const form = {
     id: "f1",
     name: "Signup",
@@ -20,7 +21,7 @@ Deno.test("form-get: GETs one form and surfaces blocks and settings", async () =
   assertEquals(result.form, form);
 });
 
-Deno.test("form-get: defaults blocks to an empty array", async () => {
+test("form-get: defaults blocks to an empty array", async () => {
   const { ctx } = mockCtx([{ body: { id: "f1" } }]);
   const result = await action.execute({ formId: "f1" }, ctx);
   assertEquals(result.blocks, []);

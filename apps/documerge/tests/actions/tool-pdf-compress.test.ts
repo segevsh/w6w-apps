@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import toolPdfCompress from "../../actions/tool-pdf-compress.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-pdf-compress: POSTs /api/tools/pdf/compress and returns the file base64-encoded", async () => {
+test("tool-pdf-compress: POSTs /api/tools/pdf/compress and returns the file base64-encoded", async () => {
   const { ctx, calls } = mockCtx([{
     body: "PDFBYTES",
     headers: { "content-type": "application/pdf" },
@@ -22,7 +23,7 @@ Deno.test("tool-pdf-compress: POSTs /api/tools/pdf/compress and returns the file
   assertEquals(out.size, 8);
 });
 
-Deno.test("tool-pdf-compress: sends the file reference", async () => {
+test("tool-pdf-compress: sends the file reference", async () => {
   const { ctx, calls } = mockCtx([{ body: "x" }]);
   await toolPdfCompress.execute(
     { "fileName": "a.pdf", "fileUrl": "https://example.com/a.pdf" } as never,
@@ -32,7 +33,7 @@ Deno.test("tool-pdf-compress: sends the file reference", async () => {
   assertEquals(body.file, { name: "a.pdf", url: "https://example.com/a.pdf" });
 });
 
-Deno.test("tool-pdf-compress: with neither a URL nor contents, no request is made", async () => {
+test("tool-pdf-compress: with neither a URL nor contents, no request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   const input = {
     ...{ "fileName": "a.pdf", "fileUrl": "https://example.com/a.pdf" },
@@ -46,7 +47,7 @@ Deno.test("tool-pdf-compress: with neither a URL nor contents, no request is mad
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tool-pdf-compress: base64 contents are sent as file.contents", async () => {
+test("tool-pdf-compress: base64 contents are sent as file.contents", async () => {
   const { ctx, calls } = mockCtx([{ body: "x" }]);
   await toolPdfCompress.execute(
     {
@@ -59,7 +60,7 @@ Deno.test("tool-pdf-compress: base64 contents are sent as file.contents", async 
   assertEquals(JSON.parse(calls[0].body!).file, { name: "a.pdf", contents: "QUJD" });
 });
 
-Deno.test("tool-pdf-compress: a vendor error surfaces its own message", async () => {
+test("tool-pdf-compress: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

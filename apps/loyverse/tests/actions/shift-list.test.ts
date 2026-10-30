@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/shift-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("shift-list: GET /shifts maps params to the vendor's query names", async () => {
+test("shift-list: GET /shifts maps params to the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: { shifts: [{ id: "a" }], cursor: "c2" } }]);
   const out = await action.execute({
     storeIds: "s1",
@@ -20,7 +21,7 @@ Deno.test("shift-list: GET /shifts maps params to the vendor's query names", asy
   assertEquals(out.cursor, "c2");
 });
 
-Deno.test("shift-list: no params sends no query string", async () => {
+test("shift-list: no params sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { shifts: [] } }]);
   const out = await action.execute({}, ctx) as { cursor?: string };
   assertEquals(new URL(calls[0].url).search, "");

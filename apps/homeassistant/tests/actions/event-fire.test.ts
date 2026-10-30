@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/event-fire.ts";
 
 const fired = ok({ message: "Event delivery_arrived fired." });
 
-Deno.test("event-fire: posts the event type and its data", async () => {
+test("event-fire: posts the event type and its data", async () => {
   const { ctx, calls } = mockCtx([fired], { display });
   const result = await action.execute!({
     eventType: "delivery_arrived",
@@ -18,7 +19,7 @@ Deno.test("event-fire: posts the event type and its data", async () => {
 });
 
 /** Forging a core event puts the state machine and recorder into a bad state. */
-Deno.test("event-fire: core Home Assistant events are refused", async () => {
+test("event-fire: core Home Assistant events are refused", async () => {
   for (
     const type of ["state_changed", "call_service", "homeassistant_start", "automation_triggered"]
   ) {
@@ -33,18 +34,18 @@ Deno.test("event-fire: core Home Assistant events are refused", async () => {
   }
 });
 
-Deno.test("event-fire: a custom type with no data still posts an object", async () => {
+test("event-fire: a custom type with no data still posts an object", async () => {
   const { ctx, calls } = mockCtx([fired], { display });
   await action.execute!({ eventType: "my_event" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("event-fire: needs an event type", async () => {
+test("event-fire: needs an event type", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`eventType` is required");
 });
 
-Deno.test("event-fire: logs the type, never the data", async () => {
+test("event-fire: logs the type, never the data", async () => {
   const { ctx, logs } = mockCtx([fired], { display });
   await action.execute!({ eventType: "my_event", data: '{"secret":"tuna"}' }, ctx);
   assert(!JSON.stringify(logs).includes("tuna"), JSON.stringify(logs));
@@ -52,7 +53,7 @@ Deno.test("event-fire: logs the type, never the data", async () => {
 });
 
 /** Firing always succeeds, whether or not anything listened. */
-Deno.test("event-fire: says nothing reports whether anything listened", () => {
+test("event-fire: says nothing reports whether anything listened", () => {
   assert(/Nothing reports whether anything listened/.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });

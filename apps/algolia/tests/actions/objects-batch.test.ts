@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/objects-batch.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("objects-batch: wraps the requests array as Algolia's body", async () => {
+test("objects-batch: wraps the requests array as Algolia's body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 9, objectIDs: ["1"] } }], {
     display,
   });
@@ -18,7 +19,7 @@ Deno.test("objects-batch: wraps the requests array as Algolia's body", async () 
   });
 });
 
-Deno.test("objects-batch: an empty batch is rejected first", async () => {
+test("objects-batch: an empty batch is rejected first", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p", requests: "[]" }, ctx),

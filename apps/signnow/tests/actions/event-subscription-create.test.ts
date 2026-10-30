@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSubscriptionCreate from "../../actions/event-subscription-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-subscription-create: POSTs the event/entity/callback envelope to /api/v2/events", async () => {
+test("event-subscription-create: POSTs the event/entity/callback envelope to /api/v2/events", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await eventSubscriptionCreate.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("event-subscription-create: POSTs the event/entity/callback envelope t
   });
 });
 
-Deno.test("event-subscription-create: forwards optional attributes and parses headers JSON", async () => {
+test("event-subscription-create: forwards optional attributes and parses headers JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await eventSubscriptionCreate.execute(
     {
@@ -47,7 +48,7 @@ Deno.test("event-subscription-create: forwards optional attributes and parses he
   });
 });
 
-Deno.test("event-subscription-create: uses the per-user Bearer sign hook (no separate Basic auth)", async () => {
+test("event-subscription-create: uses the per-user Bearer sign hook (no separate Basic auth)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await eventSubscriptionCreate.execute(
     { event: "document.complete", entityId: "doc-1", callback: "https://example.com/hook" },

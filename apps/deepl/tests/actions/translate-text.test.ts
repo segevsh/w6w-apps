@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/translate-text.ts";
 import { PRO_URL } from "../../lib/client.ts";
 
-Deno.test("translate-text: POSTs /v2/translate with a one-element text array", async () => {
+test("translate-text: POSTs /v2/translate with a one-element text array", async () => {
   const body = {
     translations: [{ detected_source_language: "EN", text: "Hallo", billed_characters: 5 }],
   };
@@ -25,7 +26,7 @@ Deno.test("translate-text: POSTs /v2/translate with a one-element text array", a
   });
 });
 
-Deno.test("translate-text: forwards optional params with snake_case keys", async () => {
+test("translate-text: forwards optional params with snake_case keys", async () => {
   const body = { translations: [{ detected_source_language: "EN", text: "x" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!(
@@ -52,7 +53,7 @@ Deno.test("translate-text: forwards optional params with snake_case keys", async
   assertEquals(sent.context, "an email footer");
 });
 
-Deno.test("translate-text: omits unset optional params from the request body", async () => {
+test("translate-text: omits unset optional params from the request body", async () => {
   const body = { translations: [{ detected_source_language: "EN", text: "x" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ text: "hi", targetLang: "FR" }, ctx);

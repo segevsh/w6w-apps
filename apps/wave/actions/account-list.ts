@@ -55,7 +55,15 @@ const accountList: ActionDefinition<Input> = {
     {
       key: "types",
       label: "Account types",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "ASSET", label: "ASSET" },
+        { value: "EQUITY", label: "EQUITY" },
+        { value: "EXPENSE", label: "EXPENSE" },
+        { value: "INCOME", label: "INCOME" },
+        { value: "LIABILITY", label: "LIABILITY" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: ASSET, EQUITY, EXPENSE, INCOME, LIABILITY.",
     },
     {

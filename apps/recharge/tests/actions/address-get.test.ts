@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import addressGet from "../../actions/address-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("address-get: hits GET /addresses/{id} and unwraps the envelope", async () => {
+test("address-get: hits GET /addresses/{id} and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("address", { id: 7, city: "Boston" }) },
   ]);

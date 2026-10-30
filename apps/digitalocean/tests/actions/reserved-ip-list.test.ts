@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reserved-ip-list.ts";
 
@@ -15,7 +16,7 @@ const page = (entries: Array<[string, boolean]>) => ({
 });
 
 /** The inverse of every intuition about cloud billing. */
-Deno.test("reserved-ip-list: counts the UNASSIGNED ones, which are the ones charged", async () => {
+test("reserved-ip-list: counts the UNASSIGNED ones, which are the ones charged", async () => {
   const { ctx, logs } = mockCtx([page([
     ["203.0.113.1", true],
     ["203.0.113.2", false],
@@ -32,7 +33,7 @@ Deno.test("reserved-ip-list: counts the UNASSIGNED ones, which are the ones char
   );
 });
 
-Deno.test("reserved-ip-list: all assigned means nothing to warn about", async () => {
+test("reserved-ip-list: all assigned means nothing to warn about", async () => {
   const { ctx, logs } = mockCtx([page([["203.0.113.1", true]])]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.unassignedCount, 0);
@@ -40,7 +41,7 @@ Deno.test("reserved-ip-list: all assigned means nothing to warn about", async ()
 });
 
 /** Destroying a droplet creates exactly the state that costs. */
-Deno.test("reserved-ip-list: says destroying a droplet creates the billing state", () => {
+test("reserved-ip-list: says destroying a droplet creates the billing state", () => {
   assert(/inverse of the usual rule/.test(action.description!), action.description);
   assert(
     /destroying a droplet creates that state automatically/.test(action.description!),
@@ -48,7 +49,7 @@ Deno.test("reserved-ip-list: says destroying a droplet creates the billing state
   );
 });
 
-Deno.test("reserved-ip-list: none is not an error", async () => {
+test("reserved-ip-list: none is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { reserved_ips: [], meta: { total: 0 } } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

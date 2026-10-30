@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import createOrder from "../../actions/create-order.ts";
 import {
   API_ROOT,
@@ -19,7 +20,7 @@ const REQUIRED = {
   priceTaxInterpretation: "EXCLUSIVE",
 };
 
-Deno.test("create-order: POST /1.0/commerce/orders with the seven required fields", async () => {
+test("create-order: POST /1.0/commerce/orders with the seven required fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1", orderNumber: "1001" } }]);
   const out = await createOrder.execute!({ ...REQUIRED }, ctx);
 
@@ -40,7 +41,7 @@ Deno.test("create-order: POST /1.0/commerce/orders with the seven required field
   assertEquals(out.id, "O1");
 });
 
-Deno.test("create-order: a fresh Idempotency-Key is stamped, even with no invocation", async () => {
+test("create-order: a fresh Idempotency-Key is stamped, even with no invocation", async () => {
   const { ctx, calls } = mockCtxWithInvocation([
     { status: 201, body: { id: "O1" } },
     { status: 201, body: { id: "O1" } },
@@ -59,7 +60,7 @@ Deno.test("create-order: a fresh Idempotency-Key is stamped, even with no invoca
   assert(first !== second, "two invocations must not share an idempotency key");
 });
 
-Deno.test("create-order: optional fields are omitted, not sent as null", async () => {
+test("create-order: optional fields are omitted, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1" } }]);
   await createOrder.execute!(
     { ...REQUIRED, inventoryBehavior: "DEDUCT", customerEmail: "a@b.c" },
@@ -73,7 +74,7 @@ Deno.test("create-order: optional fields are omitted, not sent as null", async (
   assertEquals("shippingTotal" in body, false);
 });
 
-Deno.test("create-order: JSON params accept the string a caller typed", async () => {
+test("create-order: JSON params accept the string a caller typed", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1" } }]);
   await createOrder.execute!({
     ...REQUIRED,
@@ -86,7 +87,7 @@ Deno.test("create-order: JSON params accept the string a caller typed", async ()
   assertEquals(Array.isArray(body.lineItems), true);
 });
 
-Deno.test("create-order: empty lineItems are rejected before the call", () => {
+test("create-order: empty lineItems are rejected before the call", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => createOrder.execute!({ ...REQUIRED, lineItems: [] }, ctx),
@@ -95,7 +96,7 @@ Deno.test("create-order: empty lineItems are rejected before the call", () => {
   );
 });
 
-Deno.test("create-order: FULFILLED without fulfilledOn is rejected before the call", () => {
+test("create-order: FULFILLED without fulfilledOn is rejected before the call", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => createOrder.execute!({ ...REQUIRED, fulfillmentStatus: "FULFILLED" }, ctx),
@@ -104,7 +105,7 @@ Deno.test("create-order: FULFILLED without fulfilledOn is rejected before the ca
   );
 });
 
-Deno.test("create-order: a 429 names the stricter Create order limit", async () => {
+test("create-order: a 429 names the stricter Create order limit", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody("TOO_MANY_REQUESTS", { message: "Too many requests" }),

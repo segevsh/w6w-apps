@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import listWorkspaces from "../../actions/list-workspaces.ts";
 
-Deno.test("list-workspaces: defaults orgId to the literal 'current'", async () => {
+test("list-workspaces: defaults orgId to the literal 'current'", async () => {
   const { ctx, calls } = actionCtx([{ body: [] }]);
   await listWorkspaces.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/orgs/current/workspaces");
 });
 
-Deno.test("list-workspaces: blank or whitespace orgId falls back to 'current'", async () => {
+test("list-workspaces: blank or whitespace orgId falls back to 'current'", async () => {
   const { ctx, calls } = actionCtx([{ body: [] }, { body: [] }]);
   await listWorkspaces.execute!({ orgId: "" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/orgs/current/workspaces");
@@ -16,7 +17,7 @@ Deno.test("list-workspaces: blank or whitespace orgId falls back to 'current'", 
   assertEquals(new URL(calls[1].url).pathname, "/api/orgs/current/workspaces");
 });
 
-Deno.test("list-workspaces: accepts a numeric id or a subdomain", async () => {
+test("list-workspaces: accepts a numeric id or a subdomain", async () => {
   const { ctx, calls } = actionCtx([{ body: [] }, { body: [] }]);
   await listWorkspaces.execute!({ orgId: "42" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/orgs/42/workspaces");
@@ -24,7 +25,7 @@ Deno.test("list-workspaces: accepts a numeric id or a subdomain", async () => {
   assertEquals(new URL(calls[1].url).pathname, "/api/orgs/gristlabs/workspaces");
 });
 
-Deno.test("list-workspaces: surfaces the docs nested inside each workspace", async () => {
+test("list-workspaces: surfaces the docs nested inside each workspace", async () => {
   const { ctx } = actionCtx([{
     body: [{
       id: 155,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import setSubscriberFields from "../../actions/set-subscriber-fields.ts";
 
-Deno.test("set-subscriber-fields: POSTs subscriber_id plus the fields array", async () => {
+test("set-subscriber-fields: POSTs subscriber_id plus the fields array", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setSubscriberFields.execute!({
     subscriberId: "1",
@@ -15,7 +16,7 @@ Deno.test("set-subscriber-fields: POSTs subscriber_id plus the fields array", as
   });
 });
 
-Deno.test("set-subscriber-fields: elements are forwarded verbatim, ids never inferred", async () => {
+test("set-subscriber-fields: elements are forwarded verbatim, ids never inferred", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setSubscriberFields.execute!({
     subscriberId: "1",
@@ -24,7 +25,7 @@ Deno.test("set-subscriber-fields: elements are forwarded verbatim, ids never inf
   assertEquals(JSON.parse(calls[0].body!).fields[0], { field_name: "plan", field_value: "pro" });
 });
 
-Deno.test("set-subscriber-fields: each element's value is coerced independently", async () => {
+test("set-subscriber-fields: each element's value is coerced independently", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setSubscriberFields.execute!({
     subscriberId: "1",
@@ -40,12 +41,12 @@ Deno.test("set-subscriber-fields: each element's value is coerced independently"
   assertEquals(sent[2].field_value, 12);
 });
 
-Deno.test("set-subscriber-fields: the subscriber id stays a string", async () => {
+test("set-subscriber-fields: the subscriber id stays a string", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setSubscriberFields.execute!({ subscriberId: "9007199254740993", fields: [] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).subscriber_id, "9007199254740993");
 });
 
-Deno.test("set-subscriber-fields: is idempotent", () => {
+test("set-subscriber-fields: is idempotent", () => {
   assertEquals(setSubscriberFields.idempotent, true);
 });

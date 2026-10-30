@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -26,7 +27,7 @@ Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () =>
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("mapIndicator: maps the page-level roll-up", () => {
+test("mapIndicator: maps the page-level roll-up", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -35,13 +36,13 @@ Deno.test("mapIndicator: maps the page-level roll-up", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a name slug", () => {
+test("componentKey: prefers the vendor id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "abc123", name: "Time Clock" }, 0), "abc123");
   assertEquals(componentKey({ name: "Job Scheduler" }, 3), "job-scheduler-3");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service.check: all-operational summary reports ok with per-component detail", async () => {
+test("service.check: all-operational summary reports ok with per-component detail", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -49,7 +50,7 @@ Deno.test("service.check: all-operational summary reports ok with per-component 
   assertEquals(report.components?.["n7t6gjjzznxp"], { state: "ok", message: "Time Clock" });
 });
 
-Deno.test("service.check: a degraded component surfaces in the message and the verdict", async () => {
+test("service.check: a degraded component surfaces in the message and the verdict", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -65,13 +66,13 @@ Deno.test("service.check: a degraded component surfaces in the message and the v
   assert(report.message?.includes("Time Clock"), report.message);
 });
 
-Deno.test("service.check: a broken status API reports unknown, never down", async () => {
+test("service.check: a broken status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service.check: a page that no longer self-identifies as Connecteam's is unknown", async () => {
+test("service.check: a page that no longer self-identifies as Connecteam's is unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -83,7 +84,7 @@ Deno.test("service.check: a page that no longer self-identifies as Connecteam's 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service.check: group rows are excluded from the component report", async () => {
+test("service.check: group rows are excluded from the component report", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -98,7 +99,7 @@ Deno.test("service.check: group rows are excluded from the component report", as
   assertEquals(Object.keys(report.components ?? {}), ["c1"]);
 });
 
-Deno.test("service: unsigned, app-scoped, widens egress only to its own status host", () => {
+test("service: unsigned, app-scoped, widens egress only to its own status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["connecteam.statuspage.io"]);

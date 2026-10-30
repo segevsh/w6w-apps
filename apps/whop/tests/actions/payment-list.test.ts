@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import paymentList from "../../actions/payment-list.ts";
 import { mockCtx, pageEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("payment-list: GETs /payments using company_id, not account_id", async () => {
+test("payment-list: GETs /payments using company_id, not account_id", async () => {
   const { ctx, calls } = mockCtx([{ body: pageEnvelope([{ id: "pay_1" }]) }]);
   await paymentList.execute({ companyId: "biz_1" }, ctx);
 
@@ -11,14 +12,14 @@ Deno.test("payment-list: GETs /payments using company_id, not account_id", async
   assertEquals(queryOf(calls[0].url).account_id, undefined);
 });
 
-Deno.test("payment-list: array filters repeat the bare key — no [] suffix (Legacy style)", async () => {
+test("payment-list: array filters repeat the bare key — no [] suffix (Legacy style)", async () => {
   const { ctx, calls } = mockCtx([{ body: pageEnvelope([]) }]);
   await paymentList.execute({ companyId: "biz_1", statuses: ["paid", "refunded"] }, ctx);
   assertEquals(queryOf(calls[0].url).statuses, ["paid", "refunded"]);
   assertEquals(queryOf(calls[0].url)["statuses[]"], undefined);
 });
 
-Deno.test("payment-list: strips client_secret from every returned payment", async () => {
+test("payment-list: strips client_secret from every returned payment", async () => {
   const { ctx } = mockCtx([
     { body: pageEnvelope([{ id: "pay_1", client_secret: "pay_1_secret_v1_xxxx" }]) },
   ]);

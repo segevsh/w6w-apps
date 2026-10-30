@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import titleCreate from "../../actions/title-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const TITLE = { id: "tl_1", name: "Staff Engineer" };
 
-Deno.test("title-create: POSTs a name and nothing else", async () => {
+test("title-create: POSTs a name and nothing else", async () => {
   const { ctx, calls } = mockCtx([{ body: TITLE }]);
   const result = await titleCreate.execute({ name: "Staff Engineer" }, ctx);
 
@@ -15,11 +16,11 @@ Deno.test("title-create: POSTs a name and nothing else", async () => {
   assertEquals(result, TITLE);
 });
 
-Deno.test("title-create: no description param is offered, because the API has none", () => {
+test("title-create: no description param is offered, because the API has none", () => {
   assertEquals(titleCreate.params?.map((p) => p.key), ["name", "idempotencyKey"]);
 });
 
-Deno.test("title-create: a create is not declared idempotent, and forwards a key when given", async () => {
+test("title-create: a create is not declared idempotent, and forwards a key when given", async () => {
   const { ctx, calls } = mockCtx([{ body: TITLE }]);
   await titleCreate.execute({ name: "Staff Engineer", idempotencyKey: "k1" }, ctx);
 

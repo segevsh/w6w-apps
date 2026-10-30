@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockNocrmCtx } from "../_helpers.ts";
 import {
   baseUrl,
@@ -11,7 +12,7 @@ import {
   subdomainFromConnection,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's subdomain, not a param", async () => {
+test("client: builds the URL from the connection's subdomain, not a param", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: { id: 1 } }], "acme");
   await new NocrmClient(ctx).request("/v2/leads/1");
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/leads/1");
@@ -20,12 +21,12 @@ Deno.test("client: builds the URL from the connection's subdomain, not a param",
   assertEquals("x-user-token" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no subdomain", () => {
+test("client: fails loudly when the connection carries no subdomain", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new NocrmClient(ctx), Error, "no subdomain");
 });
 
-Deno.test("client: surfaces the vendor's own type and message, not just the status", async () => {
+test("client: surfaces the vendor's own type and message, not just the status", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 422,
     statusText: "Unprocessable Entity",
@@ -38,7 +39,7 @@ Deno.test("client: surfaces the vendor's own type and message, not just the stat
   );
 });
 
-Deno.test("client: adds the documented backoff guidance on a 429", async () => {
+test("client: adds the documented backoff guidance on a 429", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 429,
     body: { error: 429, message: "Too many requests", type: "too_many_requests" },
@@ -50,12 +51,12 @@ Deno.test("client: adds the documented backoff guidance on a 429", async () => {
   );
 });
 
-Deno.test("client: falls back to the raw body when the error isn't JSON", async () => {
+test("client: falls back to the raw body when the error isn't JSON", async () => {
   const { ctx } = mockNocrmCtx([{ status: 502, body: "bad gateway" }]);
   await assertRejects(() => new NocrmClient(ctx).request("/v2/leads"), Error, "bad gateway");
 });
 
-Deno.test("client: list reads X-TOTAL-COUNT off the header beside the bare array", async () => {
+test("client: list reads X-TOTAL-COUNT off the header beside the bare array", async () => {
   const { ctx, calls } = mockNocrmCtx([{
     body: [{ id: 1 }, { id: 2 }],
     headers: { "content-type": "application/json", "x-total-count": "180" },
@@ -66,14 +67,14 @@ Deno.test("client: list reads X-TOTAL-COUNT off the header beside the bare array
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/leads?limit=2");
 });
 
-Deno.test("client: list leaves totalCount undefined when the header is absent", async () => {
+test("client: list leaves totalCount undefined when the header is absent", async () => {
   const { ctx } = mockNocrmCtx([{ body: [] }]);
   const page = await new NocrmClient(ctx).list("/v2/teams");
   assertEquals(page.items, []);
   assertEquals(page.totalCount, undefined);
 });
 
-Deno.test("client: query drops unset values but keeps false and 0", async () => {
+test("client: query drops unset values but keeps false and 0", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: [] }]);
   await new NocrmClient(ctx).list("/v2/leads", {
     query: { starred: false, offset: 0, email: undefined, tags: "" },
@@ -81,7 +82,7 @@ Deno.test("client: query drops unset values but keeps false and 0", async () => 
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/leads?starred=false&offset=0");
 });
 
-Deno.test("client: request returns undefined for an empty body", async () => {
+test("client: request returns undefined for an empty body", async () => {
   const { ctx } = mockNocrmCtx([{ status: 204 }]);
   assertEquals(
     await new NocrmClient(ctx).request("/v2/leads/1", { method: "DELETE" }),
@@ -89,23 +90,23 @@ Deno.test("client: request returns undefined for an empty body", async () => {
   );
 });
 
-Deno.test("subdomainFromConnection: reads the display data afterConnect records", () => {
+test("subdomainFromConnection: reads the display data afterConnect records", () => {
   assertEquals(subdomainFromConnection({ display: { subdomain: "acme" } } as never), "acme");
   assertThrows(() => subdomainFromConnection(undefined), Error, "no subdomain");
 });
 
-Deno.test("baseUrl: builds the per-account host", () => {
+test("baseUrl: builds the per-account host", () => {
   assertEquals(baseUrl("acme"), "https://acme.nocrm.io/api");
 });
 
-Deno.test("classifyPing: a 200 body is success", () => {
+test("classifyPing: a 200 body is success", () => {
   assertEquals(
     classifyPing(200, { status: 200, message: "Your API key is correct." }),
     { ok: true },
   );
 });
 
-Deno.test("classifyPing: failure is the unauthorized_* type, read from the body", () => {
+test("classifyPing: failure is the unauthorized_* type, read from the body", () => {
   for (
     const type of [
       "unauthorized_missing_token",
@@ -125,13 +126,13 @@ Deno.test("classifyPing: failure is the unauthorized_* type, read from the body"
   );
 });
 
-Deno.test("classifyPing: an unfamiliar body is not read as success", () => {
+test("classifyPing: an unfamiliar body is not read as success", () => {
   assertEquals(classifyPing(200, {}).ok, false);
   assertEquals(classifyPing(500, {}).ok, false);
   assertEquals(classifyPing(401, {}).ok, false);
 });
 
-Deno.test("formatNocrmError/parseNocrmError survive a non-JSON body", () => {
+test("formatNocrmError/parseNocrmError survive a non-JSON body", () => {
   assertEquals(parseNocrmError("<html>nope</html>"), {});
   assertEquals(
     formatNocrmError(500, "GET", "/api/v2/leads", "<html>nope</html>"),
@@ -139,7 +140,7 @@ Deno.test("formatNocrmError/parseNocrmError survive a non-JSON body", () => {
   );
 });
 
-Deno.test("compact/stringList behave as the other apps' helpers do", () => {
+test("compact/stringList behave as the other apps' helpers do", () => {
   assertEquals(compact({ a: 1, b: undefined, c: "", d: false, e: 0 }), { a: 1, d: false, e: 0 });
   assertEquals(stringList("a, b"), ["a", "b"]);
   assertEquals(stringList(["a"]), ["a"]);

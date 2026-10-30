@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockFormsiteCtx } from "../_helpers.ts";
 import resultSearch, { parseCriteria } from "../../actions/result-search.ts";
 
@@ -8,7 +9,7 @@ const paged = {
   "pagination-page-last": "3",
 };
 
-Deno.test("result-search: builds search_<op>[id] params and the method", async () => {
+test("result-search: builds search_<op>[id] params and the method", async () => {
   const { ctx, calls } = mockFormsiteCtx([{ body: { results: [] }, headers: paged }]);
   await resultSearch.execute({
     formDir: "f1",
@@ -28,7 +29,7 @@ Deno.test("result-search: builds search_<op>[id] params and the method", async (
   assertEquals(p.get("search_method"), "or");
 });
 
-Deno.test("result-search: accepts criteria as a JSON string", async () => {
+test("result-search: accepts criteria as a JSON string", async () => {
   const { ctx, calls } = mockFormsiteCtx([{ body: {} }]);
   await resultSearch.execute({
     formDir: "f1",
@@ -37,7 +38,7 @@ Deno.test("result-search: accepts criteria as a JSON string", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("search_equals[5]"), "1");
 });
 
-Deno.test("result-search: rejects bad criteria before any request", async () => {
+test("result-search: rejects bad criteria before any request", async () => {
   const { ctx, calls } = mockFormsiteCtx();
   await assertRejects(async () => await resultSearch.execute({ formDir: "f", criteria: [] }, ctx));
   await assertRejects(
@@ -52,7 +53,7 @@ Deno.test("result-search: rejects bad criteria before any request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("parseCriteria: stringifies ids and values", () => {
+test("parseCriteria: stringifies ids and values", () => {
   // deno-lint-ignore no-explicit-any
   assertEquals(parseCriteria([{ itemId: 1, operator: "equals", value: 2 } as any]), [
     { itemId: "1", operator: "equals", value: "2" },

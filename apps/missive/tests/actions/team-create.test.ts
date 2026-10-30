@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/team-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-create: posts name/organization/active members", async () => {
+test("team-create: posts name/organization/active members", async () => {
   const { ctx, calls } = mockCtx([{ body: { teams: [{ id: "t1", name: "Support" }] } }]);
   const out = await action.execute(
     { name: "Support", organization: "org-1", activeMembers: "u1,u2", teamInboxEnabled: true },
@@ -16,7 +17,7 @@ Deno.test("team-create: posts name/organization/active members", async () => {
   assertEquals(out, { id: "t1", name: "Support" });
 });
 
-Deno.test("team-create: requires name and organization", async () => {
+test("team-create: requires name and organization", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ name: "", organization: "org-1" }, ctx));
   await assertActionRejects(() => action.execute({ name: "Support", organization: "" }, ctx));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs to /list/{id}/task with mapped body", async () => {
+test("task-create: POSTs to /list/{id}/task with mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", name: "Do it" } }]);
   const result = await action.execute!({
     listId: "123",
@@ -28,7 +29,7 @@ Deno.test("task-create: POSTs to /list/{id}/task with mapped body", async () => 
   assertEquals(result, { id: "t1", name: "Do it" });
 });
 
-Deno.test("task-create: forwards custom_fields", async () => {
+test("task-create: forwards custom_fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", name: "Do it" } }]);
   await action.execute!({
     listId: "123",
@@ -39,7 +40,7 @@ Deno.test("task-create: forwards custom_fields", async () => {
   assertEquals(body.custom_fields, [{ id: "abc-123", value: "Gold" }]);
 });
 
-Deno.test("task-create: omits custom_fields when unset", async () => {
+test("task-create: omits custom_fields when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", name: "Do it" } }]);
   await action.execute!({ listId: "123", name: "Do it" }, ctx);
   const body = JSON.parse(calls[0].body!);

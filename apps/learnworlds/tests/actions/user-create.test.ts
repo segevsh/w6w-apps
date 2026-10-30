@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
 const conn = { display: { schoolDomain: "https://yourschool.learnworlds.com" } };
 
-Deno.test("user-create: POSTs to /v2/users", async () => {
+test("user-create: POSTs to /v2/users", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1", email: "a@b.com" } }], conn);
   await action.execute!({ email: "a@b.com", username: "ab" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("user-create: POSTs to /v2/users", async () => {
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.com", username: "ab" });
 });
 
-Deno.test("user-create: tags become an array and fields JSON is parsed", async () => {
+test("user-create: tags become an array and fields JSON is parsed", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!(
     { email: "a@b.com", username: "ab", tags: "vip, lead", fields: '{"country":"GR"}' },
@@ -23,7 +24,7 @@ Deno.test("user-create: tags become an array and fields JSON is parsed", async (
   assertEquals(body.fields, { country: "GR" });
 });
 
-Deno.test("user-create: invalid fields JSON throws before any request is made", async () => {
+test("user-create: invalid fields JSON throws before any request is made", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {
@@ -35,6 +36,6 @@ Deno.test("user-create: invalid fields JSON throws before any request is made", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-create: idempotent is false — two calls could both fail with duplicate-email, not necessarily create two users", () => {
+test("user-create: idempotent is false — two calls could both fail with duplicate-email, not necessarily create two users", () => {
   assertEquals(action.idempotent, false);
 });

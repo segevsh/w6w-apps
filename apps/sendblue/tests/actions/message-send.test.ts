@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-send: posts to the bare /api/send-message path", async () => {
+test("message-send: posts to the bare /api/send-message path", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "QUEUED", message_handle: "m1" } }]);
   const out = await messageSend.execute({
     fromNumber: "+19998887777",
@@ -20,7 +21,7 @@ Deno.test("message-send: posts to the bare /api/send-message path", async () => 
   assertEquals(out.message_handle, "m1");
 });
 
-Deno.test("message-send: parses replyTo/appCard JSON strings and omits unset fields", async () => {
+test("message-send: parses replyTo/appCard JSON strings and omits unset fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "QUEUED" } }]);
   await messageSend.execute({
     fromNumber: "+1",

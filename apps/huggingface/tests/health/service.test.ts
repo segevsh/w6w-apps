@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { mapResourceStatus, resourceKey, STATUS_URL } from "../../health/service.ts";
 
@@ -20,7 +21,7 @@ const page = (resources: Array<[string, string]>) => ({
 const allGood = page([["Hub", "operational"], ["Inference Endpoints", "operational"]]);
 
 /** The Statuspage-shaped path on this host serves HTML with a 200. */
-Deno.test("service: reads the Better Stack JSON route, not a Statuspage path", async () => {
+test("service: reads the Better Stack JSON route, not a Statuspage path", async () => {
   const { ctx, calls } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -28,7 +29,7 @@ Deno.test("service: reads the Better Stack JSON route, not a Statuspage path", a
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: the catch-all HTML reads as unknown, not as healthy", async () => {
+test("service: the catch-all HTML reads as unknown, not as healthy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<!DOCTYPE html><html>…</html>" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -36,7 +37,7 @@ Deno.test("service: the catch-all HTML reads as unknown, not as healthy", async 
 });
 
 /** Reading the Hub and running inference are different dependencies. */
-Deno.test("service: names which half is affected", async () => {
+test("service: names which half is affected", async () => {
   const hub = mockCtx([page([["Hub", "downtime"], ["Inference Endpoints", "operational"]])]);
   const hubResult = await service.check!({}, hub.ctx);
   assert(/the Hub/.test(hubResult.message!), hubResult.message);
@@ -47,20 +48,20 @@ Deno.test("service: names which half is affected", async () => {
 });
 
 /** The router's third-party providers are not on this page at all. */
-Deno.test("service: even a full outage is capped at degraded", async () => {
+test("service: even a full outage is capped at degraded", async () => {
   const { ctx } = mockCtx([page([["Hub", "downtime"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assertEquals(result.components!["hub"].state, "down");
 });
 
-Deno.test("service: only the affected resources are reported", async () => {
+test("service: only the affected resources are reported", async () => {
   const { ctx } = mockCtx([page([["Hub", "operational"], ["Website", "degraded"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(Object.keys(result.components ?? {}), ["website"]);
 });
 
-Deno.test("service: a page that is not Hugging Face's is unknown", async () => {
+test("service: a page that is not Hugging Face's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: { attributes: { company_name: "Someone Else" } }, included: [] },
@@ -70,7 +71,7 @@ Deno.test("service: a page that is not Hugging Face's is unknown", async () => {
   assert(/self-identifies/.test(result.message!), result.message);
 });
 
-Deno.test("service: a broken or unreachable status page is unknown", async () => {
+test("service: a broken or unreachable status page is unknown", async () => {
   const broken = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, broken.ctx)).state, "unknown");
 
@@ -81,14 +82,14 @@ Deno.test("service: a broken or unreachable status page is unknown", async () =>
   assertEquals((await service.check!({}, offline)).state, "unknown");
 });
 
-Deno.test("service: a page with no resources is unknown", async () => {
+test("service: a page with no resources is unknown", async () => {
   const { ctx } = mockCtx([page([])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no resources/.test(result.message!), result.message);
 });
 
-Deno.test("service: maps Better Stack's vocabulary and slugs the names", () => {
+test("service: maps Better Stack's vocabulary and slugs the names", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");
@@ -101,7 +102,7 @@ Deno.test("service: maps Better Stack's vocabulary and slugs the names", () => {
 });
 
 /** The router's providers have their own outages, on nobody's page. */
-Deno.test("service: says it does not cover the inference providers", () => {
+test("service: says it does not cover the inference providers", () => {
   assert(
     /does NOT cover the third-party inference providers/.test(service.description!),
     service.description,

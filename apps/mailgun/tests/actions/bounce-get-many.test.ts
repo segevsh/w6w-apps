@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bounce-get-many.ts";
 
-Deno.test("bounce-get-many: GETs /v3/{domain}/bounces", async () => {
+test("bounce-get-many: GETs /v3/{domain}/bounces", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ domain: "mg.example.com", limit: 25 }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("bounce-get-many: GETs /v3/{domain}/bounces", async () => {
   assertEquals(url.searchParams.get("limit"), "25");
 });
 
-Deno.test("bounce-get-many: missing domain rejects", async () => {
+test("bounce-get-many: missing domain rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(async () => await action.execute!({ domain: "" }, ctx), Error, "`domain`");
 });

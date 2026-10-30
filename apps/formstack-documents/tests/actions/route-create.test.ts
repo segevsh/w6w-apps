@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/route-create.ts";
 
-Deno.test("route-create: POSTs name and rules", async () => {
+test("route-create: POSTs name and rules", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "234543", key: "abcdef" } }]);
   const out = await action.execute(
     {
@@ -26,11 +27,11 @@ Deno.test("route-create: POSTs name and rules", async () => {
   assert(out !== null);
 });
 
-Deno.test("route-create: idempotent flag is false", () => {
+test("route-create: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("route-create: declares key, type and a description", () => {
+test("route-create: declares key, type and a description", () => {
   assertEquals(action.key, "route-create");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

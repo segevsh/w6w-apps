@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: GET /webhooks/{uid}", async () => {
+test("webhook-get: GET /webhooks/{uid}", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "w1", name: "Hook", status: "active" } }]);
   const out = await webhookGet.execute({ uid: "w1" }, ctx) as unknown as Record<string, unknown>;
 
@@ -10,7 +11,7 @@ Deno.test("webhook-get: GET /webhooks/{uid}", async () => {
   assertEquals(out.status, "active");
 });
 
-Deno.test("webhook-get: requires uid", async () => {
+test("webhook-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => webhookGet.execute({ uid: "" }, ctx));
 });

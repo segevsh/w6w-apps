@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import reservationCreate from "../../actions/reservation-create.ts";
 import { envelope, formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reservation-create: POST /postReservation, form-encoded, with a room row", async () => {
+test("reservation-create: POST /postReservation, form-encoded, with a room row", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}, { reservationID: "res1" }) }]);
   await reservationCreate.execute(
     {
@@ -27,16 +28,16 @@ Deno.test("reservation-create: POST /postReservation, form-encoded, with a room 
   assertEquals(form["adults[0][roomTypeID]"], "rt1");
 });
 
-Deno.test("reservation-create: no field is marked required — the vendor's schema requires none", () => {
+test("reservation-create: no field is marked required — the vendor's schema requires none", () => {
   const required = reservationCreate.params!.filter((p) => p.required);
   assertEquals(required.length, 0);
 });
 
-Deno.test("reservation-create: is not idempotent — the vendor accepts no idempotency key", () => {
+test("reservation-create: is not idempotent — the vendor accepts no idempotency key", () => {
   assertEquals(reservationCreate.idempotent, false);
 });
 
-Deno.test("reservation-create: guestRequirements as malformed JSON is refused before the request goes out", async () => {
+test("reservation-create: guestRequirements as malformed JSON is refused before the request goes out", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -50,7 +51,7 @@ Deno.test("reservation-create: guestRequirements as malformed JSON is refused be
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reservation-create: an HTTP-200 success:false response is surfaced as a failure", async () => {
+test("reservation-create: an HTTP-200 success:false response is surfaced as a failure", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { success: false, message: "property is no longer active" },

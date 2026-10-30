@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { bodyOf, entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { bodyOf, entityBody, mockCtx, pathOf } from "../_helpers.ts";
  * method!" Every other update in this app is a PUT, which is exactly why this
  * one gets written wrong.
  */
-Deno.test("contact-update: uses POST, not PUT", async () => {
+test("contact-update: uses POST, not PUT", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("contact", { id: 710 }) }]);
   await contactUpdate.execute({ contactId: "710", firstName: "Vicente UPDATED" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("contact-update: uses POST, not PUT", async () => {
 });
 
 /** "Can't be blank if defined" — so a blank must be dropped, not sent as "". */
-Deno.test("contact-update: blank fields are dropped rather than sent empty", async () => {
+test("contact-update: blank fields are dropped rather than sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: entityBody("contact", {}) }]);
   await contactUpdate.execute(
     { contactId: "710", firstName: "Gary", lastName: "", companyName: "Lerox" },
@@ -26,7 +27,7 @@ Deno.test("contact-update: blank fields are dropped rather than sent empty", asy
   assertEquals(bodyOf(calls[0]), { first_name: "Gary", company_name: "Lerox" });
 });
 
-Deno.test("contact-update: an empty change set is rejected before the request", async () => {
+test("contact-update: an empty change set is rejected before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(contactUpdate.execute({ contactId: "710" }, ctx)),

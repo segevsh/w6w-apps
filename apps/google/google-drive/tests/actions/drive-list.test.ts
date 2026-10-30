@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/drive-list.ts";
 
-Deno.test("drive-list: GETs /drives with default pageSize=100", async () => {
+test("drive-list: GETs /drives with default pageSize=100", async () => {
   const body = { drives: [{ id: "drv-1" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);

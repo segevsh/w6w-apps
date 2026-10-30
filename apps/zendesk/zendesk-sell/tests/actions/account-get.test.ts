@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-get: fetches /v2/accounts/self and takes no params", async () => {
+test("account-get: fetches /v2/accounts/self and takes no params", async () => {
   const { ctx, calls } = mockCtx([
     { body: dataEnvelope({ id: 1, name: "Sales Co", currency: "USD" }) },
   ]);

@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import create from "../../actions/activity-create.ts";
 
 const B = "https://acme.salesmate.io/apis/activity/v4";
 const ok = (Data: unknown) => ({ body: { Status: "success", Data } });
 
-Deno.test("activity-create: POSTs the fields and custom fields at the top level", async () => {
+test("activity-create: POSTs the fields and custom fields at the top level", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ id: 9 })]);
   const out = await create.execute(
     {
@@ -25,13 +26,13 @@ Deno.test("activity-create: POSTs the fields and custom fields at the top level"
   });
 });
 
-Deno.test("activity-create: drops unset optional fields rather than sending nulls", async () => {
+test("activity-create: drops unset optional fields rather than sending nulls", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({})]);
   await create.execute({ ...{ "title": "Call", "owner": 1 }, tags: "" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "title": "Call", "owner": 1 });
 });
 
-Deno.test("activity-create: declares the documented required params", () => {
+test("activity-create: declares the documented required params", () => {
   const required = (create.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["owner", "title"]);
 });

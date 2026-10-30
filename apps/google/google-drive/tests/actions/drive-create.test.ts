@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/drive-create.ts";
 
-Deno.test("drive-create: POSTs /drives with body and requestId query param", async () => {
+test("drive-create: POSTs /drives with body and requestId query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "drv-1", name: "Team" } }]);
   await action.execute!({ name: "Team" }, ctx);
 

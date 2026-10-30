@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/records-add.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("records-add: POSTs /k/v1/records.json with the records array", async () => {
+test("records-add: POSTs /k/v1/records.json with the records array", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { ids: ["1", "2"], revisions: ["1", "1"] } }],
     conn,
@@ -18,7 +19,7 @@ Deno.test("records-add: POSTs /k/v1/records.json with the records array", async 
   assertEquals(out, { ids: ["1", "2"], revisions: ["1", "1"] });
 });
 
-Deno.test("records-add: rejects a non-array `records`", async () => {
+test("records-add: rejects a non-array `records`", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute({ appId: "1", records: "nope" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("records-add: rejects a non-array `records`", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("records-add: rejects more than 100 records before any request", async () => {
+test("records-add: rejects more than 100 records before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const records = Array.from({ length: 101 }, () => ({ Text: { value: "x" } }));
   const err = await assertRejects(

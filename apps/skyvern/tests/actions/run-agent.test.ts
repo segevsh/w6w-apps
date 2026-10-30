@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import runAgent from "../../actions/run-agent.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("run-agent: POSTs /v1/run/agents with agent_id and parsed parameters", async () => {
+test("run-agent: POSTs /v1/run/agents with agent_id and parsed parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { run_id: "wr_1", status: "queued" } }]);
   const out = await runAgent.execute({
     agentId: "wpid_1",

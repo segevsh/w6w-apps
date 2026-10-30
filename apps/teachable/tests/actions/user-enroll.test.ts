@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userEnroll from "../../actions/user-enroll.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-enroll: posts the user/course pair and returns the 204 status", async () => {
+test("user-enroll: posts the user/course pair and returns the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await userEnroll.execute({ userId: 1, courseId: 2 }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("user-enroll: posts the user/course pair and returns the 204 status", 
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("user-enroll: is declared idempotent", () => {
+test("user-enroll: is declared idempotent", () => {
   assertEquals(userEnroll.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tableCreate from "../../actions/table-create.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("table-create: POSTs table_name only when no columns are given", async () => {
+test("table-create: POSTs table_name only when no columns are given", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "abcd", name: "Orders", columns: [] } }]);
   const out = await tableCreate.execute({ tableName: "Orders" }, ctx) as { _id: string };
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("table-create: POSTs table_name only when no columns are given", async
   assertEquals(out._id, "abcd");
 });
 
-Deno.test("table-create: columns are forwarded, from an array or JSON text", async () => {
+test("table-create: columns are forwarded, from an array or JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const columns = [{ column_name: "Name", column_type: "text" }];
   await tableCreate.execute({ tableName: "T", columns }, ctx);

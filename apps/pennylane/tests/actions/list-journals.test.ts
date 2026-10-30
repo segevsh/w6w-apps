@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-journals.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: null,
 };
 
-Deno.test("list-journals: GETs /journals", async () => {
+test("list-journals: GETs /journals", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("list-journals: GETs /journals", async () => {
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-journals: filters on the journal type", async () => {
+test("list-journals: filters on the journal type", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({ filter: [{ field: "type", operator: "eq", value: "payroll" }] }, ctx);
   assertEquals(

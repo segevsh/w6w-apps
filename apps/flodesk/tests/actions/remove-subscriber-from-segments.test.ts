@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import removeSubscriberFromSegments from "../../actions/remove-subscriber-from-segments.ts";
 
-Deno.test("remove-subscriber-from-segments: DELETEs with a body, as documented", async () => {
+test("remove-subscriber-from-segments: DELETEs with a body, as documented", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "61b2" } }]);
   await removeSubscriberFromSegments.execute(
     { idOrEmail: "61b2", segmentIds: ["s1"] },

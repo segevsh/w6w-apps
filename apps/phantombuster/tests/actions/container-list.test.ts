@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import containerList from "../../actions/container-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("container-list: calls GET /containers/fetch-all with agentId", async () => {
+test("container-list: calls GET /containers/fetch-all with agentId", async () => {
   const body = { maxLimitReached: false, containers: [{ id: "c1", status: "finished" }] };
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
 
@@ -13,7 +14,7 @@ Deno.test("container-list: calls GET /containers/fetch-all with agentId", async 
   assertEquals(out, body);
 });
 
-Deno.test("container-list: forwards mode, limit and withRuntimeEvents", async () => {
+test("container-list: forwards mode, limit and withRuntimeEvents", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { maxLimitReached: false, containers: [] },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationUserList from "../../actions/conversation-user-list.ts";
 import { mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-user-list: GET .../users/{userId}/conversations", async () => {
+test("conversation-user-list: GET .../users/{userId}/conversations", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "c1", userId: "user_1" }]) }]);
   const out = await conversationUserList.execute(
     { agentId: "a1", userId: "user_1" },

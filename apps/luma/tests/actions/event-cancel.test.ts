@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventCancel from "../../actions/event-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-cancel: confirms with event_id + cancellation_token + should_refund", async () => {
+test("event-cancel: confirms with event_id + cancellation_token + should_refund", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await eventCancel.execute(
     { eventId: "evt-1", cancellationToken: "cnl-xyz", shouldRefund: true },
@@ -18,7 +19,7 @@ Deno.test("event-cancel: confirms with event_id + cancellation_token + should_re
   assertEquals(out, { ok: true });
 });
 
-Deno.test("event-cancel: should_refund is omitted, not sent false, when unset", async () => {
+test("event-cancel: should_refund is omitted, not sent false, when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await eventCancel.execute({ eventId: "evt-1", cancellationToken: "cnl-xyz" }, ctx);
   assertEquals("should_refund" in JSON.parse(calls[0].body!), false);

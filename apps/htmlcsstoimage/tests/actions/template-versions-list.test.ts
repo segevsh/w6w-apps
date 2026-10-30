@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateVersionsList from "../../actions/template-versions-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("template-versions-list: GETs /template/{id} and pages with max_version", async () => {
+test("template-versions-list: GETs /template/{id} and pages with max_version", async () => {
   const body = {
     data: [{ id: "t-1", version: 2 }, { id: "t-1", version: 1 }],
     pagination: { next_page_start: null },
@@ -17,7 +18,7 @@ Deno.test("template-versions-list: GETs /template/{id} and pages with max_versio
   assertEquals(out, body);
 });
 
-Deno.test("template-versions-list: requires template_id", async () => {
+test("template-versions-list: requires template_id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await templateVersionsList.execute({ template_id: "" }, ctx),

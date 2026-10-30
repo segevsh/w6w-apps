@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionList from "../../actions/subscription-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -21,7 +22,7 @@ const RESPONSE = {
   "pagination": { "next": "https://api.samcart.com/v1/x?offset=99&dir=next", "prev": null },
 };
 
-Deno.test("subscription-list: sends GET /v1/subscriptions with the mapped parameters", async () => {
+test("subscription-list: sends GET /v1/subscriptions with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await subscriptionList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -45,7 +46,7 @@ Deno.test("subscription-list: sends GET /v1/subscriptions with the mapped parame
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("subscription-list: returns the documented result shape", async () => {
+test("subscription-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await subscriptionList.execute(INPUT, ctx), {
     "data": [{ "id": 1 }],
@@ -55,7 +56,7 @@ Deno.test("subscription-list: returns the documented result shape", async () => 
   });
 });
 
-Deno.test("subscription-list: an error surfaces SamCart's own message", async () => {
+test("subscription-list: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(subscriptionList.execute(INPUT, ctx)),

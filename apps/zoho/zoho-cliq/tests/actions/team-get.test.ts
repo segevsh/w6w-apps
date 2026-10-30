@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/team-get.ts";
 
-Deno.test("team-get: gets a team", async () => {
+test("team-get: gets a team", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "team_id": "53797404", "name": "Zylker" },
@@ -21,6 +22,6 @@ Deno.test("team-get: gets a team", async () => {
   });
 });
 
-Deno.test("team-get: is a read action", () => {
+test("team-get: is a read action", () => {
   assertEquals(action.type, "read");
 });

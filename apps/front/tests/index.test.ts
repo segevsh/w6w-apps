@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: {
     id: string;
@@ -12,7 +14,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 30 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 30 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 30);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -24,14 +26,14 @@ Deno.test("index: exports 30 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Anything that sends a second message, or creates a second thing. */
-Deno.test("index: the actions that duplicate on a retry say so", () => {
+test("index: the actions that duplicate on a retry say so", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, [
     "contact-create",
@@ -47,9 +49,9 @@ Deno.test("index: the actions that duplicate on a retry say so", () => {
  * The headline safety property: Front's `options.archive` defaults to TRUE, so
  * every action that sends must state the flag rather than inherit it.
  */
-Deno.test("index: both sending actions always send `archive` explicitly", async () => {
+test("index: both sending actions always send `archive` explicitly", async () => {
   for (const name of ["conversation-reply", "message-send"]) {
-    const src = await Deno.readTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${name}.ts`, import.meta.url));
     assert(/options:\s*\{\s*archive/.test(src), `${name} does not set options.archive`);
     assert(src.includes("p.archive === true"), `${name} does not read the archive param`);
   }
@@ -59,10 +61,10 @@ Deno.test("index: both sending actions always send `archive` explicitly", async 
  * `PATCH /conversations/{id}`'s `tag_ids` REPLACES the tag set. No action may
  * send it — tagging goes through the additive routes.
  */
-Deno.test("index: no action sends the destructive tag_ids field on a conversation update", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action sends the destructive tag_ids field on a conversation update", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     // Prose about the field is the point; only code counts.
     const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
     if (!/method: "PATCH"/.test(code)) continue;
@@ -71,12 +73,12 @@ Deno.test("index: no action sends the destructive tag_ids field on a conversatio
 });
 
 /** Every request must be able to reach the one host the manifest allows. */
-Deno.test("index: nothing calls a host outside the egress allowlist", async () => {
+test("index: nothing calls a host outside the egress allowlist", async () => {
   assertEquals(manifest.w6w.network.allow, ["api2.frontapp.com"]);
   for (const dir of ["actions", "auth", "lib"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.name.endsWith(".ts")) continue;
-      const src = await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
+      const src = await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
       const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
       for (const m of code.matchAll(/https:\/\/([a-z0-9.-]+)/g)) {
         assert(
@@ -88,22 +90,22 @@ Deno.test("index: nothing calls a host outside the egress allowlist", async () =
   }
 });
 
-Deno.test("index: one auth method and two declared health checks", () => {
+test("index: one auth method and two declared health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-token"]);
   assertEquals(app.healthChecks!.map((h) => h.key).sort(), ["quota", "service"]);
 });
 
-Deno.test("index: the manifest's categories are in the controlled vocabulary", () => {
+test("index: the manifest's categories are in the controlled vocabulary", () => {
   assertEquals(manifest.w6w.id, "io.w6w.front");
   assertEquals(manifest.w6w.categories, ["support", "communication", "productivity"]);
   assert(manifest.w6w.appearance.icon.url, "no icon declared");
 });
 
 /** Attachments are multipart binary the sandbox cannot produce. */
-Deno.test("index: no action tries to send multipart form data", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action tries to send multipart form data", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url));
     assert(!/new FormData\(/.test(src), `${entry.name} builds a multipart body`);
   }
 });

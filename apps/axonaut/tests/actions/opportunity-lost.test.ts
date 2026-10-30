@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import opportunityLost from "../../actions/opportunity-lost.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "opportunityId": 42, "date": "2026-10-06T09:00:00+02:00" };
 
-Deno.test("opportunity-lost: PATCH /api/v2/opportunities/42/lost with the documented query, header and body", async () => {
+test("opportunity-lost: PATCH /api/v2/opportunities/42/lost with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await opportunityLost.execute(INPUT as never, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("opportunity-lost: PATCH /api/v2/opportunities/42/lost with the docume
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("opportunity-lost: an Axonaut error surfaces its message and status", async () => {
+test("opportunity-lost: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await opportunityLost.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");

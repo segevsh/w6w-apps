@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import create from "../../actions/timeoff-request-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const days = {
   endDate: "2026-12-03",
 };
 
-Deno.test("timeoff-request-create: a days request defaults both portions to all_day", async () => {
+test("timeoff-request-create: a days request defaults both portions to all_day", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await create.execute(days, ctx);
   assertEquals(calls[0].method, "POST");
@@ -26,7 +27,7 @@ Deno.test("timeoff-request-create: a days request defaults both portions to all_
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("timeoff-request-create: an hours request sends hours/minutes, not portions", async () => {
+test("timeoff-request-create: an hours request sends hours/minutes, not portions", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await create.execute({
     ...days,
@@ -53,7 +54,7 @@ Deno.test("timeoff-request-create: an hours request sends hours/minutes, not por
   });
 });
 
-Deno.test("timeoff-request-create: hours validation fails before any call", async () => {
+test("timeoff-request-create: hours validation fails before any call", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(create.execute({ ...days, requestRangeType: "hours" }, ctx)),

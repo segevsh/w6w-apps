@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import createTables from "../../actions/create-tables.ts";
 
-Deno.test("create-tables: POSTs a {tables:[…]} envelope", async () => {
+test("create-tables: POSTs a {tables:[…]} envelope", async () => {
   const { ctx, calls } = actionCtx([{ body: { tables: [{ id: "People" }] } }]);
   const spec = [{ id: "People", columns: [{ id: "pet", fields: { label: "Pet" } }] }];
   const out = await createTables.execute!({ docId: "d", tables: spec }, ctx);
@@ -12,7 +13,7 @@ Deno.test("create-tables: POSTs a {tables:[…]} envelope", async () => {
   assertEquals(out.tables[0].id, "People");
 });
 
-Deno.test("create-tables: returns the id Grist ASSIGNED, which may differ from the request", async () => {
+test("create-tables: returns the id Grist ASSIGNED, which may differ from the request", async () => {
   const { ctx } = actionCtx([{ body: { tables: [{ id: "My_Table2" }] } }]);
   const out = await createTables.execute!(
     { docId: "d", tables: [{ id: "My Table", columns: [{ id: "a" }] }] },
@@ -21,6 +22,6 @@ Deno.test("create-tables: returns the id Grist ASSIGNED, which may differ from t
   assertEquals(out.tables[0].id, "My_Table2");
 });
 
-Deno.test("create-tables: is non-idempotent — a repeat creates a suffixed table", () => {
+test("create-tables: is non-idempotent — a repeat creates a suffixed table", () => {
   assertEquals(createTables.idempotent, false);
 });

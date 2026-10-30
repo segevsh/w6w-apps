@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import evidenceList from "../../actions/evidence-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const BASE = { "workspaceId": 7 };
 
-Deno.test("evidence-list: GET /workspaces/7/evidence sends only the page defaults and flattens the envelope", async () => {
+test("evidence-list: GET /workspaces/7/evidence sends only the page defaults and flattens the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }, { id: 2 }], "next-abc", 2) }]);
   const out = await evidenceList.execute({ ...BASE, size: 25, includeTotalCount: true }, ctx) as {
     items: unknown[];
@@ -24,7 +25,7 @@ Deno.test("evidence-list: GET /workspaces/7/evidence sends only the page default
   assertEquals(out.totalCount, 2);
 });
 
-Deno.test("evidence-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
+test("evidence-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   const out = await evidenceList.execute({
     ...BASE,
@@ -45,7 +46,7 @@ Deno.test("evidence-list: filters and expand go out under their wire names; a cu
   assertEquals(out.nextCursor, null);
 });
 
-Deno.test("evidence-list: a 403 names the permission problem and keeps Drata's message", async () => {
+test("evidence-list: a 403 names the permission problem and keeps Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden resource", 5) }]);
   const err = await assertRejects(
     () => Promise.resolve(evidenceList.execute({ ...BASE }, ctx)),

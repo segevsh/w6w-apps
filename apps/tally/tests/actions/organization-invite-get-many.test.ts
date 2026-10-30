@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-invite-get-many.ts";
 
-Deno.test("organization-invite-get-many: GETs the pending invites as a bare array", async () => {
+test("organization-invite-get-many: GETs the pending invites as a bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "i1", email: "a@b.com" }] }]);
   const result = await action.execute({ organizationId: "org1" }, ctx);
 

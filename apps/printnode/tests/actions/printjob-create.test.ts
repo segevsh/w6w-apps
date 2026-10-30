@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import printjobCreate from "../../actions/printjob-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("printjob-create: POST /printjobs, bare-integer answer wrapped", async () => {
+test("printjob-create: POST /printjobs, bare-integer answer wrapped", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 201, body: 623 }]);
   const out = await printjobCreate.execute({
     printerId: 34,
@@ -25,7 +26,7 @@ Deno.test("printjob-create: POST /printjobs, bare-integer answer wrapped", async
   assertEquals(logs[0].message, "print job created");
 });
 
-Deno.test("printjob-create: options map to the vendor's snake_case keys; rotate is numeric", async () => {
+test("printjob-create: options map to the vendor's snake_case keys; rotate is numeric", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 624 }]);
   await printjobCreate.execute({
     printerId: 34,
@@ -59,13 +60,13 @@ Deno.test("printjob-create: options map to the vendor's snake_case keys; rotate 
   });
 });
 
-Deno.test("printjob-create: no options key when none are set", async () => {
+test("printjob-create: no options key when none are set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 1 }]);
   await printjobCreate.execute({ printerId: 1, contentType: "raw_base64", content: "eA==" }, ctx);
   assertEquals("options" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("printjob-create: download authentication is built from the user/pass fields", async () => {
+test("printjob-create: download authentication is built from the user/pass fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 2 }]);
   await printjobCreate.execute({
     printerId: 1,
@@ -81,7 +82,7 @@ Deno.test("printjob-create: download authentication is built from the user/pass 
   });
 });
 
-Deno.test("printjob-create: a half-filled authentication pair is refused", async () => {
+test("printjob-create: a half-filled authentication pair is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -97,7 +98,7 @@ Deno.test("printjob-create: a half-filled authentication pair is refused", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("printjob-create: a non-integer answer is an error, not a fake id", async () => {
+test("printjob-create: a non-integer answer is an error, not a fake id", async () => {
   const { ctx } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await assertRejects(
     async () =>

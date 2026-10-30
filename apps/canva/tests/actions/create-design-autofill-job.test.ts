@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-design-autofill-job.ts";
 
-Deno.test("create-design-autofill-job: builds a create_from_brand_template body", async () => {
+test("create-design-autofill-job: builds a create_from_brand_template body", async () => {
   const { ctx, calls } = mockCtx([{ body: { job: { id: "j1", status: "in_progress" } } }]);
   const data = { headline: { type: "text", text: "Hello" } };
   const result = await action.execute({
@@ -20,7 +21,7 @@ Deno.test("create-design-autofill-job: builds a create_from_brand_template body"
   assertEquals(result, { id: "j1", status: "in_progress" });
 });
 
-Deno.test("create-design-autofill-job: builds an update_design body with design_id", async () => {
+test("create-design-autofill-job: builds an update_design body with design_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { job: {} } }]);
   const data = { photo: { type: "image", asset_id: "A1" } };
   await action.execute({ source: "update_design", designId: "DAabc", data }, ctx);

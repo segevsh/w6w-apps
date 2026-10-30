@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import mailingListRecipientsList from "../../actions/mailing-list-recipients-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("mailing-list-recipients-list: calls GET /api/v2/mailing-lists-utils/recipients/7 and shapes the output", async () => {
+test("mailing-list-recipients-list: calls GET /api/v2/mailing-lists-utils/recipients/7 and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "data": [{ "id": 1 }], "current_page": 1, "next_page_url": null, "total": 1 },
   }]);
@@ -24,7 +25,7 @@ Deno.test("mailing-list-recipients-list: calls GET /api/v2/mailing-lists-utils/r
   );
 });
 
-Deno.test("mailing-list-recipients-list: a vendor error surfaces the HTTP status and message", async () => {
+test("mailing-list-recipients-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { "message": "Not Found" } }]);
   const err = await assertRejects(
     () =>

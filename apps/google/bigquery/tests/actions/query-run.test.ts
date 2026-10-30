@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/query-run.ts";
 
 const display = { projectId: "p1", datasetId: "d1" };
 
-Deno.test("query-run: POSTs to the queries endpoint with standard SQL pinned", async () => {
+test("query-run: POSTs to the queries endpoint with standard SQL pinned", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { jobComplete: true } }], { display });
   await action.execute!({ query: "SELECT 1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,7 +17,7 @@ Deno.test("query-run: POSTs to the queries endpoint with standard SQL pinned", a
 });
 
 /** The whole point of the decoder: positional cells become named fields. */
-Deno.test("query-run: decodes rows and keeps the raw form", async () => {
+test("query-run: decodes rows and keeps the raw form", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -30,7 +31,7 @@ Deno.test("query-run: decodes rows and keeps the raw form", async () => {
   assertEquals(result.rawRows, [{ f: [{ v: "ada" }, { v: "36" }] }]);
 });
 
-Deno.test("query-run: a schema-less response passes through untouched", async () => {
+test("query-run: a schema-less response passes through untouched", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { jobComplete: false, jobReference: { jobId: "j" } },
@@ -43,7 +44,7 @@ Deno.test("query-run: a schema-less response passes through untouched", async ()
   assertEquals(result.rows, undefined);
 });
 
-Deno.test("query-run: dry run and the cost ceiling reach the wire", async () => {
+test("query-run: dry run and the cost ceiling reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     query: "SELECT 1",
@@ -55,7 +56,7 @@ Deno.test("query-run: dry run and the cost ceiling reach the wire", async () => 
   assertEquals(body.maximumBytesBilled, "1000000");
 });
 
-Deno.test("query-run: the default dataset is qualified with the project", async () => {
+test("query-run: the default dataset is qualified with the project", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ query: "SELECT 1", defaultDatasetId: "analytics" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).defaultDataset, {
@@ -64,7 +65,7 @@ Deno.test("query-run: the default dataset is qualified with the project", async 
   });
 });
 
-Deno.test("query-run: query parameters pass through as parsed JSON", async () => {
+test("query-run: query parameters pass through as parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     query: "SELECT @x",
@@ -74,7 +75,7 @@ Deno.test("query-run: query parameters pass through as parsed JSON", async () =>
   assertEquals(JSON.parse(calls[0].body!).queryParameters[0].name, "x");
 });
 
-Deno.test("query-run: SQL is required and a project must be resolvable", async () => {
+test("query-run: SQL is required and a project must be resolvable", async () => {
   const noSql = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, noSql.ctx), Error, "`query`");
   const noProject = mockCtx([], { display: {} });

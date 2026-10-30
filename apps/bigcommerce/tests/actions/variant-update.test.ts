@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import variantUpdate from "../../actions/variant-update.ts";
 import { bodyOf, mockCtx, pathOf, v3Envelope } from "../_helpers.ts";
 
-Deno.test("variant-update: PUTs a partial variant under its product", async () => {
+test("variant-update: PUTs a partial variant under its product", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Envelope({ id: 9 }) }]);
   await variantUpdate.execute({ productId: 77, variantId: 9, fields: { price: 24.5 } }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("variant-update: PUTs a partial variant under its product", async () =
   assertEquals(bodyOf(calls[0]), { price: 24.5 });
 });
 
-Deno.test("variant-update: warns that inventory_level here is ABSOLUTE", () => {
+test("variant-update: warns that inventory_level here is ABSOLUTE", () => {
   // Two absolute writes racing silently discard one; the relative endpoint is
   // the vendor's recommendation for order-driven changes.
   const fields = variantUpdate.params?.find((p) => p.key === "fields");

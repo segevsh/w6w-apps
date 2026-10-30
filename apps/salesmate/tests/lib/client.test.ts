@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockSalesmateCtx } from "../_helpers.ts";
 import {
   assertLinkname,
@@ -11,7 +12,7 @@ import {
   SalesmateClient,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's link name and unwraps Data", async () => {
+test("client: builds the URL from the connection's link name and unwraps Data", async () => {
   const { ctx, calls } = mockSalesmateCtx([{ body: { Status: "success", Data: { id: 7 } } }]);
   const out = await new SalesmateClient(ctx).request("/contact/v4/7");
   assertEquals(out, { id: 7 });
@@ -20,7 +21,7 @@ Deno.test("client: builds the URL from the connection's link name and unwraps Da
   assertEquals("accesstoken" in calls[0].headers, false);
 });
 
-Deno.test("client: sends a JSON body and drops empty query values", async () => {
+test("client: sends a JSON body and drops empty query values", async () => {
   const { ctx, calls } = mockSalesmateCtx([{ body: { Status: "success", Data: {} } }]);
   await new SalesmateClient(ctx).request("/contact/v4/search", {
     method: "POST",
@@ -32,12 +33,12 @@ Deno.test("client: sends a JSON body and drops empty query values", async () => 
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: fails loudly when the connection carries no link name", () => {
+test("client: fails loudly when the connection carries no link name", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new SalesmateClient(ctx), Error, "no link name");
 });
 
-Deno.test("client: surfaces the vendor's failure body even on HTTP 200", async () => {
+test("client: surfaces the vendor's failure body even on HTTP 200", async () => {
   const { ctx } = mockSalesmateCtx([{
     body: {
       Status: "failure",
@@ -51,7 +52,7 @@ Deno.test("client: surfaces the vendor's failure body even on HTTP 200", async (
   );
 });
 
-Deno.test("client: reads the lowercase error keys the live API actually returns", async () => {
+test("client: reads the lowercase error keys the live API actually returns", async () => {
   const { ctx } = mockSalesmateCtx([{
     status: 403,
     body: { Status: "failure", Error: { message: "", name: "AuthorizationFailed" } },
@@ -63,7 +64,7 @@ Deno.test("client: reads the lowercase error keys the live API actually returns"
   );
 });
 
-Deno.test("linkname: only a single DNS label is accepted", () => {
+test("linkname: only a single DNS label is accepted", () => {
   assertEquals(assertLinkname("acme-1"), "acme-1");
   for (
     const bad of [
@@ -83,7 +84,7 @@ Deno.test("linkname: only a single DNS label is accepted", () => {
   }
 });
 
-Deno.test("linkname: baseUrl and the connection reader both refuse a hostile value", () => {
+test("linkname: baseUrl and the connection reader both refuse a hostile value", () => {
   assertEquals(baseUrl("acme"), "https://acme.salesmate.io/apis");
   assertThrows(() => baseUrl("evil.com/#"), Error);
   assertThrows(
@@ -93,7 +94,7 @@ Deno.test("linkname: baseUrl and the connection reader both refuse a hostile val
   );
 });
 
-Deno.test("helpers: compact keeps false and 0 but drops unset and blank", () => {
+test("helpers: compact keeps false and 0 but drops unset and blank", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -101,7 +102,7 @@ Deno.test("helpers: compact keeps false and 0 but drops unset and blank", () => 
   });
 });
 
-Deno.test("helpers: parseJson / customFields accept objects or JSON strings and reject junk", () => {
+test("helpers: parseJson / customFields accept objects or JSON strings and reject junk", () => {
   assertEquals(parseJson('{"a":1}', "x"), { a: 1 });
   assertEquals(parseJson(undefined, "x"), undefined);
   assertThrows(() => parseJson("{nope", "x"), Error, "valid JSON");
@@ -110,7 +111,7 @@ Deno.test("helpers: parseJson / customFields accept objects or JSON strings and 
   assertThrows(() => customFields("[1]"), Error, "JSON object");
 });
 
-Deno.test("helpers: errorMessage prefers Message, then message, then Name", () => {
+test("helpers: errorMessage prefers Message, then message, then Name", () => {
   assertEquals(errorMessage({ Error: { Message: "m", name: "n" } }, "f"), "m");
   assertEquals(errorMessage({ Error: { name: "n" } }, "f"), "n");
   assertEquals(errorMessage(undefined, "f"), "f");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-sender-profiles.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-sender-profiles: maps profiles and a null rate limit", async () => {
+test("list-sender-profiles: maps profiles and a null rate limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [
@@ -28,7 +29,7 @@ Deno.test("list-sender-profiles: maps profiles and a null rate limit", async () 
   ]);
 });
 
-Deno.test("list-sender-profiles: a non-array payload is empty; errors throw", async () => {
+test("list-sender-profiles: a non-array payload is empty; errors throw", async () => {
   assertEquals((await run(action, {}, mockCtx([{ body: { data: null } }]).ctx)).profiles, []);
   await assertRejects(
     () =>

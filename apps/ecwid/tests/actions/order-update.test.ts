@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderUpdate from "../../actions/order-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-update: PUTs a status change and returns updateCount", async () => {
+test("order-update: PUTs a status change and returns updateCount", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   const out = await orderUpdate.execute(
     { orderId: "EBJFT", fulfillmentStatus: "SHIPPED", trackingNumber: "1Z999" },
@@ -18,13 +19,13 @@ Deno.test("order-update: PUTs a status change and returns updateCount", async ()
   assertEquals(out.updateCount, 1);
 });
 
-Deno.test("order-update: untouched fields are not sent", async () => {
+test("order-update: untouched fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await orderUpdate.execute({ orderId: "1", paymentStatus: "PAID" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { paymentStatus: "PAID" });
 });
 
-Deno.test("order-update: totals are deliberately not typed fields", () => {
+test("order-update: totals are deliberately not typed fields", () => {
   const keys = (orderUpdate.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("subtotal"), false);
   assertEquals(keys.includes("total"), false);

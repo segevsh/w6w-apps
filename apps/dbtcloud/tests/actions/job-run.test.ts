@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-run.ts";
 
 const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
 
-Deno.test("job-run: posts the cause and returns the queued run, named", async () => {
+test("job-run: posts the cause and returns the queued run, named", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 7, status: 1 } } }], {
     display,
   });
@@ -21,7 +22,7 @@ Deno.test("job-run: posts the cause and returns the queued run, named", async ()
 });
 
 /** dbt makes it mandatory, and it is what a person reads beside the run. */
-Deno.test("job-run: refuses without a cause, before spending the request", async () => {
+test("job-run: refuses without a cause, before spending the request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ jobId: "9", cause: "  " }, ctx),
@@ -31,7 +32,7 @@ Deno.test("job-run: refuses without a cause, before spending the request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-run: git, step and target overrides reach the wire", async () => {
+test("job-run: git, step and target overrides reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 7, status: 1 } } }], {
     display,
   });
@@ -55,7 +56,7 @@ Deno.test("job-run: git, step and target overrides reach the wire", async () => 
 });
 
 /** dbt will not warn you if the override is production. */
-Deno.test("job-run: a schema override is warned about", async () => {
+test("job-run: a schema override is warned about", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { data: { id: 7, status: 1 } } }], {
     display,
   });
@@ -66,7 +67,7 @@ Deno.test("job-run: a schema override is warned about", async () => {
   );
 });
 
-Deno.test("job-run: an unset docs override is omitted rather than sent as false", async () => {
+test("job-run: an unset docs override is omitted rather than sent as false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 7, status: 1 } } }], {
     display,
   });
@@ -74,12 +75,12 @@ Deno.test("job-run: an unset docs override is omitted rather than sent as false"
   assertEquals(JSON.parse(calls[0].body!).generate_docs_override, undefined);
 });
 
-Deno.test("job-run: needs a job id", async () => {
+test("job-run: needs a job id", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ cause: "x" }, ctx), Error, "jobId");
 });
 
 /** A successful trigger is not a successful build, and the description says so. */
-Deno.test("job-run: its description says the run is only queued", () => {
+test("job-run: its description says the run is only queued", () => {
   assert(/QUEUED/.test(action.description!), action.description);
 });

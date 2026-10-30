@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/escalation-policy-list.ts";
 
-Deno.test("escalation-policy-list: fetches the first page by default", async () => {
+test("escalation-policy-list: fetches the first page by default", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { escalation_policies: [{ id: "EP1" }], more: false } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("escalation-policy-list: fetches the first page by default", async () 
   assertEquals(result, [{ id: "EP1" }]);
 });
 
-Deno.test("escalation-policy-list: name/user/team filters are passed through", async () => {
+test("escalation-policy-list: name/user/team filters are passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { escalation_policies: [], more: false } }]);
   await action.execute!({ query: "primary", userIds: "U1,U2", teamIds: "T1" }, ctx);
   const url = new URL(calls[0].url);

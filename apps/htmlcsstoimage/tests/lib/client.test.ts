@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asJson,
   asOptionalJson,
@@ -10,7 +11,7 @@ import {
 import { buildBody, buildTemplateBody } from "../../lib/render.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops unset values but keeps false and 0", () => {
+test("compact: drops unset values but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -18,7 +19,7 @@ Deno.test("compact: drops unset values but keeps false and 0", () => {
   });
 });
 
-Deno.test("asOptionalJson / asJson: accept parsed values and typed strings", () => {
+test("asOptionalJson / asJson: accept parsed values and typed strings", () => {
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson("", "x"), undefined);
@@ -26,12 +27,12 @@ Deno.test("asOptionalJson / asJson: accept parsed values and typed strings", () 
   assertThrows(() => asJson(undefined, "template_values"), Error, "template_values is required");
 });
 
-Deno.test("encodeId: neutralises path characters", () => {
+test("encodeId: neutralises path characters", () => {
   assertEquals(encodeId(" a/b?c "), "a%2Fb%3Fc");
   assertEquals(encodeId(1595179003987), "1595179003987");
 });
 
-Deno.test("client: GETs under /v1 with query, drops empty query values", async () => {
+test("client: GETs under /v1 with query, drops empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await new HctiClient(ctx).json("/images", { query: { count: 5, page_token: "" } });
   assertEquals(out, { ok: true });
@@ -40,7 +41,7 @@ Deno.test("client: GETs under /v1 with query, drops empty query values", async (
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("client: POST sends a JSON body with a content-type", async () => {
+test("client: POST sends a JSON body with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new HctiClient(ctx).json("/image", { method: "POST", body: { html: "<b/>" } });
   assertEquals(pathOf(calls[0].url), "/v1/image");
@@ -48,14 +49,14 @@ Deno.test("client: POST sends a JSON body with a content-type", async () => {
   assertEquals(calls[0].body, '{"html":"<b/>"}');
 });
 
-Deno.test("client: an empty 202 body yields undefined from json and the status from status()", async () => {
+test("client: an empty 202 body yields undefined from json and the status from status()", async () => {
   const a = mockCtx([{ status: 202, body: undefined }]);
   assertEquals(await new HctiClient(a.ctx).json("/image/x", { method: "DELETE" }), undefined);
   const b = mockCtx([{ status: 202, body: undefined }]);
   assertEquals(await new HctiClient(b.ctx).status("/image/x", { method: "DELETE" }), 202);
 });
 
-Deno.test("client: errors carry the vendor's error, message, field errors and a hint", async () => {
+test("client: errors carry the vendor's error, message, field errors and a hint", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("Bad Request", "Validation failed", 400, [
@@ -78,7 +79,7 @@ Deno.test("client: errors carry the vendor's error, message, field errors and a 
   }
 });
 
-Deno.test("formatHctiError: 402 and 403 get a hint, non-JSON bodies are quoted", () => {
+test("formatHctiError: 402 and 403 get a hint, non-JSON bodies are quoted", () => {
   assertEquals(
     formatHctiError(
       402,
@@ -105,7 +106,7 @@ Deno.test("formatHctiError: 402 and 403 get a hint, non-JSON bodies are quoted",
   );
 });
 
-Deno.test("buildBody: coerces numbers, parses JSON strings, keeps booleans, drops empties", () => {
+test("buildBody: coerces numbers, parses JSON strings, keeps booleans, drops empties", () => {
   const body = buildBody(
     {
       device_scale: "2",
@@ -126,7 +127,7 @@ Deno.test("buildBody: coerces numbers, parses JSON strings, keeps booleans, drop
   });
 });
 
-Deno.test("buildBody: viewport and jumbo dimensions must come in pairs, numbers must be numeric", () => {
+test("buildBody: viewport and jumbo dimensions must come in pairs, numbers must be numeric", () => {
   assertThrows(() => buildBody({ viewport_width: 800 }), Error, "supplied together");
   assertThrows(() => buildBody({ jumbo_max_width: 800 }, {}, ["jumbo_max_width"]), Error, "jumbo");
   assertThrows(() => buildBody({ device_scale: "big" }), Error, "device_scale must be a number");
@@ -136,7 +137,7 @@ Deno.test("buildBody: viewport and jumbo dimensions must come in pairs, numbers 
   });
 });
 
-Deno.test("buildTemplateBody: only TemplateRequest fields survive", () => {
+test("buildTemplateBody: only TemplateRequest fields survive", () => {
   assertEquals(
     buildTemplateBody({
       template_id: "t-1",

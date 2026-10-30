@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports one auth method and every action has a unique key", () => {
+test("index: exports one auth method and every action has a unique key", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "oauth2-password");
 
@@ -10,7 +11,7 @@ Deno.test("index: exports one auth method and every action has a unique key", ()
   assertEquals(app.actions.length > 0, true);
 });
 
-Deno.test("index: every action has a title, type and no bare `execute` missing", () => {
+test("index: every action has a title, type and no bare `execute` missing", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(["read", "search", "perform", "control"].includes(action.type), true);
@@ -18,7 +19,7 @@ Deno.test("index: every action has a title, type and no bare `execute` missing",
   }
 });
 
-Deno.test("index: declares two health checks — service (live) and quota (declared absent)", () => {
+test("index: declares two health checks — service (live) and quota (declared absent)", () => {
   const keys = app.healthChecks?.map((h) => h.key) ?? [];
   assertEquals(keys.includes("service"), true);
   assertEquals(keys.includes("quota"), true);
@@ -26,7 +27,7 @@ Deno.test("index: declares two health checks — service (live) and quota (decla
   assertEquals(quota?.unavailable !== undefined, true);
 });
 
-Deno.test("index: no document-upload action — see index.ts module doc for why", () => {
+test("index: no document-upload action — see index.ts module doc for why", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.includes("document-upload"), false);
 });

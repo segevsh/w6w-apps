@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, ok } from "./_shared.ts";
 import action from "../../actions/embed.ts";
@@ -9,7 +10,7 @@ const vectors = ok({
   prompt_eval_count: 8,
 });
 
-Deno.test("embed: a single string goes to /api/embed and comes back as a list", async () => {
+test("embed: a single string goes to /api/embed and comes back as a list", async () => {
   const { ctx, calls } = mockCtx([ok({ embeddings: [[0.1, 0.2, 0.3]] })]);
   const result = await action.execute!(
     { model: "nomic-embed-text", input: "hello" },
@@ -24,7 +25,7 @@ Deno.test("embed: a single string goes to /api/embed and comes back as a list", 
   assertEquals(result.dimensions, 3);
 });
 
-Deno.test("embed: a JSON array string is a batch", async () => {
+test("embed: a JSON array string is a batch", async () => {
   const { ctx, calls } = mockCtx([vectors]);
   const result = await action.execute!({ model: "m", input: '["a", "b"]' }, ctx) as Record<
     string,
@@ -35,7 +36,7 @@ Deno.test("embed: a JSON array string is a batch", async () => {
   assertEquals(result.promptTokens, 8);
 });
 
-Deno.test("embed: truncate is only sent when turned off, dimensions passes through", async () => {
+test("embed: truncate is only sent when turned off, dimensions passes through", async () => {
   const { ctx, calls } = mockCtx([vectors]);
   await action.execute!({ model: "m", input: "x", truncate: false, dimensions: 256 }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -48,7 +49,7 @@ Deno.test("embed: truncate is only sent when turned off, dimensions passes throu
   assertEquals("truncate" in JSON.parse(second.calls[0].body!), false);
 });
 
-Deno.test("embed: empty input is refused before any request", async () => {
+test("embed: empty input is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ model: "m", input: "  " }, ctx),

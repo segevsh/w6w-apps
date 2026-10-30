@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event.ts";
 
-Deno.test("create-event: POSTs the event to the default calendar", async () => {
+test("create-event: POSTs the event to the default calendar", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "e1", subject: "Sync" } }]);
   const out = await action.execute({
     subject: "Sync",
@@ -23,7 +24,7 @@ Deno.test("create-event: POSTs the event to the default calendar", async () => {
   assertEquals((out as { id: string }).id, "e1");
 });
 
-Deno.test("create-event: posts to a named calendar when given one", async () => {
+test("create-event: posts to a named calendar when given one", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     calendarId: "cal-1",
@@ -33,7 +34,7 @@ Deno.test("create-event: posts to a named calendar when given one", async () => 
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/calendars/cal-1/events");
 });
 
-Deno.test("create-event: stamps the invocation id as transactionId for dedupe", async () => {
+test("create-event: stamps the invocation id as transactionId for dedupe", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   const withInvocation = {
     ...ctx,
@@ -48,7 +49,7 @@ Deno.test("create-event: stamps the invocation id as transactionId for dedupe", 
   assertEquals(JSON.parse(calls[0].body!).transactionId, "inv-42");
 });
 
-Deno.test("create-event: an explicit transactionId wins over the invocation id", async () => {
+test("create-event: an explicit transactionId wins over the invocation id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   const withInvocation = {
     ...ctx,
@@ -64,7 +65,7 @@ Deno.test("create-event: an explicit transactionId wins over the invocation id",
   assertEquals(JSON.parse(calls[0].body!).transactionId, "mine");
 });
 
-Deno.test("create-event: omits transactionId when there is no invocation context", async () => {
+test("create-event: omits transactionId when there is no invocation context", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     start: "2026-08-15T12:00:00",
@@ -73,7 +74,7 @@ Deno.test("create-event: omits transactionId when there is no invocation context
   assertEquals(JSON.parse(calls[0].body!).transactionId, undefined);
 });
 
-Deno.test("create-event: sends attendees with their Graph types", async () => {
+test("create-event: sends attendees with their Graph types", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     start: "2026-08-15T12:00:00",
@@ -88,7 +89,7 @@ Deno.test("create-event: sends attendees with their Graph types", async () => {
   ]);
 });
 
-Deno.test("create-event: is the one idempotent create, because Graph supports transactionId", () => {
+test("create-event: is the one idempotent create, because Graph supports transactionId", () => {
   assertEquals(action.idempotent, true);
   assert(action.params?.some((p) => p.key === "transactionId"));
 });

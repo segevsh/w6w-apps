@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createExpenseEqual from "../../actions/create-expense-equal.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const CREATED = {
   errors: {},
 };
 
-Deno.test("create-expense-equal: sends split_equally with the group and common fields", async () => {
+test("create-expense-equal: sends split_equally with the group and common fields", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   const out = await createExpenseEqual.execute({
     group_id: 391,
@@ -34,7 +35,7 @@ Deno.test("create-expense-equal: sends split_equally with the group and common f
  * `split_equally` is declared `{type: boolean, enum: [true]}` — there is no
  * `false` meaning "by shares". It is never exposed as a parameter.
  */
-Deno.test("create-expense-equal: split_equally is always true and is not a param", async () => {
+test("create-expense-equal: split_equally is always true and is not a param", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createExpenseEqual.execute({ group_id: 1, description: "d", cost: "1" }, ctx);
   assertEquals(bodyOf(calls[0]).split_equally, true);
@@ -46,7 +47,7 @@ Deno.test("create-expense-equal: split_equally is always true and is not a param
  * Group 0 is not a group — it is Splitwise's bucket for expenses belonging to
  * none — so there is nobody to divide among.
  */
-Deno.test("create-expense-equal: group 0 is refused before a request is spent", async () => {
+test("create-expense-equal: group 0 is refused before a request is spent", async () => {
   const { ctx, calls } = mockCtx([]);
   const error = await assertRejects(
     async () => await createExpenseEqual.execute({ group_id: 0, description: "d", cost: "1" }, ctx),
@@ -57,7 +58,7 @@ Deno.test("create-expense-equal: group 0 is refused before a request is spent", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-expense-equal: a malformed cost fails before the request", async () => {
+test("create-expense-equal: a malformed cost fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -72,7 +73,7 @@ Deno.test("create-expense-equal: a malformed cost fails before the request", asy
  * "200 OK does not indicate a successful response. The operation was successful
  * only if `errors` is empty."
  */
-Deno.test("create-expense-equal: a 200 with errors throws instead of returning", async () => {
+test("create-expense-equal: a 200 with errors throws instead of returning", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { expenses: [], errors: { base: ["That group does not exist"] } },
@@ -84,6 +85,6 @@ Deno.test("create-expense-equal: a 200 with errors throws instead of returning",
   );
 });
 
-Deno.test("create-expense-equal: is declared non-idempotent — there is no idempotency key", () => {
+test("create-expense-equal: is declared non-idempotent — there is no idempotency key", () => {
   assertEquals(createExpenseEqual.idempotent, false);
 });

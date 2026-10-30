@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reply-message.ts";
 
-Deno.test("reply-message: POSTs a comment to /reply", async () => {
+test("reply-message: POSTs a comment to /reply", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await action.execute({ messageId: "m1", comment: "on it" }, ctx);
 
@@ -11,13 +12,13 @@ Deno.test("reply-message: POSTs a comment to /reply", async () => {
   assertEquals(out, { status: 202 });
 });
 
-Deno.test("reply-message: switches to /replyAll when asked", async () => {
+test("reply-message: switches to /replyAll when asked", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ messageId: "m1", replyAll: true, comment: "all" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/messages/m1/replyAll");
 });
 
-Deno.test("reply-message: nests body and extra recipients under `message`", async () => {
+test("reply-message: nests body and extra recipients under `message`", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({
     messageId: "m1",
@@ -34,7 +35,7 @@ Deno.test("reply-message: nests body and extra recipients under `message`", asyn
   });
 });
 
-Deno.test("reply-message: rejects comment+body locally, as Graph would with a 400", () => {
+test("reply-message: rejects comment+body locally, as Graph would with a 400", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ messageId: "m1", comment: "a", bodyContent: "b" }, ctx),
@@ -45,13 +46,13 @@ Deno.test("reply-message: rejects comment+body locally, as Graph would with a 40
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reply-message: omits `message` entirely when only a comment is given", async () => {
+test("reply-message: omits `message` entirely when only a comment is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ messageId: "m1", comment: "hi" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).message, undefined);
 });
 
-Deno.test("reply-message: forwards the time zone as a Prefer header", async () => {
+test("reply-message: forwards the time zone as a Prefer header", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ messageId: "m1", comment: "x", timeZone: "UTC" }, ctx);
   assertEquals(calls[0].headers["prefer"], 'outlook.timezone="UTC"');

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSplunkCtx } from "../_helpers.ts";
 import action from "../../actions/search-get.ts";
 
-Deno.test("search-get: GETs the job by sid and flattens its content", async () => {
+test("search-get: GETs the job by sid and flattens its content", async () => {
   const { ctx, calls } = mockSplunkCtx([{
     body: {
       entry: [{
@@ -26,7 +27,7 @@ Deno.test("search-get: GETs the job by sid and flattens its content", async () =
   });
 });
 
-Deno.test("search-get: URL-encodes the sid", async () => {
+test("search-get: URL-encodes the sid", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { entry: [] } }]);
   await action.execute({ sid: "a b" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/services/search/jobs/a%20b");

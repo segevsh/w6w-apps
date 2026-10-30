@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentList from "../../actions/agent-list.ts";
 import { mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agent-list: defaults view to 'list' and returns the agentConfigurations array", async () => {
+test("agent-list: defaults view to 'list' and returns the agentConfigurations array", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { body: { agentConfigurations: [{ sId: "a1" }] } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("agent-list: defaults view to 'list' and returns the agentConfiguratio
   assertEquals(result, { agentConfigurations: [{ sId: "a1" }] });
 });
 
-Deno.test("agent-list: withAuthors is serialised as a string, and omitted when unset", async () => {
+test("agent-list: withAuthors is serialised as a string, and omitted when unset", async () => {
   const { ctx: withCtx, calls: withCalls } = mockCtxWithConnection([
     { body: { agentConfigurations: [] } },
   ]);

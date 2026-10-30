@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import spaceTagUpdate from "../../actions/space-tag-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-tag-update: PUTs /space/tag, addressed by currentName", async () => {
+test("space-tag-update: PUTs /space/tag, addressed by currentName", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "Premium Customer" } }]);
   await spaceTagUpdate.execute(
     { currentName: "VIP Customer", name: "Premium Customer", colorCode: "#FFD700" },
@@ -18,7 +19,7 @@ Deno.test("space-tag-update: PUTs /space/tag, addressed by currentName", async (
   });
 });
 
-Deno.test("space-tag-update: an empty currentName is refused before any request", async () => {
+test("space-tag-update: an empty currentName is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await spaceTagUpdate.execute({ currentName: "" }, ctx),
@@ -28,6 +29,6 @@ Deno.test("space-tag-update: an empty currentName is refused before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("space-tag-update: is declared idempotent", () => {
+test("space-tag-update: is declared idempotent", () => {
   assertEquals(spaceTagUpdate.idempotent, true);
 });

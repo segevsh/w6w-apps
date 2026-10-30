@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoGet from "../../actions/video-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("video-get: paths by course/lecture/video ID and forwards the optional watching user", async () => {
+test("video-get: paths by course/lecture/video ID and forwards the optional watching user", async () => {
   const { ctx, calls } = mockCtx([{ body: { video: { id: 4 } } }]);
   await videoGet.execute({ courseId: 1, lectureId: 2, videoId: 4, userId: 9 }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("video-get: paths by course/lecture/video ID and forwards the optional
   assertEquals(queryOf(calls[0].url), { user_id: "9" });
 });
 
-Deno.test("video-get: omits user_id from the query when not given", async () => {
+test("video-get: omits user_id from the query when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { video: { id: 4 } } }]);
   await videoGet.execute({ courseId: 1, lectureId: 2, videoId: 4 }, ctx);
 

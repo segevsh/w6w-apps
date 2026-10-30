@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listContacts from "../../actions/list-contacts.ts";
 
@@ -6,7 +7,7 @@ const ENVELOPE = { body: { Count: 1, Data: [{ ID: 1, Email: "a@x.com" }], Total:
 
 // ---------------------------------------------------------------- list-contacts
 
-Deno.test("list-contacts: GETs /v3/REST/contact", async () => {
+test("list-contacts: GETs /v3/REST/contact", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContacts.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("list-contacts: GETs /v3/REST/contact", async () => {
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("list-contacts: sends no filters when none are supplied", async () => {
+test("list-contacts: sends no filters when none are supplied", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContacts.execute!({}, ctx);
   assertEquals([...new URL(calls[0].url).searchParams.keys()], []);
 });
 
-Deno.test("list-contacts: maps filters onto Mailjet's capitalised names", async () => {
+test("list-contacts: maps filters onto Mailjet's capitalised names", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContacts.execute!(
     { contactsList: 7, campaign: 9, isExcludedFromCampaigns: true, limit: 100, offset: 200 },
@@ -34,7 +35,7 @@ Deno.test("list-contacts: maps filters onto Mailjet's capitalised names", async 
   assertEquals(p.get("Offset"), "200");
 });
 
-Deno.test("list-contacts: isExcludedFromCampaigns=false is a real filter, not an absence", async () => {
+test("list-contacts: isExcludedFromCampaigns=false is a real filter, not an absence", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContacts.execute!({ isExcludedFromCampaigns: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("IsExcludedFromCampaigns"), "false");

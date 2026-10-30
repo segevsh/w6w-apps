@@ -1,21 +1,23 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 25;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.map((a) => a.key), ["oauth2", "oauth2-sandbox", "access-token"]);
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), key);
 });
 
-Deno.test("index: every action declares type, description, params, output and execute", () => {
+test("index: every action declares type, description, params, output and execute", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), a.key);
     assert(a.description && a.description.length > 0, a.key);
@@ -24,7 +26,7 @@ Deno.test("index: every action declares type, description, params, output and ex
   }
 });
 
-Deno.test("index: every perform action states idempotency; creates are not idempotent", () => {
+test("index: every perform action states idempotency; creates are not idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -42,7 +44,7 @@ Deno.test("index: every perform action states idempotency; creates are not idemp
   assertEquals(app.actions.find((a) => a.key === "prospect-upsert")!.idempotent, true);
 });
 
-Deno.test("index: every query action pages by token and offers no offset", () => {
+test("index: every query action pages by token and offers no offset", () => {
   const queries = app.actions.filter((a) => a.type === "search");
   assertEquals(queries.length, 13);
   for (const a of queries) {
@@ -53,15 +55,15 @@ Deno.test("index: every query action pages by token and offers no offset", () =>
   }
 });
 
-Deno.test("index: no action source touches credentials, global fetch or the business unit header", async () => {
+test("index: no action source touches credentials, global fetch or the business unit header", async () => {
   const dir = new URL("../actions/", import.meta.url);
-  for await (const f of Deno.readDir(dir)) {
-    const src = await Deno.readTextFile(new URL(f.name, dir));
+  for await (const f of denoReadDir(dir)) {
+    const src = await denoReadTextFile(new URL(f.name, dir));
     assert(!/authorization|business-unit|[^.]\bfetch\(/i.test(src), `${f.name} touches auth/fetch`);
   }
 });
 
-Deno.test("index: manifest allows exactly the two Account Engagement hosts", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest allows exactly the two Account Engagement hosts", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["pi.pardot.com", "pi.demo.pardot.com"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import sendMessage from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs a one-element array to the booking or enquiry messages path", async () => {
+test("send-message: POSTs a one-element array to the booking or enquiry messages path", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }, { body: undefined }]);
   await sendMessage.execute({
     target: "booking",
@@ -20,7 +21,7 @@ Deno.test("send-message: POSTs a one-element array to the booking or enquiry mes
   assertEquals(JSON.parse(calls[1].body!), [{ message: "Note", type: "Comment" }]);
 });
 
-Deno.test("send-message: refuses an unknown target", async () => {
+test("send-message: refuses an unknown target", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(sendMessage.execute({ target: "user", id: 1, message: "x" }, ctx)),

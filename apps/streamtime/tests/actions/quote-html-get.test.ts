@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteHtmlGet from "../../actions/quote-html-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-html-get: returns text/html as a string, not a parse error", async () => {
+test("quote-html-get: returns text/html as a string, not a parse error", async () => {
   const { ctx, calls } = mockCtx([
     { body: "<html><body>Quote</body></html>", headers: { "content-type": "text/html" } },
   ]);

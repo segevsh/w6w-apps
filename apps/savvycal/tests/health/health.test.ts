@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import service, { COMPONENTS_URL, mapComponentStatus, SUMMARY_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -26,14 +27,14 @@ const components = (appStatus = "OPERATIONAL", googleStatus = "OPERATIONAL") => 
 // deno-lint-ignore no-explicit-any
 const run = (ctx: any) => (service.check as any)({}, ctx);
 
-Deno.test("service: unsigned, status host only", () => {
+test("service: unsigned, status host only", () => {
   assertEquals(SUMMARY_URL, "https://savvycal.instatus.com/summary.json");
   assertEquals(COMPONENTS_URL, "https://savvycal.instatus.com/components.json");
   assertEquals(service.network?.allow, ["savvycal.instatus.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: all operational is ok, group rows are not double counted", async () => {
+test("service: all operational is ok, group rows are not double counted", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }, { body: components() }]);
   const r = await run(ctx);
   assertEquals(r.state, "ok");
@@ -41,12 +42,12 @@ Deno.test("service: all operational is ok, group rows are not double counted", a
   assertEquals(calls.length, 2);
 });
 
-Deno.test("service: the App component drives the verdict", async () => {
+test("service: the App component drives the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary() }, { body: components("MAJOROUTAGE") }]);
   assertEquals((await run(ctx)).state, "down");
 });
 
-Deno.test("service: a calendar-connection issue is reported without moving the verdict", async () => {
+test("service: a calendar-connection issue is reported without moving the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary() }, {
     body: components("OPERATIONAL", "PARTIALOUTAGE"),
   }]);
@@ -55,24 +56,24 @@ Deno.test("service: a calendar-connection issue is reported without moving the v
   assertEquals(r.components.c.state, "degraded");
 });
 
-Deno.test("service: a page that is not SavvyCal's is unknown", async () => {
+test("service: a page that is not SavvyCal's is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ name: "Someone Else" }) }]);
   assertEquals((await run(ctx)).state, "unknown");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await run(ctx)).state, "unknown");
   const second = mockCtx([{ body: summary() }, { status: 500, body: "" }]);
   assertEquals((await run(second.ctx)).state, "unknown");
 });
 
-Deno.test("service: an empty component list is unknown", async () => {
+test("service: an empty component list is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary() }, { body: { components: [] } }]);
   assertEquals((await run(ctx)).state, "unknown");
 });
 
-Deno.test("mapComponentStatus covers the Instatus vocabulary", () => {
+test("mapComponentStatus covers the Instatus vocabulary", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("UNDERMAINTENANCE"), "degraded");
   assertEquals(mapComponentStatus("DEGRADEDPERFORMANCE"), "degraded");
@@ -81,7 +82,7 @@ Deno.test("mapComponentStatus covers the Instatus vocabulary", () => {
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("quota: a declared absence at informational severity", () => {
+test("quota: a declared absence at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");
   assertEquals(quota.check, undefined);

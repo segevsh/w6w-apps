@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-catalogs.ts";
 
-Deno.test("list-catalogs: metadata", () => {
+test("list-catalogs: metadata", () => {
   assertEquals(action.key, "list-catalogs");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["page", "pageSize"]);
 });
 
-Deno.test("list-catalogs: calls GET /catalogs on the US host", async () => {
+test("list-catalogs: calls GET /catalogs on the US host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "catalogNames": [{ "name": "c" }], "totalCatalogsCount": 1 },
   }]);
@@ -21,7 +22,7 @@ Deno.test("list-catalogs: calls GET /catalogs on the US host", async () => {
   assertEquals(out, { "catalogNames": [{ "name": "c" }], "totalCatalogsCount": 1 });
 });
 
-Deno.test("list-catalogs: uses the EU host when the connection region is eu", async () => {
+test("list-catalogs: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "catalogNames": [{ "name": "c" }], "totalCatalogsCount": 1 },
   }], { connection: { display: { region: "eu" } } });
@@ -29,7 +30,7 @@ Deno.test("list-catalogs: uses the EU host when the connection region is eu", as
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/catalogs?page=7&pageSize=7");
 });
 
-Deno.test("list-catalogs: surfaces an HTTP error with Iterable's own code", async () => {
+test("list-catalogs: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("list-catalogs: surfaces an HTTP error with Iterable's own code", asyn
   );
 });
 
-Deno.test("list-catalogs: treats a 200 carrying a non-Success code as a failure", async () => {
+test("list-catalogs: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import leaveRequestCreate from "../../actions/leave-request-create.ts";
 
@@ -10,7 +11,7 @@ const BASE = {
   leaveTypeId: "lt1",
 };
 
-Deno.test("leave-request-create: POSTs /leave-requests/ with snake_case wire names", async () => {
+test("leave-request-create: POSTs /leave-requests/ with snake_case wire names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "lr1", status: "PENDING" } }]);
   const out = await leaveRequestCreate.execute(
     { ...BASE, comments: "Family trip", startDateCustomHours: 4 },
@@ -31,14 +32,14 @@ Deno.test("leave-request-create: POSTs /leave-requests/ with snake_case wire nam
   assertEquals(out.id, "lr1");
 });
 
-Deno.test("leave-request-create: a leave policy can stand in for the leave type", async () => {
+test("leave-request-create: a leave policy can stand in for the leave type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "lr1" } }]);
   const { leaveTypeId: _drop, ...rest } = BASE;
   await leaveRequestCreate.execute({ ...rest, leavePolicyId: "lp1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).leave_policy_id, "lp1");
 });
 
-Deno.test("leave-request-create: requires worker, status and both dates, and a type or policy", async () => {
+test("leave-request-create: requires worker, status and both dates, and a type or policy", async () => {
   const { ctx, calls } = mockCtx([]);
   for (const key of ["workerId", "status", "startDate", "endDate"]) {
     const input: Record<string, unknown> = { ...BASE };
@@ -58,7 +59,7 @@ Deno.test("leave-request-create: requires worker, status and both dates, and a t
   assertEquals(calls.length, 0);
 });
 
-Deno.test("leave-request-create: status offers exactly the four documented values", () => {
+test("leave-request-create: status offers exactly the four documented values", () => {
   const status = leaveRequestCreate.params!.find((p) => p.key === "status")!;
   assertEquals(
     (status.options as Array<{ value: string }>).map((o) => o.value),

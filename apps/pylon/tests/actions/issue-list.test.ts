@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/issue-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("issue-list: GETs /issues with the required time range and cursor", async () => {
+test("issue-list: GETs /issues with the required time range and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "i1" }], pagination: { cursor: "c2", has_next_page: true } },
   }]);
@@ -23,7 +24,7 @@ Deno.test("issue-list: GETs /issues with the required time range and cursor", as
   assertEquals(out, { issues: [{ id: "i1" }], hasNextPage: true, nextCursor: "c2" });
 });
 
-Deno.test("issue-list: the last page has no nextCursor, and the range params are required", async () => {
+test("issue-list: the last page has no nextCursor, and the range params are required", async () => {
   const { ctx } = mockCtx([{
     body: { data: [], pagination: { cursor: "stale", has_next_page: false } },
   }]);
@@ -33,7 +34,7 @@ Deno.test("issue-list: the last page has no nextCursor, and the range params are
   assertEquals(required, ["startTime", "endTime"]);
 });
 
-Deno.test("issue-list: surfaces the error", async () => {
+test("issue-list: surfaces the error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { errors: ["range too long"], request_id: "r", code: "invalid_request_body" },

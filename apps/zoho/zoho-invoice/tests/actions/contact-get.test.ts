@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: GETs /contacts/{id} and unwraps the singular key", async () => {
+test("contact-get: GETs /contacts/{id} and unwraps the singular key", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", contact: { contact_id: "42" } } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("contact-get: GETs /contacts/{id} and unwraps the singular key", async
   assertEquals(out, { contact_id: "42" });
 });
 
-Deno.test("contact-get: an explicit organizationId overrides the connection default", async () => {
+test("contact-get: an explicit organizationId overrides the connection default", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", contact: {} } },
   ]);

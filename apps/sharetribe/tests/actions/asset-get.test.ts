@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetGet from "../../actions/asset-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("asset-get: GET /v1/assets/pub/{clientId}/a/latest/{assetPath}, requiresAuth false", async () => {
+test("asset-get: GET /v1/assets/pub/{clientId}/a/latest/{assetPath}, requiresAuth false", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { exampleString: "hi" }, meta: { version: "abcd" } } },
   ]);

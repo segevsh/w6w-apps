@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/employee-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("employee-get: GET /employees/{id}", async () => {
+test("employee-get: GET /employees/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1" } }]);
   const out = await action.execute({ employeeId: "x1" }, ctx) as { id: string };
   assertEquals(calls[0].method, "GET");
@@ -10,19 +11,19 @@ Deno.test("employee-get: GET /employees/{id}", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("employee-get: a slash in the id cannot leave the path segment", async () => {
+test("employee-get: a slash in the id cannot leave the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ employeeId: "a/../b" }, ctx);
   assertEquals(pathOf(calls[0].url).includes("a%2F..%2Fb"), true);
 });
 
-Deno.test("employee-get: a missing id is rejected before any request", async () => {
+test("employee-get: a missing id is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("employee-get: surfaces the vendor error code", async () => {
+test("employee-get: surfaces the vendor error code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("NOT_FOUND", "The resource was not found"),

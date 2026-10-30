@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateGroupRemove from "../../actions/affiliate-group-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("affiliate-group-remove: DELETEs the group sub-resource", async () => {
+test("affiliate-group-remove: DELETEs the group sub-resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "janejameson", affiliate_group_id: null } }]);
   const out = await affiliateGroupRemove.execute({ affiliateId: "janejameson" }, ctx) as Record<
     string,

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-role.ts";
 
-Deno.test("create-role: POSTs /guilds/{id}/roles with an empty body when nothing supplied", async () => {
+test("create-role: POSTs /guilds/{id}/roles with an empty body when nothing supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1" } }]);
   await action.execute!({ guildId: "g1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("create-role: POSTs /guilds/{id}/roles with an empty body when nothing
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("create-role: forwards only supplied fields", async () => {
+test("create-role: forwards only supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1" } }]);
   await action.execute!(
     {
@@ -31,7 +32,7 @@ Deno.test("create-role: forwards only supplied fields", async () => {
   assertEquals(body.mentionable, true);
 });
 
-Deno.test("create-role: omits undefined optional fields entirely", async () => {
+test("create-role: omits undefined optional fields entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1" } }]);
   await action.execute!({ guildId: "g1", name: "Mods" }, ctx);
   const body = JSON.parse(calls[0].body!);

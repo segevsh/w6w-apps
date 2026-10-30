@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-export-create.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("conversation-export-create: POSTs the time range", async () => {
+test("conversation-export-create: POSTs the time range", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "e_1", "status": "pending" } }]);
   const result = await action.execute!(
     {

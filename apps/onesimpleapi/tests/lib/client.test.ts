@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { OneSimpleApiClient } from "../../lib/client.ts";
 
-Deno.test("client: always requests output=json", async () => {
+test("client: always requests output=json", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new OneSimpleApiClient(ctx);
   await client.request("/qr_code", { query: { message: "hi" } });
@@ -13,14 +14,14 @@ Deno.test("client: always requests output=json", async () => {
   assertEquals(url.searchParams.get("message"), "hi");
 });
 
-Deno.test("client: never sets the token query param itself", async () => {
+test("client: never sets the token query param itself", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new OneSimpleApiClient(ctx);
   await client.request("/qr_code", { query: { message: "hi" } });
   assertEquals(new URL(calls[0].url).searchParams.has("token"), false);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   const client = new OneSimpleApiClient(ctx);
   await client.request("/x", { query: { a: "kept", b: undefined, c: null, d: "" } });
@@ -31,7 +32,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: treats a non-JSON response as an error even on HTTP 200 (the invalid-token quirk)", async () => {
+test("client: treats a non-JSON response as an error even on HTTP 200 (the invalid-token quirk)", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -47,7 +48,7 @@ Deno.test("client: treats a non-JSON response as an error even on HTTP 200 (the 
   );
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx JSON", async () => {
+test("client: throws a descriptive Error on non-2xx JSON", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: { status: "error", message: "not found" } },
   ]);
@@ -60,7 +61,7 @@ Deno.test("client: throws a descriptive Error on non-2xx JSON", async () => {
   assertEquals(err.message.includes("/api/page_info"), true);
 });
 
-Deno.test("client: resolves on a 2xx JSON response and returns the parsed body", async () => {
+test("client: resolves on a 2xx JSON response and returns the parsed body", async () => {
   const body = { url: "https://cdn.opq.to/x.png", elapsed: 0.01 };
   const { ctx } = mockCtx([{ body }]);
   const client = new OneSimpleApiClient(ctx);

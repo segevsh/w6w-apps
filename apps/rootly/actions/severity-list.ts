@@ -38,7 +38,14 @@ const severityList: ActionDefinition<Input> = {
     {
       key: "severity",
       label: "Severity",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [
+        { value: "critical", label: "critical" },
+        { value: "high", label: "high" },
+        { value: "medium", label: "medium" },
+        { value: "low", label: "low" },
+      ],
       hint: "critical, high, medium or low.",
     },
     {

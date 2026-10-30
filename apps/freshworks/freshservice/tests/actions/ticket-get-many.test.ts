@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-get-many.ts";
 
-Deno.test("ticket-get-many: GETs /tickets and returns the unwrapped array", async () => {
+test("ticket-get-many: GETs /tickets and returns the unwrapped array", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { tickets: [{ id: 1 }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.freshservice.com/api/v2/tickets");
   assertEquals(out, { tickets: [{ id: 1 }] });
 });
 
-Deno.test("ticket-get-many: maps every filter onto its snake_case query key", async () => {
+test("ticket-get-many: maps every filter onto its snake_case query key", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { tickets: [] } }]);
   await action.execute({
     filter: "new_and_my_open",
@@ -32,7 +33,7 @@ Deno.test("ticket-get-many: maps every filter onto its snake_case query key", as
   assertEquals(url.searchParams.get("per_page"), "50");
 });
 
-Deno.test("ticket-get-many: caps per_page at Freshservice's documented 100", () => {
+test("ticket-get-many: caps per_page at Freshservice's documented 100", () => {
   const perPage = action.params?.find((p) => p.key === "perPage");
   assertEquals(perPage?.validation?.max, 100);
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { monitorKey } from "../../health/service.ts";
 import api from "../../health/api.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
@@ -6,13 +7,13 @@ import { errorBody, mockCtx } from "../_helpers.ts";
 const mon = (name: string, latestStatus?: boolean) => ({ name, type: "http", latestStatus });
 const run = (c: typeof service, ctx: never) => c.check!({} as never, ctx);
 
-Deno.test("service: declares the status host, no credential, and keys monitors by slug", () => {
+test("service: declares the status host, no credential, and keys monitors by slug", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.certifier.io"]);
   assertEquals(monitorKey("Database & Storage"), "database-storage");
 });
 
-Deno.test("service: all monitors up -> ok with six components", async () => {
+test("service: all monitors up -> ok with six components", async () => {
   const names = [
     "Certifier App",
     "Issuer Portal",
@@ -28,7 +29,7 @@ Deno.test("service: all monitors up -> ok with six components", async () => {
   assertEquals(calls[0].url, "https://status.certifier.io/api/status");
 });
 
-Deno.test("service: only the API monitor decides; a down Help Center is detail", async () => {
+test("service: only the API monitor decides; a down Help Center is detail", async () => {
   const { ctx } = mockCtx([{ body: { monitors: [mon("API", true), mon("Help Center", false)] } }]);
   const r = await run(service, ctx as never);
   assertEquals(r.state, "ok");
@@ -36,14 +37,14 @@ Deno.test("service: only the API monitor decides; a down Help Center is detail",
   assertEquals(r.message, "also down: Help Center");
 });
 
-Deno.test("service: API monitor down -> down", async () => {
+test("service: API monitor down -> down", async () => {
   const { ctx } = mockCtx([{ body: { monitors: [mon("API", false), mon("Docs", true)] } }]);
   const r = await run(service, ctx as never);
   assertEquals(r.state, "down");
   assertEquals(r.message, "API monitor is down");
 });
 
-Deno.test("service: no API monitor, no monitors, 404 or unreadable body -> unknown, never down", async () => {
+test("service: no API monitor, no monitors, 404 or unreadable body -> unknown, never down", async () => {
   for (
     const resp of [
       { body: { monitors: [mon("Docs", true)] } },
@@ -57,7 +58,7 @@ Deno.test("service: no API monitor, no monitors, 404 or unreadable body -> unkno
   }
 });
 
-Deno.test("api: Certifier's own JSON 401 passes as reachable, unsigned", async () => {
+test("api: Certifier's own JSON 401 passes as reachable, unsigned", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: errorBody("unauthorized", "Unauthorized"),
@@ -68,7 +69,7 @@ Deno.test("api: Certifier's own JSON 401 passes as reachable, unsigned", async (
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api: 5xx -> down, 429 -> degraded, foreign body -> unknown", async () => {
+test("api: 5xx -> down, 429 -> degraded, foreign body -> unknown", async () => {
   const cases = [
     [{ status: 502, body: "bad gateway" }, "down"],
     [{ status: 429, body: errorBody("rate_limited", "x") }, "degraded"],

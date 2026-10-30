@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import apiToken from "../../auth/api-token.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sign: stamps the bearer header and nothing else", async () => {
+test("sign: stamps the bearer header and nothing else", async () => {
   const request = {
     url: "https://app.youform.com/api/me",
     method: "GET",
@@ -15,7 +16,7 @@ Deno.test("sign: stamps the bearer header and nothing else", async () => {
   assertEquals((out as typeof request).headers["authorization"], "Bearer tok");
 });
 
-Deno.test("test: ok on 200, probes /api/me with the bearer", async () => {
+test("test: ok on 200, probes /api/me with the bearer", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await apiToken.test!({ credential: { token: " tok " } } as never, ctx);
   assertEquals(out.ok, true);
@@ -23,14 +24,14 @@ Deno.test("test: ok on 200, probes /api/me with the bearer", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("test: a missing token never reaches the network", async () => {
+test("test: a missing token never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await apiToken.test!({ credential: {} } as never, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: 401 and 500 are failures with distinct messages", async () => {
+test("test: 401 and 500 are failures with distinct messages", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthenticated." } }, {
     status: 500,
     body: "x",
@@ -42,7 +43,7 @@ Deno.test("test: 401 and 500 are failures with distinct messages", async () => {
   assertEquals(b.message?.includes("500"), true);
 });
 
-Deno.test("afterConnect: publishes email and name, never fails the connection", async () => {
+test("afterConnect: publishes email and name, never fails the connection", async () => {
   const { ctx } = mockCtx([
     { body: { data: { email: "a@b.co", first_name: "Ada", last_name: "L" } } },
     { status: 500, body: "x" },

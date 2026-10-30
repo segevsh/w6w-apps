@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import clientCredentials, {
   describeTokenFailure,
   requestAccessToken,
@@ -18,7 +19,7 @@ function tokenResponse(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("requestAccessToken - sends client_id/client_secret as query and the Basic token as a header", async () => {
+test("requestAccessToken - sends client_id/client_secret as query and the Basic token as a header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: tokenResponse() }]);
   const result = await requestAccessToken(
     ctx,
@@ -38,7 +39,7 @@ Deno.test("requestAccessToken - sends client_id/client_secret as query and the B
   assertEquals(calls[0].headers["authorization"], `Basic ${FIELDS.basicToken}`);
 });
 
-Deno.test("requestAccessToken - a non-2xx is reported as not-ok with the raw body", async () => {
+test("requestAccessToken - a non-2xx is reported as not-ok with the raw body", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -53,13 +54,13 @@ Deno.test("requestAccessToken - a non-2xx is reported as not-ok with the raw bod
   }
 });
 
-Deno.test("requestAccessToken - a 200 with no access_token is treated as not-ok", async () => {
+test("requestAccessToken - a 200 with no access_token is treated as not-ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { scope: "read" } }]);
   const result = await requestAccessToken(ctx, "a", "b", "c");
   assertEquals(result.ok, false);
 });
 
-Deno.test("describeTokenFailure - surfaces the vendor error code", () => {
+test("describeTokenFailure - surfaces the vendor error code", () => {
   const msg = describeTokenFailure(
     401,
     JSON.stringify({ error: "unauthorized", error_description: "x" }),
@@ -67,7 +68,7 @@ Deno.test("describeTokenFailure - surfaces the vendor error code", () => {
   assertEquals(msg.includes("unauthorized"), true);
 });
 
-Deno.test("exchange - turns the three fields into a credential carrying a fresh access token", async () => {
+test("exchange - turns the three fields into a credential carrying a fresh access token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: tokenResponse() }]);
   const before = Date.now();
   const credential = await clientCredentials.exchange!({ fields: FIELDS }, ctx) as {
@@ -85,7 +86,7 @@ Deno.test("exchange - turns the three fields into a credential carrying a fresh 
   assertEquals(credential.expiresAt! >= before + 172799 * 1000, true);
 });
 
-Deno.test("exchange - throws when a required field is missing", async () => {
+test("exchange - throws when a required field is missing", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(clientCredentials.exchange!({ fields: { clientId: "x" } }, ctx)),
@@ -94,7 +95,7 @@ Deno.test("exchange - throws when a required field is missing", async () => {
   );
 });
 
-Deno.test("exchange - throws a formatted error when Hotmart rejects the credentials", async () => {
+test("exchange - throws a formatted error when Hotmart rejects the credentials", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "unauthorized", error_description: "bad" },
@@ -105,13 +106,13 @@ Deno.test("exchange - throws a formatted error when Hotmart rejects the credenti
   );
 });
 
-Deno.test("test - re-runs the exchange and reports ok on success", async () => {
+test("test - re-runs the exchange and reports ok on success", async () => {
   const { ctx } = mockCtx([{ status: 200, body: tokenResponse() }]);
   const result = await clientCredentials.test({ credential: FIELDS }, ctx);
   assertEquals(result, { ok: true });
 });
 
-Deno.test("test - reports a clear message on a rejected credential", async () => {
+test("test - reports a clear message on a rejected credential", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { error: "unauthorized", error_description: "bad creds" } },
   ]);
@@ -120,14 +121,14 @@ Deno.test("test - reports a clear message on a rejected credential", async () =>
   assertEquals(result.message?.includes("Client ID/Secret/Basic token"), true);
 });
 
-Deno.test("test - reports missing fields without making a network call", async () => {
+test("test - reports missing fields without making a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await clientCredentials.test({ credential: { clientId: "only" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sign - injects the access token as a Bearer header and makes no network call", () => {
+test("sign - injects the access token as a Bearer header and makes no network call", () => {
   const request = {
     url: "https://developers.hotmart.com/user/api/v1/me",
     method: "GET",
@@ -140,7 +141,7 @@ Deno.test("sign - injects the access token as a Bearer header and makes no netwo
   assertEquals((out as typeof request).headers["authorization"], "Bearer tok123");
 });
 
-Deno.test("refresh - re-exchanges using the stored secrets and returns a fresh credential", async () => {
+test("refresh - re-exchanges using the stored secrets and returns a fresh credential", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: tokenResponse({ access_token: "new-token" }),
@@ -151,7 +152,7 @@ Deno.test("refresh - re-exchanges using the stored secrets and returns a fresh c
   assertEquals(calls.length, 1);
 });
 
-Deno.test("afterConnect - publishes name/email and nothing else", async () => {
+test("afterConnect - publishes name/email and nothing else", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { name: "Maria Silva", email: "maria@example.com", phone: "999" } },
   ]);
@@ -162,7 +163,7 @@ Deno.test("afterConnect - publishes name/email and nothing else", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("afterConnect - fails silently (empty object) when the profile read errors", async () => {
+test("afterConnect - fails silently (empty object) when the profile read errors", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await clientCredentials.afterConnect!({
     credential: { ...FIELDS, accessToken: "tok" },
@@ -170,7 +171,7 @@ Deno.test("afterConnect - fails silently (empty object) when the profile read er
   assertEquals(out, {});
 });
 
-Deno.test("afterConnect - returns nothing when there is no access token yet", async () => {
+test("afterConnect - returns nothing when there is no access token yet", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await clientCredentials.afterConnect!({ credential: FIELDS }, ctx);
   assertEquals(out, {});

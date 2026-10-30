@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import socialAccountList from "../../actions/social-account-list.ts";
 import { envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("social-account-list: GETs q=mine and unwraps the data envelope", async () => {
+test("social-account-list: GETs q=mine and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: envelope([{ postAccountId: "pa1", platform: "YOUTUBE" }]) },
   ]);

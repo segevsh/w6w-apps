@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/self-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("self-get: returns a curated subset and none of the app block", async () => {
+test("self-get: returns a curated subset and none of the app block", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       agreementNumber: 1583064,

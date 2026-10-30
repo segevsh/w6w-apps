@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/ocr-extract.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ocr-extract: calls ocr/ocr with the nested input and shapes the output", async () => {
+test("ocr-extract: calls ocr/ocr with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -28,7 +29,7 @@ Deno.test("ocr-extract: calls ocr/ocr with the nested input and shapes the outpu
   assertEquals(out.output, { text: "Invoice", bounding_boxes: [] });
 });
 
-Deno.test("ocr-extract: a provider failure inside a 200 is thrown", async () => {
+test("ocr-extract: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "google", error: { message: "provider down" } },
   }]);
@@ -40,7 +41,7 @@ Deno.test("ocr-extract: a provider failure inside a 200 is thrown", async () => 
   );
 });
 
-Deno.test("ocr-extract: fallbacks and a provider model reach the request", async () => {
+test("ocr-extract: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ file: "https://x/a.png", language: "en", provider: "google" },

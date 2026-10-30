@@ -1,10 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
 const cred = { linkname: "acme", accessToken: "tok" };
 
-Deno.test("access-token: collects the link name alongside the secret token", () => {
+test("access-token: collects the link name alongside the secret token", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "custom");
   assertEquals(auth.fields?.map((f) => f.key), ["linkname", "accessToken"]);
@@ -15,7 +16,7 @@ Deno.test("access-token: collects the link name alongside the secret token", () 
   assertEquals(pattern.test("evil.com/x"), false);
 });
 
-Deno.test("access-token: sign sets the accessToken and x-linkname headers", async () => {
+test("access-token: sign sets the accessToken and x-linkname headers", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.salesmate.io/apis/contact/v4/1",
@@ -27,7 +28,7 @@ Deno.test("access-token: sign sets the accessToken and x-linkname headers", asyn
   assertEquals(out.headers["x-linkname"], "acme.salesmate.io");
 });
 
-Deno.test("access-token: sign refuses another host, even another salesmate.io account", async () => {
+test("access-token: sign refuses another host, even another salesmate.io account", async () => {
   const { ctx } = mockCtx();
   for (const url of ["https://other.salesmate.io/apis/x", "https://evil.example.com/apis/x"]) {
     const request = { url, method: "GET", headers: {} as Record<string, string> };
@@ -42,7 +43,7 @@ Deno.test("access-token: sign refuses another host, even another salesmate.io ac
   }
 });
 
-Deno.test("access-token: sign refuses a hostile link name", () => {
+test("access-token: sign refuses a hostile link name", () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://evil.com/apis/x",
@@ -56,7 +57,7 @@ Deno.test("access-token: sign refuses a hostile link name", () => {
   );
 });
 
-Deno.test("access-token: test refuses a half-filled credential without a request", async () => {
+test("access-token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { linkname: "acme" } }, ctx), {
     ok: false,
@@ -65,14 +66,14 @@ Deno.test("access-token: test refuses a half-filled credential without a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test refuses a hostile link name without a request", async () => {
+test("access-token: test refuses a hostile link name without a request", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.test({ credential: { linkname: "evil.com/#", accessToken: "t" } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test passes on a well-formed success body", async () => {
+test("access-token: test passes on a well-formed success body", async () => {
   const ok = mockCtx([{ body: { Status: "success", Data: [{ id: 1, firstName: "A" }] } }]);
   assertEquals(await auth.test({ credential: cred }, ok.ctx), { ok: true });
   assertEquals(ok.calls[0].url, "https://acme.salesmate.io/apis/core/v4/users?status=active");
@@ -80,12 +81,12 @@ Deno.test("access-token: test passes on a well-formed success body", async () =>
   assertEquals(ok.calls[0].headers["x-linkname"], "acme.salesmate.io");
 });
 
-Deno.test("access-token: a 200 that is not the documented shape is NOT a pass", async () => {
+test("access-token: a 200 that is not the documented shape is NOT a pass", async () => {
   const html = mockCtx([{ body: "<html>shell</html>", headers: { "content-type": "text/html" } }]);
   assertEquals((await auth.test({ credential: cred }, html.ctx)).ok, false);
 });
 
-Deno.test("access-token: classifies a dead token from the vendor's error name, not the status", async () => {
+test("access-token: classifies a dead token from the vendor's error name, not the status", async () => {
   // Same body at 401 and 403 and 200: the body decides.
   for (const status of [401, 403, 200]) {
     const bad = mockCtx([{
@@ -99,7 +100,7 @@ Deno.test("access-token: classifies a dead token from the vendor's error name, n
   }
 });
 
-Deno.test("access-token: an unknown link name is reported as such", async () => {
+test("access-token: an unknown link name is reported as such", async () => {
   const bad = mockCtx([{
     status: 404,
     body: { Status: "failure", Error: { message: "Link  not found", name: "NoSuchLinkExist" } },
@@ -110,7 +111,7 @@ Deno.test("access-token: an unknown link name is reported as such", async () => 
   });
 });
 
-Deno.test("access-token: test never echoes the credential in its message", async () => {
+test("access-token: test never echoes the credential in its message", async () => {
   const bad = mockCtx([{ status: 500, body: { Status: "failure", Error: { Message: "boom" } } }]);
   const out = await auth.test(
     { credential: { linkname: "acme", accessToken: "s3cret-tok" } },
@@ -119,7 +120,7 @@ Deno.test("access-token: test never echoes the credential in its message", async
   assertEquals(JSON.stringify(out).includes("s3cret-tok"), false);
 });
 
-Deno.test("access-token: afterConnect records only the link name", () => {
+test("access-token: afterConnect records only the link name", () => {
   assertEquals(auth.afterConnect!({ credential: cred }, {} as never), { linkname: "acme" });
   assertEquals(auth.afterConnect!({ credential: { accessToken: "t" } }, {} as never), {});
 });

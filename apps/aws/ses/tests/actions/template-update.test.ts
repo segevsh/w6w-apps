@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-update.ts";
 
-Deno.test("template-update: PUT /v2/email/templates/welcome and maps the response", async () => {
+test("template-update: PUT /v2/email/templates/welcome and maps the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({
     templateName: "welcome",
@@ -26,7 +27,7 @@ Deno.test("template-update: PUT /v2/email/templates/welcome and maps the respons
   });
 });
 
-Deno.test("template-update: uses the connection's region for the host", async () => {
+test("template-update: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     mockConnection({ region: "eu-west-1" }),
@@ -35,7 +36,7 @@ Deno.test("template-update: uses the connection's region for the host", async ()
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("template-update: surfaces the vendor's error type and message", async () => {
+test("template-update: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

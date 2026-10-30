@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskEstimateSet from "../../actions/task-estimate-set.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-estimate-set: PUT /tasks/{taskId}/estimate with the documented query and body", async () => {
+test("task-estimate-set: PUT /tasks/{taskId}/estimate with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await taskEstimateSet.execute({
     "taskId": "ev:9",
@@ -29,7 +30,7 @@ Deno.test("task-estimate-set: PUT /tasks/{taskId}/estimate with the documented q
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("task-estimate-set: an Everhour error surfaces its message and status", async () => {
+test("task-estimate-set: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -47,7 +48,7 @@ Deno.test("task-estimate-set: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("task-estimate-set: declares perform and idempotent=true", () => {
+test("task-estimate-set: declares perform and idempotent=true", () => {
   assertEquals(taskEstimateSet.type, "perform");
   assertEquals(taskEstimateSet.idempotent, true);
 });

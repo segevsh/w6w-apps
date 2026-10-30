@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-endpoint.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 
-Deno.test("get-endpoint: GETs the endpoint with its deployed models intact", async () => {
+test("get-endpoint: GETs the endpoint with its deployed models intact", async () => {
   const body = { name: "e", deployedModels: [{ id: "d1" }], trafficSplit: { d1: 100 } };
   const { ctx, calls } = mockCtx([{ body }], { display });
   const out = await action.execute!({ endpointId: "7" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("get-endpoint: GETs the endpoint with its deployed models intact", asy
   assertEquals(out, body);
 });
 
-Deno.test("get-endpoint: a model's full name is refused (wrong collection)", async () => {
+test("get-endpoint: a model's full name is refused (wrong collection)", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     () =>

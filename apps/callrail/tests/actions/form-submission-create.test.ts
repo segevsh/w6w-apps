@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import formSubmissionCreate from "../../actions/form-submission-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-submission-create: POSTs form_data parsed from a JSON string param", async () => {
+test("form-submission-create: POSTs form_data parsed from a JSON string param", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "FOR1", company_id: "COM1" } }]);
   const out = await formSubmissionCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("form-submission-create: POSTs form_data parsed from a JSON string par
   assertEquals(out, { id: "FOR1", company_id: "COM1" });
 });
 
-Deno.test("form-submission-create: also accepts form_data already parsed as an object", async () => {
+test("form-submission-create: also accepts form_data already parsed as an object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await formSubmissionCreate.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("form-submission-create: also accepts form_data already parsed as an o
   assertEquals(JSON.parse(calls[0].body!).form_data, { name: "Graham" });
 });
 
-Deno.test("form-submission-create: invalid JSON in form_data fails before any network call", () => {
+test("form-submission-create: invalid JSON in form_data fails before any network call", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(() => {
     formSubmissionCreate.execute(

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/request-create.ts";
 
-Deno.test("request-create: requires only a client, and splits formIds on commas", async () => {
+test("request-create: requires only a client, and splits formIds on commas", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { requestCreate: { request: { id: "r1" }, userErrors: [] } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("request-create: requires only a client, and splits formIds on commas"
   });
 });
 
-Deno.test("request-create: never claims an inbound `source`", async () => {
+test("request-create: never claims an inbound `source`", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { requestCreate: { request: { id: "r1" }, userErrors: [] } } },
   }]);
@@ -23,7 +24,7 @@ Deno.test("request-create: never claims an inbound `source`", async () => {
   assertEquals(action.params?.some((p) => p.key === "source"), false);
 });
 
-Deno.test("request-create: userErrors throws", async () => {
+test("request-create: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: { requestCreate: { request: null, userErrors: [{ message: "Client not found" }] } },

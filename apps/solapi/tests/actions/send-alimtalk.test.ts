@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import sendAlimtalk from "../../actions/send-alimtalk.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => sendAlimtalk.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("send-alimtalk: declares a perform action with a description, params and output", () => {
+test("send-alimtalk: declares a perform action with a description, params and output", () => {
   assertEquals(sendAlimtalk.key, "send-alimtalk");
   assertEquals(sendAlimtalk.type, "perform");
   assert((sendAlimtalk.description ?? "").length > 0);
@@ -25,7 +26,7 @@ Deno.test("send-alimtalk: declares a perform action with a description, params a
   assertEquals(sendAlimtalk.idempotent, false);
 });
 
-Deno.test("send-alimtalk: sends the documented request and returns the documented shape", async () => {
+test("send-alimtalk: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "failedMessageList": [],
@@ -70,7 +71,7 @@ Deno.test("send-alimtalk: sends the documented request and returns the documente
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("send-alimtalk: a SOLAPI error body is thrown with its code and message", async () => {
+test("send-alimtalk: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

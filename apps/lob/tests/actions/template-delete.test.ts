@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateDelete from "../../actions/template-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
+test("template-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "tmpl_abc", deleted: true } }]);
   const out = await templateDelete.execute({ templateId: "tmpl_abc" }, ctx) as {
     id: string;
@@ -14,11 +15,11 @@ Deno.test("template-delete: sends DELETE to the resource and returns Lob's confi
   assertEquals(out, { id: "tmpl_abc", deleted: true });
 });
 
-Deno.test("template-delete: is declared idempotent", () => {
+test("template-delete: is declared idempotent", () => {
   assertEquals(templateDelete.idempotent, true);
 });
 
-Deno.test("template-delete: a refused delete surfaces Lob's code", async () => {
+test("template-delete: a refused delete surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("not_deletable", "cannot be deleted", 422),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountPatch from "../../actions/account-patch.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-patch: PATCHes /accounts/{email} without IMAP/SMTP fields", async () => {
+test("account-patch: PATCHes /accounts/{email} without IMAP/SMTP fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com" } }]);
   await accountPatch.execute({ email: "a@b.com", daily_limit: 30 }, ctx);
 
@@ -13,6 +14,6 @@ Deno.test("account-patch: PATCHes /accounts/{email} without IMAP/SMTP fields", a
   assertEquals("imap_password" in body, false);
 });
 
-Deno.test("account-patch: is declared idempotent", () => {
+test("account-patch: is declared idempotent", () => {
   assertEquals(accountPatch.idempotent, true);
 });

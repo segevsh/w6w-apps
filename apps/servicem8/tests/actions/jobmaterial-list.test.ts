@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobMaterialList from "../../actions/jobmaterial-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("jobmaterial-list: calls GET /jobmaterial.json", async () => {
+test("jobmaterial-list: calls GET /jobmaterial.json", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uuid: "m1" }] }]);
   const out = await jobMaterialList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/api_1.0/jobmaterial.json");

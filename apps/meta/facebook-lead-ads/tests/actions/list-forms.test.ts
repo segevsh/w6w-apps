@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-forms.ts";
 
-Deno.test("list-forms: GETs /{pageId}/leadgen_forms with fields", async () => {
+test("list-forms: GETs /{pageId}/leadgen_forms with fields", async () => {
   const body = { data: [{ id: "form1", name: "Signup" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ pageId: "page-123" }, ctx);
@@ -16,13 +17,13 @@ Deno.test("list-forms: GETs /{pageId}/leadgen_forms with fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-forms: omits authorization when no override is provided (runtime injects it)", async () => {
+test("list-forms: omits authorization when no override is provided (runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ pageId: "page-1" }, ctx);
   assert(!("authorization" in calls[0].headers), "auth must be injected by the sign hook, not us");
 });
 
-Deno.test("list-forms: forwards cursor as the `after` query param", async () => {
+test("list-forms: forwards cursor as the `after` query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ pageId: "page-1", cursor: "cursor-abc" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("after"), "cursor-abc");

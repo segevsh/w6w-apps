@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactTagAdd from "../../actions/contact-tag-add.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-add: adds tags via the relationship route", async () => {
+test("contact-tag-add: adds tags via the relationship route", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await contactTagAdd.execute({ contactId: "9", tagIds: "1,2" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,14 +17,14 @@ Deno.test("contact-tag-add: adds tags via the relationship route", async () => {
 });
 
 /** Kajabi's schema takes an array even for one tag — batching is its own shape. */
-Deno.test("contact-tag-add: sends one request for several tags", async () => {
+test("contact-tag-add: sends one request for several tags", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await contactTagAdd.execute({ contactId: "9", tagIds: "1, 2 ,3" }, ctx);
   assertEquals(calls.length, 1);
   assertEquals((bodyOf(calls[0]) as { data: unknown[] }).data.length, 3);
 });
 
-Deno.test("contact-tag-add: a blank tag list fails before the network", async () => {
+test("contact-tag-add: a blank tag list fails before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -35,6 +36,6 @@ Deno.test("contact-tag-add: a blank tag list fails before the network", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-tag-add: is idempotent", () => {
+test("contact-tag-add: is idempotent", () => {
   assertEquals(contactTagAdd.idempotent, true);
 });

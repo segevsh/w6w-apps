@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -13,24 +14,24 @@ function summary(mainStatus: string) {
   };
 }
 
-Deno.test("service: reads the Main Bubble Environment component", async () => {
+test("service: reads the Main Bubble Environment component", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary("operational") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
   assertEquals(calls[0].url, "https://status.bubble.io/api/v2/summary.json");
 });
 
-Deno.test("service: a major outage on that component is down", async () => {
+test("service: a major outage on that component is down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("major_outage") }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: partial/degraded states are degraded, not down", async () => {
+test("service: partial/degraded states are degraded, not down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("partial_outage") }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: falls back to the page indicator if the component is gone", async () => {
+test("service: falls back to the page indicator if the component is gone", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -43,13 +44,13 @@ Deno.test("service: falls back to the page indicator if the component is gone", 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an unreachable status page is unknown, not down", async () => {
+test("service: an unreachable status page is unknown, not down", async () => {
   const { ctx } = mockCtx([]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page whose name is not Bubble is treated as an unexpected shape", async () => {
+test("service: a page whose name is not Bubble is treated as an unexpected shape", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -61,7 +62,7 @@ Deno.test("service: a page whose name is not Bubble is treated as an unexpected 
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: is app-scoped, unsigned, and degraded by default", () => {
+test("service: is app-scoped, unsigned, and degraded by default", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
 });

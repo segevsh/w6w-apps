@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postChangeCategory from "../../actions/post-change-category.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-change-category: reassigns a category", async () => {
+test("post-change-category: reassigns a category", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", category: { id: "c1" } } }]);
   await postChangeCategory.execute({ postID: "p1", categoryID: "c1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("post-change-category: reassigns a category", async () => {
   assertEquals(bodyOf(calls[0]), { postID: "p1", categoryID: "c1" });
 });
 
-Deno.test('post-change-category: passes the literal string "null" through unchanged to clear it', async () => {
+test('post-change-category: passes the literal string "null" through unchanged to clear it', async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", category: null } }]);
   await postChangeCategory.execute({ postID: "p1", categoryID: "null" }, ctx);
 

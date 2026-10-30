@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reply-to-comment.ts";
 
-Deno.test("reply-to-comment: POSTs /youtube/v3/comments with part=snippet fixed", async () => {
+test("reply-to-comment: POSTs /youtube/v3/comments with part=snippet fixed", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c2" } }]);
   await action.execute!({ parentId: "c1", textOriginal: "Thanks!" }, ctx);
   const url = new URL(calls[0].url);
@@ -16,13 +17,13 @@ Deno.test("reply-to-comment: POSTs /youtube/v3/comments with part=snippet fixed"
   });
 });
 
-Deno.test("reply-to-comment: exposes no part parameter, only parentId and text", () => {
+test("reply-to-comment: exposes no part parameter, only parentId and text", () => {
   const keys = action.params!.map((p) => p.key).sort();
   assertEquals(keys, ["parentId", "textOriginal"]);
   for (const p of action.params!) assertEquals(p.required, true);
 });
 
-Deno.test("reply-to-comment: is honestly non-idempotent and says it creates replies only", () => {
+test("reply-to-comment: is honestly non-idempotent and says it creates replies only", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(/replies only|reply to an existing/i.test(action.description!));

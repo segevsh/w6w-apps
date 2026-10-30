@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-delete.ts";
 
-Deno.test("project-delete: DELETEs and reports what went, since Vercel answers 204", async () => {
+test("project-delete: DELETEs and reports what went, since Vercel answers 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], { display: {} });
   const result = await action.execute!({ projectId: "my-app" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("project-delete: DELETEs and reports what went, since Vercel answers 2
   assertEquals(result, { id: "my-app", deleted: true });
 });
 
-Deno.test("project-delete: a blank project fails before any request", async () => {
+test("project-delete: a blank project fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`projectId`");
   assertEquals(calls.length, 0);

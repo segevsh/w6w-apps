@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   COMPONENT_ID,
   mapComponentStatus,
@@ -26,21 +27,21 @@ function summary(over: Record<string, unknown> = {}, ds24Status = "operational")
   };
 }
 
-Deno.test("service: probes the status host, not the API host, with no credential", () => {
+test("service: probes the status host, not the API host, with no credential", () => {
   assertEquals(STATUS_URL, "https://status.digistore24.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.digistore24.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: operational is ok", async () => {
+test("service: operational is ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const res = await check({}, ctx);
   assertEquals(res.state, "ok");
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: reads the Digistore24 component, not the Digibiz24 sibling", async () => {
+test("service: reads the Digistore24 component, not the Digibiz24 sibling", async () => {
   const broken = summary({
     components: [
       { id: COMPONENT_ID, name: "Digistore24", status: "operational", group: false },
@@ -52,7 +53,7 @@ Deno.test("service: reads the Digistore24 component, not the Digibiz24 sibling",
   assertEquals((await check({}, ctx)).state, "ok");
 });
 
-Deno.test("service: component outage maps to down, partial to degraded", async () => {
+test("service: component outage maps to down, partial to degraded", async () => {
   const { ctx } = mockCtx([
     { body: summary({}, "major_outage") },
     { body: summary({}, "partial_outage") },
@@ -63,25 +64,25 @@ Deno.test("service: component outage maps to down, partial to degraded", async (
   assertEquals((await check({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a page that is not Digistore24's is unknown, never ok", async () => {
+test("service: a page that is not Digistore24's is unknown, never ok", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { id: "other", name: "Digistore24" } }) }]);
   assertEquals((await check({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: falls back to the page indicator if the component is gone", async () => {
+test("service: falls back to the page indicator if the component is gone", async () => {
   const { ctx } = mockCtx([{
     body: summary({ components: [], status: { indicator: "minor", description: "Minor" } }),
   }]);
   assertEquals((await check({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: HTTP failure and unreadable body are unknown, never down", async () => {
+test("service: HTTP failure and unreadable body are unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "x" }, { body: "not json" }]);
   assertEquals((await check({}, ctx)).state, "unknown");
   assertEquals((await check({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: status vocabularies map", () => {
+test("service: status vocabularies map", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("weird"), "unknown");

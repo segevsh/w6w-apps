@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuadernoCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: calls the documented endpoint", async () => {
+test("contact-create: calls the documented endpoint", async () => {
   const { ctx, calls } = mockQuadernoCtx([{ status: 201, body: { id: 5 } }]);
   const out = await action.execute({ firstName: "Jo", email: "jo@x.io", phone: "" }, ctx);
   assertEquals(calls.length, 1);

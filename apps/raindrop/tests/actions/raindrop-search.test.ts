@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import raindropSearch from "../../actions/raindrop-search.ts";
 import { items, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { items, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * The collection id is a PATH segment, and `0` — "everything except Trash" — has
  * to survive as a path segment rather than being dropped as falsy.
  */
-Deno.test("raindrop-search: collection 0 reaches the path, not the query string", async () => {
+test("raindrop-search: collection 0 reaches the path, not the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: items([{ _id: 1 }]) }]);
   const out = await raindropSearch.execute({ collectionId: 0 }, ctx) as { items: unknown[] };
 
@@ -14,7 +15,7 @@ Deno.test("raindrop-search: collection 0 reaches the path, not the query string"
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("raindrop-search: the negative system ids survive too", async () => {
+test("raindrop-search: the negative system ids survive too", async () => {
   const { ctx, calls } = mockCtx([{ body: items([]) }, { body: items([]) }]);
   await raindropSearch.execute({ collectionId: -1 }, ctx);
   await raindropSearch.execute({ collectionId: -99 }, ctx);
@@ -23,7 +24,7 @@ Deno.test("raindrop-search: the negative system ids survive too", async () => {
   assertEquals(pathOf(calls[1].url), "/rest/v1/raindrops/-99");
 });
 
-Deno.test("raindrop-search: search, sort and paging reach the query string", async () => {
+test("raindrop-search: search, sort and paging reach the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: items([]) }]);
   await raindropSearch.execute(
     { collectionId: 8492393, search: "#work type:article", sort: "-created", perpage: 50, page: 2 },
@@ -42,7 +43,7 @@ Deno.test("raindrop-search: search, sort and paging reach the query string", asy
  * `nested` is documented as opt-in and the vendor says nothing about how a
  * literal `false` is parsed, so absence expresses "off".
  */
-Deno.test("raindrop-search: nested is sent only when on", async () => {
+test("raindrop-search: nested is sent only when on", async () => {
   const { ctx, calls } = mockCtx([{ body: items([]) }, { body: items([]) }]);
   await raindropSearch.execute({ collectionId: 0, nested: true }, ctx);
   await raindropSearch.execute({ collectionId: 0, nested: false }, ctx);
@@ -52,14 +53,14 @@ Deno.test("raindrop-search: nested is sent only when on", async () => {
 });
 
 /** 50 is the vendor's hard ceiling and is declared rather than discovered. */
-Deno.test("raindrop-search: perpage is capped at the documented 50", () => {
+test("raindrop-search: perpage is capped at the documented 50", () => {
   const perpage = raindropSearch.params?.find((p) => p.key === "perpage");
   assertEquals(perpage?.validation?.max, 50);
   assertEquals(perpage?.default, 25);
 });
 
 /** `score` is meaningless without a search term, and the label says so. */
-Deno.test("raindrop-search: the relevance sort option is labelled as search-only", () => {
+test("raindrop-search: the relevance sort option is labelled as search-only", () => {
   const options = raindropSearch.params?.find((p) => p.key === "sort")?.options as Array<
     { value: string; label: string }
   >;

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/candidate-hiring-stage-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("candidate-hiring-stage-update: POSTs a JSON stage change to /hiring-stages/{job}", async () => {
+test("candidate-hiring-stage-update: POSTs a JSON stage change to /hiring-stages/{job}", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: { status_id: 3, label: "Interview" } } }]);
   await action.execute({
     candidateId: "5",
@@ -24,13 +25,13 @@ Deno.test("candidate-hiring-stage-update: POSTs a JSON stage change to /hiring-s
   });
 });
 
-Deno.test("candidate-hiring-stage-update: the label and optional fields are omitted when unset", async () => {
+test("candidate-hiring-stage-update: the label and optional fields are omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ candidateId: "5", jobId: "8", statusId: 2 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { status: { status_id: 2 } });
 });
 
-Deno.test("candidate-hiring-stage-update: a stage id is required", async () => {
+test("candidate-hiring-stage-update: a stage id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await (action.execute({ candidateId: "5", jobId: "8" } as never, ctx)),

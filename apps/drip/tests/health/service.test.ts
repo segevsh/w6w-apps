@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 
 const PAGE = { id: "xpd61d54mz8y", name: "Drip", url: "https://status.drip.com" };
 
-Deno.test("service: probes status.drip.com/api/v2/summary.json", async () => {
+test("service: probes status.drip.com/api/v2/summary.json", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       page: PAGE,
@@ -16,7 +17,7 @@ Deno.test("service: probes status.drip.com/api/v2/summary.json", async () => {
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: all-operational maps to ok, with the API component reported", async () => {
+test("service: all-operational maps to ok, with the API component reported", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: PAGE,
@@ -32,7 +33,7 @@ Deno.test("service: all-operational maps to ok, with the API component reported"
   assertEquals(report.components?.["rest-and-javascript-apis"], { state: "ok" });
 });
 
-Deno.test("service: a major outage on the API component maps to down", async () => {
+test("service: a major outage on the API component maps to down", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: PAGE,
@@ -45,7 +46,7 @@ Deno.test("service: a major outage on the API component maps to down", async () 
   assertEquals(report.components?.["rest-and-javascript-apis"].state, "down");
 });
 
-Deno.test("service: skips group-header components", async () => {
+test("service: skips group-header components", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: PAGE,
@@ -60,13 +61,13 @@ Deno.test("service: skips group-header components", async () => {
   assertEquals(Object.keys(report.components ?? {}), ["rest-and-javascript-apis"]);
 });
 
-Deno.test("service: a failed status API reports unknown, never down", async () => {
+test("service: a failed status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Drip's reports unknown", async () => {
+test("service: a page that no longer self-identifies as Drip's reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { id: "x", name: "Someone Else", url: "https://status.example.com" },

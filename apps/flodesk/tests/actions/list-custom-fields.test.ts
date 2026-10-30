@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 
 import listCustomFields from "../../actions/list-custom-fields.ts";
 
-Deno.test("list-custom-fields: GET /v1/custom-fields, paginated", async () => {
+test("list-custom-fields: GET /v1/custom-fields, paginated", async () => {
   const { ctx, calls } = mockCtx([{
     body: { meta: { page: 1, total_items: 2 }, data: [{ key: "fav", label: "Favorite" }] },
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-association.ts";
 
-Deno.test("delete-association: DELETEs the v4 association", async () => {
+test("delete-association: DELETEs the v4 association", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!(
     {

@@ -75,7 +75,12 @@ const action: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [{ value: "active", label: "active" }, { value: "hold", label: "hold" }, {
+        value: "completed",
+        label: "completed",
+      }, { value: "cancelled", label: "cancelled" }],
       hint: "active, hold, completed or cancelled.",
     },
     {

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inventoryLocationList from "../../actions/inventory-location-list.ts";
 import { mockCtx, pathOf, queryOf, v3Page } from "../_helpers.ts";
 
-Deno.test("inventory-location-list: GETs /v3/inventory/locations", async () => {
+test("inventory-location-list: GETs /v3/inventory/locations", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([{ id: 1, code: "MAIN" }]) }]);
   const out = await inventoryLocationList.execute({}, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("inventory-location-list: GETs /v3/inventory/locations", async () => {
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("inventory-location-list: booleans use the true/false spelling here", async () => {
+test("inventory-location-list: booleans use the true/false spelling here", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([]) }]);
   await inventoryLocationList.execute({ isActive: true, managedByExternalSource: false }, ctx);
   assertEquals(queryOf(calls[0].url), {
@@ -19,7 +20,7 @@ Deno.test("inventory-location-list: booleans use the true/false spelling here", 
   });
 });
 
-Deno.test("inventory-location-list: warns about externally managed locations", () => {
+test("inventory-location-list: warns about externally managed locations", () => {
   const managed = inventoryLocationList.params?.find((p) => p.key === "managedByExternalSource");
   assert(managed?.hint?.includes("will fight it"), managed?.hint);
 });

@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/asset-get-many.ts";
 
-Deno.test("asset-get-many: GETs /assets and unwraps `assets`", async () => {
+test("asset-get-many: GETs /assets and unwraps `assets`", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { assets: [{ id: 1 }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.freshservice.com/api/v2/assets");
   assertEquals(out, { assets: [{ id: 1 }] });
 });
 
-Deno.test("asset-get-many: maps filter, search, trashed and the embed", async () => {
+test("asset-get-many: maps filter, search, trashed and the embed", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { assets: [] } }]);
   await action.execute({
     filter: "asset_type_id:25",

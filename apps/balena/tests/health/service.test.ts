@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/service.ts";
 import api from "../../health/api.ts";
@@ -27,14 +28,14 @@ const healthy = [
 
 const run = (ctx: Parameters<NonNullable<typeof check.check>>[1]) => check.check!({}, ctx);
 
-Deno.test("service: an operational API and VPN is ok", async () => {
+test("service: an operational API and VPN is ok", async () => {
   const { ctx, calls } = mockCtx([summary(healthy)]);
   const result = await run(ctx);
   assertEquals(calls[0].url, "https://status.balena.io/api/v2/summary.json");
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: an API outage is down", async () => {
+test("service: an API outage is down", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API", status: "major_outage" },
     ...healthy.slice(1),
@@ -48,7 +49,7 @@ Deno.test("service: an API outage is down", async () => {
  * The split this check exists for: the four supervisor actions travel over
  * Cloudlink and fail independently of everything else.
  */
-Deno.test("service: a Cloudlink outage names the actions it breaks, and only those", async () => {
+test("service: a Cloudlink outage names the actions it breaks, and only those", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API", status: "operational" },
     { name: "Cloudlink (VPN)", status: "major_outage" },
@@ -62,7 +63,7 @@ Deno.test("service: a Cloudlink outage names the actions it breaks, and only tho
 });
 
 /** A deployment that never arrives is not an outage. */
-Deno.test("service: a builder problem is reported as the release pipeline", async () => {
+test("service: a builder problem is reported as the release pipeline", async () => {
   const { ctx } = mockCtx([summary([
     { name: "API", status: "operational" },
     { name: "Cloudlink (VPN)", status: "operational" },
@@ -76,7 +77,7 @@ Deno.test("service: a builder problem is reported as the release pipeline", asyn
 });
 
 /** balena publishes AWS components; a regional AWS notice is not balena down. */
-Deno.test("service: an AWS component going red does not change the verdict", async () => {
+test("service: an AWS component going red does not change the verdict", async () => {
   const { ctx } = mockCtx([summary([
     ...healthy.slice(0, 5),
     { name: "AWS ec2-us-east-1", status: "major_outage" },
@@ -84,7 +85,7 @@ Deno.test("service: an AWS component going red does not change the verdict", asy
   assertEquals((await run(ctx)).state, "ok");
 });
 
-Deno.test("service: a renamed API component is unknown rather than an outage", async () => {
+test("service: a renamed API component is unknown rather than an outage", async () => {
   const { ctx } = mockCtx([summary([{ name: "balena API", status: "operational" }])]);
   const result = await run(ctx);
   assertEquals(result.state, "unknown");
@@ -92,7 +93,7 @@ Deno.test("service: a renamed API component is unknown rather than an outage", a
 });
 
 /** /ping answers two bytes of text; parsing it as JSON fails on a healthy API. */
-Deno.test("api: an OK from /ping is ok", async () => {
+test("api: an OK from /ping is ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "OK" }]);
   const result = await api.check!({}, ctx);
   assertEquals(calls[0].url, "https://api.balena-cloud.com/ping");
@@ -100,14 +101,14 @@ Deno.test("api: an OK from /ping is ok", async () => {
   assertEquals(result.state, "ok");
 });
 
-Deno.test("api: something other than OK is a proxy, not the API", async () => {
+test("api: something other than OK is a proxy, not the API", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>Sign in</html>" }]);
   const result = await api.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assert(/proxy or captive portal/.test(result.message!), result.message);
 });
 
-Deno.test("api: a 5xx is down, a 4xx is degraded, an unreachable host is down", async () => {
+test("api: a 5xx is down, a 4xx is degraded, an unreachable host is down", async () => {
   const server = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await api.check!({}, server.ctx)).state, "down");
   const client = mockCtx([{ status: 403, body: "" }]);
@@ -120,14 +121,14 @@ Deno.test("api: a 5xx is down, a 4xx is degraded, an unreachable host is down", 
   assertEquals((await api.check!({}, ctx)).state, "down");
 });
 
-Deno.test("api: is unauthenticated and app-scoped", () => {
+test("api: is unauthenticated and app-scoped", () => {
   assertEquals(api.credential, "none");
   assertEquals(api.scope, "app");
   assertEquals(api.network!.allow, ["api.balena-cloud.com"]);
 });
 
 /** Measured: no rate-limit header at all. */
-Deno.test("quota: is a declared absence naming what binds instead", () => {
+test("quota: is a declared absence naming what binds instead", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assert(/no rate-limit headers/.test(quota.unavailable!.reason), quota.unavailable!.reason);

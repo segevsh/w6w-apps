@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCH sends only the fields set", async () => {
+test("contact-update: PATCH sends only the fields set", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "ok" } }]);
   const out = await contactUpdate.execute({ contact_id: "ct1", email: "a@b.co" }, ctx);
   assertEquals(calls[0].method, "PATCH");

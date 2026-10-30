@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: is a search action", () => {
+test("list-tasks: is a search action", () => {
   assertEquals(action.type, "search");
 });
 
-Deno.test("list-tasks: GETs /tasks with mapped filters and pagination", async () => {
+test("list-tasks: GETs /tasks with mapped filters and pagination", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { tasks: [] } }]);
   await action.execute({
     resourceId: 1,

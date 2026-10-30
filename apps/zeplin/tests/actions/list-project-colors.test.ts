@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-project-colors.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-project-colors: GETs /projects/5db81e73e1e36ee19f138c1a/colors and wraps the array with its paging position", async () => {
+test("list-project-colors: GETs /projects/5db81e73e1e36ee19f138c1a/colors and wraps the array with its paging position", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     projectId: "5db81e73e1e36ee19f138c1a",
@@ -27,7 +28,7 @@ Deno.test("list-project-colors: GETs /projects/5db81e73e1e36ee19f138c1a/colors a
   });
 });
 
-Deno.test("list-project-colors: a full page yields next_offset; limit and offset are validated", async () => {
+test("list-project-colors: a full page yields next_offset; limit and offset are validated", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     ...{ projectId: "5db81e73e1e36ee19f138c1a", includeLinkedStyleguides: true },
@@ -48,7 +49,7 @@ Deno.test("list-project-colors: a full page yields next_offset; limit and offset
   );
 });
 
-Deno.test("list-project-colors: a vendor error is thrown with its message; a non-array body is an error", async () => {
+test("list-project-colors: a vendor error is thrown with its message; a non-array body is an error", async () => {
   const bad = mockCtx([{ status: 401, body: { message: "invalid_token" } }]);
   await assertRejects(
     async () =>

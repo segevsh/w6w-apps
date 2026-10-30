@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-playlist.ts";
 
-Deno.test("update-playlist: PUTs /youtube/v3/playlists with id and snippet", async () => {
+test("update-playlist: PUTs /youtube/v3/playlists with id and snippet", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "PL1" } }]);
   await action.execute!({ id: "PL1", part: "snippet", title: "T" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("update-playlist: PUTs /youtube/v3/playlists with id and snippet", asy
   assertEquals(JSON.parse(calls[0].body!), { id: "PL1", snippet: { title: "T" } });
 });
 
-Deno.test("update-playlist: always writes snippet — the API requires the title", async () => {
+test("update-playlist: always writes snippet — the API requires the title", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ id: "PL1", part: "status", title: "T", privacyStatus: "private" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("part"), "status,snippet");
@@ -21,13 +22,13 @@ Deno.test("update-playlist: always writes snippet — the API requires the title
   assertEquals(body.status, { privacyStatus: "private" });
 });
 
-Deno.test("update-playlist: adds status to part when privacy is supplied", async () => {
+test("update-playlist: adds status to part when privacy is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ id: "PL1", part: "snippet", title: "T", privacyStatus: "public" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("part"), "snippet,status");
 });
 
-Deno.test("update-playlist: requires the title on the definition, not just in prose", () => {
+test("update-playlist: requires the title on the definition, not just in prose", () => {
   const title = action.params!.find((p) => p.key === "title");
   assertEquals(title?.required, true);
   const id = action.params!.find((p) => p.key === "id");
@@ -35,7 +36,7 @@ Deno.test("update-playlist: requires the title on the definition, not just in pr
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("update-playlist: splits tags and carries optional fields", async () => {
+test("update-playlist: splits tags and carries optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     id: "PL1",

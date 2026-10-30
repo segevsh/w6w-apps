@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/entity-switch.ts";
@@ -9,14 +10,14 @@ const changed = ok([{ entity_id: "light.kitchen", state: "on" }]);
  * The domain-agnostic services dispatch to whatever the target is, so one
  * action covers lights, switches, fans, scripts and scenes alike.
  */
-Deno.test("entity-switch: calls homeassistant.turn_on, not light.turn_on", async () => {
+test("entity-switch: calls homeassistant.turn_on, not light.turn_on", async () => {
   const { ctx, calls } = mockCtx([changed], { display });
   await action.execute!({ entityId: "light.kitchen", action: "turn_on" }, ctx);
   assertEquals(calls[0].url, "https://abc.ui.nabu.casa/api/services/homeassistant/turn_on");
   assertEquals(JSON.parse(calls[0].body!), { entity_id: ["light.kitchen"] });
 });
 
-Deno.test("entity-switch: all three verbs map to their own service", async () => {
+test("entity-switch: all three verbs map to their own service", async () => {
   for (const verb of ["turn_on", "turn_off", "toggle"]) {
     const { ctx, calls } = mockCtx([changed], { display });
     await action.execute!({ entityId: "switch.desk", action: verb }, ctx);
@@ -24,7 +25,7 @@ Deno.test("entity-switch: all three verbs map to their own service", async () =>
   }
 });
 
-Deno.test("entity-switch: mixed domains go in one call", async () => {
+test("entity-switch: mixed domains go in one call", async () => {
   const { ctx, calls } = mockCtx([changed], { display });
   const result = await action.execute!({
     entityId: "light.kitchen, switch.desk, script.goodnight",
@@ -35,7 +36,7 @@ Deno.test("entity-switch: mixed domains go in one call", async () => {
 });
 
 /** Toggling something already in the requested state changes nothing. */
-Deno.test("entity-switch: nothing changing is reported, not treated as failure", async () => {
+test("entity-switch: nothing changing is reported, not treated as failure", async () => {
   const { ctx } = mockCtx([ok([])], { display });
   const result = await action.execute!({ entityId: "light.kitchen", action: "turn_on" }, ctx) as {
     changedCount: number;
@@ -43,7 +44,7 @@ Deno.test("entity-switch: nothing changing is reported, not treated as failure",
   assertEquals(result.changedCount, 0);
 });
 
-Deno.test("entity-switch: an unknown verb is refused", async () => {
+test("entity-switch: an unknown verb is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "light.kitchen", action: "explode" }, ctx),
@@ -53,7 +54,7 @@ Deno.test("entity-switch: an unknown verb is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("entity-switch: a friendly name is refused", async () => {
+test("entity-switch: a friendly name is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Kitchen Light", action: "turn_on" }, ctx),
@@ -62,7 +63,7 @@ Deno.test("entity-switch: a friendly name is refused", async () => {
   );
 });
 
-Deno.test("entity-switch: needs entities", async () => {
+test("entity-switch: needs entities", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ action: "turn_on" }, ctx),
@@ -71,13 +72,13 @@ Deno.test("entity-switch: needs entities", async () => {
   );
 });
 
-Deno.test("entity-switch: logs the shape of the call", async () => {
+test("entity-switch: logs the shape of the call", async () => {
   const { ctx, logs } = mockCtx([changed], { display });
   await action.execute!({ entityId: "light.kitchen", action: "toggle" }, ctx);
   assertEquals(logs[0].data, { action: "toggle", targets: 1, changedCount: 1 });
 });
 
 /** It is idempotent because turn_on twice ends in the same state. */
-Deno.test("entity-switch: is idempotent", () => {
+test("entity-switch: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

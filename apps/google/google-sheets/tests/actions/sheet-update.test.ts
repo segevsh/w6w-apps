@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-update.ts";
 
-Deno.test("sheet-update: PUTs values.update with 2D values", async () => {
+test("sheet-update: PUTs values.update with 2D values", async () => {
   const { ctx, calls } = mockCtx([{ body: { updatedRange: "Sheet1!A2:B2" } }]);
   await action.execute({
     spreadsheetId: "ss-1",

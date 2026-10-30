@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import shiftCreate from "../../actions/shift-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("shift-create: POSTs a one-element array to the v2 shifts path", async () => {
+test("shift-create: POSTs a one-element array to the v2 shifts path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shifts: [{ id: "sh_1" }] }) }]);
   await shiftCreate.execute(
     { schedulerId: 10, startTime: 1, endTime: 2, title: "Morning" },
@@ -13,7 +14,7 @@ Deno.test("shift-create: POSTs a one-element array to the v2 shifts path", async
   assertEquals(JSON.parse(calls[0].body!), [{ startTime: 1, endTime: 2, title: "Morning" }]);
 });
 
-Deno.test("shift-create: notifyUsers is a query parameter", async () => {
+test("shift-create: notifyUsers is a query parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shifts: [] }) }]);
   await shiftCreate.execute(
     { schedulerId: 10, startTime: 1, endTime: 2, title: "x", notifyUsers: false },
@@ -22,7 +23,7 @@ Deno.test("shift-create: notifyUsers is a query parameter", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("notifyUsers"), "false");
 });
 
-Deno.test("shift-create: refuses a shift with neither title nor jobId", async () => {
+test("shift-create: refuses a shift with neither title nor jobId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await shiftCreate.execute({ schedulerId: 10, startTime: 1, endTime: 2 }, ctx);
@@ -30,12 +31,12 @@ Deno.test("shift-create: refuses a shift with neither title nor jobId", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shift-create: a jobId alone (no title) is accepted", async () => {
+test("shift-create: a jobId alone (no title) is accepted", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shifts: [] }) }]);
   await shiftCreate.execute({ schedulerId: 10, startTime: 1, endTime: 2, jobId: "job_1" }, ctx);
   assertEquals(calls.length, 1);
 });
 
-Deno.test("shift-create: not idempotent", () => {
+test("shift-create: not idempotent", () => {
   assertEquals(shiftCreate.idempotent, false);
 });

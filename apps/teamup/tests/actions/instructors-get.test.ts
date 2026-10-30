@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/instructors-get.ts";
 
 const sample = { id: 4, object: "instructor", name: "Ada", staff: 11 };
 
-Deno.test("instructors-get: reads /instructors/4 by id", async () => {
+test("instructors-get: reads /instructors/4 by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 4 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("instructors-get: reads /instructors/4 by id", async () => {
   assertEquals(result.staff, 11);
 });
 
-Deno.test("instructors-get: unset filters are not sent", async () => {
+test("instructors-get: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 4 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -21,7 +22,7 @@ Deno.test("instructors-get: unset filters are not sent", async () => {
 });
 
 /** The link from a teaching profile to the account that can log in. */
-Deno.test("instructors-get: declares the `staff` id a workflow joins on", () => {
+test("instructors-get: declares the `staff` id a workflow joins on", () => {
   const fields = action.output as Array<{ key: string; type: string }>;
   assertEquals(fields.find((f) => f.key === "staff")!.type, "number");
 });

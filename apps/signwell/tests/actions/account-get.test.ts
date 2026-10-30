@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: GETs /me and returns the body", async () => {
+test("account-get: GETs /me and returns the body", async () => {
   const body = {
     id: "m1",
     role: "owner",
@@ -15,7 +16,7 @@ Deno.test("account-get: GETs /me and returns the body", async () => {
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("account-get: a 401 is read from the vendor error code", async () => {
+test("account-get: a 401 is read from the vendor error code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {

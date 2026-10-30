@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bookmarksList from "../../actions/bookmarks-list.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-list: maps camelCase input to Instapaper's snake_case body fields", async () => {
+test("bookmarks-list: maps camelCase input to Instapaper's snake_case body fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       user: { type: "user", user_id: 1, username: "a" },
@@ -32,7 +33,7 @@ Deno.test("bookmarks-list: maps camelCase input to Instapaper's snake_case body 
   assertEquals(result.user, { type: "user", user_id: 1, username: "a" });
 });
 
-Deno.test("bookmarks-list: defaults missing arrays to empty rather than undefined", async () => {
+test("bookmarks-list: defaults missing arrays to empty rather than undefined", async () => {
   const { ctx } = mockCtx([{ body: { bookmarks: [] } }]);
   const result = await bookmarksList.execute({}, ctx);
   assertEquals(result, { user: null, bookmarks: [], highlights: [], delete_ids: [] });

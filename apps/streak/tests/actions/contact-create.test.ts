@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * The create path carries a trailing slash — `/contacts/` — distinct from
  * every other contact operation's `/contacts/{key}` (no trailing slash).
  */
-Deno.test("contact-create: POSTs to the trailing-slash path", async () => {
+test("contact-create: POSTs to the trailing-slash path", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "c1" } }]);
   await contactCreate.execute({ teamKey: "t1", emailAddresses: ["a@x.com"] }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,7 +15,7 @@ Deno.test("contact-create: POSTs to the trailing-slash path", async () => {
   assertEquals(JSON.parse(calls[0].body!), { emailAddresses: ["a@x.com"] });
 });
 
-Deno.test("contact-create: forwards getIfExisting as a query param, not body", async () => {
+test("contact-create: forwards getIfExisting as a query param, not body", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "c1" } }]);
   await contactCreate.execute(
     { teamKey: "t1", emailAddresses: ["a@x.com"], getIfExisting: true },

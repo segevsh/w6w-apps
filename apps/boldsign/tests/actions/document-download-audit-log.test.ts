@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentDownloadAuditLog from "../../actions/document-download-audit-log.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-download-audit-log: base64-encodes the response bytes", async () => {
+test("document-download-audit-log: base64-encodes the response bytes", async () => {
   const bytes = new TextEncoder().encode("audit trail pdf bytes");
   const { ctx, calls } = mockCtx([{
     status: 200,

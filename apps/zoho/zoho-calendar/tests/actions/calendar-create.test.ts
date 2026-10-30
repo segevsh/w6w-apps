@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/calendar-create.ts";
 
-Deno.test("calendar-create: POSTs /calendars with calendarData as a query param, not a body", async () => {
+test("calendar-create: POSTs /calendars with calendarData as a query param, not a body", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { calendars: [{ uid: "new-uid" }] } }]);
   const out = await action.execute({ name: "New Calendar", color: "#101010" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("calendar-create: POSTs /calendars with calendarData as a query param,
   assertEquals(out, { uid: "new-uid" });
 });
 
-Deno.test("calendar-create: includes optional fields, snake_cased where Zoho expects it", async () => {
+test("calendar-create: includes optional fields, snake_cased where Zoho expects it", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { calendars: [{ uid: "x" }] } }]);
   await action.execute(
     { name: "N", color: "#000000", includeInFreebusy: false, timezone: "Asia/Kolkata" },
@@ -26,13 +27,13 @@ Deno.test("calendar-create: includes optional fields, snake_cased where Zoho exp
   assertEquals(sent.timezone, "Asia/Kolkata");
 });
 
-Deno.test("calendar-create: rejects without name and color reaching the network", async () => {
+test("calendar-create: rejects without name and color reaching the network", async () => {
   const { ctx, calls } = mockCalendarCtx([]);
   await assertRejects(() => Promise.resolve(action.execute({} as never, ctx)));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("calendar-create: never sends the payload as a request body", async () => {
+test("calendar-create: never sends the payload as a request body", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { calendars: [{ uid: "x" }] } }]);
   await action.execute({ name: "N", color: "#000000" }, ctx);
   assert(calls[0].body === null, "expected no request body");

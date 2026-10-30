@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeoffCreate from "../../actions/timeoff-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timeoff-create - POSTs /timeoffs with an array of people IDs and full_day as 1/0", async () => {
+test("timeoff-create - POSTs /timeoffs with an array of people IDs and full_day as 1/0", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { timeoff_id: 5 } }]);
   const out = await timeoffCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("timeoff-create - POSTs /timeoffs with an array of people IDs and full
   assertEquals(out, { timeoff_id: 5 });
 });
 
-Deno.test("timeoff-create - a comma-separated peopleIds string is parsed into numbers", async () => {
+test("timeoff-create - a comma-separated peopleIds string is parsed into numbers", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await timeoffCreate.execute(
     { timeoffTypeId: 1, peopleIds: "1, 2, 3", startDate: "2025-01-01", endDate: "2025-01-02" },

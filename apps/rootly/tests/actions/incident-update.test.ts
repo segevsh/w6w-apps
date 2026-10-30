@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/incident-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("incident-update: full input maps to PUT /v1/incidents/{id}", async () => {
+test("incident-update: full input maps to PUT /v1/incidents/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -138,7 +139,7 @@ Deno.test("incident-update: full input maps to PUT /v1/incidents/{id}", async ()
   });
 });
 
-Deno.test("incident-update: required input only maps to PUT /v1/incidents/{id}", async () => {
+test("incident-update: required input only maps to PUT /v1/incidents/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -177,7 +178,7 @@ Deno.test("incident-update: required input only maps to PUT /v1/incidents/{id}",
   });
 });
 
-Deno.test("incident-update: an API error rejects with the vendor's title and detail", async () => {
+test("incident-update: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

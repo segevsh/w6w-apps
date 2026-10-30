@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-network-members.ts";
 import { NETWORK_PLACEHOLDER } from "../../lib/client.ts";
 
-Deno.test("list-network-members: GETs the network's users (teammates, not CRM contacts)", async () => {
+test("list-network-members: GETs the network's users (teammates, not CRM contacts)", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: "u1", fullName: "Ada Lovelace", email: "ada@example.com" }],
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: posts to /subscriptions, nesting notify_info and converting notify to 0/1", async () => {
+test("subscription-create: posts to /subscriptions, nesting notify_info and converting notify to 0/1", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_1", short_url: "https://rzp.io/s/abc" } }]);
   const out = await subscriptionCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("subscription-create: posts to /subscriptions, nesting notify_info and
   assertEquals(out, { id: "sub_1", short_url: "https://rzp.io/s/abc" });
 });
 
-Deno.test("subscription-create: total_count=0 (indefinite) survives compact() — zero is not 'unset'", async () => {
+test("subscription-create: total_count=0 (indefinite) survives compact() — zero is not 'unset'", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_2" } }]);
   await subscriptionCreate.execute({ planId: "plan_1", totalCount: 0 }, ctx);
 

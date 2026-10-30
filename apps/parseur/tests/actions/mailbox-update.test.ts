@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import mailboxUpdate from "../../actions/mailbox-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailbox-update: PUTs /parser/{id} with only the set fields", async () => {
+test("mailbox-update: PUTs /parser/{id} with only the set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, name: "Renamed" } }]);
   await mailboxUpdate.execute({ mailboxId: "7", name: "Renamed" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("mailbox-update: PUTs /parser/{id} with only the set fields", async ()
   assertEquals(JSON.parse(calls[0].body!), { name: "Renamed" });
 });
 
-Deno.test("mailbox-update: a 409 address conflict surfaces the vendor's message", async () => {
+test("mailbox-update: a 409 address conflict surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([
     {
       status: 409,
@@ -25,6 +26,6 @@ Deno.test("mailbox-update: a 409 address conflict surfaces the vendor's message"
   assertEquals(err.message.includes("already exists"), true, err.message);
 });
 
-Deno.test("mailbox-update: is idempotent", () => {
+test("mailbox-update: is idempotent", () => {
   assertEquals(mailboxUpdate.idempotent, true);
 });

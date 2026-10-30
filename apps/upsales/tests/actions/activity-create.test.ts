@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import activityCreate from "../../actions/activity-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("activity-create: POSTs /activities with the mapped body", async () => {
+test("activity-create: POSTs /activities with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await activityCreate.execute({
     "description": "Book a meeting",
@@ -34,7 +35,7 @@ Deno.test("activity-create: POSTs /activities with the mapped body", async () =>
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("activity-create: the free-form fields object is merged and typed params win", async () => {
+test("activity-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await activityCreate.execute(
     {
@@ -48,7 +49,7 @@ Deno.test("activity-create: the free-form fields object is merged and typed para
   assertEquals(sent["description"], "Book a meeting");
 });
 
-Deno.test("activity-create: fields may be a JSON string", async () => {
+test("activity-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await activityCreate.execute(
     { "description": "Book a meeting", "fields": '{"extraKey":1}' } as never,
@@ -57,7 +58,7 @@ Deno.test("activity-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("activity-create: invalid fields JSON is refused before any request", async () => {
+test("activity-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await activityCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -67,12 +68,12 @@ Deno.test("activity-create: invalid fields JSON is refused before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("activity-create: required params are declared", () => {
+test("activity-create: required params are declared", () => {
   const required = (activityCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["description"]);
 });
 
-Deno.test("activity-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("activity-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -96,7 +97,7 @@ Deno.test("activity-create: a rejected key surfaces Upsales' plain-text Unauthor
   );
 });
 
-Deno.test("activity-create: a JSON error envelope surfaces the vendor key", async () => {
+test("activity-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

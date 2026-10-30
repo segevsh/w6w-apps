@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event.ts";
 
-Deno.test("create-event: POSTs to /calendars/{id}/events with start/end", async () => {
+test("create-event: POSTs to /calendars/{id}/events with start/end", async () => {
   const created = { id: "evt-1", summary: "Party" };
   const { ctx, calls } = mockCtx([{ body: created }]);
   const result = await action.execute!({
@@ -23,7 +24,7 @@ Deno.test("create-event: POSTs to /calendars/{id}/events with start/end", async 
   assertEquals(result, created);
 });
 
-Deno.test("create-event: encodes email-shaped calendar IDs", async () => {
+test("create-event: encodes email-shaped calendar IDs", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "team@example.com",
@@ -35,7 +36,7 @@ Deno.test("create-event: encodes email-shaped calendar IDs", async () => {
   assert(url.pathname.includes("team%40example.com/events"));
 });
 
-Deno.test("create-event: allDay switches to date-only start/end", async () => {
+test("create-event: allDay switches to date-only start/end", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -48,7 +49,7 @@ Deno.test("create-event: allDay switches to date-only start/end", async () => {
   assertEquals(body.end, { date: "2026-07-02" });
 });
 
-Deno.test("create-event: fans out attendees and passes recurrence + reminders", async () => {
+test("create-event: fans out attendees and passes recurrence + reminders", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -68,7 +69,7 @@ Deno.test("create-event: fans out attendees and passes recurrence + reminders", 
   });
 });
 
-Deno.test("create-event: reminders param renders as a group/repeat list, not a scalar or JSON stopgap", () => {
+test("create-event: reminders param renders as a group/repeat list, not a scalar or JSON stopgap", () => {
   const reminders = action.params?.find((p) => p.key === "reminders");
   assertEquals(reminders?.type, "group");
   assertEquals(reminders?.repeat, true);
@@ -77,7 +78,7 @@ Deno.test("create-event: reminders param renders as a group/repeat list, not a s
   assertEquals(reminders?.children?.find((c) => c.key === "minutes")?.type, "number");
 });
 
-Deno.test("create-event: useDefaultReminders=false with no reminders sends undefined overrides", async () => {
+test("create-event: useDefaultReminders=false with no reminders sends undefined overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -90,7 +91,7 @@ Deno.test("create-event: useDefaultReminders=false with no reminders sends undef
   assertEquals(body.reminders.overrides, undefined);
 });
 
-Deno.test("create-event: attachments map into body and flip supportsAttachments query", async () => {
+test("create-event: attachments map into body and flip supportsAttachments query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -105,7 +106,7 @@ Deno.test("create-event: attachments map into body and flip supportsAttachments 
   assertEquals(new URL(calls[0].url).searchParams.get("supportsAttachments"), "true");
 });
 
-Deno.test("create-event: no attachments omits supportsAttachments query", async () => {
+test("create-event: no attachments omits supportsAttachments query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -115,7 +116,7 @@ Deno.test("create-event: no attachments omits supportsAttachments query", async 
   assertEquals(new URL(calls[0].url).searchParams.get("supportsAttachments"), null);
 });
 
-Deno.test("create-event: conferenceSolution sets conferenceData and flips version query", async () => {
+test("create-event: conferenceSolution sets conferenceData and flips version query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",
@@ -129,7 +130,7 @@ Deno.test("create-event: conferenceSolution sets conferenceData and flips versio
   assertEquals(new URL(calls[0].url).searchParams.get("conferenceDataVersion"), "1");
 });
 
-Deno.test("create-event: forwards sendUpdates and maxAttendees as query params", async () => {
+test("create-event: forwards sendUpdates and maxAttendees as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e" } }]);
   await action.execute!({
     calendarId: "primary",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-tags.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-tags: sends the required group filter", async () => {
+test("list-tags: sends the required group filter", async () => {
   const rows = [{ name: "support", group_ids: [0] }];
   const { ctx, calls } = mockCtx([{ body: rows }]);
   const out = await action.execute({ groupIds: "0,42" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("list-tags: sends the required group filter", async () => {
   assertEquals(out, { items: rows, count: 1 });
 });
 
-Deno.test("list-tags: groupIds is required, before any request", async () => {
+test("list-tags: groupIds is required, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`groupIds` is required");
   assertEquals(calls.length, 0);

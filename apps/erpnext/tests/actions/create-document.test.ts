@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createDocument from "../../actions/create-document.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("create-document: POSTs the values and returns the created document", async () => {
+test("create-document: POSTs the values and returns the created document", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { name: "CUST-0099", customer_name: "Acme Inc" } } },
   ], conn);
@@ -18,13 +19,13 @@ Deno.test("create-document: POSTs the values and returns the created document", 
   assertEquals(result, { document: { name: "CUST-0099", customer_name: "Acme Inc" } });
 });
 
-Deno.test("create-document: accepts Values as a raw JSON string", async () => {
+test("create-document: accepts Values as a raw JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], conn);
   await createDocument.execute({ doctype: "Lead", values: '{"lead_name":"Jane"}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { lead_name: "Jane" });
 });
 
-Deno.test("create-document: refuses a non-object Values", async () => {
+test("create-document: refuses a non-object Values", async () => {
   const { ctx } = mockCtx([], conn);
   const err = await assertRejects(
     async () => await createDocument.execute({ doctype: "Lead", values: "[1,2,3]" }, ctx),
@@ -33,6 +34,6 @@ Deno.test("create-document: refuses a non-object Values", async () => {
   assert(err.message.includes("must be a JSON object"), err.message);
 });
 
-Deno.test("create-document: is honest that a retry makes a second document", () => {
+test("create-document: is honest that a retry makes a second document", () => {
   assertEquals(createDocument.idempotent, false);
 });

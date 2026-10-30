@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobStatusGet from "../../actions/job-status-get.ts";
 import { jobResponse, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const JOB_ID = "018f1e2a-0000-7000-8000-000000000001";
 
-Deno.test("job-status-get: always sends redirect=false so a Processed job answers 200", async () => {
+test("job-status-get: always sends redirect=false so a Processed job answers 200", async () => {
   const { ctx, calls } = mockCtx([{ body: jobResponse({ status: "Processed" }) }]);
   const result = await jobStatusGet.execute({ jobId: JOB_ID }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("job-status-get: always sends redirect=false so a Processed job answer
   assertEquals((result as { job: { status: string } }).job.status, "Processed");
 });
 
-Deno.test("job-status-get: reports a Failed job's error detail", async () => {
+test("job-status-get: reports a Failed job's error detail", async () => {
   const { ctx } = mockCtx([
     {
       body: jobResponse({

@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-create.ts";
 
 const D = { display: { host: "https://nocodb.internal" } };
 
 /** The array form is one request rather than N, which is the whole point. */
-Deno.test("record-create: sends an array as one request and returns the ids", async () => {
+test("record-create: sends an array as one request and returns the ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ Id: 10 }, { Id: 11 }] }], D);
   const result = await action.execute({
     tableId: "mtbl1",
@@ -20,7 +21,7 @@ Deno.test("record-create: sends an array as one request and returns the ids", as
 });
 
 /** NocoDB accepts either shape; a single record goes as an object. */
-Deno.test("record-create: a single record is sent as an object", async () => {
+test("record-create: a single record is sent as an object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Id: 10 } }], D);
   const result = await action.execute(
     { tableId: "mtbl1", records: '{"Title":"A"}' },
@@ -33,7 +34,7 @@ Deno.test("record-create: a single record is sent as an object", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("record-create: reports which columns were written", async () => {
+test("record-create: reports which columns were written", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ Id: 10 }] }], D);
   const result = await action.execute({
     tableId: "mtbl1",
@@ -42,7 +43,7 @@ Deno.test("record-create: reports which columns were written", async () => {
   assertEquals(result.columns, ["Title", "Status"]);
 });
 
-Deno.test("record-create: refuses an empty list or a non-object record", async () => {
+test("record-create: refuses an empty list or a non-object record", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", records: "[]" }, ctx),
@@ -58,12 +59,12 @@ Deno.test("record-create: refuses an empty list or a non-object record", async (
 });
 
 /** The values are the customer's data. */
-Deno.test("record-create: logs the count, never the values", async () => {
+test("record-create: logs the count, never the values", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: [{ Id: 10 }] }], D);
   await action.execute({ tableId: "mtbl1", records: '[{"Email":"ada@example.com"}]' }, ctx);
   assert(!/ada@example\.com/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("record-create: is not idempotent", () => {
+test("record-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

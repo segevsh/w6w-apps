@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("health/quota: declares quota kind and informational severity", () => {
+test("health/quota: declares quota kind and informational severity", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("health/quota: ok when every meter is well under 90%", async () => {
+test("health/quota: ok when every meter is well under 90%", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -24,7 +25,7 @@ Deno.test("health/quota: ok when every meter is well under 90%", async () => {
   assertEquals(report.quota?.find((q) => q.id === "call_count")?.remaining, 90);
 });
 
-Deno.test("health/quota: degraded at >=90% used, down at >=100%", async () => {
+test("health/quota: degraded at >=90% used, down at >=100%", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -39,13 +40,13 @@ Deno.test("health/quota: degraded at >=90% used, down at >=100%", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("health/quota: unknown when the probe fails", async () => {
+test("health/quota: unknown when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("health/quota: unknown when no X-App-Usage header is present", async () => {
+test("health/quota: unknown when no X-App-Usage header is present", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "u1" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

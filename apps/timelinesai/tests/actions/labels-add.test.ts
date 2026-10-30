@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import labelsAdd from "../../actions/labels-add.ts";
 
-Deno.test("labels-add: PUTs the split label list", async () => {
+test("labels-add: PUTs the split label list", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "labels": [] } } }]);
   const out = await labelsAdd.execute!({ "chatId": 4, "labels": "vip, hot\nnew" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("labels-add: PUTs the split label list", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("labels-add: surfaces a vendor error envelope", async () => {
+test("labels-add: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -28,7 +29,7 @@ Deno.test("labels-add: surfaces a vendor error envelope", async () => {
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("labels-add: refuses an empty label list, before the network", async () => {
+test("labels-add: refuses an empty label list, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await labelsAdd.execute!({ chatId: 4, labels: " , " } as never, ctx);

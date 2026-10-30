@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import viewMessages from "../../actions/view-messages.ts";
 import { APP_ID, mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("view-messages: defaults limit/offset, app_id from the connection", async () => {
+test("view-messages: defaults limit/offset, app_id from the connection", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 200, body: { total_count: 0, notifications: [] } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("view-messages: defaults limit/offset, app_id from the connection", as
   assertEquals(queryOf(calls[0].url), { app_id: APP_ID, limit: "50", offset: "0" });
 });
 
-Deno.test("view-messages: `kind` passes through as-is (creation method, not channel)", async () => {
+test("view-messages: `kind` passes through as-is (creation method, not channel)", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 200, body: { total_count: 0, notifications: [] } },
   ]);

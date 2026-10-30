@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/chart-url-create.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
 const CHART = { type: "bar", data: { labels: ["a"], datasets: [{ data: [1] }] } };
 
-Deno.test("chart-url-create: POSTs /chart/create and returns the short URL and viewer URL", async () => {
+test("chart-url-create: POSTs /chart/create and returns the short URL and viewer URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, url: "https://quickchart.io/chart/render/zf-abc-123" },
   }]);
@@ -17,12 +18,12 @@ Deno.test("chart-url-create: POSTs /chart/create and returns the short URL and v
   });
 });
 
-Deno.test("chart-url-create: a response without a url is an error", async () => {
+test("chart-url-create: a response without a url is an error", async () => {
   const { ctx } = mockCtx([{ body: { success: true } }]);
   await assertRejects(() => exec(action, { chart: CHART }, ctx), Error, "without a url");
 });
 
-Deno.test("chart-url-create: a 500 surfaces the status", async () => {
+test("chart-url-create: a 500 surfaces the status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { error: "boom" } }]);
   await assertRejects(() => exec(action, { chart: CHART }, ctx), Error, "500");
 });

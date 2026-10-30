@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categorySearch from "../../actions/category-search.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("category-search: calls GET /categories and returns the page", async () => {
+test("category-search: calls GET /categories and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ id: 9691094, name: "Fruit" }]) }]);
   const out = await categorySearch.execute({ limit: 50 }, ctx) as { items: unknown[] };
 
@@ -12,7 +13,7 @@ Deno.test("category-search: calls GET /categories and returns the page", async (
   assertEquals(out.items, [{ id: 9691094, name: "Fruit" }]);
 });
 
-Deno.test("category-search: the tree walkers are passed through", async () => {
+test("category-search: the tree walkers are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await categorySearch.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("category-search: the tree walkers are passed through", async () => {
   });
 });
 
-Deno.test("category-search: disabled categories are excluded unless asked for", () => {
+test("category-search: disabled categories are excluded unless asked for", () => {
   const param = categorySearch.params?.find((p) => p.key === "hidden_categories");
   assertEquals(param?.default, undefined);
 });

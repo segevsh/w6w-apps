@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import customerUpdate from "../../actions/customer-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-update: PUT /v1/src1/customers/o%201 with the documented query/body", async () => {
+test("customer-update: PUT /v1/src1/customers/o%201 with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { customer: {} } }]);
   const out = await customerUpdate.execute({
     source_id: "src1",
@@ -26,19 +27,19 @@ Deno.test("customer-update: PUT /v1/src1/customers/o%201 with the documented que
   assert("customer" in out);
 });
 
-Deno.test("customer-update: omits unset optional body fields", async () => {
+test("customer-update: omits unset optional body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customerUpdate.execute({ source_id: "src1", oid: "o 1" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body ?? "{}")).sort(), [].sort());
 });
 
-Deno.test("customer-update: declares type perform and every required param", () => {
+test("customer-update: declares type perform and every required param", () => {
   assertEquals(customerUpdate.type, "perform");
   const required = (customerUpdate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["oid", "source_id"]);
 });
 
-Deno.test("customer-update: surfaces a vendor error as a thrown message", async () => {
+test("customer-update: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

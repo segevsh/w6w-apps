@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/create-appointment.ts";
 
-Deno.test("create-appointment: POSTs /calendars/events/appointments with locationId", async () => {
+test("create-appointment: POSTs /calendars/events/appointments with locationId", async () => {
   const { ctx, calls } = mockHighLevelCtx([
     { status: 201, body: { appointment: { id: "e1" } } },
   ], "loc-1");

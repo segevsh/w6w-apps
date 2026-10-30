@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-update.ts";
 
 const display = {};
 
-Deno.test("email-update: PATCHes only the schedule — the endpoint takes nothing else", async () => {
+test("email-update: PATCHes only the schedule — the endpoint takes nothing else", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { scheduled_at: "2026-09-01T00:00:00Z" } }],
     {
@@ -17,7 +18,7 @@ Deno.test("email-update: PATCHes only the schedule — the endpoint takes nothin
   assertEquals(JSON.parse(calls[0].body!), { scheduled_at: "in 1 hour" });
 });
 
-Deno.test("email-update: both fields are required", async () => {
+test("email-update: both fields are required", async () => {
   const noId = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ scheduledAt: "in 1 hour" }, noId.ctx),

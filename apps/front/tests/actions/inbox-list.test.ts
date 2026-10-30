@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/inbox-list.ts";
 
-Deno.test("inbox-list: reads /inboxes and returns the results", async () => {
+test("inbox-list: reads /inboxes and returns the results", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _results: [{ id: "inb_1", name: "Support" }] },
@@ -12,7 +13,7 @@ Deno.test("inbox-list: reads /inboxes and returns the results", async () => {
 });
 
 /** This collection has no cursor, so one request is the whole answer. */
-Deno.test("inbox-list: does not page a collection Front does not paginate", async () => {
+test("inbox-list: does not page a collection Front does not paginate", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _results: [{ id: "inb_1" }] } }]);
   await action.execute!({ returnAll: true }, ctx);
   assertEquals(calls.length, 1);

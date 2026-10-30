@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import storeProfileUpdate from "../../actions/store-profile-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("store-profile-update: PUTs a partial profile body", async () => {
+test("store-profile-update: PUTs a partial profile body", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   const out = await storeProfileUpdate.execute(
     { settings: { storeName: "Acme", closed: false } },
@@ -17,7 +18,7 @@ Deno.test("store-profile-update: PUTs a partial profile body", async () => {
   assertEquals(out.updateCount, 1);
 });
 
-Deno.test("store-profile-update: additional fields are merged over the typed ones", async () => {
+test("store-profile-update: additional fields are merged over the typed ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await storeProfileUpdate.execute(
     {
@@ -32,7 +33,7 @@ Deno.test("store-profile-update: additional fields are merged over the typed one
   });
 });
 
-Deno.test("store-profile-update: an untouched field is not sent, so it keeps its value", async () => {
+test("store-profile-update: an untouched field is not sent, so it keeps its value", async () => {
   const { ctx, calls } = mockCtx([{ body: { updateCount: 1 } }]);
   await storeProfileUpdate.execute({ languages: { defaultLanguage: "en" } }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { languages: { defaultLanguage: "en" } });

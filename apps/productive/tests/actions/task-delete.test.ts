@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskDelete from "../../actions/task-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-delete: DELETE /tasks/{id} reports ok and the id", async () => {
+test("task-delete: DELETE /tasks/{id} reports ok and the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await taskDelete.execute({ id: "42" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("task-delete: DELETE /tasks/{id} reports ok and the id", async () => {
   assertEquals(out, { ok: true, id: "42" });
 });
 
-Deno.test("task-delete: a vendor error surfaces its status, title and detail", async () => {
+test("task-delete: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -27,7 +28,7 @@ Deno.test("task-delete: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("task-delete: declares perform and idempotent=true", () => {
+test("task-delete: declares perform and idempotent=true", () => {
   assertEquals(taskDelete.type, "perform");
   assertEquals(taskDelete.idempotent, true);
   assertEquals(taskDelete.key, "task-delete");

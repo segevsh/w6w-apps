@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import tableRecordList from "../../actions/table-record-list.ts";
 
-Deno.test("table-record-list: lists a table's records with default pagination", async () => {
+test("table-record-list: lists a table's records with default pagination", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -25,7 +26,7 @@ Deno.test("table-record-list: lists a table's records with default pagination", 
   assert(q.startsWith('{ table_records(table_id: "ZtEdWh", first: 20) {'));
 });
 
-Deno.test("table-record-list: type/resource metadata", () => {
+test("table-record-list: type/resource metadata", () => {
   assertEquals(tableRecordList.type, "read");
   assertEquals(tableRecordList.resource, "table-record");
 });

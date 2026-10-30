@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ok } from "./_shared.ts";
 import action from "../../actions/connection-resync.ts";
@@ -7,7 +8,7 @@ import action from "../../actions/connection-resync.ts";
  * Fivetran bills by monthly active rows, so a full re-sync re-bills every row —
  * real money that arrives on next month's invoice rather than as an error.
  */
-Deno.test("connection-resync: refuses without the acknowledgement, and says why", async () => {
+test("connection-resync: refuses without the acknowledgement, and says why", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ connectionId: "c1" }, ctx),
@@ -17,7 +18,7 @@ Deno.test("connection-resync: refuses without the acknowledgement, and says why"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("connection-resync: acknowledged, it posts and warns", async () => {
+test("connection-resync: acknowledged, it posts and warns", async () => {
   const { ctx, calls, logs } = mockCtx([ok({})]);
   const result = await action.execute!({ connectionId: "c1", confirm: true }, ctx) as {
     queued: boolean;
@@ -31,7 +32,7 @@ Deno.test("connection-resync: acknowledged, it posts and warns", async () => {
 });
 
 /** Scoping costs proportionally less and is usually what the reason calls for. */
-Deno.test("connection-resync: a scope limits it to named tables", async () => {
+test("connection-resync: a scope limits it to named tables", async () => {
   const { ctx, calls } = mockCtx([ok({})]);
   const result = await action.execute!({
     connectionId: "c1",
@@ -43,7 +44,7 @@ Deno.test("connection-resync: a scope limits it to named tables", async () => {
 });
 
 /** Fivetran answers 400 for an empty scope; refusing here says why. */
-Deno.test("connection-resync: an empty scope is refused rather than sent", async () => {
+test("connection-resync: an empty scope is refused rather than sent", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ connectionId: "c1", confirm: true, scope: "{}" }, ctx),
@@ -53,7 +54,7 @@ Deno.test("connection-resync: an empty scope is refused rather than sent", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("connection-resync: malformed scope JSON is refused by name", async () => {
+test("connection-resync: malformed scope JSON is refused by name", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ connectionId: "c1", confirm: true, scope: "{oops" }, ctx),
@@ -62,7 +63,7 @@ Deno.test("connection-resync: malformed scope JSON is refused by name", async ()
   );
 });
 
-Deno.test("connection-resync: needs a connection id", async () => {
+test("connection-resync: needs a connection id", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ confirm: true }, ctx),
@@ -71,6 +72,6 @@ Deno.test("connection-resync: needs a connection id", async () => {
   );
 });
 
-Deno.test("connection-resync: states the cost in its description", () => {
+test("connection-resync: states the cost in its description", () => {
   assert(/re-bills every row/.test(action.description!), action.description);
 });

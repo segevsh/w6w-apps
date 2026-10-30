@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-ledger-accounts.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: null,
 };
 
-Deno.test("list-ledger-accounts: GETs /ledger_accounts", async () => {
+test("list-ledger-accounts: GETs /ledger_accounts", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -17,14 +18,14 @@ Deno.test("list-ledger-accounts: GETs /ledger_accounts", async () => {
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-ledger-accounts: a limit above the usual 100 is sent through, not clamped", async () => {
+test("list-ledger-accounts: a limit above the usual 100 is sent through, not clamped", async () => {
   // This is the one list whose documented ceiling is 1,000.
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({ limit: 1000 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "1000");
 });
 
-Deno.test("list-ledger-accounts: filters on a number prefix and on enabled", async () => {
+test("list-ledger-accounts: filters on a number prefix and on enabled", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     filter: [

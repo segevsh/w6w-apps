@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { AcumbamailError, call, encodeForm, fnUrl, parseBody, required } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("encodeForm: drops unset, 1/0 booleans, bracket-encodes dicts and arrays", () => {
+test("encodeForm: drops unset, 1/0 booleans, bracket-encodes dicts and arrays", () => {
   const f = encodeForm({
     a: undefined,
     b: null,
@@ -24,12 +25,12 @@ Deno.test("encodeForm: drops unset, 1/0 booleans, bracket-encodes dicts and arra
   });
 });
 
-Deno.test("fnUrl: only letters; rejects path tricks", () => {
+test("fnUrl: only letters; rejects path tricks", () => {
   assertEquals(fnUrl("getLists"), "https://acumbamail.com/api/1/getLists/");
   assertThrows(() => fnUrl("../x"));
 });
 
-Deno.test("required / parseBody", () => {
+test("required / parseBody", () => {
   assertEquals(required("x", " 7 "), "7");
   assertThrows(() => required("x", undefined), Error, "x is required");
   assertEquals(parseBody(""), null);
@@ -37,7 +38,7 @@ Deno.test("required / parseBody", () => {
   assertEquals(parseBody("not json"), "not json");
 });
 
-Deno.test("call: 401 Unauthorized becomes an AcumbamailError carrying status", async () => {
+test("call: 401 Unauthorized becomes an AcumbamailError carrying status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   const err = await assertRejects(() => call(ctx, "getLists"));
   assert(err instanceof AcumbamailError);

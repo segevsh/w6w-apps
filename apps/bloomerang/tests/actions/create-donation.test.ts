@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-donation.ts";
 
-Deno.test("create-donation: is a non-idempotent perform", () => {
+test("create-donation: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-donation: POSTs /transaction with a single Donation designation", async () => {
+test("create-donation: POSTs /transaction with a single Donation designation", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Id: 1, TransactionNumber: 100 } }]);
   await action.execute({
     accountId: 42,
@@ -30,7 +31,7 @@ Deno.test("create-donation: POSTs /transaction with a single Donation designatio
   });
 });
 
-Deno.test("create-donation: the designation amount always equals the transaction amount", async () => {
+test("create-donation: the designation amount always equals the transaction amount", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ accountId: 1, date: "2026-01-01", amount: 250 }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -38,7 +39,7 @@ Deno.test("create-donation: the designation amount always equals the transaction
   assertEquals(sent.Designations[0].Amount, 250);
 });
 
-Deno.test("create-donation: omits campaign/appeal/fee when not supplied", async () => {
+test("create-donation: omits campaign/appeal/fee when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ accountId: 1, date: "2026-01-01", amount: 10 }, ctx);
   const sent = JSON.parse(calls[0].body!);

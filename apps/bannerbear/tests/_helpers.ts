@@ -9,7 +9,7 @@
  * test that makes an unexpected extra request fails instead of hanging.
  */
 import type { HookContext } from "@w6w/types";
-import { assertRejects as stdAssertRejects } from "@std/assert";
+import { assertRejects as stdAssertRejects } from "./_assert.ts";
 
 export const API_ROOT = "https://api.bannerbear.com/v5";
 export const SYNC_API_ROOT = "https://sync.api.bannerbear.com/v5";

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { basicHeader } from "../../auth/api-key.ts";
 
-Deno.test("api-key: collects the domain alongside the credential", () => {
+test("api-key: collects the domain alongside the credential", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -13,7 +14,7 @@ Deno.test("api-key: collects the domain alongside the credential", () => {
   assertEquals(auth.fields?.find((f) => f.key === "domain")?.type, "string");
 });
 
-Deno.test("api-key: the domain field rejects a full URL", () => {
+test("api-key: the domain field rejects a full URL", () => {
   const pattern = auth.fields?.find((f) => f.key === "domain")?.validation?.pattern;
   assertEquals(typeof pattern, "string");
   const re = new RegExp(pattern!);
@@ -22,7 +23,7 @@ Deno.test("api-key: the domain field rejects a full URL", () => {
   assertEquals(re.test("https://acme.freshservice.com"), false);
 });
 
-Deno.test("api-key: sign uses Freshservice's `apiKey:X` Basic scheme", async () => {
+test("api-key: sign uses Freshservice's `apiKey:X` Basic scheme", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.freshservice.com/api/v2/tickets",
@@ -36,7 +37,7 @@ Deno.test("api-key: sign uses Freshservice's `apiKey:X` Basic scheme", async () 
   assertEquals(atob(basicHeader("tok").slice("Basic ".length)), "tok:X");
 });
 
-Deno.test("api-key: test refuses a half-filled credential without a request", async () => {
+test("api-key: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { domain: "acme" } }, ctx), {
     ok: false,
@@ -45,7 +46,7 @@ Deno.test("api-key: test refuses a half-filled credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes the account's own host, signed itself", async () => {
+test("api-key: test probes the account's own host, signed itself", async () => {
   const ok = mockCtx([{ body: { tickets: [] } }]);
   assertEquals(
     await auth.test({ credential: { domain: "acme", apiKey: "tok" } }, ok.ctx),
@@ -56,7 +57,7 @@ Deno.test("api-key: test probes the account's own host, signed itself", async ()
   assertEquals(ok.calls[0].headers["authorization"], `Basic ${btoa("tok:X")}`);
 });
 
-Deno.test("api-key: test reports the status when the credential is rejected", async () => {
+test("api-key: test reports the status when the credential is rejected", async () => {
   const bad = mockCtx([{ status: 401, body: { code: "invalid_credentials" } }]);
   assertEquals(
     await auth.test({ credential: { domain: "acme", apiKey: "nope" } }, bad.ctx),
@@ -64,7 +65,7 @@ Deno.test("api-key: test reports the status when the credential is rejected", as
   );
 });
 
-Deno.test("api-key: afterConnect records the domain and makes no request", async () => {
+test("api-key: afterConnect records the domain and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.afterConnect!({ credential: { domain: "acme", apiKey: "tok" } }, ctx);
   // Without this the client could never build a URL for the connection.
@@ -74,7 +75,7 @@ Deno.test("api-key: afterConnect records the domain and makes no request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect returns nothing when no domain was given", async () => {
+test("api-key: afterConnect returns nothing when no domain was given", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {});
 });

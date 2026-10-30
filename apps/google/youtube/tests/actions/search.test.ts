@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: hits /youtube/v3/search with part and invents no other defaults", async () => {
+test("search: hits /youtube/v3/search with part and invents no other defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: "snippet" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("search: hits /youtube/v3/search with part and invents no other defaul
   assertEquals([...url.searchParams.keys()], ["part"]);
 });
 
-Deno.test("search: serialises a multiselect part as a comma-separated value", async () => {
+test("search: serialises a multiselect part as a comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: ["id", "snippet"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("part"), "id,snippet");
 });
 
-Deno.test("search: collapses the repeated `type` parameter to one comma-separated value", async () => {
+test("search: collapses the repeated `type` parameter to one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "snippet", type: ["video", "playlist"] }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -28,7 +29,7 @@ Deno.test("search: collapses the repeated `type` parameter to one comma-separate
   assertEquals(p.getAll("type"), ["video,playlist"]);
 });
 
-Deno.test("search: forwards every documented filter", async () => {
+test("search: forwards every documented filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "snippet",
@@ -80,7 +81,7 @@ Deno.test("search: forwards every documented filter", async () => {
   assertEquals(p.get("forMine"), "true");
 });
 
-Deno.test("search: is typed as a search action and requires part", () => {
+test("search: is typed as a search action and requires part", () => {
   assertEquals(action.type, "search");
   const part = action.params!.find((p) => p.key === "part");
   assertEquals(part?.required, true);

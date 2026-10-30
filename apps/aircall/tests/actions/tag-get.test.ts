@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagGet from "../../actions/tag-get.ts";
 import { entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-get: reads GET /v1/tags/{id} and unwraps the envelope", async () => {
+test("tag-get: reads GET /v1/tags/{id} and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: entityBody("tag", { id: 678, name: "General Inquiries" }) },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-outbound-messages.ts";
 
-Deno.test("list-outbound-messages: GETs /messages/outbound with count/offset defaults", async () => {
+test("list-outbound-messages: GETs /messages/outbound with count/offset defaults", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { TotalCount: 0, Messages: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-outbound-messages: GETs /messages/outbound with count/offset def
   assertEquals(url.searchParams.get("offset"), "0");
 });
 
-Deno.test("list-outbound-messages: forwards filters with the vendor's lowercase query names", async () => {
+test("list-outbound-messages: forwards filters with the vendor's lowercase query names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     {

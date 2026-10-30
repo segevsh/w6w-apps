@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = {} as never;
 
-Deno.test("api: the JSON INVALID_API_KEY refusal proves the API is serving", async () => {
+test("api: the JSON INVALID_API_KEY refusal proves the API is serving", async () => {
   const { ctx, calls } = mockCtx([{
     status: 403,
     body: { success: false, error: { code: "INVALID_API_KEY" } },
@@ -15,12 +16,12 @@ Deno.test("api: the JSON INVALID_API_KEY refusal proves the API is serving", asy
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("api: a 5xx is down", async () => {
+test("api: a 5xx is down", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "bad gateway" }]);
   assertEquals((await api.check!(input, ctx)).state, "down");
 });
 
-Deno.test("api: a 200 HTML shell is unknown, not ok", async () => {
+test("api: a 200 HTML shell is unknown, not ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "<html></html>",

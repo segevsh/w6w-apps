@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/list-pages.ts";
 
@@ -18,7 +19,7 @@ const pages = {
   ],
 };
 
-Deno.test("list-pages: GETs the Pages v2 list and returns the results verbatim", async () => {
+test("list-pages: GETs the Pages v2 list and returns the results verbatim", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: pages }]);
   const result = await action.execute!({ siteName: "abc1234d" }, ctx) as typeof pages;
 
@@ -32,7 +33,7 @@ Deno.test("list-pages: GETs the Pages v2 list and returns the results verbatim",
   assertEquals(result.results[2].type, "BOOKING_WIDGET");
 });
 
-Deno.test("list-pages: reads v2, never the separately documented v1 surface", async () => {
+test("list-pages: reads v2, never the separately documented v1 surface", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { results: [] } }]);
   await action.execute!({ siteName: "abc" }, ctx);
   assert(!pathOf(calls[0].url).includes("/v1"), pathOf(calls[0].url));

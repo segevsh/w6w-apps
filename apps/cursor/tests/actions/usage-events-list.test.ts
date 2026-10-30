@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usageEventsList from "../../actions/usage-events-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("usage-events-list: posts filters to /teams/filtered-usage-events", async () => {
+test("usage-events-list: posts filters to /teams/filtered-usage-events", async () => {
   const { ctx, calls } = mockCtx([
     { body: { totalUsageEventsCount: 0, pagination: {}, usageEvents: [], period: {} } },
   ]);
@@ -26,7 +27,7 @@ Deno.test("usage-events-list: posts filters to /teams/filtered-usage-events", as
   );
 });
 
-Deno.test("usage-events-list: passes hostingType through verbatim, undocumented values included", async () => {
+test("usage-events-list: passes hostingType through verbatim, undocumented values included", async () => {
   const { ctx, calls } = mockCtx([
     { body: { totalUsageEventsCount: 0, pagination: {}, usageEvents: [], period: {} } },
   ]);

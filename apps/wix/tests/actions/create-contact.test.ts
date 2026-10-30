@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/create-contact.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-contact: builds Wix's nested `info` from the flat convenience fields", async () => {
+test("create-contact: builds Wix's nested `info` from the flat convenience fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact: { id: "c1" } } }]);
   await action.execute!({
     firstName: "Ada",
@@ -25,7 +26,7 @@ Deno.test("create-contact: builds Wix's nested `info` from the flat convenience 
   });
 });
 
-Deno.test("create-contact: splits labelKeys into the `labelKeys.items` wrapper", async () => {
+test("create-contact: splits labelKeys into the `labelKeys.items` wrapper", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ email: "a@b.com", labelKeys: "custom.vip, custom.news" }, ctx);
   assertEquals(
@@ -34,14 +35,14 @@ Deno.test("create-contact: splits labelKeys into the `labelKeys.items` wrapper",
   );
 });
 
-Deno.test("create-contact: omits every section the caller left blank", async () => {
+test("create-contact: omits every section the caller left blank", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ email: "a@b.com" }, ctx);
   const info = JSON.parse(calls[0].body!).info;
   assertEquals(Object.keys(info), ["emails"]);
 });
 
-Deno.test("create-contact: a raw `info` object wins over the convenience fields", async () => {
+test("create-contact: a raw `info` object wins over the convenience fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     firstName: "Ignored",
@@ -53,7 +54,7 @@ Deno.test("create-contact: a raw `info` object wins over the convenience fields"
   });
 });
 
-Deno.test("create-contact: sends allowDuplicates only when set", async () => {
+test("create-contact: sends allowDuplicates only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute!({ email: "a@b.com" }, ctx);
   assert(!("allowDuplicates" in JSON.parse(calls[0].body!)));
@@ -61,7 +62,7 @@ Deno.test("create-contact: sends allowDuplicates only when set", async () => {
   assertEquals(JSON.parse(calls[1].body!).allowDuplicates, true);
 });
 
-Deno.test("create-contact: is a non-idempotent perform action", () => {
+test("create-contact: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignUpdate from "../../actions/campaign-update.ts";
 import { mockCtx, noContentResponse, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-update: a plain single PARTIAL_UPDATE, no batch wrapper", async () => {
+test("campaign-update: a plain single PARTIAL_UPDATE, no batch wrapper", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await campaignUpdate.execute(
     { accountId: "1", campaignId: "141049524", status: "PAUSED" },
@@ -16,7 +17,7 @@ Deno.test("campaign-update: a plain single PARTIAL_UPDATE, no batch wrapper", as
   assertEquals(result, { ok: true });
 });
 
-Deno.test("campaign-update: parses targetingCriteria JSON into the patch", async () => {
+test("campaign-update: parses targetingCriteria JSON into the patch", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   await campaignUpdate.execute(
     { accountId: "1", campaignId: "2", targetingCriteria: JSON.stringify({ include: {} }) },
@@ -26,7 +27,7 @@ Deno.test("campaign-update: parses targetingCriteria JSON into the patch", async
   assertEquals(body.patch.$set.targetingCriteria, { include: {} });
 });
 
-Deno.test("campaign-update: rejects when nothing is set to change, without a request", async () => {
+test("campaign-update: rejects when nothing is set to change, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignUpdate.execute({ accountId: "1", campaignId: "2" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embeddings-create.ts";
 
-Deno.test("embeddings-create: POSTs to /embeddings with default model", async () => {
+test("embeddings-create: POSTs to /embeddings with default model", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ input: "hello world" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("embeddings-create: POSTs to /embeddings with default model", async ()
   assertEquals(body.model, "text-embedding-3-small");
 });
 
-Deno.test("embeddings-create: forwards optional format + dimensions", async () => {
+test("embeddings-create: forwards optional format + dimensions", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { COMPONENTS_URL, mapComponentStatus } from "../../health/service.ts";
 
-Deno.test("mapComponentStatus: OPERATIONAL maps to ok, unrecognized statuses to degraded (never guessed as down)", () => {
+test("mapComponentStatus: OPERATIONAL maps to ok, unrecognized statuses to degraded (never guessed as down)", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("MAJOR_OUTAGE"), "degraded");
@@ -10,14 +11,14 @@ Deno.test("mapComponentStatus: OPERATIONAL maps to ok, unrecognized statuses to 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: declares itself scoped to the app, no credential, with its own status-host allowlist", () => {
+test("service: declares itself scoped to the app, no credential, with its own status-host allowlist", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
   assertEquals(service.network, { allow: ["status.exa.ai"] });
 });
 
-Deno.test("service: check reports ok when every leaf component is OPERATIONAL", async () => {
+test("service: check reports ok when every leaf component is OPERATIONAL", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -46,7 +47,7 @@ Deno.test("service: check reports ok when every leaf component is OPERATIONAL", 
   assertEquals(Object.keys(report.components ?? {}).length, 4);
 });
 
-Deno.test("service: check reports degraded and names the affected component when one leaf isn't operational", async () => {
+test("service: check reports degraded and names the affected component when one leaf isn't operational", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -64,13 +65,13 @@ Deno.test("service: check reports degraded and names the affected component when
   assertEquals(report.message?.includes("Websets"), true);
 });
 
-Deno.test("service: check reports unknown (never down) when the status API itself is broken", async () => {
+test("service: check reports unknown (never down) when the status API itself is broken", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "internal error" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: check reports unknown when the response carries no components", async () => {
+test("service: check reports unknown when the response carries no components", async () => {
   const { ctx } = mockCtx([{ body: { components: [] } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

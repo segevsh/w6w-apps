@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-statistics-summary.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-statistics-summary: maps aggregate and country data", async () => {
+test("get-statistics-summary: maps aggregate and country data", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { aggregate: { delivered: 1200 }, country_data: { US: { opens: 5, clicks: 1 } } },
@@ -16,7 +17,7 @@ Deno.test("get-statistics-summary: maps aggregate and country data", async () =>
   });
 });
 
-Deno.test("get-statistics-summary: a 429 throws with the rate-limit hint", async () => {
+test("get-statistics-summary: a 429 throws with the rate-limit hint", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { error: { message: "exceeded" } } }]);
   await assertRejects(() => run(action, {}, ctx), Error, "180 requests per minute");
 });

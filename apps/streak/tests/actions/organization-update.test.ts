@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import organizationUpdate from "../../actions/organization-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("organization-update: POSTs a JSON body", async () => {
+test("organization-update: POSTs a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "o1" } }]);
   await organizationUpdate.execute({ organizationKey: "o1", name: "Renamed" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,7 +17,7 @@ Deno.test("organization-update: POSTs a JSON body", async () => {
  * See the note in organization-update.ts: this app does not guess an
  * encoding the spec never states.
  */
-Deno.test("organization-update: domains is sent as the documented plain string", async () => {
+test("organization-update: domains is sent as the documented plain string", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "o1" } }]);
   await organizationUpdate.execute({ organizationKey: "o1", domains: "kittensrus.com" }, ctx);
   const body = JSON.parse(calls[0].body!) as { domains: unknown };

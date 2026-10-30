@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs /webhooks/ with event_type and callback_url", async () => {
+test("webhook-create: POSTs /webhooks/ with event_type and callback_url", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "wh-1" } }]);
   await webhookCreate.execute({
     eventType: "signed",

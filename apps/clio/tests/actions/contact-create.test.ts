@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs a Person contact with name required alongside first/last", async () => {
+test("contact-create: POSTs a Person contact with name required alongside first/last", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 1 }) }]);
   await contactCreate.execute(
     { type: "Person", name: "Jane Doe", firstName: "Jane", lastName: "Doe" },
@@ -17,7 +18,7 @@ Deno.test("contact-create: POSTs a Person contact with name required alongside f
  * `primary_email_address` is a read-only projection — see this action's own
  * doc comment. Writing an email means sending `email_addresses[]`.
  */
-Deno.test("contact-create: an email input is written as a default email_addresses entry", async () => {
+test("contact-create: an email input is written as a default email_addresses entry", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 1 }) }]);
   await contactCreate.execute({ type: "Company", name: "Acme LLP", email: "hi@acme.test" }, ctx);
   const body = JSON.parse(calls[0].body!).data;
@@ -25,7 +26,7 @@ Deno.test("contact-create: an email input is written as a default email_addresse
   assertEquals("primary_email_address" in body, false);
 });
 
-Deno.test("contact-create: a phone input is written as a default phone_numbers entry", async () => {
+test("contact-create: a phone input is written as a default phone_numbers entry", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 1 }) }]);
   await contactCreate.execute({ type: "Company", name: "Acme LLP", phone: "+15550100" }, ctx);
   const body = JSON.parse(calls[0].body!).data;

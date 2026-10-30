@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-location.ts";
 
-Deno.test("update-location: PATCHes /v1/locations/{id} and derives updateMask from supplied fields", async () => {
+test("update-location: PATCHes /v1/locations/{id} and derives updateMask from supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "locations/1", title: "New name" } }]);
   const result = await action.execute!({ locationId: "1", title: "New name" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("update-location: PATCHes /v1/locations/{id} and derives updateMask fr
   assertEquals(result, { name: "locations/1", title: "New name" });
 });
 
-Deno.test("update-location: builds nested phoneNumbers/storefrontAddress/profile/openInfo/latlng bodies", async () => {
+test("update-location: builds nested phoneNumbers/storefrontAddress/profile/openInfo/latlng bodies", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     locationId: "1",
@@ -49,7 +50,7 @@ Deno.test("update-location: builds nested phoneNumbers/storefrontAddress/profile
   }
 });
 
-Deno.test("update-location: an untouched field is neither in the body nor the mask", async () => {
+test("update-location: an untouched field is neither in the body nor the mask", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ locationId: "1", title: "Only this" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -58,7 +59,7 @@ Deno.test("update-location: an untouched field is neither in the body nor the ma
   assertEquals(new URL(calls[0].url).searchParams.get("updateMask"), "title");
 });
 
-Deno.test("update-location: forwards validateOnly", async () => {
+test("update-location: forwards validateOnly", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ locationId: "1", title: "x", validateOnly: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("validateOnly"), "true");

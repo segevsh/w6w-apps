@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: ok when overall is operational and all incidents are resolved", async () => {
+test("service: ok when overall is operational and all incidents are resolved", async () => {
   const { ctx } = mockCtx([{
     body: {
       overall: "operational",
@@ -15,7 +16,7 @@ Deno.test("service: ok when overall is operational and all incidents are resolve
   assertEquals(report.components?.europe.state, "ok");
 });
 
-Deno.test("service: degraded when an incident is still open", async () => {
+test("service: degraded when an incident is still open", async () => {
   const { ctx } = mockCtx([{
     body: {
       overall: "operational",
@@ -28,7 +29,7 @@ Deno.test("service: degraded when an incident is still open", async () => {
   assertEquals(report.message, "Elevated errors");
 });
 
-Deno.test("service: down when a datacenter reports an outage", async () => {
+test("service: down when a datacenter reports an outage", async () => {
   const { ctx } = mockCtx([{
     body: {
       overall: "major_outage",
@@ -41,13 +42,13 @@ Deno.test("service: down when a datacenter reports an outage", async () => {
   assertEquals(report.components?.americas.state, "down");
 });
 
-Deno.test("service: unknown (never down) on a non-2xx status API response", async () => {
+test("service: unknown (never down) on a non-2xx status API response", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown on an unrecognized status token rather than guessing", async () => {
+test("service: unknown on an unrecognized status token rather than guessing", async () => {
   const { ctx } = mockCtx([{
     body: { overall: "something-new", datacenters: [], incidents: [] },
   }]);
@@ -55,7 +56,7 @@ Deno.test("service: unknown on an unrecognized status token rather than guessing
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares its own network.allow for the status host, unsigned", () => {
+test("service: declares its own network.allow for the status host, unsigned", () => {
   assertEquals(service.network?.allow, ["api-status.deepl.com"]);
   assertEquals(service.credential, undefined); // defaults to "none" for kind:"service"
 });

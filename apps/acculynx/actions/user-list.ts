@@ -19,7 +19,14 @@ const action: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [
+        { value: "Active", label: "Active" },
+        { value: "Inactive", label: "Inactive" },
+        { value: "Archived", label: "Archived" },
+        { value: "Deleted", label: "Deleted" },
+      ],
       advanced: true,
       hint: "Filter by user status: Active, Inactive, Archived or Deleted.",
     },

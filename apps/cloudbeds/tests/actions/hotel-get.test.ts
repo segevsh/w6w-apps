@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import hotelGet from "../../actions/hotel-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("hotel-get: GET /getHotelDetails with propertyID", async () => {
+test("hotel-get: GET /getHotelDetails with propertyID", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ propertyID: "1", propertyName: "Acme Inn" }),
   }]);
@@ -16,7 +17,7 @@ Deno.test("hotel-get: GET /getHotelDetails with propertyID", async () => {
   assertEquals(result.data, { propertyID: "1", propertyName: "Acme Inn" });
 });
 
-Deno.test("hotel-get: propertyID is optional — omitted uses the token's own property", async () => {
+test("hotel-get: propertyID is optional — omitted uses the token's own property", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ propertyID: "1" }) }]);
   await hotelGet.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

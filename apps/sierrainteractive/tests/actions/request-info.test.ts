@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import requestInfo from "../../actions/request-info.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("request-info: POST /zapier/requestInfo sends listing + contact fields", async () => {
+test("request-info: POST /zapier/requestInfo sends listing + contact fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await requestInfo.execute({
     mlsNumber: "9",

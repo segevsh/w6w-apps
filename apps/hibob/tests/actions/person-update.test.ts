@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import personUpdate from "../../actions/person-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("person-update: PUTs the nested object as-is and reports the status", async () => {
+test("person-update: PUTs the nested object as-is and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await personUpdate.execute(
     { employeeId: "7", fields: { work: { title: "Lead" }, firstName: "J" } },
@@ -14,7 +15,7 @@ Deno.test("person-update: PUTs the nested object as-is and reports the status", 
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("person-update: accepts a JSON string and refuses an empty or non-object body", async () => {
+test("person-update: accepts a JSON string and refuses an empty or non-object body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await personUpdate.execute({ employeeId: "7", fields: '{"firstName":"A"}' }, ctx);
   assertEquals(bodyOf(calls[0]), { firstName: "A" });

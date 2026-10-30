@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-signal.ts";
 
 const ID = "0123456789abcdef01234567";
 
-Deno.test("device-signal: sends signal=1 to start and 0 to stop", async () => {
+test("device-signal: sends signal=1 to start and 0 to stop", async () => {
   const on = mockCtx([{ status: 200, body: { signaling: true, connected: true } }]);
   const started = await action.execute({ deviceId: ID }, on.ctx) as Record<string, unknown>;
   assertEquals(on.calls[0].method, "PUT");
@@ -17,7 +18,7 @@ Deno.test("device-signal: sends signal=1 to start and 0 to stop", async () => {
 });
 
 /** Everything else here that reaches a device does something. */
-Deno.test("device-signal: says it runs no firmware and changes no state", () => {
+test("device-signal: says it runs no firmware and changes no state", () => {
   assert(/Runs no firmware and changes no state/.test(action.description!), action.description);
   assert(
     /correlate a device id with a box on a wall/.test(action.description!),
@@ -26,7 +27,7 @@ Deno.test("device-signal: says it runs no firmware and changes no state", () => 
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("device-signal: an unreachable device surfaces the error", async () => {
+test("device-signal: an unreachable device surfaces the error", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "Timed out." } }]);
   let message = "";
   try {

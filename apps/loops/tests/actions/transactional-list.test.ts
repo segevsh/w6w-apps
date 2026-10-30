@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/transactional-list.ts";
 
-Deno.test("transactional-list: lists every template, drafts included", async () => {
+test("transactional-list: lists every template, drafts included", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ id: "t1" }], pagination: { nextCursor: null } },
@@ -12,13 +13,13 @@ Deno.test("transactional-list: lists every template, drafts included", async () 
 });
 
 /** Loops has a second endpoint for the sendable ones; it is the option here. */
-Deno.test("transactional-list: published-only is a different endpoint", async () => {
+test("transactional-list: published-only is a different endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], pagination: {} } }]);
   await action.execute!({ publishedOnly: true }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/transactional");
 });
 
-Deno.test("transactional-list: returnAll follows the cursor", async () => {
+test("transactional-list: returnAll follows the cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "a" }], pagination: { nextCursor: "c2" } } },
     { status: 200, body: { data: [{ id: "b" }], pagination: { nextCursor: null } } },

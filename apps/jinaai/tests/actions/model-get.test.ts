@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelGet from "../../actions/model-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("model-get: calls GET /v1/models/{id} with the id escaped", async () => {
+test("model-get: calls GET /v1/models/{id} with the id escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "jina-ai/jina-embeddings-v3" } }]);
   const out = await modelGet.execute({ modelId: "jina-ai/jina-embeddings-v3" }, ctx) as {
     id: string;

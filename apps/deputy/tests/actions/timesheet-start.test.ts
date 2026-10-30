@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/timesheet-start.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("timesheet-start: POSTs intEmployeeId/intOpunitId to /supervise/timesheet/start", async () => {
+test("timesheet-start: POSTs intEmployeeId/intOpunitId to /supervise/timesheet/start", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 100 } }],
     { display: { baseUrl: BASE_URL } },
@@ -14,11 +15,11 @@ Deno.test("timesheet-start: POSTs intEmployeeId/intOpunitId to /supervise/timesh
   assertEquals(out, { response: { Id: 100 } });
 });
 
-Deno.test("timesheet-start: is explicitly not idempotent — no idempotency key exists", () => {
+test("timesheet-start: is explicitly not idempotent — no idempotency key exists", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("timesheet-start: both fields are required integers", () => {
+test("timesheet-start: both fields are required integers", () => {
   const byKey = Object.fromEntries(action.params!.map((p) => [p.key, p]));
   assertEquals(byKey.intEmployeeId.required, true);
   assertEquals(byKey.intOpunitId.required, true);

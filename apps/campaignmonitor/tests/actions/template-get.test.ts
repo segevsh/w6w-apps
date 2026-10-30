@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateGet from "../../actions/template-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-get: GETs /templates/{templateid}.json", async () => {
+test("template-get: GETs /templates/{templateid}.json", async () => {
   const template = {
     TemplateID: "5cac213cf061dd4e008de5a82b7a3621",
     Name: "Template One",

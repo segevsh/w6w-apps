@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-list.ts";
 
@@ -14,7 +15,7 @@ const page = {
   },
 };
 
-Deno.test("cluster-list: reads the project's clusters at the current cluster version", async () => {
+test("cluster-list: reads the project's clusters at the current cluster version", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -28,7 +29,7 @@ Deno.test("cluster-list: reads the project's clusters at the current cluster ver
 });
 
 /** Paused clusters keep their data and stop billing compute. */
-Deno.test("cluster-list: counts the paused and the busy", async () => {
+test("cluster-list: counts the paused and the busy", async () => {
   const { ctx, logs } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -40,7 +41,7 @@ Deno.test("cluster-list: counts the paused and the busy", async () => {
 });
 
 /** IDLE is the only state that accepts a change. */
-Deno.test("cluster-list: a cluster in any non-IDLE state counts as busy", async () => {
+test("cluster-list: a cluster in any non-IDLE state counts as busy", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -62,14 +63,14 @@ Deno.test("cluster-list: a cluster in any non-IDLE state counts as busy", async 
  * The omission this action exists to warn about: flex clusters live at their
  * own path and this response gives no sign of it.
  */
-Deno.test("cluster-list: says flex clusters are not in here", () => {
+test("cluster-list: says flex clusters are not in here", () => {
   assert(
     /FLEX clusters are a separate endpoint and are NOT in here/.test(action.description!),
     action.description,
   );
 });
 
-Deno.test("cluster-list: a project with no clusters is not an error", async () => {
+test("cluster-list: a project with no clusters is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [], totalCount: 0 } }]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -79,7 +80,7 @@ Deno.test("cluster-list: a project with no clusters is not an error", async () =
   assertEquals(result.pausedCount, 0);
 });
 
-Deno.test("cluster-list: a malformed project id is refused before any request", async () => {
+test("cluster-list: a malformed project id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

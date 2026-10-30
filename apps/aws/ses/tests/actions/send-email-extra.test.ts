@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import sendEmail from "../../actions/send-email.ts";
 import sendTemplated from "../../actions/send-templated-email.ts";
 import sendBulk from "../../actions/send-bulk-email.ts";
 
-Deno.test("send-email: refuses a message with neither a text nor an HTML body", async () => {
+test("send-email: refuses a message with neither a text nor an HTML body", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -15,7 +16,7 @@ Deno.test("send-email: refuses a message with neither a text nor an HTML body", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-email: refuses an empty To list without calling SES", async () => {
+test("send-email: refuses an empty To list without calling SES", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -28,7 +29,7 @@ Deno.test("send-email: refuses an empty To list without calling SES", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-email: a text-only message carries no Html member; omitted lists are not sent", async () => {
+test("send-email: a text-only message carries no Html member; omitted lists are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { MessageId: "m" } }]);
   await sendEmail.execute!({ from: "a@x.com", to: "b@x.com", subject: "s", textBody: "t" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -37,7 +38,7 @@ Deno.test("send-email: a text-only message carries no Html member; omitted lists
   assertEquals("EmailTags" in body, false);
 });
 
-Deno.test("send-email: accepts tags as a name/value array and as a JSON string", async () => {
+test("send-email: accepts tags as a name/value array and as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { MessageId: "m" } }, { body: { MessageId: "m" } }]);
   const base = { from: "a@x.com", to: "b@x.com", subject: "s", textBody: "t" };
   await sendEmail.execute!({ ...base, tags: [{ name: "k", value: "v" }] }, ctx);
@@ -47,7 +48,7 @@ Deno.test("send-email: accepts tags as a name/value array and as a JSON string",
   }
 });
 
-Deno.test("send-email: malformed tags JSON is a descriptive error", async () => {
+test("send-email: malformed tags JSON is a descriptive error", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>
@@ -62,7 +63,7 @@ Deno.test("send-email: malformed tags JSON is a descriptive error", async () => 
   );
 });
 
-Deno.test("send-templated-email: defaults TemplateData to an empty object and passes a string through", async () => {
+test("send-templated-email: defaults TemplateData to an empty object and passes a string through", async () => {
   const { ctx, calls } = mockCtx([{ body: { MessageId: "m" } }, { body: { MessageId: "m" } }]);
   const base = { from: "a@x.com", to: "b@x.com", templateName: "t" };
   await sendTemplated.execute!(base, ctx);
@@ -71,7 +72,7 @@ Deno.test("send-templated-email: defaults TemplateData to an empty object and pa
   assertEquals(JSON.parse(calls[1].body!).Content.Template.TemplateData, '{"a":1}');
 });
 
-Deno.test("send-bulk-email: rejects an empty, malformed, or over-50 entry list before calling SES", async () => {
+test("send-bulk-email: rejects an empty, malformed, or over-50 entry list before calling SES", async () => {
   const { ctx, calls } = mockCtx([]);
   const base = { from: "a@x.com", templateName: "t" };
   await assertRejects(
@@ -93,7 +94,7 @@ Deno.test("send-bulk-email: rejects an empty, malformed, or over-50 entry list b
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-bulk-email: a 200 with failed entries is reported, not thrown", async () => {
+test("send-bulk-email: a 200 with failed entries is reported, not thrown", async () => {
   const { ctx } = mockCtx([{
     body: {
       BulkEmailEntryResults: [{ Status: "ACCOUNT_THROTTLED" }, { Status: "ACCOUNT_THROTTLED" }],

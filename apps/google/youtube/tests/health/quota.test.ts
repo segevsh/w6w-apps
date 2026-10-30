@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import check from "../../health/quota.ts";
 
-Deno.test("quota: is declared unavailable with no hook", () => {
+test("quota: is declared unavailable with no hook", () => {
   assertEquals(check.key, "quota");
   assertEquals(check.kind, "quota");
   assert(check.unavailable);
@@ -10,7 +11,7 @@ Deno.test("quota: is declared unavailable with no hook", () => {
   assertEquals(check.covers, ["*"]);
 });
 
-Deno.test("quota: the reason states the real cost model rather than shrugging", () => {
+test("quota: the reason states the real cost model rather than shrugging", () => {
   const reason = check.unavailable!.reason;
   // The point of this entry is that YouTube documents its costs unusually well
   // even though it exposes no headroom — both halves must be present.

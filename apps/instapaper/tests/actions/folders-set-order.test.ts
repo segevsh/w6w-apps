@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import foldersSetOrder from "../../actions/folders-set-order.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("folders-set-order: builds the documented folder_id:position,... string", async () => {
+test("folders-set-order: builds the documented folder_id:position,... string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ type: "folder", folder_id: 100 }]) }]);
   await foldersSetOrder.execute(
     {
@@ -18,13 +19,13 @@ Deno.test("folders-set-order: builds the documented folder_id:position,... strin
   assertEquals(bodyOf(calls[0]), { order: "100:1,200:2,300:3" });
 });
 
-Deno.test("folders-set-order: returns the vendor's re-ordered folder list", async () => {
+test("folders-set-order: returns the vendor's re-ordered folder list", async () => {
   const { ctx } = mockCtx([{ body: envelope([{ type: "folder", folder_id: 100 }]) }]);
   const result = await foldersSetOrder.execute({ order: [{ folderId: 100, position: 1 }] }, ctx);
   assertEquals(result, { folders: [{ type: "folder", folder_id: 100 }] });
 });
 
-Deno.test("folders-set-order: rejects an empty order before making a request", async () => {
+test("folders-set-order: rejects an empty order before making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await foldersSetOrder.execute({ order: [] }, ctx),

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import apis, { PROBES, readLegacy, readRpc } from "../../health/apis.ts";
 
@@ -39,7 +40,7 @@ const rpcBadKey = {
  * The inversion worth stating: "the API told me my request was wrong" means the
  * API is switched on and answering. That is the healthy result here.
  */
-Deno.test("apis: a complaint about the request means the API is enabled", async () => {
+test("apis: a complaint about the request means the API is enabled", async () => {
   const { ctx, calls } = mockCtx([
     legacyEnabled,
     legacyEnabled,
@@ -54,7 +55,7 @@ Deno.test("apis: a complaint about the request means the API is enabled", async 
 });
 
 /** The failure this check exists for: one API off while everything else works. */
-Deno.test("apis: one disabled API is degraded, and names it", async () => {
+test("apis: one disabled API is degraded, and names it", async () => {
   const { ctx } = mockCtx([legacyEnabled, legacyEnabled, rpcDisabled, rpcEnabled, rpcEnabled]);
   const result = await apis.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -63,12 +64,12 @@ Deno.test("apis: one disabled API is degraded, and names it", async () => {
 });
 
 /** A connection that only geocodes is healthy with Places off. */
-Deno.test("apis: a partially-enabled key is never reported as down", async () => {
+test("apis: a partially-enabled key is never reported as down", async () => {
   const { ctx } = mockCtx([legacyEnabled, legacyDenied, rpcDisabled, rpcDisabled, rpcDisabled]);
   assertEquals((await apis.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("apis: everything refused means the key itself is the problem", async () => {
+test("apis: everything refused means the key itself is the problem", async () => {
   const { ctx } = mockCtx([legacyDenied, legacyDenied, rpcBadKey, rpcBadKey, rpcBadKey]);
   const result = await apis.check!({}, ctx);
   assertEquals(result.state, "down");
@@ -76,7 +77,7 @@ Deno.test("apis: everything refused means the key itself is the problem", async 
   assert(/billing/.test(result.message!), result.message);
 });
 
-Deno.test("apis: an unreachable probe is unknown rather than a false negative", async () => {
+test("apis: an unreachable probe is unknown rather than a false negative", async () => {
   let call = 0;
   const ctx = {
     fetch: () => {
@@ -96,7 +97,7 @@ Deno.test("apis: an unreachable probe is unknown rather than a false negative", 
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("apis: the legacy vocabulary maps enablement, not correctness", () => {
+test("apis: the legacy vocabulary maps enablement, not correctness", () => {
   assertEquals(readLegacy("REQUEST_DENIED", "no"), "down");
   assertEquals(readLegacy("INVALID_REQUEST", ""), "ok");
   assertEquals(readLegacy("OK", ""), "ok");
@@ -105,7 +106,7 @@ Deno.test("apis: the legacy vocabulary maps enablement, not correctness", () => 
   assertEquals(readLegacy(undefined, ""), "unknown");
 });
 
-Deno.test("apis: the RPC vocabulary separates disabled from refused from complaining", () => {
+test("apis: the RPC vocabulary separates disabled from refused from complaining", () => {
   assertEquals(readRpc(403, "…is disabled.", "SERVICE_DISABLED"), "down");
   assertEquals(readRpc(400, "API key not valid.", "API_KEY_INVALID"), "down");
   assertEquals(readRpc(403, "Requests from referer <empty> are blocked.", undefined), "down");
@@ -115,14 +116,14 @@ Deno.test("apis: the RPC vocabulary separates disabled from refused from complai
 });
 
 /** Enablement changes when a person clicks a button, not minute to minute. */
-Deno.test("apis: is signed, informational, and does not run often", () => {
+test("apis: is signed, informational, and does not run often", () => {
   assertEquals(apis.credential, "signed");
   assertEquals(apis.scope, "connection");
   assertEquals(apis.severity, "informational");
   assertEquals(apis.minIntervalSeconds, 900);
 });
 
-Deno.test("apis: every probe asks a question with a required parameter missing", () => {
+test("apis: every probe asks a question with a required parameter missing", () => {
   assertEquals(PROBES.length, 5);
   for (const probe of PROBES) {
     if (probe.method === "POST") assertEquals(probe.body, {});

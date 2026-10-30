@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transactionRefund from "../../actions/transaction-refund.ts";
 import { errorBody, formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-refund: calls POST /refund with order_id and reference", async () => {
+test("transaction-refund: calls POST /refund with order_id and reference", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, message: "This refund has been issued successfully." } },
   ]);
@@ -16,11 +17,11 @@ Deno.test("transaction-refund: calls POST /refund with order_id and reference", 
   assertEquals(out.success, true);
 });
 
-Deno.test("transaction-refund: is not idempotent", () => {
+test("transaction-refund: is not idempotent", () => {
   assertEquals(transactionRefund.idempotent, false);
 });
 
-Deno.test("transaction-refund: a 404 surfaces the vendor's error text", async () => {
+test("transaction-refund: a 404 surfaces the vendor's error text", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("The requested charge could not be identified.") },
   ]);

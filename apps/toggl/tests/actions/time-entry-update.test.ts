@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-update.ts";
 
-Deno.test("time-entry-update: PUTs /workspaces/{id}/time_entries/{id} with only set fields", async () => {
+test("time-entry-update: PUTs /workspaces/{id}/time_entries/{id} with only set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 456, description: "renamed" } }]);
   await action.execute(
     { workspaceId: 123, timeEntryId: 456, description: "renamed" },
@@ -17,7 +18,7 @@ Deno.test("time-entry-update: PUTs /workspaces/{id}/time_entries/{id} with only 
   });
 });
 
-Deno.test("time-entry-update: sends tags and billable when provided", async () => {
+test("time-entry-update: sends tags and billable when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 456 } }]);
   await action.execute(
     { workspaceId: 1, timeEntryId: 2, tags: ["a", "b"], billable: true },

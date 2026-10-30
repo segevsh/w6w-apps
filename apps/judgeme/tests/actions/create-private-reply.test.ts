@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createPrivateReply from "../../actions/create-private-reply.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-private-reply: posts review_id and a nested private_reply object", async () => {
+test("create-private-reply: posts review_id and a nested private_reply object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await createPrivateReply.execute({
     reviewId: 9,

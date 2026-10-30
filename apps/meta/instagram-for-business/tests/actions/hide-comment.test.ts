@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/hide-comment.ts";
 
-Deno.test("hide-comment: POST /c1 with the documented query params", async () => {
+test("hide-comment: POST /c1 with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ commentId: "c1" }, ctx);
   assertEquals(calls.length, 1);
@@ -15,7 +16,7 @@ Deno.test("hide-comment: POST /c1 with the documented query params", async () =>
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("hide-comment: surfaces a Graph error body", async () => {
+test("hide-comment: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

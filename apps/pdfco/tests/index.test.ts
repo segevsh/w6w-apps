@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadFile, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 24;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -41,13 +43,13 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * retrying spends credits again even when the underlying operation is
  * otherwise deterministic. None is declared idempotent.
  */
-Deno.test("index: no metered perform action is marked idempotent", () => {
+test("index: no metered perform action is marked idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(a.idempotent, false, `${a.key}: unexpectedly marked idempotent`);
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -66,9 +68,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -77,7 +79,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -90,7 +92,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * hard-coded a host — or accepted one as a param — could be pointed
  * somewhere the manifest never allowlisted.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     // Deliberately narrower than "pdf.co" — the vendor's own brand name is
@@ -101,7 +103,7 @@ Deno.test("index: no action hard-codes a host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -116,7 +118,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
  * describe the 0-based convention instead. Getting this backwards is the
  * page-indexing trap this app's module doc warns about.
  */
-Deno.test("index: only pdf-delete-pages documents 1-based page numbering", () => {
+test("index: only pdf-delete-pages documents 1-based page numbering", () => {
   const withPages = app.actions.filter((a) => (a.params ?? []).some((p) => p.key === "pages"));
   assert(withPages.length > 1, "no actions with a pages param — this test would pass vacuously");
   for (const a of withPages) {
@@ -139,8 +141,8 @@ Deno.test("index: only pdf-delete-pages documents 1-based page numbering", () =>
  * from `/file/upload/get-presigned-url`) — the probe must stay on the
  * balance endpoint, which returns only a credit count.
  */
-Deno.test("index: the auth probe is /v1/account/credit/balance", async () => {
-  const src = code(await Deno.readTextFile(new URL("../auth/api-key.ts", import.meta.url)));
+test("index: the auth probe is /v1/account/credit/balance", async () => {
+  const src = code(await denoReadTextFile(new URL("../auth/api-key.ts", import.meta.url)));
   assert(src.includes("/v1/account/credit/balance"), "auth probe moved off the balance endpoint");
   assert(
     !/get-presigned-url/.test(src),
@@ -148,7 +150,7 @@ Deno.test("index: the auth probe is /v1/account/credit/balance", async () => {
   );
 });
 
-Deno.test("index: the credential field is declared secret", () => {
+test("index: the credential field is declared secret", () => {
   const [method] = app.auth;
   assertEquals(method.key, "api-key");
   assertEquals(method.type, "apiKey");
@@ -161,7 +163,7 @@ Deno.test("index: the credential field is declared secret", () => {
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -175,7 +177,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * `ok` in the roll-up, so at any severity but `informational` a declared
  * absence pins the App at `unknown` forever.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = app.healthChecks.filter((h) => h.unavailable);
   assert(unavailable.length > 0, "no declared absence — this test would pass vacuously");
   for (const h of unavailable) {
@@ -185,9 +187,9 @@ Deno.test("index: every unavailable health check is informational", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows the API host and not either status host", async () => {
+test("index: the manifest allows the API host and not either status host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] }; appearance: { icon: { url: string } } } };
   assertEquals(manifest.w6w.id, "io.w6w.pdfco");
   assert(manifest.w6w.network.allow.includes("api.pdf.co"));
@@ -195,8 +197,8 @@ Deno.test("index: the manifest allows the API host and not either status host", 
   assertEquals(manifest.w6w.appearance.icon.url, "./assets/icon.png");
 });
 
-Deno.test("index: the icon is the vendor's own favicon, verbatim", async () => {
-  const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
+test("index: the icon is the vendor's own favicon, verbatim", async () => {
+  const bytes = await denoReadFile(new URL("../assets/icon.png", import.meta.url));
   // Downloaded verbatim from pdf.co/favicon.png (the site's own
   // apple-touch-icon target) on 2026-08-24: PNG, 180x180, 5,927 bytes.
   assertEquals(bytes.byteLength, 5927, "icon.png byte length changed — no longer verbatim");
@@ -204,7 +206,7 @@ Deno.test("index: the icon is the vendor's own favicon, verbatim", async () => {
   assertEquals(bytes[1], 0x50, "not a PNG (bad signature byte 1: 'P')");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

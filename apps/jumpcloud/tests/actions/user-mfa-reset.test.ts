@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-mfa-reset.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("user-mfa-reset: POSTs the resetmfa endpoint", async () => {
+test("user-mfa-reset: POSTs the resetmfa endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }], display);
   const result = await action.execute!({ userId: "u1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/systemusers/u1/resetmfa");
@@ -12,13 +13,13 @@ Deno.test("user-mfa-reset: POSTs the resetmfa endpoint", async () => {
 });
 
 /** The account has one factor between this call and re-enrolment. */
-Deno.test("user-mfa-reset: logs at warn, because it lowers protection", async () => {
+test("user-mfa-reset: logs at warn, because it lowers protection", async () => {
   const { ctx, logs } = mockCtx([{ status: 200 }], display);
   await action.execute!({ userId: "u1" }, ctx);
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("user-mfa-reset: a blank id fails before any request", async () => {
+test("user-mfa-reset: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`userId`");
   assertEquals(calls.length, 0);

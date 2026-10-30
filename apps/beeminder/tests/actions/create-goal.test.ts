@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-goal.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
 const base = { slug: "run", title: "Run", goalType: "hustler", gunits: "km" };
 
-Deno.test("create-goal: POSTs JSON with the unset one of the three as an explicit null", async () => {
+test("create-goal: POSTs JSON with the unset one of the three as an explicit null", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       slug: "run",
@@ -46,7 +47,7 @@ Deno.test("create-goal: POSTs JSON with the unset one of the three as an explici
   assertEquals(out.slug, "run");
 });
 
-Deno.test("create-goal: anything but exactly two of goaldate/goalval/rate throws before a call", async () => {
+test("create-goal: anything but exactly two of goaldate/goalval/rate throws before a call", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { ...base, rate: 1 }, none.ctx), Error, "Exactly two");
   await assertRejects(

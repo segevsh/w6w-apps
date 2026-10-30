@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   actionUrl,
   asList,
@@ -17,7 +18,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("client: builds the RPC url for both surfaces", () => {
+test("client: builds the RPC url for both surfaces", () => {
   assertEquals(
     actionUrl("agent", "list_chats"),
     "https://api.livechatinc.com/v3.6/agent/action/list_chats",
@@ -28,7 +29,7 @@ Deno.test("client: builds the RPC url for both surfaces", () => {
   );
 });
 
-Deno.test("client: every call is a JSON POST with the body and no credential", async () => {
+test("client: every call is a JSON POST with the body and no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   const out = await new LiveChatClient(ctx).agent("get_chat", { chat_id: "C1" });
   assertEquals(out, { ok: 1 });
@@ -38,12 +39,12 @@ Deno.test("client: every call is a JSON POST with the body and no credential", a
   assertEquals(JSON.parse(calls[0].body!), { chat_id: "C1" });
 });
 
-Deno.test("client: an empty 200 body (no response payload) is {}", async () => {
+test("client: an empty 200 body (no response payload) is {}", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await new LiveChatClient(ctx).agent("tag_thread", {}), {});
 });
 
-Deno.test("client: an error envelope throws, classified from the body not the status", async () => {
+test("client: an error envelope throws, classified from the body not the status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: unauthorized }]);
   await assertRejects(
     () => new LiveChatClient(ctx).agent("list_chats"),
@@ -59,7 +60,7 @@ Deno.test("client: an error envelope throws, classified from the body not the st
   );
 });
 
-Deno.test("client: misdirected_request names the correct region", async () => {
+test("client: misdirected_request names the correct region", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -73,21 +74,21 @@ Deno.test("client: misdirected_request names the correct region", async () => {
   );
 });
 
-Deno.test("client: a non-JSON body and a bare non-2xx both throw", async () => {
+test("client: a non-JSON body and a bare non-2xx both throw", async () => {
   const html = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   await assertRejects(() => new LiveChatClient(html.ctx).agent("x"), Error, "non-JSON body");
   const bare = mockCtx([{ status: 500, body: {} }]);
   await assertRejects(() => new LiveChatClient(bare.ctx).agent("x"), Error, "LiveChat 500");
 });
 
-Deno.test("client: errorOf / describeError", () => {
+test("client: errorOf / describeError", () => {
   assertEquals(errorOf([]), undefined);
   assertEquals(errorOf({ chats: [] }), undefined);
   assertEquals(errorOf({ error: "string" }), undefined);
   assertEquals(describeError({ type: "validation" }), "validation");
 });
 
-Deno.test("client: input helpers", () => {
+test("client: input helpers", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -111,7 +112,7 @@ Deno.test("client: input helpers", () => {
   assertEquals(optObject("", "n"), undefined);
 });
 
-Deno.test("client: asList and pageInfo", () => {
+test("client: asList and pageInfo", () => {
   assertEquals(asList([1, 2]), { items: [1, 2], count: 2 });
   assertEquals(asList({ odd: true }), { items: [], count: 0, raw: { odd: true } });
   assertEquals(pageInfo({ next_page_id: "n", previous_page_id: "p" }), {
@@ -121,7 +122,7 @@ Deno.test("client: asList and pageInfo", () => {
   assertEquals(pageInfo({}), { nextPageId: undefined, previousPageId: undefined });
 });
 
-Deno.test("client: pagingBody sends filters on page one and page_id alone afterwards", () => {
+test("client: pagingBody sends filters on page one and page_id alone afterwards", () => {
   assertEquals(
     pagingBody({ limit: 5, sortOrder: "asc" }, { filters: { active: true } }),
     { filters: { active: true }, limit: 5, sort_order: "asc" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/form-list.ts";
 import { envelope, exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-list: product is optional, inventory becomes []expand, cursor returned", async () => {
+test("form-list: product is optional, inventory becomes []expand, cursor returned", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ id: 1, status: "open" }], { hasMore: true, startingAfter: 1 }),
   }]);
@@ -23,7 +24,7 @@ Deno.test("form-list: product is optional, inventory becomes []expand, cursor re
   assertEquals(action.params!.find((p) => p.key === "product")?.required, undefined);
 });
 
-Deno.test("form-list: without inventory no expand is sent", async () => {
+test("form-list: without inventory no expand is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await exec(action, { product: "regfox.com" }, ctx);
   assertEquals(queryOf(calls[0].url)["[]expand"], undefined);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/start-chat.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("start-chat: builds users, access and the first message", async () => {
+test("start-chat: builds users, access and the first message", async () => {
   const { ctx, calls } = mockCtx([{
     body: { chat_id: "C1", thread_id: "T1", event_ids: ["E1"] },
   }]);
@@ -34,14 +35,14 @@ Deno.test("start-chat: builds users, access and the first message", async () => 
   assertEquals(out, { chatId: "C1", threadId: "T1", eventIds: ["E1"] });
 });
 
-Deno.test("start-chat: no input is a bare start_chat call; missing event_ids becomes []", async () => {
+test("start-chat: no input is a bare start_chat call; missing event_ids becomes []", async () => {
   const { ctx, calls } = mockCtx([{ body: { chat_id: "C1", thread_id: "T1" } }]);
   const out = await action.execute({}, ctx) as { eventIds: unknown[] };
   assertEquals(JSON.parse(calls[0].body!), {});
   assertEquals(out.eventIds, []);
 });
 
-Deno.test("start-chat: refuses more than 4 additional agents before any request", async () => {
+test("start-chat: refuses more than 4 additional agents before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ agentIds: "a,b,c,d,e" }, ctx),
@@ -51,6 +52,6 @@ Deno.test("start-chat: refuses more than 4 additional agents before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("start-chat: is declared non-idempotent", () => {
+test("start-chat: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-mapping-get.ts";
 
 const display = { endpoint: "https://example.com:9200" };
 
-Deno.test("index-mapping-get: GETs /<index>/_mapping", async () => {
+test("index-mapping-get: GETs /<index>/_mapping", async () => {
   const { ctx, calls } = mockCtx([{ body: { "my-index": { mappings: {} } } }], { display });
   const result = await action.execute({ index: "my-index" }, ctx);
   assertEquals(calls[0].method, "GET");

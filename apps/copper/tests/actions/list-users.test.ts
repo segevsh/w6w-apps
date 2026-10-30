@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import action from "../../actions/list-users.ts";
 
-Deno.test("list-users: POSTs to /users/search — even the user list is a search", async () => {
+test("list-users: POSTs to /users/search — even the user list is a search", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ id: 137658, name: "John Doe", email: "johndoe@copper.com" }],
@@ -14,13 +15,13 @@ Deno.test("list-users: POSTs to /users/search — even the user list is a search
   assertEquals(out.records, [{ id: 137658, name: "John Doe", email: "johndoe@copper.com" }]);
 });
 
-Deno.test("list-users: sends an empty body when no paging is supplied", async () => {
+test("list-users: sends an empty body when no paging is supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("list-users: offers paging only — Copper documents no filters or sorting for it", () => {
+test("list-users: offers paging only — Copper documents no filters or sorting for it", () => {
   assertEquals((action.params ?? []).map((p) => p.key), ["pageNumber", "pageSize"]);
   assert(!(action.params ?? []).some((p) => /sort/i.test(p.key)));
 });

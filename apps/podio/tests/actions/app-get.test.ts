@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import appGet from "../../actions/app-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const APP = {
   rights: ["view", "add_item"],
 };
 
-Deno.test("app-get: GETs one app definition", async () => {
+test("app-get: GETs one app definition", async () => {
   const { ctx, calls } = mockCtx([{ body: APP }]);
   await appGet.execute({ appId: "123" }, ctx);
   assertEquals(pathOf(calls[0].url), "/app/123");
@@ -26,7 +27,7 @@ Deno.test("app-get: GETs one app definition", async () => {
  * App Authentication grant. Returning it would put a permanent write credential
  * into the run record.
  */
-Deno.test("app-get: the app token never reaches the result", async () => {
+test("app-get: the app token never reaches the result", async () => {
   const { ctx } = mockCtx([{ body: APP }]);
   const out = await appGet.execute({ appId: "123" }, ctx) as { app: Record<string, unknown> };
   assertEquals(out.app.token, undefined, "the app token leaked out of a read action");
@@ -37,7 +38,7 @@ Deno.test("app-get: the app token never reaches the result", async () => {
   );
 });
 
-Deno.test("app-get: everything else comes back verbatim", async () => {
+test("app-get: everything else comes back verbatim", async () => {
   const { ctx } = mockCtx([{ body: APP }]);
   const out = await appGet.execute({ appId: "123" }, ctx) as { app: Record<string, unknown> };
   assertEquals(out.app.app_id, 123);
@@ -46,7 +47,7 @@ Deno.test("app-get: everything else comes back verbatim", async () => {
   assertEquals(out.app.rights, ["view", "add_item"]);
 });
 
-Deno.test("app-get: an empty body yields an empty object", async () => {
+test("app-get: an empty body yields an empty object", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await appGet.execute({ appId: "123" }, ctx), { app: {} });
 });

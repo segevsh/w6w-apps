@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formSubmissionList from "../../actions/form-submission-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-submission-list: hits form_submissions.json and forwards person_lead/lead_status", async () => {
+test("form-submission-list: hits form_submissions.json and forwards person_lead/lead_status", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope("form_submissions", [{ id: "FOR1" }]) },
   ]);
@@ -17,7 +18,7 @@ Deno.test("form-submission-list: hits form_submissions.json and forwards person_
   assertEquals(out.form_submissions, [{ id: "FOR1" }]);
 });
 
-Deno.test("form-submission-list: both submitted_at and created_at remain valid sort options", () => {
+test("form-submission-list: both submitted_at and created_at remain valid sort options", () => {
   const sortParam = formSubmissionList.params?.find((p) => p.key === "sort");
   const values = (sortParam?.options as Array<{ value: string }> | undefined)?.map((o) => o.value);
   assertEquals(values?.includes("submitted_at"), true);

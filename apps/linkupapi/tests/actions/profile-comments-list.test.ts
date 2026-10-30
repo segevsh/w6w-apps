@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import profileCommentsList from "../../actions/profile-comments-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("profile-comments-list: sends every input, unwraps data and credits", async () => {
+test("profile-comments-list: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -25,7 +26,7 @@ Deno.test("profile-comments-list: sends every input, unwraps data and credits", 
   });
 });
 
-Deno.test("profile-comments-list: omits optional inputs that were not given", async () => {
+test("profile-comments-list: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -42,7 +43,7 @@ Deno.test("profile-comments-list: omits optional inputs that were not given", as
   });
 });
 
-Deno.test("profile-comments-list: an error envelope is thrown with the vendor code", async () => {
+test("profile-comments-list: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

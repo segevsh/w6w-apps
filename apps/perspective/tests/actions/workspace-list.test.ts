@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceList from "../../actions/workspace-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-list: GET /v1/workspaces returns the data array", async () => {
+test("workspace-list: GET /v1/workspaces returns the data array", async () => {
   const ws = [{
     id: "ws_1",
     name: "Main",

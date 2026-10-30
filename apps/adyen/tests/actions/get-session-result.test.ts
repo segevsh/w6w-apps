@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getSessionResult from "../../actions/get-session-result.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "sessionId": "CS 1", "sessionResult": "res/1" } as Parameters<
   typeof getSessionResult.execute
 >[0];
 
-Deno.test("get-session-result: sends GET to the documented path and returns the response", async () => {
+test("get-session-result: sends GET to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "id": "CS 1", "status": "completed" },
@@ -22,7 +23,7 @@ Deno.test("get-session-result: sends GET to the documented path and returns the 
   assertEquals(out, { "id": "CS 1", "status": "completed" });
 });
 
-Deno.test("get-session-result: targets the connection's base URL and carries no credential", async () => {
+test("get-session-result: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "id": "CS 1", "status": "completed" },
@@ -37,7 +38,7 @@ Deno.test("get-session-result: targets the connection's base URL and carries no 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-session-result: surfaces Adyen's error code, type and message", async () => {
+test("get-session-result: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -55,6 +56,6 @@ Deno.test("get-session-result: surfaces Adyen's error code, type and message", a
   );
 });
 
-Deno.test("get-session-result: is a read-only action", () => {
+test("get-session-result: is a read-only action", () => {
   assertEquals(getSessionResult.type, "read");
 });

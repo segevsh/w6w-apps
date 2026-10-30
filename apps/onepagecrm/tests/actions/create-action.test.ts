@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createAction from "../../actions/create-action.ts";
 import { bodyOf, envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-action: POST /actions with the documented body fields", async () => {
+test("create-action: POST /actions with the documented body fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ action: { id: "a1" } }) }]);
   const out = await createAction.execute({
     contactId: "c1",
@@ -23,7 +24,7 @@ Deno.test("create-action: POST /actions with the documented body fields", async 
   assertEquals(out.action, { id: "a1" });
 });
 
-Deno.test("create-action: a second ASAP action answers 409 and is reported as such", async () => {
+test("create-action: a second ASAP action answers 409 and is reported as such", async () => {
   const { ctx } = mockCtx([{ status: 409, body: errorBody("conflict", "already has one", 409) }]);
   await assertRejects(
     () =>
@@ -33,7 +34,7 @@ Deno.test("create-action: a second ASAP action answers 409 and is reported as su
   );
 });
 
-Deno.test("create-action: text is capped at 140 characters in the form and is not idempotent", () => {
+test("create-action: text is capped at 140 characters in the form and is not idempotent", () => {
   const text = createAction.params!.find((p) => p.key === "text")!;
   assertEquals(text.validation?.maxLength, 140);
   assertEquals(createAction.idempotent, false);

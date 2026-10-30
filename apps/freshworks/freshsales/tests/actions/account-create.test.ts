@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/account-create.ts";
 
-Deno.test("account-create: POSTs to /sales_accounts, wrapped under `sales_account`", async () => {
+test("account-create: POSTs to /sales_accounts, wrapped under `sales_account`", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{
     body: { sales_account: { id: 1, name: "Widgetz" } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("account-create: POSTs to /sales_accounts, wrapped under `sales_accoun
   assertEquals(out, { id: 1, name: "Widgetz" });
 });
 
-Deno.test("account-create: passes through numeric size fields", async () => {
+test("account-create: passes through numeric size fields", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { sales_account: {} } }]);
   await action.execute({ name: "Widgetz", numberOfEmployees: 50, annualRevenue: 1000000 }, ctx);
   assertEquals(

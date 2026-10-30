@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectTaskSearch from "../../actions/project-task-search.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-task-search: GET /projects/{projectId}/tasks/search with the documented query and body", async () => {
+test("project-task-search: GET /projects/{projectId}/tasks/search with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await projectTaskSearch.execute({
     "projectId": "ev:1",
@@ -24,7 +25,7 @@ Deno.test("project-task-search: GET /projects/{projectId}/tasks/search with the 
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": 2 });
 });
 
-Deno.test("project-task-search: an Everhour error surfaces its message and status", async () => {
+test("project-task-search: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -37,6 +38,6 @@ Deno.test("project-task-search: an Everhour error surfaces its message and statu
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("project-task-search: declares search", () => {
+test("project-task-search: declares search", () => {
   assertEquals(projectTaskSearch.type, "search");
 });

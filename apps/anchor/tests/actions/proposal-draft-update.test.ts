@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import proposalDraftUpdate from "../../actions/proposal-draft-update.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("proposal-draft-update: sends PATCH /v2/proposal-drafts/d1", async () => {
+test("proposal-draft-update: sends PATCH /v2/proposal-drafts/d1", async () => {
   const { ctx, calls } = mockCtx([{ body: { "draftId": "d1" } }]);
   const out = await proposalDraftUpdate.execute(
     { "id": "d1", "agreementName": "New" } as never,
@@ -24,7 +25,7 @@ Deno.test("proposal-draft-update: sends PATCH /v2/proposal-drafts/d1", async () 
   assertEquals(out.draftId, "d1");
 });
 
-Deno.test("proposal-draft-update: a non-2xx answer throws with the vendor's error code", async () => {
+test("proposal-draft-update: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

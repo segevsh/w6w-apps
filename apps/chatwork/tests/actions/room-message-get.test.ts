@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomMessageGet from "../../actions/room-message-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-message-get: calls GET /rooms/{room_id}/messages/{message_id}", async () => {
+test("room-message-get: calls GET /rooms/{room_id}/messages/{message_id}", async () => {
   const message = {
     message_id: "101",
     body: "Hello Chatwork!",

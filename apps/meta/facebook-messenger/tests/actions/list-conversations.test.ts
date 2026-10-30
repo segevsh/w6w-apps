@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-conversations.ts";
 
-Deno.test("list-conversations: GET /me/conversations?platform=messenger with defaults", async () => {
+test("list-conversations: GET /me/conversations?platform=messenger with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "t_1", updated_time: "2026-10-01" }] } }]);
   const out = await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("list-conversations: GET /me/conversations?platform=messenger with def
   assertEquals(out.data[0].id, "t_1");
 });
 
-Deno.test("list-conversations: userId, cursor, limit and pageId are forwarded", async () => {
+test("list-conversations: userId, cursor, limit and pageId are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ userId: "psid", cursor: "CUR", limit: 5, pageId: "77" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockShopifyCtx } from "../_helpers.ts";
 import action from "../../actions/product-get.ts";
 
-Deno.test("product-get: GETs /products/{id}.json", async () => {
+test("product-get: GETs /products/{id}.json", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: { id: 5 } } }]);
   await action.execute({ productId: 5 }, ctx);
   assertEquals(

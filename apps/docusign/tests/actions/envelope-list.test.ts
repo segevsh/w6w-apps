@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, hostOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/envelope-list.ts";
 
-Deno.test("envelope-list: GETs the account's envelopes on the connection's regional host", async () => {
+test("envelope-list: GETs the account's envelopes on the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { envelopes: [] } }]);
   await action.execute({ fromDate: "2026-01-01T00:00:00Z" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("envelope-list: GETs the account's envelopes on the connection's regio
   assertEquals(queryOf(calls[0]).get("from_date"), "2026-01-01T00:00:00Z");
 });
 
-Deno.test("envelope-list: maps every filter to Docusign's snake_case query names", async () => {
+test("envelope-list: maps every filter to Docusign's snake_case query names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     fromDate: "2026-01-01",
@@ -43,13 +44,13 @@ Deno.test("envelope-list: maps every filter to Docusign's snake_case query names
   assertEquals(q.get("start_position"), "100");
 });
 
-Deno.test("envelope-list: sends no query at all when nothing is set", async () => {
+test("envelope-list: sends no query at all when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("envelope-list: from_date is optional — Docusign owns that rule", () => {
+test("envelope-list: from_date is optional — Docusign owns that rule", () => {
   const fromDate = action.params?.find((p) => p.key === "fromDate");
   assertEquals(fromDate?.required, undefined);
   assertEquals(action.type, "search");

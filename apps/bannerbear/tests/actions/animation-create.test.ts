@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import animationCreate from "../../actions/animation-create.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("animation-create: POST /animations, modifications defaults to {}", async () => {
+test("animation-create: POST /animations, modifications defaults to {}", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "a1", status: "queued" } }]);
   const out = await animationCreate.execute({ template: "t1" }, ctx) as unknown as Record<
     string,
@@ -16,7 +17,7 @@ Deno.test("animation-create: POST /animations, modifications defaults to {}", as
   assertEquals(out.uid, "a1");
 });
 
-Deno.test("animation-create: passes formats and metadata through", async () => {
+test("animation-create: passes formats and metadata through", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "a1" } }]);
   await animationCreate.execute(
     { template: "t1", formats: ["mov"], metadata: "job-1" },
@@ -28,7 +29,7 @@ Deno.test("animation-create: passes formats and metadata through", async () => {
   assertEquals(body.metadata, "job-1");
 });
 
-Deno.test("animation-create: requires a template", async () => {
+test("animation-create: requires a template", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => animationCreate.execute({ template: "" }, ctx));
 });

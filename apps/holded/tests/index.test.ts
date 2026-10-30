@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 22;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.length, 1);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -41,7 +43,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * documented anywhere in the CRM API spec, so a retry must not be treated as
  * safe.
  */
-Deno.test("index: no create-shaped action is marked idempotent", () => {
+test("index: no create-shaped action is marked idempotent", () => {
   for (
     const key of [
       "funnel-create",
@@ -55,7 +57,7 @@ Deno.test("index: no create-shaped action is marked idempotent", () => {
   }
 });
 
-Deno.test("index: no action or auth hook contains a credential-shaped field name", () => {
+test("index: no action or auth hook contains a credential-shaped field name", () => {
   // A cheap grep-in-memory guard: nothing outside auth/api-key.ts should ever
   // reference the credential's own field name.
   for (const a of app.actions) {
@@ -64,8 +66,8 @@ Deno.test("index: no action or auth hook contains a credential-shaped field name
   }
 });
 
-Deno.test("index: no runtime dependency beyond @w6w/types", async () => {
-  const denoJson = JSON.parse(await Deno.readTextFile(new URL("../deno.json", import.meta.url)));
+test("index: no runtime dependency beyond @w6w/types", async () => {
+  const denoJson = JSON.parse(await denoReadTextFile(new URL("../deno.json", import.meta.url)));
   const imports = Object.keys(denoJson.imports ?? {});
   for (const spec of imports) {
     assert(

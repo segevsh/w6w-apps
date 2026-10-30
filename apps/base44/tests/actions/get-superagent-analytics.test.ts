@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-superagent-analytics.ts";
 import { mockConnectedCtx, mockCtx, pathOf, queryOf, WORKSPACE_ID } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const ANALYTICS = {
   integration_credits_consumed: 5,
 };
 
-Deno.test("get-superagent-analytics: maps the analytics record", async () => {
+test("get-superagent-analytics: maps the analytics record", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: ANALYTICS }]);
   const result = await action.execute(
     { agentId: "agent1", from: "2026-06-01", to: "2026-06-30" },
@@ -33,7 +34,7 @@ Deno.test("get-superagent-analytics: maps the analytics record", async () => {
   });
 });
 
-Deno.test("get-superagent-analytics: requires agentId, from, and to without making a request", async () => {
+test("get-superagent-analytics: requires agentId, from, and to without making a request", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   await assertRejects(
     async () => await action.execute!({ from: "2026-06-01", to: "2026-06-30" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("get-superagent-analytics: requires agentId, from, and to without maki
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-superagent-analytics: fails without a connected workspace", async () => {
+test("get-superagent-analytics: fails without a connected workspace", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>

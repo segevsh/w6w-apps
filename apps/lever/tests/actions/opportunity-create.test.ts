@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-create.ts";
 
@@ -7,7 +8,7 @@ const USER = "8d49b010-cc6a-4f40-ace5-e86061c677ed";
 const noMatch = { status: 200, body: { data: [] } };
 const created = { status: 200, body: { data: { id: "o9", name: "Ada", contact: { id: "c1" } } } };
 
-Deno.test("opportunity-create: posts with perform_as in the query string", async () => {
+test("opportunity-create: posts with perform_as in the query string", async () => {
   const { ctx, calls } = mockCtx([noMatch, created], D);
   const result = await action.execute({
     performAs: USER,
@@ -26,7 +27,7 @@ Deno.test("opportunity-create: posts with perform_as in the query string", async
 });
 
 /** Lever refuses a create without it, and it decides the audit trail. */
-Deno.test("opportunity-create: requires performAs, and says why", async () => {
+test("opportunity-create: requires performAs, and says why", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ name: "Ada" }, ctx),
@@ -40,7 +41,7 @@ Deno.test("opportunity-create: requires performAs, and says why", async () => {
  * The sharp edge: a create against a known email keeps the existing contact's
  * details and reports success.
  */
-Deno.test("opportunity-create: warns when the email matches an existing person", async () => {
+test("opportunity-create: warns when the email matches an existing person", async () => {
   const { ctx, logs } = mockCtx([
     { status: 200, body: { data: [{ contact: { id: "c1" } }] } },
     created,
@@ -59,7 +60,7 @@ Deno.test("opportunity-create: warns when the email matches an existing person",
 });
 
 /** A candidate attached to no job is a real and rarely intended state. */
-Deno.test("opportunity-create: notes a candidate with no posting", async () => {
+test("opportunity-create: notes a candidate with no posting", async () => {
   const { ctx, logs } = mockCtx([created], D);
   const result = await action.execute({ performAs: USER, name: "Ada" }, ctx) as Record<
     string,
@@ -73,7 +74,7 @@ Deno.test("opportunity-create: notes a candidate with no posting", async () => {
 });
 
 /** The dedupe lookup is context, not a gate. */
-Deno.test("opportunity-create: a failed lookup does not stop the create", async () => {
+test("opportunity-create: a failed lookup does not stop the create", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }, created], D);
   const result = await action.execute(
     { performAs: USER, emails: "ada@example.com" },
@@ -84,13 +85,13 @@ Deno.test("opportunity-create: a failed lookup does not stop the create", async 
 });
 
 /** Candidate names and emails are personal data. */
-Deno.test("opportunity-create: logs ids, never the candidate", async () => {
+test("opportunity-create: logs ids, never the candidate", async () => {
   const { ctx, logs } = mockCtx([noMatch, created], D);
   await action.execute({ performAs: USER, name: "Ada", emails: "ada@example.com" }, ctx);
   assert(!/ada@example\.com/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("opportunity-create: is not idempotent", () => {
+test("opportunity-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
   assert(/DEDUPES on email/.test(action.description!), action.description);
 });

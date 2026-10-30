@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-organizations.ts";
 
 const query = [{ type: "predicate", field_id: "name", operator_id: "contains", values: ["acme"] }];
 
-Deno.test("search-organizations: POSTs field_ids and query to the right path", async () => {
+test("search-organizations: POSTs field_ids and query to the right path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { count: 0, entities: [] } }]);
   await action.execute!(
     { fieldIds: "identifier, name", query: JSON.stringify(query) },
@@ -17,7 +18,7 @@ Deno.test("search-organizations: POSTs field_ids and query to the right path", a
   assertEquals(body.query, query);
 });
 
-Deno.test("search-organizations: order, limit and cursors are optional and pass through", async () => {
+test("search-organizations: order, limit and cursors are optional and pass through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     {
@@ -36,7 +37,7 @@ Deno.test("search-organizations: order, limit and cursors are optional and pass 
   assert(!("before_id" in body));
 });
 
-Deno.test("search-organizations: fieldIds and query are both required", async () => {
+test("search-organizations: fieldIds and query are both required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ query: JSON.stringify(query) }, ctx),
@@ -51,7 +52,7 @@ Deno.test("search-organizations: fieldIds and query are both required", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("search-organizations: a money-typed predicate value passes through as an object", async () => {
+test("search-organizations: a money-typed predicate value passes through as an object", async () => {
   const moneyQuery = [
     {
       type: "predicate",
@@ -66,7 +67,7 @@ Deno.test("search-organizations: a money-typed predicate value passes through as
   assertEquals(body.query[0].values[0], { value: 1e7, currency: "usd" });
 });
 
-Deno.test("search-organizations: malformed query JSON is rejected", async () => {
+test("search-organizations: malformed query JSON is rejected", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ fieldIds: "name", query: "{not json" }, ctx),

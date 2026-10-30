@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-update-records.ts";
 
-Deno.test("bulk-update-records: PATCHes { items } to records/bulk/", async () => {
+test("bulk-update-records: PATCHes { items } to records/bulk/", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     { tableId: "tbl1", items: [{ id: "rec1", status: "Closed" }] },
@@ -13,6 +14,6 @@ Deno.test("bulk-update-records: PATCHes { items } to records/bulk/", async () =>
   assertEquals(JSON.parse(calls[0].body!), { items: [{ id: "rec1", status: "Closed" }] });
 });
 
-Deno.test("bulk-update-records: is idempotent", () => {
+test("bulk-update-records: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

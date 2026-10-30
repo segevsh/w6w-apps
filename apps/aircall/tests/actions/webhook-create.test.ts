@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { bodyOf, entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs /v1/webhooks with url, name and events", async () => {
+test("webhook-create: POSTs /v1/webhooks with url, name and events", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: entityBody("webhook", { webhook_id: "uuid-1", token: "df76g76d" }) },
   ]);
@@ -25,7 +26,7 @@ Deno.test("webhook-create: POSTs /v1/webhooks with url, name and events", async 
  * The deliberate exception to the stripping rule: this call ISSUES the secret,
  * it belongs to the webhook this step just created, and it can never be re-read.
  */
-Deno.test("webhook-create: returns the token, unlike every other webhook action", async () => {
+test("webhook-create: returns the token, unlike every other webhook action", async () => {
   const { ctx } = mockCtx([
     {
       status: 201,
@@ -41,7 +42,7 @@ Deno.test("webhook-create: returns the token, unlike every other webhook action"
  * around ninety event types, and it is the DEFAULT. A silent firehose deserves
  * a warning in the run log.
  */
-Deno.test("webhook-create: an empty event list omits the field and warns", async () => {
+test("webhook-create: an empty event list omits the field and warns", async () => {
   const { ctx, calls, logs } = mockCtx([
     { status: 201, body: entityBody("webhook", { webhook_id: "uuid-1" }) },
   ]);

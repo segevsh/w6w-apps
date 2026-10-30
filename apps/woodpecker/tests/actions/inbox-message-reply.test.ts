@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import inboxMessageReply from "../../actions/inbox-message-reply.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("inbox-message-reply: POSTs the reply with an html body", async () => {
+test("inbox-message-reply: POSTs the reply with an html body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await inboxMessageReply.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("inbox-message-reply: POSTs the reply with an html body", async () => 
   assertEquals(out.sent, true);
 });
 
-Deno.test("inbox-message-reply: an invalid recipient is surfaced", async () => {
+test("inbox-message-reply: an invalid recipient is surfaced", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: {

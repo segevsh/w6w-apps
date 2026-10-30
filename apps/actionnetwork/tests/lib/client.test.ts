@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   ActionNetworkClient,
   buildQuery,
@@ -15,12 +16,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("seg: strips the action_network prefix and encodes", () => {
+test("seg: strips the action_network prefix and encodes", () => {
   assertEquals(seg("action_network:abc-1"), "abc-1");
   assertEquals(seg(" a/b "), "a%2Fb");
 });
 
-Deno.test("need: rejects blank values", () => {
+test("need: rejects blank values", () => {
   assertEquals(need({ a: 5 }, "a"), "5");
   for (const v of [undefined, null, "", "  "]) {
     let threw = false;
@@ -33,7 +34,7 @@ Deno.test("need: rejects blank values", () => {
   }
 });
 
-Deno.test("strList / jsonValue / compact / buildQuery", () => {
+test("strList / jsonValue / compact / buildQuery", () => {
   assertEquals(strList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(strList([]), undefined);
   assertEquals(strList(undefined), undefined);
@@ -45,7 +46,7 @@ Deno.test("strList / jsonValue / compact / buildQuery", () => {
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("redact: cuts the echoed key; errorText handles strings, objects and raw text", () => {
+test("redact: cuts the echoed key; errorText handles strings, objects and raw text", () => {
   assertEquals(redact("API Key invalid or not present sk_1"), "API Key invalid or not present");
   assertEquals(
     errorText({ error: "API Key invalid or not present sk_1" }),
@@ -55,7 +56,7 @@ Deno.test("redact: cuts the echoed key; errorText handles strings, objects and r
   assertEquals(errorText(null, " plain "), "plain");
 });
 
-Deno.test("simplify / resourceId / simplifyPage flatten HAL", () => {
+test("simplify / resourceId / simplifyPage flatten HAL", () => {
   assertEquals(resourceId({ identifiers: ["x:1", "action_network:u1"] }), "u1");
   assertEquals(resourceId({}), undefined);
   assertEquals(simplify({ identifiers: ["action_network:u1"], n: 1, _links: {}, _embedded: {} }), {
@@ -83,7 +84,7 @@ Deno.test("simplify / resourceId / simplifyPage flatten HAL", () => {
   assertEquals(simplifyPage(null), { items: [], hasMore: false });
 });
 
-Deno.test("client: a non-JSON failure body is reported by status and text", async () => {
+test("client: a non-JSON failure body is reported by status and text", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "bad gateway" }]);
   await assertRejects(
     () => new ActionNetworkClient(ctx).get("/people"),
@@ -92,7 +93,7 @@ Deno.test("client: a non-JSON failure body is reported by status and text", asyn
   );
 });
 
-Deno.test("client: an empty success body resolves to an empty object", async () => {
+test("client: an empty success body resolves to an empty object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   assertEquals(await new ActionNetworkClient(ctx).create("/people", { a: 1 }, true), {});
   assert(calls[0].url.endsWith("/people?background_request=true"));

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-datapoint.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("create-datapoint: form-posts the point and maps the result", async () => {
+test("create-datapoint: form-posts the point and maps the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "9", timestamp: 1325523600, daystamp: "20120102", value: 130.1, comment: "hi" },
   }]);
@@ -21,13 +22,13 @@ Deno.test("create-datapoint: form-posts the point and maps the result", async ()
   assertEquals(out.daystamp, "20120102");
 });
 
-Deno.test("create-datapoint: requestid defaults to the invocation id; zero is a valid value", async () => {
+test("create-datapoint: requestid defaults to the invocation id; zero is a valid value", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { invocation: { invocationId: "inv-7" } });
   await run(action, { slug: "w", value: 0 }, ctx);
   assertEquals(calls[0].body, "value=0&requestid=inv-7");
 });
 
-Deno.test("create-datapoint: a missing value throws before a call; errors surface", async () => {
+test("create-datapoint: a missing value throws before a call; errors surface", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { slug: "w" }, none.ctx), Error, "value is required");
   assertEquals(none.calls.length, 0);

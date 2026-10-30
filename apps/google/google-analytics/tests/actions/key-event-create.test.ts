@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-event-create.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("key-event-create: marks an event name as a key event", async () => {
+test("key-event-create: marks an event name as a key event", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { eventName: "purchase" } }], { display });
   await action.execute!({ eventName: "purchase" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -15,7 +16,7 @@ Deno.test("key-event-create: marks an event name as a key event", async () => {
   });
 });
 
-Deno.test("key-event-create: an event name is required", async () => {
+test("key-event-create: an event name is required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`eventName`");
   assertEquals(calls.length, 0);

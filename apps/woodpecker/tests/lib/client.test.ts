@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   buildUrl,
   call,
@@ -15,7 +16,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: errorMessage reads the v1 and v2 dialects", () => {
+test("client: errorMessage reads the v1 and v2 dialects", () => {
   assertEquals(errorMessage({ status: { status: "ERROR", code: "E_SESSION", msg: "bad key" } }), {
     code: "E_SESSION",
     message: "bad key",
@@ -31,20 +32,20 @@ Deno.test("client: errorMessage reads the v1 and v2 dialects", () => {
   assertEquals(errorMessage(null), {});
 });
 
-Deno.test("client: buildUrl drops unset query values", () => {
+test("client: buildUrl drops unset query values", () => {
   assertEquals(
     buildUrl(V2, "/x", { a: 1, b: undefined, c: "", d: null, e: false }),
     "https://api.woodpecker.co/rest/v2/x?a=1&e=false",
   );
 });
 
-Deno.test("client: encodeId trims, encodes and refuses empty", () => {
+test("client: encodeId trims, encodes and refuses empty", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
   assertEquals(encodeId(12), "12");
   assertThrows(() => encodeId(""), Error, "ID was empty");
 });
 
-Deno.test("client: pick, csv, parseJsonField and requireArray", () => {
+test("client: pick, csv, parseJsonField and requireArray", () => {
   assertEquals(pick({ a: 1, b: "", c: null, d: false }, ["a", "b", "c", "d"]), { a: 1, d: false });
   assertEquals(csv(["1", "2"]), "1,2");
   assertEquals(csv([]), undefined);
@@ -55,7 +56,7 @@ Deno.test("client: pick, csv, parseJsonField and requireArray", () => {
   assertEquals(requireArray("x", [1], 1), [1]);
 });
 
-Deno.test("client: parse failures are named", () => {
+test("client: parse failures are named", () => {
   let message = "";
   try {
     parseJsonField("prospects", "{nope");
@@ -74,21 +75,21 @@ Deno.test("client: parse failures are named", () => {
   }
 });
 
-Deno.test("client: listOf unwraps arrays and the empty-match message", () => {
+test("client: listOf unwraps arrays and the empty-match message", () => {
   assertEquals(listOf([{ id: 1 }]).items, [{ id: 1 }]);
   assertEquals(listOf([{ prospect: { id: 2 } }]).items, [{ id: 2 }]);
   assertEquals(listOf({ message: "none" }), { items: [], message: "none" });
   assertEquals(listOf(null), { items: [] });
 });
 
-Deno.test("client: call returns {} for an empty body and sends JSON", async () => {
+test("client: call returns {} for an empty body and sends JSON", async () => {
   const m = mockCtx([{ status: 200, body: undefined }]);
   assertEquals(await call(m.ctx, "POST", V2, "/x", { body: { a: 1 } }), {});
   assertEquals(m.calls[0].headers["content-type"], "application/json");
   assertEquals(m.calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: HTTP errors and 200-with-ERROR bodies both throw WoodpeckerError", async () => {
+test("client: HTTP errors and 200-with-ERROR bodies both throw WoodpeckerError", async () => {
   const http = mockCtx([{
     status: 404,
     body: { title: "Not Found", detail: "Requested resource does not exist" },
@@ -107,7 +108,7 @@ Deno.test("client: HTTP errors and 200-with-ERROR bodies both throw WoodpeckerEr
   assertEquals((e2 as WoodpeckerError).vendorCode, "E_X");
 });
 
-Deno.test("client: a non-JSON body does not crash the error path", async () => {
+test("client: a non-JSON body does not crash the error path", async () => {
   const m = mockCtx([{
     status: 502,
     body: "<html>bad gateway</html>",

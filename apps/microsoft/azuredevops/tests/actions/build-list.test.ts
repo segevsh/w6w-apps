@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, list } from "./_shared.ts";
 import action from "../../actions/build-list.ts";
@@ -7,7 +8,7 @@ import action from "../../actions/build-list.ts";
  * `result` does not exist until `status` is completed — so a running build
  * counted by result reads as nothing at all.
  */
-Deno.test("build-list: counts results and running runs separately", async () => {
+test("build-list: counts results and running runs separately", async () => {
   const { ctx, calls } = mockCtx([list([
     { id: 1, status: "completed", result: "succeeded" },
     { id: 2, status: "completed", result: "failed" },
@@ -25,19 +26,19 @@ Deno.test("build-list: counts results and running runs separately", async () => 
   assertEquals(result.runningCount, 1);
 });
 
-Deno.test("build-list: pipeline ids are sent comma-delimited", async () => {
+test("build-list: pipeline ids are sent comma-delimited", async () => {
   const { ctx, calls } = mockCtx([list([])], { display });
   await action.execute!({ project: "P", definitionIds: "12, 34" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("definitions"), "12,34");
 });
 
-Deno.test("build-list: a bare branch name is expanded to a full ref", async () => {
+test("build-list: a bare branch name is expanded to a full ref", async () => {
   const { ctx, calls } = mockCtx([list([])], { display });
   await action.execute!({ project: "P", branchName: "main" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("branchName"), "refs/heads/main");
 });
 
-Deno.test("build-list: the status and result filters reach the wire", async () => {
+test("build-list: the status and result filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([list([])], { display });
   await action.execute!({ project: "P", statusFilter: "completed", resultFilter: "failed" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -45,12 +46,12 @@ Deno.test("build-list: the status and result filters reach the wire", async () =
   assertEquals(q.get("resultFilter"), "failed");
 });
 
-Deno.test("build-list: needs a project", async () => {
+test("build-list: needs a project", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "project");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("build-list: says what checking result on a running build does", () => {
+test("build-list: says what checking result on a running build does", () => {
   assert(/concludes it passed/.test(action.description!), action.description);
 });

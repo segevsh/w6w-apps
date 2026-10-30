@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import searchResults from "../../actions/search-results.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("search-results: pins searchResults, defaults depth, hides output-type params", async () => {
+test("search-results: pins searchResults, defaults depth, hides output-type params", async () => {
   const r = mockCtx([{ body: { results: [] } }]);
   assertEquals((await searchResults.execute({ q: "q" }, r.ctx)).results, []);
   assertEquals(JSON.parse(r.calls[0].body!), {

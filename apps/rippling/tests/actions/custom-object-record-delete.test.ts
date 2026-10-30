@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import customObjectRecordDelete from "../../actions/custom-object-record-delete.ts";
 
-Deno.test("custom-object-record-delete: DELETEs .../records/<codr_id>/ and reports the 204", async () => {
+test("custom-object-record-delete: DELETEs .../records/<codr_id>/ and reports the 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await customObjectRecordDelete.execute(
     { customObjectApiName: "asset", recordId: "r1" },
@@ -14,7 +15,7 @@ Deno.test("custom-object-record-delete: DELETEs .../records/<codr_id>/ and repor
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("custom-object-record-delete: requires both identifiers", async () => {
+test("custom-object-record-delete: requires both identifiers", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

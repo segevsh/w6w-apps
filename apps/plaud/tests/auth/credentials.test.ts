@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertMatch, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertMatch, assertRejects, assertThrows } from "../_assert.ts";
 import auth from "../../auth/credentials.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const USER = { body: { access_token: "UT", token_type: "bearer", expires_in: 864
 // deno-lint-ignore no-explicit-any
 const call = (hook: any, input: unknown, ctx: unknown) => hook(input, ctx);
 
-Deno.test("exchange: Basic partner token, then a user token minted with the partner bearer", async () => {
+test("exchange: Basic partner token, then a user token minted with the partner bearer", async () => {
   const { ctx, calls } = mockCtx([PARTNER, USER]);
   const cred = await call(auth.exchange, { fields: FIELDS }, ctx) as Record<string, string>;
 
@@ -43,24 +44,24 @@ Deno.test("exchange: Basic partner token, then a user token minted with the part
   assert(Date.parse(cred.userTokenExpiresAt) > Date.now());
 });
 
-Deno.test("exchange: uses the Japan host when selected", async () => {
+test("exchange: uses the Japan host when selected", async () => {
   const { ctx, calls } = mockCtx([PARTNER, USER]);
   await call(auth.exchange, { fields: { ...FIELDS, region: "jp" } }, ctx);
   assertMatch(calls[0].url, /^https:\/\/platform-jp\.plaud\.ai\//);
 });
 
-Deno.test("exchange: a 401 detail body is carried into the error", async () => {
+test("exchange: a 401 detail body is carried into the error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { detail: "CLIENT_NOT_FOUND" } }]);
   const err = await assertRejects(() => call(auth.exchange, { fields: FIELDS }, ctx));
   assertMatch((err as Error).message, /CLIENT_NOT_FOUND/);
 });
 
-Deno.test("exchange: a 200 carrying a detail error is still refused", async () => {
+test("exchange: a 200 carrying a detail error is still refused", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { detail: "INVALID_SECRET" } }]);
   await assertRejects(() => call(auth.exchange, { fields: FIELDS }, ctx), Error, "INVALID_SECRET");
 });
 
-Deno.test("exchange: validates required fields and the 6-120 char user id", async () => {
+test("exchange: validates required fields and the 6-120 char user id", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => call(auth.exchange, { fields: { ...FIELDS, secretKey: "" } }, ctx),
@@ -74,7 +75,7 @@ Deno.test("exchange: validates required fields and the 6-120 char user id", asyn
   );
 });
 
-Deno.test("refresh: re-mints and keeps the stored keys", async () => {
+test("refresh: re-mints and keeps the stored keys", async () => {
   const { ctx } = mockCtx([PARTNER, { body: { access_token: "UT2", expires_in: 86400 } }]);
   const next = await call(
     auth.refresh,
@@ -90,7 +91,7 @@ const req = (url: string) => ({ url, method: "GET", headers: { accept: "applicat
 const CRED = { clientId: "cid", apiKey: "key-1", userToken: "UT" };
 const BASE = "https://platform-us.plaud.ai/developer/api";
 
-Deno.test("sign: device and upload endpoints get the user bearer token", async () => {
+test("sign: device and upload endpoints get the user bearer token", async () => {
   for (const path of ["/open/partner/sdk/bind", "/open/partner/files/upload/complete-upload"]) {
     const out = await call(auth.sign, { request: req(BASE + path), credential: CRED }, {}) as {
       headers: Record<string, string>;
@@ -100,7 +101,7 @@ Deno.test("sign: device and upload endpoints get the user bearer token", async (
   }
 });
 
-Deno.test("sign: transcription endpoints get X-Client-Id / X-Client-Api-Key, not a bearer", async () => {
+test("sign: transcription endpoints get X-Client-Id / X-Client-Api-Key, not a bearer", async () => {
   const out = await call(auth.sign, {
     request: req(BASE + "/open/partner/ai/transcriptions/task_1"),
     credential: CRED,
@@ -110,7 +111,7 @@ Deno.test("sign: transcription endpoints get X-Client-Id / X-Client-Api-Key, not
   assertEquals(out.headers.authorization, undefined);
 });
 
-Deno.test("sign: transcription without an api key fails loudly", () => {
+test("sign: transcription without an api key fails loudly", () => {
   assertThrows(
     () =>
       call(auth.sign, {
@@ -122,13 +123,13 @@ Deno.test("sign: transcription without an api key fails loudly", () => {
   );
 });
 
-Deno.test("sign: never stamps a host that is not Plaud's", async () => {
+test("sign: never stamps a host that is not Plaud's", async () => {
   const r = req("https://plaud-bucket.s3.amazonaws.com/part1");
   const out = await call(auth.sign, { request: r, credential: CRED }, {});
   assertEquals(out, r);
 });
 
-Deno.test("test: ok when a partner token mints, and says when no api key is set", async () => {
+test("test: ok when a partner token mints, and says when no api key is set", async () => {
   const ok = mockCtx([PARTNER]);
   const res = await call(
     auth.test,
@@ -144,7 +145,7 @@ Deno.test("test: ok when a partner token mints, and says when no api key is set"
   assertMatch(r2.message, /no transcription API key/);
 });
 
-Deno.test("test: a rejected client is a failed test with the vendor's code", async () => {
+test("test: a rejected client is a failed test with the vendor's code", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { detail: "CLIENT_NOT_FOUND" } }]);
   const res = await call(auth.test, { credential: { clientId: "c", secretKey: "s" } }, ctx) as {
     ok: boolean;
@@ -154,7 +155,7 @@ Deno.test("test: a rejected client is a failed test with the vendor's code", asy
   assertMatch(res.message, /CLIENT_NOT_FOUND/);
 });
 
-Deno.test("afterConnect: exposes the region for actions, never a secret", () => {
+test("afterConnect: exposes the region for actions, never a secret", () => {
   const d = call(auth.afterConnect, {
     credential: { ...CRED, region: "jp", userId: "user-123456", secretKey: "s" },
   }, {}) as Record<string, string>;

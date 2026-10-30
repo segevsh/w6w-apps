@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reply-to-channel-message.ts";
 
 const CHANNEL = "19:4a95f7d8db4c4e7fae857bcebe0623e6@thread.tacv2";
 
-Deno.test("reply-to-channel-message: POSTs to the message's replies collection", async () => {
+test("reply-to-channel-message: POSTs to the message's replies collection", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "1616990171266", replyToId: "1616990032035" },
@@ -27,15 +28,15 @@ Deno.test("reply-to-channel-message: POSTs to the message's replies collection",
   assertEquals(out.replyToId, "1616990032035");
 });
 
-Deno.test("reply-to-channel-message: offers no subject — a reply has no title in Teams", () => {
+test("reply-to-channel-message: offers no subject — a reply has no title in Teams", () => {
   assertEquals(action.params!.map((p) => p.key).includes("subject"), false);
 });
 
-Deno.test("reply-to-channel-message: offers no reply id — Teams threads are one level deep", () => {
+test("reply-to-channel-message: offers no reply id — Teams threads are one level deep", () => {
   assertEquals(action.params!.map((p) => p.key).includes("replyId"), false);
 });
 
-Deno.test("reply-to-channel-message: passes importance through when set", async () => {
+test("reply-to-channel-message: passes importance through when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     teamId: "t",
@@ -47,6 +48,6 @@ Deno.test("reply-to-channel-message: passes importance through when set", async 
   assertEquals(JSON.parse(calls[0].body!).importance, "high");
 });
 
-Deno.test("reply-to-channel-message: is non-idempotent", () => {
+test("reply-to-channel-message: is non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("project-list: lists the org's projects", async () => {
+test("project-list: lists the org's projects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ slug: "backend" }] }], { display });
   const result = await action.execute!({ query: "back" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("project-list: lists the org's projects", async () => {
   assertEquals(result, [{ slug: "backend" }]);
 });
 
-Deno.test("project-list: returnAll follows every cursor", async () => {
+test("project-list: returnAll follows every cursor", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

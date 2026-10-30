@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import searchAppointments from "../../actions/search-appointments.ts";
 
-Deno.test("search-appointments: GETs /appointments with a paired window", async () => {
+test("search-appointments: GETs /appointments with a paired window", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "appointments" }, appointments: [] },
@@ -29,7 +30,7 @@ Deno.test("search-appointments: GETs /appointments with a paired window", async 
  * reasons. An empty result is usually scoping, not an empty calendar — and if
  * that stops being said, every integrator rediscovers it as a bug report.
  */
-Deno.test("search-appointments: explains the three visibility conditions", () => {
+test("search-appointments: explains the three visibility conditions", () => {
   const d = searchAppointments.description!;
   assert(/authenticating user/i.test(d), d);
   assert(/Google|Outlook|synced/i.test(d), d);

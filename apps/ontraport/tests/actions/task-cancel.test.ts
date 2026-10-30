@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCancel from "../../actions/task-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-cancel: calls POST /1/task/cancel with objectID (the Task type itself)", async () => {
+test("task-cancel: calls POST /1/task/cancel with objectID (the Task type itself)", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0 } }]);
   await taskCancel.execute({ ids: "1,2" }, ctx);
 

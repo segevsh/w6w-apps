@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import myStatusGet from "../../actions/my-status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("my-status-get: calls GET /my/status", async () => {
+test("my-status-get: calls GET /my/status", async () => {
   const status = {
     unread_room_num: 2,
     mention_room_num: 1,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-type-get-many.ts";
 
-Deno.test("event-type-get-many: GETs /event_types with mapped query params", async () => {
+test("event-type-get-many: GETs /event_types with mapped query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { collection: [] } }]);
   await action.execute(
     { user: "https://api.calendly.com/users/AAAA", active: true, count: 50 },
@@ -16,7 +17,7 @@ Deno.test("event-type-get-many: GETs /event_types with mapped query params", asy
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("event-type-get-many: maps pageToken to page_token", async () => {
+test("event-type-get-many: maps pageToken to page_token", async () => {
   const { ctx, calls } = mockCtx([{ body: { collection: [] } }]);
   await action.execute({ organization: "org", pageToken: "next" }, ctx);
   const url = new URL(calls[0].url);

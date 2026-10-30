@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tasksCreate from "../../actions/tasks-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const TASKS = [
   { type: "fetch", input: { url: "https://e.com" } },
 ];
 
-Deno.test("tasks-create: rejects bad batches before any request", async () => {
+test("tasks-create: rejects bad batches before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await tasksCreate.execute({ tasks: [] }, ctx), Error, "1 to 100");
   await assertRejects(

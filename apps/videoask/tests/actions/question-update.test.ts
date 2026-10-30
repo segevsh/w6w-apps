@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import questionUpdate from "../../actions/question-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("question-update: merges Body(JSON) (e.g. metadata.text) with typed media fields", async () => {
+test("question-update: merges Body(JSON) (e.g. metadata.text) with typed media fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await questionUpdate.execute(
     {

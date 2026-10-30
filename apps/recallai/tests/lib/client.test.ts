@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   API_URLS,
   buildQuery,
@@ -15,7 +16,7 @@ import {
 import { botBody, recordingConfig } from "../../lib/bot.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("regions: four canonical hosts; an unknown or missing region falls back to us-west-2", () => {
+test("regions: four canonical hosts; an unknown or missing region falls back to us-west-2", () => {
   assertEquals(Object.keys(API_URLS), [
     "us-east-1",
     "us-west-2",
@@ -30,7 +31,7 @@ Deno.test("regions: four canonical hosts; an unknown or missing region falls bac
   assertEquals(regionFrom(undefined), "us-west-2");
 });
 
-Deno.test("helpers: seg, buildQuery, compact, jsonValue, jsonObject, errorText, nextToken", () => {
+test("helpers: seg, buildQuery, compact, jsonValue, jsonObject, errorText, nextToken", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
   assertEquals(buildQuery({ a: 1, b: "", c: undefined, d: null, e: false }), "?a=1&e=false");
   assertEquals(buildQuery(undefined), "");
@@ -49,7 +50,7 @@ Deno.test("helpers: seg, buildQuery, compact, jsonValue, jsonObject, errorText, 
   assertEquals(nextToken("not a url", "cursor"), undefined);
 });
 
-Deno.test("client: a GET never carries a body (Recall's WAF 403s one), a POST does", async () => {
+test("client: a GET never carries a body (Recall's WAF 403s one), a POST does", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const c = new RecallClient(ctx);
   await c.request("GET", "/api/v1/bot/", { body: {} });
@@ -60,7 +61,7 @@ Deno.test("client: a GET never carries a body (Recall's WAF 403s one), a POST do
   assertEquals(calls[1].headers["content-type"], "application/json");
 });
 
-Deno.test("client: the idempotency key is sent only when asked for and one exists", async () => {
+test("client: the idempotency key is sent only when asked for and one exists", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const withInv = { ...ctx, invocation: { invocationId: "inv" } } as never;
   await new RecallClient(withInv).request("POST", "/p", { idempotent: true });
@@ -69,7 +70,7 @@ Deno.test("client: the idempotency key is sent only when asked for and one exist
   assertEquals("idempotency-key" in calls[1].headers, false);
 });
 
-Deno.test("client: non-JSON failure bodies are summarised and success with no body is {}", async () => {
+test("client: non-JSON failure bodies are summarised and success with no body is {}", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }, { status: 204 }]);
   const c = new RecallClient(ctx);
   let msg = "";
@@ -82,7 +83,7 @@ Deno.test("client: non-JSON failure bodies are summarised and success with no bo
   assertEquals(await c.request("DELETE", "/x"), {});
 });
 
-Deno.test("redactCalendar: drops the OAuth refresh token and client secret only", () => {
+test("redactCalendar: drops the OAuth refresh token and client secret only", () => {
   assertEquals(
     redactCalendar({ id: "c", oauth_refresh_token: "r", oauth_client_secret: "s", status: "ok" }),
     { id: "c", status: "ok" },
@@ -90,7 +91,7 @@ Deno.test("redactCalendar: drops the OAuth refresh token and client secret only"
   assertThrows(() => redactCalendar(null as never));
 });
 
-Deno.test("bot body: shortcut, override, extra and metadata compose; blanks are dropped", () => {
+test("bot body: shortcut, override, extra and metadata compose; blanks are dropped", () => {
   assertEquals(recordingConfig({}), undefined);
   assertEquals(
     recordingConfig({ transcriptProvider: "recallai_streaming", transcriptLanguage: " " }),

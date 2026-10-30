@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { API_KEY_HEADER, authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const KEY = "luma-api-unitTestFixtureNotARealKey00000";
 
-Deno.test("api-key: sign stamps the x-luma-api-key header and nothing else", () => {
+test("api-key: sign stamps the x-luma-api-key header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://public-api.luma.com/v1/events/get",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign stamps the x-luma-api-key header and nothing else", () 
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { [API_KEY_HEADER]: KEY });
 });
 
@@ -31,11 +32,11 @@ Deno.test("api-key: authHeaders is the single source of the wire format", () => 
  * whoami-shaped sibling without noticing this already IS that endpoint, or
  * for something resource-scoped that a narrower key configuration could fail.
  */
-Deno.test("api-key: the probe is GET /v1/users/get-self", () => {
+test("api-key: the probe is GET /v1/users/get-self", () => {
   assertEquals(PROBE_PATH, "/v1/users/get-self");
 });
 
-Deno.test("api-key: test passes when the probe answers 200", async () => {
+test("api-key: test passes when the probe answers 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "usr-1", email: "a@b.com" } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("api-key: test passes when the probe answers 200", async () => {
   assertEquals(calls[0].headers[API_KEY_HEADER], KEY);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 
@@ -53,7 +54,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
 });
 
 /** Live-observed 2026-09-01: missing header -> 400, bad key -> 401. Both classified from the body. */
-Deno.test("api-key: test classifies the missing-key 400 from the response body", async () => {
+test("api-key: test classifies the missing-key 400 from the response body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { message: "Please provide an API key.", code: null } },
   ]);
@@ -63,7 +64,7 @@ Deno.test("api-key: test classifies the missing-key 400 from the response body",
   assertEquals(result.message, "Please provide an API key.");
 });
 
-Deno.test("api-key: test classifies the bad-key 401 with actionable guidance", async () => {
+test("api-key: test classifies the bad-key 401 with actionable guidance", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { message: "You are not signed in.", code: null } },
   ]);
@@ -74,7 +75,7 @@ Deno.test("api-key: test classifies the bad-key 401 with actionable guidance", a
   assert(result.message?.includes("luma.com/calendar/manage/api-keys"));
 });
 
-Deno.test("api-key: test never echoes the credential back in its message", async () => {
+test("api-key: test never echoes the credential back in its message", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { message: "You are not signed in.", code: null } },
   ]);
@@ -82,7 +83,7 @@ Deno.test("api-key: test never echoes the credential back in its message", async
   assert(!result.message?.includes(KEY));
 });
 
-Deno.test("api-key: afterConnect publishes email/name, nothing else", async () => {
+test("api-key: afterConnect publishes email/name, nothing else", async () => {
   const { ctx } = mockCtx([
     { body: { id: "usr-1", name: "Ada Lovelace", email: "ada@example.com", avatar_url: "x" } },
   ]);
@@ -91,13 +92,13 @@ Deno.test("api-key: afterConnect publishes email/name, nothing else", async () =
   assertEquals(result, { email: "ada@example.com", name: "Ada Lovelace", userId: "usr-1" });
 });
 
-Deno.test("api-key: afterConnect fails silently on a bad response", async () => {
+test("api-key: afterConnect fails silently on a bad response", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "nope", code: null } }]);
   const result = await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx);
   assertEquals(result, {});
 });
 
-Deno.test("api-key: the credential field is declared secret", () => {
+test("api-key: the credential field is declared secret", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "apiKey");
   for (const f of apiKey.fields ?? []) {

@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listModels from "../../actions/list-models.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 const BASE = "https://us-central1-aiplatform.googleapis.com/v1/projects/p1/locations/us-central1";
 
-Deno.test("list-models: GETs /models with a filter and pageSize", async () => {
+test("list-models: GETs /models with a filter and pageSize", async () => {
   const { ctx, calls } = mockCtx([{ body: { models: [{ name: "m1" }] } }], { display });
   const out = await listModels.execute!({ filter: 'display_name="x"', limit: 10 }, ctx);
   const url = new URL(calls[0].url);

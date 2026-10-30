@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/annotation-create.ts";
 
 const display = { endpoint: "https://example.grafana.net" };
 
-Deno.test("annotation-create: POSTs /annotations with text and scoping fields", async () => {
+test("annotation-create: POSTs /annotations with text and scoping fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, message: "Annotation added" } }], { display });
   const result = await action.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("annotation-create: POSTs /annotations with text and scoping fields", 
   assertEquals(result, { id: 1, message: "Annotation added" });
 });
 
-Deno.test("annotation-create: omits tags entirely when not given", async () => {
+test("annotation-create: omits tags entirely when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ text: "Global note" }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/content-block-list.ts";
 
-Deno.test("content-block-list: sends modified_after/before, limit and offset", async () => {
+test("content-block-list: sends modified_after/before, limit and offset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { content_blocks: [] } }], {
     display: { instance: "iad-01" },
   });

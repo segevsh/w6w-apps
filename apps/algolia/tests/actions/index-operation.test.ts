@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-operation.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("index-operation: a move is the atomic re-index swap", async () => {
+test("index-operation: a move is the atomic re-index swap", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 4 } }], { display });
   await action.execute!({
     indexName: "products_tmp",
@@ -15,7 +16,7 @@ Deno.test("index-operation: a move is the atomic re-index swap", async () => {
   assertEquals(JSON.parse(calls[0].body!), { operation: "move", destination: "products" });
 });
 
-Deno.test("index-operation: a scoped copy clones configuration only", async () => {
+test("index-operation: a scoped copy clones configuration only", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     indexName: "products",
@@ -27,7 +28,7 @@ Deno.test("index-operation: a scoped copy clones configuration only", async () =
 });
 
 /** Algolia ignores scope on a move; saying so beats a silently different result. */
-Deno.test("index-operation: scope with a move is refused rather than ignored", async () => {
+test("index-operation: scope with a move is refused rather than ignored", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -43,7 +44,7 @@ Deno.test("index-operation: scope with a move is refused rather than ignored", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("index-operation: a destination is required", async () => {
+test("index-operation: a destination is required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "a", operation: "copy" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectRestore from "../../actions/project-restore.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("project-restore: POST /api/v3/portal/1/projects/10/restore", async () => {
+test("project-restore: POST /api/v3/portal/1/projects/10/restore", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: {} }]);
   const res = await projectRestore.execute(
     { "portalId": "1", "projectId": "10" } as never,

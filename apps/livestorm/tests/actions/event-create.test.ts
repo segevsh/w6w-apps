@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventCreate from "../../actions/event-create.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("event-create: POSTs a JSON:API events body with only the set fields", async () => {
+test("event-create: POSTs a JSON:API events body with only the set fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("events", "e1", { title: "Demo" }),
@@ -17,7 +18,7 @@ Deno.test("event-create: POSTs a JSON:API events body with only the set fields",
   assertEquals(result, { id: "e1", type: "events", attributes: { title: "Demo" } });
 });
 
-Deno.test("event-create: copy_from_event_id is carried when set", async () => {
+test("event-create: copy_from_event_id is carried when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("events", "e2") }]);
   await eventCreate.execute({ copyFromEventId: "e1" }, ctx);
 

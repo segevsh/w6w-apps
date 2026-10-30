@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import pdf from "../../actions/pdf.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BYTES = new TextEncoder().encode("%PDF-1.4");
 
-Deno.test("pdf: builds options and margins and returns base64", async () => {
+test("pdf: builds options and margins and returns base64", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "application/pdf" }, body: BYTES }]);
   const out = await pdf.execute(
     {
@@ -36,13 +37,13 @@ Deno.test("pdf: builds options and margins and returns base64", async () => {
   });
 });
 
-Deno.test("pdf: no options means no options key", async () => {
+test("pdf: no options means no options key", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "application/pdf" }, body: BYTES }]);
   await pdf.execute({ html: "<p>x</p>" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { html: "<p>x</p>" });
 });
 
-Deno.test("pdf: a pageRanges 500 surfaces the plain-text vendor message", async () => {
+test("pdf: a pageRanges 500 surfaces the plain-text vendor message", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "Page range exceeds page count" }]);
   await assertRejects(
     async () => await pdf.execute({ url: "https://a.com", pageRanges: "9-10" }, ctx),
@@ -51,7 +52,7 @@ Deno.test("pdf: a pageRanges 500 surfaces the plain-text vendor message", async 
   );
 });
 
-Deno.test("pdf: needs exactly one of url and html", async () => {
+test("pdf: needs exactly one of url and html", async () => {
   const { ctx } = mockCtx();
   await assertRejects(async () => await pdf.execute({}, ctx), Error, "URL or HTML");
 });

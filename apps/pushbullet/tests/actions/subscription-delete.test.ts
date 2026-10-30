@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionDelete from "../../actions/subscription-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-delete: DELETEs /v2/subscriptions/{iden}", async () => {
+test("subscription-delete: DELETEs /v2/subscriptions/{iden}", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await subscriptionDelete.execute({ iden: "s1" }, ctx) as { deleted: boolean };
 
@@ -11,6 +12,6 @@ Deno.test("subscription-delete: DELETEs /v2/subscriptions/{iden}", async () => {
   assertEquals(out.deleted, true);
 });
 
-Deno.test("subscription-delete: is declared idempotent", () => {
+test("subscription-delete: is declared idempotent", () => {
   assertEquals(subscriptionDelete.idempotent, true);
 });

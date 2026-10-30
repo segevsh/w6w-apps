@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscriberDetailsGet from "../../actions/subscriber-details-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-details-get: POST /api/1/getSubscriberDetails/ with the documented form fields", async () => {
+test("subscriber-details-get: POST /api/1/getSubscriberDetails/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await subscriberDetailsGet.execute(
     { "list_id": 7, "subscriber": "a@b.co" } as never,
@@ -19,7 +20,7 @@ Deno.test("subscriber-details-get: POST /api/1/getSubscriberDetails/ with the do
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("subscriber-details-get: a vendor error surfaces its status and body", async () => {
+test("subscriber-details-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await subscriberDetailsGet.execute({ "list_id": 7, "subscriber": "a@b.co" } as never, ctx)
@@ -28,7 +29,7 @@ Deno.test("subscriber-details-get: a vendor error surfaces its status and body",
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("subscriber-details-get: an empty list_id fails before any request", async () => {
+test("subscriber-details-get: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -8,7 +9,7 @@ import {
   strList,
 } from "../../lib/client.ts";
 
-Deno.test("buildQuery: skips unset values, keeps false and 0", () => {
+test("buildQuery: skips unset values, keeps false and 0", () => {
   assertEquals(
     buildQuery({ a: 1, b: undefined, c: "", d: false, e: 0, f: null }),
     "?a=1&d=false&e=0",
@@ -16,7 +17,7 @@ Deno.test("buildQuery: skips unset values, keeps false and 0", () => {
   assertEquals(buildQuery(undefined), "");
 });
 
-Deno.test("errorText: errors array, error string, raw fallback", () => {
+test("errorText: errors array, error string, raw fallback", () => {
   assertEquals(errorText({ errors: ["a", "b"] }), "a; b");
   assertEquals(errorText({ error: "x" }), "x");
   assertEquals(errorText(undefined, "  raw text "), "raw text");
@@ -24,7 +25,7 @@ Deno.test("errorText: errors array, error string, raw fallback", () => {
   assertEquals(isErrorEnvelope({ data: 1 }), false);
 });
 
-Deno.test("strList, jsonValue and compact", () => {
+test("strList, jsonValue and compact", () => {
   assertEquals(strList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(strList([" x "]), ["x"]);
   assertEquals(strList(""), undefined);

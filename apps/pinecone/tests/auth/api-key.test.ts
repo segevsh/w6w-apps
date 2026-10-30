@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
 /** `Api-Key`, not `Authorization`, and no scheme word. */
-Deno.test("api-key: signs with the Api-Key header", async () => {
+test("api-key: signs with the Api-Key header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.pinecone.io/indexes",
@@ -15,7 +16,7 @@ Deno.test("api-key: signs with the Api-Key header", async () => {
   assertEquals(Object.keys(out.headers), ["api-key"]);
 });
 
-Deno.test("api-key: test reports what the key can see", async () => {
+test("api-key: test reports what the key can see", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { indexes: [{ name: "a" }, { name: "b" }] },
@@ -27,7 +28,7 @@ Deno.test("api-key: test reports what the key can see", async () => {
 });
 
 /** A key from the wrong project connects fine and sees nothing. */
-Deno.test("api-key: an empty project connects, and says so plainly", async () => {
+test("api-key: an empty project connects, and says so plainly", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { indexes: [] } }]);
   const out = await auth.test!({ credential: { apiKey: "pcsk_abc" } }, ctx);
   assertEquals(out.ok, true);
@@ -35,7 +36,7 @@ Deno.test("api-key: an empty project connects, and says so plainly", async () =>
 });
 
 /** Both auth failures are PLAIN TEXT, not JSON. */
-Deno.test("api-key: a missing header is distinguished from a bad key", async () => {
+test("api-key: a missing header is distinguished from a bad key", async () => {
   const missing = mockCtx([{
     status: 401,
     body: "Missing api-key header",
@@ -56,7 +57,7 @@ Deno.test("api-key: a missing header is distinguished from a bad key", async () 
 });
 
 /** An unsupported version answers 403 with the list of supported ones. */
-Deno.test("api-key: a version rejection is reported as a version problem", async () => {
+test("api-key: a version rejection is reported as a version problem", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: "Unsupported API version '2099-01'. Supported versions: 2024-04, …",
@@ -66,13 +67,13 @@ Deno.test("api-key: a version rejection is reported as a version problem", async
   assert(/API version/.test(out.message!), out.message);
 });
 
-Deno.test("api-key: a missing credential never reaches the network", async () => {
+test("api-key: a missing credential never reaches the network", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test!({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect records the regions, never the key", async () => {
+test("api-key: afterConnect records the regions, never the key", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -92,7 +93,7 @@ Deno.test("api-key: afterConnect records the regions, never the key", async () =
   assert(!JSON.stringify(display).includes("pcsk_abc"));
 });
 
-Deno.test("api-key: the key field is declared secret", () => {
+test("api-key: the key field is declared secret", () => {
   const f = auth.fields!.find((f) => f.key === "apiKey")!;
   assertEquals(f.type, "secret");
   assertEquals(f.required, true);

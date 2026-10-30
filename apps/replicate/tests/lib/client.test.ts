@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_URL,
   compact,
@@ -11,13 +12,13 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("the API base is what the spec's servers block states", () => {
+test("the API base is what the spec's servers block states", () => {
   assertEquals(API_URL, "https://api.replicate.com/v1");
   assertEquals([...TERMINAL_STATES], ["succeeded", "failed", "canceled"]);
 });
 
 /** Replicate caps the wait at 60 seconds; asking for more is a client error. */
-Deno.test("preferWait builds the header and enforces Replicate's 1–60 range", () => {
+test("preferWait builds the header and enforces Replicate's 1–60 range", () => {
   assertEquals(preferWait(0), undefined);
   assertEquals(preferWait(""), undefined);
   assertEquals(preferWait(false), undefined);
@@ -28,7 +29,7 @@ Deno.test("preferWait builds the header and enforces Replicate's 1–60 range", 
   assertThrows(() => preferWait("soon"), Error, "must be a number of seconds");
 });
 
-Deno.test("splitModel takes owner/name, and ignores a version suffix", () => {
+test("splitModel takes owner/name, and ignores a version suffix", () => {
   assertEquals(splitModel("black-forest-labs/flux-schnell"), {
     owner: "black-forest-labs",
     name: "flux-schnell",
@@ -40,7 +41,7 @@ Deno.test("splitModel takes owner/name, and ignores a version suffix", () => {
   assertThrows(() => splitModel("a/b/c"), Error, 'should be "owner/name"');
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: [], f: false }), {
     a: 1,
     f: false,
@@ -49,19 +50,19 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
   assertThrows(() => json("{oops", "input"), Error, "`input` is not valid JSON");
 });
 
-Deno.test("client: builds paths under the v1 base", async () => {
+test("client: builds paths under the v1 base", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ReplicateClient(ctx).request("/predictions", { query: { source: "api" } });
   assertEquals(calls[0].url, "https://api.replicate.com/v1/predictions?source=api");
 });
 
-Deno.test("client: never sends Authorization — signing is the host's job", async () => {
+test("client: never sends Authorization — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ReplicateClient(ctx).request("/account");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: extra headers reach the wire", async () => {
+test("client: extra headers reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ReplicateClient(ctx).request("/predictions", {
     method: "POST",
@@ -72,7 +73,7 @@ Deno.test("client: extra headers reach the wire", async () => {
 });
 
 /** The readme endpoint answers Markdown, which JSON.parse would reject. */
-Deno.test("client: a raw request returns the body as text", async () => {
+test("client: a raw request returns the body as text", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "# Hello\n\nnot json", headers: {} }]);
   assertEquals(
     await new ReplicateClient(ctx).request<string>("/models/a/b/readme", { raw: true }),
@@ -80,7 +81,7 @@ Deno.test("client: a raw request returns the body as text", async () => {
   );
 });
 
-Deno.test("client: a failure surfaces the status and Replicate's problem details", async () => {
+test("client: a failure surfaces the status and Replicate's problem details", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     statusText: "Unprocessable Entity",
@@ -99,7 +100,7 @@ Deno.test("client: a failure surfaces the status and Replicate's problem details
  * `next` is a complete URL rather than a token, so the walk follows it verbatim
  * instead of rebuilding a query.
  */
-Deno.test("requestAll follows the absolute `next` URL", async () => {
+test("requestAll follows the absolute `next` URL", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -117,7 +118,7 @@ Deno.test("requestAll follows the absolute `next` URL", async () => {
   assertEquals(new URL(calls[1].url).pathname, "/v1/predictions");
 });
 
-Deno.test("requestAll stops when there is no cursor, and at the wanted total", async () => {
+test("requestAll stops when there is no cursor, and at the wanted total", async () => {
   const single = mockCtx([{ status: 200, body: { results: [{ id: "a" }] } }]);
   assertEquals((await new ReplicateClient(single.ctx).requestAll("/models")).length, 1);
   assertEquals(single.calls.length, 1);
@@ -130,7 +131,7 @@ Deno.test("requestAll stops when there is no cursor, and at the wanted total", a
   assertEquals(capped.calls.length, 1);
 });
 
-Deno.test("requestAll stops on an empty page rather than looping", async () => {
+test("requestAll stops on an empty page rather than looping", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

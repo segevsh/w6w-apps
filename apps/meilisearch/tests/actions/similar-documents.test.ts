@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/similar-documents.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com", indexUid: "movies" } };
 
-Deno.test("similar-documents: POSTs the document id and embedder", async () => {
+test("similar-documents: POSTs the document id and embedder", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { hits: [] } }], conn);
   await action.execute!({ id: "42", embedder: "default" }, ctx);
   assertEquals(calls[0].url, "https://search.example.com/indexes/movies/similar");
@@ -15,7 +16,7 @@ Deno.test("similar-documents: POSTs the document id and embedder", async () => {
 });
 
 /** Similarity here is vector similarity — there is no keyword fallback. */
-Deno.test("similar-documents: an embedder is required, and says why", async () => {
+test("similar-documents: an embedder is required, and says why", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const err = await assertRejects(
     async () => await action.execute!({ id: "42", embedder: "" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("similar-documents: an embedder is required, and says why", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("similar-documents: a blank document id fails before any request", async () => {
+test("similar-documents: a blank document id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ embedder: "default" }, ctx),

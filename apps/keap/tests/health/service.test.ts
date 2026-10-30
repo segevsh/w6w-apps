@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import service, {
   findKeapGroupId,
   KEAP_GROUP_ID,
@@ -58,7 +59,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: the probe calls status.thryv.com directly, not the redirecting keap host", () => {
+test("service: the probe calls status.thryv.com directly, not the redirecting keap host", () => {
   // status.keap.com 301s to the APEX of status.thryv.com, dropping the path, so
   // every path there answers with the same 1.29 MB HTML. The runtime allowlists
   // the URL it is given, not the redirect target.
@@ -68,7 +69,7 @@ Deno.test("service: the probe calls status.thryv.com directly, not the redirecti
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: statuspage component and indicator vocabularies map as documented", () => {
+test("service: statuspage component and indicator vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -81,7 +82,7 @@ Deno.test("service: statuspage component and indicator vocabularies map as docum
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: the Keap group is found by name first, then by its published id", () => {
+test("service: the Keap group is found by name first, then by its published id", () => {
   const components = summary().components;
   assertEquals(findKeapGroupId(components), KEAP_GROUP_ID);
   // Renamed group, same id: the id fallback catches it.
@@ -93,12 +94,12 @@ Deno.test("service: the Keap group is found by name first, then by its published
   assertEquals(findKeapGroupId(reissued), "brand-new");
 });
 
-Deno.test("service: only the Keap group's leaf components are collected", () => {
+test("service: only the Keap group's leaf components are collected", () => {
   const names = keapComponents(summary().components, KEAP_GROUP_ID).map((c) => c.name);
   assertEquals(names, ["APIs", "Authentication", "Automation"]);
 });
 
-Deno.test("service: a healthy Keap group reports ok with its components named", async () => {
+test("service: a healthy Keap group reports ok with its components named", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -112,7 +113,7 @@ Deno.test("service: a healthy Keap group reports ok with its components named", 
  * pack correctly does — reports Keap down because Thryv's Website Builder is
  * down.
  */
-Deno.test("service: another Thryv product being down does NOT make Keap down", async () => {
+test("service: another Thryv product being down does NOT make Keap down", async () => {
   const body = summary({ status: { indicator: "critical", description: "Major outage" } });
   body.components = body.components.map((c) =>
     c.id === "bc-web" ? { ...c, status: "major_outage" } : c
@@ -127,7 +128,7 @@ Deno.test("service: another Thryv product being down does NOT make Keap down", a
   assert(!("bc-web" in (report.components ?? {})));
 });
 
-Deno.test("service: a Keap component outage IS reported as down", async () => {
+test("service: a Keap component outage IS reported as down", async () => {
   const body = summary();
   body.components = body.components.map((c) =>
     c.id === "k-api" ? { ...c, status: "major_outage" } : c
@@ -138,7 +139,7 @@ Deno.test("service: a Keap component outage IS reported as down", async () => {
   assertStringIncludes(report.message!, "APIs (major_outage)");
 });
 
-Deno.test("service: a degraded Keap component is degraded, not down", async () => {
+test("service: a degraded Keap component is degraded, not down", async () => {
   const body = summary();
   body.components = body.components.map((c) =>
     c.id === "k-auto" ? { ...c, status: "degraded_performance" } : c
@@ -147,19 +148,19 @@ Deno.test("service: a degraded Keap component is degraded, not down", async () =
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertStringIncludes(report.message!, "500");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Thryv's is unknown", async () => {
+test("service: a page that no longer self-identifies as Thryv's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -173,7 +174,7 @@ Deno.test("service: a page that no longer self-identifies as Thryv's is unknown"
  * on Thryv while claiming to report on Keap. Saying "I cannot tell" is the
  * honest answer, and it must not be `ok`.
  */
-Deno.test("service: a page with no Keap group reports unknown, not the Thryv indicator", async () => {
+test("service: a page with no Keap group reports unknown, not the Thryv indicator", async () => {
   const body = summary();
   body.components = body.components.filter((c) =>
     c.id !== KEAP_GROUP_ID && c.group_id !== KEAP_GROUP_ID
@@ -184,14 +185,14 @@ Deno.test("service: a page with no Keap group reports unknown, not the Thryv ind
   assertStringIncludes(report.message!, "no longer publishes a Keap component group");
 });
 
-Deno.test("service: an empty Keap group reports unknown", async () => {
+test("service: an empty Keap group reports unknown", async () => {
   const body = summary();
   body.components = body.components.filter((c) => c.group_id !== KEAP_GROUP_ID);
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: page-wide incident counts are labelled page-wide", async () => {
+test("service: page-wide incident counts are labelled page-wide", async () => {
   const { ctx } = mockCtx([{
     body: summary({ incidents: [{ name: "Something on another product" }] }),
   }]);

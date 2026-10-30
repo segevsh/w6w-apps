@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   asJson,
@@ -10,11 +11,11 @@ import {
   segment,
 } from "../../lib/client.ts";
 
-Deno.test("helpers: compact keeps false and 0 but drops unset values", () => {
+test("helpers: compact keeps false and 0 but drops unset values", () => {
   assertEquals(compact({ a: 0, b: false, c: undefined, d: null, e: "" }), { a: 0, b: false });
 });
 
-Deno.test("helpers: coercions", () => {
+test("helpers: coercions", () => {
   assertEquals(asNumber("12"), 12);
   assertEquals(asNumber(""), undefined);
   assertEquals(asNumber("x"), undefined);
@@ -24,14 +25,14 @@ Deno.test("helpers: coercions", () => {
   assertEquals(asJson<number[]>("[1]", "x"), [1]);
 });
 
-Deno.test("failureMessage: reads the documented error object", () => {
+test("failureMessage: reads the documented error object", () => {
   assertEquals(failureMessage({ message: "nope", code: 999 }), "nope (code 999)");
   assertEquals(failureMessage({ message: "nope" }), "nope");
   assertEquals(failureMessage([1]), undefined);
   assertEquals(failureMessage(null), undefined);
 });
 
-Deno.test("client: sends accept, adds content-type only with a body, targets api.lodgify.com", async () => {
+test("client: sends accept, adds content-type only with a body, targets api.lodgify.com", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const client = new LodgifyClient(ctx);
   await client.request("/v2/properties");
@@ -42,7 +43,7 @@ Deno.test("client: sends accept, adds content-type only with a body, targets api
   assertEquals(calls[0].url, "https://api.lodgify.com/v2/properties");
 });
 
-Deno.test("client: a non-JSON error body is reported verbatim and truncated", async () => {
+test("client: a non-JSON error body is reported verbatim and truncated", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "x".repeat(1000), headers: {} }]);
   await assertRejects(
     () => new LodgifyClient(ctx).request("/v2/properties"),
@@ -51,7 +52,7 @@ Deno.test("client: a non-JSON error body is reported verbatim and truncated", as
   );
 });
 
-Deno.test("client.command / created: shapes for empty and bare-integer bodies", async () => {
+test("client.command / created: shapes for empty and bare-integer bodies", async () => {
   const { ctx } = mockCtx([{ body: undefined }, { body: { extra: 1 } }, { body: 5 }, { body: {} }]);
   const client = new LodgifyClient(ctx);
   assertEquals(await client.command("/a"), { ok: true });

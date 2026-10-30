@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionCleanEmpty from "../../actions/collection-clean-empty.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-clean-empty: PUTs /collections/clean and reports the count", async () => {
+test("collection-clean-empty: PUTs /collections/clean and reports the count", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ count: 3 }) }]);
   const out = await collectionCleanEmpty.execute({}, ctx) as { count: number; result: boolean };
 
@@ -16,12 +17,12 @@ Deno.test("collection-clean-empty: PUTs /collections/clean and reports the count
  * The count is the only report this endpoint makes — it never names what it
  * removed — so a missing `count` must read as zero rather than `undefined`.
  */
-Deno.test("collection-clean-empty: a response without a count reports zero", async () => {
+test("collection-clean-empty: a response without a count reports zero", async () => {
   const { ctx } = mockCtx([{ body: okBody() }]);
   assertEquals(await collectionCleanEmpty.execute({}, ctx), { count: 0, result: true });
 });
 
-Deno.test("collection-clean-empty: is idempotent and takes no parameters", () => {
+test("collection-clean-empty: is idempotent and takes no parameters", () => {
   assertEquals(collectionCleanEmpty.idempotent, true);
   assertEquals(collectionCleanEmpty.params, []);
 });

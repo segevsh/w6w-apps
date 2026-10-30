@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createEvent from "../../actions/create-event.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-event: PUT /events with required fields", async () => {
+test("create-event: PUT /events with required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await createEvent.execute(
     { name: "Onboarding", startTime: "2026-10-01T18:00:00.000Z", duration: 60, location: "ZOOM" },
@@ -18,6 +19,6 @@ Deno.test("create-event: PUT /events with required fields", async () => {
   });
 });
 
-Deno.test("create-event: is not idempotent", () => {
+test("create-event: is not idempotent", () => {
   assertEquals(createEvent.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse, PDF_BYTES } from "../_helpers.ts";
 import action from "../../actions/pdf-split.ts";
 
-Deno.test("pdf-split: POSTs the file and page ranges", async () => {
+test("pdf-split: POSTs the file and page ranges", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "application/pdf" },
     body: PDF_BYTES,
@@ -27,11 +28,11 @@ Deno.test("pdf-split: POSTs the file and page ranges", async () => {
   assertEquals(atob(file.contentBase64), new TextDecoder().decode(PDF_BYTES));
 });
 
-Deno.test("pdf-split: idempotent flag is true", () => {
+test("pdf-split: idempotent flag is true", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("pdf-split: declares key, type and a description", () => {
+test("pdf-split: declares key, type and a description", () => {
   assertEquals(action.key, "pdf-split");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

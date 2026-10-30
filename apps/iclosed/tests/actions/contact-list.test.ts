@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("contact-list: sends every input as query", async () => {
+test("contact-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await contactList.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("contact-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("contact-list: omits every unset optional", async () => {
+test("contact-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await contactList.execute({} as never, ctx);
 
@@ -48,7 +49,7 @@ Deno.test("contact-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("contact-list: declares a read-only shape", () => {
+test("contact-list: declares a read-only shape", () => {
   assertEquals(contactList.type, "read");
   assertEquals(contactList.idempotent, undefined);
   assertEquals(contactList.params!.filter((p) => p.required).map((p) => p.key), []);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-webhook.ts";
 
-Deno.test("create-webhook: POSTs /webhooks with triggers array and campaign relationship", async () => {
+test("create-webhook: POSTs /webhooks with triggers array and campaign relationship", async () => {
   const body = {
     data: {
       id: "3955",
@@ -34,7 +35,7 @@ Deno.test("create-webhook: POSTs /webhooks with triggers array and campaign rela
   assertEquals(out, body);
 });
 
-Deno.test("create-webhook: rejects an undocumented trigger before making a request", async () => {
+test("create-webhook: rejects an undocumented trigger before making a request", async () => {
   const { ctx, calls } = mockCtx();
   try {
     await action.execute({ campaignId: "1", uri: "https://x", triggers: "members:teleport" }, ctx);

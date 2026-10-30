@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/suppression-list.ts";
 
-Deno.test("suppression-list: GET /v2/email/suppression/addresses and maps the response", async () => {
+test("suppression-list: GET /v2/email/suppression/addresses and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -36,7 +37,7 @@ Deno.test("suppression-list: GET /v2/email/suppression/addresses and maps the re
   });
 });
 
-Deno.test("suppression-list: uses the connection's region for the host", async () => {
+test("suppression-list: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -56,7 +57,7 @@ Deno.test("suppression-list: uses the connection's region for the host", async (
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("suppression-list: surfaces the vendor's error type and message", async () => {
+test("suppression-list: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

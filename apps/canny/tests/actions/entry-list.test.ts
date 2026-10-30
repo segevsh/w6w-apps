@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import entryList from "../../actions/entry-list.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("entry-list: posts filters to /v1/entries/list", async () => {
+test("entry-list: posts filters to /v1/entries/list", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [], hasMore: false } }]);
   await entryList.execute({ type: "fixed", sort: "created", limit: 5 }, ctx);
 

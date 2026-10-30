@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/crawl-data-get.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const RECORDS = [
   { col: "c", pageUrl: "https://e.com/2", id: 2, type: "article", token: "SECRETTOKEN" },
 ];
 
-Deno.test("crawl-data-get: reads /v3/crawl/data and strips the token from every record", async () => {
+test("crawl-data-get: reads /v3/crawl/data and strips the token from every record", async () => {
   const { ctx, calls } = mockCtx([{ body: RECORDS }]);
   const out = await run(action, { name: "test-crawl", num: 2 }, ctx);
   const u = new URL(calls[0].url);
@@ -27,7 +28,7 @@ Deno.test("crawl-data-get: reads /v3/crawl/data and strips the token from every 
   assertEquals((out.records as Array<{ title?: string }>)[0].title, "Example");
 });
 
-Deno.test("crawl-data-get: CSV comes back as text with the token column removed", async () => {
+test("crawl-data-get: CSV comes back as text with the token column removed", async () => {
   const csv = 'pageUrl,token,title\nhttps://e.com/,SECRETTOKEN,"Hello, world"\n';
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "text/csv" }, body: csv }]);
   const out = await run(action, { name: "n", format: "csv" }, ctx);
@@ -36,7 +37,7 @@ Deno.test("crawl-data-get: CSV comes back as text with the token column removed"
   assertEquals(out.records, []);
 });
 
-Deno.test("crawl-data-get: the URL report type is requested; an empty body is no records", async () => {
+test("crawl-data-get: the URL report type is requested; an empty body is no records", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await run(action, { name: "n", type: "urls" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("type"), "urls");

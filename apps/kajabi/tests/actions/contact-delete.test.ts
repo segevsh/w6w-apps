@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { doc, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-delete: DELETEs the contact", async () => {
+test("contact-delete: DELETEs the contact", async () => {
   const { ctx, calls } = mockCtx([{ body: doc("5") }]);
   await contactDelete.execute({ id: "5" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,6 +12,6 @@ Deno.test("contact-delete: DELETEs the contact", async () => {
 });
 
 /** Deleting an already-deleted contact converges — safe for the runtime to retry. */
-Deno.test("contact-delete: is idempotent", () => {
+test("contact-delete: is idempotent", () => {
   assertEquals(contactDelete.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectCommentList from "../../actions/project-comment-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-comment-list: lists project comments", async () => {
+test("project-comment-list: lists project comments", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: "1", content: "Have you seen this yet?", commentable_type: "Project" }],
   }]);

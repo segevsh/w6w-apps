@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import addLeadToCampaign from "../../actions/add-lead-to-campaign.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("add-lead-to-campaign: POSTs to /campaigns/{id}/leads/ WITH the trailing slash", async () => {
+test("add-lead-to-campaign: POSTs to /campaigns/{id}/leads/ WITH the trailing slash", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({ campaignId: "cam_1", email: "a@b.com" }, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(new URL(calls[0].url).pathname, "/api/campaigns/cam_1/leads/");
 });
 
-Deno.test("add-lead-to-campaign: sends the standard fields in the body", async () => {
+test("add-lead-to-campaign: sends the standard fields in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({
     campaignId: "cam_1",
@@ -41,13 +42,13 @@ Deno.test("add-lead-to-campaign: sends the standard fields in the body", async (
   });
 });
 
-Deno.test("add-lead-to-campaign: omits fields the caller did not set", async () => {
+test("add-lead-to-campaign: omits fields the caller did not set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({ campaignId: "cam_1", email: "a@b.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.com" });
 });
 
-Deno.test("add-lead-to-campaign: flattens custom variables onto the body, not under a key", async () => {
+test("add-lead-to-campaign: flattens custom variables onto the body, not under a key", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({
     campaignId: "cam_1",
@@ -60,7 +61,7 @@ Deno.test("add-lead-to-campaign: flattens custom variables onto the body, not un
   assertEquals(body.customVariables, undefined, "must not nest under a wrapper key");
 });
 
-Deno.test("add-lead-to-campaign: the enrichment flags are QUERY params, not body fields", async () => {
+test("add-lead-to-campaign: the enrichment flags are QUERY params, not body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({
     campaignId: "cam_1",
@@ -81,13 +82,13 @@ Deno.test("add-lead-to-campaign: the enrichment flags are QUERY params, not body
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.com" });
 });
 
-Deno.test("add-lead-to-campaign: sends no enrichment flags by default — they cost credits", async () => {
+test("add-lead-to-campaign: sends no enrichment flags by default — they cost credits", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await addLeadToCampaign.execute!({ campaignId: "cam_1", email: "a@b.com" }, ctx);
   assertEquals([...new URL(calls[0].url).searchParams.keys()], []);
 });
 
-Deno.test("add-lead-to-campaign: is a non-idempotent perform — lemlist has no idempotency key", () => {
+test("add-lead-to-campaign: is a non-idempotent perform — lemlist has no idempotency key", () => {
   assertEquals(addLeadToCampaign.type, "perform");
   assertEquals(addLeadToCampaign.idempotent, false);
 });

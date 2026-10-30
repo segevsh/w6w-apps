@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import conversationGet from "../../actions/conversation-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-get: GET .../conversations/{id}", async () => {
+test("conversation-get: GET .../conversations/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { id: "c1", messages: [] },
@@ -17,7 +18,7 @@ Deno.test("conversation-get: GET .../conversations/{id}", async () => {
   assertEquals(out.data.id, "c1");
 });
 
-Deno.test("conversation-get: 404 when the conversation isn't API-sourced", async () => {
+test("conversation-get: 404 when the conversation isn't API-sourced", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,

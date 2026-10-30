@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAcceloCtx } from "../_helpers.ts";
 import action from "../../actions/job-create.ts";
 
-Deno.test("job-create: POSTs a form to /jobs using Accelo's wire names", async () => {
+test("job-create: POSTs a form to /jobs using Accelo's wire names", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "55" } },
   }]);
@@ -28,7 +29,7 @@ Deno.test("job-create: POSTs a form to /jobs using Accelo's wire names", async (
   });
 });
 
-Deno.test("job-create: drops unset fields and forwards _fields", async () => {
+test("job-create: drops unset fields and forwards _fields", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "56" } },
   }]);
@@ -38,7 +39,7 @@ Deno.test("job-create: drops unset fields and forwards _fields", async () => {
   assertEquals("comments" in sent, false);
 });
 
-Deno.test("job-create: declares itself non-idempotent and requires title", () => {
+test("job-create: declares itself non-idempotent and requires title", () => {
   assertEquals(action.idempotent, false);
   const required = (action.params ?? []).filter((p) => "required" in p && p.required).map((p) =>
     p.key

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/barcode-render.ts";
 import { exec, mockCtx, SVG } from "../_helpers.ts";
 
-Deno.test("barcode-render: POSTs /barcode and returns svg markup", async () => {
+test("barcode-render: POSTs /barcode and returns svg markup", async () => {
   const { ctx, calls, created } = mockCtx(
     [{ headers: { "content-type": "image/svg+xml" }, body: SVG }],
     { files: true },
@@ -24,7 +25,7 @@ Deno.test("barcode-render: POSTs /barcode and returns svg markup", async () => {
   assertEquals(out.svg, SVG);
 });
 
-Deno.test("barcode-render: an unknown type surfaces the vendor's header message", async () => {
+test("barcode-render: an unknown type surfaces the vendor's header message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     headers: {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockAcceloCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: GETs /contacts/{id} and returns the unwrapped object", async () => {
+test("contact-get: GETs /contacts/{id} and returns the unwrapped object", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "7" } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("contact-get: GETs /contacts/{id} and returns the unwrapped object", a
   assertEquals(calls[0].url, "https://acme.api.accelo.com/api/v0/contacts/7");
 });
 
-Deno.test("contact-get: passes _fields through", async () => {
+test("contact-get: passes _fields through", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "7" } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("contact-get: passes _fields through", async () => {
   assertEquals(calls[0].url, "https://acme.api.accelo.com/api/v0/contacts/7?_fields=_ALL");
 });
 
-Deno.test("contact-get: rejects a missing id before any request", async () => {
+test("contact-get: rejects a missing id before any request", async () => {
   const { ctx, calls } = mockAcceloCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "positive numeric id");
   assertEquals(calls.length, 0);

@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/envelope-recipient-get.ts";
 
 const conn = { display: {} };
 
 /** The answer to "has Ada signed", which the envelope's status cannot give. */
-Deno.test("envelope-recipient-get: reads one recipient's own state", async () => {
+test("envelope-recipient-get: reads one recipient's own state", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { id: 12, signingStatus: "SIGNED" } }],
     conn,
@@ -15,13 +16,13 @@ Deno.test("envelope-recipient-get: reads one recipient's own state", async () =>
   assertEquals(result.signingStatus, "SIGNED");
 });
 
-Deno.test("envelope-recipient-get: the output distinguishes read from signed", () => {
+test("envelope-recipient-get: the output distinguishes read from signed", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "signingStatus")!.label.includes("THIS person"));
   assert(outputs.find((o) => o.key === "readStatus")!.label.includes("opened"));
 });
 
-Deno.test("envelope-recipient-get: a missing id fails before any request", async () => {
+test("envelope-recipient-get: a missing id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`recipientId`");
   assertEquals(calls.length, 0);

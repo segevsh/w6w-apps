@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entry-file-get.ts";
 
-Deno.test("entry-file-get: GETs /forms/{formId}/entries/{entryId}/files/{fileId}", async () => {
+test("entry-file-get: GETs /forms/{formId}/entries/{entryId}/files/{fileId}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { Id: "F-1", Name: "upload.bin", ContentType: "application/octet-stream", Size: 3 } },
   ]);

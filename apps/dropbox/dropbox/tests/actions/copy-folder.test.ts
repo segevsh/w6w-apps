@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/copy-folder.ts";
 
-Deno.test("copy-folder: POSTs /files/copy_v2 with from_path/to_path", async () => {
+test("copy-folder: POSTs /files/copy_v2 with from_path/to_path", async () => {
   const { ctx, calls } = mockCtx([{ body: { metadata: { id: "id:cp" } } }]);
   await action.execute!({ fromPath: "/a", toPath: "/b", autorename: true }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-video.ts";
 
-Deno.test("delete-video: DELETEs /youtube/v3/videos?id= and sends no part", async () => {
+test("delete-video: DELETEs /youtube/v3/videos?id= and sends no part", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ id: "v1" }, ctx);
   const url = new URL(calls[0].url);
@@ -15,12 +16,12 @@ Deno.test("delete-video: DELETEs /youtube/v3/videos?id= and sends no part", asyn
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("delete-video: turns an empty 204 into a branchable result", async () => {
+test("delete-video: turns an empty 204 into a branchable result", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({ id: "v1" }, ctx), { deleted: true });
 });
 
-Deno.test("delete-video: declares no part parameter at all", () => {
+test("delete-video: declares no part parameter at all", () => {
   assert(!action.params!.some((p) => p.key === "part"));
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);

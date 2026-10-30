@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import apiToken, { authHeaders, PROBE_PATH } from "../auth/api-token.ts";
 import { listEnvelope, mockCtx, pathOf } from "./_helpers.ts";
 
 const credential = { apiToken: "tok_123" };
 
-Deno.test("auth: sign stamps a bearer header", async () => {
+test("auth: sign stamps a bearer header", async () => {
   const req = {
     url: "https://api.thanks.io/api/v2/x",
     method: "GET",
@@ -15,7 +16,7 @@ Deno.test("auth: sign stamps a bearer header", async () => {
   assertEquals(authHeaders({}).authorization, "Bearer ");
 });
 
-Deno.test("auth: test passes only on the documented `data` array", async () => {
+test("auth: test passes only on the documented `data` array", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   const res = await apiToken.test({ credential } as never, ctx);
   assertEquals(res.ok, true);
@@ -25,7 +26,7 @@ Deno.test("auth: test passes only on the documented `data` array", async () => {
   assert(PROBE_PATH.startsWith("/mailing-lists/"));
 });
 
-Deno.test("auth: a 200 that is not the documented shape is not a pass", async () => {
+test("auth: a 200 that is not the documented shape is not a pass", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -35,7 +36,7 @@ Deno.test("auth: a 200 that is not the documented shape is not a pass", async ()
   assert(res.message?.includes("unexpected response"), res.message);
 });
 
-Deno.test("auth: an `Unauthenticated.` body is a rejected token", async () => {
+test("auth: an `Unauthenticated.` body is a rejected token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthenticated." } }]);
   const res = await apiToken.test({ credential } as never, ctx);
   assertEquals(res.ok, false);
@@ -43,14 +44,14 @@ Deno.test("auth: an `Unauthenticated.` body is a rejected token", async () => {
   assert(!res.message?.includes("tok_123"));
 });
 
-Deno.test("auth: 402 is reported as a billing problem, not a bad token", async () => {
+test("auth: 402 is reported as a billing problem, not a bad token", async () => {
   const { ctx } = mockCtx([{ status: 402, body: { message: "disabled" } }]);
   const res = await apiToken.test({ credential } as never, ctx);
   assertEquals(res.ok, false);
   assert(res.message?.includes("payment failures"), res.message);
 });
 
-Deno.test("auth: a missing token never reaches the network", async () => {
+test("auth: a missing token never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const res = await apiToken.test({ credential: {} } as never, ctx);
   assertEquals(res.ok, false);

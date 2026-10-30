@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import methodList from "../../actions/method-list.ts";
 import { list, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("method-list: fetches /methods and unwraps _embedded.methods", async () => {
+test("method-list: fetches /methods and unwraps _embedded.methods", async () => {
   const { ctx, calls } = mockCtx([{ body: list("methods", [{ id: "ideal" }, { id: "paypal" }]) }]);
   const out = await methodList.execute({}, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("method-list: fetches /methods and unwraps _embedded.methods", async (
   assertEquals(out, { count: 2, items: [{ id: "ideal" }, { id: "paypal" }] });
 });
 
-Deno.test("method-list: encodes amount as deepObject query params, not JSON", async () => {
+test("method-list: encodes amount as deepObject query params, not JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: list("methods", []) }]);
   await methodList.execute({ amountValue: "10.00", amountCurrency: "EUR" }, ctx);
 

@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/search-tasks.ts";
 
-Deno.test("search-tasks: POSTs to /tasks/search", async () => {
+test("search-tasks: POSTs to /tasks/search", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(calls[0].url, "https://api.copper.com/developer_api/v1/tasks/search");
 });
 
-Deno.test("search-tasks: maps every filter onto Copper's body keys", async () => {
+test("search-tasks: maps every filter onto Copper's body keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({
     ids: [1, 2],
@@ -39,7 +40,7 @@ Deno.test("search-tasks: maps every filter onto Copper's body keys", async () =>
   });
 });
 
-Deno.test("search-tasks: statuses are the plain strings, not numeric ids", () => {
+test("search-tasks: statuses are the plain strings, not numeric ids", () => {
   // Tasks are the one resource whose search filter shares the record's own
   // vocabulary; Opportunities and Leads use numeric ids instead.
   assertEquals(optionValues(action, "statuses"), ["Open", "Completed"]);

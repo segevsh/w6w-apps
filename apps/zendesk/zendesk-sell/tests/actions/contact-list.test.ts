@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: unwraps each item's own data envelope, not a bare array", async () => {
+test("contact-list: unwraps each item's own data envelope, not a bare array", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: 1, name: "A" }, { id: 2, name: "B" }]) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("contact-list: unwraps each item's own data envelope, not a bare array
   assertEquals(out.count, 2);
 });
 
-Deno.test("contact-list: maps camelCase params to the vendor's snake_case query", async () => {
+test("contact-list: maps camelCase params to the vendor's snake_case query", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await contactList.execute({
     perPage: 50,

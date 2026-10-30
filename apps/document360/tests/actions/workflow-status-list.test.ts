@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workflowStatusList from "../../actions/workflow-status-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("workflow-status-list: lists statuses", async () => {
+test("workflow-status-list: lists statuses", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "s1", name: "In review" }]),
@@ -25,7 +26,7 @@ Deno.test("workflow-status-list: lists statuses", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("workflow-status-list: a vendor error surfaces its code and message", async () => {
+test("workflow-status-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

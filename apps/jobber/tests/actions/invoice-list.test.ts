@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: past_due is a Jobber-computed status, offered as a filter", async () => {
+test("invoice-list: past_due is a Jobber-computed status, offered as a filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { invoices: { nodes: [] } } } }]);
   await action.execute({ status: "past_due" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.filter, { status: "past_due" });
 });
 
-Deno.test("invoice-list: both date windows map to their own filter keys", async () => {
+test("invoice-list: both date windows map to their own filter keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { invoices: { nodes: [] } } } }]);
   await action.execute({
     dueBefore: "2026-09-01T00:00:00Z",

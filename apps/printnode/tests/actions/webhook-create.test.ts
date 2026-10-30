@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate, { normaliseMessages } from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /webhook, returns new id, strips secrets", async () => {
+test("webhook-create: POST /webhook, returns new id, strips secrets", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { webhookId: 11, secret: "a", url: "u1", messages: ["*"] },
@@ -25,7 +26,7 @@ Deno.test("webhook-create: POST /webhook, returns new id, strips secrets", async
   assertEquals(JSON.stringify(out).includes("password"), false);
 });
 
-Deno.test("webhook-create: * must stand alone; message types accept a comma string", async () => {
+test("webhook-create: * must stand alone; message types accept a comma string", async () => {
   assertEquals(normaliseMessages("computer state, print job state"), [
     "computer state",
     "print job state",
@@ -43,7 +44,7 @@ Deno.test("webhook-create: * must stand alone; message types accept a comma stri
   assertEquals(calls.length, 0);
 });
 
-Deno.test("webhook-create: at least one message type is required", async () => {
+test("webhook-create: at least one message type is required", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await webhookCreate.execute({ url: "u", secret: "s", messages: [] }, ctx),

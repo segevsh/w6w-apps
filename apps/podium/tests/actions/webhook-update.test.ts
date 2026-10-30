@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 
-Deno.test("webhook-update: sends every documented field in its documented place", async () => {
+test("webhook-update: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1", secret: "s3cret" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -31,7 +32,7 @@ Deno.test("webhook-update: sends every documented field in its documented place"
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("webhook-update: a minimal call sends only what was set", async () => {
+test("webhook-update: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1", secret: "s3cret" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -45,7 +46,7 @@ Deno.test("webhook-update: a minimal call sends only what was set", async () => 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("webhook-update: declares its params and kind", () => {
+test("webhook-update: declares its params and kind", () => {
   assertEquals((webhookUpdate.params ?? []).map((p) => p.key), [
     "uid",
     "url",

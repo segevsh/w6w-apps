@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/run-workflow.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("run-workflow: sends the documented request and maps the answer", async () => {
+test("run-workflow: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "inv-1" } }]);
   const out = await run(action, { "id": "wf-1", "nodeOutputs": '{"n1":{"text":"hi"}}' }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("run-workflow: sends the documented request and maps the answer", asyn
   assertEquals(JSON.parse(JSON.stringify(out)), { "invocationId": "inv-1" });
 });
 
-Deno.test("run-workflow: a 401 surfaces Runway's error text", async () => {
+test("run-workflow: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

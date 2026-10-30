@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listGrowthTools from "../../actions/list-growth-tools.ts";
 
-Deno.test("list-growth-tools: GETs getGrowthTools, not the deprecated getWidgets", async () => {
+test("list-growth-tools: GETs getGrowthTools, not the deprecated getWidgets", async () => {
   // Manychat's own description on getWidgets reads "Use getGrowthTools instead".
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: [] } }]);
   await listGrowthTools.execute!({}, ctx);
@@ -10,7 +11,7 @@ Deno.test("list-growth-tools: GETs getGrowthTools, not the deprecated getWidgets
   assert(!calls[0].url.includes("getWidgets"));
 });
 
-Deno.test("list-growth-tools: returns the tool array", async () => {
+test("list-growth-tools: returns the tool array", async () => {
   const { ctx } = mockCtx([
     { body: { status: "success", data: [{ id: 1, name: "Ref link", type: "ref_url" }] } },
   ]);

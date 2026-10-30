@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/keyword-related-term-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = { "country": "US" };
 
-Deno.test("keyword-related-term-list: GETs /keywords-explorer/related-terms and returns the keywords with cost headers", async () => {
+test("keyword-related-term-list: GETs /keywords-explorer/related-terms and returns the keywords with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { keywords: [{ a: 1 }] },
     headers: {
@@ -27,14 +28,14 @@ Deno.test("keyword-related-term-list: GETs /keywords-explorer/related-terms and 
   );
 });
 
-Deno.test("keyword-related-term-list: omits cost fields when headers are absent and passes optional params", async () => {
+test("keyword-related-term-list: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { keywords: [{ a: 1 }] } }]);
   const out = await action.execute!({ ...input, limit: 5 }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "5");
 });
 
-Deno.test("keyword-related-term-list: a 403 array error body is surfaced", async () => {
+test("keyword-related-term-list: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

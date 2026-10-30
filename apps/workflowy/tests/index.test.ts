@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 12 actions, one auth method and two health checks", () => {
+test("index: exports 12 actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, 12);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case with type, description, execute, output", () => {
+test("index: action keys are unique kebab-case with type, description, execute, output", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -20,7 +22,7 @@ Deno.test("index: action keys are unique kebab-case with type, description, exec
   }
 });
 
-Deno.test("index: every perform action states idempotency; creates are not idempotent", () => {
+test("index: every perform action states idempotency; creates are not idempotent", () => {
   for (const a of app.actions.filter((x) => x.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent unstated`);
   }
@@ -29,9 +31,9 @@ Deno.test("index: every perform action states idempotency; creates are not idemp
   }
 });
 
-Deno.test("index: no action source touches the credential or global fetch", async () => {
+test("index: no action source touches the credential or global fetch", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(
       !/authorization|apiKey|credential/i.test(src.replace(/^\s*(\/\/|\*|\/\*).*$/gm, "")),
       a.key,
@@ -40,7 +42,7 @@ Deno.test("index: no action source touches the credential or global fetch", asyn
   }
 });
 
-Deno.test("index: both health checks declare informational severity where unavailable", () => {
+test("index: both health checks declare informational severity where unavailable", () => {
   const rl = app.healthChecks.find((h) => h.key === "rate-limit")!;
   assertEquals(rl.severity, "informational");
   assert(rl.unavailable?.reason);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import savedListingCreate from "../../actions/saved-listing-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("saved-listing-create: POST /zapier/savedListings", async () => {
+test("saved-listing-create: POST /zapier/savedListings", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await savedListingCreate.execute(
     { leadIdOrEmail: "a@b.com", mlsNumber: "123", mlsRegion: "ABC" },

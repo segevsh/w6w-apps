@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupList from "../../actions/group-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-list: calls GET /teams/groups with billingCycle", async () => {
+test("group-list: calls GET /teams/groups with billingCycle", async () => {
   const { ctx, calls } = mockCtx([
     { body: { groups: [], unassignedGroup: {}, billingCycle: {} } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("group-list: calls GET /teams/groups with billingCycle", async () => {
   assertEquals(queryOf(calls[0].url), { billingCycle: "2025-01-15" });
 });
 
-Deno.test("group-list: billingCycle is optional", async () => {
+test("group-list: billingCycle is optional", async () => {
   const { ctx, calls } = mockCtx([{ body: { groups: [], unassignedGroup: {}, billingCycle: {} } }]);
   await groupList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-update-recipients.ts";
 
-Deno.test("document-update-recipients: PATCHes /documents/{id}/recipients", async () => {
+test("document-update-recipients: PATCHes /documents/{id}/recipients", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "d1", recipients: [{ id: "r1", name: "B", email: "b@b.test" }] },
   }]);
@@ -19,7 +20,7 @@ Deno.test("document-update-recipients: PATCHes /documents/{id}/recipients", asyn
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("document-update-recipients: recipients are required, and a 409 surfaces", async () => {
+test("document-update-recipients: recipients are required, and a 409 surfaces", async () => {
   const { ctx, calls } = mockCtx([{
     status: 409,
     body: { message: "Conflict", meta: { error: "conflict" } },

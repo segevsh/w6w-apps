@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-list.ts";
 
 const display = { endpoint: "https://us.sentry.io", organizationSlug: "acme" };
 
-Deno.test("issue-list: uses the connection's org and stops after one page by default", async () => {
+test("issue-list: uses the connection's org and stops after one page by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "1" }] }], { display });
   const result = await action.execute!({}, ctx);
   assertEquals(calls.length, 1);
@@ -14,13 +15,13 @@ Deno.test("issue-list: uses the connection's org and stops after one page by def
   assertEquals(result, [{ id: "1" }]);
 });
 
-Deno.test("issue-list: the org param overrides the connection's org", async () => {
+test("issue-list: the org param overrides the connection's org", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display });
   await action.execute!({ organizationSlug: "beta" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/0/organizations/beta/issues/");
 });
 
-Deno.test("issue-list: filters map to Sentry's repeated query params", async () => {
+test("issue-list: filters map to Sentry's repeated query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display });
   await action.execute!({
     projects: "web, api",
@@ -37,7 +38,7 @@ Deno.test("issue-list: filters map to Sentry's repeated query params", async () 
   assertEquals(url.searchParams.get("sort"), "freq");
 });
 
-Deno.test("issue-list: a small limit truncates without a second request", async () => {
+test("issue-list: a small limit truncates without a second request", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ id: "1" }, { id: "2" }],

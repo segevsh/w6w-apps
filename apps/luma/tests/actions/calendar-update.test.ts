@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarUpdate from "../../actions/calendar-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-update: posts only the fields set, dropping the rest", async () => {
+test("calendar-update: posts only the fields set, dropping the rest", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cal-1", name: "New Name" } }]);
   await calendarUpdate.execute({ calendarId: "cal-1", name: "New Name" }, ctx);
 

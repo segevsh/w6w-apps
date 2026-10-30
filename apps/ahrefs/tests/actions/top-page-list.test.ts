@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/top-page-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = { "target": "example.com", "date": "2026-10-01" };
 
-Deno.test("top-page-list: GETs /site-explorer/top-pages and returns the pages with cost headers", async () => {
+test("top-page-list: GETs /site-explorer/top-pages and returns the pages with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { pages: [{ a: 1 }] },
     headers: {
@@ -28,14 +29,14 @@ Deno.test("top-page-list: GETs /site-explorer/top-pages and returns the pages wi
   );
 });
 
-Deno.test("top-page-list: omits cost fields when headers are absent and passes optional params", async () => {
+test("top-page-list: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { pages: [{ a: 1 }] } }]);
   const out = await action.execute!({ ...input, limit: 5 }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "5");
 });
 
-Deno.test("top-page-list: a 403 array error body is surfaced", async () => {
+test("top-page-list: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

@@ -36,8 +36,10 @@ export function expandParam(values: string[]): Param {
   return {
     key: "expand",
     label: "Expand",
-    type: "string",
-    hint: "Comma-separated extra data to inline. Allowed: " + values.join(", ") + ".",
+    type: "multiselect",
+    options: values.map((value) => ({ value, label: value.replaceAll("_", " ") })),
+    config: { valueFormat: "csv" },
+    hint: "Select one or more related resources to include.",
   };
 }
 

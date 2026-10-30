@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import controlGet from "../../actions/control-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": 7, "controlId": 11 };
 
-Deno.test("control-get: GET /workspaces/7/controls/11 returns the bare object", async () => {
+test("control-get: GET /workspaces/7/controls/11 returns the bare object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "x" } }]);
   const out = await controlGet.execute({ ...INPUT }, ctx) as { id: number };
 
@@ -14,7 +15,7 @@ Deno.test("control-get: GET /workspaces/7/controls/11 returns the bare object", 
   assertEquals(out.id, 1);
 });
 
-Deno.test("control-get: expand goes out as repeated expand[] parameters", async () => {
+test("control-get: expand goes out as repeated expand[] parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await controlGet.execute({ ...INPUT, ...{ "expand": ["owners", "testIds"] } }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("control-get: expand goes out as repeated expand[] parameters", async 
   assertEquals(queryOf(calls[0].url).getAll("expand[]"), wire.map(([, v]) => v));
 });
 
-Deno.test("control-get: a 404 surfaces Drata's own message", async () => {
+test("control-get: a 404 surfaces Drata's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found", 3) }]);
   const err = await assertRejects(
     () => Promise.resolve(controlGet.execute({ ...INPUT }, ctx)),

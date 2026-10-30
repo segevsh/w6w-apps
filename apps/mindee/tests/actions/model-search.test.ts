@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelSearch from "../../actions/model-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("model-search: lists models with no filters when none are given", async () => {
+test("model-search: lists models with no filters when none are given", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -18,7 +19,7 @@ Deno.test("model-search: lists models with no filters when none are given", asyn
   assertEquals((result as { models: unknown[] }).models.length, 1);
 });
 
-Deno.test("model-search: filters map to the vendor's snake_case query params", async () => {
+test("model-search: filters map to the vendor's snake_case query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { models: [], pagination: {} } }]);
   await modelSearch.execute(
     { name: "invoice", modelType: "extraction", page: 2, perPage: 10 },

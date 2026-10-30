@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createFriend from "../../actions/create-friend.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const CREATED = { friend: { id: 15, first_name: "Ada", registration_status: "inv
  * own schema. This app follows the `properties` block and the prose, both of
  * which use the `user_` prefix.
  */
-Deno.test("create-friend: sends user_email, following the properties block", async () => {
+test("create-friend: sends user_email, following the properties block", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   const out = await createFriend.execute({
     user_email: "ada@example.com",
@@ -30,13 +31,13 @@ Deno.test("create-friend: sends user_email, following the properties block", asy
   assertEquals(out.id, 15);
 });
 
-Deno.test("create-friend: names are optional — ignored when the user exists", async () => {
+test("create-friend: names are optional — ignored when the user exists", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createFriend.execute({ user_email: "ada@example.com" }, ctx);
   assertEquals(bodyOf(calls[0]), { user_email: "ada@example.com" });
 });
 
-Deno.test("create-friend: an empty email fails before the request", async () => {
+test("create-friend: an empty email fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await createFriend.execute({ user_email: "  " }, ctx),
@@ -47,6 +48,6 @@ Deno.test("create-friend: an empty email fails before the request", async () => 
 });
 
 /** An unowned email mints an invited placeholder, so a retry can mint a second. */
-Deno.test("create-friend: is declared non-idempotent", () => {
+test("create-friend: is declared non-idempotent", () => {
   assertEquals(createFriend.idempotent, false);
 });

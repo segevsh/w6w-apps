@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import instantUrlCreate from "../../actions/instant-url-create.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("instant-url-create: POST /instant_urls, surfaces the one-time signing_key", async () => {
+test("instant-url-create: POST /instant_urls, surfaces the one-time signing_key", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -28,12 +29,12 @@ Deno.test("instant-url-create: POST /instant_urls, surfaces the one-time signing
   assertEquals(out.signing_key, "shhh-signing-key");
 });
 
-Deno.test("instant-url-create: requires name and template", async () => {
+test("instant-url-create: requires name and template", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => instantUrlCreate.execute({ name: "", template: "t1" }, ctx));
   await assertRejects(() => instantUrlCreate.execute({ name: "n", template: "" }, ctx));
 });
 
-Deno.test("instant-url-create: not idempotent", () => {
+test("instant-url-create: not idempotent", () => {
   assertEquals(instantUrlCreate.idempotent, false);
 });

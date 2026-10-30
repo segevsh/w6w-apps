@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deal-get-many.ts";
 
-Deno.test("deal-get-many: GETs /deals with filter query params", async () => {
+test("deal-get-many: GETs /deals with filter query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: [] } }]);
   await action.execute!({ status: "open", filterId: 5, limit: 50, start: 0 }, ctx);
   const url = new URL(calls[0].url);

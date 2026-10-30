@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: points at Sentry's own OAuth endpoints", () => {
+test("oauth2: points at Sentry's own OAuth endpoints", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2!.authorizationUrl, "https://sentry.io/oauth/authorize/");
   assertEquals(auth.oauth2!.tokenUrl, "https://sentry.io/oauth/token/");
   assertEquals(auth.oauth2!.scopeSeparator, " ");
 });
 
-Deno.test("oauth2: requests only the scopes this app's actions use", () => {
+test("oauth2: requests only the scopes this app's actions use", () => {
   // Nothing here is an admin scope — the app deliberately has no
   // organization/team/member write actions to need one.
   const scopes = auth.oauth2!.scopes!;
@@ -18,7 +19,7 @@ Deno.test("oauth2: requests only the scopes this app's actions use", () => {
   for (const scope of scopes) assert(!scope.endsWith(":admin"), `unexpected admin scope: ${scope}`);
 });
 
-Deno.test("oauth2: signs with the access token", async () => {
+test("oauth2: signs with the access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://sentry.io/api/0/organizations/",
@@ -29,13 +30,13 @@ Deno.test("oauth2: signs with the access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: test calls the org listing, the narrowest scope it asks for", async () => {
+test("oauth2: test calls the org listing, the narrowest scope it asks for", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   assertEquals(await auth.test!({ credential: { accessToken: "at" } } as never, ctx), { ok: true });
   assertEquals(calls[0].url, "https://sentry.io/api/0/organizations/");
 });
 
-Deno.test("oauth2: a rejected token reports the status", async () => {
+test("oauth2: a rejected token reports the status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { detail: "no" } }]);
   assertEquals(await auth.test!({ credential: { accessToken: "at" } } as never, ctx), {
     ok: false,
@@ -43,7 +44,7 @@ Deno.test("oauth2: a rejected token reports the status", async () => {
   });
 });
 
-Deno.test("oauth2: afterConnect adopts a sole organization as the default", async () => {
+test("oauth2: afterConnect adopts a sole organization as the default", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ slug: "acme" }] }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "at" } } as never, ctx), {
     endpoint: "https://sentry.io",
@@ -52,7 +53,7 @@ Deno.test("oauth2: afterConnect adopts a sole organization as the default", asyn
   });
 });
 
-Deno.test("oauth2: with several organizations it records them but picks none", async () => {
+test("oauth2: with several organizations it records them but picks none", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ slug: "acme" }, { slug: "beta" }] }]);
   const display = await auth.afterConnect!(
     { credential: { accessToken: "at" } } as never,
@@ -62,7 +63,7 @@ Deno.test("oauth2: with several organizations it records them but picks none", a
   assertEquals(display.organizationSlug, undefined);
 });
 
-Deno.test("oauth2: a failed lookup still connects", async () => {
+test("oauth2: a failed lookup still connects", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "at" } } as never, ctx), {
     endpoint: "https://sentry.io",

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/personal-access-token.ts";
 
@@ -14,7 +15,7 @@ const SIGNIN_OK = {
   },
 };
 
-Deno.test("exchange: trades the PAT for a session and stores both halves", async () => {
+test("exchange: trades the PAT for a session and stores both halves", async () => {
   const { ctx, calls } = mockCtx([SIGNIN_OK]);
   const credential = await auth.exchange!({
     fields: {
@@ -35,7 +36,7 @@ Deno.test("exchange: trades the PAT for a session and stores both halves", async
   assertEquals(calls[0].url, "https://10ax.online.tableau.com/api/3.21/auth/signin");
 });
 
-Deno.test("exchange: requires a server URL and both PAT fields", async () => {
+test("exchange: requires a server URL and both PAT fields", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(auth.exchange!({ fields: { patName: "n", patSecret: "s" } }, ctx)),
@@ -49,7 +50,7 @@ Deno.test("exchange: requires a server URL and both PAT fields", async () => {
   );
 });
 
-Deno.test("exchange: rejects an untrimmed empty PAT secret before any network call", async () => {
+test("exchange: rejects an untrimmed empty PAT secret before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -62,7 +63,7 @@ Deno.test("exchange: rejects an untrimmed empty PAT secret before any network ca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sign: stamps X-Tableau-Auth, never Authorization", async () => {
+test("sign: stamps X-Tableau-Auth, never Authorization", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x.com/api/3.21/sites/s1/projects",
@@ -74,7 +75,7 @@ Deno.test("sign: stamps X-Tableau-Auth, never Authorization", async () => {
   assertEquals(out.headers["authorization"], undefined);
 });
 
-Deno.test("test: a live session probes GET /projects?pageSize=1 with the session header", async () => {
+test("test: a live session probes GET /projects?pageSize=1 with the session header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { projects: {} } }]);
   const result = await auth.test!({
     credential: { token: "tok1", baseUrl: "https://x.com", siteId: "s1", apiVersion: "3.21" },
@@ -86,7 +87,7 @@ Deno.test("test: a live session probes GET /projects?pageSize=1 with the session
   assertEquals(calls[0].headers["x-tableau-auth"], "tok1");
 });
 
-Deno.test("test: an idled-out session is diagnosed as 401, not a generic failure", async () => {
+test("test: an idled-out session is diagnosed as 401, not a generic failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   const result = await auth.test!(
     { credential: { token: "tok1", baseUrl: "https://x.com", siteId: "s1" } },
@@ -96,7 +97,7 @@ Deno.test("test: an idled-out session is diagnosed as 401, not a generic failure
   assert(result.message.includes("idled out"), result.message);
 });
 
-Deno.test("test: 403 is reported distinctly from a bad credential", async () => {
+test("test: 403 is reported distinctly from a bad credential", async () => {
   const { ctx } = mockCtx([{ status: 403, body: {} }]);
   const result = await auth.test!(
     { credential: { token: "tok1", baseUrl: "https://x.com", siteId: "s1" } },
@@ -106,7 +107,7 @@ Deno.test("test: 403 is reported distinctly from a bad credential", async () => 
   assert(result.message.includes("403"), result.message);
 });
 
-Deno.test("test: missing credential fields fail before any network call", async () => {
+test("test: missing credential fields fail before any network call", async () => {
   const noToken = mockCtx([]);
   assertEquals(
     await auth.test!({ credential: { baseUrl: "https://x.com", siteId: "s1" } }, noToken.ctx),
@@ -120,7 +121,7 @@ Deno.test("test: missing credential fields fail before any network call", async 
   assertEquals(noToken.calls.length + noSite.calls.length, 0);
 });
 
-Deno.test("afterConnect: records the server/site/user, never the PAT secret or session token", async () => {
+test("afterConnect: records the server/site/user, never the PAT secret or session token", async () => {
   const { ctx } = mockCtx();
   const display = await auth.afterConnect!({
     credential: {
@@ -145,7 +146,7 @@ Deno.test("afterConnect: records the server/site/user, never the PAT secret or s
   assert(!JSON.stringify(display).includes("tok1"), "the session token leaked into display");
 });
 
-Deno.test("refresh: re-signs-in with the stored PAT and returns a fresh session", async () => {
+test("refresh: re-signs-in with the stored PAT and returns a fresh session", async () => {
   const { ctx, calls } = mockCtx([SIGNIN_OK]);
   const refreshed = await auth.refresh!({
     credential: {
@@ -166,7 +167,7 @@ Deno.test("refresh: re-signs-in with the stored PAT and returns a fresh session"
   assertEquals(calls[0].url, "https://10ax.online.tableau.com/api/3.21/auth/signin");
 });
 
-Deno.test("revoke: signs out and never throws", async () => {
+test("revoke: signs out and never throws", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await auth.revoke!({
     credential: { baseUrl: "https://x.com", apiVersion: "3.21", token: "tok1" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { listEnvelope, mockCtx, pathOf, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("project-list: lists projects and passes the paging block", async () => {
+test("project-list: lists projects and passes the paging block", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "p1", name: "Docs" }], {
@@ -25,7 +26,7 @@ Deno.test("project-list: lists projects and passes the paging block", async () =
   assertEquals(out.pagination?.next_cursor, "c1");
 });
 
-Deno.test("project-list: a vendor error surfaces its code and message", async () => {
+test("project-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

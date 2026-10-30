@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createRecord from "../../actions/create-record.ts";
 
-Deno.test("create-record: POSTs the doubly-nested { data: { values } } envelope", async () => {
+test("create-record: POSTs the doubly-nested { data: { values } } envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: { record_id: "r1" } } } }]);
   await createRecord.execute({
     object: "people",
@@ -24,7 +25,7 @@ Deno.test("create-record: POSTs the doubly-nested { data: { values } } envelope"
   });
 });
 
-Deno.test("create-record: rejects a values array before it reaches the wire", async () => {
+test("create-record: rejects a values array before it reaches the wire", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -37,7 +38,7 @@ Deno.test("create-record: rejects a values array before it reaches the wire", as
   assertEquals(calls.length, 0, "a malformed payload must not be sent");
 });
 
-Deno.test("create-record: says it throws on conflict and points at Upsert", () => {
+test("create-record: says it throws on conflict and points at Upsert", () => {
   const d = createRecord.description!;
   assert(/conflict/i.test(d), d);
   assert(d.includes("Upsert Record"), d);

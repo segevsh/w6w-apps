@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { appErrorBody, bodyOf, entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-create: POSTs /v1/tags with name and colour", async () => {
+test("tag-create: POSTs /v1/tags with name and colour", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: entityBody("tag", { id: 681, name: "VIP Customer" }) },
   ]);
@@ -21,7 +22,7 @@ Deno.test("tag-create: POSTs /v1/tags with name and colour", async () => {
  * succeeded 400s. That is why this action is not marked retryable, and why the
  * 400 has to stay readable.
  */
-Deno.test("tag-create: a duplicate-name 400 surfaces its vendor message", async () => {
+test("tag-create: a duplicate-name 400 surfaces its vendor message", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: appErrorBody("Bad Request", "Name has already been taken") },
   ]);

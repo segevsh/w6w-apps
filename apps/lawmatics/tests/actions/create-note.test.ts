@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createNote from "../../actions/create-note.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-note: POSTs /v1/notes attached to a Matter", async () => {
+test("create-note: POSTs /v1/notes attached to a Matter", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: item("1", "note", { name: "New Note", body: "An important thing to remember" }),
@@ -24,7 +25,7 @@ Deno.test("create-note: POSTs /v1/notes attached to a Matter", async () => {
   assertEquals(out.id, "1");
 });
 
-Deno.test("create-note: composes with a Contact just as well as a Matter", async () => {
+test("create-note: composes with a Contact just as well as a Matter", async () => {
   const { ctx, calls } = mockCtx([{ body: item("2", "note", {}) }]);
   await createNote.execute({
     name: "Called",
@@ -37,6 +38,6 @@ Deno.test("create-note: composes with a Contact just as well as a Matter", async
   assertEquals(body.notable_id, "136");
 });
 
-Deno.test("create-note: is marked non-idempotent", () => {
+test("create-note: is marked non-idempotent", () => {
   assertEquals(createNote.idempotent, false);
 });

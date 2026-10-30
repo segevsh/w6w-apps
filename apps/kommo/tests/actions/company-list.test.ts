@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-list.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("company-list: GETs /companies with page and limit", async () => {
+test("company-list: GETs /companies with page and limit", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { companies: [{ id: 1 }] } } }],
     conn,
@@ -14,7 +15,7 @@ Deno.test("company-list: GETs /companies with page and limit", async () => {
   assertEquals(out.companies, [{ id: 1 }]);
 });
 
-Deno.test("company-list: withEmbed joins contacts and leads", async () => {
+test("company-list: withEmbed joins contacts and leads", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { companies: [] } } }],
     conn,
@@ -24,7 +25,7 @@ Deno.test("company-list: withEmbed joins contacts and leads", async () => {
   assertEquals(url.searchParams.get("with"), "contacts,leads");
 });
 
-Deno.test("company-list: type is search, and resource is company", () => {
+test("company-list: type is search, and resource is company", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "company");
 });

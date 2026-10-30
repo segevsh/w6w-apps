@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-list.ts";
 
-Deno.test("member-list: filters by office ids and pages", async () => {
+test("member-list: filters by office ids and pages", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { get_metadata: { total: 1 }, members: [{ id: 11, memberUserId: 100234 }] },
@@ -18,7 +19,7 @@ Deno.test("member-list: filters by office ids and pages", async () => {
   assertEquals(result.members[0].memberUserId, 100234);
 });
 
-Deno.test("member-list: sends no query at all when nothing is set", async () => {
+test("member-list: sends no query at all when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { members: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

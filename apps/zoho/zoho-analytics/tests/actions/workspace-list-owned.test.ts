@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-list-owned.ts";
 
-Deno.test("workspace-list-owned: GETs /workspaces/owned with no org header", async () => {
+test("workspace-list-owned: GETs /workspaces/owned with no org header", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {
@@ -19,7 +20,7 @@ Deno.test("workspace-list-owned: GETs /workspaces/owned with no org header", asy
   assertEquals(out, { workspaces: [{ workspaceId: "1", orgId: "671712892" }] });
 });
 
-Deno.test("workspace-list-owned: defaults to an empty array when data carries none", async () => {
+test("workspace-list-owned: defaults to an empty array when data carries none", async () => {
   const { ctx } = mockAnalyticsCtx([
     { body: { status: "success", summary: "ok", data: {} } },
   ]);

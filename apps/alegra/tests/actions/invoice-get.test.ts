@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 import { alegraError, assertRejects, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-get: GET /invoices/:id returns the record", async () => {
+test("invoice-get: GET /invoices/:id returns the record", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "5" } }]);
   const out = await invoiceGet.execute({ id: "5", fields: "pdf" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,19 +12,19 @@ Deno.test("invoice-get: GET /invoices/:id returns the record", async () => {
   assertEquals(out, { id: "5" });
 });
 
-Deno.test("invoice-get: a UUID id is path-encoded as a string", async () => {
+test("invoice-get: a UUID id is path-encoded as a string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await invoiceGet.execute({ id: "75c1a5ad-4bd5-4675-b51b-8d6c70f1f2f9" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v1/invoices/75c1a5ad-4bd5-4675-b51b-8d6c70f1f2f9");
 });
 
-Deno.test("invoice-get: a blank id is rejected before any request", async () => {
+test("invoice-get: a blank id is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => invoiceGet.execute({ id: " " }, ctx), Error, "id is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("invoice-get: a 404 surfaces the vendor message", async () => {
+test("invoice-get: a 404 surfaces the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: alegraError(404, "No encontrado") }]);
   await assertRejects(() => invoiceGet.execute({ id: "1" }, ctx), Error, "No encontrado");
 });

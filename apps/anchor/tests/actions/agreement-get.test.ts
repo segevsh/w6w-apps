@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import agreementGet from "../../actions/agreement-get.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agreement-get: sends GET /v2/agreements/a1", async () => {
+test("agreement-get: sends GET /v2/agreements/a1", async () => {
   const { ctx, calls } = mockCtx([{ body: { "agreementName": "X" } }]);
   const out = await agreementGet.execute({ "id": "a1" } as never, ctx) as Record<string, unknown>;
 
@@ -19,7 +20,7 @@ Deno.test("agreement-get: sends GET /v2/agreements/a1", async () => {
   assertEquals(out.agreementName, "X");
 });
 
-Deno.test("agreement-get: a non-2xx answer throws with the vendor's error code", async () => {
+test("agreement-get: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

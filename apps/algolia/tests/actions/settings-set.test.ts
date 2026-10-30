@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/settings-set.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("settings-set: PUTs the settings to the write host", async () => {
+test("settings-set: PUTs the settings to the write host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 6 } }], { display });
   await action.execute!({
     indexName: "products",
@@ -16,7 +17,7 @@ Deno.test("settings-set: PUTs the settings to the write host", async () => {
 });
 
 /** Without this, replicas silently keep serving the old configuration. */
-Deno.test("settings-set: forwardToReplicas is only sent when asked for", async () => {
+test("settings-set: forwardToReplicas is only sent when asked for", async () => {
   const off = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ indexName: "p", settings: "{}" }, off.ctx);
   assertEquals(new URL(off.calls[0].url).searchParams.get("forwardToReplicas"), null);
@@ -26,7 +27,7 @@ Deno.test("settings-set: forwardToReplicas is only sent when asked for", async (
   assertEquals(new URL(on.calls[0].url).searchParams.get("forwardToReplicas"), "true");
 });
 
-Deno.test("settings-set: settings are required and must be an object", async () => {
+test("settings-set: settings are required and must be an object", async () => {
   const missing = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p" }, missing.ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import secretCreate from "../../actions/secret-create.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("secret-create: POSTs key/type/value to /secrets", async () => {
+test("secret-create: POSTs key/type/value to /secrets", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       secret_id: "secret-1",
@@ -30,7 +31,7 @@ Deno.test("secret-create: POSTs key/type/value to /secrets", async () => {
   assertEquals(out.secret_id, "secret-1");
 });
 
-Deno.test("secret-create: the created secret's value never appears in the result", async () => {
+test("secret-create: the created secret's value never appears in the result", async () => {
   const { ctx } = mockCtx([{
     body: {
       secret_id: "secret-1",
@@ -50,10 +51,10 @@ Deno.test("secret-create: the created secret's value never appears in the result
   assert(!JSON.stringify(out).includes("ghp_super-secret-value"));
 });
 
-Deno.test("secret-create: is not idempotent", () => {
+test("secret-create: is not idempotent", () => {
   assertEquals(secretCreate.idempotent, false);
 });
 
-Deno.test("secret-create: the value param is marked secret", () => {
+test("secret-create: the value param is marked secret", () => {
   assertEquals(secretCreate.params?.find((p) => p.key === "value")?.type, "secret");
 });

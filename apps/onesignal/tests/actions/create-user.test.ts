@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createUser from "../../actions/create-user.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("create-user: nests identity/properties/subscriptions correctly", async () => {
+test("create-user: nests identity/properties/subscriptions correctly", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ status: 200, body: { identity: {} } }]);
   await createUser.execute({
     externalId: "user_123",
@@ -16,7 +17,7 @@ Deno.test("create-user: nests identity/properties/subscriptions correctly", asyn
   assertEquals(body.subscriptions, [{ type: "Email", token: "a@example.com" }]);
 });
 
-Deno.test("create-user: omits identity entirely when no External ID is given", async () => {
+test("create-user: omits identity entirely when no External ID is given", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ status: 200, body: {} }]);
   await createUser.execute({}, ctx);
   const body = JSON.parse(calls[0].body!);

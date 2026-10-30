@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: its endpoints are per-account, templated on the subdomain", () => {
+test("oauth2: its endpoints are per-account, templated on the subdomain", () => {
   assertEquals(auth.type, "oauth2");
   // There is no single Zendesk OAuth host — it lives under the customer's own
   // subdomain, which is why `*.zendesk.com` is what permits the egress.
@@ -14,7 +15,7 @@ Deno.test("oauth2: its endpoints are per-account, templated on the subdomain", (
   assertEquals(auth.fields?.[0].key, "subdomain");
 });
 
-Deno.test("oauth2: sign sets the Bearer header", async () => {
+test("oauth2: sign sets the Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.zendesk.com/api/v2/tickets.json",
@@ -25,7 +26,7 @@ Deno.test("oauth2: sign sets the Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test needs both the subdomain and the token", async () => {
+test("oauth2: test needs both the subdomain and the token", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, ctx), {
     ok: false,

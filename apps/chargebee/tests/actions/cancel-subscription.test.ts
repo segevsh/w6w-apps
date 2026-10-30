@@ -1,17 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, formObject, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/cancel-subscription.ts";
 
 const ok = { status: 200, body: { subscription: { id: "sub_1", status: "cancelled" } } };
 
-Deno.test("cancel-subscription: is an idempotent perform action", () => {
+test("cancel-subscription: is an idempotent perform action", () => {
   assertEquals(action.key, "cancel-subscription");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "subscription");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("cancel-subscription: POSTs to /cancel_for_items, NOT /cancel", async () => {
+test("cancel-subscription: POSTs to /cancel_for_items, NOT /cancel", async () => {
   // `/cancel` is the Product Catalog 1.0 route and is absent from the PC 2.0
   // surface — guessing at it would 404.
   const { ctx, calls } = mockCtx([ok]);
@@ -23,20 +24,20 @@ Deno.test("cancel-subscription: POSTs to /cancel_for_items, NOT /cancel", async 
   );
 });
 
-Deno.test("cancel-subscription: reproduces Chargebee's `end_of_term=true` sample", async () => {
+test("cancel-subscription: reproduces Chargebee's `end_of_term=true` sample", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ subscriptionId: "sub_1", endOfTerm: true }, connected(ctx));
   assertEquals(calls[0].body, "end_of_term=true");
 });
 
-Deno.test("cancel-subscription: `end_of_term=false` is sent, not dropped as falsy", async () => {
+test("cancel-subscription: `end_of_term=false` is sent, not dropped as falsy", async () => {
   // `false` here means "cancel immediately" — the opposite of omitting it.
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ subscriptionId: "sub_1", endOfTerm: false }, connected(ctx));
   assertEquals(calls[0].body, "end_of_term=false");
 });
 
-Deno.test("cancel-subscription: maps every documented option onto its snake_case name", async () => {
+test("cancel-subscription: maps every documented option onto its snake_case name", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     subscriptionId: "sub_1",
@@ -60,7 +61,7 @@ Deno.test("cancel-subscription: maps every documented option onto its snake_case
   });
 });
 
-Deno.test("cancel-subscription: offers the enum values in the documented lowercase form", () => {
+test("cancel-subscription: offers the enum values in the documented lowercase form", () => {
   // The reference's parameter listing gives these lowercase; only some older
   // curl samples show them uppercased.
   assertEquals(optionValues(action, "cancelOption"), [
@@ -77,7 +78,7 @@ Deno.test("cancel-subscription: offers the enum values in the documented lowerca
   assertEquals(optionValues(action, "unbilledChargesOption"), ["invoice", "delete"]);
 });
 
-Deno.test("cancel-subscription: sends nothing but the path when no options are given", async () => {
+test("cancel-subscription: sends nothing but the path when no options are given", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ subscriptionId: "sub_1" }, connected(ctx));
   assertEquals(calls[0].body, "");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailUnreadCountGet from "../../actions/email-unread-count-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-unread-count-get: GETs /emails/unread/count with no params", async () => {
+test("email-unread-count-get: GETs /emails/unread/count with no params", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 7 } }]);
   const out = await emailUnreadCountGet.execute({}, ctx) as { count: number };
 
@@ -11,6 +12,6 @@ Deno.test("email-unread-count-get: GETs /emails/unread/count with no params", as
   assertEquals(out.count, 7);
 });
 
-Deno.test("email-unread-count-get: declares no params", () => {
+test("email-unread-count-get: declares no params", () => {
   assertEquals(emailUnreadCountGet.params, []);
 });

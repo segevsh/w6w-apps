@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs the task object, with title the documented required field", async () => {
+test("create-task: POSTs the task object, with title the documented required field", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 1, title: "Task title" })]);
   await action.execute(
     {
@@ -36,7 +37,7 @@ Deno.test("create-task: POSTs the task object, with title the documented require
   });
 });
 
-Deno.test("create-task: refuses a task with no title, making no request", async () => {
+test("create-task: refuses a task with no title, making no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "`title` is required");
   await assertRejects(

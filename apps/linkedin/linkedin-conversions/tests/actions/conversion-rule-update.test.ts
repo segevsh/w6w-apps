@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import conversionRuleUpdate from "../../actions/conversion-rule-update.ts";
 import { mockCtx, noContentResponse, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-rule-update: a PARTIAL_UPDATE $set patch, account URN in the query", async () => {
+test("conversion-rule-update: a PARTIAL_UPDATE $set patch, account URN in the query", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await conversionRuleUpdate.execute(
     { conversionId: "104012", accountId: "519072844", enabled: false },
@@ -18,7 +19,7 @@ Deno.test("conversion-rule-update: a PARTIAL_UPDATE $set patch, account URN in t
   assertEquals(result, { ok: true });
 });
 
-Deno.test("conversion-rule-update: only the fields set are included in $set", async () => {
+test("conversion-rule-update: only the fields set are included in $set", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   await conversionRuleUpdate.execute(
     { conversionId: "1", accountId: "1", name: "New name", postClickAttributionWindowSize: 90 },
@@ -28,7 +29,7 @@ Deno.test("conversion-rule-update: only the fields set are included in $set", as
   assertEquals(body.patch.$set, { name: "New name", postClickAttributionWindowSize: 90 });
 });
 
-Deno.test("conversion-rule-update: rejects when nothing is set, without making a request", async () => {
+test("conversion-rule-update: rejects when nothing is set, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await conversionRuleUpdate.execute({ conversionId: "1", accountId: "1" }, ctx),
@@ -38,6 +39,6 @@ Deno.test("conversion-rule-update: rejects when nothing is set, without making a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("conversion-rule-update: is idempotent", () => {
+test("conversion-rule-update: is idempotent", () => {
   assertEquals(conversionRuleUpdate.idempotent, true);
 });

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-trigger.ts";
 
 const display = { baseUrl: "https://myapp.bubbleapps.io" };
 
-Deno.test("workflow-trigger: POST sends params as a JSON body", async () => {
+test("workflow-trigger: POST sends params as a JSON body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { status: "success" } },
   ], { display });
@@ -21,7 +22,7 @@ Deno.test("workflow-trigger: POST sends params as a JSON body", async () => {
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.com" });
 });
 
-Deno.test("workflow-trigger: GET sends params as a query string, no body", async () => {
+test("workflow-trigger: GET sends params as a query string, no body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { status: "success" } },
   ], { display });
@@ -38,7 +39,7 @@ Deno.test("workflow-trigger: GET sends params as a query string, no body", async
   assertEquals(url.searchParams.get("count"), "3");
 });
 
-Deno.test("workflow-trigger: a plain-text response is returned as text", async () => {
+test("workflow-trigger: a plain-text response is returned as text", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: "ok", headers: { "content-type": "text/plain" } },
   ], { display });
@@ -46,7 +47,7 @@ Deno.test("workflow-trigger: a plain-text response is returned as text", async (
   assertEquals(out, "ok");
 });
 
-Deno.test("workflow-trigger: rejects params that are not a JSON object", async () => {
+test("workflow-trigger: rejects params that are not a JSON object", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ workflowName: "w", httpMethod: "POST", params: "[1,2]" }, ctx);

@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 21);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 3);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: idempotency matches what the underlying ORM method actually does", () => {
+test("index: idempotency matches what the underlying ORM method actually does", () => {
   const byKey = Object.fromEntries(app.actions.map((a) => [a.key, a]));
   // `write` twice with the same values leaves the same state.
   assertEquals(byKey["update-contact"].idempotent, true);
@@ -65,9 +67,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -86,7 +88,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -94,14 +96,14 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// credential\nconst a = 1;").trim(), "const a = 1;");
   assert(code('const u = "https://x/y";').includes("https://x/y"));
   assert(/credential/.test(code("const c = credential;")));
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -110,7 +112,7 @@ Deno.test("index: every param has a key and a label", () => {
   }
 });
 
-Deno.test("index: every action that targets a fixed model declares it as its resource", () => {
+test("index: every action that targets a fixed model declares it as its resource", () => {
   const generic = new Set(["search-records", "count-records", "call-method"]);
   for (const a of app.actions) {
     if (generic.has(a.key)) {
@@ -125,7 +127,7 @@ Deno.test("index: every action that targets a fixed model declares it as its res
   }
 });
 
-Deno.test("index: the generic actions take a model param, since they pin no resource", () => {
+test("index: the generic actions take a model param, since they pin no resource", () => {
   for (const key of ["search-records", "count-records", "call-method"]) {
     const action = app.actions.find((a) => a.key === key)!;
     const model = (action.params ?? []).find((p) => p.key === "model");
@@ -136,14 +138,14 @@ Deno.test("index: the generic actions take a model param, since they pin no reso
 
 // --- health surface ---------------------------------------------------------
 
-Deno.test("index: health checks cover the three kinds", () => {
+test("index: health checks cover the three kinds", () => {
   const byKey = Object.fromEntries(app.healthChecks.map((c) => [c.key, c]));
   assertEquals(byKey.service.kind, "service");
   assertEquals(byKey.instance.kind, "dependency");
   assertEquals(byKey.quota.kind, "quota");
 });
 
-Deno.test("index: the two declared-absent checks are informational, or they pin the verdict", () => {
+test("index: the two declared-absent checks are informational, or they pin the verdict", () => {
   // An `unavailable` entry always reports `unknown`, and `unknown` outranks `ok`
   // in the roll-up — at any other severity these would pin every verdict at
   // `unknown` forever.
@@ -155,7 +157,7 @@ Deno.test("index: the two declared-absent checks are informational, or they pin 
   }
 });
 
-Deno.test("index: the instance check is per-connection, unsigned, and widens no egress", () => {
+test("index: the instance check is per-connection, unsigned, and widens no egress", () => {
   const instance = app.healthChecks.find((c) => c.key === "instance")!;
   assertEquals(instance.scope, "connection");
   // `context`: it needs the Connection to know WHICH host to call, and needs no
@@ -165,7 +167,7 @@ Deno.test("index: the instance check is per-connection, unsigned, and widens no 
   assertEquals(typeof instance.check, "function");
 });
 
-Deno.test("index: no health check declares a status host, because none exists to declare", () => {
+test("index: no health check declares a status host, because none exists to declare", () => {
   // status.odoo.com serves the same HTML shell for every path, so probing it
   // would be worse than declaring the absence.
   for (const c of app.healthChecks) {

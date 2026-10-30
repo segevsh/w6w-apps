@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/jobs-list.ts";
 
-Deno.test("jobs-list: GETs getjobs with filters", async () => {
+test("jobs-list: GETs getjobs with filters", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ jobId: "1", jobName: "Build" }], status: 0 } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("jobs-list: GETs getjobs with filters", async () => {
   assertEquals(out.result.length, 1);
 });
 
-Deno.test("jobs-list: requires assignedTo; time-tracker errors arrive as an array", async () => {
+test("jobs-list: requires assignedTo; time-tracker errors arrive as an array", async () => {
   const { ctx } = mockPeopleCtx([{
     status: 400,
     body: {

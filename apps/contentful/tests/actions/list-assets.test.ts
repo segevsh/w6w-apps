@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-assets.ts";
 
-Deno.test("list-assets: applies default pagination and hits CDN", async () => {
+test("list-assets: applies default pagination and hits CDN", async () => {
   const body = { items: [], total: 0, skip: 0, limit: 100 };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-assets: applies default pagination and hits CDN", async () => {
   assertEquals(url.searchParams.get("skip"), "0");
 });
 
-Deno.test("list-assets: forwards paging + unpacks search extras", async () => {
+test("list-assets: forwards paging + unpacks search extras", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     {
@@ -35,7 +36,7 @@ Deno.test("list-assets: forwards paging + unpacks search extras", async () => {
   assertEquals(params.get("query"), "party");
 });
 
-Deno.test("list-assets: omits unset search extras", async () => {
+test("list-assets: omits unset search extras", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ spaceId: "sp", environmentId: "master" }, ctx);
   const params = new URL(calls[0].url).searchParams;

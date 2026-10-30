@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-list.ts";
 
 const conn = { display: { tenantId: "42", environment: "production" } };
 
-Deno.test("customer-list: GETs /crm/v2/tenant/{t}/customers with filters, ids joined by commas", async () => {
+test("customer-list: GETs /crm/v2/tenant/{t}/customers with filters, ids joined by commas", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { page: 1, data: [], hasMore: false } }],
     conn,
@@ -25,7 +26,7 @@ Deno.test("customer-list: GETs /crm/v2/tenant/{t}/customers with filters, ids jo
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("customer-list: unset filters are omitted, and a non-numeric id is refused before any request", async () => {
+test("customer-list: unset filters are omitted, and a non-numeric id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], conn);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

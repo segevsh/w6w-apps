@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import search from "../../actions/deal-search.ts";
 
 const ok = (Data: unknown) => ({ body: { Status: "success", Data } });
 
-Deno.test("deal-search: POSTs the documented query shape with rows/from", async () => {
+test("deal-search: POSTs the documented query shape with rows/from", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ data: [{ id: 1 }], totalRows: 1, totalPages: 1 })]);
   const out = await search.execute({ rows: 50, from: 10 }, ctx);
   assertEquals(out, { records: [{ id: 1 }], totalRows: 1, totalPages: 1 });
@@ -25,7 +26,7 @@ Deno.test("deal-search: POSTs the documented query shape with rows/from", async 
   assertEquals(body.sort, { fieldName: "", order: "" });
 });
 
-Deno.test("deal-search: caller rules, fields and sort replace the defaults", async () => {
+test("deal-search: caller rules, fields and sort replace the defaults", async () => {
   const { ctx, calls } = mockSalesmateCtx([ok({ data: [] })]);
   const rule = { condition: "EQUALS", moduleName: "X", field: { fieldName: "deal.id" }, data: 1 };
   const out = await search.execute(
@@ -39,7 +40,7 @@ Deno.test("deal-search: caller rules, fields and sort replace the defaults", asy
   assertEquals(body.sort, { fieldName: "id", order: "desc" });
 });
 
-Deno.test("deal-search: a non-array rules value is rejected before any request", async () => {
+test("deal-search: a non-array rules value is rejected before any request", async () => {
   const { ctx, calls } = mockSalesmateCtx();
   await assertRejects(
     async () => await search.execute({ rules: { a: 1 } }, ctx),

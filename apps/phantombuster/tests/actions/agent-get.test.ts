@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertFalse } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertFalse } from "../_assert.ts";
 import agentGet from "../../actions/agent-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const AGENT = {
   proxyPassword: "super-secret-proxy-password",
 };
 
-Deno.test("agent-get: calls GET /agents/fetch with id and strips proxyPassword", async () => {
+test("agent-get: calls GET /agents/fetch with id and strips proxyPassword", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: AGENT }]);
 
   const out = await agentGet.execute({ id: "42" }, ctx) as Record<string, unknown>;
@@ -23,13 +24,13 @@ Deno.test("agent-get: calls GET /agents/fetch with id and strips proxyPassword",
   assertEquals((out.agent as Record<string, unknown>).id, "42");
 });
 
-Deno.test("agent-get: does not touch the opaque argument field", async () => {
+test("agent-get: does not touch the opaque argument field", async () => {
   const { ctx } = mockCtx([{ status: 200, body: AGENT }]);
   const out = await agentGet.execute({ id: "42" }, ctx) as Record<string, unknown>;
   assertEquals((out.agent as Record<string, unknown>).argument, AGENT.argument);
 });
 
-Deno.test("agent-get: withManifest is opt-in and forwarded only when true", async () => {
+test("agent-get: withManifest is opt-in and forwarded only when true", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: AGENT }, { status: 200, body: AGENT }]);
 
   await agentGet.execute({ id: "42" }, ctx);
@@ -39,7 +40,7 @@ Deno.test("agent-get: withManifest is opt-in and forwarded only when true", asyn
   assertEquals(queryOf(calls[1].url).withManifest, "true");
 });
 
-Deno.test("agent-get: never requests withAgentObject or withCode", () => {
+test("agent-get: never requests withAgentObject or withCode", () => {
   const keys = agentGet.params?.map((p) => p.key) ?? [];
   assertFalse(keys.includes("withAgentObject"));
   assertFalse(keys.includes("withCode"));

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
 type Rec = Record<string, unknown>;
 
-Deno.test("candidate-search: POSTs the query and unwraps the paginated envelope", async () => {
+test("candidate-search: POSTs the query and unwraps the paginated envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       total: 5,
@@ -29,7 +30,7 @@ Deno.test("candidate-search: POSTs the query and unwraps the paginated envelope"
   assertEquals(out, { candidates: [{ _id: "k1" }], total: 5, totalCapped: false, nextPage: 2 });
 });
 
-Deno.test("candidate-search: a null next_page means no nextPage", async () => {
+test("candidate-search: a null next_page means no nextPage", async () => {
   const { ctx } = mockCtx([{ body: { total: 0, data: [], next_page: null } }]);
   const out = await action.execute!({ companyId: "c1", query: "x" }, ctx);
   assertEquals("nextPage" in (out as Rec), false);

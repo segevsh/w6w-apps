@@ -1,16 +1,17 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-accounts.ts";
 
 const ok = { status: 200, body: { object: "list", has_more: false, next: null, data: [] } };
 
-Deno.test("list-accounts: is a search action over the account resource", () => {
+test("list-accounts: is a search action over the account resource", () => {
   assertEquals(action.key, "list-accounts");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "account");
 });
 
-Deno.test("list-accounts: GETs /accounts on the connection's own host", async () => {
+test("list-accounts: GETs /accounts on the connection's own host", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({}, connected(ctx));
   const url = new URL(calls[0].url);
@@ -20,7 +21,7 @@ Deno.test("list-accounts: GETs /accounts on the connection's own host", async ()
   assertEquals(url.search, "");
 });
 
-Deno.test("list-accounts: sends filters as documented query params", async () => {
+test("list-accounts: sends filters as documented query params", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     limit: 25,
@@ -39,13 +40,13 @@ Deno.test("list-accounts: sends filters as documented query params", async () =>
   assertEquals(q.get("past_due"), "true");
 });
 
-Deno.test("list-accounts: pastDue=false sends nothing — Recurly has no such literal", async () => {
+test("list-accounts: pastDue=false sends nothing — Recurly has no such literal", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ pastDue: false }, connected(ctx));
   assertEquals(new URL(calls[0].url).searchParams.get("past_due"), null);
 });
 
-Deno.test("list-accounts: a `next` value is fetched verbatim, ignoring every other param", async () => {
+test("list-accounts: a `next` value is fetched verbatim, ignoring every other param", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute(
     { next: "/accounts?cursor=abc123&limit=20", limit: 5, email: "x@y.com" },
@@ -54,7 +55,7 @@ Deno.test("list-accounts: a `next` value is fetched verbatim, ignoring every oth
   assertEquals(calls[0].url, "https://v3.recurly.com/accounts?cursor=abc123&limit=20");
 });
 
-Deno.test("list-accounts: returns Recurly's list envelope unchanged", async () => {
+test("list-accounts: returns Recurly's list envelope unchanged", async () => {
   const body = { object: "list", has_more: true, next: "/accounts?cursor=x", data: [{ id: "a1" }] };
   const { ctx } = mockCtx([{ status: 200, body }]);
   assertEquals(await action.execute({}, connected(ctx)), body);

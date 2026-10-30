@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeEntryUpdate from "../../actions/time-entry-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("time-entry-update: PATCHes a plain path segment, NOT TimeEntries(id)", async () => {
+test("time-entry-update: PATCHes a plain path segment, NOT TimeEntries(id)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await timeEntryUpdate.execute({ timeEntryId: "t1", note: "fixed" }, ctx) as {
     ok: boolean;
@@ -12,7 +13,7 @@ Deno.test("time-entry-update: PATCHes a plain path segment, NOT TimeEntries(id)"
   assertEquals(out.ok, true);
 });
 
-Deno.test("time-entry-update: refuses an empty update", async () => {
+test("time-entry-update: refuses an empty update", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(timeEntryUpdate.execute({ timeEntryId: "t1" }, ctx)),

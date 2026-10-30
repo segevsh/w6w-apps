@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
 const conn = { display: { baseUrl: "https://mautic.example.com" } };
 
-Deno.test("contact-list: GETs /contacts and unwraps the `contacts` map into an array", async () => {
+test("contact-list: GETs /contacts and unwraps the `contacts` map into an array", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { total: 1, contacts: { "47": { id: 47 } } } },
   ], conn);
@@ -15,13 +16,13 @@ Deno.test("contact-list: GETs /contacts and unwraps the `contacts` map into an a
   assertEquals(url.searchParams.get("start"), "0");
 });
 
-Deno.test("contact-list: publishedOnly=true sends publishedOnly=1", async () => {
+test("contact-list: publishedOnly=true sends publishedOnly=1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { total: 0, contacts: {} } }], conn);
   await action.execute!({ publishedOnly: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("publishedOnly"), "1");
 });
 
-Deno.test("contact-list: limit caps the number of rows returned", async () => {
+test("contact-list: limit caps the number of rows returned", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { total: 2, contacts: { "1": { id: 1 }, "2": { id: 2 } } } },
   ], conn);

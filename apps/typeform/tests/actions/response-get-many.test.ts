@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/response-get-many.ts";
 
-Deno.test("response-get-many: GETs /forms/{id}/responses with mapped query", async () => {
+test("response-get-many: GETs /forms/{id}/responses with mapped query", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], total_items: 0 } }]);
   await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("response-get-many: GETs /forms/{id}/responses with mapped query", asy
   assertEquals(url.searchParams.get("sort"), "submitted_at,desc");
 });
 
-Deno.test("response-get-many: sends only the form id path when unfiltered", async () => {
+test("response-get-many: sends only the form id path when unfiltered", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute({ formId: "abc" }, ctx);
   const url = new URL(calls[0].url);

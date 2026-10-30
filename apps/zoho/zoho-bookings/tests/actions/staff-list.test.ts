@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/staff-list.ts";
 
-Deno.test("staff-list: GETs /staffs with only the provided filters", async () => {
+test("staff-list: GETs /staffs with only the provided filters", async () => {
   const { ctx, calls } = mockBookingsCtx([
     { body: { response: { status: "success", returnvalue: { data: [] } } } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("staff-list: GETs /staffs with only the provided filters", async () =>
   assertEquals(url.searchParams.has("workspace_id"), false);
 });
 
-Deno.test("staff-list: does not fall back to the connection's workspace id — every param is optional here", async () => {
+test("staff-list: does not fall back to the connection's workspace id — every param is optional here", async () => {
   const { ctx, calls } = mockBookingsCtx(
     [{ body: { response: { status: "success", returnvalue: { data: [] } } } }],
     "www.zohoapis.com",

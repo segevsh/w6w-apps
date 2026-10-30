@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import translationCreate from "../../actions/translation-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("translation-create: sends POST /v2/projects/project%201%2Fx/translations", async () => {
+test("translation-create: sends POST /v2/projects/project%201%2Fx/translations", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "projectId": "project 1/x",
@@ -35,7 +36,7 @@ Deno.test("translation-create: sends POST /v2/projects/project%201%2Fx/translati
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("translation-create: surfaces Phrase's validation message on a 422", async () => {
+test("translation-create: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await translationCreate.execute({
@@ -54,7 +55,7 @@ Deno.test("translation-create: surfaces Phrase's validation message on a 422", a
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("translation-create: declares key, type and every param it reads", () => {
+test("translation-create: declares key, type and every param it reads", () => {
   assertEquals(translationCreate.key, "translation-create");
   assertEquals(translationCreate.type, "perform");
   const declared = new Set((translationCreate.params ?? []).map((p) => p.key));

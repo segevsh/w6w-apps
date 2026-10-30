@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import unpin from "../../actions/note-unpin.ts";
 
 const ok = (Data?: unknown) => ({ body: { Status: "success", Data } });
 const B = "https://acme.salesmate.io/apis";
 
-Deno.test("note-unpin: PATCHes unpin-it", async () => {
+test("note-unpin: PATCHes unpin-it", async () => {
   const b = mockSalesmateCtx([ok({})]);
   assertEquals(await unpin.execute({ module: "deal", recordId: 2, noteId: 4 }, b.ctx), {
     pinned: false,

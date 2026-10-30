@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { formatGladiaError, toList } from "../../lib/client.ts";
 
-Deno.test("formatGladiaError: surfaces message and request_id", () => {
+test("formatGladiaError: surfaces message and request_id", () => {
   const raw = JSON.stringify({
     statusCode: 401,
     message: "gladia user not found",
@@ -12,18 +13,18 @@ Deno.test("formatGladiaError: surfaces message and request_id", () => {
   assertEquals(out.includes("G-1"), true);
 });
 
-Deno.test("formatGladiaError: non-JSON body and 429 hint", () => {
+test("formatGladiaError: non-JSON body and 429 hint", () => {
   const out = formatGladiaError(429, "POST", "/v2/pre-recorded", "slow down");
   assertEquals(out.includes("slow down"), true);
   assertEquals(out.includes("do not resubmit"), true);
 });
 
-Deno.test("formatGladiaError: array message is stringified", () => {
+test("formatGladiaError: array message is stringified", () => {
   const out = formatGladiaError(422, "POST", "/p", JSON.stringify({ message: ["a", "b"] }));
   assertEquals(out.includes('["a","b"]'), true);
 });
 
-Deno.test("toList: splits commas and newlines, drops blanks, passes arrays", () => {
+test("toList: splits commas and newlines, drops blanks, passes arrays", () => {
   assertEquals(toList("a, b\nc,,"), ["a", "b", "c"]);
   assertEquals(toList(["x", " y "]), ["x", "y"]);
   assertEquals(toList(undefined), []);

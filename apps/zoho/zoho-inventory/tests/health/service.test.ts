@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 function feedOf(titles: string[]) {
@@ -9,7 +10,7 @@ function feedOf(titles: string[]) {
   };
 }
 
-Deno.test("service: unknown, never down, when the feed itself failed", () => {
+test("service: unknown, never down, when the feed itself failed", () => {
   const result = service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "", error: "boom" } },
     {} as never,
@@ -17,7 +18,7 @@ Deno.test("service: unknown, never down, when the feed itself failed", () => {
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("service: unknown when the feed carries no Zoho Inventory component", () => {
+test("service: unknown when the feed carries no Zoho Inventory component", () => {
   const result = service.check!(
     { feed: feedOf(["Zoho CRM - Operational", "Zoho Mail - Operational"]) },
     {} as never,
@@ -29,7 +30,7 @@ Deno.test("service: unknown when the feed carries no Zoho Inventory component", 
  * The same feed carries "Zoho Books", "Zoho Invoice" and "Zoho CRM" entries —
  * a prefix match would report the wrong product's outage.
  */
-Deno.test("service: does not match other Zoho product components", () => {
+test("service: does not match other Zoho product components", () => {
   const result = service.check!(
     {
       feed: feedOf([
@@ -45,29 +46,29 @@ Deno.test("service: does not match other Zoho product components", () => {
   assertEquals((result as { message?: string }).message, "Zoho Inventory - Operational");
 });
 
-Deno.test("service: maps Operational to ok", () => {
+test("service: maps Operational to ok", () => {
   const result = service.check!({ feed: feedOf(["Zoho Inventory - Operational"]) }, {} as never);
   assertEquals((result as { state: string }).state, "ok");
 });
 
-Deno.test("service: maps Major Outage to down", () => {
+test("service: maps Major Outage to down", () => {
   const result = service.check!({ feed: feedOf(["Zoho Inventory - Major Outage"]) }, {} as never);
   assertEquals((result as { state: string }).state, "down");
 });
 
-Deno.test("service: maps Degraded Performance and Partial Outage and Under Maintenance to degraded", () => {
+test("service: maps Degraded Performance and Partial Outage and Under Maintenance to degraded", () => {
   for (const status of ["Degraded Performance", "Partial Outage", "Under Maintenance"]) {
     const result = service.check!({ feed: feedOf([`Zoho Inventory - ${status}`]) }, {} as never);
     assertEquals((result as { state: string }).state, "degraded", status);
   }
 });
 
-Deno.test("service: an unrecognised status word is unknown, not guessed", () => {
+test("service: an unrecognised status word is unknown, not guessed", () => {
   const result = service.check!({ feed: feedOf(["Zoho Inventory - Something New"]) }, {} as never);
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("service: declares the feed and no network widening of its own", () => {
+test("service: declares the feed and no network widening of its own", () => {
   assertEquals(service.feed?.url, "https://us.zohostatus.com/rss");
   assertEquals(service.network, undefined);
   assertEquals(service.kind, "service");

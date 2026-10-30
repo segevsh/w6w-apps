@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-get.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("campaign-get: GETs the Asset API path, not the Lead Database path", async () => {
+test("campaign-get: GETs the Asset API path, not the Lead Database path", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1001, name: "Process Bounced Emails" }] } },
   ], conn);
@@ -16,7 +17,7 @@ Deno.test("campaign-get: GETs the Asset API path, not the Lead Database path", a
   assertEquals(out, { id: 1001, name: "Process Bounced Emails" });
 });
 
-Deno.test("campaign-get: rejects a non-numeric campaignId", async () => {
+test("campaign-get: rejects a non-numeric campaignId", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {

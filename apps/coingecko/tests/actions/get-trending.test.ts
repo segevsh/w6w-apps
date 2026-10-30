@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-trending.ts";
 
-Deno.test("get-trending: calls the documented path with the mapped query", async () => {
+test("get-trending: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { coins: [] } }]);
   const out = await action.execute!({ showMax: "coins" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("get-trending: calls the documented path with the mapped query", async
   assert(out !== undefined);
 });
 
-Deno.test("get-trending: a vendor error body becomes a readable error", async () => {
+test("get-trending: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

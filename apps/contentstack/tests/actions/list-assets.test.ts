@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-assets.ts";
 
-Deno.test("list-assets: metadata", () => {
+test("list-assets: metadata", () => {
   assertEquals(action.key, "list-assets");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -20,7 +21,7 @@ Deno.test("list-assets: metadata", () => {
   ]);
 });
 
-Deno.test("list-assets: calls GET /assets on the NA host", async () => {
+test("list-assets: calls GET /assets on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "assets": [{ "uid": "blta" }], "count": 1 } }]);
   const out = await action.execute({
     "folder": "cs_root",
@@ -39,7 +40,7 @@ Deno.test("list-assets: calls GET /assets on the NA host", async () => {
   assertEquals(out, { "assets": [{ "uid": "blta" }], "count": 1 });
 });
 
-Deno.test("list-assets: uses the connection's regional host", async () => {
+test("list-assets: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "assets": [{ "uid": "blta" }], "count": 1 } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -50,7 +51,7 @@ Deno.test("list-assets: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("list-assets: sends the branch header only when a branch is given", async () => {
+test("list-assets: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "assets": [{ "uid": "blta" }], "count": 1 } }, {
     body: { "assets": [{ "uid": "blta" }], "count": 1 },
   }]);
@@ -65,7 +66,7 @@ Deno.test("list-assets: sends the branch header only when a branch is given", as
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("list-assets: surfaces Contentstack's own error body", async () => {
+test("list-assets: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

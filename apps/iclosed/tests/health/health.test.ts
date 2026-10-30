@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api, { PROBE_URL } from "../../health/api.ts";
 import service, {
   API_COMPONENT_ID,
@@ -9,7 +10,7 @@ import service, {
 import quota from "../../health/quota.ts";
 import { KEY_REQUIRED, mockCtx } from "../_helpers.ts";
 
-Deno.test("api: probes GET /v1/users unsigned", async () => {
+test("api: probes GET /v1/users unsigned", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: KEY_REQUIRED }]);
   await api.check!({} as never, ctx);
   assertEquals(PROBE_URL, "https://public.api.iclosed.io/v1/users");
@@ -18,14 +19,14 @@ Deno.test("api: probes GET /v1/users unsigned", async () => {
   assertEquals(api.credential, "none");
 });
 
-Deno.test("api: the schema-correct 401 is a pass", async () => {
+test("api: the schema-correct 401 is a pass", async () => {
   const { ctx } = mockCtx([{ status: 401, body: KEY_REQUIRED }]);
   const out = await api.check!({} as never, ctx);
   assertEquals(out.state, "ok");
   assertEquals(out.message, undefined);
 });
 
-Deno.test("api: other outcomes", async () => {
+test("api: other outcomes", async () => {
   const cases: Array<[number, unknown, string]> = [
     [401, { message: "something else" }, "unknown"],
     [404, { message: "Not found" }, "down"],
@@ -39,7 +40,7 @@ Deno.test("api: other outcomes", async () => {
   }
 });
 
-Deno.test("api: a non-JSON body is down", async () => {
+test("api: a non-JSON body is down", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>", headers: {} }]);
   assertEquals((await api.check!({} as never, ctx)).state, "down");
 });
@@ -55,7 +56,7 @@ const summary = (api: string, app = "operational", billing = "operational", page
   ],
 });
 
-Deno.test("service: reads the status page unsigned from the declared host", async () => {
+test("service: reads the status page unsigned from the declared host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -65,7 +66,7 @@ Deno.test("service: reads the status page unsigned from the declared host", asyn
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: only the API component decides, others cap at degraded", async () => {
+test("service: only the API component decides, others cap at degraded", async () => {
   let c = mockCtx([{ body: summary("major_outage") }]);
   assertEquals((await service.check!({} as never, c.ctx)).state, "down");
   c = mockCtx([{ body: summary("operational", "major_outage", "partial_outage") }]);
@@ -77,7 +78,7 @@ Deno.test("service: only the API component decides, others cap at degraded", asy
   assertEquals((await service.check!({} as never, c.ctx)).state, "degraded");
 });
 
-Deno.test("service: a foreign page, a missing API component or a bad body is unknown", async () => {
+test("service: a foreign page, a missing API component or a bad body is unknown", async () => {
   let c = mockCtx([{ body: summary("operational", "operational", "operational", "other") }]);
   assertEquals((await service.check!({} as never, c.ctx)).state, "unknown");
   const noApi = summary("operational");
@@ -92,14 +93,14 @@ Deno.test("service: a foreign page, a missing API component or a bad body is unk
   assertEquals((await service.check!({} as never, c.ctx)).state, "unknown");
 });
 
-Deno.test("service: component vocabulary", () => {
+test("service: component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("quota: declared unavailable at informational severity", () => {
+test("quota: declared unavailable at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason.includes("X-RateLimit"));
   assertEquals(quota.check, undefined);

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/stage-list.ts";
 
 const D = { display: { environment: "production" } };
 
 /** Stage ids are per account, so a name-to-id map is the useful output. */
-Deno.test("stage-list: returns a name-to-id map in pipeline order", async () => {
+test("stage-list: returns a name-to-id map in pipeline order", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ id: "s1", text: "New Lead" }, { id: "s2", text: "Phone Screen" }] },
@@ -17,7 +18,7 @@ Deno.test("stage-list: returns a name-to-id map in pipeline order", async () => 
 });
 
 /** Two stages can share a name, and resolving by name is then ambiguous. */
-Deno.test("stage-list: reports duplicate names rather than collapsing them", async () => {
+test("stage-list: reports duplicate names rather than collapsing them", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: {
@@ -37,7 +38,7 @@ Deno.test("stage-list: reports duplicate names rather than collapsing them", asy
   );
 });
 
-Deno.test("stage-list: a clean pipeline warns about nothing", async () => {
+test("stage-list: a clean pipeline warns about nothing", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { data: [{ id: "s1", text: "New" }] } }], D);
   await action.execute({}, ctx);
   assertEquals(logs.length, 0);

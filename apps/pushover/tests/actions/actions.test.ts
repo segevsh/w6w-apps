@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import userValidate from "../../actions/user-validate.ts";
 import soundsList from "../../actions/sounds-list.ts";
 import limitsGet from "../../actions/limits-get.ts";
 import { failure, mockPushoverCtx, ok } from "../_helpers.ts";
 
-Deno.test("message-send: posts the message and drops what was left blank", async () => {
+test("message-send: posts the message and drops what was left blank", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok() }]);
   await messageSend.execute({ message: "deploy finished", title: "" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("message-send: posts the message and drops what was left blank", async
   assertEquals(calls[0].body, "message=deploy+finished");
 });
 
-Deno.test("message-send: maps every optional parameter onto Pushover's names", async () => {
+test("message-send: maps every optional parameter onto Pushover's names", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok() }]);
   await messageSend.execute({
     message: "x",
@@ -42,7 +43,7 @@ Deno.test("message-send: maps every optional parameter onto Pushover's names", a
  * that pairing is what makes a per-message recipient possible without the
  * action ever holding the Connection's key.
  */
-Deno.test("message-send: a recipient override is sent as the user parameter", async () => {
+test("message-send: a recipient override is sent as the user parameter", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok() }]);
   await messageSend.execute({ message: "x", userOverride: "OTHERKEY" }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).get("user"), "OTHERKEY");
@@ -52,7 +53,7 @@ Deno.test("message-send: a recipient override is sent as the user parameter", as
  * Emergency priority makes retry and expire REQUIRED. Catching it here names the
  * missing parameter instead of letting it arrive as a generic 4xx.
  */
-Deno.test("message-send: emergency priority requires retry and expire", async () => {
+test("message-send: emergency priority requires retry and expire", async () => {
   const { ctx, calls } = mockPushoverCtx([]);
   await assertRejects(
     async () => {
@@ -71,7 +72,7 @@ Deno.test("message-send: emergency priority requires retry and expire", async ()
   assertEquals(calls.length, 0, "nothing should have been sent");
 });
 
-Deno.test("message-send: emergency priority sends retry and expire when both are given", async () => {
+test("message-send: emergency priority sends retry and expire when both are given", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok({ receipt: "rcpt123" }) }]);
   const out = await messageSend.execute(
     { message: "wake up", priority: "2", retry: 60, expire: 3600 },
@@ -85,7 +86,7 @@ Deno.test("message-send: emergency priority sends retry and expire when both are
 });
 
 /** Retry/expire on a non-emergency message are silently ignored by Pushover — say so instead. */
-Deno.test("message-send: refuses retry or expire without emergency priority", async () => {
+test("message-send: refuses retry or expire without emergency priority", async () => {
   const { ctx, calls } = mockPushoverCtx([]);
   await assertRejects(
     async () => {
@@ -98,11 +99,11 @@ Deno.test("message-send: refuses retry or expire without emergency priority", as
 });
 
 /** Two calls send two notifications; Pushover has no idempotency key. */
-Deno.test("message-send: is honestly not idempotent", () => {
+test("message-send: is honestly not idempotent", () => {
   assertEquals(messageSend.idempotent, false);
 });
 
-Deno.test("message-send: the documented length caps are declared on the params", () => {
+test("message-send: the documented length caps are declared on the params", () => {
   const byKey = Object.fromEntries((messageSend.params ?? []).map((p) => [p.key, p]));
   assertEquals(byKey.message.validation?.maxLength, 1024);
   assertEquals(byKey.title.validation?.maxLength, 250);
@@ -112,7 +113,7 @@ Deno.test("message-send: the documented length caps are declared on the params",
   assertEquals(byKey.retry.validation?.min, 30);
 });
 
-Deno.test("message-send: a rejection surfaces the vendor's own error text", async () => {
+test("message-send: a rejection surfaces the vendor's own error text", async () => {
   const { ctx } = mockPushoverCtx([{
     status: 400,
     body: failure(["message cannot be blank", "user identifier is invalid"]),
@@ -126,7 +127,7 @@ Deno.test("message-send: a rejection surfaces the vendor's own error text", asyn
   );
 });
 
-Deno.test("user-validate: POSTs to users/validate and is a read, not a perform", async () => {
+test("user-validate: POSTs to users/validate and is a read, not a perform", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok({ devices: ["iphone"] }) }]);
   const out = await userValidate.execute({}, ctx) as { devices?: string[] };
   assertEquals(new URL(calls[0].url).pathname, "/1/users/validate.json");
@@ -135,7 +136,7 @@ Deno.test("user-validate: POSTs to users/validate and is a read, not a perform",
   assertEquals(out.devices, ["iphone"]);
 });
 
-Deno.test("user-validate: checks a supplied key rather than the connection's", async () => {
+test("user-validate: checks a supplied key rather than the connection's", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok({ devices: [] }) }]);
   await userValidate.execute({ userOverride: "SOMEONEELSE", device: "nexus5" }, ctx);
   const sent = new URLSearchParams(calls[0].body!);
@@ -144,7 +145,7 @@ Deno.test("user-validate: checks a supplied key rather than the connection's", a
 });
 
 /** Application-scoped endpoints: GET, no user key, and `sign` withholds it. */
-Deno.test("sounds-list: GETs the application-scoped sounds endpoint", async () => {
+test("sounds-list: GETs the application-scoped sounds endpoint", async () => {
   const { ctx, calls } = mockPushoverCtx([{ body: ok({ sounds: { bike: "Bike" } }) }]);
   const out = await soundsList.execute({}, ctx) as { sounds?: Record<string, string> };
   assertEquals(calls[0].method, "GET");
@@ -153,7 +154,7 @@ Deno.test("sounds-list: GETs the application-scoped sounds endpoint", async () =
   assertEquals(soundsList.params?.length ?? 0, 0);
 });
 
-Deno.test("limits-get: GETs the allowance without spending any of it", async () => {
+test("limits-get: GETs the allowance without spending any of it", async () => {
   const { ctx, calls } = mockPushoverCtx([{
     body: ok({ limit: 10000, remaining: 7496, reset: 1393653600 }),
   }]);

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,13 +12,13 @@ const SUMMARY = {
   ],
 };
 
-Deno.test("service: is an unsigned, app-scoped, unauthenticated check", () => {
+test("service: is an unsigned, app-scoped, unauthenticated check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
   assertEquals(service.network?.allow, ["status.capsulecrm.com"]);
 });
 
-Deno.test("service: all-operational summary is ok, reporting the Capsule component", async () => {
+test("service: all-operational summary is ok, reporting the Capsule component", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.capsulecrm.com/api/v2/summary.json");
@@ -26,7 +27,7 @@ Deno.test("service: all-operational summary is ok, reporting the Capsule compone
   assertEquals(r.components?.capsule?.state, "ok");
 });
 
-Deno.test("service: an outage on the Capsule component reports down, ignoring Drop Box", async () => {
+test("service: an outage on the Capsule component reports down, ignoring Drop Box", async () => {
   const { ctx } = mockCtx([{
     body: {
       ...SUMMARY,
@@ -42,7 +43,7 @@ Deno.test("service: an outage on the Capsule component reports down, ignoring Dr
   assertEquals(r.components?.capsule?.state, "down");
 });
 
-Deno.test("service: a Drop Box-only outage does not affect the reported state", async () => {
+test("service: a Drop Box-only outage does not affect the reported state", async () => {
   const { ctx } = mockCtx([{
     body: {
       ...SUMMARY,
@@ -56,12 +57,12 @@ Deno.test("service: a Drop Box-only outage does not affect the reported state", 
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: minor indicator maps to degraded when no Capsule component is found", async () => {
+test("service: minor indicator maps to degraded when no Capsule component is found", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "minor" }, components: [] } }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a failed status API is unknown, never down", async () => {
+test("service: a failed status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

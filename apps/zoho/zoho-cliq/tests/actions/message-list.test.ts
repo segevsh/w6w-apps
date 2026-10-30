@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-list.ts";
 
-Deno.test("message-list: lists messages in a window", async () => {
+test("message-list: lists messages in a window", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "data": [{ "id": "m1" }] } }]);
   const out = await action.execute(
     { "chatId": "CT_1", "fromTime": 1, "toTime": 2, "limit": 4 } as never,
@@ -23,6 +24,6 @@ Deno.test("message-list: lists messages in a window", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "messages": [{ "id": "m1" }] });
 });
 
-Deno.test("message-list: is a read action", () => {
+test("message-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

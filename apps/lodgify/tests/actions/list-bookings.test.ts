@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import listBookings from "../../actions/list-bookings.ts";
 
-Deno.test("list-bookings: sends the documented v2 filters", async () => {
+test("list-bookings: sends the documented v2 filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 0, items: [] } }]);
   await listBookings.execute({
     page: 1,

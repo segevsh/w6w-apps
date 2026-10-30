@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_RESOURCE, mapResourceStatus, PAGE_ID } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ function page(statuses: Record<string, string>, id = PAGE_ID, company = "Supadat
   };
 }
 
-Deno.test("service: the Transcript API resource drives the verdict; Dashboard is capped at degraded", async () => {
+test("service: the Transcript API resource drives the verdict; Dashboard is capped at degraded", async () => {
   const { ctx, calls } = mockCtx([
     { body: page({ [API_RESOURCE]: "operational", "Dashboard": "downtime" }) },
     { body: page({ [API_RESOURCE]: "downtime", "Dashboard": "operational" }) },
@@ -27,7 +28,7 @@ Deno.test("service: the Transcript API resource drives the verdict; Dashboard is
   assertEquals(down.components?.["transcript-api"]?.state, "down");
 });
 
-Deno.test("service: unknown when the page is not Supadata's or lacks the resource", async () => {
+test("service: unknown when the page is not Supadata's or lacks the resource", async () => {
   const wrongId = mockCtx([{ body: page({ [API_RESOURCE]: "operational" }, "1") }]);
   assertEquals((await service.check!({}, wrongId.ctx)).state, "unknown");
   const wrongName = mockCtx([{ body: page({ [API_RESOURCE]: "operational" }, PAGE_ID, "Acme") }]);
@@ -36,7 +37,7 @@ Deno.test("service: unknown when the page is not Supadata's or lacks the resourc
   assertEquals((await service.check!({}, absent.ctx)).state, "unknown");
 });
 
-Deno.test("service: a non-200 or non-JSON page is unknown; status mapping", async () => {
+test("service: a non-200 or non-JSON page is unknown; status mapping", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "unknown",

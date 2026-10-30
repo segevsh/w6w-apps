@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-booking.ts";
 
-Deno.test("create-booking: POSTs /{accountId}/profiles/{profileId}/bookings with the body", async () => {
+test("create-booking: POSTs /{accountId}/profiles/{profileId}/bookings with the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "book-1" } }]);
   await action.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("create-booking: POSTs /{accountId}/profiles/{profileId}/bookings with
   );
 });
 
-Deno.test("create-booking: defaults response fields to id", async () => {
+test("create-booking: defaults response fields to id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "book-1" } }]);
   await action.execute(
     {

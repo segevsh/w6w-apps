@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/delete-cloned-voice.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-cloned-voice: DELETEs the voice and returns the envelope", async () => {
+test("delete-cloned-voice: DELETEs the voice and returns the envelope", async () => {
   const body = { responseCode: "SUCCESS", responseMessage: "Deleted" };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, { voiceId: "cln_1" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("delete-cloned-voice: DELETEs the voice and returns the envelope", asy
   assertEquals(out, body);
 });
 
-Deno.test("delete-cloned-voice: requires an id; a 404 fails", async () => {
+test("delete-cloned-voice: requires an id; a 404 fails", async () => {
   assertEquals((await failure(action, { voiceId: " " }, mockCtx().ctx)).includes("voiceId"), true);
   const { ctx } = mockCtx([{
     status: 404,

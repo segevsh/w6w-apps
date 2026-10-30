@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 
@@ -16,7 +17,7 @@ const ABSENCES = [
   { name: "quota", check: quota },
 ];
 
-Deno.test("health: every declared absence has a reason, no hook, and informational severity", () => {
+test("health: every declared absence has a reason, no hook, and informational severity", () => {
   for (const { name, check } of ABSENCES) {
     assertEquals(check.check, undefined, `${name}: an unavailable check must have no hook`);
     assert(
@@ -39,7 +40,7 @@ Deno.test("health: every declared absence has a reason, no hook, and information
  * and has to name the alternatives that were ruled out, or the next person
  * re-does the whole investigation.
  */
-Deno.test("health/service: the reason records that the page exists and why it is unusable", () => {
+test("health/service: the reason records that the page exists and why it is unusable", () => {
   const reason = service.unavailable!.reason;
   // What is there.
   assert(reason.includes("status.campaignmonitor.com"), "names the host");
@@ -73,7 +74,7 @@ Deno.test("health/service: the reason records that the page exists and why it is
  * headers exist and why reading them is not side-effect-free, otherwise the
  * next person adds a probe that sends email.
  */
-Deno.test("health/quota: the reason records that the rate-limit headers exist but cannot be read", () => {
+test("health/quota: the reason records that the rate-limit headers exist but cannot be read", () => {
   const reason = quota.unavailable!.reason;
   assert(reason.includes("X-RateLimit-Limit"), "names the header that does exist");
   assert(reason.includes("/transactional"), "names the only endpoints that carry it");
@@ -85,7 +86,7 @@ Deno.test("health/quota: the reason records that the rate-limit headers exist bu
   assert(reason.includes("billing-details-get"), "points at where the number is still available");
 });
 
-Deno.test("health: neither absence declares egress or a feed it cannot fetch", () => {
+test("health: neither absence declares egress or a feed it cannot fetch", () => {
   for (const { name, check } of ABSENCES) {
     assertEquals(check.network, undefined, `${name}: an unavailable check reaches nothing`);
     assertEquals(check.feed, undefined, `${name}: an unavailable check parses nothing`);

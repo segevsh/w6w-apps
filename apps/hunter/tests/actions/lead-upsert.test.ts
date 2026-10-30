@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/lead-upsert.ts";
 
-Deno.test("lead-upsert: PUTs /leads (dedupe by email), not /leads/{id}", async () => {
+test("lead-upsert: PUTs /leads (dedupe by email), not /leads/{id}", async () => {
   const body = envelope({ id: 3, email: "alexis@reddit.com" });
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({ email: "alexis@reddit.com", company: "Reddit" }, ctx);
@@ -14,6 +15,6 @@ Deno.test("lead-upsert: PUTs /leads (dedupe by email), not /leads/{id}", async (
   assertEquals(result, body);
 });
 
-Deno.test("lead-upsert: is marked idempotent", () => {
+test("lead-upsert: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

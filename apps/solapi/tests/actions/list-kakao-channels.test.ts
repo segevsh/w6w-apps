@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listKakaoChannels from "../../actions/list-kakao-channels.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => listKakaoChannels.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("list-kakao-channels: declares a read action with a description, params and output", () => {
+test("list-kakao-channels: declares a read action with a description, params and output", () => {
   assertEquals(listKakaoChannels.key, "list-kakao-channels");
   assertEquals(listKakaoChannels.type, "read");
   assert((listKakaoChannels.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("list-kakao-channels: declares a read action with a description, param
   assertEquals(listKakaoChannels.idempotent, undefined);
 });
 
-Deno.test("list-kakao-channels: sends the documented request and returns the documented shape", async () => {
+test("list-kakao-channels: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "channelList": [
@@ -52,7 +53,7 @@ Deno.test("list-kakao-channels: sends the documented request and returns the doc
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-kakao-channels: a SOLAPI error body is thrown with its code and message", async () => {
+test("list-kakao-channels: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/search-leads.ts";
 
-Deno.test("search-leads: POSTs to /leads/search", async () => {
+test("search-leads: POSTs to /leads/search", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(calls[0].url, "https://api.copper.com/developer_api/v1/leads/search");
 });
 
-Deno.test("search-leads: maps every filter onto Copper's body keys", async () => {
+test("search-leads: maps every filter onto Copper's body keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({
     name: "My Lead",
@@ -47,12 +48,12 @@ Deno.test("search-leads: maps every filter onto Copper's body keys", async () =>
   });
 });
 
-Deno.test("search-leads: `emails` is a single string here, unlike People's array", () => {
+test("search-leads: `emails` is a single string here, unlike People's array", () => {
   // A Lead holds one email object; the filter mirrors that. The matching field
   // names make this an easy thing to get backwards.
   assertEquals(param(action, "emails").type, "string");
 });
 
-Deno.test("search-leads: exposes the converted-leads flag Copper defaults to false", () => {
+test("search-leads: exposes the converted-leads flag Copper defaults to false", () => {
   assertEquals(param(action, "includeConvertedLeads").type, "boolean");
 });

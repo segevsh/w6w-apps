@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-create: nests display_value under tag", async () => {
+test("tag-create: nests display_value under tag", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "1", value: "front side" } }]);
   await tagCreate.execute({ displayValue: "Front Side" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/tags");

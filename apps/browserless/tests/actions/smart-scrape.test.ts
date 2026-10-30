@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import smartScrape from "../../actions/smart-scrape.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("smart-scrape: maps formats, selectors and headers", async () => {
+test("smart-scrape: maps formats, selectors and headers", async () => {
   const { ctx, calls } = mockCtx([{ body: { markdown: "# hi" } }]);
   const out = await smartScrape.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("smart-scrape: maps formats, selectors and headers", async () => {
   });
 });
 
-Deno.test("smart-scrape: strategyCache false is sent; overrides win", async () => {
+test("smart-scrape: strategyCache false is sent; overrides win", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await smartScrape.execute(
     { url: "https://a.com", strategyCache: false, requestOverrides: { waitFor: 5 }, waitFor: 1 },
@@ -40,7 +41,7 @@ Deno.test("smart-scrape: strategyCache false is sent; overrides win", async () =
   assertEquals(body.waitFor, 5);
 });
 
-Deno.test("smart-scrape: needs a URL and an object for headers", async () => {
+test("smart-scrape: needs a URL and an object for headers", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await smartScrape.execute({ url: "" }, ctx),

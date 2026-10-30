@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -16,7 +17,7 @@ function summary(components: Array<Record<string, unknown>>, extra: Record<strin
   };
 }
 
-Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: maps the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -25,7 +26,7 @@ Deno.test("mapComponentStatus: maps the documented Statuspage vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: reports ok when the Public API component is operational", async () => {
+test("service: reports ok when the Public API component is operational", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "k6l1zkqk6lkp", name: "Login", status: "operational" },
@@ -46,7 +47,7 @@ Deno.test("service: reports ok when the Public API component is operational", as
  * the Public API itself is fine — verified live 2026-09-01. This app's
  * verdict must track the API component, not the page roll-up.
  */
-Deno.test("service: an unrelated degraded component does not affect the verdict", async () => {
+test("service: an unrelated degraded component does not affect the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       { id: "mqdzsjjl42yx", name: "Web Application Performance", status: "degraded_performance" },
@@ -62,7 +63,7 @@ Deno.test("service: an unrelated degraded component does not affect the verdict"
   assert(report.message?.includes("Web Application Performance"), report.message);
 });
 
-Deno.test("service: a degraded Public API component drives the verdict", async () => {
+test("service: a degraded Public API component drives the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary([
       {
@@ -76,13 +77,13 @@ Deno.test("service: a degraded Public API component drives the verdict", async (
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as JobNimbus reports unknown", async () => {
+test("service: a page that no longer self-identifies as JobNimbus reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ id: API_COMPONENT_ID, name: "Public API", status: "operational" }], {
       page: { id: "x", name: "Someone Else", url: "https://status.example.com" },
@@ -92,7 +93,7 @@ Deno.test("service: a page that no longer self-identifies as JobNimbus reports u
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: missing the Public API component entirely reports unknown", async () => {
+test("service: missing the Public API component entirely reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ id: "k6l1zkqk6lkp", name: "Login", status: "operational" }]),
   }]);
@@ -100,7 +101,7 @@ Deno.test("service: missing the Public API component entirely reports unknown", 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug of the name", () => {
+test("componentKey: prefers the vendor id, falls back to a slug of the name", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(
     componentKey({ name: "Public API - Application Programming Interface" }, 0),
@@ -109,7 +110,7 @@ Deno.test("componentKey: prefers the vendor id, falls back to a slug of the name
   assertEquals(componentKey({}, 3), "component-3");
 });
 
-Deno.test("service: declares the manifest fields a status check needs", () => {
+test("service: declares the manifest fields a status check needs", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.jobnimbus.com"]);

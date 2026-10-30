@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldCreate from "../../actions/field-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-create: POST /projects/{projectId}/fields with the documented query and body", async () => {
+test("field-create: POST /projects/{projectId}/fields with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await fieldCreate.execute({
     "projectId": "ev:1",
@@ -29,7 +30,7 @@ Deno.test("field-create: POST /projects/{projectId}/fields with the documented q
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("field-create: an Everhour error surfaces its message and status", async () => {
+test("field-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -47,7 +48,7 @@ Deno.test("field-create: an Everhour error surfaces its message and status", asy
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("field-create: declares perform and idempotent=false", () => {
+test("field-create: declares perform and idempotent=false", () => {
   assertEquals(fieldCreate.type, "perform");
   assertEquals(fieldCreate.idempotent, false);
 });

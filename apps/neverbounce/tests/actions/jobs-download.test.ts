@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import jobsDownload from "../../actions/jobs-download.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const CSV = 'id,email,name,email_status\n"12345","support@neverbounce.com","Fred McValid",valid';
 
-Deno.test("jobs-download: returns the raw CSV body and defaults segmentation flags to include everything", async () => {
+test("jobs-download: returns the raw CSV body and defaults segmentation flags to include everything", async () => {
   const { ctx, calls } = mockCtx([{ body: CSV, headers: { "content-type": "text/csv" } }]);
 
   const result = await jobsDownload.execute({ jobId: 123 }, ctx);
@@ -24,7 +25,7 @@ Deno.test("jobs-download: returns the raw CSV body and defaults segmentation fla
   assertEquals(result.csv, CSV);
 });
 
-Deno.test("jobs-download: booleans set to false turn off a segmentation flag", async () => {
+test("jobs-download: booleans set to false turn off a segmentation flag", async () => {
   const { ctx, calls } = mockCtx([{ body: CSV, headers: { "content-type": "text/csv" } }]);
 
   await jobsDownload.execute({ jobId: 1, valids: false, onlyDuplicates: true }, ctx);
@@ -34,7 +35,7 @@ Deno.test("jobs-download: booleans set to false turn off a segmentation flag", a
   assertEquals(url.searchParams.get("only_duplicates"), "1");
 });
 
-Deno.test("jobs-download: a JSON error body (e.g. auth_failure) is surfaced as an error, not returned as CSV", async () => {
+test("jobs-download: a JSON error body (e.g. auth_failure) is surfaced as an error, not returned as CSV", async () => {
   const { ctx } = mockCtx([
     { body: { status: "auth_failure", message: "Invalid API Key" } },
   ]);

@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares oauth2 (production) and oauth2-sandbox", () => {
+test("index: declares oauth2 (production) and oauth2-sandbox", () => {
   assertEquals(app.auth?.map((a) => a.key), ["oauth2", "oauth2-sandbox"]);
 });
 
-Deno.test("index: declares 20 actions with unique kebab-case keys", () => {
+test("index: declares 20 actions with unique kebab-case keys", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 20);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -36,7 +37,7 @@ Deno.test("index: declares 20 actions with unique kebab-case keys", () => {
   ]);
 });
 
-Deno.test("index: every action declares execute and params; performs declare idempotent", () => {
+test("index: every action declares execute and params; performs declare idempotent", () => {
   for (const action of app.actions) {
     if (typeof action.execute !== "function") throw new Error(`${action.key}: missing execute`);
     if (!Array.isArray(action.params)) throw new Error(`${action.key}: missing params`);
@@ -46,6 +47,6 @@ Deno.test("index: every action declares execute and params; performs declare ide
   }
 });
 
-Deno.test("index: declares service, api and quota health checks", () => {
+test("index: declares service, api and quota health checks", () => {
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["api", "quota", "service"]);
 });

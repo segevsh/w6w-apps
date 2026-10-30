@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import tableRecordGet from "../../actions/table-record-get.ts";
 
-Deno.test("table-record-get: fetches a record by numeric id", async () => {
+test("table-record-get: fetches a record by numeric id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { table_record: { id: "987654", title: "Acme Corp" } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("table-record-get: fetches a record by numeric id", async () => {
   assert(q.includes("required"));
 });
 
-Deno.test("table-record-get: type/resource metadata", () => {
+test("table-record-get: type/resource metadata", () => {
   assertEquals(tableRecordGet.type, "read");
   assertEquals(tableRecordGet.resource, "table-record");
 });

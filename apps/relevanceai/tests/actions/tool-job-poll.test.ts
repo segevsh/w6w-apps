@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import toolJobPoll from "../../actions/tool-job-poll.ts";
 import { mockRelevanceCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tool-job-poll: GETs both ids in the path, with the cursor and page size", async () => {
+test("tool-job-poll: GETs both ids in the path, with the cursor and page size", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     { body: { type: "complete", updates: [{ message: "done" }], last_message_id: 42 } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("tool-job-poll: GETs both ids in the path, with the cursor and page si
   assertEquals(out.last_message_id, 42);
 });
 
-Deno.test("tool-job-poll: a timeout is a state, not an error", async () => {
+test("tool-job-poll: a timeout is a state, not an error", async () => {
   const { ctx } = mockRelevanceCtx([
     { body: { type: "timeout", updates: [], last_message_id: 7 } },
   ]);
@@ -29,19 +30,19 @@ Deno.test("tool-job-poll: a timeout is a state, not an error", async () => {
   assertEquals(out.updates, []);
 });
 
-Deno.test("tool-job-poll: sends no query when no cursor is supplied", async () => {
+test("tool-job-poll: sends no query when no cursor is supplied", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { type: "complete" } }]);
   await toolJobPoll.execute({ toolId: "s1", jobId: "j1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("tool-job-poll: ids are escaped, so a pasted URL cannot break the path", async () => {
+test("tool-job-poll: ids are escaped, so a pasted URL cannot break the path", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: {} }]);
   await toolJobPoll.execute({ toolId: "s/1", jobId: "j?1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/latest/studios/s%2F1/async_poll/j%3F1");
 });
 
-Deno.test("tool-job-poll: the four documented states are exposed as one string", () => {
+test("tool-job-poll: the four documented states are exposed as one string", () => {
   assertEquals(toolJobPoll.type, "read");
   assertEquals(toolJobPoll.params?.map((p) => p.key), [
     "toolId",

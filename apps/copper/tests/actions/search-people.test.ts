@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param, run } from "../_helpers.ts";
 import action from "../../actions/search-people.ts";
 
-Deno.test("search-people: POSTs to /people/search — Copper has no GET collection", async () => {
+test("search-people: POSTs to /people/search — Copper has no GET collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: 7 }] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("search-people: POSTs to /people/search — Copper has no GET collecti
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("search-people: maps every filter onto Copper's snake_case body keys", async () => {
+test("search-people: maps every filter onto Copper's snake_case body keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({
     name: "Jim",
@@ -51,13 +52,13 @@ Deno.test("search-people: maps every filter onto Copper's snake_case body keys",
   });
 });
 
-Deno.test("search-people: omits filters that were not supplied", async () => {
+test("search-people: omits filters that were not supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({ name: "Jim" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Jim" });
 });
 
-Deno.test("search-people: returns the bare array plus the header total", async () => {
+test("search-people: returns the bare array plus the header total", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{ id: 7, name: "Jim Halpert" }],
@@ -68,7 +69,7 @@ Deno.test("search-people: returns the bare array plus the header total", async (
   assertEquals(out.total, 775);
 });
 
-Deno.test("search-people: is a search action and offers the shared paging params", () => {
+test("search-people: is a search action and offers the shared paging params", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "person");
   for (const key of ["pageNumber", "pageSize", "sortBy", "sortDirection"]) {
@@ -77,6 +78,6 @@ Deno.test("search-people: is a search action and offers the shared paging params
   assertEquals(optionValues(action, "sortDirection"), ["asc", "desc"]);
 });
 
-Deno.test("search-people: caps the page size at Copper's documented 200", () => {
+test("search-people: caps the page size at Copper's documented 200", () => {
   assertEquals(param(action, "pageSize").validation?.max, 200);
 });

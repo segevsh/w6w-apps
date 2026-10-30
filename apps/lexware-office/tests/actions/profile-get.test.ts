@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/profile-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("profile-get: GET /v1/profile and returns the organization", async () => {
+test("profile-get: GET /v1/profile and returns the organization", async () => {
   const { ctx, calls } = mockCtx([{
     body: { organizationId: "o", companyName: "Testfirma GmbH" },
   }]);

@@ -1,12 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("app: every action key is unique", () => {
+test("app: every action key is unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, `duplicate keys in ${keys}`);
 });
 
-Deno.test("app: every action declares a title, description and execute hook", () => {
+test("app: every action declares a title, description and execute hook", () => {
   for (const action of app.actions) {
     assert(action.title, `${action.key} has no title`);
     assert(action.description, `${action.key} has no description`);
@@ -14,14 +15,14 @@ Deno.test("app: every action declares a title, description and execute hook", ()
   }
 });
 
-Deno.test("app: every action's type is one of the four in the spec", () => {
+test("app: every action's type is one of the four in the spec", () => {
   const valid = new Set(["read", "search", "perform", "control"]);
   for (const action of app.actions) {
     assert(valid.has(action.type), `${action.key} has invalid type ${action.type}`);
   }
 });
 
-Deno.test("app: required params have hints or self-evident labels", () => {
+test("app: required params have hints or self-evident labels", () => {
   for (const action of app.actions) {
     for (const param of action.params ?? []) {
       assert(param.label, `${action.key}.${param.key} has no label`);
@@ -29,17 +30,17 @@ Deno.test("app: required params have hints or self-evident labels", () => {
   }
 });
 
-Deno.test("app: declares the single basic auth method", () => {
+test("app: declares the single basic auth method", () => {
   assertEquals(app.auth.length, 1);
   assertEquals(app.auth[0].key, "basic");
   assertEquals(app.auth[0].type, "basic");
 });
 
-Deno.test("app: declares both a service and a quota health check", () => {
+test("app: declares both a service and a quota health check", () => {
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["quota", "service"]);
 });
 
-Deno.test("app: every health check either probes or explains its absence", () => {
+test("app: every health check either probes or explains its absence", () => {
   for (const check of app.healthChecks ?? []) {
     const hasProbe = typeof check.check === "function";
     assert(
@@ -56,7 +57,7 @@ Deno.test("app: every health check either probes or explains its absence", () =>
   }
 });
 
-Deno.test("app: every perform action declares idempotent — it drives retry and dedupe", () => {
+test("app: every perform action declares idempotent — it drives retry and dedupe", () => {
   for (const action of app.actions) {
     if (action.type !== "perform") continue;
     assertEquals(
@@ -67,7 +68,7 @@ Deno.test("app: every perform action declares idempotent — it drives retry and
   }
 });
 
-Deno.test("app: no send action is marked idempotent — a retry would deliver twice", () => {
+test("app: no send action is marked idempotent — a retry would deliver twice", () => {
   for (const action of app.actions) {
     if (!action.key.startsWith("send-")) continue;
     assertEquals(action.idempotent, false, `${action.key} must not be retry-safe`);

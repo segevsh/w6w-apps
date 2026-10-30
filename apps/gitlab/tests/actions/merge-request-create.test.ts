@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/merge-request-create.ts";
 
-Deno.test("merge-request-create: POSTs /projects/{id}/merge_requests", async () => {
+test("merge-request-create: POSTs /projects/{id}/merge_requests", async () => {
   const { ctx, calls } = mockCtx([{ body: { iid: 1 } }]);
   await action.execute(
     { projectId: "group/project", sourceBranch: "feat", targetBranch: "main", title: "Feature" },
@@ -17,11 +18,11 @@ Deno.test("merge-request-create: POSTs /projects/{id}/merge_requests", async () 
   });
 });
 
-Deno.test("merge-request-create: is not idempotent", () => {
+test("merge-request-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("merge-request-create: sends labels as a CSV string, id lists as numbers", async () => {
+test("merge-request-create: sends labels as a CSV string, id lists as numbers", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     {
@@ -45,7 +46,7 @@ Deno.test("merge-request-create: sends labels as a CSV string, id lists as numbe
   assertEquals(body.squash, true);
 });
 
-Deno.test("merge-request-create: omits the new optional fields when unset", async () => {
+test("merge-request-create: omits the new optional fields when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { projectId: "1", sourceBranch: "feat", targetBranch: "main", title: "Feature" },

@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.kit.com/api-reference/overview"
     ],
-    "longDescription": "Kit (formerly ConvertKit) brings a creator's email list into a workflow: adding and updating the people on it, applying tags for segmentation, feeding them into signup forms and automated sequences, sending one-off broadcasts, and tracking whatever custom data points a creator keeps on each subscriber, on Kit's current v4 API. Subscriber actions create, read, list and update people on a list, while tag actions create tags and apply or remove them from a subscriber.\n\nForm and sequence actions add an existing subscriber into a signup form's funnel or an automated email sequence \u2014 though Kit requires the subscriber to already exist, so creating one comes first in any workflow that needs both. Broadcast actions list, read and create the one-off emails sent to a list, and custom field actions manage the extra data points a creator tracks about each subscriber.",
+    "longDescription": "Kit (formerly ConvertKit) brings a creator's email list into a workflow: adding and updating the people on it, applying tags for segmentation, feeding them into signup forms and automated sequences, sending one-off broadcasts, and tracking whatever custom data points a creator keeps on each subscriber, on Kit's current v4 API. Subscriber actions create, read, list and update people on a list, while tag actions create tags and apply or remove them from a subscriber.\n\nForm and sequence actions add an existing subscriber into a signup form's funnel or an automated email sequence — though Kit requires the subscriber to already exist, so creating one comes first in any workflow that needs both. Broadcast actions list, read and create the one-off emails sent to a list, and custom field actions manage the extra data points a creator tracks about each subscriber.",
     "categories": [
       "marketing",
       "email"
@@ -34,5 +34,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
   }
 }

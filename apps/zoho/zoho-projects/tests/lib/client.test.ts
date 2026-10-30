@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import {
   apiHostFromConnection,
   compact,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("client: host comes from the connection, defaulting to the US host", () => {
+test("client: host comes from the connection, defaulting to the US host", () => {
   assertEquals(apiHostFromConnection(undefined), "projects.zoho.com");
   assertEquals(
     new ProjectsClient(mockProjectsCtx([], "projects.zoho.in").ctx).host,
@@ -18,7 +19,7 @@ Deno.test("client: host comes from the connection, defaulting to the US host", (
   assertEquals(new ProjectsClient(mockCtx([]).ctx).host, "projects.zoho.com");
 });
 
-Deno.test("client: compact drops unset keys but keeps false and 0", () => {
+test("client: compact drops unset keys but keeps false and 0", () => {
   assertEquals(compact({ a: "x", b: undefined, c: "", d: false, e: 0, f: null }), {
     a: "x",
     d: false,
@@ -26,7 +27,7 @@ Deno.test("client: compact drops unset keys but keeps false and 0", () => {
   });
 });
 
-Deno.test("client: listResult handles envelope, bare array, array page_info and fallback key", () => {
+test("client: listResult handles envelope, bare array, array page_info and fallback key", () => {
   const r = listResult(
     { page_info: { page: 2, per_page: 5, has_next_page: true }, tasks: [1, 2] },
     "tasks",
@@ -41,7 +42,7 @@ Deno.test("client: listResult handles envelope, bare array, array page_info and 
   assertEquals(listResult(null, "x").items, []);
 });
 
-Deno.test("client: errors are parsed from the body, tolerating non-JSON", () => {
+test("client: errors are parsed from the body, tolerating non-JSON", () => {
   const body = JSON.stringify({
     error: {
       status_code: "401",
@@ -64,7 +65,7 @@ Deno.test("client: errors are parsed from the body, tolerating non-JSON", () => 
   assertEquals(long.includes("700 bytes"), true);
 });
 
-Deno.test("client: request builds the versioned URL, sends JSON and never sets authorization", async () => {
+test("client: request builds the versioned URL, sends JSON and never sets authorization", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: {} }, { body: {} }]);
   const client = new ProjectsClient(ctx);
   await client.request("POST", "/portal/1/x", {
@@ -80,7 +81,7 @@ Deno.test("client: request builds the versioned URL, sends JSON and never sets a
   assertEquals(calls[1].headers["content-type"], undefined);
 });
 
-Deno.test("client: an empty 2xx body is {}, an error status throws the vendor code, non-JSON 200 throws", async () => {
+test("client: an empty 2xx body is {}, an error status throws the vendor code, non-JSON 200 throws", async () => {
   const { ctx } = mockProjectsCtx([
     { status: 204 },
     { status: 404, body: { error: { title: "RESOURCE_NOT_FOUND" } } },

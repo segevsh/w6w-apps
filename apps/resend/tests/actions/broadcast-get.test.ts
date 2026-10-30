@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/broadcast-get.ts";
 
-Deno.test("broadcast-get: fetches one broadcast", async () => {
+test("broadcast-get: fetches one broadcast", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "b_1", status: "sent" } }], {
     display: {},
   });
@@ -11,7 +12,7 @@ Deno.test("broadcast-get: fetches one broadcast", async () => {
   assertEquals((result as Record<string, unknown>).status, "sent");
 });
 
-Deno.test("broadcast-get: a blank id fails before any request", async () => {
+test("broadcast-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`broadcastId`");
   assertEquals(calls.length, 0);

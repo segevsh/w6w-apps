@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import highlightsCreate from "../../actions/highlights-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlights-create: posts text/position to the bookmark-scoped highlight path", async () => {
+test("highlights-create: posts text/position to the bookmark-scoped highlight path", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{
       type: "highlight",
@@ -25,7 +26,7 @@ Deno.test("highlights-create: posts text/position to the bookmark-scoped highlig
   assertEquals(result.highlight_id, 7);
 });
 
-Deno.test("highlights-create: throws if Instapaper returns no highlight", async () => {
+test("highlights-create: throws if Instapaper returns no highlight", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
   await assertRejects(
     async () => await highlightsCreate.execute({ bookmarkId: 42, text: "hi" }, ctx),
@@ -34,6 +35,6 @@ Deno.test("highlights-create: throws if Instapaper returns no highlight", async 
   );
 });
 
-Deno.test("highlights-create: is not marked idempotent — it always creates a new highlight", () => {
+test("highlights-create: is not marked idempotent — it always creates a new highlight", () => {
   assertEquals(highlightsCreate.idempotent, false);
 });

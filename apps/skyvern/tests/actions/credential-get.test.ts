@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import credentialGet from "../../actions/credential-get.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("credential-get: GETs /v1/credentials/{id} and returns the vendor body unchanged", async () => {
+test("credential-get: GETs /v1/credentials/{id} and returns the vendor body unchanged", async () => {
   const c = {
     credential_id: "cred_1",
     name: "Gmail",

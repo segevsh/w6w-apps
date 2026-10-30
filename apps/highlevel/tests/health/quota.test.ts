@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reads the X-RateLimit-* headers off a GET /locations/:locationId probe", async () => {
+test("quota: reads the X-RateLimit-* headers off a GET /locations/:locationId probe", async () => {
   const { ctx, calls } = mockHighLevelCtx([{
     body: { location: { id: "loc-1" } },
     headers: {
@@ -21,7 +22,7 @@ Deno.test("quota: reads the X-RateLimit-* headers off a GET /locations/:location
   ]);
 });
 
-Deno.test("quota: a near-exhausted bucket degrades the worst-of verdict", async () => {
+test("quota: a near-exhausted bucket degrades the worst-of verdict", async () => {
   const { ctx } = mockHighLevelCtx([{
     body: {},
     headers: {
@@ -34,12 +35,12 @@ Deno.test("quota: a near-exhausted bucket degrades the worst-of verdict", async 
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: no rate-limit headers at all reports unknown", async () => {
+test("quota: no rate-limit headers at all reports unknown", async () => {
   const { ctx } = mockHighLevelCtx([{ body: {}, headers: {} }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: an error response reports unknown", async () => {
+test("quota: an error response reports unknown", async () => {
   const { ctx } = mockHighLevelCtx([{ status: 500, body: {} }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });

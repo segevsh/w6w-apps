@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/slide-create.ts";
 
-Deno.test("slide-create: bare call appends a slide with no layout reference", async () => {
+test("slide-create: bare call appends a slide with no layout reference", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ createSlide: { objectId: "g9" } }] } }]);
   await action.execute({ presentationId: "p1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("slide-create: bare call appends a slide with no layout reference", as
   assertEquals(JSON.parse(calls[0].body!), { requests: [{ createSlide: {} }] });
 });
 
-Deno.test("slide-create: emits predefinedLayout and the insertion index", async () => {
+test("slide-create: emits predefinedLayout and the insertion index", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { presentationId: "p1", predefinedLayout: "TITLE_AND_BODY", insertionIndex: 2 },
@@ -22,7 +23,7 @@ Deno.test("slide-create: emits predefinedLayout and the insertion index", async 
   });
 });
 
-Deno.test("slide-create: layoutId wins and only one union arm is ever sent", async () => {
+test("slide-create: layoutId wins and only one union arm is ever sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { presentationId: "p1", predefinedLayout: "BLANK", layoutId: "layout-7" },
@@ -34,7 +35,7 @@ Deno.test("slide-create: layoutId wins and only one union arm is ever sent", asy
   );
 });
 
-Deno.test("slide-create: placeholder mappings nest under layoutPlaceholder", async () => {
+test("slide-create: placeholder mappings nest under layoutPlaceholder", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -51,7 +52,7 @@ Deno.test("slide-create: placeholder mappings nest under layoutPlaceholder", asy
   ]);
 });
 
-Deno.test("slide-create: placeholder index defaults to 0 when omitted", async () => {
+test("slide-create: placeholder index defaults to 0 when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -64,7 +65,7 @@ Deno.test("slide-create: placeholder index defaults to 0 when omitted", async ()
   );
 });
 
-Deno.test("slide-create: placeholder mappings without a layout are rejected locally", () => {
+test("slide-create: placeholder mappings without a layout are rejected locally", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () =>
@@ -78,7 +79,7 @@ Deno.test("slide-create: placeholder mappings without a layout are rejected loca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("slide-create: forwards the revision guard", async () => {
+test("slide-create: forwards the revision guard", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ presentationId: "p1", requiredRevisionId: "r3" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).writeControl, { requiredRevisionId: "r3" });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/note-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-create: POSTs JSON to /notes", async () => {
+test("note-create: POSTs JSON to /notes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { description: "Call back" } }]);
   await action.execute({
     description: "Call back",
@@ -20,7 +21,7 @@ Deno.test("note-create: POSTs JSON to /notes", async () => {
   });
 });
 
-Deno.test("note-create: validates required fields before any request", async () => {
+test("note-create: validates required fields before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const base = { description: "x", relatedTo: "1", relatedToType: "job" };
   await assertRejects(

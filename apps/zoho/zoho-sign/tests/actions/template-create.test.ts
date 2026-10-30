@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/template-create.ts";
 
-Deno.test("template-create: multipart POST to /templates with a data part and a file part", async () => {
+test("template-create: multipart POST to /templates with a data part and a file part", async () => {
   const { ctx, calls } = mockSignCtx(
     [
       {

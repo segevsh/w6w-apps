@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, run } from "../_helpers.ts";
 import searchDeals from "../../actions/search-deals.ts";
 import { DEAL_STATUSES } from "../../lib/client.ts";
 
-Deno.test("search-deals: GETs /deals with the documented filters", async () => {
+test("search-deals: GETs /deals with the documented filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "deals", totalByStageId: { "5": 1 } }, deals: [{ id: 2146 }] },
@@ -32,7 +33,7 @@ Deno.test("search-deals: GETs /deals with the documented filters", async () => {
  * The docs specify the integer `1` for these two, not a boolean. Exposed as
  * booleans for a sane form, converted on the way out.
  */
-Deno.test("search-deals: converts the include flags to the documented integer 1", async () => {
+test("search-deals: converts the include flags to the documented integer 1", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { deals: [] } }]);
   await searchDeals.execute({ includeDeleted: true, includeArchived: true }, ctx);
   const url = new URL(calls[0].url);
@@ -40,12 +41,12 @@ Deno.test("search-deals: converts the include flags to the documented integer 1"
   assertEquals(url.searchParams.get("includeArchived"), "1");
 });
 
-Deno.test("search-deals: omits the include flags entirely when false", async () => {
+test("search-deals: omits the include flags entirely when false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { deals: [] } }]);
   await searchDeals.execute({ includeDeleted: false }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("includeDeleted"));
 });
 
-Deno.test("search-deals: offers exactly the three documented statuses", () => {
+test("search-deals: offers exactly the three documented statuses", () => {
   assertEquals(optionValues(searchDeals, "status"), [...DEAL_STATUSES]);
 });

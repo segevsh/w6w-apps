@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("comment-create: POSTs /comments with the mapped body", async () => {
+test("comment-create: POSTs /comments with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await commentCreate.execute({
     "description": "Renewal conversation started.",
@@ -24,7 +25,7 @@ Deno.test("comment-create: POSTs /comments with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("comment-create: the free-form fields object is merged and typed params win", async () => {
+test("comment-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await commentCreate.execute(
     {
@@ -38,7 +39,7 @@ Deno.test("comment-create: the free-form fields object is merged and typed param
   assertEquals(sent["description"], "Renewal conversation started.");
 });
 
-Deno.test("comment-create: fields may be a JSON string", async () => {
+test("comment-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await commentCreate.execute(
     { "description": "Renewal conversation started.", "fields": '{"extraKey":1}' } as never,
@@ -47,7 +48,7 @@ Deno.test("comment-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("comment-create: invalid fields JSON is refused before any request", async () => {
+test("comment-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await commentCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -57,12 +58,12 @@ Deno.test("comment-create: invalid fields JSON is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("comment-create: required params are declared", () => {
+test("comment-create: required params are declared", () => {
   const required = (commentCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["description"]);
 });
 
-Deno.test("comment-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("comment-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -81,7 +82,7 @@ Deno.test("comment-create: a rejected key surfaces Upsales' plain-text Unauthori
   );
 });
 
-Deno.test("comment-create: a JSON error envelope surfaces the vendor key", async () => {
+test("comment-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

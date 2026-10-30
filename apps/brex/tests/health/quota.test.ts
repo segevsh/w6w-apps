@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -7,7 +8,7 @@ import quota from "../../health/quota.ts";
  * So this check is a declared ABSENCE, and the assertions below are about that
  * declaration being a usable one rather than a silent gap.
  */
-Deno.test("quota: declared absent, with no hook to run", () => {
+test("quota: declared absent, with no hook to run", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
@@ -19,11 +20,11 @@ Deno.test("quota: declared absent, with no hook to run", () => {
  * outranks `ok` in the roll-up, so at any other severity this declaration would
  * pin the App's verdict at `unknown` forever.
  */
-Deno.test("quota: the declared absence is informational", () => {
+test("quota: the declared absence is informational", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: the reason names the evidence, not just the conclusion", () => {
+test("quota: the reason names the evidence, not just the conclusion", () => {
   const reason = quota.unavailable?.reason ?? "";
   // The ceilings Brex does document.
   assert(/1,000 requests per 60 seconds/.test(reason), reason);
@@ -36,7 +37,7 @@ Deno.test("quota: the reason names the evidence, not just the conclusion", () =>
   assert(/api\.brex\.com/.test(reason), reason);
 });
 
-Deno.test("quota: the check claims no egress and no credential", () => {
+test("quota: the check claims no egress and no credential", () => {
   assertEquals(quota.network, undefined);
   assertEquals(quota.credential, undefined);
 });

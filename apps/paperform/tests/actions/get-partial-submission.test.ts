@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getPartialSubmission from "../../actions/get-partial-submission.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-partial-submission: GETs /v1/partial-submissions/{id}, reads the hyphenated key", async () => {
+test("get-partial-submission: GETs /v1/partial-submissions/{id}, reads the hyphenated key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ "partial-submission": { id: "ps1" } }),

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-send: builds a text message", async () => {
+test("message-send: builds a text message", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   const out = await messageSend.execute(
     { identifier: "id:1", messageType: "text", text: "Hello!" },
@@ -14,7 +15,7 @@ Deno.test("message-send: builds a text message", async () => {
   assertEquals(out.messageId, 1);
 });
 
-Deno.test("message-send: a text message carries an optional Facebook message tag", async () => {
+test("message-send: a text message carries an optional Facebook message tag", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     { identifier: "id:1", messageType: "text", text: "Hi", messageTag: "ACCOUNT_UPDATE" },
@@ -27,7 +28,7 @@ Deno.test("message-send: a text message carries an optional Facebook message tag
   });
 });
 
-Deno.test("message-send: builds an attachment message", async () => {
+test("message-send: builds an attachment message", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     {
@@ -44,7 +45,7 @@ Deno.test("message-send: builds an attachment message", async () => {
   });
 });
 
-Deno.test("message-send: an attachment without a URL is refused before any request", async () => {
+test("message-send: an attachment without a URL is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -58,7 +59,7 @@ Deno.test("message-send: an attachment without a URL is refused before any reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-send: builds an email message with cc/bcc arrays", async () => {
+test("message-send: builds an email message with cc/bcc arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     {
@@ -80,7 +81,7 @@ Deno.test("message-send: builds an email message with cc/bcc arrays", async () =
   });
 });
 
-Deno.test("message-send: builds a quick_reply message", async () => {
+test("message-send: builds a quick_reply message", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     {
@@ -98,7 +99,7 @@ Deno.test("message-send: builds a quick_reply message", async () => {
   });
 });
 
-Deno.test("message-send: builds a custom_payload message from a JSON string", async () => {
+test("message-send: builds a custom_payload message from a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     { identifier: "id:1", messageType: "custom_payload", customPayload: '{"foo":"bar"}' },
@@ -110,7 +111,7 @@ Deno.test("message-send: builds a custom_payload message from a JSON string", as
   });
 });
 
-Deno.test("message-send: an invalid JSON payload is refused before any request", async () => {
+test("message-send: an invalid JSON payload is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -124,7 +125,7 @@ Deno.test("message-send: an invalid JSON payload is refused before any request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-send: builds a whatsapp_template message and passes channelId through", async () => {
+test("message-send: builds a whatsapp_template message and passes channelId through", async () => {
   const { ctx, calls } = mockCtx([{ body: { messageId: 1 } }]);
   await messageSend.execute(
     {
@@ -147,6 +148,6 @@ Deno.test("message-send: builds a whatsapp_template message and passes channelId
   ]);
 });
 
-Deno.test("message-send: is never idempotent", () => {
+test("message-send: is never idempotent", () => {
   assertEquals(messageSend.idempotent, false);
 });

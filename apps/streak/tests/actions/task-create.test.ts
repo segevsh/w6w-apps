@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * caller: the input only takes `boxKey` once, and this test pins that the
  * duplication still reaches the wire the way Streak requires.
  */
-Deno.test("task-create: sends boxKey both in the path and as the body's 'key'", async () => {
+test("task-create: sends boxKey both in the path and as the body's 'key'", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "task1", boxKey: "b1", text: "Do it" } }]);
   await taskCreate.execute({ boxKey: "b1", text: "Do it" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -18,7 +19,7 @@ Deno.test("task-create: sends boxKey both in the path and as the body's 'key'", 
   assertEquals(body.text, "Do it");
 });
 
-Deno.test("task-create: assignedToEmails becomes an array of {email} objects", async () => {
+test("task-create: assignedToEmails becomes an array of {email} objects", async () => {
   const { ctx, calls } = mockCtx([{ body: { key: "task1" } }]);
   await taskCreate.execute(
     { boxKey: "b1", text: "Do it", assignedToEmails: ["a@x.com"] },

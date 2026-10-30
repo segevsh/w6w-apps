@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/transcript-delete.ts";
 
-Deno.test("transcript-delete: returns the deleted record, which is the last copy of it", async () => {
+test("transcript-delete: returns the deleted record, which is the last copy of it", async () => {
   const { ctx, calls, logs } = mockCtx([{
     body: { data: { deleteTranscript: { id: "t1", title: "Weekly sync" } } },
   }]);
@@ -15,6 +16,6 @@ Deno.test("transcript-delete: returns the deleted record, which is the last copy
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("transcript-delete: is not idempotent — a second call is object_not_found", () => {
+test("transcript-delete: is not idempotent — a second call is object_not_found", () => {
   assertEquals(action.idempotent, false);
 });

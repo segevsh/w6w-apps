@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { field } from "../../health/service.ts";
 
 const entry = (title: string, summary: string, id = title) => ({
@@ -16,19 +17,19 @@ const run = (
   f: ReturnType<typeof feed> | { error: string; entries: []; latest: []; fetchedAt: string },
 ) => service.check!({ feed: f } as never, {} as never);
 
-Deno.test("service: reads the status.seven.io Atom feed with no hook-side fetch", () => {
+test("service: reads the status.seven.io Atom feed with no hook-side fetch", () => {
   assertEquals(service.feed?.url, "https://status.seven.io/history.atom");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: only resolved incidents is ok", async () => {
+test("service: only resolved incidents is ok", async () => {
   const r = await run(
     feed(entry("Short disruption", "Status: resolved\nImpact: critical\nAffected: HTTP Api")),
   );
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: an open incident on a reachable component is degraded, never down", async () => {
+test("service: an open incident on a reachable component is degraded, never down", async () => {
   const r = await run(
     feed(
       entry(
@@ -41,14 +42,14 @@ Deno.test("service: an open incident on a reachable component is degraded, never
   assertEquals(r.message, "SMS delays");
 });
 
-Deno.test("service: an open incident on Webapp / SMPP only does not drive the verdict", async () => {
+test("service: an open incident on Webapp / SMPP only does not drive the verdict", async () => {
   const r = await run(
     feed(entry("Webapp slow", "Status: identified\nImpact: major\nAffected: Webapp, SMPP Server")),
   );
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: open Impact: none (announced work) is ok; an entry with no Affected line counts", async () => {
+test("service: open Impact: none (announced work) is ok; an entry with no Affected line counts", async () => {
   assertEquals(
     (await run(feed(entry("Maintenance", "Status: monitoring\nImpact: none\nAffected: Voice"))))
       .state,
@@ -60,12 +61,12 @@ Deno.test("service: open Impact: none (announced work) is ok; an entry with no A
   );
 });
 
-Deno.test("service: a feed error is unknown, never down", async () => {
+test("service: a feed error is unknown, never down", async () => {
   const r = await run({ error: "fetch failed", entries: [], latest: [], fetchedAt: "x" });
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("service: field() reads a labelled line case-insensitively", () => {
+test("service: field() reads a labelled line case-insensitively", () => {
   assertEquals(field("Status: Resolved\nImpact: minor", "status"), "Resolved");
   assertEquals(field("no labels here", "status"), undefined);
 });

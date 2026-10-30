@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/state-get.ts";
@@ -10,7 +11,7 @@ const sensor = ok({
   last_changed: "2026-08-18T10:00:00+00:00",
 });
 
-Deno.test("state-get: reads one entity and lifts the useful attributes out", async () => {
+test("state-get: reads one entity and lifts the useful attributes out", async () => {
   const { ctx, calls } = mockCtx([sensor], { display });
   const result = await action.execute!({ entityId: "sensor.living_room_temperature" }, ctx) as {
     numericState: number;
@@ -30,7 +31,7 @@ Deno.test("state-get: reads one entity and lifts the useful attributes out", asy
  * `unavailable` arrives as an ordinary string in a 200 and parses to NaN — the
  * failure that makes a threshold comparison silently false.
  */
-Deno.test("state-get: unavailable and unknown are flagged and never become numbers", async () => {
+test("state-get: unavailable and unknown are flagged and never become numbers", async () => {
   for (const state of ["unavailable", "unknown"]) {
     const { ctx } = mockCtx([ok({ entity_id: "sensor.x", state })], { display });
     const result = await action.execute!({ entityId: "sensor.x" }, ctx) as {
@@ -45,7 +46,7 @@ Deno.test("state-get: unavailable and unknown are flagged and never become numbe
 });
 
 /** "on" must not become 0. */
-Deno.test("state-get: a non-numeric state stays undefined rather than becoming zero", async () => {
+test("state-get: a non-numeric state stays undefined rather than becoming zero", async () => {
   const { ctx } = mockCtx([ok({ entity_id: "light.kitchen", state: "on" })], { display });
   const result = await action.execute!({ entityId: "light.kitchen" }, ctx) as {
     usable: boolean;
@@ -55,7 +56,7 @@ Deno.test("state-get: a non-numeric state stays undefined rather than becoming z
   assertEquals(result.numericState, undefined);
 });
 
-Deno.test("state-get: zero is a real reading, not an absent one", async () => {
+test("state-get: zero is a real reading, not an absent one", async () => {
   const { ctx } = mockCtx([ok({ entity_id: "sensor.rain", state: "0" })], { display });
   const result = await action.execute!({ entityId: "sensor.rain" }, ctx) as {
     numericState: number;
@@ -64,7 +65,7 @@ Deno.test("state-get: zero is a real reading, not an absent one", async () => {
 });
 
 /** The mistake is passing the friendly name. */
-Deno.test("state-get: a friendly name is refused before the request", async () => {
+test("state-get: a friendly name is refused before the request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Living Room Temperature" }, ctx),
@@ -74,11 +75,11 @@ Deno.test("state-get: a friendly name is refused before the request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("state-get: needs an entity", async () => {
+test("state-get: needs an entity", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`entityId` is required");
 });
 
-Deno.test("state-get: says the state is always a string", () => {
+test("state-get: says the state is always a string", () => {
   assert(/ALWAYS a string/.test(action.description!), action.description);
 });

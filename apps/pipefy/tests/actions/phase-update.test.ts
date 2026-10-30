@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import phaseUpdate from "../../actions/phase-update.ts";
 
-Deno.test("phase-update: updates and returns the phase, color as a bare enum", async () => {
+test("phase-update: updates and returns the phase, color as a bare enum", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { updatePhase: { phase: { id: "1", name: "Phase", color: "lime" } } } },
   }]);
@@ -15,7 +16,7 @@ Deno.test("phase-update: updates and returns the phase, color as a bare enum", a
   assert(!q.includes('color: "lime"'));
 });
 
-Deno.test("phase-update: type/resource/idempotency metadata", () => {
+test("phase-update: type/resource/idempotency metadata", () => {
   assertEquals(phaseUpdate.type, "perform");
   assertEquals(phaseUpdate.resource, "phase");
   assertEquals(phaseUpdate.idempotent, true);

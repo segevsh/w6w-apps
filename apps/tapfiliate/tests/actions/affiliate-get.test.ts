@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateGet from "../../actions/affiliate-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("affiliate-get: fetches by affiliate id", async () => {
+test("affiliate-get: fetches by affiliate id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "janejameson", firstname: "Jane" } }]);
   const out = await affiliateGet.execute({ affiliateId: "janejameson" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/catalog-size-guide-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("catalog-size-guide-get: GET /products/71/sizes and unwraps the envelope", async () => {
+test("catalog-size-guide-get: GET /products/71/sizes and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "code": 200,
@@ -16,7 +17,7 @@ Deno.test("catalog-size-guide-get: GET /products/71/sizes and unwraps the envelo
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("catalog-size-guide-get: a Printful error is surfaced with its reason and message", async () => {
+test("catalog-size-guide-get: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

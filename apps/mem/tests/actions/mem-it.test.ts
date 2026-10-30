@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import memIt from "../../actions/mem-it.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "input": "Call Sam Friday", "instructions": "file under people" };
 const RESPONSE = { "request_id": "r9" };
 
-Deno.test("mem-it: POST /v2/mem-it", async () => {
+test("mem-it: POST /v2/mem-it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await memIt.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -22,13 +23,13 @@ Deno.test("mem-it: POST /v2/mem-it", async () => {
   assertEquals(out.requestId, "r9");
 });
 
-Deno.test("mem-it: puts no credential on the request (sign owns that)", async () => {
+test("mem-it: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await memIt.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("mem-it: a vendor error surfaces its own message", async () => {
+test("mem-it: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

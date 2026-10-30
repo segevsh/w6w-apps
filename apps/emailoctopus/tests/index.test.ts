@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 25, "one action per v2 OpenAPI operation");
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 3);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description, output and an execute hook", () => {
+test("index: every action declares a valid type, a description, output and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,7 +30,7 @@ Deno.test("index: every action declares a valid type, a description, output and 
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   const count = (t: string) => app.actions.filter((a) => a.type === t).length;
   // 5 reads + 5 searches + 15 performs = the 25 operations the v2 spec publishes.
   assertEquals([count("read"), count("search"), count("perform")], [5, 5, 15]);
@@ -37,7 +39,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
   }
 });
 
-Deno.test("index: the three create endpoints that conflict on repeat are not idempotent", () => {
+test("index: the three create endpoints that conflict on repeat are not idempotent", () => {
   const byKey = new Map(app.actions.map((a) => [a.key, a]));
   // POST /lists has no uniqueness constraint; POST contacts/tags 409 on repeat;
   // start-automation depends on a per-automation "allow repeat" setting.
@@ -48,7 +50,7 @@ Deno.test("index: the three create endpoints that conflict on repeat are not ide
   assertEquals(byKey.get("upsert-contact")?.idempotent, true);
 });
 
-Deno.test("index: every action declares a resource for editor grouping", () => {
+test("index: every action declares a resource for editor grouping", () => {
   const resources = new Set(app.actions.map((a) => a.resource));
   for (const a of app.actions) assert(a.resource, `${a.key}: no resource`);
   assertEquals(
@@ -57,7 +59,7 @@ Deno.test("index: every action declares a resource for editor grouping", () => {
   );
 });
 
-Deno.test("index: every required param carries a label", () => {
+test("index: every required param carries a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.label === "string" && p.label.length > 0, `${a.key}/${p.key}: no label`);
@@ -65,18 +67,18 @@ Deno.test("index: every required param carries a label", () => {
   }
 });
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
     assert(!/authorization/i.test(src), `${a.key}: sets the auth header itself`);
     assert(!/\bapi[_-]?key\b/i.test(src), `${a.key}: mentions an api key`);
   }
 });
 
-Deno.test("index: no action or lib module calls the global fetch", async () => {
+test("index: no action or lib module calls the global fetch", async () => {
   for (const rel of [...app.actions.map((a) => `../actions/${a.key}.ts`), "../lib/client.ts"]) {
-    const src = await Deno.readTextFile(new URL(rel, import.meta.url));
+    const src = await denoReadTextFile(new URL(rel, import.meta.url));
     for (const [i, line] of src.split("\n").entries()) {
       const code = line.replace(/\/\/.*$/, "").replace(/^\s*\*.*$/, "");
       if (!/fetch\s*\(/.test(code)) continue;
@@ -85,7 +87,7 @@ Deno.test("index: no action or lib module calls the global fetch", async () => {
   }
 });
 
-Deno.test("index: every health check is either a live probe or a declared absence", () => {
+test("index: every health check is either a live probe or a declared absence", () => {
   for (const c of app.healthChecks) {
     const live = typeof c.check === "function";
     const declared = c.unavailable !== undefined;
@@ -96,7 +98,7 @@ Deno.test("index: every health check is either a live probe or a declared absenc
   }
 });
 
-Deno.test("index: only unsigned health checks widen the egress allowlist", () => {
+test("index: only unsigned health checks widen the egress allowlist", () => {
   for (const c of app.healthChecks) {
     if (!c.network?.allow?.length) continue;
     assert(

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -8,7 +9,7 @@ import quota from "../../health/quota.ts";
  * `Retry-After`. The RFC makes `unavailable` a first-class answer for exactly
  * this, and a better one than a silent gap or an invented always-`ok` check.
  */
-Deno.test("quota: declares an absence rather than inventing a probe", () => {
+test("quota: declares an absence rather than inventing a probe", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.covers, ["*"]);
   assertEquals(quota.check, undefined, "an unavailable entry must have no hook");
@@ -19,14 +20,14 @@ Deno.test("quota: declares an absence rather than inventing a probe", () => {
   );
 });
 
-Deno.test("quota: is informational, or its permanent unknown would pin the verdict", () => {
+test("quota: is informational, or its permanent unknown would pin the verdict", () => {
   // The RFC calls this out directly: an `unavailable` entry reports a permanent
   // `unknown`, and at any higher severity that would fix the App's roll-up
   // there forever.
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: declares no egress, because it makes no request", () => {
+test("quota: declares no egress, because it makes no request", () => {
   assertEquals(quota.network, undefined);
   assertEquals(quota.feed, undefined, "feed and unavailable are mutually exclusive");
 });

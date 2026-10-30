@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-cancel.ts";
 
-Deno.test("booking-cancel: POSTs /bookings/{id}/cancel with the body fields", async () => {
+test("booking-cancel: POSTs /bookings/{id}/cancel with the body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "BKNG-1" } }]);
   await action.execute(
     { id: "BKNG-1", cancellationReason: "conflict", sendCancellationEmail: false },

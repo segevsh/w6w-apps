@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/file-download.ts";
 
-Deno.test("file-download: GETs .../<record>/<field>/download and base64-encodes binary content", async () => {
+test("file-download: GETs .../<record>/<field>/download and base64-encodes binary content", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { status: 200, headers: { "content-type": "image/png" }, body: "\x89PNG\r\n" },
   ]);
@@ -26,7 +27,7 @@ Deno.test("file-download: GETs .../<record>/<field>/download and base64-encodes 
   assertEquals(out.contentType, "image/png");
 });
 
-Deno.test("file-download: returns text content as-is, base64 false", async () => {
+test("file-download: returns text content as-is, base64 false", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 200, headers: { "content-type": "text/plain" }, body: "hello" },
   ]);

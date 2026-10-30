@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import partList from "../../actions/part-list.ts";
 import { mockCtx, pathOf, queryAll } from "../_helpers.ts";
 
-Deno.test("part-list: GET /v1/parts with partNumber as repeated keys", async () => {
+test("part-list: GET /v1/parts with partNumber as repeated keys", async () => {
   const { ctx, calls } = mockCtx([{
     body: { parts: [{ id: 1, name: "Belt" }], nextCursor: null },
   }]);

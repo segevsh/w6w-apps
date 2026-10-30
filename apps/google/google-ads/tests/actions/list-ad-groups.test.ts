@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { bodyOf, mockAdsCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/list-ad-groups.ts";
 
 const OK = { status: 200, body: { results: [] } };
 
-Deno.test("list-ad-groups: queries FROM ad_group with the parent campaign named", async () => {
+test("list-ad-groups: queries FROM ad_group with the parent campaign named", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -14,7 +15,7 @@ Deno.test("list-ad-groups: queries FROM ad_group with the parent campaign named"
   assert(q.includes("campaign.name"));
 });
 
-Deno.test("list-ad-groups: narrows by campaign via campaign.id, not ad_group.campaign", async () => {
+test("list-ad-groups: narrows by campaign via campaign.id, not ad_group.campaign", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ campaignId: "42" }, ctx);
   // `ad_group.campaign` holds a resource name, so the id predicate belongs on
@@ -22,18 +23,18 @@ Deno.test("list-ad-groups: narrows by campaign via campaign.id, not ad_group.cam
   assert(queryOf(calls[0]).includes("WHERE campaign.id = 42"));
 });
 
-Deno.test("list-ad-groups: combines campaign and status filters", async () => {
+test("list-ad-groups: combines campaign and status filters", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ campaignId: "42", status: "enabled" }, ctx);
   assert(queryOf(calls[0]).includes("WHERE campaign.id = 42 AND ad_group.status = ENABLED"));
 });
 
-Deno.test("list-ad-groups: refuses a non-numeric campaign id", () => {
+test("list-ad-groups: refuses a non-numeric campaign id", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(() => action.execute({ campaignId: "x" }, ctx), Error, "numeric ID");
 });
 
-Deno.test("list-ad-groups: honours limit and pageToken", async () => {
+test("list-ad-groups: honours limit and pageToken", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ limit: 10, pageToken: "tok" }, ctx);
   assert(queryOf(calls[0]).endsWith("LIMIT 10"));

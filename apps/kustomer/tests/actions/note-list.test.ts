@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
 import action from "../../actions/note-list.ts";
 
-Deno.test("note-list: GETs /conversations/{id}/notes with pagination", async () => {
+test("note-list: GETs /conversations/{id}/notes with pagination", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: [], meta: { page: 1 } } }]);
   const out = await action.execute({ conversationId: "c1", page: 1, pageSize: 10 }, ctx);
   assertEquals(
