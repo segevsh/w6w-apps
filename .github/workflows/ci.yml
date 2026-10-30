@@ -19,6 +19,20 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # apps/postgres's golden-path runtime test logs in to a real PostgreSQL 16 server (the
+    # devcontainer's `postgres` service locally); this is that server for CI.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -43,4 +57,5 @@ jobs:
         working-directory: w6w-apps
         env:
           VERIFY_BASE: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+          W6W_TEST_PG_HOST: 127.0.0.1
         run: bash scripts/verify.sh
