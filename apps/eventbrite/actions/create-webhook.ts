@@ -33,8 +33,10 @@ const createWebhook: ActionDefinition<Input> = {
       key: "actions",
       label: "Actions",
       type: "multiselect",
+      ui: "checkboxes",
       options: WEBHOOK_ACTIONS.map((a) => ({ value: a, label: a })),
-      hint: "Actions that trigger the webhook. Leave empty to use Eventbrite's default.",
+      hint:
+        "Select one or more actions, or Select all. If empty, the actions parameter is omitted.",
     },
     {
       key: "eventId",

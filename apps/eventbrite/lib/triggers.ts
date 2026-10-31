@@ -97,6 +97,7 @@ const ACTIONS_PARAM: Param = {
   key: "actions",
   label: "Actions",
   type: "multiselect",
+  ui: "checkboxes",
   required: true,
   options: WEBHOOK_ACTIONS.map((a) => ({ value: a, label: a })),
   hint: "The Eventbrite actions that start the workflow.",
