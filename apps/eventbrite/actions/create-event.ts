@@ -3,6 +3,7 @@ import type { Param } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
+import { EVENT_OUTPUT } from "../lib/outputs.ts";
 
 export interface EventFields {
   name?: string;
@@ -167,41 +168,8 @@ export function buildEventBody(input: EventFields): Record<string, unknown> {
   return input.extra ? deepMerge(e, input.extra) : e;
 }
 
-// Eventbrite's Event object, returned unwrapped (no `event` envelope). Its
-// multipart-text (`name`, `description`) and datetime-tz (`start`, `end`)
-// fields are objects, so their leaves are declared as dot paths too — the
-// workflow editor offers each one, e.g. `{{ steps.<id>.output.name.text }}`.
-export const EVENT_OUTPUT = [
-  { key: "id", type: "string", label: "Event ID" },
-  { key: "name", type: "object", label: "Name" },
-  { key: "name.text", type: "string", label: "Name (text)" },
-  { key: "name.html", type: "string", label: "Name (HTML)" },
-  { key: "description", type: "object", label: "Description" },
-  { key: "description.text", type: "string", label: "Description (text)" },
-  { key: "description.html", type: "string", label: "Description (HTML)" },
-  { key: "summary", type: "string", label: "Summary" },
-  { key: "start", type: "object", label: "Start" },
-  { key: "start.utc", type: "string", label: "Start (UTC)" },
-  { key: "start.local", type: "string", label: "Start (local)" },
-  { key: "start.timezone", type: "string", label: "Start timezone" },
-  { key: "end", type: "object", label: "End" },
-  { key: "end.utc", type: "string", label: "End (UTC)" },
-  { key: "end.local", type: "string", label: "End (local)" },
-  { key: "end.timezone", type: "string", label: "End timezone" },
-  { key: "status", type: "string", label: "Status" },
-  { key: "url", type: "string", label: "URL" },
-  { key: "currency", type: "string", label: "Currency" },
-  { key: "capacity", type: "number", label: "Capacity" },
-  { key: "is_free", type: "boolean", label: "Free event" },
-  { key: "online_event", type: "boolean", label: "Online event" },
-  { key: "listed", type: "boolean", label: "Listed" },
-  { key: "created", type: "string", label: "Created" },
-  { key: "changed", type: "string", label: "Changed" },
-  { key: "published", type: "string", label: "Published" },
-  { key: "organization_id", type: "string", label: "Organization ID" },
-  { key: "organizer_id", type: "string", label: "Organizer ID" },
-  { key: "venue_id", type: "string", label: "Venue ID" },
-] as const;
+// The Event record shape lives once, in lib/outputs.ts; re-exported for the event actions.
+export { EVENT_OUTPUT };
 
 interface Input extends EventFields {
   organizationId: string;
