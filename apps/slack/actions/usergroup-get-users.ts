@@ -20,10 +20,6 @@ const userGroupGetUsers: ActionDefinition<Input> = {
     { key: "userGroupId", label: "User group ID", type: "string", required: true },
   ],
 
-  output: [
-    { key: "items", type: "array", label: "Member user IDs (the action returns the array itself)" },
-  ],
-
   async execute(input, ctx) {
     const client = new SlackClient(ctx);
     const res = await client.request<{ usergroups?: UserGroup[] }>("/usergroups.list", {

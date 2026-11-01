@@ -19,10 +19,6 @@ const userGroupGetMany: ActionDefinition<Input> = {
     { key: "includeUsers", label: "Include users", type: "boolean" },
   ],
 
-  output: [
-    { key: "items", type: "array", label: "User groups (the action returns the array itself)" },
-  ],
-
   async execute(input, ctx) {
     const client = new SlackClient(ctx);
     const res = await client.request<{ usergroups?: unknown }>("/usergroups.list", {
