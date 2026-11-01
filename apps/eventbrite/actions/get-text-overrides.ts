@@ -52,11 +52,8 @@ const getTextOverrides: ActionDefinition<Input> = {
     { key: "venueId", label: "Venue ID", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
-  output: [
-    { key: "text_code", type: "string", label: "Text code" },
-    { key: "message", type: "string", label: "Message" },
-    { key: "message_code", type: "string", label: "Message code" },
-  ],
+  output: [],
+  sample: {},
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

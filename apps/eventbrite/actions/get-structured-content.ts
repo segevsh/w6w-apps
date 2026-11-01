@@ -1,5 +1,11 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import {
+  PAGINATION_OUTPUT,
+  PAGINATION_SAMPLE,
+  STRUCTURED_CONTENT_OUTPUT,
+  STRUCTURED_CONTENT_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -37,14 +43,8 @@ const getStructuredContent: ActionDefinition<Input> = {
       ],
     },
   ],
-  output: [
-    { key: "access_type", type: "string", label: "Access type" },
-    { key: "modules", type: "array", label: "Modules" },
-    { key: "widgets", type: "array", label: "Widgets" },
-    { key: "page_version_number", type: "string", label: "Page version number" },
-    { key: "pagination", type: "object", label: "Pagination" },
-    { key: "purpose", type: "string", label: "Purpose" },
-  ],
+  output: [...STRUCTURED_CONTENT_OUTPUT, ...PAGINATION_OUTPUT],
+  sample: { ...STRUCTURED_CONTENT_SAMPLE, pagination: PAGINATION_SAMPLE },
   idempotent: true,
 
   execute(input, ctx) {

@@ -14,6 +14,7 @@ const action: ActionDefinition<Input> = {
     "Permanently delete an event on Eventbrite. Fails if the event has pending or completed orders. Deleting a series parent deletes all occurrences.",
   params: [{ key: "eventId", label: "Event ID", type: "string", required: true }],
   output: [{ key: "deleted", type: "boolean", label: "Deleted" }],
+  sample: { deleted: true },
   idempotent: true,
 
   execute(input, ctx) {

@@ -14,6 +14,7 @@ const action: ActionDefinition<Input> = {
     "Cancel an event on Eventbrite. Fails if the event has pending or completed orders. Canceling a series parent cancels all occurrences.",
   params: [{ key: "eventId", label: "Event ID", type: "string", required: true }],
   output: [{ key: "canceled", type: "boolean", label: "Canceled" }],
+  sample: { canceled: true },
   idempotent: false,
 
   execute(input, ctx) {

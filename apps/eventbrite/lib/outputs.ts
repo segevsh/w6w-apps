@@ -818,3 +818,185 @@ export const REFUND_RETENTION_POLICY_SAMPLE = {
   retain_reasons: ["attendee_requested"],
   no_retain_reasons: ["event_cancelled"],
 };
+
+// ---- T1.2.3 additions -----------------------------------------------------------------------
+
+/** A category, as `get-category` returns it and as a `list-categories` item. */
+export const CATEGORY_OUTPUT: OutputField[] = [
+  s("id", "Category ID"),
+  s("resource_uri", "Resource URI"),
+  s("name", "Name"),
+  s("name_localized", "Localized name"),
+  s("short_name", "Short name"),
+  s("short_name_localized", "Localized short name"),
+];
+
+export const CATEGORY_SAMPLE = {
+  id: "1000000101",
+  resource_uri: `${API}/categories/1000000101/`,
+  name: "Example Category",
+  name_localized: "Example Category",
+  short_name: "Example",
+  short_name_localized: "Example",
+};
+
+/** A subcategory; `parent_category` is a nested category record. */
+export const SUBCATEGORY_OUTPUT: OutputField[] = [
+  s("id", "Subcategory ID"),
+  s("resource_uri", "Resource URI"),
+  s("name", "Name"),
+  s("name_localized", "Localized name"),
+  o("parent_category", "Parent category"),
+  s("parent_category.id", "Parent category ID"),
+  s("parent_category.name", "Parent category name"),
+];
+
+export const SUBCATEGORY_SAMPLE = {
+  id: "1000000201",
+  resource_uri: `${API}/subcategories/1000000201/`,
+  name: "Example Subcategory",
+  name_localized: "Example Subcategory",
+  parent_category: { id: CATEGORY_SAMPLE.id, name: CATEGORY_SAMPLE.name },
+};
+
+/** An event format. */
+export const FORMAT_OUTPUT: OutputField[] = [
+  s("id", "Format ID"),
+  s("resource_uri", "Resource URI"),
+  s("name", "Name"),
+  s("name_localized", "Localized name"),
+  s("short_name", "Short name"),
+  s("short_name_localized", "Localized short name"),
+];
+
+export const FORMAT_SAMPLE = {
+  id: "1000000301",
+  resource_uri: `${API}/formats/1000000301/`,
+  name: "Example Format",
+  name_localized: "Example Format",
+  short_name: "Example",
+  short_name_localized: "Example",
+};
+
+/** An uploaded image (`get-media`, `upload-media`). */
+export const MEDIA_OUTPUT: OutputField[] = [
+  s("id", "Image ID"),
+  s("url", "Image URL"),
+  s("aspect_ratio", "Aspect ratio"),
+  s("edge_color", "Edge color"),
+  b("edge_color_set", "Edge color set"),
+  o("original", "Original image"),
+  s("original.url", "Original image URL"),
+  n("original.width", "Original width"),
+  n("original.height", "Original height"),
+  o("crop_mask", "Crop mask"),
+  n("crop_mask.width", "Crop width"),
+  n("crop_mask.height", "Crop height"),
+];
+
+export const MEDIA_SAMPLE = {
+  id: ID.logo,
+  url: "https://img.example.com/logo.png",
+  aspect_ratio: "2",
+  edge_color: "#6a7c92",
+  edge_color_set: true,
+  original: { url: "https://img.example.com/original.png", width: 2160, height: 1080 },
+  crop_mask: { width: 1080, height: 540 },
+};
+
+/** `get-media-upload`: the storage URL, form fields and token for step 2/3 of an upload. */
+export const MEDIA_UPLOAD_INSTRUCTIONS_OUTPUT: OutputField[] = [
+  s("upload_url", "Storage upload URL"),
+  o("upload_data", "Form fields to send to the storage URL"),
+  s("file_parameter_name", "File field name"),
+  s("upload_token", "Upload token"),
+];
+
+export const MEDIA_UPLOAD_INSTRUCTIONS_SAMPLE = {
+  upload_url: "https://upload.example.com/media",
+  upload_data: { key: "example/upload.png", policy: "example-policy" },
+  file_parameter_name: "file",
+  upload_token: "example-upload-token",
+};
+
+/** An event's display settings (`get-display-settings`, `update-display-settings`). */
+export const DISPLAY_SETTINGS_OUTPUT: OutputField[] = [
+  b("show_start_date", "Show start date"),
+  b("show_end_date", "Show end date"),
+  b("show_start_end_time", "Show start/end time"),
+  b("show_timezone", "Show timezone"),
+  b("show_map", "Show map"),
+  b("show_remaining", "Show remaining tickets"),
+  b("show_organizer_facebook", "Show organizer Facebook link"),
+  b("show_organizer_twitter", "Show organizer Twitter link"),
+  b("show_facebook_friends_going", "Show Facebook friends going"),
+  s("terminology", "Terminology"),
+];
+
+export const DISPLAY_SETTINGS_SAMPLE = {
+  show_start_date: true,
+  show_end_date: true,
+  show_start_end_time: true,
+  show_timezone: true,
+  show_map: true,
+  show_remaining: false,
+  show_organizer_facebook: false,
+  show_organizer_twitter: false,
+  show_facebook_friends_going: false,
+  terminology: "tickets_vertical",
+};
+
+/** A structured-content page (`set-structured-content`; `get-structured-content` adds pagination). */
+export const STRUCTURED_CONTENT_OUTPUT: OutputField[] = [
+  s("access_type", "Access type"),
+  a("modules", "Modules", [s("type", "Module type"), o("data", "Module data")]),
+  a("widgets", "Widgets", [s("type", "Widget type"), o("data", "Widget data")]),
+  s("page_version_number", "Page version number"),
+  s("purpose", "Purpose"),
+];
+
+export const STRUCTURED_CONTENT_SAMPLE = {
+  access_type: "public",
+  modules: [{ type: "text", data: { body: { type: "text", text: "<p>Hello</p>" } } }],
+  widgets: [{ type: "agenda", data: { sessions: [] } }],
+  page_version_number: "1",
+  purpose: "listing",
+};
+
+/** A schedule created on a series parent. */
+export const SCHEDULE_OUTPUT: OutputField[] = [
+  s("id", "Schedule ID"),
+  n("occurrence_duration", "Occurrence duration"),
+  s("recurrence_rule", "Recurrence rule"),
+];
+
+export const SCHEDULE_SAMPLE = {
+  id: "1000000401",
+  occurrence_duration: 3600,
+  recurrence_rule: "DTSTART:20261201T023000Z\nRRULE:FREQ=WEEKLY;COUNT=5",
+};
+
+/** `get-event-series`: the parent event, plus the `series_dates` expansion. */
+export const EVENT_SERIES_OUTPUT: OutputField[] = [
+  ...EVENT_OUTPUT,
+  a("series_dates", "Series dates"),
+];
+
+export const EVENT_SERIES_SAMPLE = { ...EVENT_SAMPLE, series_dates: [] as unknown[] };
+
+/** Category/subcategory/format lists: the element record plus `locale` (and `pagination`). */
+export const CATEGORY_LIST_OUTPUT: OutputField[] = [
+  s("locale", "Locale"),
+  a("categories", "Categories", CATEGORY_OUTPUT),
+  ...PAGINATION_OUTPUT,
+];
+export const SUBCATEGORY_LIST_OUTPUT: OutputField[] = [
+  s("locale", "Locale"),
+  a("subcategories", "Subcategories", SUBCATEGORY_OUTPUT),
+  ...PAGINATION_OUTPUT,
+];
+export const FORMAT_LIST_OUTPUT: OutputField[] = [
+  s("locale", "Locale"),
+  a("formats", "Formats", FORMAT_OUTPUT),
+  ...PAGINATION_OUTPUT,
+];
