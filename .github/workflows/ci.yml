@@ -3,10 +3,13 @@ name: CI
 # Every check lives in scripts/verify.sh, which the pre-push hook (w6w-io/w6w
 # .githooks/pre-push) also runs. It tests and builds only the apps a change touches (all of
 # them when a shared file changes), building with the same pinned w6w-core that
-# `Reload apps` uses after merge — so a PR that is green here publishes cleanly.
+# `Reload apps` uses after merge — so a PR that is green here publishes cleanly. The job id
+# `verify` is the required-check context branch protection names on every w6w-io repo.
 
 on:
   pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +17,9 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Only a PR run is superseded by a newer one. A push run verifies just the apps its own push
+  # changed (VERIFY_BASE = the previous tip), so cancelling it would leave that push unchecked.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verify:
@@ -36,9 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          path: w6w-apps
+          path: apps
           fetch-depth: 0
-      # Full history: verify.sh checks out the SHA reload-apps.yml pins as a worktree.
+      # Full history: verify.sh diffs against VERIFY_BASE, and checks out the SHA
+      # reload-apps.yml pins as a worktree of ../core.
       - uses: actions/checkout@v6
         with:
           repository: w6w-io/w6w-core
@@ -51,11 +57,19 @@ jobs:
         with:
           node-version: "24"
       - name: Install the pack's shared tooling
-        working-directory: w6w-apps
+        working-directory: apps
         run: npm ci --no-audit --no-fund
       - name: Verify
-        working-directory: w6w-apps
+        working-directory: apps
+        # The apps to verify are the ones changed since VERIFY_BASE: the PR's base, or on a push
+        # the tip before it (every commit of the push, not only the last). A base this checkout
+        # lacks (a manual run, a force-push, a new branch's all-zero `before`) falls back to HEAD~1.
         env:
-          VERIFY_BASE: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+          VERIFY_BASE: ${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
           W6W_TEST_PG_HOST: 127.0.0.1
-        run: bash scripts/verify.sh
+        run: |
+          if ! git cat-file -e "$VERIFY_BASE^{commit}" 2>/dev/null; then
+            echo "::notice::VERIFY_BASE $VERIFY_BASE is not in this checkout; using HEAD~1"
+            VERIFY_BASE=HEAD~1
+          fi
+          bash scripts/verify.sh
