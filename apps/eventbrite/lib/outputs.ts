@@ -685,13 +685,16 @@ const inventoryTierFields = (): OutputField[] => [
   b("count_against_event_capacity", "Counts against event capacity"),
 ];
 
-/** One inventory tier (get/create/update-inventory-tier). */
+/** One inventory tier (get/create/update-inventory-tier): the `{ inventory_tier }` wrapper. */
 export const INVENTORY_TIER_OUTPUT: OutputField[] = [
-  ...inventoryTierFields(),
-  a("holds", "Holds", holdFields()),
+  o("inventory_tier", "Inventory tier"),
+  ...prefixOutput("inventory_tier", [
+    ...inventoryTierFields(),
+    a("holds", "Holds", holdFields()),
+  ]),
 ];
 
-export const INVENTORY_TIER_SAMPLE = {
+const INVENTORY_TIER_RECORD_SAMPLE = {
   id: T5.tier,
   name: "General Admission",
   tier: 1,
@@ -709,6 +712,8 @@ export const INVENTORY_TIER_SAMPLE = {
   holds: [holdSample],
 };
 
+export const INVENTORY_TIER_SAMPLE = { inventory_tier: INVENTORY_TIER_RECORD_SAMPLE };
+
 /** A tier as an element of a list: its nested `holds` list is declared as a plain array. */
 export const INVENTORY_TIER_LIST_ITEM_OUTPUT: OutputField[] = [
   ...inventoryTierFields(),
@@ -720,7 +725,7 @@ export const INVENTORY_TIERS_OUTPUT: OutputField[] = [
   a("inventory_tiers", "Inventory tiers", INVENTORY_TIER_LIST_ITEM_OUTPUT),
 ];
 
-export const INVENTORY_TIERS_SAMPLE = { inventory_tiers: [INVENTORY_TIER_SAMPLE] };
+export const INVENTORY_TIERS_SAMPLE = { inventory_tiers: [INVENTORY_TIER_RECORD_SAMPLE] };
 
 export const CAPACITY_TIER_OUTPUT: OutputField[] = [
   s("event_id", "Event ID"),
@@ -871,7 +876,7 @@ export const T5_SAMPLE = {
   },
   seatMaps: { seatmaps: [SEAT_MAP_SAMPLE], pagination: PAGINATION_SAMPLE },
   tierList: {
-    inventory_tiers: [{ ...INVENTORY_TIER_SAMPLE, holds: [holdSample] }],
+    inventory_tiers: [{ ...INVENTORY_TIER_RECORD_SAMPLE, holds: [holdSample] }],
     pagination: PAGINATION_SAMPLE,
   },
   ticketGroups: {
