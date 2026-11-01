@@ -429,6 +429,12 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "accepted", type: "boolean", label: "Accepted by SendGrid" },
+    { key: "statusCode", type: "number", label: "HTTP status (202)" },
+    { key: "messageId", type: "string", label: "X-Message-Id receipt" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const legacy = (p.additionalFields ?? {}) as Legacy;

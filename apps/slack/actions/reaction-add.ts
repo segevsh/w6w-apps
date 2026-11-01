@@ -25,6 +25,10 @@ const reactionAdd: ActionDefinition<Input> = {
     },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.add", {

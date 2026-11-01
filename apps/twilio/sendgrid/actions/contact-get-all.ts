@@ -50,6 +50,10 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "items", type: "array", label: "Contacts (the action returns the array itself)" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const returnAll = p.returnAll === true;

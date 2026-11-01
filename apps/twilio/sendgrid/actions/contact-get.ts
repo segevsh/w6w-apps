@@ -40,6 +40,24 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "id", type: "string", label: "Contact ID" },
+    { key: "email", type: "string", label: "Email" },
+    { key: "first_name", type: "string", label: "First name" },
+    { key: "last_name", type: "string", label: "Last name" },
+    { key: "alternate_emails", type: "array", label: "Alternate emails" },
+    { key: "address_line_1", type: "string", label: "Address line 1" },
+    { key: "address_line_2", type: "string", label: "Address line 2" },
+    { key: "city", type: "string", label: "City" },
+    { key: "state_province_region", type: "string", label: "State / province / region" },
+    { key: "postal_code", type: "string", label: "Postal code" },
+    { key: "country", type: "string", label: "Country" },
+    { key: "list_ids", type: "array", label: "List IDs" },
+    { key: "custom_fields", type: "object", label: "Custom fields" },
+    { key: "created_at", type: "string", label: "Created at" },
+    { key: "updated_at", type: "string", label: "Updated at" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const by = String(p.by ?? "id");

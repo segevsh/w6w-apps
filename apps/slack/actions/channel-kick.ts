@@ -17,6 +17,10 @@ const channelKick: ActionDefinition<Input> = {
     { key: "userId", label: "User ID", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.kick", {

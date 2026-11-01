@@ -17,6 +17,13 @@ const reactionGet: ActionDefinition<Input> = {
     { key: "timestamp", label: "Message ts", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "type", type: "string", label: "Item type" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "message", type: "object", label: "Message with its reactions" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.get", {
