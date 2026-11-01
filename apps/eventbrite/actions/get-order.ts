@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { ORDER_DETAIL_OUTPUT, ORDER_DETAIL_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
 
@@ -28,17 +29,8 @@ const getOrder: ActionDefinition<Input> = {
       default: DEFAULT_EXPAND,
     },
   ],
-  output: [
-    { key: "id", type: "string", label: "Order ID" },
-    { key: "created", type: "string", label: "Created" },
-    { key: "changed", type: "string", label: "Changed" },
-    { key: "name", type: "string", label: "Buyer name" },
-    { key: "email", type: "string", label: "Buyer email" },
-    { key: "status", type: "string", label: "Status" },
-    { key: "costs", type: "object", label: "Costs" },
-    { key: "event_id", type: "string", label: "Event ID" },
-    { key: "attendees", type: "array", label: "Attendees" },
-  ],
+  output: ORDER_DETAIL_OUTPUT,
+  sample: ORDER_DETAIL_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

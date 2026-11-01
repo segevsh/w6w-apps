@@ -21,6 +21,7 @@ const checkTeamPassword: ActionDefinition<Input> = {
     { key: "password", label: "Password", type: "secret", required: true },
   ],
   output: [{ key: "token", type: "string", label: "Team token" }],
+  sample: { token: "example-team-token" },
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

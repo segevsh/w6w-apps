@@ -1,4 +1,10 @@
 import type { ActionDefinition } from "@w6w/types";
+import {
+  DISCOUNT_OUTPUT,
+  DISCOUNT_SAMPLE,
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+} from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 
@@ -151,17 +157,10 @@ const action: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    {
-      "key": "discounts",
-      "type": "array",
-      "label": "Discounts",
-    },
-    {
-      "key": "pagination",
-      "type": "object",
-      "label": "Pagination",
-    },
+    { key: "discounts", type: "array", label: "Discounts", items: DISCOUNT_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: { discounts: [DISCOUNT_SAMPLE], pagination: PAGINATION_CONTINUATION_SAMPLE },
   idempotent: true,
 
   execute(input, ctx) {

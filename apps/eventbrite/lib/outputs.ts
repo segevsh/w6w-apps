@@ -615,3 +615,206 @@ export const RESOURCE_SAMPLE: Record<
 
 /** The delivery half of a trigger's sample. */
 export const DELIVERY_SAMPLE = { webhookId: ID.webhook, userId: ID.user } as const;
+
+// ---- T1.2.4 ---------------------------------------------------------------------------------
+// Orders, attendees, discounts, questions, reports, buyer settings. Appended only; nothing above
+// is edited.
+
+const ID_B = {
+  discount: "1000000011",
+  question: "1000000012",
+  choice: "1000000013",
+} as const;
+
+/** An attendee as `get-attendee` returns it: `barcodes` and `answers` declare their elements. */
+export const ATTENDEE_DETAIL_OUTPUT: OutputField[] = ATTENDEE_OUTPUT.map((f) => {
+  if (f.key === "barcodes") {
+    return a("barcodes", "Barcodes", [
+      s("barcode", "Barcode"),
+      s("status", "Status"),
+      s("created", "Created"),
+      s("changed", "Changed"),
+    ]);
+  }
+  if (f.key === "answers") {
+    return a("answers", "Answers", [
+      s("question_id", "Question ID"),
+      s("question", "Question"),
+      s("type", "Type"),
+      s("answer", "Answer"),
+    ]);
+  }
+  return f;
+});
+
+export const ATTENDEE_DETAIL_SAMPLE = {
+  ...ATTENDEE_SAMPLE,
+  barcodes: [{
+    barcode: "1000000015",
+    status: "unused",
+    created: "2026-10-08T09:00:00Z",
+    changed: "2026-10-08T09:00:00Z",
+  }],
+  answers: [{
+    question_id: ID_B.question,
+    question: "Dietary needs",
+    type: "text",
+    answer: "None",
+  }],
+};
+
+/** An order as `get-order` returns it (default expansion inlines the attendees). */
+export const ORDER_DETAIL_OUTPUT: OutputField[] = [
+  ...ORDER_OUTPUT,
+  a("attendees", "Attendees (expanded)", ATTENDEE_OUTPUT),
+];
+
+export const ORDER_DETAIL_SAMPLE = { ...ORDER_SAMPLE, attendees: [ATTENDEE_SAMPLE] };
+
+// ---- discounts ----
+
+export const DISCOUNT_OUTPUT: OutputField[] = [
+  s("id", "Discount ID"),
+  s("type", "Type"),
+  s("code", "Code"),
+  s("amount_off", "Amount off"),
+  s("percent_off", "Percent off"),
+  s("event_id", "Event ID"),
+  a("ticket_class_ids", "Ticket class IDs"),
+  n("quantity_available", "Quantity available"),
+  n("quantity_sold", "Quantity sold"),
+  s("start_date", "Start date"),
+  n("start_date_relative", "Start date relative"),
+  s("end_date", "End date"),
+  n("end_date_relative", "End date relative"),
+  s("ticket_group_id", "Ticket group ID"),
+  a("hold_ids", "Hold IDs"),
+];
+
+export const DISCOUNT_SAMPLE = {
+  id: ID_B.discount,
+  type: "coded",
+  code: "EXAMPLE10",
+  amount_off: null,
+  percent_off: "10.00",
+  event_id: ID.event,
+  ticket_class_ids: [ID.ticketClass],
+  quantity_available: 100,
+  quantity_sold: 3,
+  start_date: "2026-10-01T09:00:00",
+  start_date_relative: null,
+  end_date: "2026-11-01T17:00:00",
+  end_date_relative: null,
+  ticket_group_id: null,
+  hold_ids: [],
+};
+
+/** What a discount DELETE answers. */
+export const DELETED_OUTPUT: OutputField[] = [b("deleted", "Deleted")];
+export const DELETED_SAMPLE = { deleted: true };
+
+// ---- questions ----
+
+const questionFields = (choices: OutputField): OutputField[] => [
+  s("id", "Question ID"),
+  o("question", "Question text"),
+  s("question.text", "Question (text)"),
+  s("question.html", "Question (HTML)"),
+  s("type", "Type"),
+  b("required", "Required"),
+  s("respondent", "Respondent"),
+  choices,
+];
+
+/** A registration question (custom or default). */
+export const QUESTION_OUTPUT: OutputField[] = questionFields(
+  a("choices", "Choices", [
+    s("id", "Choice ID"),
+    o("answer", "Answer"),
+    s("answer.text", "Answer (text)"),
+    s("answer.html", "Answer (HTML)"),
+  ]),
+);
+
+/** A question inside a list: `choices` is nested in a list item, so a plain array. */
+export const QUESTION_LIST_ITEM_OUTPUT: OutputField[] = questionFields(a("choices", "Choices"));
+
+export const QUESTION_SAMPLE = {
+  id: ID_B.question,
+  question: { text: "Dietary needs", html: "Dietary needs" },
+  type: "dropdown",
+  required: false,
+  respondent: "attendee",
+  choices: [{ id: ID_B.choice, answer: { text: "None", html: "None" } }],
+};
+
+// ---- reports ----
+
+/** The envelope of `/reports/sales/` and `/reports/attendees/`; rows are keyed by the grouping. */
+export const REPORT_OUTPUT: OutputField[] = [
+  s("timezone", "Timezone"),
+  a("event_ids", "Event IDs"),
+  a("data", "Report rows", [
+    s("date", "Date"),
+    s("currency", "Currency"),
+    n("quantity", "Quantity"),
+  ]),
+];
+
+export const REPORT_SAMPLE = {
+  timezone: "America/Los_Angeles",
+  event_ids: [ID.event],
+  data: [{ date: "2026-10-08", currency: "USD", quantity: 1 }],
+};
+
+// ---- buyer settings, retention policy ----
+
+const html = (key: string, label: string): OutputField[] => [
+  o(key, label),
+  s(`${key}.text`, `${label} (text)`),
+  s(`${key}.html`, `${label} (HTML)`),
+];
+
+const htmlSample = (text: string) => ({ text, html: `<p>${text}</p>` });
+
+export const TICKET_BUYER_SETTINGS_OUTPUT: OutputField[] = [
+  ...html("confirmation_message", "Confirmation message"),
+  ...html("instructions", "Instructions"),
+  ...html("sales_ended_message", "Sales ended message"),
+  ...html("survey_info", "Survey info"),
+  s("event_id", "Event ID"),
+  s("survey_name", "Survey name"),
+  b("refund_request_enabled", "Refund requests enabled"),
+  b("allow_attendee_update", "Attendee update allowed"),
+  n("survey_time_limit", "Survey time limit (minutes)"),
+  s("redirect_url", "Redirect URL"),
+  s("survey_respondent", "Survey respondent"),
+  a("survey_ticket_classes", "Survey ticket classes"),
+];
+
+export const TICKET_BUYER_SETTINGS_SAMPLE = {
+  confirmation_message: htmlSample("Thanks for your order"),
+  instructions: htmlSample("Bring your ticket"),
+  sales_ended_message: htmlSample("Sales have ended"),
+  survey_info: htmlSample("Tell us about you"),
+  event_id: ID.event,
+  survey_name: "Example survey",
+  refund_request_enabled: true,
+  allow_attendee_update: false,
+  survey_time_limit: 15,
+  redirect_url: "https://example.com/thanks",
+  survey_respondent: "attendee",
+  survey_ticket_classes: [ID.ticketClass],
+};
+
+export const REFUND_RETENTION_POLICY_OUTPUT: OutputField[] = [
+  s("refund_retention_policy", "Retention policy"),
+  a("retain_reasons", "Reasons that retain the fee"),
+  a("no_retain_reasons", "Reasons that never retain the fee"),
+];
+
+export const REFUND_RETENTION_POLICY_SAMPLE = {
+  refund_retention_policy: "retain_fee",
+  retain_reasons: ["attendee_requested"],
+  no_retain_reasons: ["event_cancelled"],
+};
