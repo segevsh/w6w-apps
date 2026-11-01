@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE, VENUE_OUTPUT } from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -27,9 +28,10 @@ const listVenues: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    { key: "venues", type: "array", label: "Venues" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "venues", type: "array", label: "Venues", items: VENUE_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: T5_SAMPLE.venues,
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"venues">>(

@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { USER_OUTPUT, USER_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   userId?: string;
@@ -29,11 +30,8 @@ const getUser: ActionDefinition<Input> = {
       hint: "Include the user’s assortment package.",
     },
   ],
-  output: [
-    { key: "id", type: "string", label: "User ID" },
-    { key: "name", type: "string", label: "Name" },
-    { key: "emails", type: "array", label: "Emails" },
-  ],
+  output: USER_OUTPUT,
+  sample: USER_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

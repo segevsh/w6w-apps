@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { TEAM_OUTPUT, TEAM_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -17,10 +18,8 @@ const getEventTeam: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "teamId", label: "Team ID", type: "string", required: true },
   ],
-  output: [
-    { key: "id", type: "string", label: "Team ID" },
-    { key: "name", type: "string", label: "Team name" },
-  ],
+  output: TEAM_OUTPUT,
+  sample: TEAM_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

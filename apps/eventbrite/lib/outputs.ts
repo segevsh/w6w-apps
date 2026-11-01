@@ -1000,3 +1000,279 @@ export const FORMAT_LIST_OUTPUT: OutputField[] = [
   a("formats", "Formats", FORMAT_OUTPUT),
   ...PAGINATION_OUTPUT,
 ];
+
+// ---- T1.2.5 ----
+// Ticket groups, inventory/capacity tiers, seat maps, teams, users, members, roles, fee rates
+// (v3 reference). Appended as one block: sibling nodes append their own blocks above/below.
+
+const T5 = {
+  ticketGroup: "1000000101",
+  tier: "1000000102",
+  hold: "1000000103",
+  seatmap: "1000000104",
+  team: "1000000105",
+  member: "1000000106",
+  role: "1000000107",
+} as const;
+
+export const TICKET_GROUP_OUTPUT: OutputField[] = [
+  s("id", "Ticket group ID"),
+  s("name", "Name"),
+  s("status", "Status"),
+  o("event_ticket_ids", "Event ticket IDs"),
+  a("tickets", "Tickets", [s("event_id", "Event ID"), s("ticket_class_id", "Ticket class ID")]),
+];
+
+export const TICKET_GROUP_SAMPLE = {
+  id: T5.ticketGroup,
+  name: "Example Group",
+  status: "live",
+  event_ticket_ids: { [ID.event]: [ID.ticketClass] },
+  tickets: [{ event_id: ID.event, ticket_class_id: ID.ticketClass }],
+};
+
+/** A list of ticket groups plus the `pagination` object. */
+export const TICKET_GROUP_LIST_OUTPUT: OutputField[] = [
+  a("ticket_groups", "Ticket groups", TICKET_GROUP_OUTPUT),
+  ...PAGINATION_CONTINUATION_OUTPUT,
+];
+
+const holdFields = (): OutputField[] => [
+  s("id", "Hold ID"),
+  s("name", "Name"),
+  n("quantity_total", "Quantity total"),
+  n("quantity_sold", "Quantity sold"),
+  n("quantity_pending", "Quantity pending"),
+];
+
+const holdSample = {
+  id: T5.hold,
+  name: "Marketing",
+  quantity_total: 10,
+  quantity_sold: 0,
+  quantity_pending: 0,
+};
+
+const inventoryTierFields = (): OutputField[] => [
+  s("id", "Inventory tier ID"),
+  s("name", "Name"),
+  n("tier", "Tier number"),
+  n("seatmap_number", "Seat map number"),
+  n("sort_order", "Sort order"),
+  s("color", "Color"),
+  s("image_id", "Image ID"),
+  n("quantity_total", "Quantity total"),
+  n("quantity_sold", "Quantity sold"),
+  n("quantity_pending", "Quantity pending"),
+  n("capacity_total", "Capacity total"),
+  n("capacity_sold", "Capacity sold"),
+  n("capacity_pending", "Capacity pending"),
+  b("count_against_event_capacity", "Counts against event capacity"),
+];
+
+/** One inventory tier (get/create/update-inventory-tier): the `{ inventory_tier }` wrapper. */
+export const INVENTORY_TIER_OUTPUT: OutputField[] = [
+  o("inventory_tier", "Inventory tier"),
+  ...prefixOutput("inventory_tier", [
+    ...inventoryTierFields(),
+    a("holds", "Holds", holdFields()),
+  ]),
+];
+
+const INVENTORY_TIER_RECORD_SAMPLE = {
+  id: T5.tier,
+  name: "General Admission",
+  tier: 1,
+  seatmap_number: 0,
+  sort_order: 1,
+  color: "#fac114",
+  image_id: ID.logo,
+  quantity_total: 100,
+  quantity_sold: 0,
+  quantity_pending: 0,
+  capacity_total: 110,
+  capacity_sold: 0,
+  capacity_pending: 0,
+  count_against_event_capacity: true,
+  holds: [holdSample],
+};
+
+export const INVENTORY_TIER_SAMPLE = { inventory_tier: INVENTORY_TIER_RECORD_SAMPLE };
+
+/** A tier as an element of a list: its nested `holds` list is declared as a plain array. */
+export const INVENTORY_TIER_LIST_ITEM_OUTPUT: OutputField[] = [
+  ...inventoryTierFields(),
+  a("holds", "Holds"),
+];
+
+/** `{ inventory_tiers }` (create/update-multiple-inventory-tiers). */
+export const INVENTORY_TIERS_OUTPUT: OutputField[] = [
+  a("inventory_tiers", "Inventory tiers", INVENTORY_TIER_LIST_ITEM_OUTPUT),
+];
+
+export const INVENTORY_TIERS_SAMPLE = { inventory_tiers: [INVENTORY_TIER_RECORD_SAMPLE] };
+
+export const CAPACITY_TIER_OUTPUT: OutputField[] = [
+  s("event_id", "Event ID"),
+  n("quantity_pending", "Pending quantity"),
+  n("quantity_sold", "Sold quantity"),
+  n("quantity_total", "Available quantity"),
+  n("capacity_pending", "Pending capacity"),
+  n("capacity_sold", "Sold capacity"),
+  n("capacity_total", "Total capacity"),
+  b("capacity_is_custom", "Capacity is custom"),
+  a("holds", "Holds", holdFields()),
+];
+
+export const CAPACITY_TIER_SAMPLE = {
+  event_id: ID.event,
+  quantity_pending: 0,
+  quantity_sold: 5,
+  quantity_total: 100,
+  capacity_pending: 0,
+  capacity_sold: 5,
+  capacity_total: 110,
+  capacity_is_custom: true,
+  holds: [holdSample],
+};
+
+export const SEAT_MAP_OUTPUT: OutputField[] = [
+  s("id", "Seat map ID"),
+  s("name", "Name"),
+  s("event_id", "Event ID"),
+  s("venue_id", "Venue ID"),
+  n("capacity", "Capacity"),
+  s("thumbnail_url", "Thumbnail URL"),
+  s("resource_uri", "Resource URI"),
+];
+
+export const SEAT_MAP_SAMPLE = {
+  id: T5.seatmap,
+  name: "Main Floor",
+  event_id: ID.event,
+  venue_id: ID.venue,
+  capacity: 300,
+  thumbnail_url: "https://img.example.com/seatmap-thumbnail.png",
+  resource_uri: `${API}/seatmaps/${T5.seatmap}/`,
+};
+
+export const TEAM_OUTPUT: OutputField[] = [
+  s("id", "Team ID"),
+  s("name", "Team name"),
+  s("token", "Team token"),
+  s("event_id", "Event ID"),
+  n("attendee_count", "Attendee count"),
+  n("spots_left", "Spots left"),
+  s("date_created", "Created"),
+  s("changed", "Changed"),
+];
+
+export const TEAM_SAMPLE = {
+  id: T5.team,
+  name: "Example Team",
+  token: "example-team-token",
+  event_id: ID.event,
+  attendee_count: 3,
+  spots_left: 7,
+  date_created: "2026-10-08T09:00:00Z",
+  changed: "2026-10-08T09:00:00Z",
+};
+
+/** `{ teams, pagination }` (list-event-teams, search-event-teams). */
+export const TEAM_LIST_OUTPUT: OutputField[] = [
+  a("teams", "Teams", TEAM_OUTPUT),
+  ...PAGINATION_CONTINUATION_OUTPUT,
+];
+
+export const TEAM_LIST_SAMPLE = {
+  teams: [TEAM_SAMPLE],
+  pagination: PAGINATION_CONTINUATION_SAMPLE,
+};
+
+export const USER_OUTPUT: OutputField[] = [
+  s("id", "User ID"),
+  s("name", "Name"),
+  s("first_name", "First name"),
+  s("last_name", "Last name"),
+  s("image_id", "Image ID"),
+  a("emails", "Emails", [s("email", "Email"), b("verified", "Verified"), b("primary", "Primary")]),
+];
+
+export const USER_SAMPLE = {
+  id: ID.user,
+  name: "Example User",
+  first_name: "Example",
+  last_name: "User",
+  image_id: ID.logo,
+  emails: [{ email: "user@example.com", verified: true, primary: true }],
+};
+
+export const MEMBER_OUTPUT: OutputField[] = [
+  s("id", "Member ID"),
+  s("name", "Name"),
+  s("email", "Email"),
+  s("role_id", "Role ID"),
+];
+
+export const ROLE_OUTPUT: OutputField[] = [
+  s("id", "Role ID"),
+  s("name", "Name"),
+  s("description", "Description"),
+];
+
+export const FEE_RATE_OUTPUT: OutputField[] = [
+  s("country", "Country"),
+  s("currency", "Currency"),
+  s("plan", "Plan"),
+  s("payment_type", "Payment type"),
+  s("channel", "Channel"),
+  s("item_type", "Item type"),
+  n("percentage", "Percentage fee"),
+  n("fixed_amount", "Fixed fee (minor units)"),
+];
+
+/** Sample bodies for the list responses assembled from the record samples above. */
+export const T5_SAMPLE = {
+  members: {
+    members: [{
+      id: T5.member,
+      name: "Example Member",
+      email: "member@example.com",
+      role_id: T5.role,
+    }],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
+  roles: {
+    roles: [{ id: T5.role, name: "Admin", description: "Example role" }],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
+  feeRates: {
+    fee_rates: [{
+      country: "US",
+      currency: "USD",
+      plan: "pro",
+      payment_type: "eventbrite_payments",
+      channel: "web",
+      item_type: "ticket",
+      percentage: 3.5,
+      fixed_amount: 99,
+    }],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
+  seatMaps: { seatmaps: [SEAT_MAP_SAMPLE], pagination: PAGINATION_SAMPLE },
+  tierList: {
+    inventory_tiers: [{ ...INVENTORY_TIER_RECORD_SAMPLE, holds: [holdSample] }],
+    pagination: PAGINATION_SAMPLE,
+  },
+  ticketGroups: {
+    ticket_groups: [TICKET_GROUP_SAMPLE],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
+  organizers: { organizers: [ORGANIZER_SAMPLE], pagination: PAGINATION_SAMPLE },
+  venues: { venues: [VENUE_SAMPLE], pagination: PAGINATION_CONTINUATION_SAMPLE },
+  ticketClasses: {
+    ticket_classes: [TICKET_CLASS_SAMPLE],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
+  deleted: { deleted: true },
+} as const;

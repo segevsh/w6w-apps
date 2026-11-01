@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { INVENTORY_TIER_LIST_ITEM_OUTPUT, PAGINATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -34,18 +35,13 @@ const action: ActionDefinition<Input> = {
       "hint": "When set, filter by whether the tier counts toward event capacity.",
     },
   ],
-  output: [
-    {
-      "key": "inventory_tiers",
-      "type": "array",
-      "label": "Inventory tiers",
-    },
-    {
-      "key": "pagination",
-      "type": "object",
-      "label": "Pagination",
-    },
-  ],
+  output: [{
+    key: "inventory_tiers",
+    type: "array",
+    label: "Inventory tiers",
+    items: INVENTORY_TIER_LIST_ITEM_OUTPUT,
+  }, ...PAGINATION_OUTPUT],
+  sample: T5_SAMPLE.tierList,
   idempotent: true,
 
   execute(input, ctx) {

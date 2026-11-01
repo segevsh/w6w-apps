@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { PAGINATION_OUTPUT, SEAT_MAP_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -38,12 +39,10 @@ const action: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    {
-      "key": "seatmaps",
-      "type": "array",
-      "label": "Seat maps",
-    },
+    { key: "seatmaps", type: "array", label: "Seat maps", items: SEAT_MAP_OUTPUT },
+    ...PAGINATION_OUTPUT,
   ],
+  sample: T5_SAMPLE.seatMaps,
   idempotent: true,
 
   execute(input, ctx) {

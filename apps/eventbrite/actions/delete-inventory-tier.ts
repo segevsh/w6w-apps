@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -27,13 +28,8 @@ const action: ActionDefinition<Input> = {
       "required": true,
     },
   ],
-  output: [
-    {
-      "key": "deleted",
-      "type": "boolean",
-      "label": "Whether the tier was deleted",
-    },
-  ],
+  output: [{ key: "deleted", type: "boolean", label: "Deleted" }],
+  sample: T5_SAMPLE.deleted,
   idempotent: true,
 
   execute(input, ctx) {

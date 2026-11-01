@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { TICKET_GROUP_OUTPUT, TICKET_GROUP_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -31,7 +32,8 @@ const action: ActionDefinition<Input> = {
     { key: "ticketGroupIds", label: "Ticket group IDs", type: "array", item: { type: "string" } },
   ],
   resolveFields: resolveEventbriteFields,
-  output: [],
+  output: TICKET_GROUP_OUTPUT,
+  sample: TICKET_GROUP_SAMPLE,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);
