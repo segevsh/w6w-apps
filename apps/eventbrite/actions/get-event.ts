@@ -1,7 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
-import { EVENT_OUTPUT } from "./create-event.ts";
+import { EVENT_EXPANDED_OUTPUT, EVENT_EXPANDED_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -27,14 +27,8 @@ const getEvent: ActionDefinition<Input> = {
     },
   ],
   // `expand` (default `venue,ticket_classes`) inlines these alongside the event.
-  output: [
-    ...EVENT_OUTPUT,
-    { key: "venue", type: "object", label: "Venue (expanded)" },
-    { key: "venue.name", type: "string", label: "Venue name" },
-    { key: "venue.address.localized_address_display", type: "string", label: "Venue address" },
-    { key: "venue.address.city", type: "string", label: "Venue city" },
-    { key: "ticket_classes", type: "array", label: "Ticket classes (expanded)" },
-  ],
+  output: EVENT_EXPANDED_OUTPUT,
+  sample: EVENT_EXPANDED_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

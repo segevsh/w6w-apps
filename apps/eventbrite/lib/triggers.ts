@@ -1,5 +1,6 @@
 import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import { API_URL, EventbriteClient, EventbriteError } from "./client.ts";
+import { DELIVERY_SAMPLE, RESOURCE_OUTPUT, RESOURCE_SAMPLE } from "./outputs.ts";
 
 /**
  * Eventbrite webhook triggers (rfcs/trigger.md, webhook form).
@@ -112,135 +113,17 @@ const DELIVERY_OUTPUT: OutputField[] = [
   { key: "userId", type: "string", label: "User ID" },
 ];
 
-/** Downstream autocomplete for each record type, under `resource.`. */
-const RESOURCE_OUTPUT: Record<ResourceType, OutputField[]> = {
-  order: [
-    { key: "resource.id", type: "string", label: "Order ID" },
-    { key: "resource.event_id", type: "string", label: "Event ID" },
-    { key: "resource.name", type: "string", label: "Buyer Name" },
-    { key: "resource.first_name", type: "string", label: "Buyer First Name" },
-    { key: "resource.last_name", type: "string", label: "Buyer Last Name" },
-    { key: "resource.email", type: "string", label: "Buyer Email" },
-    { key: "resource.status", type: "string", label: "Status" },
-    { key: "resource.created", type: "string", label: "Created" },
-    { key: "resource.costs.gross.display", type: "string", label: "Gross Total" },
-  ],
-  attendee: [
-    { key: "resource.id", type: "string", label: "Attendee ID" },
-    { key: "resource.event_id", type: "string", label: "Event ID" },
-    { key: "resource.order_id", type: "string", label: "Order ID" },
-    { key: "resource.profile.name", type: "string", label: "Name" },
-    { key: "resource.profile.email", type: "string", label: "Email" },
-    { key: "resource.ticket_class_name", type: "string", label: "Ticket Class" },
-    { key: "resource.checked_in", type: "boolean", label: "Checked In" },
-    { key: "resource.status", type: "string", label: "Status" },
-  ],
-  event: [
-    { key: "resource.id", type: "string", label: "Event ID" },
-    { key: "resource.name.text", type: "string", label: "Name" },
-    { key: "resource.url", type: "string", label: "URL" },
-    { key: "resource.start.utc", type: "string", label: "Starts (UTC)" },
-    { key: "resource.end.utc", type: "string", label: "Ends (UTC)" },
-    { key: "resource.status", type: "string", label: "Status" },
-  ],
-  ticket_class: [
-    { key: "resource.id", type: "string", label: "Ticket Class ID" },
-    { key: "resource.event_id", type: "string", label: "Event ID" },
-    { key: "resource.name", type: "string", label: "Name" },
-    { key: "resource.cost.display", type: "string", label: "Cost" },
-    { key: "resource.quantity_total", type: "number", label: "Quantity" },
-  ],
-  organizer: [
-    { key: "resource.id", type: "string", label: "Organizer ID" },
-    { key: "resource.name", type: "string", label: "Name" },
-    { key: "resource.url", type: "string", label: "URL" },
-  ],
-  venue: [
-    { key: "resource.id", type: "string", label: "Venue ID" },
-    { key: "resource.name", type: "string", label: "Name" },
-    { key: "resource.address.localized_address_display", type: "string", label: "Address" },
-  ],
-};
-
-/** One plausible record per type, for the editor's preview before a live delivery arrives. */
-const SAMPLE_RESOURCE: Record<ResourceType, { path: string; record: Record<string, unknown> }> = {
-  order: {
-    path: "orders/1234567890",
-    record: {
-      id: "1234567890",
-      event_id: "62541733007",
-      name: "Alex Doe",
-      first_name: "Alex",
-      last_name: "Doe",
-      email: "alex@example.com",
-      status: "placed",
-      created: "2026-10-08T09:00:00Z",
-      costs: { gross: { display: "$25.00" } },
-    },
-  },
-  attendee: {
-    path: "events/62541733007/attendees/2345678901",
-    record: {
-      id: "2345678901",
-      event_id: "62541733007",
-      order_id: "1234567890",
-      profile: { name: "Alex Doe", email: "alex@example.com" },
-      ticket_class_name: "General Admission",
-      checked_in: true,
-      status: "Checked In",
-    },
-  },
-  event: {
-    path: "events/62541733007",
-    record: {
-      id: "62541733007",
-      name: { text: "Launch Night" },
-      url: "https://www.eventbrite.com/e/launch-night-tickets-62541733007",
-      start: { utc: "2026-11-01T18:00:00Z" },
-      end: { utc: "2026-11-01T21:00:00Z" },
-      status: "live",
-    },
-  },
-  ticket_class: {
-    path: "events/62541733007/ticket_classes/345678901",
-    record: {
-      id: "345678901",
-      event_id: "62541733007",
-      name: "General Admission",
-      cost: { display: "$25.00" },
-      quantity_total: 200,
-    },
-  },
-  organizer: {
-    path: "organizers/456789012",
-    record: {
-      id: "456789012",
-      name: "Example Events",
-      url: "https://www.eventbrite.com/o/456789012",
-    },
-  },
-  venue: {
-    path: "venues/567890123",
-    record: {
-      id: "567890123",
-      name: "Main Hall",
-      address: { localized_address_display: "1 Main St, Springfield" },
-    },
-  },
-};
-
 /** The sample `trigger.event` for one action. */
 function sampleFor(action: WebhookAction): TriggerEvent {
   const resourceType = action.split(".")[0] as ResourceType;
-  const { path, record } = SAMPLE_RESOURCE[resourceType];
+  const { path, record } = RESOURCE_SAMPLE[resourceType];
   const apiUrl = `${API_URL}/${path}/`;
   return {
     action,
     resourceType,
     resourceId: resourceIdOf(apiUrl),
     apiUrl,
-    webhookId: "2006536",
-    userId: "308733706151",
+    ...DELIVERY_SAMPLE,
     resource: GONE_ACTIONS.has(action) ? null : record,
   };
 }
