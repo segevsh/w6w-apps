@@ -33,6 +33,10 @@ const starAdd: ActionDefinition<Input> = {
     { key: "fileComment", label: "File comment ID", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = { channel: input.channel };

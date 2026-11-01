@@ -2,6 +2,12 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import {
+  EVENT_EXPANDED_SAMPLE,
+  EVENT_LIST_ITEM_OUTPUT,
+  PAGINATION_OUTPUT,
+  PAGINATION_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   scope?: "organization" | "venue" | "series";
@@ -150,9 +156,13 @@ const listEvents: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    { key: "events", type: "array", label: "Events" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "events", type: "array", label: "Events", items: EVENT_LIST_ITEM_OUTPUT },
+    ...PAGINATION_OUTPUT,
   ],
+  sample: {
+    events: [EVENT_EXPANDED_SAMPLE],
+    pagination: PAGINATION_SAMPLE,
+  },
   idempotent: true,
 
   execute(input, ctx) {

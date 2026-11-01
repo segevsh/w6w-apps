@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { QUESTION_OUTPUT, QUESTION_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -17,14 +18,8 @@ const getCustomQuestion: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "questionId", label: "Question ID", type: "string", required: true },
   ],
-  output: [
-    { key: "id", type: "string", label: "ID" },
-    { key: "question", type: "object", label: "Question text" },
-    { key: "type", type: "string", label: "Type" },
-    { key: "required", type: "boolean", label: "Required" },
-    { key: "respondent", type: "string", label: "Respondent" },
-    { key: "choices", type: "array", label: "Choices" },
-  ],
+  output: QUESTION_OUTPUT,
+  sample: QUESTION_SAMPLE,
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(

@@ -19,6 +19,12 @@ const channelMember: ActionDefinition<Input> = {
     { key: "cursor", label: "Cursor", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "members", type: "array", label: "Member user IDs" },
+    { key: "response_metadata", type: "object", label: "Pagination metadata" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.members", {

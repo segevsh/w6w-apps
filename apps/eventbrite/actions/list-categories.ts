@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { CATEGORY_LIST_OUTPUT, CATEGORY_SAMPLE, PAGINATION_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   page?: number;
@@ -17,11 +18,8 @@ const action: ActionDefinition<Input> = {
     { key: "page", label: "Page number", type: "number" },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
-  output: [
-    { key: "locale", type: "string", label: "Locale" },
-    { key: "categories", type: "array", label: "List Categories" },
-    { key: "pagination", type: "object", label: "Pagination" },
-  ],
+  output: [...CATEGORY_LIST_OUTPUT],
+  sample: { locale: "en_US", categories: [CATEGORY_SAMPLE], pagination: PAGINATION_SAMPLE },
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

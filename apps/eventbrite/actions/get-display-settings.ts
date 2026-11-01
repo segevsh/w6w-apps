@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { DISPLAY_SETTINGS_OUTPUT, DISPLAY_SETTINGS_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -15,18 +16,8 @@ const action: ActionDefinition<Input> = {
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
   ],
-  output: [
-    { key: "show_start_date", type: "boolean", label: "Show start date" },
-    { key: "show_end_date", type: "boolean", label: "Show end date" },
-    { key: "show_start_end_time", type: "boolean", label: "Show start/end time" },
-    { key: "show_timezone", type: "boolean", label: "Show timezone" },
-    { key: "show_map", type: "boolean", label: "Show map" },
-    { key: "show_remaining", type: "boolean", label: "Show remaining tickets" },
-    { key: "show_organizer_facebook", type: "boolean", label: "Show organizer Facebook link" },
-    { key: "show_organizer_twitter", type: "boolean", label: "Show organizer Twitter link" },
-    { key: "show_facebook_friends_going", type: "boolean", label: "Show Facebook friends going" },
-    { key: "terminology", type: "string", label: "Terminology" },
-  ],
+  output: [...DISPLAY_SETTINGS_OUTPUT],
+  sample: DISPLAY_SETTINGS_SAMPLE,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);

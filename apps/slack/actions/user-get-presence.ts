@@ -15,6 +15,16 @@ const userGetPresence: ActionDefinition<Input> = {
     { key: "user", label: "User ID", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "presence", type: "string", label: "Presence (active or away)" },
+    { key: "online", type: "boolean", label: "Connected" },
+    { key: "auto_away", type: "boolean", label: "Auto-away" },
+    { key: "manual_away", type: "boolean", label: "Manually away" },
+    { key: "connection_count", type: "number", label: "Connection count" },
+    { key: "last_activity", type: "number", label: "Last activity (unix seconds)" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/users.getPresence", { query: { user: input.user } });

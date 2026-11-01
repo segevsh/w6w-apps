@@ -19,6 +19,10 @@ const reactionRemove: ActionDefinition<Input> = {
     { key: "name", label: "Emoji name", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.remove", {

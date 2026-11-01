@@ -17,6 +17,14 @@ const starGetMany: ActionDefinition<Input> = {
     { key: "cursor", label: "Cursor", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "items", type: "array", label: "Starred items" },
+    { key: "paging.count", type: "number", label: "Page size" },
+    { key: "paging.total", type: "number", label: "Total items" },
+    { key: "response_metadata", type: "object", label: "Pagination metadata" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/stars.list", {

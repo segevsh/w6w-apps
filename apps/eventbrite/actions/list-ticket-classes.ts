@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE, TICKET_CLASS_OUTPUT } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -26,10 +27,13 @@ const listTicketClasses: ActionDefinition<Input> = {
     },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
-  output: [
-    { key: "ticket_classes", type: "array", label: "Ticket classes" },
-    { key: "pagination", type: "object", label: "Pagination" },
-  ],
+  output: [{
+    key: "ticket_classes",
+    type: "array",
+    label: "Ticket classes",
+    items: TICKET_CLASS_OUTPUT,
+  }, ...PAGINATION_CONTINUATION_OUTPUT],
+  sample: T5_SAMPLE.ticketClasses,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

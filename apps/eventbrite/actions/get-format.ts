@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { FORMAT_OUTPUT, FORMAT_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   formatId: string;
@@ -13,14 +14,8 @@ const action: ActionDefinition<Input> = {
   description: "Retrieve an event format by ID.",
   idempotent: true,
   params: [{ key: "formatId", label: "Format ID", type: "string", required: true }],
-  output: [
-    { key: "id", type: "string", label: "ID" },
-    { key: "name", type: "string", label: "Name" },
-    { key: "name_localized", type: "string", label: "Localized name" },
-    { key: "short_name", type: "string", label: "Short name" },
-    { key: "short_name_localized", type: "string", label: "Localized short name" },
-    { key: "resource_uri", type: "string", label: "Resource URI" },
-  ],
+  output: [...FORMAT_OUTPUT],
+  sample: FORMAT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

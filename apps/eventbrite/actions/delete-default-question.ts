@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { DELETED_OUTPUT, DELETED_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -18,7 +19,8 @@ const deleteDefaultQuestion: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "questionId", label: "Question ID", type: "string", required: true },
   ],
-  output: [{ key: "deleted", type: "boolean", label: "Deleted" }],
+  output: DELETED_OUTPUT,
+  sample: DELETED_SAMPLE,
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(

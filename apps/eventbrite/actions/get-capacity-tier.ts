@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { CAPACITY_TIER_OUTPUT, CAPACITY_TIER_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -16,17 +17,8 @@ const action: ActionDefinition<Input> = {
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
   ],
-  output: [
-    { key: "event_id", type: "string", label: "Event ID" },
-    { key: "quantity_pending", type: "number", label: "Pending quantity" },
-    { key: "quantity_sold", type: "number", label: "Sold quantity" },
-    { key: "quantity_total", type: "number", label: "Available quantity" },
-    { key: "capacity_pending", type: "number", label: "Pending capacity" },
-    { key: "capacity_sold", type: "number", label: "Sold capacity" },
-    { key: "capacity_total", type: "number", label: "Total capacity" },
-    { key: "capacity_is_custom", type: "boolean", label: "Capacity is custom" },
-    { key: "holds", type: "array", label: "Holds" },
-  ],
+  output: CAPACITY_TIER_OUTPUT,
+  sample: CAPACITY_TIER_SAMPLE,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);

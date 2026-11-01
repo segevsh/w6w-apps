@@ -23,6 +23,12 @@ const messageGetManyScheduled: ActionDefinition<Input> = {
     { key: "cursor", label: "Cursor", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "scheduled_messages", type: "array", label: "Scheduled messages" },
+    { key: "response_metadata", type: "object", label: "Pagination metadata" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/chat.scheduledMessages.list", {

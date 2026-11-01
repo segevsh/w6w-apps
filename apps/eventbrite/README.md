@@ -95,6 +95,13 @@ key on `trigger.event.id` (host-issued) or the record's own id when that matters
 
 ## Pickers
 
+**Webhook actions** — Create Webhook and the Activity trigger use checkboxes with **Select all**.
+Select any combination of the 15 supported actions. The app sends them to Eventbrite as a
+comma-separated string (for example, `event.created,order.placed`). Selecting all sends all 15
+names explicitly; it does not rely on an undocumented wildcard or an empty selection meaning all.
+Create Webhook omits `actions` when no action is selected, preserving Eventbrite's default behavior.
+
+
 Three params ask Eventbrite for their choices while the form is open, on the connection the
 step already uses:
 

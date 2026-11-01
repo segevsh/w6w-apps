@@ -6,6 +6,7 @@ import {
   eventFieldParams,
   type EventFields,
 } from "./create-event.ts";
+import { EVENT_SAMPLE } from "../lib/outputs.ts";
 
 interface Input extends EventFields {
   eventId: string;
@@ -24,6 +25,7 @@ const updateEvent: ActionDefinition<Input> = {
     ...eventFieldParams({ create: false }),
   ],
   output: [...EVENT_OUTPUT],
+  sample: EVENT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

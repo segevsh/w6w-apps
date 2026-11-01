@@ -135,6 +135,10 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "job_id", type: "string", label: "Import job ID" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const email = String(p.email ?? "").trim();

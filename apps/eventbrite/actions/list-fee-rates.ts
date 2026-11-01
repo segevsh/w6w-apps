@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { FEE_RATE_OUTPUT, PAGINATION_CONTINUATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   country: string;
@@ -152,17 +153,10 @@ const action: ActionDefinition<Input> = {
     },
   ],
   output: [
-    {
-      "key": "fee_rates",
-      "type": "array",
-      "label": "Fee rates",
-    },
-    {
-      "key": "pagination",
-      "type": "object",
-      "label": "Pagination",
-    },
+    { key: "fee_rates", type: "array", label: "Fee rates", items: FEE_RATE_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: T5_SAMPLE.feeRates,
   idempotent: true,
 
   execute(input, ctx) {

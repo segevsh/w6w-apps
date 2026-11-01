@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { MEDIA_OUTPUT, MEDIA_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   uploadToken: string;
@@ -32,10 +33,8 @@ const uploadMedia: ActionDefinition<Input> = {
     { key: "cropHeight", label: "Crop height", type: "number", advanced: true },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
-  output: [
-    { key: "id", type: "string", label: "Media ID" },
-    { key: "url", type: "string", label: "Image URL" },
-  ],
+  output: [...MEDIA_OUTPUT],
+  sample: MEDIA_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

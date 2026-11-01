@@ -31,6 +31,15 @@ const messageSearch: ActionDefinition<Input> = {
     { key: "page", label: "Page", type: "number" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "query", type: "string", label: "Search query" },
+    { key: "messages.total", type: "number", label: "Total matches" },
+    { key: "messages.matches", type: "array", label: "Matching messages" },
+    { key: "messages.paging.page", type: "number", label: "Current page" },
+    { key: "messages.paging.pages", type: "number", label: "Total pages" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/search.messages", {

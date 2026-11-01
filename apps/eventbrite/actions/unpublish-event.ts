@@ -14,6 +14,7 @@ const action: ActionDefinition<Input> = {
     "Unpublish a live event on Eventbrite. Fails if the event has pending or completed orders (with limited exceptions for completed paid events). Unpublishing a series parent unpublishes all occurrences.",
   params: [{ key: "eventId", label: "Event ID", type: "string", required: true }],
   output: [{ key: "unpublished", type: "boolean", label: "Unpublished" }],
+  sample: { unpublished: true },
   idempotent: false,
 
   execute(input, ctx) {
