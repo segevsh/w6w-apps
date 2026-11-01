@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { T5_SAMPLE, TICKET_GROUP_LIST_OUTPUT } from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -45,10 +46,8 @@ const action: ActionDefinition<Input> = {
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
-  output: [
-    { key: "ticket_groups", type: "array", label: "Ticket groups" },
-    { key: "pagination", type: "object", label: "Pagination" },
-  ],
+  output: TICKET_GROUP_LIST_OUTPUT,
+  sample: T5_SAMPLE.ticketGroups,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);

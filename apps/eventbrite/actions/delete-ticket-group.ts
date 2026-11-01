@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   ticketGroupId: string;
@@ -15,9 +16,8 @@ const action: ActionDefinition<Input> = {
   params: [
     { key: "ticketGroupId", label: "Ticket group ID", type: "string", required: true },
   ],
-  output: [
-    { key: "deleted", type: "boolean", label: "Deleted" },
-  ],
+  output: [{ key: "deleted", type: "boolean", label: "Deleted" }],
+  sample: T5_SAMPLE.deleted,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);
