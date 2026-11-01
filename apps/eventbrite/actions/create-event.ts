@@ -3,7 +3,7 @@ import type { Param } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
-import { EVENT_OUTPUT } from "../lib/outputs.ts";
+import { EVENT_OUTPUT, EVENT_SAMPLE } from "../lib/outputs.ts";
 
 export interface EventFields {
   name?: string;
@@ -196,6 +196,7 @@ const createEvent: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [...EVENT_OUTPUT],
+  sample: EVENT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

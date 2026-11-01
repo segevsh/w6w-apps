@@ -13,6 +13,7 @@ const getEventDescription: ActionDefinition<Input> = {
   description: "Retrieve the fully rendered HTML description of an event.",
   params: [{ key: "eventId", label: "Event ID", type: "string", required: true }],
   output: [{ key: "description", type: "string", label: "Description (HTML)" }],
+  sample: { description: "<p>An example event description.</p>" },
   idempotent: true,
 
   execute(input, ctx) {

@@ -14,6 +14,7 @@ const action: ActionDefinition<Input> = {
     "Publish a draft event on Eventbrite, making it live. Requires a name, description, organizer, at least one ticket and valid payment options. Publishing a series parent publishes all occurrences.",
   params: [{ key: "eventId", label: "Event ID", type: "string", required: true }],
   output: [{ key: "published", type: "boolean", label: "Published" }],
+  sample: { published: true },
   idempotent: false,
 
   execute(input, ctx) {
