@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { QUESTION_OUTPUT, QUESTION_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -25,7 +26,8 @@ const getDefaultQuestion: ActionDefinition<Input> = {
       hint: "Canned question ID, e.g. `email`, `job_title`.",
     },
   ],
-  output: [{ key: "question", type: "object", label: "Default question" }],
+  output: QUESTION_OUTPUT,
+  sample: QUESTION_SAMPLE,
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(

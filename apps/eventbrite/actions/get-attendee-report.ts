@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { REPORT_OUTPUT, REPORT_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -88,11 +89,8 @@ const action: ActionDefinition<Input> = {
     },
     { key: "timezone", label: "Timezone", type: "string", placeholder: "America/Los_Angeles" },
   ],
-  output: [
-    { key: "timezone", type: "string", label: "Timezone" },
-    { key: "event_ids", type: "array", label: "Event IDs" },
-    { key: "data", type: "array", label: "Report rows" },
-  ],
+  output: REPORT_OUTPUT,
+  sample: REPORT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

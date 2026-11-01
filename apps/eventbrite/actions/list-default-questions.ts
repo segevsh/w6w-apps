@@ -1,4 +1,10 @@
 import type { ActionDefinition } from "@w6w/types";
+import {
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+  QUESTION_LIST_ITEM_OUTPUT,
+  QUESTION_SAMPLE,
+} from "../lib/outputs.ts";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 
 interface Input {
@@ -20,9 +26,10 @@ const listDefaultQuestions: ActionDefinition<Input> = {
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [
-    { key: "questions", type: "array", label: "Default questions" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "questions", type: "array", label: "Questions", items: QUESTION_LIST_ITEM_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: { questions: [QUESTION_SAMPLE], pagination: PAGINATION_CONTINUATION_SAMPLE },
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"questions">>(

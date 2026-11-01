@@ -116,13 +116,8 @@ const action: ActionDefinition<Input> = {
       "hint": "Defaults to web.",
     },
   ],
-  output: [
-    {
-      "key": "item_pricing",
-      "type": "object",
-      "label": "Item pricing",
-    },
-  ],
+  output: [{ key: "item_pricing", type: "object", label: "Item pricing" }],
+  sample: { item_pricing: {} },
   idempotent: true,
 
   execute(input, ctx) {

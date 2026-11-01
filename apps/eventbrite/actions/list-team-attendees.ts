@@ -1,4 +1,10 @@
 import type { ActionDefinition } from "@w6w/types";
+import {
+  ATTENDEE_OUTPUT,
+  ATTENDEE_SAMPLE,
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+} from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -20,9 +26,10 @@ const listTeamAttendees: ActionDefinition<Input> = {
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   output: [
-    { key: "attendees", type: "array", label: "Attendees" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "attendees", type: "array", label: "Attendees", items: ATTENDEE_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: { attendees: [ATTENDEE_SAMPLE], pagination: PAGINATION_CONTINUATION_SAMPLE },
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
