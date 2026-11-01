@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { TICKET_BUYER_SETTINGS_OUTPUT, TICKET_BUYER_SETTINGS_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
 
@@ -65,20 +66,8 @@ const action: ActionDefinition<Input> = {
         "Merged (deep) into the request object for any field not listed above, using Eventbrite's snake_case names.",
     },
   ],
-  output: [
-    { key: "confirmation_message", type: "object", label: "Confirmation message" },
-    { key: "instructions", type: "object", label: "Instructions" },
-    { key: "sales_ended_message", type: "object", label: "Sales ended message" },
-    { key: "survey_info", type: "object", label: "Survey info" },
-    { key: "event_id", type: "string", label: "Event ID" },
-    { key: "survey_name", type: "string", label: "Survey name" },
-    { key: "refund_request_enabled", type: "boolean", label: "Refund requests enabled" },
-    { key: "allow_attendee_update", type: "boolean", label: "Attendee update allowed" },
-    { key: "survey_time_limit", type: "number", label: "Survey time limit (minutes)" },
-    { key: "redirect_url", type: "string", label: "Redirect URL" },
-    { key: "survey_respondent", type: "string", label: "Survey respondent" },
-    { key: "survey_ticket_classes", type: "array", label: "Survey ticket classes" },
-  ],
+  output: TICKET_BUYER_SETTINGS_OUTPUT,
+  sample: TICKET_BUYER_SETTINGS_SAMPLE,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);

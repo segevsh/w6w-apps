@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { INVENTORY_TIER_OUTPUT, INVENTORY_TIER_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -26,13 +27,8 @@ const action: ActionDefinition<Input> = {
       "required": true,
     },
   ],
-  output: [
-    {
-      "key": "inventory_tier",
-      "type": "object",
-      "label": "Inventory tier",
-    },
-  ],
+  output: INVENTORY_TIER_OUTPUT,
+  sample: INVENTORY_TIER_SAMPLE,
   idempotent: true,
 
   execute(input, ctx) {

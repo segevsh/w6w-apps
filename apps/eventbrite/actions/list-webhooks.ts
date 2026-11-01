@@ -1,6 +1,12 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import {
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+  WEBHOOK_OUTPUT,
+  WEBHOOK_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -25,9 +31,13 @@ const listWebhooks: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    { key: "webhooks", type: "array", label: "Webhooks" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "webhooks", type: "array", label: "Webhooks", items: WEBHOOK_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: {
+    webhooks: [WEBHOOK_SAMPLE],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

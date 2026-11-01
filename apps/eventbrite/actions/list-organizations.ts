@@ -1,5 +1,11 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import {
+  ORGANIZATION_OUTPUT,
+  ORGANIZATION_SAMPLE,
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   userId?: string;
@@ -22,9 +28,13 @@ const listOrganizations: ActionDefinition<Input> = {
     { key: "page", label: "Page", type: "number", default: 1 },
   ],
   output: [
-    { key: "organizations", type: "array", label: "Organizations" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "organizations", type: "array", label: "Organizations", items: ORGANIZATION_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: {
+    organizations: [ORGANIZATION_SAMPLE],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

@@ -29,6 +29,13 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "id", type: "string", label: "List ID" },
+    { key: "name", type: "string", label: "List name" },
+    { key: "contact_count", type: "number", label: "Contact count" },
+    { key: "_metadata.self", type: "string", label: "Self URL" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const listId = String(p.listId ?? "").trim();

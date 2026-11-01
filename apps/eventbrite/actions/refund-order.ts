@@ -82,9 +82,8 @@ const refundOrder: ActionDefinition<Input> = {
     },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
-  output: [
-    { key: "error", type: "string", label: "Error code (on failure)" },
-  ],
+  output: [],
+  sample: {},
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

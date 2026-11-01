@@ -29,6 +29,14 @@ const messageUpdate: ActionDefinition<Input> = {
     { key: "parse", label: "Parse", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "ts", type: "string", label: "Message timestamp" },
+    { key: "text", type: "string", label: "Updated text" },
+    { key: "message", type: "object", label: "Updated message" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = { channel: input.channel, ts: input.ts };

@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
+import { TICKET_CLASS_OUTPUT, TICKET_CLASS_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -121,23 +122,8 @@ const action: ActionDefinition<Input> = {
         "Merged (deep) into the request object for any field not listed above, using Eventbrite's snake_case names.",
     },
   ],
-  output: [
-    { key: "id", type: "string", label: "ID" },
-    { key: "name", type: "string", label: "Name" },
-    { key: "display_name", type: "string", label: "Display name" },
-    { key: "description", type: "string", label: "Description" },
-    { key: "cost", type: "object", label: "Cost" },
-    { key: "capacity", type: "number", label: "Capacity" },
-    { key: "quantity_total", type: "number", label: "Quantity total" },
-    { key: "quantity_sold", type: "number", label: "Quantity sold" },
-    { key: "sales_start", type: "string", label: "Sales start" },
-    { key: "sales_end", type: "string", label: "Sales end" },
-    { key: "hidden", type: "boolean", label: "Hidden" },
-    { key: "free", type: "boolean", label: "Free" },
-    { key: "donation", type: "boolean", label: "Donation" },
-    { key: "event_id", type: "string", label: "Event ID" },
-    { key: "resource_uri", type: "string", label: "Resource URI" },
-  ],
+  output: TICKET_CLASS_OUTPUT,
+  sample: TICKET_CLASS_SAMPLE,
 
   async execute(input, ctx) {
     const client = new EventbriteClient(ctx);

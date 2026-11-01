@@ -34,6 +34,15 @@ const fileGetMany: ActionDefinition<Input> = {
     { key: "page", label: "Page", type: "number" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "files", type: "array", label: "Files" },
+    { key: "paging.count", type: "number", label: "Page size" },
+    { key: "paging.total", type: "number", label: "Total files" },
+    { key: "paging.page", type: "number", label: "Current page" },
+    { key: "paging.pages", type: "number", label: "Total pages" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/files.list", {

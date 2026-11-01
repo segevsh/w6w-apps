@@ -19,6 +19,13 @@ const userGetMany: ActionDefinition<Input> = {
     { key: "includeLocale", label: "Include locale", type: "boolean" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "members", type: "array", label: "Users" },
+    { key: "cache_ts", type: "number", label: "Cache timestamp" },
+    { key: "response_metadata", type: "object", label: "Pagination metadata" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/users.list", {

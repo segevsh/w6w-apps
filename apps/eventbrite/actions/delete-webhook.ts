@@ -14,6 +14,7 @@ const deleteWebhook: ActionDefinition<Input> = {
   idempotent: true,
   params: [{ key: "webhookId", label: "Webhook ID", type: "string", required: true }],
   output: [],
+  sample: {},
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

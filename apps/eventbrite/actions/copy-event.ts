@@ -2,6 +2,7 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
 import { EVENT_OUTPUT } from "./create-event.ts";
+import { EVENT_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -42,6 +43,7 @@ const copyEvent: ActionDefinition<Input> = {
     },
   ],
   output: [...EVENT_OUTPUT],
+  sample: EVENT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

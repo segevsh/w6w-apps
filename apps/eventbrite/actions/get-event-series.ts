@@ -1,7 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
-import { EVENT_OUTPUT } from "./create-event.ts";
+import { EVENT_SERIES_OUTPUT, EVENT_SERIES_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventSeriesId: string;
@@ -25,7 +25,8 @@ const getEventSeries: ActionDefinition<Input> = {
       hint: "Select one or more related resources to include.",
     },
   ],
-  output: [...EVENT_OUTPUT, { key: "series_dates", type: "array", label: "Series dates" }],
+  output: [...EVENT_SERIES_OUTPUT],
+  sample: EVENT_SERIES_SAMPLE,
   idempotent: true,
 
   execute(input, ctx) {

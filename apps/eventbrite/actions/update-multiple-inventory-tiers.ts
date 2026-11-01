@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { INVENTORY_TIERS_OUTPUT, INVENTORY_TIERS_SAMPLE } from "../lib/outputs.ts";
 
 type Obj = Record<string, unknown>;
 
@@ -44,13 +45,8 @@ const action: ActionDefinition<Input> = {
         'Array of objects, each with the tier `id` plus only the fields to change, e.g. [{"id":"1234","name":"New"}].',
     },
   ],
-  output: [
-    {
-      "key": "inventory_tiers",
-      "type": "array",
-      "label": "Inventory tiers",
-    },
-  ],
+  output: INVENTORY_TIERS_OUTPUT,
+  sample: INVENTORY_TIERS_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

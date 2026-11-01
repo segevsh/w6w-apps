@@ -31,6 +31,14 @@ const channelHistory: ActionDefinition<Input> = {
     { key: "cursor", label: "Cursor", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "messages", type: "array", label: "Messages" },
+    { key: "has_more", type: "boolean", label: "More messages available" },
+    { key: "pin_count", type: "number", label: "Pinned item count" },
+    { key: "response_metadata", type: "object", label: "Pagination metadata" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.history", {

@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { ATTENDEE_DETAIL_OUTPUT, ATTENDEE_DETAIL_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -17,21 +18,8 @@ const getAttendee: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "attendeeId", label: "Attendee ID", type: "string", required: true },
   ],
-  output: [
-    { key: "id", type: "string", label: "Attendee ID" },
-    { key: "created", type: "string", label: "Created" },
-    { key: "changed", type: "string", label: "Changed" },
-    { key: "profile", type: "object", label: "Profile" },
-    { key: "ticket_class_id", type: "string", label: "Ticket class ID" },
-    { key: "ticket_class_name", type: "string", label: "Ticket class" },
-    { key: "status", type: "string", label: "Status" },
-    { key: "checked_in", type: "boolean", label: "Checked in" },
-    { key: "cancelled", type: "boolean", label: "Cancelled" },
-    { key: "refunded", type: "boolean", label: "Refunded" },
-    { key: "costs", type: "object", label: "Costs" },
-    { key: "order_id", type: "string", label: "Order ID" },
-    { key: "event_id", type: "string", label: "Event ID" },
-  ],
+  output: ATTENDEE_DETAIL_OUTPUT,
+  sample: ATTENDEE_DETAIL_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

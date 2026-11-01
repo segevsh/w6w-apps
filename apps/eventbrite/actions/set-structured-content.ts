@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
+import { STRUCTURED_CONTENT_OUTPUT, STRUCTURED_CONTENT_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -71,13 +72,8 @@ const setStructuredContent: ActionDefinition<Input> = {
       hint: "Object deep-merged into the request body.",
     },
   ],
-  output: [
-    { key: "access_type", type: "string", label: "Access type" },
-    { key: "modules", type: "array", label: "Modules" },
-    { key: "widgets", type: "array", label: "Widgets" },
-    { key: "page_version_number", type: "string", label: "Page version number" },
-    { key: "purpose", type: "string", label: "Purpose" },
-  ],
+  output: [...STRUCTURED_CONTENT_OUTPUT],
+  sample: STRUCTURED_CONTENT_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { ORGANIZER_OUTPUT, PAGINATION_OUTPUT, T5_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   organizationId: string;
@@ -27,9 +28,10 @@ const listOrganizers: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    { key: "organizers", type: "array", label: "Organizers" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "organizers", type: "array", label: "Organizers", items: ORGANIZER_OUTPUT },
+    ...PAGINATION_OUTPUT,
   ],
+  sample: T5_SAMPLE.organizers,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

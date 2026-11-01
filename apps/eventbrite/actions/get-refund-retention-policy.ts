@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { REFUND_RETENTION_POLICY_OUTPUT, REFUND_RETENTION_POLICY_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 
 interface Input {
@@ -30,11 +31,8 @@ const getRefundRetentionPolicy: ActionDefinition<Input> = {
       hint: "e.g. `10.00`. Pass for a partial refund; partial refunds do not retain the fee.",
     },
   ],
-  output: [
-    { key: "refund_retention_policy", type: "string", label: "Retention policy" },
-    { key: "retain_reasons", type: "array", label: "Reasons that retain the fee" },
-    { key: "no_retain_reasons", type: "array", label: "Reasons that never retain the fee" },
-  ],
+  output: REFUND_RETENTION_POLICY_OUTPUT,
+  sample: REFUND_RETENTION_POLICY_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

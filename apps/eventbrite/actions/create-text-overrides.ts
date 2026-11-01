@@ -74,11 +74,8 @@ const createTextOverrides: ActionDefinition<Input> = {
     { key: "extra", label: "Additional fields", type: "json" },
   ],
   resolveFields: resolveEventbriteFields,
-  output: [
-    { key: "text_code", type: "string", label: "Text code" },
-    { key: "message", type: "string", label: "Message" },
-    { key: "message_code", type: "string", label: "Message code" },
-  ],
+  output: [],
+  sample: {},
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

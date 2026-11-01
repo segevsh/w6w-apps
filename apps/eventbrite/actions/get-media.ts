@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { MEDIA_OUTPUT, MEDIA_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   mediaId: string;
@@ -19,10 +20,8 @@ const getMedia: ActionDefinition<Input> = {
     { key: "width", label: "Thumbnail width", type: "number" },
     { key: "height", label: "Thumbnail height", type: "number" },
   ],
-  output: [
-    { key: "id", type: "string", label: "Image ID" },
-    { key: "url", type: "string", label: "Image URL" },
-  ],
+  output: [...MEDIA_OUTPUT],
+  sample: MEDIA_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

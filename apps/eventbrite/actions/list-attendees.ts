@@ -1,6 +1,12 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import {
+  ATTENDEE_OUTPUT,
+  ATTENDEE_SAMPLE,
+  PAGINATION_CONTINUATION_OUTPUT,
+  PAGINATION_CONTINUATION_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   scope: "event" | "organization";
@@ -58,9 +64,13 @@ const listAttendees: ActionDefinition<Input> = {
   ],
   resolveFields: resolveEventbriteFields,
   output: [
-    { key: "attendees", type: "array", label: "Attendees" },
-    { key: "pagination", type: "object", label: "Pagination" },
+    { key: "attendees", type: "array", label: "Attendees", items: ATTENDEE_OUTPUT },
+    ...PAGINATION_CONTINUATION_OUTPUT,
   ],
+  sample: {
+    attendees: [ATTENDEE_SAMPLE],
+    pagination: PAGINATION_CONTINUATION_SAMPLE,
+  },
 
   execute(input, ctx) {
     if (input.scope === "organization" && input.status === "unpaid") {

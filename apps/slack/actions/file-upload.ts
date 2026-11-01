@@ -43,6 +43,11 @@ const fileUpload: ActionDefinition<Input> = {
     { key: "contentType", label: "Content type", type: "string", default: "text/plain" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "files", type: "array", label: "Completed files" },
+  ],
+
   async execute(input, ctx) {
     const client = new SlackClient(ctx);
 

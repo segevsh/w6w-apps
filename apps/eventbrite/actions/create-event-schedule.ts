@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
+import { SCHEDULE_OUTPUT, SCHEDULE_SAMPLE } from "../lib/outputs.ts";
 
 interface Input {
   eventId: string;
@@ -48,11 +49,8 @@ const createEventSchedule: ActionDefinition<Input> = {
       hint: "Object deep-merged into the `schedule` body.",
     },
   ],
-  output: [
-    { key: "id", type: "string", label: "Schedule ID" },
-    { key: "occurrence_duration", type: "number", label: "Occurrence duration" },
-    { key: "recurrence_rule", type: "string", label: "Recurrence rule" },
-  ],
+  output: [...SCHEDULE_OUTPUT],
+  sample: SCHEDULE_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

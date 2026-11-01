@@ -1,5 +1,9 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import {
+  MEDIA_UPLOAD_INSTRUCTIONS_OUTPUT,
+  MEDIA_UPLOAD_INSTRUCTIONS_SAMPLE,
+} from "../lib/outputs.ts";
 
 interface Input {
   type: string;
@@ -30,12 +34,8 @@ const getMediaUpload: ActionDefinition<Input> = {
       ],
     },
   ],
-  output: [
-    { key: "upload_url", type: "string", label: "Storage upload URL" },
-    { key: "upload_data", type: "object", label: "Form fields to send to the storage URL" },
-    { key: "file_parameter_name", type: "string", label: "File field name" },
-    { key: "upload_token", type: "string", label: "Upload token" },
-  ],
+  output: [...MEDIA_UPLOAD_INSTRUCTIONS_OUTPUT],
+  sample: MEDIA_UPLOAD_INSTRUCTIONS_SAMPLE,
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);

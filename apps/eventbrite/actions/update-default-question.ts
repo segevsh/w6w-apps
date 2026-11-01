@@ -1,4 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
+import { QUESTION_OUTPUT, QUESTION_SAMPLE } from "../lib/outputs.ts";
 import { EventbriteClient } from "../lib/client.ts";
 import { deepMerge } from "../lib/merge.ts";
 
@@ -55,7 +56,8 @@ const updateDefaultQuestion: ActionDefinition<Input> = {
     { key: "parentChoiceId", label: "Parent choice ID", type: "string" },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
-  output: [{ key: "question", type: "object", label: "Default question" }],
+  output: QUESTION_OUTPUT,
+  sample: QUESTION_SAMPLE,
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     const question: Record<string, unknown> = {};
