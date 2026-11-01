@@ -760,23 +760,6 @@ export const STRUCTURED_CONTENT_SAMPLE = {
   purpose: "listing",
 };
 
-/** The text overrides of an organization/event/venue (`get-`/`create-text-overrides`). */
-export const TEXT_OVERRIDES_OUTPUT: OutputField[] = [
-  s("locale", "Locale"),
-  a("strings", "Text overrides", [
-    s("text_code", "Text code"),
-    s("message", "Message"),
-    s("message_code", "Message code"),
-  ]),
-];
-
-export const TEXT_OVERRIDES_SAMPLE = {
-  locale: "en_US",
-  strings: [
-    { text_code: "tickets_sold_out", message: "Sold out - join the waitlist", message_code: "" },
-  ],
-};
-
 /** A schedule created on a series parent. */
 export const SCHEDULE_OUTPUT: OutputField[] = [
   s("id", "Schedule ID"),

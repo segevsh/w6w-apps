@@ -1,7 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
-import { TEXT_OVERRIDES_OUTPUT, TEXT_OVERRIDES_SAMPLE } from "../lib/outputs.ts";
 
 interface Override {
   textCode: string;
@@ -75,8 +74,8 @@ const createTextOverrides: ActionDefinition<Input> = {
     { key: "extra", label: "Additional fields", type: "json" },
   ],
   resolveFields: resolveEventbriteFields,
-  output: [...TEXT_OVERRIDES_OUTPUT],
-  sample: TEXT_OVERRIDES_SAMPLE,
+  output: [],
+  sample: {},
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
