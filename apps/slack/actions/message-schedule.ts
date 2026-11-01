@@ -43,6 +43,14 @@ const messageSchedule: ActionDefinition<Input> = {
     { key: "unfurlMedia", label: "Unfurl media", type: "boolean" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "scheduled_message_id", type: "string", label: "Scheduled message ID" },
+    { key: "post_at", type: "number", label: "Scheduled post time (unix seconds)" },
+    { key: "message", type: "object", label: "Scheduled message" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = {

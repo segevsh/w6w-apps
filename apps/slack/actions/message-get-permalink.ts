@@ -17,6 +17,12 @@ const messageGetPermalink: ActionDefinition<Input> = {
     { key: "ts", label: "Message ts", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "permalink", type: "string", label: "Permalink URL" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/chat.getPermalink", {

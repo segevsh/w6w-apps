@@ -29,6 +29,10 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "success", type: "boolean", label: "Succeeded" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const listId = String(p.listId ?? "").trim();

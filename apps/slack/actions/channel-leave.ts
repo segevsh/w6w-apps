@@ -15,6 +15,11 @@ const channelLeave: ActionDefinition<Input> = {
     { key: "channelId", label: "Channel ID", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "not_in_channel", type: "boolean", label: "Caller was not in the channel" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.leave", {

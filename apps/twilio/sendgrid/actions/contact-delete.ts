@@ -27,6 +27,11 @@ const action: ActionDefinition = {
     },
   ],
 
+  output: [
+    { key: "job_id", type: "string", label: "Deletion job ID" },
+    { key: "success", type: "boolean", label: "Succeeded (when SendGrid returns no body)" },
+  ],
+
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
     const deleteAll = p.deleteAll === true;

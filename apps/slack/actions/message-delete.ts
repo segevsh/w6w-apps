@@ -17,6 +17,12 @@ const messageDelete: ActionDefinition<Input> = {
     { key: "ts", label: "Message ts", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "ts", type: "string", label: "Deleted message timestamp" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/chat.delete", {

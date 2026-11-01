@@ -15,6 +15,12 @@ const channelClose: ActionDefinition<Input> = {
     { key: "channelId", label: "Channel ID", type: "string", required: true },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "no_op", type: "boolean", label: "Nothing changed" },
+    { key: "already_closed", type: "boolean", label: "Conversation was already closed" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.close", {

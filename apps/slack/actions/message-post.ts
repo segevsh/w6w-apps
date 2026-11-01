@@ -72,6 +72,14 @@ const messagePost: ActionDefinition<Input> = {
     { key: "username", label: "Username", type: "string" },
   ],
 
+  output: [
+    { key: "ok", type: "boolean", label: "Succeeded" },
+    { key: "channel", type: "string", label: "Channel ID" },
+    { key: "ts", type: "string", label: "Message timestamp (regular posts)" },
+    { key: "message_ts", type: "string", label: "Message timestamp (ephemeral posts)" },
+    { key: "message", type: "object", label: "Posted message" },
+  ],
+
   execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = { channel: input.channel };
