@@ -4,7 +4,7 @@ Create and run Eventbrite events end to end: events, tickets, inventory, discoun
 
 - **Categories** — commerce, calendar
 - **Auth methods** — personal-token, oauth2
-- **Actions** — 93
+- **Actions** — 94
 - **Triggers** — 16 (webhook)
 - **Egress allowlist** — `www.eventbriteapi.com`
 - **Website** — https://www.eventbrite.com
@@ -37,6 +37,24 @@ Where the blueprint disagrees with itself, the actions follow the vendor's worki
 - **Scope-specific filters** stay within their documented endpoints: unpaid attendees require
   Event scope; order status and email filters apply to Event/Organization scopes; sorting
   events by name requires Organization scope.
+
+## Get resource by URL
+
+`get-by-url` fetches any record from its API URL in one step, so a workflow fed by an Eventbrite
+webhook (whose body is just `{ config, api_url }`) needs no router choosing among the `get-*`
+actions. Bind **URL** to the delivery's `api_url` (`{{ trigger.event.apiUrl }}` from this app's
+triggers); **Expand** is an optional comma-separated list sent as `?expand=` and replaces any
+`expand` already on the URL.
+
+It returns the record unchanged plus `resource_type`, the singular of the last collection named in
+the path: `/v3/orders/1/` → `order`, `/v3/events/1/attendees/2/` → `attendee`,
+`/v3/events/1/ticket_classes/3/` → `ticket_class`, `/v3/users/me/` → `user`. A list URL
+(`/v3/events/1/attendees/`) reports the type of its items, so route on single-record URLs.
+
+The URL is signed with the connection's credential, so only
+`https://www.eventbriteapi.com/v3/…` is accepted. The action refuses any other scheme, host or
+port, credentials in the URL, `.`/`..` segments, encoded dots or slashes, backslashes, whitespace
+and control characters, all before it sends a request.
 
 ## Triggers
 

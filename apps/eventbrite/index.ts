@@ -94,6 +94,7 @@ import getFormat from "./actions/get-format.ts";
 import getMedia from "./actions/get-media.ts";
 import getMediaUpload from "./actions/get-media-upload.ts";
 import uploadMedia from "./actions/upload-media.ts";
+import getByUrl from "./actions/get-by-url.ts";
 import orderPlaced from "./triggers/order-placed.ts";
 import orderRefunded from "./triggers/order-refunded.ts";
 import orderUpdated from "./triggers/order-updated.ts";
@@ -208,6 +209,7 @@ export default {
     getMedia,
     getMediaUpload,
     uploadMedia,
+    getByUrl,
   ],
   triggers: [
     orderPlaced,
