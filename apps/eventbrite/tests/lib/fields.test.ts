@@ -88,25 +88,25 @@ test("organizerId: org-scoped, id encoded, no org request", async () => {
   assertEquals(out.fields.organizerId?.options, [{ value: "9", label: "Org9" }]);
 });
 
-test("organizerId: org-scoped pagination (page + continuation)", async () => {
+test("organizerId: uses page numbers even when the response also has continuation tokens", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
         organizers: [{ id: "1", name: "A" }],
-        pagination: { has_more_items: true, page_number: 1 },
+        pagination: { has_more_items: true, page_number: 1, continuation: "ignored" },
       },
     },
     {
       body: {
         organizers: [{ id: "2", name: "B" }],
-        pagination: { has_more_items: true, continuation: "c" },
+        pagination: { has_more_items: true, page_number: 2, continuation: "ignored" },
       },
     },
     { body: { organizers: [{ id: "3", name: "C" }], pagination: { has_more_items: false } } },
   ]);
   const out = await resolveEventbriteFields(input(["organizerId"], { organizationId: "5" }), ctx);
   assertEquals(calls[1].url, `${B}/organizations/5/organizers/?page=2`);
-  assertEquals(calls[2].url, `${B}/organizations/5/organizers/?continuation=c`);
+  assertEquals(calls[2].url, `${B}/organizations/5/organizers/?page=3`);
   assertEquals(out.fields.organizerId?.options?.length, 3);
 });
 

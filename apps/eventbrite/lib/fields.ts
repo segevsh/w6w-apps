@@ -8,11 +8,12 @@ interface Named {
   name?: string;
 }
 
-/** Page a list endpoint (continuation token if given, else page number) up to the cap. */
+/** Page a list endpoint using its supported pagination style, up to the cap. */
 async function listAll<K extends string>(
   ctx: HookContext,
   path: string,
   key: K,
+  pagination: "continuation" | "page" = "continuation",
 ): Promise<Named[]> {
   const client = new EventbriteClient(ctx);
   const items: Named[] = [];
@@ -28,7 +29,9 @@ async function listAll<K extends string>(
     items.push(...(res[key] ?? []));
     const p = res.pagination;
     if (!p?.has_more_items) break;
-    query = p.continuation
+    // Organizers returns a continuation token too, but ignores that query parameter:
+    // following it repeats page 1. That endpoint must advance with `page`.
+    query = pagination === "continuation" && p.continuation
       ? { continuation: p.continuation }
       : { page: (p.page_number ?? Number(query.page ?? 1)) + 1 };
   }
@@ -37,7 +40,7 @@ async function listAll<K extends string>(
 
 const listOrgs = (ctx: HookContext) => listAll(ctx, "/users/me/organizations/", "organizations");
 const listOrganizers = (ctx: HookContext, orgId: string) =>
-  listAll(ctx, `/organizations/${encodeURIComponent(orgId)}/organizers/`, "organizers");
+  listAll(ctx, `/organizations/${encodeURIComponent(orgId)}/organizers/`, "organizers", "page");
 
 /** Shared `resolveFields` hook for the Eventbrite organizer-bearing actions. */
 export const resolveEventbriteFields: ResolveFieldsHook = async (input, ctx) => {
