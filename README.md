@@ -156,6 +156,7 @@ App IDs and versions are unchanged. See [provider folders and building](docs/pro
 | deputy | hr, scheduling | permanent-token | 18 |
 | devin | developer-tools, ai | api-key | 12 |
 | dialpad | communication, support | api-key | 35 |
+| dice | commerce, analytics | api-token | 10 |
 | diffbot | ai, search, developer-tools | api-token | 20 |
 | digistore24 | commerce | api-key | 36 |
 | digitalocean | devops, storage | token | 15 |

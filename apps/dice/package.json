@@ -1,0 +1,51 @@
+{
+  "name": "@w6w-apps/dice",
+  "version": "0.1.0",
+  "description": "Read DICE partner events, ticket holders, orders, returns and transfers through the Ticket Holders GraphQL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "homepage": "https://dice.fm",
+  "internal": {
+    "tier": 2,
+    "lastReviewed": null
+  },
+  "w6w": {
+    "id": "io.w6w.dice",
+    "displayName": "DICE",
+    "apiDocs": [
+      "https://partners-endpoint.dice.fm/graphql/docs/index.html"
+    ],
+    "longDescription": "Connect a DICE MIO partner API token to fetch events, ticket holders, orders, returns, extras, ticket transfers and genre types. Named list actions return rows and cursor pagination for reporting and workflow iteration; a native GraphQL action accepts a query and variables for custom selections. This integration reads the partner Ticket Holders API; it does not sell tickets, create events, or perform check-in.",
+    "categories": [
+      "commerce",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "DICE"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "DICE"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "partners-endpoint.dice.fm"
+      ]
+    },
+    "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
+  }
+}
