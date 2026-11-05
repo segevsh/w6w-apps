@@ -18,8 +18,13 @@ const auth: AuthDefinition = {
     return request;
   },
 
-  async test({ credential: _credential }, ctx) {
-    const res = await ctx.fetch("https://api.sendgrid.com/v3/scopes");
+  async test({ credential }, ctx) {
+    const { apiKey } = (credential ?? {}) as { apiKey?: string };
+    if (!apiKey) return { ok: false, message: "credential missing apiKey" };
+    // Credential test hooks receive an unsigned fetch; sign() applies to actions.
+    const res = await ctx.fetch("https://api.sendgrid.com/v3/scopes", {
+      headers: { authorization: `Bearer ${apiKey}` },
+    });
     if (!res.ok) return { ok: false, message: `Auth check returned ${res.status}` };
     return { ok: true };
   },
