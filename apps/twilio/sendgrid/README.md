@@ -11,9 +11,8 @@ Consume SendGrid API
 
 ## Health check
 
-Three different questions get confused with each other, so this section keeps them
-apart: is the *vendor* up, is *this credential* live, and do we have *quota* left. Only
-the second is something the app itself performs.
+The app checks whether the *vendor* is up, whether *this credential* is live, and
+whether rate-limit *quota* remains.
 
 ### Is the vendor up?
 
@@ -31,22 +30,18 @@ poll.
 
 ### Is this credential live?
 
-This is what the Auth `test` hook does — the app's own health check, and the only one of
-the three it performs itself.
+The Auth `test` hook validates the configured API key.
 
 The single auth method probes:
 
 ```
-GET /v3/scopes
+GET https://api.sendgrid.com/v3/scopes
+Authorization: Bearer <apiKey>
 ```
 
-SendGrid's documented way to validate a key: it returns the permissions the key actually
-carries, so a pass tells you not just that the key is live but what it may do. This is
-what n8n probes too.
-
-Nothing in this app calls that endpoint: it is out-of-band context for whoever is
-diagnosing a failure, and the host it lives on is not in `w6w.network.allow`, so an
-action could not reach it even if it tried.
+The endpoint returns the key's available permissions. The test supplies the bearer
+header explicitly because credential test hooks receive an unsigned fetch. A successful
+response passes the check; a non-success response fails it and reports the HTTP status.
 
 ### Do we have quota left?
 
