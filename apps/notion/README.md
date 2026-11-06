@@ -17,8 +17,10 @@ Admin requests use `2026-06-01`. Documentation was downloaded on 2026-10-19.
   matching its schema. **Search Data Sources** finds IDs; **Get Database** returns the container's
   `data_sources`. A database ID and a data source ID identify different objects.
 
-For an ordinary page, the optional **Title** field builds the Notion title property. For a row,
-set the title property by its schema name, for example:
+The optional **Title** field builds the Notion title property. For a row it fills the data
+source's title column, whatever that column is named (the action reads the data source's schema
+to find it). You can instead set that column yourself in **Properties**, by its schema name —
+but not both:
 
 ```json
 {
