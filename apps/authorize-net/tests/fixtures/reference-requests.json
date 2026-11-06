@@ -1,0 +1,681 @@
+{
+  "authenticateTestRequest": {
+    "authenticateTestRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      }
+    }
+  },
+  "createTransactionRequest": {
+    "createTransactionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "transactionRequest": {
+        "transactionType": "authCaptureTransaction",
+        "amount": "5",
+        "payment": {
+          "creditCard": {
+            "cardNumber": "5424000000000015",
+            "expirationDate": "2025-12",
+            "cardCode": "999"
+          }
+        },
+        "lineItems": {
+          "lineItem": {
+            "itemId": "1",
+            "name": "vase",
+            "description": "Cannes logo",
+            "quantity": "18",
+            "unitPrice": "45.00"
+          }
+        },
+        "tax": {
+          "amount": "4.26",
+          "name": "level2 tax name",
+          "description": "level2 tax"
+        },
+        "duty": {
+          "amount": "8.55",
+          "name": "duty name",
+          "description": "duty description"
+        },
+        "shipping": {
+          "amount": "4.26",
+          "name": "level2 tax name",
+          "description": "level2 tax"
+        },
+        "poNumber": "456654",
+        "customer": {
+          "id": "99999456654"
+        },
+        "billTo": {
+          "firstName": "Ellen",
+          "lastName": "Johnson",
+          "company": "Souveniropolis",
+          "address": "14 Main Street",
+          "city": "Pecan Springs",
+          "state": "TX",
+          "zip": "44628",
+          "country": "US"
+        },
+        "shipTo": {
+          "firstName": "China",
+          "lastName": "Bayles",
+          "company": "Thyme for Tea",
+          "address": "12 Main Street",
+          "city": "Pecan Springs",
+          "state": "TX",
+          "zip": "44628",
+          "country": "US"
+        },
+        "customerIP": "192.168.1.1",
+        "transactionSettings": {
+          "setting": {
+            "settingName": "testRequest",
+            "settingValue": "false"
+          }
+        },
+        "userFields": {
+          "userField": [
+            {
+              "name": "MerchantDefinedFieldName1",
+              "value": "MerchantDefinedFieldValue1"
+            },
+            {
+              "name": "favorite_color",
+              "value": "blue"
+            }
+          ]
+        },
+        "processingOptions": {
+          "isSubsequentAuth": "true"
+        },
+        "subsequentAuthInformation": {
+          "originalNetworkTransId": "123456789NNNH",
+          "originalAuthAmount": "45.00",
+          "reason": "resubmission"
+        },
+        "authorizationIndicatorType": {
+          "authorizationIndicator": "final"
+        }
+      }
+    }
+  },
+  "getTransactionDetailsRequest": {
+    "getTransactionDetailsRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "transId": "12345"
+    }
+  },
+  "getTransactionListRequest": {
+    "getTransactionListRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "batchId": "6680535",
+      "sorting": {
+        "orderBy": "submitTimeUTC",
+        "orderDescending": "true"
+      },
+      "paging": {
+        "limit": "100",
+        "offset": "1"
+      }
+    }
+  },
+  "getUnsettledTransactionListRequest": {
+    "getUnsettledTransactionListRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "12345",
+      "status": "pendingApproval",
+      "sorting": {
+        "orderBy": "submitTimeUTC",
+        "orderDescending": false
+      },
+      "paging": {
+        "limit": "100",
+        "offset": "1"
+      }
+    }
+  },
+  "getTransactionListForCustomerRequest": {
+    "getTransactionListForCustomerRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "40025205",
+      "customerPaymentProfileId": "40027471",
+      "sorting": {
+        "orderBy": "submitTimeUTC",
+        "orderDescending": false
+      },
+      "paging": {
+        "limit": "100",
+        "offset": "1"
+      }
+    }
+  },
+  "updateHeldTransactionRequest": {
+    "updateHeldTransactionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "12345",
+      "heldTransactionRequest": {
+        "action": "approve",
+        "refTransId": "12345"
+      }
+    }
+  },
+  "getBatchStatisticsRequest": {
+    "getBatchStatisticsRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "batchId": "12345"
+    }
+  },
+  "getSettledBatchListRequest": {
+    "getSettledBatchListRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "firstSettlementDate": "2020-05-01T16:00:00Z",
+      "lastSettlementDate": "2020-05-31T16:00:00Z"
+    }
+  },
+  "createCustomerProfileRequest": {
+    "createCustomerProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "profile": {
+        "merchantCustomerId": "Merchant_Customer_ID",
+        "description": "Profile description here",
+        "email": "customer-profile-email@here.com",
+        "paymentProfiles": {
+          "customerType": "individual",
+          "payment": {
+            "creditCard": {
+              "cardNumber": "4111111111111111",
+              "expirationDate": "2025-12"
+            }
+          }
+        }
+      },
+      "validationMode": "testMode"
+    }
+  },
+  "createCustomerProfileFromTransactionRequest": {
+    "createCustomerProfileFromTransactionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "transId": "122"
+    }
+  },
+  "getCustomerProfileRequest": {
+    "getCustomerProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "includeIssuerInfo": "true"
+    }
+  },
+  "getCustomerProfileIdsRequest": {
+    "getCustomerProfileIdsRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      }
+    }
+  },
+  "updateCustomerProfileRequest": {
+    "updateCustomerProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "profile": {
+        "merchantCustomerId": "custId123",
+        "description": "some description",
+        "email": "newaddress@example.com",
+        "customerProfileId": "10000"
+      }
+    }
+  },
+  "deleteCustomerProfileRequest": {
+    "deleteCustomerProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000"
+    }
+  },
+  "createCustomerPaymentProfileRequest": {
+    "createCustomerPaymentProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "paymentProfile": {
+        "billTo": {
+          "firstName": "John",
+          "lastName": "Doe",
+          "address": "123 Main St.",
+          "city": "Bellevue",
+          "state": "WA",
+          "zip": "98004",
+          "country": "US",
+          "phoneNumber": "000-000-0000"
+        },
+        "payment": {
+          "creditCard": {
+            "cardNumber": "4111111111111111",
+            "expirationDate": "2023-12"
+          }
+        },
+        "defaultPaymentProfile": false
+      },
+      "validationMode": "liveMode"
+    }
+  },
+  "getCustomerPaymentProfileRequest": {
+    "getCustomerPaymentProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "customerPaymentProfileId": "20000",
+      "includeIssuerInfo": "true"
+    }
+  },
+  "getCustomerPaymentProfileListRequest": {
+    "getCustomerPaymentProfileListRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "searchType": "cardsExpiringInMonth",
+      "month": "2025-12",
+      "sorting": {
+        "orderBy": "id",
+        "orderDescending": "false"
+      },
+      "paging": {
+        "limit": "10",
+        "offset": "1"
+      }
+    }
+  },
+  "updateCustomerPaymentProfileRequest": {
+    "updateCustomerPaymentProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "paymentProfile": {
+        "billTo": {
+          "firstName": "John",
+          "lastName": "Doe",
+          "company": "",
+          "address": "123 Main St.",
+          "city": "Bellevue",
+          "state": "WA",
+          "zip": "98004",
+          "country": "US",
+          "phoneNumber": "000-000-0000",
+          "faxNumber": ""
+        },
+        "payment": {
+          "creditCard": {
+            "cardNumber": "4111111111111111",
+            "expirationDate": "2026-01"
+          }
+        },
+        "defaultPaymentProfile": false,
+        "customerPaymentProfileId": "20000"
+      },
+      "validationMode": "liveMode"
+    }
+  },
+  "deleteCustomerPaymentProfileRequest": {
+    "deleteCustomerPaymentProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "customerPaymentProfileId": "20000"
+    }
+  },
+  "validateCustomerPaymentProfileRequest": {
+    "validateCustomerPaymentProfileRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "customerPaymentProfileId": "20000",
+      "validationMode": "liveMode"
+    }
+  },
+  "createCustomerShippingAddressRequest": {
+    "createCustomerShippingAddressRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "address": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "company": "",
+        "address": "123 Main St.",
+        "city": "Bellevue",
+        "state": "WA",
+        "zip": "98004",
+        "country": "US",
+        "phoneNumber": "000-000-0000",
+        "faxNumber": ""
+      },
+      "defaultShippingAddress": false
+    }
+  },
+  "getCustomerShippingAddressRequest": {
+    "getCustomerShippingAddressRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "customerAddressId": "30000"
+    }
+  },
+  "updateCustomerShippingAddressRequest": {
+    "updateCustomerShippingAddressRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "address": {
+        "firstName": "Newfirstname",
+        "lastName": "Doe",
+        "company": "",
+        "address": "123 Main St.",
+        "city": "Bellevue",
+        "state": "WA",
+        "zip": "98004",
+        "country": "US",
+        "phoneNumber": "000-000-0000",
+        "faxNumber": "",
+        "customerAddressId": "30000"
+      },
+      "defaultShippingAddress": false
+    }
+  },
+  "deleteCustomerShippingAddressRequest": {
+    "deleteCustomerShippingAddressRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "10000",
+      "customerAddressId": "30000"
+    }
+  },
+  "ARBCreateSubscriptionRequest": {
+    "ARBCreateSubscriptionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "subscription": {
+        "name": "Sample subscription",
+        "paymentSchedule": {
+          "interval": {
+            "length": "1",
+            "unit": "months"
+          },
+          "startDate": "2020-08-30",
+          "totalOccurrences": "12",
+          "trialOccurrences": "1"
+        },
+        "amount": "10.29",
+        "trialAmount": "0.00",
+        "payment": {
+          "creditCard": {
+            "cardNumber": "4111111111111111",
+            "expirationDate": "2025-12"
+          }
+        },
+        "billTo": {
+          "firstName": "John",
+          "lastName": "Smith"
+        }
+      }
+    }
+  },
+  "ARBUpdateSubscriptionRequest": {
+    "ARBUpdateSubscriptionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "subscriptionId": "100748",
+      "subscription": {
+        "payment": {
+          "creditCard": {
+            "cardNumber": "4111111111111111",
+            "expirationDate": "2025-12"
+          }
+        }
+      }
+    }
+  },
+  "ARBCancelSubscriptionRequest": {
+    "ARBCancelSubscriptionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "subscriptionId": "100748"
+    }
+  },
+  "ARBGetSubscriptionRequest": {
+    "ARBGetSubscriptionRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "subscriptionId": "4818507",
+      "includeTransactions": true
+    }
+  },
+  "ARBGetSubscriptionStatusRequest": {
+    "ARBGetSubscriptionStatusRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "subscriptionId": "100748"
+    }
+  },
+  "ARBGetSubscriptionListRequest": {
+    "ARBGetSubscriptionListRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "searchType": "subscriptionActive",
+      "sorting": {
+        "orderBy": "id",
+        "orderDescending": "false"
+      },
+      "paging": {
+        "limit": "1000",
+        "offset": "1"
+      }
+    }
+  },
+  "getHostedPaymentPageRequest": {
+    "getHostedPaymentPageRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "transactionRequest": {
+        "transactionType": "authCaptureTransaction",
+        "amount": "20.00",
+        "profile": {
+          "customerProfileId": "123456789"
+        },
+        "customer": {
+          "email": "ellen@mail.com"
+        },
+        "billTo": {
+          "firstName": "Ellen",
+          "lastName": "Johnson",
+          "company": "Souveniropolis",
+          "address": "14 Main Street",
+          "city": "Pecan Springs",
+          "state": "TX",
+          "zip": "44628",
+          "country": "US"
+        }
+      },
+      "hostedPaymentSettings": {
+        "setting": [
+          {
+            "settingName": "hostedPaymentReturnOptions",
+            "settingValue": "{\"showReceipt\": true, \"url\": \"https://mysite.com/receipt\", \"urlText\": \"Continue\", \"cancelUrl\": \"https://mysite.com/cancel\", \"cancelUrlText\": \"Cancel\"}"
+          },
+          {
+            "settingName": "hostedPaymentButtonOptions",
+            "settingValue": "{\"text\": \"Pay\"}"
+          },
+          {
+            "settingName": "hostedPaymentStyleOptions",
+            "settingValue": "{\"bgColor\": \"blue\"}"
+          },
+          {
+            "settingName": "hostedPaymentPaymentOptions",
+            "settingValue": "{\"cardCodeRequired\": false, \"showCreditCard\": true, \"showBankAccount\": true}"
+          },
+          {
+            "settingName": "hostedPaymentSecurityOptions",
+            "settingValue": "{\"captcha\": false}"
+          },
+          {
+            "settingName": "hostedPaymentShippingAddressOptions",
+            "settingValue": "{\"show\": false, \"required\": false}"
+          },
+          {
+            "settingName": "hostedPaymentBillingAddressOptions",
+            "settingValue": "{\"show\": true, \"required\": false}"
+          },
+          {
+            "settingName": "hostedPaymentCustomerOptions",
+            "settingValue": "{\"showEmail\": false, \"requiredEmail\": false, \"addPaymentProfile\": true}"
+          },
+          {
+            "settingName": "hostedPaymentOrderOptions",
+            "settingValue": "{\"show\": true, \"merchantName\": \"G and S Questions Inc.\"}"
+          },
+          {
+            "settingName": "hostedPaymentIFrameCommunicatorUrl",
+            "settingValue": "{\"url\": \"https://mysite.com/special\"}"
+          }
+        ]
+      }
+    }
+  },
+  "getHostedProfilePageRequest": {
+    "getHostedProfilePageRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "customerProfileId": "YourProfileID",
+      "hostedProfileSettings": {
+        "setting": [
+          {
+            "settingName": "hostedProfileReturnUrl",
+            "settingValue": "https://returnurl.com/return/"
+          },
+          {
+            "settingName": "hostedProfileReturnUrlText",
+            "settingValue": "Continue to confirmation page."
+          },
+          {
+            "settingName": "hostedProfilePageBorderVisible",
+            "settingValue": "true"
+          }
+        ]
+      }
+    }
+  },
+  "getMerchantDetailsRequest": {
+    "getMerchantDetailsRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      }
+    }
+  },
+  "getAUJobSummaryRequest": {
+    "getAUJobSummaryRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "month": "2017-06"
+    }
+  },
+  "getAUJobDetailsRequest": {
+    "getAUJobDetailsRequest": {
+      "merchantAuthentication": {
+        "name": "TEST_LOGIN",
+        "transactionKey": "TEST_TRANSACTION_KEY"
+      },
+      "refId": "123456",
+      "month": "2017-06",
+      "modifiedTypeFilter": "all",
+      "paging": {
+        "limit": "100",
+        "offset": "1"
+      }
+    }
+  }
+}

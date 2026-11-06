@@ -61,6 +61,7 @@ App IDs and versions are unchanged. See [provider folders and building](docs/pro
 | assemblyai | ai, developer-tools | api-token | 11 |
 | attio | crm | api-key | 29 |
 | auth0 | security, developer-tools | client-credentials | 18 |
+| authorize-net | commerce, finance | api-credentials | 40 |
 | autotask | support, crm, project-management | api-user | 21 |
 | avoma | ai, productivity, analytics | api-key | 19 |
 | aweber | email, marketing | oauth2 | 33 |

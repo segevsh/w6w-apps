@@ -1,0 +1,45 @@
+{
+  "name": "@w6w-apps/authorize-net",
+  "version": "0.1.0",
+  "description": "Authorize, charge, capture, refund and void payments; manage customer profiles and recurring subscriptions; retrieve transactions and hosted payment forms with Authorize.Net.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "internal": {
+    "tier": 7,
+    "lastReviewed": null
+  },
+  "w6w": {
+    "id": "io.w6w.authorize-net",
+    "displayName": "Authorize.Net",
+    "apiDocs": [
+      "https://developer.authorize.net/api/reference/index.html"
+    ],
+    "longDescription": "Connect Authorize.Net in sandbox or production using an API Login ID and Transaction Key. Accept card, bank-account, opaque-token and saved-profile payments, manage customers and subscriptions, inspect transactions and settlement batches, and obtain Accept Hosted payment and profile form tokens. Requests are rebuilt recursively in the exact XML schema sequence before sending JSON, including inherited fields, nested objects and array items. Credentials are injected only by the auth signing hook. Payment writes are not automatically retried.",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "alt": "Authorize.Net",
+        "url": "./assets/icon.png"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.authorize.net",
+        "apitest.authorize.net"
+      ]
+    },
+    "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
+  }
+}
