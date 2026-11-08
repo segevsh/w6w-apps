@@ -30,8 +30,14 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "xAI"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "xAI"
+        }
       }
     },
     "network": {

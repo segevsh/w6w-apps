@@ -21,8 +21,8 @@
     ],
     "appearance": {
       "icon": {
-        "svg": "./assets/icon.svg",
-        "alt": "Jev"
+        "url": "./assets/icon.png",
+        "alt": "TypeSafe"
       }
     },
     "network": {
