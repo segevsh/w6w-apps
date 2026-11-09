@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/workable",
-  "version": "0.1.0",
-  "description": "Manage Workable jobs, candidates, pipeline stages, members and webhook subscriptions.",
+  "version": "0.2.0",
+  "description": "Manage Workable jobs, candidates, pipeline stages, members webhook subscriptions, and poll for new candidates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,7 +32,8 @@
         "*.workable.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
