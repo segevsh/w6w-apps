@@ -315,3 +315,8 @@ test("onSubscribe makes no Wise call and returns the callback URL; onUnsubscribe
   );
   assertEquals(calls.length, 0);
 });
+
+test("handleIngest: a Wise-signed delivery of another event type is acknowledged with none", async () => {
+  const call = delivery(WISE_BODY, { "x-signature-sha256": WISE_SIGNATURE });
+  assertEquals(evs(await ingest(balanceUpdated, call, "sandbox")), []);
+});
