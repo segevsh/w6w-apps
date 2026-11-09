@@ -33,9 +33,15 @@ test("shared files select ALL", () => {
     ".github/scripts/changed-apps.mjs",
     ".github/scripts/run-app-tests.mjs",
     ".github/workflows/reload-apps.yml",
+    "apps/_shared/poll/mod.ts",
+    "apps/google/_shared/oauth2.ts",
   ]) {
     assert.equal(changedApps([f], APPS), "ALL", f);
   }
+});
+
+test("an app file beside a group _shared still selects only its app", () => {
+  assert.deepEqual(changedApps(["apps/google/gmail/index.ts"], ["apps/google/gmail", "apps/google/drive"]), ["apps/google/gmail"]);
 });
 
 test("docs and other workflows select nothing", () => {
