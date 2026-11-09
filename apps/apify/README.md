@@ -6,6 +6,7 @@ stores those runs produce, on the **Apify API v2**.
 - **Categories** — developer-tools, storage, ai
 - **Auth methods** — api-token
 - **Actions** — 31
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.apify.com` (the `service` check adds `status.apify.com` to its own
   hook allowlist, never to the app's)
@@ -401,6 +402,14 @@ apify/
 ├── assets/icon.svg              # vendor mark, verbatim
 └── tests/                       # 201 tests: entry module, every action, auth, health, lib
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-actor` — New Actor | Poll | `actor-list` | Each newly created Actor |
+
+Source: [Apify API](https://docs.apify.com/api/v2) (verified 2026-11-09).
 
 ## Development
 
