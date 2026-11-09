@@ -91,6 +91,7 @@ import userGet from "./actions/user-get.ts";
 import textMessageList from "./actions/text-message-list.ts";
 import textMessageGet from "./actions/text-message-get.ts";
 import textMessageSend from "./actions/text-message-send.ts";
+import newCall from "./triggers/new-call.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -135,5 +136,6 @@ export default {
   // API key only. CallRail publishes no OAuth surface for third-party apps —
   // the reference's whole "Authorization" section is the API key header.
   auth: [apiToken],
+  triggers: [newCall],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

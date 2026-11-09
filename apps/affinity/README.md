@@ -1,5 +1,17 @@
 # Affinity
 
+- **Triggers** — 1 webhook
+
+## Triggers
+
+| Key | Title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-list-entry` | New List Entry | Webhook | `list_entry.created` | The changed record |
+
+Affinity V1 provides no cryptographic delivery signature. The callback URL is the shared secret; the trigger deletes stale registrations for that URL before registering its own.
+
+Vendor documentation: [Affinity V1 Webhooks](https://api-docs.affinity.co/) (verified 2026-11-09).
+
 [Affinity](https://www.affinity.co) is a relationship-intelligence CRM built around three
 top-level objects — **Persons**, **Organizations**, and **Opportunities** — plus the **Lists**
 (spreadsheet-like views) and **Fields** (columns) that organize them.

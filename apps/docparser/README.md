@@ -8,6 +8,8 @@ Built on `https://api.docparser.com` (reference: https://docparser.com/api/).
 App id `io.w6w.docparser` · categories `documents`, `ai` · egress `api.docparser.com` only (the
 status host is allowlisted on the health check itself, not on the app).
 
+- **Triggers** — 1 (poll)
+
 ## Auth setup
 
 One method, **API Key** (`api-key`). In Docparser open **Account > API Settings**
@@ -66,3 +68,10 @@ documented examples were not verifiable without a key.
 - **`auth:api-key`** (derived from the auth `test` hook): `GET /v1/ping` as above.
 - No quota check: the API only reports quota inside upload responses (`quota_left`,
   `quota_refill`), not on a read endpoint.
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-result` — New Parsed Result | poll | `results-list` | Each newly parsed document result |
+
+The poll requests descending `uploaded_at` order. Source: https://docparser.com/api/ (verified 2026-11-09).

@@ -17,6 +17,7 @@ import createPlaceActionLink from "./actions/create-place-action-link.ts";
 import deletePlaceActionLink from "./actions/delete-place-action-link.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newQuestion from "./triggers/new-question.ts";
 
 export default {
   actions: [
@@ -38,4 +39,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newQuestion],
 } satisfies AppDefinition;

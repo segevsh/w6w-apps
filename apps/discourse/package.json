@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/discourse",
-  "version": "0.1.1",
-  "description": "Read and write topics, posts, categories, users and groups on a Discourse forum — self-hosted or Discourse-hosted.",
+  "version": "0.2.0",
+  "description": "Read and write topics, posts, categories, users and groups on a Discourse forum — self-hosted or Discourse-hosted. Poll for newly created topics.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.discourse",
     "displayName": "Discourse",
     "apiDocs": [

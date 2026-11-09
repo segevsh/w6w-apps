@@ -5,6 +5,7 @@ Forms, fields, folders and submissions on the **Formstack V2025 API**.
 - **Categories** — forms, productivity
 - **Auth methods** — access-token
 - **Actions** — 9
+- **Triggers** — 2 (webhook, poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `www.formstack.com`
 - **Website** — https://www.formstack.com/
@@ -206,3 +207,33 @@ deno task check    # typecheck
 deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-submission` — New Submission | webhook (API) | `POST /forms/{formId}/webhooks` (V2025) | Form id, submission id, every answer under `fields` |
+| `new-submission-poll` — New Submission (poll) | poll | `submission-list` (`GET /forms/{formId}/submissions`, `order=DESC`, `pageSize=50`) | Each submission not seen on an earlier check |
+
+`new-submission` registers a JSON-bodied webhook on the chosen form with a random 256-bit
+`sharedSecret` (Formstack accepts a caller-chosen one; the older v2 API calls it `handshake_key`),
+keeps it in the subscription state, and deletes the webhook again on unsubscribe. Leftover webhooks
+pointing at the same callback URL are removed first.
+
+Trust model: Formstack's shared secret is echoed in each delivery's payload (it is not an HMAC), so
+`handleIngest` reads the raw body, requires the stored secret to exist, and refuses any delivery whose
+handshake key differs (constant-time compare); the key is removed from the emitted event. It proves
+the sender knows the secret, not that the body is untampered. The V2025 webhook object also has an
+`hmacSecret` / `customHmacHeader` pair, but the V2025 reference does not state the algorithm or the
+default header, so it is not relied on. **UNVERIFIED:** the V2025 reference does not name the payload
+field that carries the shared secret in a delivery; the trigger accepts `HandshakeKey` (the name in the
+v2 reference), `handshake_key` and `sharedSecret`, and refuses a delivery with none of them. If your
+form delivers it under another name, use `new-submission-poll`, which needs no webhook.
+
+`new-submission-poll` runs the existing `submission-list` action — same client, endpoint and auth —
+at most every five minutes, one page of 50 (newest first) per check; more than 50 new submissions
+between checks would be missed.
+
+Vendor docs: <https://developers.formstack.com/reference/createwebhook-1> and
+<https://developers.formstack.com/v2.0/reference/form-id-webhook-post> (the v2 `handshake_key`),
+verified 2026-11-09.

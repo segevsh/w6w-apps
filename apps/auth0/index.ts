@@ -102,6 +102,7 @@ import organizationMemberAdd from "./actions/organization-member-add.ts";
 import connectionList from "./actions/connection-list.ts";
 import clientList from "./actions/client-list.ts";
 import logList from "./actions/log-list.ts";
+import newLog from "./triggers/new-log.ts";
 
 import service from "./health/service.ts";
 import tenant from "./health/tenant.ts";
@@ -135,4 +136,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, tenant],
+  triggers: [newLog],
 } satisfies AppDefinition;

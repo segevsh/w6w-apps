@@ -24,14 +24,24 @@
  * self-serve signup goes through `checkout-session-create` and returns a
  * Stripe-hosted URL to redirect to.
  *
- * Deliberately absent: the webhook trigger (a Trigger, not an Action — which
- * is also why n8n's `signatureSecret` credential field is not collected), and
- * Stripe Connect's account/transfer surface. Note that checkout only *starts*
- * the flow — knowing it COMPLETED needs that webhook, so today a caller polls
- * the session or reads the subscription instead.
+ * Triggers (`lib/triggers.ts`) register a Stripe webhook endpoint per subscription and verify every
+ * delivery's `Stripe-Signature` with the endpoint secret Stripe returns at creation, so n8n's
+ * `signatureSecret` credential field is still not collected. Deliberately absent: Stripe
+ * Connect's account/transfer surface.
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
+
+import paymentSucceededTrigger from "./triggers/payment-succeeded.ts";
+import paymentFailedTrigger from "./triggers/payment-failed.ts";
+import chargeRefundedTrigger from "./triggers/charge-refunded.ts";
+import invoicePaidTrigger from "./triggers/invoice-paid.ts";
+import invoicePaymentFailedTrigger from "./triggers/invoice-payment-failed.ts";
+import subscriptionCreatedTrigger from "./triggers/subscription-created.ts";
+import subscriptionCanceledTrigger from "./triggers/subscription-canceled.ts";
+import checkoutCompletedTrigger from "./triggers/checkout-completed.ts";
+import customerCreatedTrigger from "./triggers/customer-created.ts";
+import eventTrigger from "./triggers/event.ts";
 
 import customerCreate from "./actions/customer-create.ts";
 import customerGet from "./actions/customer-get.ts";
@@ -97,6 +107,18 @@ export default {
     checkoutSessionCreate,
     // balance
     balanceGet,
+  ],
+  triggers: [
+    paymentSucceededTrigger,
+    paymentFailedTrigger,
+    chargeRefundedTrigger,
+    invoicePaidTrigger,
+    invoicePaymentFailedTrigger,
+    subscriptionCreatedTrigger,
+    subscriptionCanceledTrigger,
+    checkoutCompletedTrigger,
+    customerCreatedTrigger,
+    eventTrigger,
   ],
   auth: [apiKey],
   healthChecks: [service, quota],

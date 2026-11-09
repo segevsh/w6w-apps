@@ -90,6 +90,7 @@ import predefinedTagGetMany from "./actions/predefined-tag-get-many.ts";
 
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookGetMany from "./actions/webhook-get-many.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -123,4 +124,5 @@ export default {
   ],
   auth: [apiKey, userToken],
   healthChecks: [subdomain, service, quota],
+  triggers: [newLead],
 } satisfies AppDefinition;

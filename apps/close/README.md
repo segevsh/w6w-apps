@@ -6,6 +6,7 @@ v1**.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.close.com`
 - **Website** — https://close.com
 - **API docs** — https://developer.close.com/api
@@ -323,6 +324,17 @@ that particular grant.
 https://app.close.com/icon.svg (the `<link rel="icon" type="image/svg+xml">` the Close web app
 serves). n8n has no Close node, so there was no upstream mark to port. The file is byte-identical to
 what that URL serves; `deno task fmt` is scoped to source directories and does not touch it.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-opportunity` — New Opportunity | poll | `list-opportunities`, newest-first by `-date_created` | Each newly observed Close opportunity |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://developer.close.com/api/resources/opportunities/list> (verified 2026-11-09).
 
 ## Development
 

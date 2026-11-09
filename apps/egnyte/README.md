@@ -74,3 +74,5 @@ Three different questions, kept apart:
 
 Authenticated calls were not made against a live account: every request shape here
 is taken from the vendor reference, not replayed.
+
+Triggers: not shipped — search requires a 3–100 character free-text query, returns 20 items per page, and sorts by `last_modified` rather than creation time (https://developers.egnyte.com/docs/#operation/search, verified 2026-11-09).

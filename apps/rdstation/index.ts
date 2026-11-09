@@ -28,6 +28,7 @@ import listDeals from "./actions/list-deals.ts";
 import createDeal from "./actions/create-deal.ts";
 import listDealPipelines from "./actions/list-deal-pipelines.ts";
 import listUsers from "./actions/list-users.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -44,4 +45,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newContact],
 } satisfies AppDefinition;

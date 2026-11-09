@@ -3,6 +3,7 @@
 Business SMS and MMS: send texts, and manage contacts, conversations, tags, inboxes and numbers, on
 **Salesmsg's public API v2.3**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — communication, marketing
 - **Auth methods** — `access-token` (a Personal Access Token, sent as a Bearer token)
 - **Actions** — 27
@@ -95,3 +96,21 @@ and async sends (`/async/messages`) and `PUT /messages/{message}` are not covere
 `assets/icon.svg` embeds the vendor's own 256x256 favicon PNG
 (`https://cdn.prod.website-files.com/61e005adf5b93f9f89f0ddd4/61e69bcaba496cec8f1e87a2_fav-256.png`)
 verbatim as base64 inside an SVG `<image>`, the same approach as `apps/addevent`.
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll (every 5 minutes at most) | `contact-list`, ordered `created_at` descending (unverified column name; see note) | each newly created contact |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `contact-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://app.salesmessage.com/api/docs/salesmessage-public-api-v2.3.json> (verified 2026-11-09).
+
+Note: the sort column name above could not be confirmed from the vendor's published docs on 2026-11-09; if the vendor ignores or rejects it the check fails or returns the vendor's default order, which can miss new items.

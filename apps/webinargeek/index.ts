@@ -62,6 +62,7 @@ import accountGet from "./actions/account-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -87,6 +88,7 @@ export default {
   ],
   // API key only. WebinarGeek publishes no OAuth surface — a single account-wide key is the
   // whole authentication story.
+  triggers: [newMessage],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

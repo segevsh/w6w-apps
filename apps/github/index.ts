@@ -46,6 +46,12 @@ import workflowGetMany from "./actions/workflow-get-many.ts";
 import workflowEnable from "./actions/workflow-enable.ts";
 import userGetRepositories from "./actions/user-get-repositories.ts";
 import organizationGetRepositories from "./actions/organization-get-repositories.ts";
+import push from "./triggers/push.ts";
+import pullRequestEvent from "./triggers/pull-request.ts";
+import issueEvent from "./triggers/issue.ts";
+import issueCommentEvent from "./triggers/issue-comment.ts";
+import releaseEvent from "./triggers/release.ts";
+import workflowRun from "./triggers/workflow-run.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -86,6 +92,7 @@ export default {
     userGetRepositories,
     organizationGetRepositories,
   ],
+  triggers: [push, pullRequestEvent, issueEvent, issueCommentEvent, releaseEvent, workflowRun],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
   interfaces: [{

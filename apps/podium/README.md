@@ -10,6 +10,15 @@ local businesses) from a workflow, over the Podium API v4 at `api.podium.com/v4`
 - **Actions** — 49: contacts, contact tags and attributes, conversations, messages, locations,
   organizations, users, reviews, feedback, calls, appointments, campaigns, templates, data-feed
   events and webhooks. Each action's description names the OAuth scope it needs.
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` — New Conversation | poll | `conversation-list` | Newly listed conversations |
+
+Source: https://developer.podium.com (verified 2026-11-09).
 
 ## Getting credentials
 

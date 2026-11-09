@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jira",
-  "version": "0.2.1",
-  "description": "Create, search and transition Jira issues, and manage comments, users and projects.",
+  "version": "0.3.0",
+  "description": "Create, search and transition Jira issues, and manage comments, users and projects. Poll for new issues.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "api.atlassian.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

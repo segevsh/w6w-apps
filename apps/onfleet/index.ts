@@ -51,6 +51,12 @@ import recipientCreate from "./actions/recipient-create.ts";
 import recipientGet from "./actions/recipient-get.ts";
 import recipientUpdate from "./actions/recipient-update.ts";
 import recipientFind from "./actions/recipient-find.ts";
+import taskCreated from "./triggers/task-created.ts";
+import taskStarted from "./triggers/task-started.ts";
+import taskCompleted from "./triggers/task-completed.ts";
+import taskFailed from "./triggers/task-failed.ts";
+import taskAssigned from "./triggers/task-assigned.ts";
+import taskUpdated from "./triggers/task-updated.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -87,6 +93,7 @@ const app: AppDefinition = {
     recipientUpdate,
     recipientFind,
   ],
+  triggers: [taskCreated, taskStarted, taskCompleted, taskFailed, taskAssigned, taskUpdated],
   auth: [apiKey],
   healthChecks: [service, quota],
 };

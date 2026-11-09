@@ -5,6 +5,7 @@ Create and manage PayPal orders, payments, invoices and payouts.
 - **Categories** — commerce, finance
 - **Auth methods** — client-credentials
 - **Actions** — 13
+- **Triggers** — 6 (webhook)
 - **Egress allowlist** — `api-m.paypal.com`, `api-m.sandbox.paypal.com`
 - **Website** — https://www.paypal.com
 - **API docs** — https://developer.paypal.com/docs/api/overview/
@@ -66,6 +67,45 @@ case; PayPal's full shape (multiple recipients, item-level tax/shipping breakdow
 scope. `payout-create` accepts PayPal's own payout-item JSON shape directly as an escape
 hatch for multi-recipient batches, the same pattern SendGrid's `mail-send` uses for dynamic
 template fields.
+
+## Triggers
+
+Subscribing registers a PayPal **webhook** (`POST /v1/notifications/webhooks`: the w6w callback URL
+and the trigger's event types) on the app behind the connection; unsubscribing deletes it (a
+webhook PayPal no longer has counts as deleted). PayPal returns the webhook's id, which w6w keeps
+in the subscription's state. Nothing to configure by hand. The connection's sandbox setting picks
+the sandbox or live PayPal for registration and for verification.
+
+| Trigger | Mechanism | PayPal event | The run gets |
+| --- | --- | --- | --- |
+| `payment-captured` | webhook | `PAYMENT.CAPTURE.COMPLETED` | the event and the capture |
+| `payment-refunded` | webhook | `PAYMENT.CAPTURE.REFUNDED` | the event and the refund |
+| `order-approved` | webhook | `CHECKOUT.ORDER.APPROVED` | the event and the order |
+| `invoice-paid` | webhook | `INVOICING.INVOICE.PAID` | the event and the invoice |
+| `payout-item-succeeded` | webhook | `PAYMENT.PAYOUTS-ITEM.SUCCEEDED` | the event and the payout item |
+| `event` | webhook | any event types you list (or `*`) | the event and its resource |
+
+Every event has `id`, `eventType`, `resourceType`, `summary`, `createTime`, `eventVersion`,
+`resourceVersion`, `transmissionId` and `resource`. PayPal retries a failed delivery for up to three
+days with the same event `id`, so use `id` to skip a duplicate.
+
+**Trust model.** PayPal signs each delivery with an asymmetric key published in a certificate it
+hosts, so every delivery is verified by PayPal itself: the five `PAYPAL-*` header values, the
+webhook id kept in the subscription's state and the event are posted to
+`/v1/notifications/verify-webhook-signature`, and the delivery is refused unless PayPal answers
+`SUCCESS`. The event is sent as the exact raw bytes PayPal delivered (PayPal checksums them), the
+webhook id never comes from the request, and a missing header, a body that is not one JSON object,
+a subscription with no stored webhook id, or any answer other than `SUCCESS` refuses the delivery
+and starts no run; no unsigned path exists. PayPal's API defines no timestamp window for
+verification, so there is none to enforce; the PayPal verify call needs the same connection (its
+client credentials) that registered the webhook. PayPal does not support this verification for
+events from its webhook simulator.
+
+Sources, verified 2026-11-09:
+[webhooks guide](https://developer.paypal.com/api/rest/webhooks/rest/),
+[Webhooks Management API](https://developer.paypal.com/docs/api/webhooks/v1/) (create, list,
+delete, verify-webhook-signature; field names from PayPal's
+[OpenAPI spec](https://github.com/paypal/paypal-rest-api-specifications/blob/main/openapi/notifications_webhooks_v1.json)).
 
 ## Health check
 

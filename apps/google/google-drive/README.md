@@ -5,9 +5,21 @@ Manage files, folders and shared drives on Google Drive.
 - **Categories** — storage, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 18
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `www.googleapis.com`
 - **Website** — https://drive.google.com
 - **API docs** — https://developers.google.com/workspace/drive
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-file` — New File | poll | `file-list`, ordered `createdTime desc` | The new Google Drive file |
+
+The trigger polls the existing `files.list` request rather than registering a callback; its first
+check records the current page and emits no historical files. The Drive API supports the
+`createdTime desc` sort used by this trigger. Verified 2026-11-09:
+https://developers.google.com/workspace/drive/api/reference/rest/v3/files/list
 
 ## Health check
 

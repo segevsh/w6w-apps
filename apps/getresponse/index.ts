@@ -53,6 +53,7 @@ import newsletterCreate from "./actions/newsletter-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -80,4 +81,5 @@ export default {
   // network-less, so a refreshable token would have to be resolved elsewhere.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

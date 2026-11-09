@@ -55,6 +55,7 @@
  * `None` level needs no credential at all — see that file for why.)
  */
 import type { AppDefinition } from "@w6w/types";
+import newPost from "./triggers/new-post.ts";
 import oauth2 from "./auth/oauth2.ts";
 
 import blogInfoGet from "./actions/blog-info-get.ts";
@@ -114,6 +115,7 @@ export default {
     userLike,
     userUnlike,
   ],
+  triggers: [newPost],
   auth: [oauth2],
   healthChecks: [service],
 } satisfies AppDefinition;

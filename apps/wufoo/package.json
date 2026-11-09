@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wufoo",
-  "version": "0.1.2",
-  "description": "Read Wufoo forms, fields, entries and reports, and submit new entries — with the entry filters, sorting and paging the v3 API provides.",
+  "version": "0.2.0",
+  "description": "Read Wufoo forms, fields, entries and reports, and submit new entries — with the entry filters, sorting and paging the v3 API provides. Poll for new entries.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,12 @@
         "*.wufoo.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

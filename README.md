@@ -811,6 +811,7 @@ for its own worker only, which is safe precisely because such a check is never s
 
 Per-app detail, including why each probe was chosen over the obvious alternatives, is in
 `apps/<app>/README.md`, indexed in [HEALTHCHECKS.md](HEALTHCHECKS.md).
+Trigger coverage of every app is in [TRIGGERS.md](TRIGGERS.md) (generated from `TRIGGERS.json`).
 
 [health-rfc]: https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md
 

@@ -241,3 +241,5 @@ deno task test
 ```
 
 No runtime dependencies beyond `@w6w/types` (types-only, dev).
+
+Triggers: not shipped — document listing has no documented creation-time newest-first order; its ordering is field or name based (https://firebase.google.com/docs/firestore/reference/rest, verified 2026-11-09).

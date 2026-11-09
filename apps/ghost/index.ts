@@ -11,6 +11,7 @@ import createMember from "./actions/create-member.ts";
 import listTags from "./actions/list-tags.ts";
 import listTiers from "./actions/list-tiers.ts";
 import getSiteInfo from "./actions/get-site-info.ts";
+import newPost from "./triggers/new-post.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
@@ -30,5 +31,6 @@ export default {
     getSiteInfo,
   ],
   auth: [adminApiKey],
+  triggers: [newPost],
   healthChecks: [service, quota, site],
 } satisfies AppDefinition;

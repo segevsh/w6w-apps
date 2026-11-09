@@ -1,5 +1,7 @@
 # Coda
 
+Triggers: not shipped — the rows action exposes creation sorting but no descending newest-first order (<https://coda.io/developers/apis/v1#operation/listRows>).
+
 Read and write Coda docs, tables and rows via the Coda REST API.
 
 - **Categories** — productivity, documents

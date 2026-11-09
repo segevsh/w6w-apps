@@ -5,9 +5,32 @@ Create and manage Typeform forms, responses, workspaces, themes and images via t
 - **Categories** — forms, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 10
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `api.typeform.com`
 - **Website** — https://www.typeform.com
 - **API docs** — https://www.typeform.com/developers/
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `new-response` — New Response | webhook (API-registered) | a form response is submitted | the response token, submit time, hidden fields and every answer |
+
+### Setup
+
+Nothing to paste. Subscribing needs the form's id (`typeform.com/to/<id>`) and runs
+`PUT /forms/{uid}/webhooks/{tag}` with a random per-subscription secret that is kept in the
+subscription's state; unsubscribing runs `DELETE` on the same path (a webhook already gone counts as
+deleted). The connection's token needs the `webhooks:read` and `webhooks:write` scopes; the OAuth flow requests both (Typeform OAuth scopes, developer doc checked 2026-11-09).
+
+### Trust model
+
+Every delivery's `Typeform-Signature` header (`sha256=` + base64 HMAC-SHA256 of the exact request
+body, keyed by the subscription's secret) is verified before the body is parsed. A missing or wrong
+signature, an absent raw body or an unset secret refuses the delivery (one failed row, no run).
+Typeform's signature carries no timestamp, so there is no replay window.
+
+Docs (verified 2026-11-09): https://www.typeform.com/developers/webhooks/, https://www.typeform.com/developers/webhooks/secure-your-webhooks/
 
 ## Health check
 

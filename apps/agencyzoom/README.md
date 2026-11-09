@@ -17,6 +17,8 @@ management CRM, over its **API v1**.
 > 316,160 bytes, `info.version` `1.0.0`) plus live probes against `api.agencyzoom.com`. Nothing here
 > came from a third-party integration directory.
 
+Triggers: not shipped — lead-list has no creation-time sort (only name, last stage change, last activity), so a lead that merely moves stage would re-emit as new (https://app.agencyzoom.com/openapi/agencyzoom.yaml)
+
 ## The things most likely to cost someone a day
 
 ### 1. Auth is a login exchange, not an API key — and there's no refresh endpoint

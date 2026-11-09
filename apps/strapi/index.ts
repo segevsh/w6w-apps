@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newEntry from "./triggers/new-entry.ts";
 import apiToken from "./auth/api-token.ts";
 import entryList from "./actions/entry-list.ts";
 import entryGet from "./actions/entry-get.ts";
@@ -19,6 +20,7 @@ export default {
     entryDelete,
     mediaList,
   ],
+  triggers: [newEntry],
   auth: [apiToken],
   healthChecks: [service, quota, site],
 } satisfies AppDefinition;

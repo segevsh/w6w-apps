@@ -6,6 +6,7 @@ boards — on the **Connecteam API v1**.
 - **Categories** — hr, productivity, calendar
 - **Auth methods** — api-key
 - **Actions** — 27
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 live (`service`) + 1 declared absence (~~`quota`~~) + the derived
   `auth:api-key`
 - **Egress allowlist** — `api.connecteam.com` (the `service` check adds `connecteam.statuspage.io`
@@ -230,6 +231,20 @@ connecteam/
 ```
 
 ## Development
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-shift` — New Shift | poll | `shift-list`, newest-first by `created_at` | Each newly observed shift |
+
+The trigger uses the action's fixed `startTime`/`endTime` schedule window. Shifts created outside
+that window are not discovered until the window includes them.
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://developer.connecteam.com/reference> (verified 2026-11-09).
 
 From this directory, inside the `api` container:
 

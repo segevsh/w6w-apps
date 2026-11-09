@@ -65,6 +65,7 @@ import memberList from "./actions/member-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCard from "./triggers/new-card.ts";
 
 export default {
   actions: [
@@ -92,5 +93,6 @@ export default {
   // Basic auth only — Guru documents no OAuth surface for third-party apps;
   // User/Collection tokens are the whole authentication story.
   auth: [basic],
+  triggers: [newCard],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

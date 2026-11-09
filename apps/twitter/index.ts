@@ -37,6 +37,7 @@ import userGetTweets from "./actions/user-get-tweets.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTweet from "./triggers/new-tweet.ts";
 
 export default {
   actions: [
@@ -51,6 +52,7 @@ export default {
     userGetByUsername,
     userGetTweets,
   ],
+  triggers: [newTweet],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

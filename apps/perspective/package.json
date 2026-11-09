@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/perspective",
-  "version": "0.1.0",
-  "description": "Read Perspective funnel workspaces, contacts and analytics, and create or update CRM contacts.",
+  "version": "0.2.0",
+  "description": "Read Perspective funnel workspaces, contacts and analytics, poll for new contacts, and create or update CRM contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.perspective",
     "displayName": "Perspective",
     "apiDocs": [

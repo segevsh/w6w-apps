@@ -1,5 +1,15 @@
 # Vanta
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-issue` — New Issue | Poll | `issue-list` | Newly created Vanta issues |
+
+Vanta API docs: https://developer.vanta.com/ (verified 2026-11-09).
+
 Read a compliance program: failing tests and the resources causing them,
 controls and their owners, issues against their due dates, vulnerabilities
 against their SLAs, people's overdue tasks, and the vendor inventory.

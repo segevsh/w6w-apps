@@ -1,5 +1,7 @@
 # Mixmax
 
+- **Triggers** — 1 (poll)
+
 Send and schedule email, run sequences and read templates, tasks, teams and unsubscribes in
 **Mixmax**, the email-engagement and sales-outreach platform, over the **Mixmax REST API (v1)**.
 
@@ -18,6 +20,10 @@ Verified on 2026-10-06 against developer.mixmax.com (a ReadMe site: each referen
 own OpenAPI fragment, which were merged and read) and unauthenticated probes of `api.mixmax.com`.
 
 ## Actions
+
+## Triggers
+
+- **New Unsubscribe** (`new-unsubscribe`) polls `unsubscribe-list` by descending `createdAt`.
 
 | Area | Actions |
 |---|---|

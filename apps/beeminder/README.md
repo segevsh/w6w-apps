@@ -44,6 +44,14 @@ Writes are form-encoded like the reference's curl examples; `create-goal` / `upd
 because they carry arrays (`tags`, `roadall`) and explicit nulls. Neither encoding could be exercised
 against a live token while building this app.
 
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-datapoint` — New Datapoint | Poll | `list-datapoints` | Each new datapoint for the selected goal |
+
+Polled newest-first through the `list-datapoints` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://api.beeminder.com/#datapoints) (verified 2026-11-09).
+
 ## Health checks
 
 | Check | What it does |

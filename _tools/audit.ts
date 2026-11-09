@@ -24,6 +24,11 @@ import {
 import { hostAllowed } from "@w6w/runtime";
 import { TILE, verdictFor } from "./icon-legibility.ts";
 import { appPath, appPaths } from "./app-paths.ts";
+import { countTriggers, formatLine, summarize } from "./triggers-coverage.ts";
+import type { TriggerCounts } from "./triggers-coverage.ts";
+
+/** Per-app trigger counts, filled by `auditApp` after the entry import. */
+const triggerCounts: Record<string, TriggerCounts> = {};
 
 const ROOT = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const APPS_DIR = `${ROOT}/apps`;
@@ -535,6 +540,7 @@ async function auditApp(name: string): Promise<Issue[]> {
     );
     return issues;
   }
+  triggerCounts[name] = countTriggers(def);
 
   if (!Array.isArray(def?.actions)) {
     add(
@@ -714,8 +720,12 @@ for (const name of names) {
   warns += issues.filter((i) => i.severity === "warn").length;
 }
 
+const triggerSummary = summarize(triggerCounts);
+
 if (asJson) {
-  console.log(JSON.stringify(report, null, 2));
+  console.log(
+    JSON.stringify({ ...report, _triggers: triggerSummary }, null, 2),
+  );
 } else {
   for (const [name, issues] of Object.entries(report)) {
     if (!issues.length) {
@@ -733,6 +743,7 @@ if (asJson) {
       console.log(`    ${tag} [${i.check}] ${i.path} — ${i.message}`);
     }
   }
-  console.log(`\n${names.length} apps · ${errors} errors · ${warns} warnings`);
+  console.log(`\n${formatLine(triggerSummary)}`);
+  console.log(`${names.length} apps · ${errors} errors · ${warns} warnings`);
 }
 Deno.exit(errors > 0 ? 1 : 0);

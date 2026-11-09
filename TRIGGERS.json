@@ -1,0 +1,7144 @@
+[
+  {
+    "path": "apps/2chat",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/accelo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/acculynx",
+    "mechanism": "poll",
+    "candidates": [
+      "new-job-invoices-list"
+    ],
+    "pollAction": "job-invoices-list",
+    "reason": "list action job-invoices-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/actionnetwork",
+    "mechanism": "poll",
+    "candidates": [
+      "new-person-list"
+    ],
+    "pollAction": "person-list",
+    "reason": "list action person-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/activecampaign",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/activecampaign/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/acuityscheduling",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "appointment-canceled",
+      "appointment-rescheduled",
+      "appointment-scheduled"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/acuityscheduling/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/acumbamail",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/adalo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/addevent",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-template-list"
+    ],
+    "pollAction": "event-template-list",
+    "reason": "list action event-template-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/adyen",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/affinity",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-list-entry"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/affinity/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/agencyzoom",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead-list"
+    ],
+    "pollAction": "lead-list",
+    "reason": "list action lead-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ahrefs",
+    "mechanism": "poll",
+    "candidates": [
+      "new-anchor-list"
+    ],
+    "pollAction": "anchor-list",
+    "reason": "list action anchor-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/aidbase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-ticket-list"
+    ],
+    "pollAction": "ticket-list",
+    "reason": "list action ticket-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/airbyte",
+    "mechanism": "poll",
+    "candidates": [
+      "new-destination-list"
+    ],
+    "pollAction": "destination-list",
+    "reason": "list action destination-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/aircall",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call-list"
+    ],
+    "pollAction": "call-list",
+    "reason": "list action call-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/airparser",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/airtable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "search-records",
+    "reason": "shipped poll trigger(s) over list action search-records",
+    "verified": "apps/airtable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/airtop",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/alegra",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/algolia",
+    "mechanism": "poll",
+    "candidates": [
+      "new-multi"
+    ],
+    "pollAction": "search-multi",
+    "reason": "list action search-multi has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/amplitude",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/anchor",
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoice-list"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "list action invoice-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/anthropic",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/apify",
+    "mechanism": "poll",
+    "candidates": [
+      "new-actor"
+    ],
+    "pollAction": "actor-list",
+    "reason": "shipped poll trigger(s) over list action actor-list",
+    "verified": "apps/apify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/apitemplateio",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/apollo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deal-list"
+    ],
+    "pollAction": "deal-list",
+    "reason": "list action deal-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/asana",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-task",
+      "task-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/asana/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/ashby",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/assemblyai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/atlassian/bitbucket",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "issue-created",
+      "pull-request-comment",
+      "pull-request-created",
+      "pull-request-declined",
+      "pull-request-merged",
+      "pull-request-updated",
+      "push"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/atlassian/confluence",
+    "mechanism": "poll",
+    "candidates": [
+      "new-page-child-list"
+    ],
+    "pollAction": "page-child-list",
+    "reason": "list action page-child-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/atlassian/jira",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue"
+    ],
+    "pollAction": "issue-search",
+    "reason": "shipped poll trigger(s) over list action issue-search",
+    "verified": "apps/atlassian/jira/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/atlassian/jira-data-center",
+    "mechanism": "poll",
+    "candidates": [
+      "new-comment-get-many"
+    ],
+    "pollAction": "comment-get-many",
+    "reason": "list action comment-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/atlassian/jira-service-management",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/atlassian/trello",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "card-created",
+      "card-moved",
+      "card-updated",
+      "comment-added"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/atlassian/trello/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/attio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-attribute-values"
+    ],
+    "pollAction": "list-record-attribute-values",
+    "reason": "list action list-record-attribute-values has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/auth0",
+    "mechanism": "poll",
+    "candidates": [
+      "new-log"
+    ],
+    "pollAction": "log-list",
+    "reason": "shipped poll trigger(s) over list action log-list",
+    "verified": "apps/auth0/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/authorize-net",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-transactions"
+    ],
+    "pollAction": "list-customer-transactions",
+    "reason": "list action list-customer-transactions has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/autotask",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/avoma",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call-list"
+    ],
+    "pollAction": "call-list",
+    "reason": "list action call-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/aweber",
+    "mechanism": "poll",
+    "candidates": [
+      "new-broadcast-list"
+    ],
+    "pollAction": "broadcast-list",
+    "reason": "list action broadcast-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/aws/s3",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/aws/ses",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/axonaut",
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoice-list"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "list action invoice-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/balena",
+    "mechanism": "poll",
+    "candidates": [
+      "new-device-list"
+    ],
+    "pollAction": "device-list",
+    "reason": "list action device-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bamboohr",
+    "mechanism": "poll",
+    "candidates": [
+      "new-employee"
+    ],
+    "pollAction": "list-employees",
+    "reason": "shipped poll trigger(s) over list action list-employees",
+    "verified": "apps/bamboohr/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/bannerbear",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/baremetrics",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer"
+    ],
+    "pollAction": "customer-list",
+    "reason": "shipped poll trigger(s) over list action customer-list",
+    "verified": "apps/baremetrics/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/base44",
+    "mechanism": "poll",
+    "candidates": [
+      "new-audit-log"
+    ],
+    "pollAction": "list-audit-logs",
+    "reason": "shipped poll trigger(s) over list action list-audit-logs",
+    "verified": "apps/base44/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/basecamp",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/baserow",
+    "mechanism": "poll",
+    "candidates": [
+      "new-row"
+    ],
+    "pollAction": "row-list",
+    "reason": "shipped poll trigger(s) over list action row-list",
+    "verified": "apps/baserow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/beehiiv",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post-list"
+    ],
+    "pollAction": "post-list",
+    "reason": "list action post-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/beeminder",
+    "mechanism": "poll",
+    "candidates": [
+      "new-datapoint"
+    ],
+    "pollAction": "list-datapoints",
+    "reason": "shipped poll trigger(s) over list action list-datapoints",
+    "verified": "apps/beeminder/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/betterstack",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bexio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/bexio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/bigcommerce",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order"
+    ],
+    "pollAction": "order-list",
+    "reason": "shipped poll trigger(s) over list action order-list",
+    "verified": "apps/bigcommerce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/bitly",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bitrix24",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bitwarden",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/blandai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bloomerang",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bluesky",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post"
+    ],
+    "pollAction": "post-search",
+    "reason": "shipped poll trigger(s) over list action post-search",
+    "verified": "apps/bluesky/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/boldsign",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document-list"
+    ],
+    "pollAction": "document-list",
+    "reason": "list action document-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/booqable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/box",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "activity",
+      "file-uploaded"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/box/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/braintree",
+    "mechanism": "poll",
+    "candidates": [
+      "new-transaction-search"
+    ],
+    "pollAction": "transaction-search",
+    "reason": "list action transaction-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/brandfetch",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/braze",
+    "mechanism": "poll",
+    "candidates": [
+      "new-campaign-list"
+    ],
+    "pollAction": "campaign-list",
+    "reason": "list action campaign-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/breezyhr",
+    "mechanism": "poll",
+    "candidates": [
+      "new-candidate"
+    ],
+    "pollAction": "candidate-search",
+    "reason": "shipped poll trigger(s) over list action candidate-search",
+    "verified": "apps/breezyhr/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/brevo",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/brevo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/brex",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/browseai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/browserless",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/bubble",
+    "mechanism": "poll",
+    "candidates": [
+      "new-data-list"
+    ],
+    "pollAction": "data-list",
+    "reason": "list action data-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/buffer",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post-list"
+    ],
+    "pollAction": "post-list",
+    "reason": "list action post-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cal",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "booking-cancelled",
+      "booking-created",
+      "booking-rescheduled"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/cal/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/calendly",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "invitee-canceled",
+      "invitee-created"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/calendly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/callrail",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call"
+    ],
+    "pollAction": "call-list",
+    "reason": "shipped poll trigger(s) over list action call-list",
+    "verified": "apps/callrail/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/campaignmonitor",
+    "mechanism": "poll",
+    "candidates": [
+      "new-stats-get"
+    ],
+    "pollAction": "list-stats-get",
+    "reason": "list action list-stats-get has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/canny",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post-list"
+    ],
+    "pollAction": "post-list",
+    "reason": "list action post-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/canva",
+    "mechanism": "poll",
+    "candidates": [
+      "new-design"
+    ],
+    "pollAction": "list-designs",
+    "reason": "shipped poll trigger(s) over list action list-designs",
+    "verified": "apps/canva/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/capsulecrm",
+    "mechanism": "poll",
+    "candidates": [
+      "new-opportunity-list"
+    ],
+    "pollAction": "opportunity-list",
+    "reason": "list action opportunity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/certifier",
+    "mechanism": "poll",
+    "candidates": [
+      "new-credential-search"
+    ],
+    "pollAction": "credential-search",
+    "reason": "list action credential-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/chargebee",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event"
+    ],
+    "pollAction": "list-events",
+    "reason": "shipped poll trigger(s) over list action list-events",
+    "verified": "apps/chargebee/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/chatbase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation-user-list"
+    ],
+    "pollAction": "conversation-user-list",
+    "reason": "list action conversation-user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/chatwork",
+    "mechanism": "poll",
+    "candidates": [
+      "new-room-message-list"
+    ],
+    "pollAction": "room-message-list",
+    "reason": "list action room-message-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/checkly",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/circle",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/circleci",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clearbit",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clearout",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clerk",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cleverreach",
+    "mechanism": "poll",
+    "candidates": [
+      "new-group-list"
+    ],
+    "pollAction": "group-list",
+    "reason": "list action group-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clickhouse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-activity-list"
+    ],
+    "pollAction": "activity-list",
+    "reason": "list action activity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clicksend",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sms"
+    ],
+    "pollAction": "sms-history-list",
+    "reason": "shipped poll trigger(s) over list action sms-history-list",
+    "verified": "apps/clicksend/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/clickup",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "task-comment-posted",
+      "task-created",
+      "task-deleted",
+      "task-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/clickup/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/clientify",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/clockify",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-client",
+      "new-project",
+      "new-task",
+      "new-time-entry",
+      "timer-started",
+      "timer-stopped"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/clockify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/clockodo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entries"
+    ],
+    "pollAction": "list-entries",
+    "reason": "list action list-entries has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/close",
+    "mechanism": "poll",
+    "candidates": [
+      "new-opportunity"
+    ],
+    "pollAction": "list-opportunities",
+    "reason": "shipped poll trigger(s) over list action list-opportunities",
+    "verified": "apps/close/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/cloudbeds",
+    "mechanism": "poll",
+    "candidates": [
+      "new-guest-list"
+    ],
+    "pollAction": "guest-list",
+    "reason": "list action guest-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cloudconvert",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cloudflare",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cloudinary",
+    "mechanism": "poll",
+    "candidates": [
+      "new-asset"
+    ],
+    "pollAction": "asset-search",
+    "reason": "shipped poll trigger(s) over list action asset-search",
+    "verified": "apps/cloudinary/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/cloze",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/coda",
+    "mechanism": "poll",
+    "candidates": [
+      "new-rows"
+    ],
+    "pollAction": "list-rows",
+    "reason": "list action list-rows has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cognitoforms",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/coingecko",
+    "mechanism": "poll",
+    "candidates": [
+      "new-coin-markets"
+    ],
+    "pollAction": "list-coin-markets",
+    "reason": "list action list-coin-markets has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/companycam",
+    "mechanism": "poll",
+    "candidates": [
+      "new-checklist-list"
+    ],
+    "pollAction": "checklist-list",
+    "reason": "list action checklist-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/connecteam",
+    "mechanism": "poll",
+    "candidates": [
+      "new-shift"
+    ],
+    "pollAction": "shift-list",
+    "reason": "shipped poll trigger(s) over list action shift-list",
+    "verified": "apps/connecteam/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/constantcontact",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-lists"
+    ],
+    "pollAction": "list-contact-lists",
+    "reason": "list action list-contact-lists has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/contentful",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry"
+    ],
+    "pollAction": "list-entries",
+    "reason": "shipped poll trigger(s) over list action list-entries",
+    "verified": "apps/contentful/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/contentstack",
+    "mechanism": "poll",
+    "candidates": [
+      "new-assets"
+    ],
+    "pollAction": "list-assets",
+    "reason": "list action list-assets has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/copper",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-company",
+      "new-lead",
+      "new-opportunity",
+      "new-person",
+      "new-task",
+      "updated-opportunity",
+      "updated-person"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/copper/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/creditrepaircloud",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/crisp",
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversations"
+    ],
+    "pollAction": "list-conversations",
+    "reason": "list action list-conversations has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/crunchbase",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/cursor",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/customerio",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "customer-unsubscribed",
+      "email-clicked",
+      "email-opened",
+      "reporting-event"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/customerio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/databricks",
+    "mechanism": "poll",
+    "candidates": [
+      "job-run-finished"
+    ],
+    "pollAction": "catalog-list",
+    "reason": "AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker.",
+    "verified": false,
+    "source": "survey"
+  },
+  {
+    "path": "apps/datadog",
+    "mechanism": "poll",
+    "candidates": [
+      "new-log"
+    ],
+    "pollAction": "log-search",
+    "reason": "shipped poll trigger(s) over list action log-search",
+    "verified": "apps/datadog/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/dbtcloud",
+    "mechanism": "poll",
+    "candidates": [
+      "new-run"
+    ],
+    "pollAction": "run-list",
+    "reason": "shipped poll trigger(s) over list action run-list",
+    "verified": "apps/dbtcloud/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/deel",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contract-list"
+    ],
+    "pollAction": "contract-list",
+    "reason": "list action contract-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/deepgram",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/deepl",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/deepseek",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/demio",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/deputy",
+    "mechanism": "poll",
+    "candidates": [
+      "new-employee-search"
+    ],
+    "pollAction": "employee-search",
+    "reason": "list action employee-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/devin",
+    "mechanism": "poll",
+    "candidates": [
+      "new-session-message-list"
+    ],
+    "pollAction": "session-message-list",
+    "reason": "list action session-message-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dialpad",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call-list"
+    ],
+    "pollAction": "call-list",
+    "reason": "list action call-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dice",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/diffbot",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/digistore24",
+    "mechanism": "poll",
+    "candidates": [
+      "new-purchase"
+    ],
+    "pollAction": "list-purchases",
+    "reason": "shipped poll trigger(s) over list action list-purchases",
+    "verified": "apps/digistore24/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/digitalocean",
+    "mechanism": "poll",
+    "candidates": [
+      "new-domain-record-list"
+    ],
+    "pollAction": "domain-record-list",
+    "reason": "list action domain-record-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/discord",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/discourse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-topic"
+    ],
+    "pollAction": "topic-list-latest",
+    "reason": "shipped poll trigger(s) over list action topic-list-latest",
+    "verified": "apps/discourse/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/dixa",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/docparser",
+    "mechanism": "poll",
+    "candidates": [
+      "new-result"
+    ],
+    "pollAction": "results-list",
+    "reason": "shipped poll trigger(s) over list action results-list",
+    "verified": "apps/docparser/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/documenso",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/document360",
+    "mechanism": "poll",
+    "candidates": [
+      "new-drive-search"
+    ],
+    "pollAction": "drive-search",
+    "reason": "list action drive-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/documerge",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/docuseal",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/docusign",
+    "mechanism": "poll",
+    "candidates": [
+      "new-envelope-list"
+    ],
+    "pollAction": "envelope-list",
+    "reason": "list action envelope-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/donorbox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/drata",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/drip",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dropbox/dropbox",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dropbox/dropbox-sign",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dropcontact",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/dub",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer"
+    ],
+    "pollAction": "customer-list",
+    "reason": "shipped poll trigger(s) over list action customer-list",
+    "verified": "apps/dub/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/duda",
+    "mechanism": "poll",
+    "candidates": [
+      "new-site"
+    ],
+    "pollAction": "list-sites",
+    "reason": "shipped poll trigger(s) over list action list-sites",
+    "verified": "apps/duda/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/dust",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/easypost",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ebay",
+    "mechanism": "poll",
+    "candidates": [
+      "new-listing"
+    ],
+    "pollAction": "item-search",
+    "reason": "shipped poll trigger(s) over list action item-search",
+    "verified": "apps/ebay/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/economic",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry-list"
+    ],
+    "pollAction": "entry-list",
+    "reason": "list action entry-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ecwid",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer"
+    ],
+    "pollAction": "customer-search",
+    "reason": "shipped poll trigger(s) over list action customer-search",
+    "verified": "apps/ecwid/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/edenai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/egnyte",
+    "mechanism": "poll",
+    "candidates": [
+      "new-link-list"
+    ],
+    "pollAction": "link-list",
+    "reason": "list action link-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/elastic",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "search",
+    "reason": "list action search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/elastic-email",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/elevenlabs",
+    "mechanism": "poll",
+    "candidates": [
+      "new-voice"
+    ],
+    "pollAction": "voice-list",
+    "reason": "shipped poll trigger(s) over list action voice-list",
+    "verified": "apps/elevenlabs/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/emailoctopus",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/encharge",
+    "mechanism": "poll",
+    "candidates": [
+      "new-segment-people-list"
+    ],
+    "pollAction": "segment-people-list",
+    "reason": "list action segment-people-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/enrichlayer",
+    "mechanism": "poll",
+    "candidates": [
+      "new-company-employees-list"
+    ],
+    "pollAction": "company-employees-list",
+    "reason": "list action company-employees-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/erpnext",
+    "mechanism": "poll",
+    "candidates": [
+      "new-documents"
+    ],
+    "pollAction": "list-documents",
+    "reason": "list action list-documents has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/esignatures",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/eventbrite",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "activity",
+      "attendee-checked-in",
+      "attendee-checked-out",
+      "attendee-updated",
+      "event-created",
+      "event-published",
+      "event-unpublished",
+      "event-updated",
+      "order-placed",
+      "order-refunded",
+      "order-updated",
+      "organizer-updated",
+      "ticket-class-created",
+      "ticket-class-deleted",
+      "ticket-class-updated",
+      "venue-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/everhour",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/exa",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/expensify",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/eztexting",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fareharbor",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fathom",
+    "mechanism": "poll",
+    "candidates": [
+      "new-meeting-get-many"
+    ],
+    "pollAction": "meeting-get-many",
+    "reason": "list action meeting-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/feedly",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fellow",
+    "mechanism": "poll",
+    "candidates": [
+      "new-action-item"
+    ],
+    "pollAction": "action-item-list",
+    "reason": "shipped poll trigger(s) over list action action-item-list",
+    "verified": "apps/fellow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/figma",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "comment-added",
+      "file-deleted",
+      "file-updated",
+      "file-version-created",
+      "library-published"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/figma/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/fillout",
+    "mechanism": "poll",
+    "candidates": [
+      "new-submission-list"
+    ],
+    "pollAction": "submission-list",
+    "reason": "list action submission-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/findymail",
+    "mechanism": "poll",
+    "candidates": [
+      "new-intellimatch-search"
+    ],
+    "pollAction": "intellimatch-search",
+    "reason": "list action intellimatch-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fireberry",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/firecrawl",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fireflies",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/firestore",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document-list"
+    ],
+    "pollAction": "document-list",
+    "reason": "list action document-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fivetran",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/float",
+    "mechanism": "poll",
+    "candidates": [
+      "new-allocation-list"
+    ],
+    "pollAction": "allocation-list",
+    "reason": "list action allocation-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/flodesk",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/folk",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/followupboss",
+    "mechanism": "poll",
+    "candidates": [
+      "new-users"
+    ],
+    "pollAction": "list-users",
+    "reason": "list action list-users has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/formbricks",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/formidableforms",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry-get-many"
+    ],
+    "pollAction": "entry-get-many",
+    "reason": "list action entry-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/formsite",
+    "mechanism": "poll",
+    "candidates": [
+      "new-result-list"
+    ],
+    "pollAction": "result-list",
+    "reason": "list action result-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/formspark",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/formstack",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-submission",
+      "new-submission-poll"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/formstack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/formstack-documents",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fortnox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/freeagent",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/freshbooks",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/freshworks/freshdesk",
+    "mechanism": "poll",
+    "candidates": [
+      "new-ticket-get-many"
+    ],
+    "pollAction": "ticket-get-many",
+    "reason": "list action ticket-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/freshworks/freshsales",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-get-many"
+    ],
+    "pollAction": "contact-get-many",
+    "reason": "list action contact-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/freshworks/freshservice",
+    "mechanism": "poll",
+    "candidates": [
+      "new-ticket-get-many"
+    ],
+    "pollAction": "ticket-get-many",
+    "reason": "list action ticket-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/front",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/fullenrich",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gamma",
+    "mechanism": "poll",
+    "candidates": [
+      "new-gamma-comments"
+    ],
+    "pollAction": "list-gamma-comments",
+    "reason": "list action list-gamma-comments has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gcs",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gerrit",
+    "mechanism": "poll",
+    "candidates": [
+      "new-change-search"
+    ],
+    "pollAction": "change-search",
+    "reason": "list action change-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/getresponse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/getresponse/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/ghost",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post"
+    ],
+    "pollAction": "list-posts",
+    "reason": "shipped poll trigger(s) over list action list-posts",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/giphy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gitea",
+    "mechanism": "poll",
+    "candidates": [
+      "new-pull-request-list"
+    ],
+    "pollAction": "pull-request-list",
+    "reason": "list action pull-request-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/github",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "issue",
+      "issue-comment",
+      "pull-request",
+      "push",
+      "release",
+      "workflow-run"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/github/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/gitlab",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "comment",
+      "issue",
+      "merge-request",
+      "pipeline",
+      "push",
+      "release"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/gitlab/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/givebutter",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gladia",
+    "mechanism": "poll",
+    "candidates": [
+      "new-transcription-list"
+    ],
+    "pollAction": "transcription-list",
+    "reason": "list action transcription-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/glide",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gocanvas",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gocardless",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customers"
+    ],
+    "pollAction": "list-customers",
+    "reason": "list action list-customers has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/bigquery",
+    "mechanism": "poll",
+    "candidates": [
+      "new-job-list"
+    ],
+    "pollAction": "job-list",
+    "reason": "list action job-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/gemini",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/gmail",
+    "mechanism": "poll",
+    "candidates": [
+      "new-email"
+    ],
+    "pollAction": "get-many-messages",
+    "reason": "gmail users.messages.list with q=after:<epoch>; H-1",
+    "verified": "apps/google/gmail/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/google/google-admin",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-ads",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-clients"
+    ],
+    "pollAction": "list-customer-clients",
+    "reason": "list action list-customer-clients has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-analytics",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-business-profile",
+    "mechanism": "poll",
+    "candidates": [
+      "new-question"
+    ],
+    "pollAction": "list-questions",
+    "reason": "shipped poll trigger(s) over list action list-questions",
+    "verified": "apps/google/google-business-profile/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/google/google-calendar",
+    "mechanism": "poll",
+    "candidates": [
+      "event-changed"
+    ],
+    "pollAction": "list-events",
+    "reason": "shipped poll trigger(s) over list action list-events",
+    "verified": "apps/google/google-calendar/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/google/google-contacts",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-groups"
+    ],
+    "pollAction": "list-contact-groups",
+    "reason": "list action list-contact-groups has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-docs",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-drive",
+    "mechanism": "poll",
+    "candidates": [
+      "new-file"
+    ],
+    "pollAction": "file-list",
+    "reason": "shipped poll trigger(s) over list action file-list",
+    "verified": "apps/google/google-drive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/google/google-forms",
+    "mechanism": "poll",
+    "candidates": [
+      "new-forms"
+    ],
+    "pollAction": "list-forms",
+    "reason": "list action list-forms has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-maps",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-meet",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-sheets",
+    "mechanism": "poll",
+    "candidates": [
+      "row-added",
+      "row-added-or-updated",
+      "row-updated"
+    ],
+    "pollAction": "sheet-read",
+    "reason": "poll sheet-read, diff rows against seeded snapshot",
+    "verified": "apps/google/google-sheets/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/google/google-slides",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-tasks",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/google-vertex-ai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/googlechat",
+    "mechanism": "poll",
+    "candidates": [
+      "new-messages"
+    ],
+    "pollAction": "list-messages",
+    "reason": "list action list-messages has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/googlesearchconsole",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/looker",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/google/youtube",
+    "mechanism": "poll",
+    "candidates": [
+      "new-comment-threads"
+    ],
+    "pollAction": "list-comment-threads",
+    "reason": "list action list-comment-threads has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gorgias",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-get-many"
+    ],
+    "pollAction": "customer-get-many",
+    "reason": "list action customer-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gotify",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message-list"
+    ],
+    "pollAction": "message-list",
+    "reason": "list action message-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/goto-webinar",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/grafana",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/grain",
+    "mechanism": "poll",
+    "candidates": [
+      "new-recording-list"
+    ],
+    "pollAction": "recording-list",
+    "reason": "list action recording-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/granola",
+    "mechanism": "poll",
+    "candidates": [
+      "new-audit-event-list"
+    ],
+    "pollAction": "audit-event-list",
+    "reason": "list action audit-event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gravityforms",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry-get-many"
+    ],
+    "pollAction": "entry-get-many",
+    "reason": "list action entry-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/greenhouse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-interviews"
+    ],
+    "pollAction": "list-interviews",
+    "reason": "list action list-interviews has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/grist",
+    "mechanism": "poll",
+    "candidates": [
+      "new-records"
+    ],
+    "pollAction": "list-records",
+    "reason": "list action list-records has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/groq",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/gumroad",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-sale",
+      "sale-webhook"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/gumroad/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/guru",
+    "mechanism": "poll",
+    "candidates": [
+      "new-card"
+    ],
+    "pollAction": "card-search",
+    "reason": "shipped poll trigger(s) over list action card-search",
+    "verified": "apps/guru/README.md Triggers section (verified 2026-09-05)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/gusto",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hackernews",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/harvest",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-get-many"
+    ],
+    "pollAction": "task-get-many",
+    "reason": "list action task-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/heartbeat",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hedy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/helpscout",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "conversation-status-changed",
+      "customer-replied",
+      "new-conversation",
+      "new-customer"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/helpscout/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/hex",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/heygen",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/heyreach",
+    "mechanism": "poll",
+    "candidates": [
+      "new-get-leads"
+    ],
+    "pollAction": "list-get-leads",
+    "reason": "list action list-get-leads has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hibob",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/highlevel",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/holded",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/homeassistant",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/honeybook",
+    "mechanism": "poll",
+    "candidates": [
+      "new-project"
+    ],
+    "pollAction": "project-list",
+    "reason": "shipped poll trigger(s) over list action project-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/hospitable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-reservation-list"
+    ],
+    "pollAction": "reservation-list",
+    "reason": "list action reservation-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hostaway",
+    "mechanism": "poll",
+    "candidates": [
+      "new-reservation"
+    ],
+    "pollAction": "list-reservations",
+    "reason": "shipped poll trigger(s) over list action list-reservations",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/hotmart",
+    "mechanism": "poll",
+    "candidates": [
+      "new-product-list"
+    ],
+    "pollAction": "product-list",
+    "reason": "list action product-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/housecallpro",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/htmlcsstoimage",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hubspot",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "search-contacts",
+    "reason": "shipped poll trigger(s) over list action search-contacts",
+    "verified": "apps/hubspot/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/hubstaff",
+    "mechanism": "poll",
+    "candidates": [
+      "new-project-list"
+    ],
+    "pollAction": "project-list",
+    "reason": "list action project-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/huggingface",
+    "mechanism": "poll",
+    "candidates": [
+      "new-inference-model-list"
+    ],
+    "pollAction": "inference-model-list",
+    "reason": "list action inference-model-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hunter",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead-list"
+    ],
+    "pollAction": "lead-list",
+    "reason": "list action lead-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/hyros",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/iclosed",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deal"
+    ],
+    "pollAction": "deal-list",
+    "reason": "shipped poll trigger(s) over list action deal-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/inoreader",
+    "mechanism": "poll",
+    "candidates": [
+      "new-stream-preferences-list"
+    ],
+    "pollAction": "stream-preferences-list",
+    "reason": "list action stream-preferences-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/insightly",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/instantly",
+    "mechanism": "poll",
+    "candidates": [
+      "new-email"
+    ],
+    "pollAction": "email-list",
+    "reason": "shipped poll trigger(s) over list action email-list",
+    "verified": "apps/instantly/README.md Triggers section (verified 2026-08-29)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/instapaper",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/intercom",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "conversation-created",
+      "contact-created"
+    ],
+    "pollAction": null,
+    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/invoiceninja",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "invoice-webhook",
+      "new-invoice"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/invoiceninja/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/ironclad",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-list"
+    ],
+    "pollAction": "record-list",
+    "reason": "list action record-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/iterable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-campaign"
+    ],
+    "pollAction": "list-campaigns",
+    "reason": "shipped poll trigger(s) over list action list-campaigns",
+    "verified": "apps/iterable/README.md Triggers section (verified 2026-10-06)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/jenkins",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jev",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jibble",
+    "mechanism": "poll",
+    "candidates": [
+      "new-activity-list"
+    ],
+    "pollAction": "activity-list",
+    "reason": "list action activity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jinaai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jobber",
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoice-list"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "list action invoice-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jobnimbus",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jobtread",
+    "mechanism": "poll",
+    "candidates": [
+      "new-job"
+    ],
+    "pollAction": "list-jobs",
+    "reason": "shipped poll trigger(s) over list action list-jobs",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/jotform",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-submission",
+      "submission-webhook"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/jotform/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/judgeme",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/jumpcloud",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-group-list"
+    ],
+    "pollAction": "user-group-list",
+    "reason": "list action user-group-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/justcall",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/kajabi",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/keap",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/keap/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/kintone",
+    "mechanism": "poll",
+    "candidates": [
+      "new-comment"
+    ],
+    "pollAction": "comments-list",
+    "reason": "shipped poll trigger(s) over list action comments-list",
+    "verified": "apps/kintone/README.md Triggers section (verified 2026-09-05)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/kit",
+    "mechanism": "poll",
+    "candidates": [
+      "new-subscriber"
+    ],
+    "pollAction": "list-subscribers",
+    "reason": "shipped poll trigger(s) over list action list-subscribers",
+    "verified": "apps/kit/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/klaviyo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/klicktipp",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/klipfolio",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/knack",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-list"
+    ],
+    "pollAction": "record-list",
+    "reason": "list action record-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/kommo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": "lead-list",
+    "reason": "shipped poll trigger(s) over list action lead-list",
+    "verified": "apps/kommo/README.md Triggers section (verified 2026-09-05)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/kudosity",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sms"
+    ],
+    "pollAction": "sms-list",
+    "reason": "shipped poll trigger(s) over list action sms-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/kustomer",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/kvcore",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/landbot",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/launchdarkly",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lawmatics",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contacts"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "list action list-contacts has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/leadfeeder",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/learnworlds",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/leexi",
+    "mechanism": "poll",
+    "candidates": [
+      "new-meeting-event"
+    ],
+    "pollAction": "meeting-event-list",
+    "reason": "shipped poll trigger(s) over list action meeting-event-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/lemlist",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "activity-webhook",
+      "new-activity"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/lemlist/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/lemonsqueezy",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-list"
+    ],
+    "pollAction": "order-list",
+    "reason": "list action order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lever",
+    "mechanism": "poll",
+    "candidates": [
+      "new-posting-list"
+    ],
+    "pollAction": "posting-list",
+    "reason": "list action posting-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lexware-office",
+    "mechanism": "poll",
+    "candidates": [
+      "new-voucher-list"
+    ],
+    "pollAction": "voucher-list",
+    "reason": "list action voucher-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/line",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/linear",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "comment",
+      "cycle",
+      "issue",
+      "project"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/linear/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/linkedin/linkedin",
+    "mechanism": "poll",
+    "candidates": [
+      "new-posts-by-author"
+    ],
+    "pollAction": "list-posts-by-author",
+    "reason": "list action list-posts-by-author has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/linkedin/linkedin-ads",
+    "mechanism": "poll",
+    "candidates": [
+      "new-ad-account-list"
+    ],
+    "pollAction": "ad-account-list",
+    "reason": "list action ad-account-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/linkedin/linkedin-conversions",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/linkup",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/linkupapi",
+    "mechanism": "poll",
+    "candidates": [
+      "new-candidate"
+    ],
+    "pollAction": "job-candidates-list",
+    "reason": "shipped poll trigger(s) over list action job-candidates-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/littlegreenlight",
+    "mechanism": "poll",
+    "candidates": [
+      "new-constituent-search"
+    ],
+    "pollAction": "constituent-search",
+    "reason": "list action constituent-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/livechat",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/livestorm",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lob",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lodgify",
+    "mechanism": "poll",
+    "candidates": [
+      "new-bookings"
+    ],
+    "pollAction": "list-bookings",
+    "reason": "list action list-bookings has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lofty",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead-activity-list"
+    ],
+    "pollAction": "lead-activity-list",
+    "reason": "list action lead-activity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lokalise",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/loop-returns",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order"
+    ],
+    "pollAction": "order-list",
+    "reason": "shipped poll trigger(s) over list action order-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/loops",
+    "mechanism": "poll",
+    "candidates": [
+      "new-transactional-list"
+    ],
+    "pollAction": "transactional-list",
+    "reason": "list action transactional-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/loyverse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-receipt-list"
+    ],
+    "pollAction": "receipt-list",
+    "reason": "list action receipt-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/luma",
+    "mechanism": "poll",
+    "candidates": [
+      "new-calendar-events-list"
+    ],
+    "pollAction": "calendar-events-list",
+    "reason": "list action calendar-events-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/lusha",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mailcheck",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mailchimp/mailchimp",
+    "mechanism": "poll",
+    "candidates": [
+      "new-member"
+    ],
+    "pollAction": "list-members",
+    "reason": "shipped poll trigger(s) over list action list-members",
+    "verified": "apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/mailchimp/mandrill",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mailerlite",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "campaign-sent",
+      "new-subscriber",
+      "subscriber-unsubscribed",
+      "subscriber-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/mailerlite/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/maileroo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-domain"
+    ],
+    "pollAction": "list-domains",
+    "reason": "shipped poll trigger(s) over list action list-domains",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/mailersend",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sender-identities"
+    ],
+    "pollAction": "list-sender-identities",
+    "reason": "list action list-sender-identities has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mailgun",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "message-delivered",
+      "message-opened"
+    ],
+    "pollAction": null,
+    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/mailjet",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "list-messages",
+    "reason": "shipped poll trigger(s) over list action list-messages",
+    "verified": "apps/mailjet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/maintainx",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/manus",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/manychat",
+    "mechanism": "poll",
+    "candidates": [
+      "new-flows"
+    ],
+    "pollAction": "list-flows",
+    "reason": "list action list-flows has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/marketo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mastodon",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/matrix",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mattermost",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post-search"
+    ],
+    "pollAction": "post-search",
+    "reason": "list action post-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mautic",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "contact-deleted",
+      "contact-updated",
+      "form-submitted",
+      "new-contact"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/mautic/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/meilisearch",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document-list"
+    ],
+    "pollAction": "document-list",
+    "reason": "list action document-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meistertask",
+    "mechanism": "poll",
+    "candidates": [
+      "new-checklist-item-list"
+    ],
+    "pollAction": "checklist-item-list",
+    "reason": "list action checklist-item-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mem",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/memberstack",
+    "mechanism": "poll",
+    "candidates": [
+      "new-member"
+    ],
+    "pollAction": "member-list",
+    "reason": "shipped poll trigger(s) over list action member-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/mercury",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/messagebird",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meta/facebook",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "new-comment",
+      "page-feed"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/facebook/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/meta/facebook-conversions",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meta/facebook-custom-audiences",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meta/facebook-lead-ads",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/meta/facebook-messenger",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meta/instagram-for-business",
+    "mechanism": "poll",
+    "candidates": [
+      "new-media"
+    ],
+    "pollAction": "list-media",
+    "reason": "list action list-media has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/meta/whatsapp",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "message-received",
+      "message-status"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/metabase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "search",
+    "reason": "list action search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/metricool",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/azure-blob",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/azuredevops",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/excel",
+    "mechanism": "poll",
+    "candidates": [
+      "new-workbooks"
+    ],
+    "pollAction": "list-workbooks",
+    "reason": "list action list-workbooks has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/microsoft-entra-id",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deleted-items"
+    ],
+    "pollAction": "list-deleted-items",
+    "reason": "list action list-deleted-items has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/microsoft-todo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-changes"
+    ],
+    "pollAction": "list-task-changes",
+    "reason": "list action list-task-changes has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/onedrive",
+    "mechanism": "poll",
+    "candidates": [
+      "file-changed"
+    ],
+    "pollAction": "list-changes",
+    "reason": "shipped poll trigger(s) over list action list-changes",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/microsoft/onenote",
+    "mechanism": "poll",
+    "candidates": [
+      "new-notebooks"
+    ],
+    "pollAction": "list-notebooks",
+    "reason": "list action list-notebooks has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/outlook",
+    "mechanism": "poll",
+    "candidates": [
+      "new-email"
+    ],
+    "pollAction": "list-messages",
+    "reason": "shipped poll trigger(s) over list action list-messages",
+    "verified": "apps/microsoft/outlook/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/microsoft/powerbi",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/microsoft/sharepoint",
+    "mechanism": "poll",
+    "candidates": [
+      "new-list-item"
+    ],
+    "pollAction": "list-items",
+    "reason": "shipped poll trigger(s) over list action list-items",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/microsoft/teams",
+    "mechanism": "poll",
+    "candidates": [
+      "new-channel-message"
+    ],
+    "pollAction": "list-channel-messages",
+    "reason": "shipped poll trigger(s) over list action list-channel-messages",
+    "verified": "apps/microsoft/teams/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/mighty-networks",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/millionverifier",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mindee",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/miro",
+    "mechanism": "poll",
+    "candidates": [
+      "new-board-list"
+    ],
+    "pollAction": "board-list",
+    "reason": "list action board-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/missive",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mistral",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mixmax",
+    "mechanism": "poll",
+    "candidates": [
+      "new-unsubscribe"
+    ],
+    "pollAction": "unsubscribe-list",
+    "reason": "shipped poll trigger(s) over list action unsubscribe-list",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/mixpanel",
+    "mechanism": "poll",
+    "candidates": [
+      "new-activity-list"
+    ],
+    "pollAction": "activity-list",
+    "reason": "list action activity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/moco",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mollie",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/monday",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/moneybird",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mongodb-atlas",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/moonclerk",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/motion",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/msg91",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mural",
+    "mechanism": "poll",
+    "candidates": [
+      "new-mural-list"
+    ],
+    "pollAction": "mural-list",
+    "reason": "list action mural-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/murf",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/mux",
+    "mechanism": "poll",
+    "candidates": [
+      "new-asset-list"
+    ],
+    "pollAction": "asset-list",
+    "reason": "list action asset-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/nationbuilder",
+    "mechanism": "poll",
+    "candidates": [
+      "new-person-list"
+    ],
+    "pollAction": "person-list",
+    "reason": "list action person-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/netlify",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "deploy",
+      "deploy-failed",
+      "deploy-succeeded"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/netsuite",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/neverbounce",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/newrelic",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ninox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-record"
+    ],
+    "pollAction": "record-list",
+    "reason": "shipped poll trigger(s) over list action record-list",
+    "verified": "apps/ninox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/nocodb",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-list"
+    ],
+    "pollAction": "record-list",
+    "reason": "list action record-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/nocrm",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": "lead-get-many",
+    "reason": "shipped poll trigger(s) over list action lead-get-many",
+    "verified": "apps/nocrm/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/notion",
+    "mechanism": "poll",
+    "candidates": [
+      "new-database-page"
+    ],
+    "pollAction": "get-many-database-pages",
+    "reason": "shipped poll trigger(s) over list action get-many-database-pages",
+    "verified": "apps/notion/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/nutshell",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/odoo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contacts"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "list action list-contacts has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/okta",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ollama",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ollama-cloud",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/omnisend",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/omnisend/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/oncehub",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sms-notification-list"
+    ],
+    "pollAction": "sms-notification-list",
+    "reason": "list action sms-notification-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/onepagecrm",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/onepagecrm/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/onepassword",
+    "mechanism": "poll",
+    "candidates": [
+      "new-item-file-list"
+    ],
+    "pollAction": "item-file-list",
+    "reason": "list action item-file-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/onesignal",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/onesimpleapi",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/onfleet",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "task-assigned",
+      "task-completed",
+      "task-created",
+      "task-failed",
+      "task-started",
+      "task-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/onfleet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/ontraport",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/openai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/openrouter",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/opusclip",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/otter",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/outreach",
+    "mechanism": "poll",
+    "candidates": [
+      "new-account-list"
+    ],
+    "pollAction": "account-list",
+    "reason": "list action account-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/outseta",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/paddle",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pagerduty",
+    "mechanism": "poll",
+    "candidates": [
+      "new-incident"
+    ],
+    "pollAction": "incident-list",
+    "reason": "shipped poll trigger(s) over list action incident-list",
+    "verified": "apps/pagerduty/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/pandadoc",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document-get-many"
+    ],
+    "pollAction": "document-get-many",
+    "reason": "list action document-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/paperform",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pardot",
+    "mechanism": "poll",
+    "candidates": [
+      "new-landing-page-list"
+    ],
+    "pollAction": "landing-page-list",
+    "reason": "list action landing-page-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/parseur",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document"
+    ],
+    "pollAction": "document-list",
+    "reason": "shipped poll trigger(s) over list action document-list",
+    "verified": "apps/parseur/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/particle",
+    "mechanism": "poll",
+    "candidates": [
+      "new-device-list"
+    ],
+    "pollAction": "device-list",
+    "reason": "list action device-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/patreon",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/payhip",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/paypal",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "event",
+      "invoice-paid",
+      "order-approved",
+      "payment-captured",
+      "payment-refunded",
+      "payout-item-succeeded"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/paypal/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/paystack",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pdfco",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pdfmonkey",
+    "mechanism": "poll",
+    "candidates": [
+      "new-documents"
+    ],
+    "pollAction": "list-documents",
+    "reason": "list action list-documents has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pendo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pennylane",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-invoices"
+    ],
+    "pollAction": "list-customer-invoices",
+    "reason": "list action list-customer-invoices has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/peopledatalabs",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/perplexity",
+    "mechanism": "poll",
+    "candidates": [
+      "new-web-search"
+    ],
+    "pollAction": "web-search",
+    "reason": "list action web-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/personio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-employees"
+    ],
+    "pollAction": "list-employees",
+    "reason": "list action list-employees has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/perspective",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/perspective/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/phantombuster",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/phrase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-job-list"
+    ],
+    "pollAction": "job-list",
+    "reason": "list action job-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pinecone",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-search"
+    ],
+    "pollAction": "record-search",
+    "reason": "list action record-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pinterest",
+    "mechanism": "poll",
+    "candidates": [
+      "new-pin-search"
+    ],
+    "pollAction": "pin-search",
+    "reason": "list action pin-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pipedrive",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-deal"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/pipedrive/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/pipefy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/placid",
+    "mechanism": "poll",
+    "candidates": [
+      "new-template-list"
+    ],
+    "pollAction": "template-list",
+    "reason": "list action template-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/plaid",
+    "mechanism": "poll",
+    "candidates": [
+      "new-institution-list"
+    ],
+    "pollAction": "institution-list",
+    "reason": "list action institution-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/planningcenter",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-instances"
+    ],
+    "pollAction": "list-event-instances",
+    "reason": "list action list-event-instances has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/plaud",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/plivo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/podio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/podium",
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation"
+    ],
+    "pollAction": "conversation-list",
+    "reason": "shipped poll trigger(s) over list action conversation-list",
+    "verified": "apps/podium/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/postbin",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/postgres",
+    "mechanism": "poll",
+    "candidates": [
+      "new-row"
+    ],
+    "pollAction": "query",
+    "reason": "shipped poll trigger(s) over list action query",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/posthog",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/postmark",
+    "mechanism": "poll",
+    "candidates": [
+      "new-outbound-message"
+    ],
+    "pollAction": "list-outbound-messages",
+    "reason": "shipped poll trigger(s) over list action list-outbound-messages",
+    "verified": "apps/postmark/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/practicebetter",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/printavo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/printful",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-list"
+    ],
+    "pollAction": "order-list",
+    "reason": "list action order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/printnode",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/processstreet",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/procore",
+    "mechanism": "poll",
+    "candidates": [
+      "new-submittal-list"
+    ],
+    "pollAction": "submittal-list",
+    "reason": "list action submittal-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/productboard",
+    "mechanism": "poll",
+    "candidates": [
+      "new-member-activity-list"
+    ],
+    "pollAction": "member-activity-list",
+    "reason": "list action member-activity-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/productive",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deal-list"
+    ],
+    "pollAction": "deal-list",
+    "reason": "list action deal-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/prospeo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pushbullet",
+    "mechanism": "poll",
+    "candidates": [
+      "new-chat-list"
+    ],
+    "pollAction": "chat-list",
+    "reason": "list action chat-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pushover",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sounds-list"
+    ],
+    "pollAction": "sounds-list",
+    "reason": "list action sounds-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/pylon",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/qdrant",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/quaderno",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/qualtrics",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/quickbase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-tables"
+    ],
+    "pollAction": "list-tables",
+    "reason": "list action list-tables has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/quickbooks",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/quickchart",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/quo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/raindrop",
+    "mechanism": "poll",
+    "candidates": [
+      "new-collection-list"
+    ],
+    "pollAction": "collection-list",
+    "reason": "list action collection-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/raisely",
+    "mechanism": "poll",
+    "candidates": [
+      "new-campaign-list"
+    ],
+    "pollAction": "campaign-list",
+    "reason": "list action campaign-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/razorpay",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-list"
+    ],
+    "pollAction": "order-list",
+    "reason": "list action order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/rdstation",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/rdstation/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/read-ai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/readwise",
+    "mechanism": "poll",
+    "candidates": [
+      "new-book-list"
+    ],
+    "pollAction": "book-list",
+    "reason": "list action book-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recallai",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recharge",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-list"
+    ],
+    "pollAction": "order-list",
+    "reason": "list action order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recruit-crm",
+    "mechanism": "poll",
+    "candidates": [
+      "new-job-list"
+    ],
+    "pollAction": "job-list",
+    "reason": "list action job-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recruitee",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recruiterflow",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/recurly",
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoices"
+    ],
+    "pollAction": "list-invoices",
+    "reason": "list action list-invoices has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/reddit",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post"
+    ],
+    "pollAction": "post-list",
+    "reason": "shipped poll trigger(s) over list action post-list",
+    "verified": "apps/reddit/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/redtail-crm",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/refiner",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/regfox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-form-list"
+    ],
+    "pollAction": "form-list",
+    "reason": "list action form-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/relevanceai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-agent-list"
+    ],
+    "pollAction": "agent-list",
+    "reason": "list action agent-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/rendex",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/replicate",
+    "mechanism": "poll",
+    "candidates": [
+      "new-prediction-list"
+    ],
+    "pollAction": "prediction-list",
+    "reason": "list action prediction-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/replyio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-sequence-contact-list"
+    ],
+    "pollAction": "sequence-contact-list",
+    "reason": "list action sequence-contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/resend",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/respondio",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/retellai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-agents"
+    ],
+    "pollAction": "list-agents",
+    "reason": "list action list-agents has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ringcentral",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ringover",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call"
+    ],
+    "pollAction": "call-list",
+    "reason": "shipped poll trigger(s) over list action call-list",
+    "verified": "apps/ringover/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/rippling",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/rocketchat",
+    "mechanism": "poll",
+    "candidates": [
+      "new-users"
+    ],
+    "pollAction": "list-users",
+    "reason": "list action list-users has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/rocketreach",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/rootly",
+    "mechanism": "poll",
+    "candidates": [
+      "new-incident"
+    ],
+    "pollAction": "incident-list",
+    "reason": "shipped poll trigger(s) over list action incident-list",
+    "verified": "apps/rootly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/runway",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/salesforce",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "query",
+    "reason": "shipped poll trigger(s) over list action query",
+    "verified": "apps/salesforce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/salesloft",
+    "mechanism": "poll",
+    "candidates": [
+      "new-person"
+    ],
+    "pollAction": "person-list",
+    "reason": "shipped poll trigger(s) over list action person-list",
+    "verified": "apps/salesloft/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/salesmate",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/salesmsg",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/salesmsg/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/salla",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-history-list"
+    ],
+    "pollAction": "order-history-list",
+    "reason": "list action order-history-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/samcart",
+    "mechanism": "poll",
+    "candidates": [
+      "new-funnel-order-list"
+    ],
+    "pollAction": "funnel-order-list",
+    "reason": "list action funnel-order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sanity",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/savvycal",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/scoreapp",
+    "mechanism": "poll",
+    "candidates": [
+      "new-result-list"
+    ],
+    "pollAction": "result-list",
+    "reason": "list action result-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/seamlessai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task"
+    ],
+    "pollAction": "task-list",
+    "reason": "shipped poll trigger(s) over list action task-list",
+    "verified": "apps/seamlessai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/seatable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-row"
+    ],
+    "pollAction": "row-list",
+    "reason": "shipped poll trigger(s) over list action row-list",
+    "verified": "apps/seatable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/sellsy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/semrush",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sendblue",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "message-list",
+    "reason": "shipped poll trigger(s) over list action message-list",
+    "verified": "apps/sendblue/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/sender",
+    "mechanism": "poll",
+    "candidates": [
+      "new-field-list"
+    ],
+    "pollAction": "field-list",
+    "reason": "list action field-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sendfox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sendpulse",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deals-list"
+    ],
+    "pollAction": "deals-list",
+    "reason": "list action deals-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sendy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sentry",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue-list"
+    ],
+    "pollAction": "issue-list",
+    "reason": "list action issue-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/servicem8",
+    "mechanism": "poll",
+    "candidates": [
+      "new-category-list"
+    ],
+    "pollAction": "category-list",
+    "reason": "list action category-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/servicenow",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/servicetitan",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/seven",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact"
+    ],
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/seven/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/sharetribe",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/shippo",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/shipstation",
+    "mechanism": "poll",
+    "candidates": [
+      "new-shipment-list"
+    ],
+    "pollAction": "shipment-list",
+    "reason": "list action shipment-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/shopify",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "customer-created",
+      "event",
+      "order-cancelled",
+      "order-created",
+      "order-fulfilled",
+      "order-paid",
+      "order-updated",
+      "product-created",
+      "product-updated",
+      "refund-created"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/shopify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/short-io",
+    "mechanism": "poll",
+    "candidates": [
+      "new-link-list"
+    ],
+    "pollAction": "link-list",
+    "reason": "list action link-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/shortcut",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/sierrainteractive",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/signnow",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/signrequest",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/signwell",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/simplero",
+    "mechanism": "poll",
+    "candidates": [
+      "new-purchase-list"
+    ],
+    "pollAction": "purchase-list",
+    "reason": "list action purchase-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/simpletexting",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/simplybook",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/skyvern",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/slack",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "event",
+      "new-message"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/slack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/slite",
+    "mechanism": "poll",
+    "candidates": [
+      "new-km-note-list"
+    ],
+    "pollAction": "km-note-list",
+    "reason": "list action km-note-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/smartsheet",
+    "mechanism": "poll",
+    "candidates": [
+      "new-container-children"
+    ],
+    "pollAction": "list-container-children",
+    "reason": "list action list-container-children has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/smartsuite",
+    "mechanism": "poll",
+    "candidates": [
+      "new-records"
+    ],
+    "pollAction": "list-records",
+    "reason": "list action list-records has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/snowflake",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/snyk",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue-list"
+    ],
+    "pollAction": "issue-list",
+    "reason": "list action issue-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/softr",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record-list"
+    ],
+    "pollAction": "record-list",
+    "reason": "list action record-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/solapi",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/splitwise",
+    "mechanism": "poll",
+    "candidates": [
+      "new-expenses"
+    ],
+    "pollAction": "list-expenses",
+    "reason": "list action list-expenses has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/splunk",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/spotify",
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "search",
+    "reason": "list action search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/square",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer"
+    ],
+    "pollAction": "customer-get-many",
+    "reason": "shipped poll trigger(s) over list action customer-get-many",
+    "verified": "apps/square/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/squarespace-commerce",
+    "mechanism": "poll",
+    "candidates": [
+      "new-orders"
+    ],
+    "pollAction": "list-orders",
+    "reason": "list action list-orders has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/stackexchange",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-answer-list"
+    ],
+    "pollAction": "user-answer-list",
+    "reason": "list action user-answer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/statuspage",
+    "mechanism": "poll",
+    "candidates": [
+      "new-component-list"
+    ],
+    "pollAction": "component-list",
+    "reason": "list action component-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/storyblok",
+    "mechanism": "poll",
+    "candidates": [
+      "new-story"
+    ],
+    "pollAction": "story-list",
+    "reason": "shipped poll trigger(s) over list action story-list",
+    "verified": "apps/storyblok/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/strapi",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry"
+    ],
+    "pollAction": "entry-list",
+    "reason": "shipped poll trigger(s) over list action entry-list",
+    "verified": "apps/strapi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/strava",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "activity-created",
+      "activity-deleted",
+      "activity-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/strava/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/streak",
+    "mechanism": "poll",
+    "candidates": [
+      "new-box-list"
+    ],
+    "pollAction": "box-list",
+    "reason": "list action box-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/streamtime",
+    "mechanism": "poll",
+    "candidates": [
+      "new-records"
+    ],
+    "pollAction": "search-records",
+    "reason": "list action search-records has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/stripe",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "charge-refunded",
+      "checkout-completed",
+      "customer-created",
+      "event",
+      "invoice-paid",
+      "invoice-payment-failed",
+      "payment-failed",
+      "payment-succeeded",
+      "subscription-canceled",
+      "subscription-created"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/stripe/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/supabase",
+    "mechanism": "poll",
+    "candidates": [
+      "new-rows-list"
+    ],
+    "pollAction": "rows-list",
+    "reason": "list action rows-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/supadata",
+    "mechanism": "poll",
+    "candidates": [
+      "new-youtube-search"
+    ],
+    "pollAction": "youtube-search",
+    "reason": "list action youtube-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/superchat",
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation-messages-list"
+    ],
+    "pollAction": "conversation-messages-list",
+    "reason": "list action conversation-messages-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/surveymonkey",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "response-completed"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/surveymonkey/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/synthflow",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call-list"
+    ],
+    "pollAction": "call-list",
+    "reason": "list action call-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/systemeio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tableau",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tailscale",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/talentlms",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tally",
+    "mechanism": "poll",
+    "candidates": [
+      "new-submission-get-many"
+    ],
+    "pollAction": "submission-get-many",
+    "reason": "list action submission-get-many has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tapfiliate",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/taskade",
+    "mechanism": "poll",
+    "candidates": [
+      "new-my-project-list"
+    ],
+    "pollAction": "my-project-list",
+    "reason": "list action my-project-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tavily",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/teachable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/teamleader",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contacts-list"
+    ],
+    "pollAction": "contacts-list",
+    "reason": "list action contacts-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/teamup",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-memberships-list"
+    ],
+    "pollAction": "customer-memberships-list",
+    "reason": "list action customer-memberships-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/teamwork",
+    "mechanism": "poll",
+    "candidates": [
+      "new-project-list"
+    ],
+    "pollAction": "project-list",
+    "reason": "list action project-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/telegram",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-message",
+      "update"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/telegram/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/telnyx",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/terraform",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/textmagic",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/thanksio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-items-list"
+    ],
+    "pollAction": "order-items-list",
+    "reason": "list action order-items-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/thinkific",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/thrivecart",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tickettailor",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issued-ticket-list"
+    ],
+    "pollAction": "issued-ticket-list",
+    "reason": "list action issued-ticket-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/ticktick",
+    "mechanism": "poll",
+    "candidates": [
+      "new-habits"
+    ],
+    "pollAction": "list-habits",
+    "reason": "list action list-habits has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tidio",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lyro-data-source-list"
+    ],
+    "pollAction": "lyro-data-source-list",
+    "reason": "list action lyro-data-source-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tidycal",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tiktok-lead-generation",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/timelinesai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-messages-list"
+    ],
+    "pollAction": "messages-list",
+    "reason": "list action messages-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tldv",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/todoist",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "task-added",
+      "task-completed"
+    ],
+    "pollAction": null,
+    "reason": "vendor ships a webhook API (model knowledge; not verified against docs)",
+    "verified": false,
+    "source": "hand"
+  },
+  {
+    "path": "apps/toggl",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "project-created",
+      "time-entry-created",
+      "time-entry-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/toggl/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/tremendous",
+    "mechanism": "poll",
+    "candidates": [
+      "new-order-list"
+    ],
+    "pollAction": "order-list",
+    "reason": "list action order-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/trustpilot",
+    "mechanism": "poll",
+    "candidates": [
+      "new-business-unit-reviews-list"
+    ],
+    "pollAction": "business-unit-reviews-list",
+    "reason": "list action business-unit-reviews-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/tumblr",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post"
+    ],
+    "pollAction": "blog-posts-list",
+    "reason": "shipped poll trigger(s) over list action blog-posts-list",
+    "verified": "apps/tumblr/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/twilio/segment",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/twilio/sendgrid",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/twilio/twilio",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "incoming-message",
+      "message-status"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/twilio/twilio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/twist",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message-list"
+    ],
+    "pollAction": "message-list",
+    "reason": "list action message-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/twitch",
+    "mechanism": "poll",
+    "candidates": [
+      "new-categories"
+    ],
+    "pollAction": "search-categories",
+    "reason": "list action search-categories has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/twitter",
+    "mechanism": "poll",
+    "candidates": [
+      "new-tweet"
+    ],
+    "pollAction": "tweet-search-recent",
+    "reason": "shipped poll trigger(s) over list action tweet-search-recent",
+    "verified": "apps/twitter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/typeform",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-response"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/typeform/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/typefully",
+    "mechanism": "poll",
+    "candidates": [
+      "new-draft"
+    ],
+    "pollAction": "draft-list",
+    "reason": "shipped poll trigger(s) over list action draft-list",
+    "verified": "apps/typefully/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/typesense",
+    "mechanism": "poll",
+    "candidates": [
+      "new-document-search"
+    ],
+    "pollAction": "document-search",
+    "reason": "list action document-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/unbounce",
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead"
+    ],
+    "pollAction": "page-lead-list",
+    "reason": "shipped poll trigger(s) over list action page-lead-list",
+    "verified": "apps/unbounce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/upsales",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/upstash",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/uptimerobot",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/uscreen",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/vanta",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue"
+    ],
+    "pollAction": "issue-list",
+    "reason": "shipped poll trigger(s) over list action issue-list",
+    "verified": "apps/vanta/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/vapi",
+    "mechanism": "poll",
+    "candidates": [
+      "new-phone-number"
+    ],
+    "pollAction": "phone-number-list",
+    "reason": "shipped poll trigger(s) over list action phone-number-list",
+    "verified": "apps/vapi/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/vbout",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/vercel",
+    "mechanism": "poll",
+    "candidates": [
+      "new-deployment-event-list"
+    ],
+    "pollAction": "deployment-event-list",
+    "reason": "list action deployment-event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/vero",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/videoask",
+    "mechanism": "poll",
+    "candidates": [
+      "new-conversation"
+    ],
+    "pollAction": "conversation-list",
+    "reason": "shipped poll trigger(s) over list action conversation-list",
+    "verified": "apps/videoask/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/vimeo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-folder-item-list"
+    ],
+    "pollAction": "folder-item-list",
+    "reason": "list action folder-item-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wakatime",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wappalyzer",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wati",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wave",
+    "mechanism": "poll",
+    "candidates": [
+      "new-customer-list"
+    ],
+    "pollAction": "customer-list",
+    "reason": "list action customer-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wealthbox",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contacts"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "list action list-contacts has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/webex",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-membership",
+      "new-message"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/webex/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/webflow",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "collection-item-changed",
+      "collection-item-created",
+      "form-submission",
+      "new-order"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/webflow/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/webinargeek",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message"
+    ],
+    "pollAction": "message-list",
+    "reason": "shipped poll trigger(s) over list action message-list",
+    "verified": "apps/webinargeek/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/webinarjam",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/webscrapingai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-serp-search"
+    ],
+    "pollAction": "serp-search",
+    "reason": "list action serp-search has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/whatconverts",
+    "mechanism": "poll",
+    "candidates": [
+      "new-leads-list"
+    ],
+    "pollAction": "leads-list",
+    "reason": "list action leads-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/whop",
+    "mechanism": "poll",
+    "candidates": [
+      "new-member-list"
+    ],
+    "pollAction": "member-list",
+    "reason": "list action member-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wise",
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "balance-updated",
+      "profile-state-changed",
+      "transfer-payout-failed",
+      "transfer-state-changed"
+    ],
+    "pollAction": null,
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/wise/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/wistia",
+    "mechanism": "poll",
+    "candidates": [
+      "new-folder-list"
+    ],
+    "pollAction": "folder-list",
+    "reason": "list action folder-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wix",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contacts"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "list action list-contacts has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wiza",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/woocommerce",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "customer-created",
+      "event",
+      "order-created",
+      "order-deleted",
+      "order-updated",
+      "product-created",
+      "product-updated"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/woocommerce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/woodpecker",
+    "mechanism": "poll",
+    "candidates": [
+      "new-user-list"
+    ],
+    "pollAction": "user-list",
+    "reason": "list action user-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wordpress",
+    "mechanism": "poll",
+    "candidates": [
+      "new-post"
+    ],
+    "pollAction": "post-get-all",
+    "reason": "shipped poll trigger(s) over list action post-get-all",
+    "verified": "apps/wordpress/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/workable",
+    "mechanism": "poll",
+    "candidates": [
+      "new-candidate"
+    ],
+    "pollAction": "candidate-list",
+    "reason": "shipped poll trigger(s) over list action candidate-list",
+    "verified": "apps/workable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/workday",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/workflowy",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/workiz",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/workos",
+    "mechanism": "poll",
+    "candidates": [
+      "new-event-list"
+    ],
+    "pollAction": "event-list",
+    "reason": "list action event-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wrike",
+    "mechanism": "poll",
+    "candidates": [
+      "new-task-list"
+    ],
+    "pollAction": "task-list",
+    "reason": "list action task-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/wufoo",
+    "mechanism": "poll",
+    "candidates": [
+      "new-entry"
+    ],
+    "pollAction": "entry-list",
+    "reason": "shipped poll trigger(s) over list action entry-list",
+    "verified": "apps/wufoo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/xai",
+    "mechanism": "poll",
+    "candidates": [
+      "new-files"
+    ],
+    "pollAction": "list-files",
+    "reason": "list action list-files has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/xero",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/yelp-leads",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/youcanbookme",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/youform",
+    "mechanism": "poll",
+    "candidates": [
+      "new-submission"
+    ],
+    "pollAction": "submission-list",
+    "reason": "shipped poll trigger(s) over list action submission-list",
+    "verified": "apps/youform/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/zendesk/zendesk",
+    "mechanism": "webhook-api",
+    "candidates": [
+      "new-ticket",
+      "ticket-comment-added",
+      "ticket-status-changed"
+    ],
+    "pollAction": null,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
+  },
+  {
+    "path": "apps/zendesk/zendesk-sell",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zeplin",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zerobounce",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/bigin",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-analytics",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-bookings",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-calendar",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-campaigns",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-cliq",
+    "mechanism": "poll",
+    "candidates": [
+      "new-chat-list"
+    ],
+    "pollAction": "chat-list",
+    "reason": "list action chat-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-creator",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-inventory",
+    "mechanism": "poll",
+    "candidates": [
+      "new-salesorder-list"
+    ],
+    "pollAction": "salesorder-list",
+    "reason": "list action salesorder-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-invoice",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-people",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-projects",
+    "mechanism": "poll",
+    "candidates": [
+      "new-issue-list"
+    ],
+    "pollAction": "issue-list",
+    "reason": "list action issue-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-recruit",
+    "mechanism": "poll",
+    "candidates": [
+      "new-candidate-list"
+    ],
+    "pollAction": "candidate-list",
+    "reason": "list action candidate-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-sheet",
+    "mechanism": "poll",
+    "candidates": [
+      "new-workbook-list"
+    ],
+    "pollAction": "workbook-list",
+    "reason": "list action workbook-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-sign",
+    "mechanism": "poll",
+    "candidates": [
+      "new-request-list"
+    ],
+    "pollAction": "request-list",
+    "reason": "list action request-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zoho-workdrive",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zohobooks",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zohodesk",
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact-list"
+    ],
+    "pollAction": "contact-list",
+    "reason": "list action contact-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoho/zohomail",
+    "mechanism": "poll",
+    "candidates": [
+      "new-message-list"
+    ],
+    "pollAction": "message-list",
+    "reason": "list action message-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zoom",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zulip",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "verified": false,
+    "source": "scan"
+  },
+  {
+    "path": "apps/zuora",
+    "mechanism": "poll",
+    "candidates": [
+      "new-invoice-list"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "list action invoice-list has pagination and order/since params",
+    "verified": false,
+    "source": "scan"
+  }
+]

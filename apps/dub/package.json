@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/dub",
-  "version": "0.1.0",
-  "description": "Create and manage Dub short links, domains, tags, folders and customers, read click analytics and events, and track lead and sale conversions.",
+  "version": "0.2.0",
+  "description": "Create and manage Dub short links, domains, tags, folders and customers, read click analytics and events, and track lead and sale conversions. Poll for newly created customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.dub",
     "displayName": "Dub",
     "apiDocs": [

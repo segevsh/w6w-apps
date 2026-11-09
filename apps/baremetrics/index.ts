@@ -44,6 +44,7 @@ import goalsList from "./actions/goals-list.ts";
 import annotationsList from "./actions/annotations-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -80,4 +81,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCustomer],
 } satisfies AppDefinition;

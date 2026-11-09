@@ -37,6 +37,7 @@ import scheduleList from "./actions/schedule-list.ts";
 import scheduleGet from "./actions/schedule-get.ts";
 import oncallList from "./actions/oncall-list.ts";
 import escalationPolicyList from "./actions/escalation-policy-list.ts";
+import newIncident from "./triggers/new-incident.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -64,4 +65,5 @@ export default {
   ],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newIncident],
 } satisfies AppDefinition;

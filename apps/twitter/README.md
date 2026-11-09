@@ -1,5 +1,15 @@
 # Twitter (X)
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-tweet` — New Tweet | Poll | `tweet-search-recent` | New recent tweets matching a query |
+
+X API search docs: https://docs.x.com/x-api/posts/search/introduction (verified 2026-11-09).
+
 Post, delete, search and read tweets, look up users, and like/retweet on X
 (formerly Twitter) — the X API v2 (`api.x.com`).
 

@@ -15,6 +15,7 @@ import updateContact from "./actions/update-contact.ts";
 import listOpportunities from "./actions/list-opportunities.ts";
 import createOpportunity from "./actions/create-opportunity.ts";
 import updateOpportunity from "./actions/update-opportunity.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
 
 import listActivities from "./actions/list-activities.ts";
 import createNote from "./actions/create-note.ts";
@@ -63,4 +64,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newOpportunity],
 } satisfies AppDefinition;

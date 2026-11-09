@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newUnsubscribe from "./triggers/new-unsubscribe.ts";
 import userGet from "./actions/user-get.ts";
 import messageList from "./actions/message-list.ts";
 import messageGet from "./actions/message-get.ts";
@@ -47,6 +48,7 @@ export default {
     unsubscribeAdd,
     unsubscribeRemove,
   ],
+  triggers: [newUnsubscribe],
   auth: [apiToken],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

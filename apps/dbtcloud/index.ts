@@ -39,6 +39,7 @@ import userList from "./actions/user-list.ts";
 import groupList from "./actions/group-list.ts";
 import serviceTokenList from "./actions/service-token-list.ts";
 import auditLogList from "./actions/audit-log-list.ts";
+import newRun from "./triggers/new-run.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -67,6 +68,7 @@ const app: AppDefinition = {
     auditLogList,
   ],
   auth: [token],
+  triggers: [newRun],
   healthChecks: [service, account, quota],
 };
 

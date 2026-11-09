@@ -5,6 +5,7 @@ Manage contacts, organizations, and deals in RD Station CRM.
 - **Categories** — crm
 - **Auth** — `api-key` (a per-user token, sent as the `token` query parameter)
 - **Actions** — 10
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (feed-backed, `informational`) + the derived `auth:api-key`
 - **Egress allowlist** — `crm.rdstation.com`
 - **Website** — https://www.rdstation.com
@@ -35,6 +36,14 @@ but a token a user can mint in a minute, and its entire surface is documented in
 machine-readable reference, so it is the half that can actually be built and checked. If RDSM
 support is ever wanted, it belongs in a separate app with its own OAuth2 auth method, not bolted
 onto this one.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+
+Source: https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos (verified 2026-11-09).
 
 ## Auth
 

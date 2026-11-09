@@ -6,6 +6,7 @@ API v3** — on the retail platform and on GetResponse MAX.
 - **Categories** — marketing, email
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.getresponse.com`, `api3.getresponse360.com`, `api3.getresponse360.pl`
 - **Website** — https://www.getresponse.com/
@@ -227,3 +228,12 @@ deno task check    # typecheck
 deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/
 ```
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-contact` | New Contact | poll | `contact-list`, sorted by `createdOn DESC` | Each new contact |
+
+The account-wide callback API cannot safely be owned by one subscription, so this trigger polls the
+existing contact list. [GetResponse callbacks](https://apidocs.getresponse.com/v3/callbacks) verified 2026-11-09.

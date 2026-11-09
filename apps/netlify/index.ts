@@ -10,6 +10,9 @@ import envVarSet from "./actions/env-var-set.ts";
 import formList from "./actions/form-list.ts";
 import formSubmissionList from "./actions/form-submission-list.ts";
 import personalAccessToken from "./auth/personal-access-token.ts";
+import deploy from "./triggers/deploy.ts";
+import deploySucceeded from "./triggers/deploy-succeeded.ts";
+import deployFailed from "./triggers/deploy-failed.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -26,6 +29,7 @@ export default {
     formList,
     formSubmissionList,
   ],
+  triggers: [deploy, deploySucceeded, deployFailed],
   auth: [personalAccessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

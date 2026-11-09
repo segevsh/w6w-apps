@@ -5,6 +5,7 @@ catalog — through the **Chargebee API v2**.
 
 - **Auth:** `api-key` — HTTP Basic, API key as the username, empty password
 - **Actions:** 17
+- **Triggers:** 1 (poll)
 - **Categories:** `commerce`, `finance`
 - **Egress:** `*.chargebee.com`
 - **Requires:** a site on **Product Catalog 2.0** for the subscription and catalog actions
@@ -342,3 +343,14 @@ form would reformat asset files and break that guarantee.
 > every page — `https://apidocs.chargebee.com/llms.txt`, offered as "the complete machine-readable
 > documentation index" — is a **404**, so it is not listed here. The OpenAPI repository serves that
 > purpose instead.
+
+## Triggers
+
+| Trigger     | Event                                               | Poll source                                    |
+| ----------- | --------------------------------------------------- | ---------------------------------------------- |
+| `new-event` | A new Chargebee event, optionally of one event type | `GET /api/v2/events?sort_by[desc]=occurred_at` |
+
+The first poll records the current event page without emitting it; later polls deduplicate by event
+id. The trigger requests the documented maximum page size of 100 and sorts `occurred_at` descending.
+The [List events reference](https://apidocs.chargebee.com/docs/api/events/list-events) was checked
+2026-11-09.

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/reddit",
-  "version": "0.1.1",
-  "description": "Submit and read posts and comments, vote, search, and look up identity on Reddit.",
+  "version": "0.2.0",
+  "description": "Submit and read posts and comments, poll for new subreddit posts, vote, search, and look up identity on Reddit.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.reddit",
     "displayName": "Reddit",
     "apiDocs": [

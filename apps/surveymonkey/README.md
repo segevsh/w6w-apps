@@ -6,6 +6,7 @@ SurveyMonkey API.
 - **Categories** — forms, productivity
 - **Auth methods** — oauth2
 - **Actions** — 12
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `api.surveymonkey.com`
 
 ## Links
@@ -50,9 +51,35 @@ Token:     https://api.surveymonkey.com/oauth/token
 
 Scopes are limited to what this app's actions actually use: `users_read`, `surveys_read`,
 `surveys_write`, `responses_read`, `responses_read_detail`, `collectors_read`,
-`collectors_write`, `contacts_read`, `contacts_write`. SurveyMonkey sends `scope` as a
+`collectors_write`, `contacts_read`, `contacts_write`, plus `webhooks_read` / `webhooks_write` for the webhook triggers (developer.surveymonkey.com/api/v3, checked 2026-11-09). SurveyMonkey sends `scope` as a
 **comma-separated** list rather than the OAuth-default space (`scopeSeparator: ","`),
 verified against the vendor's own OAuth credential wiring.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `response-completed` — Response Completed | webhook (API-registered) | `response_completed` on one survey | the full response (pages, questions, answers) |
+
+### Setup
+
+Subscribing needs the **Survey ID**, plus your SurveyMonkey app's **Client ID** and **Client Secret**
+(developer.surveymonkey.com > My Apps > Settings): SurveyMonkey signs deliveries with them and the
+connection does not expose them to a trigger, so they are trigger params (the secret is a secret-typed
+param). The trigger runs `POST /v3/webhooks` (`response_completed`, object type `survey`); SurveyMonkey
+pings the callback URL with a `HEAD` request while creating the webhook and needs a 200, which the
+trigger answers with no event. Unsubscribing runs `DELETE /v3/webhooks/{id}` (already gone counts as
+deleted). The connection needs the `webhooks_write` scope; each run fetches the response with
+`GET /v3/surveys/{id}/responses/{id}/details` (`responses_read_detail`).
+
+### Trust model
+
+Every delivery's `Sm-Signature` header (base64 HMAC-SHA1 of the exact request body, keyed by
+`<client id>&<client secret>`) is verified before the body is parsed. A missing or wrong signature, an
+absent raw body or an unset client id/secret refuses the delivery. The signature carries no timestamp,
+so there is no replay window. The `HEAD` ping carries no data and yields no event.
+
+Docs (verified 2026-11-09): https://api.surveymonkey.com/v3/docs (Webhooks, Webhook Callbacks)
 
 ## Health check
 

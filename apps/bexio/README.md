@@ -6,6 +6,7 @@ bexio, the Swiss all-in-one CRM/accounting/invoicing platform, over the REST API
 - **Categories** — crm, finance, productivity
 - **Auth method** — oauth2 (OpenID Connect against bexio's own Keycloak realm)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.bexio.com`
 - **Website** — https://bexio.com
 - **API docs** — https://docs.bexio.com (a Redoc page rendering an embedded OpenAPI 3.0 document —
@@ -147,3 +148,11 @@ low is worth surfacing, never worth failing a verdict over on its own.
   `pr_project_type_id`, …) are collected as raw numbers/JSON rather than dynamic dropdowns — doing
   that properly means calling the corresponding lookup endpoint (`/2.0/unit`, `/2.0/pr_project_type`,
   …) as a param's `options.source` hook, which is a natural follow-up but out of scope for this pass.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled newest-first through the `contact-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://docs.bexio.com) (verified 2026-11-09).

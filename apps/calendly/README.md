@@ -6,6 +6,7 @@ scheduling links and manage webhook subscriptions.
 - **Categories** — calendar, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 12
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.calendly.com`
 - **Website** — https://calendly.com
 - **API docs** — https://developer.calendly.com/api-docs
@@ -31,6 +32,34 @@ either the full URI or the bare UUID.
 | `webhook-subscription-create` | webhook-subscription | `POST /webhook_subscriptions` |
 | `webhook-subscription-get-many` | webhook-subscription | `GET /webhook_subscriptions` |
 | `webhook-subscription-delete` | webhook-subscription | `DELETE /webhook_subscriptions/{uuid}` |
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `invitee-created` — Invitee Scheduled | webhook (API-registered) | `invitee.created` | the invitee, event time and location, answers |
+| `invitee-canceled` — Invitee Canceled | webhook (API-registered) | `invitee.canceled` | the invitee, the canceled meeting, the reason |
+
+### Setup
+
+Subscribing looks up the connected user (`GET /users/me`) and runs `POST /webhook_subscriptions` for
+the one event, with a random per-subscription `signing_key` kept in the subscription's state;
+unsubscribing runs `DELETE /webhook_subscriptions/{uuid}` (already gone counts as deleted). Scope
+defaults to the whole organization; choose "Only my events" to limit it to the connected user.
+**OAuth connections:** Calendly signs an OAuth app's webhooks with the app's own webhook signing key,
+so paste it into the trigger's *Signing key* param; with a personal access token leave it blank.
+The OAuth flow requests `users:read`, `event_types:read`, `scheduled_events:read`, `scheduling_links:write`, `webhooks:read` and `webhooks:write` (developer.calendly.com/scopes, checked 2026-11-09); a newly created Calendly OAuth app is granted nothing until scopes are requested.
+Webhook subscriptions need a Calendly plan that allows them.
+
+### Trust model
+
+Every delivery's `Calendly-Webhook-Signature: t=<unix>,v1=<hex>` is verified before the body is
+parsed: HMAC-SHA256 of `t + "." + exact request body` under the signing key, compared in constant
+time, and a timestamp more than 180 seconds (Calendly's documented 3 minute tolerance) from now is
+refused. A missing, malformed or wrong signature, an absent raw body or an unset key refuses the
+delivery.
+
+Docs (verified 2026-11-09): https://developer.calendly.com/api-docs/overview/webhooks/webhook-signatures, https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription
 
 ## Health check
 

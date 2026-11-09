@@ -68,6 +68,7 @@ import fileDelete from "./actions/file-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPhoneNumber from "./triggers/new-phone-number.ts";
 
 export default {
   actions: [
@@ -98,6 +99,7 @@ export default {
   ],
   // Private Key only. Vapi's Public Key is scoped for the client-side SDK and
   // is rejected by most of this surface — see auth/private-key.ts.
+  triggers: [newPhoneNumber],
   auth: [privateKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

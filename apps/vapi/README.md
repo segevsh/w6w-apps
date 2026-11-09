@@ -1,5 +1,15 @@
 # Vapi
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-phone-number` — New Phone Number | Poll | `phone-number-list` | Newly created phone numbers |
+
+Vapi API docs: https://docs.vapi.ai/ (verified 2026-11-09).
+
 Place voice/web calls against an existing Assistant, Squad or Workflow, manage those calls
 afterward, and read the Assistant/phone-number/Squad/Tool/file catalogs behind them, on Vapi's
 voice-AI infrastructure platform.

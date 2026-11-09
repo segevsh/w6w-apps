@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/stripe",
-  "version": "0.2.4",
-  "description": "Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue.",
+  "version": "0.3.0",
+  "description": "Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue, plus triggers on payments, refunds, invoices, subscriptions and checkout.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.stripe.com/api"
     ],
-    "longDescription": "Stripe covers the core objects a payments workflow needs — customers can be created, updated, searched, fetched and deleted; payment intents can be created, captured, canceled or read back; and refunds can be issued directly against a charge.\n\nSubscriptions and invoicing are both supported end to end: a subscription can be created, fetched or canceled, and an invoice can be created, finalized and paid as three distinct steps, matching how Stripe's own invoicing lifecycle actually works rather than collapsing it into one call. Products and prices can both be created to build out a workflow's catalogue, and prices can be listed to check what's already configured; a Checkout Session can be created to hand a customer a hosted payment page.\n\nA fit for automating subscription lifecycle events, reconciling payments and refunds with an external ledger, or generating invoices and checkout links as part of a larger sales or billing workflow.",
+    "longDescription": "Stripe covers the core objects a payments workflow needs — customers can be created, updated, searched, fetched and deleted; payment intents can be created, captured, canceled or read back; and refunds can be issued directly against a charge.\n\nSubscriptions and invoicing are both supported end to end: a subscription can be created, fetched or canceled, and an invoice can be created, finalized and paid as three distinct steps, matching how Stripe's own invoicing lifecycle actually works rather than collapsing it into one call. Products and prices can both be created to build out a workflow's catalogue, and prices can be listed to check what's already configured; a Checkout Session can be created to hand a customer a hosted payment page.\n\nA fit for automating subscription lifecycle events, reconciling payments and refunds with an external ledger, or generating invoices and checkout links as part of a larger sales or billing workflow.\n\nTen triggers start a workflow when something happens in Stripe: a payment succeeding or failing, a charge refunded, an invoice paid or failing, a subscription created or canceled, a Checkout Session completed, a customer created, or any Stripe event types you list. Subscribing registers a webhook endpoint with Stripe and unsubscribing removes it; every delivery is checked against the endpoint's signing secret before a run starts.",
     "categories": [
       "commerce",
       "finance"
@@ -33,7 +33,12 @@
         "api.stripe.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

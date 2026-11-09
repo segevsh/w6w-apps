@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-business-profile",
-  "version": "0.1.0",
-  "description": "Manage Google Business Profile listings: accounts, locations, attributes, Q&A, and place action links.",
+  "version": "0.2.0",
+  "description": "Manage Google Business Profile listings and poll for new location questions.",
   "license": "MIT",
   "author": {
     "name": "w6w"

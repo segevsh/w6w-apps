@@ -1,5 +1,15 @@
 # Youform
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-submission` — New Submission | Poll | `submission-list` | New form submissions |
+
+Youform API docs: https://app.youform.com/api (verified 2026-11-09).
+
 Read Youform forms and submissions, manage submission webhooks and enable submission refill links
 over Youform's REST API (`https://app.youform.com/api`).
 

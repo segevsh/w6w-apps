@@ -1,5 +1,9 @@
 # HoneyBook
 
+## Triggers
+
+- **New Project** (`new-project`) polls the newest-first `project-list` action every five minutes.
+
 Clientflow / CRM for service businesses, over the **HoneyBook API v3**
 (`https://api.honeybook.com/api/v3`). 38 actions, OAuth 2.0 (authorization code + PKCE), one health
 check.

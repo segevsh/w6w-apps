@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/loop-returns",
-  "version": "0.1.0",
-  "description": "Loop Returns: returns and exchanges, orders, customers, destinations, labels, fraud reports and webhooks.",
+  "version": "0.2.0",
+  "description": "Loop Returns: returns and exchanges, orders, customers, destinations, labels, fraud reports, webhooks, and a poll trigger for new orders.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.loopreturns.com/llms.txt"
     ],
-    "longDescription": "Loop Returns runs the returns and exchanges experience for Shopify merchants. This app drives the Loop API from a workflow.\n\nList and fetch returns, then act on them: process, cancel, flag, close, remove line items, read and add notes, generate a label, or report a return as fraudulent. Pull the advanced shipping notice for warehouse reconciliation, create return deep links and QR codes for a customer's order, and check which items on an order are still eligible to return.\n\nRead orders and customers held in Loop, upsert customers, list warehouse and donation destinations, inspect label requests and bulk operations, and subscribe webhooks so a workflow reacts to return events instead of polling.\n\nIt authenticates with a Loop API key sent as the X-Authorization header; the key's scopes decide which actions work. Order writes, product, collection, inventory, listing and location data, draft returns, cart and Checkout+ APIs are not part of this app.",
+    "longDescription": "Loop Returns runs the returns and exchanges experience for Shopify merchants. This app drives the Loop API from a workflow.\n\nList and fetch returns, then act on them: process, cancel, flag, close, remove line items, read and add notes, generate a label, or report a return as fraudulent. Pull the advanced shipping notice for warehouse reconciliation, create return deep links and QR codes for a customer's order, and check which items on an order are still eligible to return.\n\nRead orders and customers held in Loop, upsert customers, list warehouse and donation destinations, inspect label requests and bulk operations, and subscribe webhooks so a workflow reacts to return events instead of polling. Its New Order poll trigger detects new orders.\n\nIt authenticates with a Loop API key sent as the X-Authorization header; the key's scopes decide which actions work. Order writes, product, collection, inventory, listing and location data, draft returns, cart and Checkout+ APIs are not part of this app.",
     "categories": [
       "commerce",
       "support"
@@ -33,7 +33,8 @@
         "api.loopreturns.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

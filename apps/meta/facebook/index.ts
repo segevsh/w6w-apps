@@ -24,6 +24,8 @@ import uploadPhoto from "./actions/upload-photo.ts";
 import listVideos from "./actions/list-videos.ts";
 import getPageInsights from "./actions/get-page-insights.ts";
 import listAdCampaigns from "./actions/list-ad-campaigns.ts";
+import newComment from "./triggers/new-comment.ts";
+import pageFeed from "./triggers/page-feed.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -44,6 +46,7 @@ export default {
     getPageInsights,
     listAdCampaigns,
   ],
+  triggers: [pageFeed, newComment],
   auth: [oauth2, pageToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

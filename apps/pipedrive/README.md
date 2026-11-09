@@ -1,5 +1,17 @@
 # Pipedrive
 
+- **Triggers** — 1 webhook
+
+## Triggers
+
+| Key | Title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-deal` | New Deal | Webhook | `create.deal` | The new deal |
+
+Pipedrive does not sign these V1 webhook deliveries; the callback URL is the secret. The trigger removes stale registrations for its callback URL before creating its own registration, and treats a missing registration as already removed during cleanup.
+
+Vendor documentation: [Webhooks API](https://developers.pipedrive.com/docs/api/v1/Webhooks) (verified 2026-11-09).
+
 Manage Pipedrive deals, persons, organizations, activities, notes and leads through the REST API.
 
 - **Categories** — crm

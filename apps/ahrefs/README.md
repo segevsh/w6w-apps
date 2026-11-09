@@ -11,6 +11,8 @@ Tracker and Site Audit — over the **Ahrefs API v3**, and read the API-unit all
   `GET /subscription-info/limits-and-usage`; a schema-correct auth error passes), `quota` (signed
   `limits-and-usage`, informational) + the derived `auth:api-key`
 
+Triggers: not shipped — every list is an SEO analytics report (backlinks, keywords, pages) with no record-creation feed or stable id (https://docs.ahrefs.com/openapi.json)
+
 ## Setup
 
 1. In Ahrefs, a workspace owner or admin opens **Account settings > API keys** and creates a key.

@@ -5,6 +5,7 @@ Manage Webex spaces, messages, memberships, teams and webhooks — the Webex Mes
 - **Category** — communication
 - **Auth methods** — oauth2
 - **Actions** — 34
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `webexapis.com`
 - **Website** — https://www.webex.com
 - **API docs** — https://developer.webex.com/docs/api/v1/people
@@ -14,6 +15,19 @@ API reference on 2026-09-29 (each reference page embeds a per-operation OpenAPI 
 fragment in `window.__INITIAL_STATE__.apiReference`), plus live probes against
 `webexapis.com`. Covers Rooms, Messages, Memberships, Teams, Team Memberships, Webhooks,
 and a read-only slice of People.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `new-message` — New Message | webhook (API-registered) | `messages` / `created` | space, sender, message id and text |
+| `new-membership` — New Space Member | webhook (API-registered) | `memberships` / `created` | space, the person who joined |
+
+**Setup.** Nothing to do by hand: subscribing creates a Webex webhook (`POST /v1/webhooks`) pointed at the trigger's callback URL with a random `secret`, after removing any leftover webhook already pointed at that URL; unsubscribing deletes it. A message trigger also reads `GET /v1/people/me` so it can skip the connection's own messages (turn on `includeOwnMessages` to keep them).
+
+**Trust model.** Webex sends `X-Spark-Signature`, the hex HMAC-SHA1 of the unmodified raw body under the webhook's `secret`. The secret is generated per subscription and kept in subscription state; a missing signature, a mismatch or a subscription with no stored secret refuses the delivery. Webex puts no timestamp in a delivery, so there is no replay window. The notification holds ids only; the run's message text is fetched at dispatch time and is empty when the connection cannot read the message (a bot sees only messages that mention it).
+
+Sources (verified 2026-11-09): https://developer.webex.com/docs/webhooks , https://developer.webex.com/messaging/docs/api/v1/webhooks/create-a-webhook
 
 ## Why People is read-only
 

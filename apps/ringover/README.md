@@ -3,6 +3,7 @@
 Query calls, contacts, users, groups, numbers, SMS conversations and tags, place callbacks and send
 SMS in **Ringover**, the cloud telephony platform, over the **Ringover public API (v2)**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — communication, crm
 - **Auth methods** — api-key (`Authorization: <key>`, bare, plus a Europe/US region field)
 - **Actions** — 30
@@ -81,3 +82,19 @@ the MCP endpoint and SCIM 2.0 provisioning.
 - `quota` — **declared unavailable** (2 requests/second per key, 429 on breach, no headers or
   usage endpoint). Severity `informational`.
 - `auth:api-key` — derived from the auth `test` hook (`GET /teams`, verdict read from the body).
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-call` — New Call | poll (every 5 minutes at most) | `call-list`, ordered newest first (the call log default) | each newly terminated call |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `call-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://developer.ringover.com> (verified 2026-11-09).

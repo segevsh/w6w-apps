@@ -222,13 +222,20 @@ permanently.
 No status host appears in `w6w.network.allow`, and neither check widens egress via `network.allow` —
 because neither check makes a request at all.
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| New Email | `GET /me/messages?$orderby=receivedDateTime desc` | Seeds the current page on its first check, then emits unseen messages oldest first. An optional folder and KQL search narrow the same request used by **List Messages**. |
+
+This poll uses the Graph [List messages](https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09), rather than a webhook subscription: Graph's webhook subscriptions require renewal and a public callback endpoint.
+
+When a KQL search is set, Graph supplies the search result order (by sent date), so the poll omits `$orderby`; otherwise it requests newest received messages first.
+
 ## Not implemented
 
 Stated plainly rather than left as a silent gap:
 
-- **Triggers.** Graph's change-notification model (`POST /subscriptions` plus a validated webhook
-  endpoint and periodic renewal) is a `TriggerDefinition`, not an Action, and was out of scope here.
-  Polling with List Messages ordered by `receivedDateTime` is the interim.
 - **MIME bodies**, on both the read (`/$value`) and write (`Content-Type: text/plain`) sides.
 - **Attachment listing and download** as separate operations; only inline `fileAttachment` send is
   supported.

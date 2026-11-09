@@ -79,6 +79,8 @@ import listPeople from "./actions/list-people.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
+import newMembership from "./triggers/new-membership.ts";
 
 export default {
   actions: [
@@ -125,5 +127,6 @@ export default {
     listPeople,
   ],
   auth: [oauth2],
+  triggers: [newMessage, newMembership],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

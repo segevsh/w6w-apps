@@ -6,6 +6,7 @@ Cloud API — Meta's Graph-API-hosted platform (not the deprecated on-prem Busin
 - **Categories** — communication
 - **Auth methods** — access-token
 - **Actions** — 9
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `graph.facebook.com`
 - **Website** — https://business.whatsapp.com
 - **API docs** — https://developers.facebook.com/docs/whatsapp
@@ -138,3 +139,33 @@ Researched and endpoint-verified 2026-07-31 against Meta's own Cloud API referen
 (developers.facebook.com/documentation/business-messaging/whatsapp) and n8n's `WhatsApp` node.
 Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts
 failing for everyone at once.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `message-received` — Message Received | webhook (manual, signed) | WhatsApp Business Account `messages` field: an inbound customer message | sender, profile name, type, text, business number, raw message |
+| `message-status` — Message Status Changed | webhook (manual, signed) | the same `messages` field: a `statuses[]` receipt for a message you sent | message ID, status (sent, delivered, read, failed), recipient, errors |
+
+The subscription is made by hand in the Meta app dashboard (a manual webhook), chosen as the default
+receiver. Meta does offer `/{app-id}/subscriptions` (needs an app token, not this connection's token) and
+`/{page-id}/subscribed_apps`, but this app does not call them. Meta allows one callback URL per app and
+object, so one Meta app can feed only one w6w trigger per object (not verified here):
+
+1. Create the trigger in w6w and paste your **App Secret** (App settings → Basic) and a **Verify Token**
+   of your choosing into its parameters. The trigger shows its webhook URL.
+2. In the Meta app dashboard → Webhooks, add a subscription for **WhatsApp Business Account** with that URL and the same
+   verify token, then subscribe to the **`messages`** field.
+3. Meta confirms the URL with a one-time `GET` carrying `hub.mode=subscribe`, `hub.verify_token` and
+   `hub.challenge`; the trigger answers it with the challenge only when the verify token matches.
+
+**Trust model.** Every delivery is verified against `X-Hub-Signature-256` (`sha256=` HMAC-SHA256 of the
+exact request body, keyed with the App Secret) before anything is parsed. A missing or wrong signature,
+a missing raw body, or an App Secret / Verify Token that was never configured refuses the delivery; the
+host records one failed call and starts no run. The signed body carries only a send time (`entry[].time`), and Meta retries for
+hours to days, so no replay window can be enforced; Meta retries unacknowledged deliveries, so a workflow may see an event twice.
+
+Docs (verified 2026-11-09): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
+https://developers.facebook.com/docs/graph-api/webhooks/getting-started/webhooks-for-pages
+
+WhatsApp docs (verified 2026-11-09): https://developers.facebook.com/docs/whatsapp/cloud-api/guides/set-up-webhooks · https://developers.facebook.com/docs/whatsapp/webhooks/create-webhook-endpoint (signature section)

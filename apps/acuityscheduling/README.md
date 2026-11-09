@@ -6,6 +6,7 @@ calendars and clients; check availability.
 - **Categories** — calendar
 - **Auth methods** — basic, oauth2
 - **Actions** — 9
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `acuityscheduling.com`
 - **Website** — https://acuityscheduling.com
 - **API docs** — https://developers.acuityscheduling.com
@@ -47,6 +48,32 @@ Two methods, both verified 2026-08-01 against the official docs
   - Token URL: `https://acuityscheduling.com/oauth2/token`
   - Scope: `api-v1` (Acuity has no finer-grained scopes)
   - PKCE and refresh tokens are not documented, so neither is declared.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `appointment-scheduled` — Appointment Scheduled | webhook (API-registered) | `appointment.scheduled` | the full appointment |
+| `appointment-rescheduled` — Appointment Rescheduled | webhook (API-registered) | `appointment.rescheduled` | the appointment at its new time |
+| `appointment-canceled` — Appointment Canceled | webhook (API-registered) | `appointment.canceled` | the canceled appointment |
+
+### Setup
+
+Subscribing needs your **API Key** (Business Settings > Integrations > API) as the trigger's secret
+param: Acuity signs deliveries with the account's API key and the connection does not expose it to a
+trigger. The trigger runs `POST /webhooks` (`event`, `target`); Acuity allows at most 25 webhooks per
+account and the target must be on port 443 or 80. Unsubscribing runs `DELETE /webhooks/{id}` (already
+gone counts as deleted). The delivery is form-encoded (`action`, `id`, `calendarID`,
+`appointmentTypeID`); each run fetches the appointment with `GET /appointments/{id}`.
+
+### Trust model
+
+Every delivery's `X-Acuity-Signature` header (base64 HMAC-SHA256 of the exact form-encoded request
+body, keyed by the API key) is verified before the body is parsed. A missing or wrong signature, an
+absent raw body or an unset API key refuses the delivery. The signature carries no timestamp, so there
+is no replay window.
+
+Docs (verified 2026-11-09): https://developers.acuityscheduling.com/docs/webhooks, https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks
 
 ## Health check
 

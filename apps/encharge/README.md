@@ -98,3 +98,5 @@ If a route turns out to want OAuth2, that action will fail with an auth error na
 - **Activity Stream** (a paid add-on that posts every event to your endpoint) and **JavaScript
   event tracking** (a browser library): neither is a server-callable API.
 - **Custom objects, flows, emails and forms**: no endpoints exist for them in the OpenAPI document.
+
+Triggers: not shipped — the segment-membership list does not provide a documented newest-first creation order (https://docs.encharge.io/api-documentation, verified 2026-11-09).

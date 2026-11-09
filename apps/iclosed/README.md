@@ -1,5 +1,9 @@
 # iClosed
 
+## Triggers
+
+- **New Deal** (`new-deal`) polls the newest-first `deal-list` action every five minutes.
+
 Sales-call scheduling and CRM for closers, over the iClosed public API v1
 (`https://public.api.iclosed.io/v1`). 36 actions, API-key auth, three health checks.
 

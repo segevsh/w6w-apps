@@ -83,6 +83,7 @@ import bootstrapGet from "./actions/bootstrap-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDocument from "./triggers/new-document.ts";
 
 export default {
   actions: [
@@ -126,4 +127,5 @@ export default {
   // publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newDocument],
 } satisfies AppDefinition;

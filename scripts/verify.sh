@@ -22,6 +22,19 @@ step() { printf '\n== %s\n' "$*"; }
 step "publish + selection scripts"
 node --test .github/scripts/publish-apps.test.mjs .github/scripts/changed-apps.test.mjs
 
+step "triggers coverage file"
+deno run --no-check -A --no-lock --config _tools/deno.json _tools/triggers-coverage.ts --check
+
+step "apps _tools suite"
+# the file list is _tools/deno.json's own `test` task, so the two cannot drift
+tools_tests=$(sed -n 's/.*"test": "deno test -A --unstable-worker-options \(.*\)".*/\1/p' _tools/deno.json)
+[ -n "$tools_tests" ] || { echo "verify: cannot read the _tools test task" >&2; exit 1; }
+# shellcheck disable=SC2086
+deno test -A --no-lock --unstable-worker-options --config _tools/deno.json $(printf '_tools/%s ' $tools_tests)
+
+step "shared kit copies"
+deno run --no-check -A --no-lock --config _tools/deno.json _tools/sync-shared.ts --check
+
 base="${VERIFY_BASE:-}"
 if [ -z "$base" ]; then
   for r in upstream/main origin/main; do

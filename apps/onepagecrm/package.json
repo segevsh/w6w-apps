@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/onepagecrm",
-  "version": "0.1.0",
-  "description": "Manage OnePageCRM contacts, companies, deals, next actions, notes and calls, and look up users, statuses, lead sources and pipelines via the OnePageCRM API v3.",
+  "version": "0.2.0",
+  "description": "Manage OnePageCRM contacts, companies, deals, next actions, notes and calls, poll for new contacts, and look up users, statuses, lead sources and pipelines via the OnePageCRM API v3.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.onepagecrm",
     "displayName": "OnePageCRM",
     "apiDocs": [

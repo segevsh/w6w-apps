@@ -6,6 +6,7 @@ the **Perspective External API** (`https://api.perspective.co/v1`).
 - **Categories** — marketing, crm, analytics
 - **Auth methods** — api-key (`x-perspective-api-key` header)
 - **Actions** — 8
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`api`, ~~`service`~~, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.perspective.co`
 - **Website** — https://perspective.co/
@@ -14,6 +15,14 @@ the **Perspective External API** (`https://api.perspective.co/v1`).
 
 > Verified on 2026-10-06 against the vendor's developer docs (Docusaurus; source in
 > `github.com/Perspective-Software/developer-docs`) and live probes of the API host.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `contact-list` | Newly listed contacts |
+
+Source: https://developers.perspective.co/api-reference/overview (verified 2026-11-09).
 
 ## Actions
 

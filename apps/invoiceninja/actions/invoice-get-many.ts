@@ -5,6 +5,7 @@ import { pagination, statusFilter } from "../lib/params.ts";
 interface Input {
   clientId?: string;
   status?: string[];
+  sort?: string;
   page?: number;
   perPage?: number;
 }
@@ -19,6 +20,7 @@ const invoiceGetMany: ActionDefinition<Input> = {
   params: [
     { key: "clientId", label: "Client ID", type: "string" },
     statusFilter,
+    { key: "sort", label: "Sort", type: "string", advanced: true },
     ...pagination,
   ],
   output: [{ key: "data", type: "array", label: "Invoices" }],
@@ -28,6 +30,7 @@ const invoiceGetMany: ActionDefinition<Input> = {
       query: {
         client_id: input.clientId,
         status: input.status?.length ? input.status.join(",") : undefined,
+        sort: input.sort,
         page: input.page,
         per_page: input.perPage,
       },

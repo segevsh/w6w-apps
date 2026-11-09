@@ -13,6 +13,13 @@ import orderDelete from "./actions/order-delete.ts";
 import customerCreate from "./actions/customer-create.ts";
 import customerGet from "./actions/customer-get.ts";
 import customerGetMany from "./actions/customer-get-many.ts";
+import orderCreatedTrigger from "./triggers/order-created.ts";
+import orderUpdatedTrigger from "./triggers/order-updated.ts";
+import orderDeletedTrigger from "./triggers/order-deleted.ts";
+import customerCreatedTrigger from "./triggers/customer-created.ts";
+import productCreatedTrigger from "./triggers/product-created.ts";
+import productUpdatedTrigger from "./triggers/product-updated.ts";
+import eventTrigger from "./triggers/event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
@@ -32,6 +39,15 @@ export default {
     customerCreate,
     customerGet,
     customerGetMany,
+  ],
+  triggers: [
+    orderCreatedTrigger,
+    orderUpdatedTrigger,
+    orderDeletedTrigger,
+    customerCreatedTrigger,
+    productCreatedTrigger,
+    productUpdatedTrigger,
+    eventTrigger,
   ],
   auth: [apiKey],
   healthChecks: [service, quota, site],

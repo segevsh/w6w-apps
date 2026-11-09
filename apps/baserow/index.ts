@@ -48,6 +48,7 @@ import rowsDeleteBatch from "./actions/rows-delete-batch.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRow from "./triggers/new-row.ts";
 
 export default {
   actions: [
@@ -72,4 +73,5 @@ export default {
   // auth/database-token.ts for the full reasoning.
   auth: [databaseToken],
   healthChecks: [service, quota],
+  triggers: [newRow],
 } satisfies AppDefinition;

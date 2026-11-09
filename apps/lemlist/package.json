@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lemlist",
-  "version": "0.1.1",
-  "description": "Manage lemlist cold-email campaigns, leads, activities, senders, schedules and unsubscribes via the lemlist API.",
+  "version": "0.2.0",
+  "description": "Manage lemlist cold-email campaigns, leads, activities, senders, schedules and unsubscribes, and poll for new activities.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "api.lemlist.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

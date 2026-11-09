@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/parseur",
-  "version": "0.1.0",
-  "description": "Turn incoming emails and documents into structured data with Parseur's AI mailboxes, and manage the templates, webhooks and custom downloads that shape what comes out.",
+  "version": "0.2.0",
+  "description": "Turn incoming emails and documents into structured data with Parseur's AI mailboxes, poll for new documents, and manage the templates, webhooks and custom downloads that shape what comes out.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.parseur",
     "displayName": "Parseur",
     "apiDocs": [

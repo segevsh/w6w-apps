@@ -10,6 +10,9 @@ import eventTypeGet from "./actions/event-type-get.ts";
 import scheduleGetMany from "./actions/schedule-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import bookingCreated from "./triggers/booking-created.ts";
+import bookingCancelled from "./triggers/booking-cancelled.ts";
+import bookingRescheduled from "./triggers/booking-rescheduled.ts";
 
 export default {
   actions: [
@@ -26,5 +29,6 @@ export default {
     scheduleGetMany,
   ],
   auth: [apiKey],
+  triggers: [bookingCreated, bookingCancelled, bookingRescheduled],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-drive",
-  "version": "0.3.0",
-  "description": "Manage files, folders and shared drives on Google Drive.",
+  "version": "0.4.0",
+  "description": "Manage files, folders and shared drives on Google Drive, and poll for new files.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -9,6 +9,10 @@ test("oauth2: declares Calendly authorize/token endpoints and PKCE", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://auth.calendly.com/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://auth.calendly.com/oauth/token");
   assertEquals(auth.oauth2?.pkce, true);
+  // webhook trigger registration + reading (T3.fx1)
+  for (const s of ["webhooks:read", "webhooks:write", "scheduled_events:read", "users:read"]) {
+    assert(auth.oauth2?.scopes?.includes(s), s);
+  }
 });
 
 test("oauth2: sign appends Bearer using credential.accessToken", async () => {

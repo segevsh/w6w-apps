@@ -86,6 +86,7 @@ import companyUpdate from "./actions/company-update.ts";
 
 import account from "./health/account.ts";
 import service from "./health/service.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -106,5 +107,6 @@ export default {
     companyUpdate,
   ],
   auth: [longLivedToken],
+  triggers: [newLead],
   healthChecks: [account, service],
 } satisfies AppDefinition;

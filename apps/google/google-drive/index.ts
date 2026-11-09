@@ -24,6 +24,7 @@ import driveDelete from "./actions/drive-delete.ts";
 import driveUpdate from "./actions/drive-update.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newFile from "./triggers/new-file.ts";
 
 export default {
   actions: [
@@ -50,4 +51,5 @@ export default {
   ],
   auth: [oauth2, serviceAccount],
   healthChecks: [service, quota],
+  triggers: [newFile],
 } satisfies AppDefinition;

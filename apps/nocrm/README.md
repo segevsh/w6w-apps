@@ -6,6 +6,7 @@ predefined tags and webhooks.
 - **Categories** — crm, communication
 - **Auth methods** — api-key, user-token
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.nocrm.io`
 - **Website** — https://www.nocrm.io
 - **API docs** — https://www.nocrm.io/api
@@ -31,6 +32,14 @@ Like `apps/gorgias`, every noCRM account has its own host — `https://YOUR_SUBD
 so the subdomain is collected as a Connection field on both auth methods, not an Action param, and
 echoed onto the Connection's `display` by `afterConnect`; `lib/client.ts` reads it from there.
 `w6w.network.allow` declares the wildcard `*.nocrm.io`, matching that pattern.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | poll | `lead-get-many` | Newly listed leads |
+
+Source: https://www.nocrm.io/api (verified 2026-11-09).
 
 ## Errors
 

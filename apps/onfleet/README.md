@@ -6,6 +6,7 @@ and hubs, and get notified as tasks move through Onfleet.
 - **Categories** — commerce, productivity
 - **Auth methods** — api-key
 - **Actions** — 32
+- **Triggers** — 6 (webhook)
 - **Egress allowlist** — `onfleet.com` (the `service` health check adds
   `status.onfleet.com`)
 - **Website** — https://onfleet.com
@@ -182,3 +183,32 @@ connect time, not just at connect time; a `429` names the shared 20 req/s
 budget; a `412` explains that a container was locked by a concurrent update
 and should be retried serially rather than in parallel — Onfleet's own
 containers doc recommends exactly that.
+
+## Triggers
+
+Webhook triggers that register themselves through `POST /webhooks` (the same endpoint as the
+`webhook-create` action) and delete their webhook again on unsubscribe.
+
+| Trigger | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `task-created` — Task Created | webhook (API) | trigger `6` taskCreated | Trigger id/name, time, task id, `task` |
+| `task-started` — Task Started | webhook (API) | trigger `0` taskStarted | …plus `workerId` |
+| `task-completed` — Task Completed | webhook (API) | trigger `3` taskCompleted | …with completion details in `task` |
+| `task-failed` — Task Failed | webhook (API) | trigger `4` taskFailed | …with failure notes in `task` |
+| `task-assigned` — Task Assigned | webhook (API) | trigger `9` taskAssigned | …plus `workerId` |
+| `task-updated` — Task Updated | webhook (API) | trigger `7` taskUpdated | The updated `task` |
+
+Setup: paste the organization's **Webhook secret** (dashboard → Configuration → API & Webhook →
+Show Secret; a hexadecimal string) into the trigger. Onfleet signs every delivery with it.
+
+Trust model: every `POST` is verified before it is parsed — `X-Onfleet-Signature` must equal the
+lowercase-hex HMAC-SHA512 of the raw request body, keyed by the bytes of the hex secret
+(constant-time compare). A missing signature header, a missing raw body, an unset secret or a
+mismatch refuses the delivery (the host records one failed event, no run). The registration
+handshake — Onfleet's `GET <url>?check=<random string>` — is answered with that string as plain
+text (HTTP 200; Onfleet refuses 204); it carries no secret and the echoed value is limited to
+printable ASCII, 256 characters.
+
+Vendor docs: <https://docs.onfleet.com/reference/webhooks>,
+<https://docs.onfleet.com/reference/secrets> (HMAC) and
+<https://docs.onfleet.com/reference/validation> (the `check` handshake), verified 2026-11-09.

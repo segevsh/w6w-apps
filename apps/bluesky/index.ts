@@ -36,6 +36,7 @@ import followsList from "./actions/follows-list.ts";
 import notificationList from "./actions/notification-list.ts";
 import notificationCount from "./actions/notification-count.ts";
 import blobUpload from "./actions/blob-upload.ts";
+import newPost from "./triggers/new-post.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -63,6 +64,7 @@ const app: AppDefinition = {
   ],
   auth: [appPassword],
   healthChecks: [service, pds, quota],
+  triggers: [newPost],
 };
 
 export default app;

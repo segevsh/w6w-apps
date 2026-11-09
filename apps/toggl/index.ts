@@ -27,6 +27,9 @@ import projectCreate from "./actions/project-create.ts";
 import workspaceGetMany from "./actions/workspace-get-many.ts";
 import clientGetMany from "./actions/client-get-many.ts";
 
+import timeEntryCreated from "./triggers/time-entry-created.ts";
+import timeEntryUpdated from "./triggers/time-entry-updated.ts";
+import projectCreated from "./triggers/project-created.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -48,5 +51,6 @@ export default {
     clientGetMany,
   ],
   auth: [apiToken],
+  triggers: [timeEntryCreated, timeEntryUpdated, projectCreated],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

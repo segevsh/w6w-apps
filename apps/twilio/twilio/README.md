@@ -5,9 +5,27 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 - **Categories** — communication
 - **Auth methods** — api-key
 - **Actions** — 2
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.twilio.com`
 - **Website** — https://www.twilio.com
 - **API docs** — https://www.twilio.com/docs/usage/api
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `incoming-message` — Incoming Message | webhook (manual) | an SMS/MMS sent to your Twilio number | message SID, from, to, text, media URLs, all parameters |
+| `message-status` — Message Status Update | webhook (manual) | a delivery status callback for a message you sent | message SID, status, error code, all parameters |
+
+**Setup (manual webhook).** Twilio webhooks are set per phone number, messaging service or message, not through an API this app calls.
+
+1. Create the trigger and copy its callback URL. Use **exactly** that URL: Twilio's signature covers the full URL.
+2. Paste it into the number's (or messaging service's) **A message comes in** webhook, method `POST`; for status updates, use it as the `StatusCallback` URL.
+3. Paste your **Auth Token** (Twilio Console, Account info) into the trigger's `authToken` param.
+
+**Trust model.** `X-Twilio-Signature` must equal the base64 HMAC-SHA1, keyed by the Auth Token, of the callback URL followed by every POST parameter as name + value sorted by name. A missing or empty Auth Token, a missing signature or a mismatch refuses the delivery. Only form-encoded webhooks are accepted. Twilio expects TwiML as the reply to an incoming message; the host replies with a JSON acknowledgement, not TwiML, so Twilio may log a warning per inbound message (not verified); answer through the Send SMS action.
+
+Sources (verified 2026-11-09): https://www.twilio.com/docs/usage/webhooks/webhooks-security , https://www.twilio.com/docs/messaging/guides/webhook-request
 
 ## Health check
 
