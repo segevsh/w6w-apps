@@ -2037,7 +2037,7 @@
       "new-submission"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
+    "reason": "shipped (T2.15): signed webhook + poll fallback on submission-list",
     "verified": false,
     "source": "survey"
   },
@@ -3123,15 +3123,15 @@
   },
   {
     "path": "apps/keap",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
       "contact-added",
       "order-added",
       "appointment-added",
       "tag-applied"
     ],
-    "pollAction": null,
-    "reason": "Hook auto-disables after repeated failures.",
+    "pollAction": "contact-list",
+    "reason": "shipped (T2.15): poll on contact-list; REST hook handshake secret cannot be persisted on this host",
     "verified": false,
     "source": "survey"
   },
@@ -5921,14 +5921,14 @@
   },
   {
     "path": "apps/strava",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "activity-created",
       "activity-updated",
       "activity-deleted"
     ],
     "pollAction": null,
-    "reason": "Needs client_id/secret; poll activity-list is S.",
+    "reason": "shipped (T2.15): manual-webhook receiver with hub.challenge reply and verify token",
     "verified": false,
     "source": "survey"
   },
