@@ -159,7 +159,7 @@ subscription.
   — vendor-side APIs for approved partners, not customer-side recruiting actions.
 - **Talent pool candidates** (`POST /talent_pool/candidates`) — a distinct create path from
   job-scoped candidate creation; may be added alongside a talent-pool read surface later.
-- **Receiving webhook events** (a Trigger) — see above.
+- **Receiving webhook events** (a Trigger) — Workable signs deliveries with `X-Workable-Signature`; this app cannot safely ship the callback without the signed-webhook pass. The existing candidate-list endpoint exposes filters and cursor bounds but no documented newest-first sort, so it cannot safely back the required seed-and-dedupe poll either. Source: [Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees), checked 2026-11-09.
 
 Nothing was left out because it could not be understood. One genuine gap: the response **shape**
 of `GET /disqualification_reasons` could not be confirmed (the vendor's own OpenAPI schema and

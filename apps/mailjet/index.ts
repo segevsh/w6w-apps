@@ -22,6 +22,7 @@ import getMessage from "./actions/get-message.ts";
 import listTemplates from "./actions/list-templates.ts";
 import listSenders from "./actions/list-senders.ts";
 import getStatCounters from "./actions/get-stat-counters.ts";
+import newMessage from "./triggers/new-message.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -53,4 +54,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

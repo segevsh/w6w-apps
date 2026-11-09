@@ -50,6 +50,12 @@ Postmark's error body is uniform across error types: `{ ErrorCode, Message }` on
 | Server & stats | `get-server-info`, `get-outbound-stats` |
 | Templates | `list-templates`, `create-template` |
 
+## Triggers
+
+| Trigger | Delivery | Source |
+| ------- | -------- | ------ |
+| `new-outbound-message` — New Outbound Message | Polls the newest-first `GET /messages/outbound?count=100&offset=0` search every five minutes | [Postmark Messages API announcement](https://postmarkapp.com/blog/announcing-the-postmark-messages-api), checked 2026-11-09 |
+
 Notes:
 
 - `send-email-batch` accepts a raw JSON array of message objects (`{From, To, Subject,

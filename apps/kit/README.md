@@ -82,6 +82,12 @@ Get a key at **kit.com → Settings → Developer**. It must be a **V4** key; V3
 | Custom field | `list-custom-fields`         | `GET /v4/custom_fields`                        |
 | Custom field | `create-custom-field`        | `POST /v4/custom_fields`                       |
 
+## Triggers
+
+| Trigger | Delivery | Source |
+| ------- | -------- | ------ |
+| `new-subscriber` — New Subscriber | Polls `GET /v4/subscribers?per_page=100&sort_field=updated_at&sort_order=desc` every five minutes | [Kit v4 API reference](https://developers.kit.com/api-reference/overview), checked 2026-11-09 |
+
 Every path above was taken from Kit's published v4 OpenAPI document, not from memory.
 
 ### Three behaviours worth knowing before you wire a workflow

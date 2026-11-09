@@ -109,6 +109,12 @@ why `send-email-batch` neither reorders nor filters the array it is given.
 | Message log | `list-messages`, `get-message` |
 | Config & reporting | `list-templates`, `list-senders`, `get-stat-counters` |
 
+## Triggers
+
+| Trigger | Delivery | Source |
+| ------- | -------- | ------ |
+| `new-message` — New Message | Polls `GET /v3/REST/message?Limit=100&Sort=ArrivedAt+DESC` every five minutes | [Mailjet pagination reference](https://dev.mailjet.com/docs/api-reference/email-api/email-api-overview/pagination), checked 2026-11-09 |
+
 Notes on the ones with sharp edges:
 
 - **`manage-contact-lists` and `manage-many-contacts` both default to `addnoforce`.** Mailjet's

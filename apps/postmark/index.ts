@@ -18,6 +18,7 @@ import getOutboundStats from "./actions/get-outbound-stats.ts";
 
 import listTemplates from "./actions/list-templates.ts";
 import createTemplate from "./actions/create-template.ts";
+import newOutboundMessage from "./triggers/new-outbound-message.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -45,4 +46,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newOutboundMessage],
 } satisfies AppDefinition;
