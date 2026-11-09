@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/strava",
-  "version": "0.1.1",
-  "description": "Read and log activities, comments, kudos and athlete stats on Strava.",
+  "version": "0.2.0",
+  "description": "Read and log activities, comments, kudos and athlete stats on Strava. Triggers fire on Strava push events (activity created, updated, deleted).",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.strava.com/docs/reference/",
       "https://developers.strava.com/docs/rate-limits/"
     ],
-    "longDescription": "Strava brings an athlete's activity data into a workflow — reading and logging activities, comments, kudos and stats. Activity actions list an athlete's activities, read one in detail, create a manually-logged activity, and update an existing one's details, alongside reading the comments and kudos left on a specific activity and the effort zones it was recorded in.\n\nAthlete actions read the connected athlete's own profile and their aggregate stats — recent, year-to-date and all-time totals across their sport of choice. Because Strava's access tokens are short-lived, refreshing happens automatically behind the scenes so a scheduled workflow keeps working hours or days after the original connection.\n\nThis app deliberately does not cover file-based activity uploads (a separate multipart flow), or Strava's segments, routes, clubs and gear resources, focusing instead on the read-and-log loop around individual activities and an athlete's own stats.",
+    "longDescription": "Strava brings an athlete's activity data into a workflow — reading and logging activities, comments, kudos and stats. Activity actions list an athlete's activities, read one in detail, create a manually-logged activity, and update an existing one's details, alongside reading the comments and kudos left on a specific activity and the effort zones it was recorded in.\n\nAthlete actions read the connected athlete's own profile and their aggregate stats — recent, year-to-date and all-time totals across their sport of choice. Because Strava's access tokens are short-lived, refreshing happens automatically behind the scenes so a scheduled workflow keeps working hours or days after the original connection.\n\nThis app deliberately does not cover file-based activity uploads (a separate multipart flow), or Strava's segments, routes, clubs and gear resources, focusing instead on the read-and-log loop around individual activities and an athlete's own stats.\n\nTriggers fire on Strava push events (activity created, updated, deleted).",
     "categories": [
       "productivity"
     ],
@@ -33,7 +33,8 @@
         "www.strava.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -115,6 +115,7 @@ import appointmentCreate from "./actions/appointment-create.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import spikeRate from "./health/spike-rate.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -165,6 +166,7 @@ export default {
     appointmentList,
     appointmentCreate,
   ],
+  triggers: [newContact],
   auth: [oauth2, accessKey],
   healthChecks: [service, quota, spikeRate],
 } satisfies AppDefinition;

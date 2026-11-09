@@ -5,7 +5,7 @@ platform. This app covers the parts a workflow actually reaches for: contacts,
 tags, companies, opportunities, tasks, notes, campaigns and automations,
 commerce reads, users, the business profile, and transactional email.
 
-**36 actions · 2 auth methods · 3 declared health checks (+2 derived) · 298 unit
+**36 actions · 1 poll trigger · 2 auth methods · 3 declared health checks (+2 derived) · 298 unit
 tests.**
 
 ## Sources
@@ -421,8 +421,7 @@ Everything below is a conscious omission, not an oversight.
 **v1-only surfaces left out**
 
 - **REST Hooks** (`/rest/v1/hooks`, 8 operations) — Keap's webhook subscription
-  API, and the natural basis for a `TriggerDefinition`. Triggers are out of
-  scope for this app; adding them means reading `rfcs/trigger.md` first.
+  API. Not used: see **Triggers** for why the one trigger is a poll.
 - **XML-RPC** (`api.infusionsoft.com/crm/xmlrpc`) entirely.
 
 **Things deliberately not exposed on covered actions**
@@ -473,3 +472,27 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 
 Use **`deno task fmt`**, never bare `deno fmt` — the task is scoped to
 `index.ts actions/ auth/ health/ lib/ tests/` so it cannot rewrite `assets/`.
+
+## Triggers
+
+- **Triggers** — 1 (poll)
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-list` (`GET /rest/v2/contacts`, `order_by=create_time desc`, `page_size=50`) | Each contact not seen on an earlier check |
+
+The first check records the contacts that already exist and emits nothing; later checks emit the
+contacts that appeared since (oldest first). It runs the existing `contact-list` action — same
+client, endpoint and auth — at most every five minutes, one page of 50 per check, so more than 50
+new contacts between two checks would be missed.
+
+Why a poll and not a REST hook (`POST /rest/v1/hooks`): Keap verifies a hook with a handshake in
+which **Keap** chooses the secret — it POSTs to the hook URL with an `X-Hook-Secret` header and the
+URL is verified by echoing that header back in the response. A trigger has no place to store a
+secret it only learns during that handshake, so later deliveries could not be authenticated against
+anything that was known before the first request; accepting them unauthenticated would be an
+unsigned acceptance path for a vendor that hands out a secret. This is the "a secret the host cannot
+persist" fallback. Keap's documentation pages are rendered client-side and could not be fetched
+from this host on 2026-11-09, so the handshake description above (REST hooks, `X-Hook-Secret`) is
+**UNVERIFIED** against Keap's own page: <https://developer.keap.com/docs/rest/> (REST Hooks section)
+and the `order_by` grammar is the one the `contact-list` action documents.
