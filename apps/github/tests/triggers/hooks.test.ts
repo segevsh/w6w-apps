@@ -166,13 +166,15 @@ test("error text never echoes the secret, a signature or a header value", async 
     () => ingest(push, call(BODY, goodHeaders()), { state: { ...STATE, secret: "" } }),
   ];
   for (const run of cases) {
+    let threw: Error | undefined;
     try {
       await run();
-      assert(false, "should have thrown");
     } catch (err) {
-      const m = (err as Error).message;
-      for (const leak of [SECRET, bad, sign(BODY), "72d3162e-cc78"]) assert(!m.includes(leak));
+      threw = err as Error;
     }
+    assert(threw, "should have thrown");
+    const m = threw!.message;
+    for (const leak of [SECRET, bad, sign(BODY), "72d3162e-cc78"]) assert(!m.includes(leak));
   }
 });
 
