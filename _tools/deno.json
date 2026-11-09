@@ -12,7 +12,7 @@
     "icons:normalize": "deno run --allow-read --allow-write --allow-run --allow-env icon-normalize.ts --all",
     "coverage": "deno run --no-check -A output-coverage.ts",
     "triggers": "deno run --no-check -A triggers-coverage.ts",
-    "test": "deno test -A --unstable-worker-options audit.test.ts app-paths.test.ts output-coverage.test.ts sync-shared.test.ts poll-kit.test.ts poll-kit-sandbox.test.ts triggers-coverage.test.ts"
+    "test": "deno test -A --unstable-worker-options audit.test.ts app-paths.test.ts output-coverage.test.ts sync-shared.test.ts poll-kit.test.ts poll-kit-sandbox.test.ts triggers-coverage.test.ts webhook-kit.test.ts"
   },
   "fmt": {
     "exclude": [
