@@ -1,6 +1,6 @@
 # Coda
 
-Triggers: not shipped — the rows action exposes creation sorting but no descending newest-first order (<https://coda.io/developers/apis/v1#operation/listRows>).
+Triggers: not shipped — the rows action exposes creation sorting but no descending newest-first order (<https://coda.io/developers/apis/v1#operation/listRows>, verified 2026-11-09: "If left unspecified, rows are returned by creation time ascending"; no descending order or created-since filter).
 
 Read and write Coda docs, tables and rows via the Coda REST API.
 

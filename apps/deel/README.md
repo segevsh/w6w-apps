@@ -1,14 +1,18 @@
 # Deel
 
-Manage Deel contracts, people, time off, timesheets and invoice adjustments.
+## Triggers
 
-- **Categories** — hr, finance
-- **Auth methods** — api-token
-- **Actions** — 25
-- **Egress allowlist** — `api.letsdeel.com`, `api-staging.letsdeel.com`
-- **Website** — https://www.deel.com
-- **API docs** — https://developer.deel.com ·
-  schema index: https://developer.deel.com/openapi.json
+- **Triggers** — 1 (poll)
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contract` | poll | `contract-list` | Each newly created contract (`order_direction=desc`) |
+
+`contract-list` passes Deel's `order_direction` through; the trigger asks for `desc` and reads the first 100 contracts. Deel's reference lists `order_direction` but does not state the sort key, so the creation order is assumed from the descending default sort.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://developer.deel.com/reference/getcontracts> (verified 2026-11-09).
 
 ## Setup
 
