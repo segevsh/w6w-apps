@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 379, none: 253
+**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 377, none: 255
 
 ## webhook-api (42)
 
@@ -71,7 +71,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (379)
+## poll (377)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -133,29 +133,27 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/clicksend | sms-history-list | new-sms | apps/clicksend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action sms-history-list |
 | apps/clio | contact-list | new-contact, new-or-updated-contact | apps/clio/README.md Triggers section (verified 2026-11-09) | hand | created_since / updated_since filters, id(asc) order: cursor window + id dedupe |
 | apps/close | list-opportunities | new-opportunity | apps/close/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-opportunities |
-| apps/cloudbeds | guest-list | new-guest-list | no | scan | list action guest-list has pagination and order/since params |
+| apps/cloudbeds | reservation-list | new-reservation, new-or-updated-reservation | apps/cloudbeds/README.md Triggers section (verified 2026-11-09) | hand | since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated) |
 | apps/cloudinary | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |
-| apps/coda | list-rows | new-rows | no | scan | list action list-rows has pagination and order/since params |
-| apps/coingecko | list-coin-markets | new-coin-markets | no | scan | list action list-coin-markets has pagination and order/since params |
-| apps/companycam | checklist-list | new-checklist-list | no | scan | list action checklist-list has pagination and order/since params |
+| apps/companycam | checklist-list | new-checklist, new-or-updated-checklist | apps/companycam/README.md Triggers section (verified 2026-11-09) | hand | checklist-list returns company checklists newest-updated first (page 1 of 50) |
 | apps/connecteam | shift-list | new-shift | apps/connecteam/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action shift-list |
-| apps/constantcontact | list-contact-lists | new-contact-lists | no | scan | list action list-contact-lists has pagination and order/since params |
+| apps/constantcontact | list-contact-lists | new-contact-list | apps/constantcontact/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=500 lists, no sort or date filter exists); added-only |
 | apps/contentful | list-entries | new-entry | apps/contentful/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-entries |
-| apps/contentstack | list-assets | new-assets | no | scan | list action list-assets has pagination and order/since params |
-| apps/crisp | list-conversations | new-conversations | no | scan | list action list-conversations has pagination and order/since params |
+| apps/contentstack | list-assets | new-asset, new-or-updated-asset | apps/contentstack/README.md Triggers section (verified 2026-11-09) | hand | list-assets takes desc=created_at / desc=updated_at |
+| apps/crisp | list-conversations | new-conversation, new-or-updated-conversation | apps/crisp/README.md Triggers section (verified 2026-11-09) | hand | since-filter on filter_date_start (additive optional action param); new-conversation keeps created_at in window, dedupe by session_id; updated dedupes by session_id:updated_at |
 | apps/databricks | catalog-list | job-run-finished | no | survey | AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker. |
 | apps/datadog | log-search | new-log | apps/datadog/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-search |
 | apps/dbtcloud | run-list | new-run | apps/dbtcloud/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action run-list |
-| apps/deel | contract-list | new-contract-list | no | scan | list action contract-list has pagination and order/since params |
-| apps/deputy | employee-search | new-employee-search | no | scan | list action employee-search has pagination and order/since params |
-| apps/devin | session-message-list | new-session-message-list | no | scan | list action session-message-list has pagination and order/since params |
-| apps/dialpad | call-list | new-call-list | no | scan | list action call-list has pagination and order/since params |
+| apps/deel | contract-list | new-contract | apps/deel/README.md Triggers section (verified 2026-11-09) | hand | order_direction=desc (sort key not stated by the vendor reference; creation order assumed) |
+| apps/deputy | employee-search | new-employee, new-or-updated-employee | apps/deputy/README.md Triggers section (verified 2026-11-09) | hand | QUERY sort Id desc / Modified desc |
+| apps/devin | session-list | new-session, new-or-updated-session | apps/devin/README.md Triggers section (verified 2026-11-09) | hand | since-filter created_after / updated_after (no sort), dedupe by session_id |
+| apps/dialpad | call-list | new-call | apps/dialpad/README.md Triggers section (verified 2026-11-09) | hand | call-list is documented reverse-chronological by call start time |
 | apps/digistore24 | list-purchases | new-purchase | apps/digistore24/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-purchases |
-| apps/digitalocean | domain-record-list | new-domain-record-list | no | scan | list action domain-record-list has pagination and order/since params |
+| apps/digitalocean | domain-record-list | new-domain-record | apps/digitalocean/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly |
 | apps/discourse | topic-list-latest | new-topic | apps/discourse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action topic-list-latest |
 | apps/docparser | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
-| apps/document360 | drive-search | new-drive-search | no | scan | list action drive-search has pagination and order/since params |
-| apps/docusign | envelope-list | new-envelope-list | no | scan | list action envelope-list has pagination and order/since params |
+| apps/document360 | workspace-article-list | new-article, new-or-updated-article | apps/document360/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash |
+| apps/docusign | envelope-list | new-envelope, new-or-updated-envelope | apps/docusign/README.md Triggers section (verified 2026-11-09) | hand | order_by=created\|status_changed with order=desc and a 30-day from_date |
 | apps/donorbox | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
 | apps/dub | customer-list | new-customer | apps/dub/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/duda | list-sites | new-site | apps/duda/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-sites |
@@ -455,7 +453,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (253)
+## none (255)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -494,7 +492,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/cloudconvert |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/cloudflare |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/cloze |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/coda |  | apps/coda/README.md Triggers section (verified 2026-11-09) | hand | list-rows returns rows by creation time ascending unless sorted, with no descending order or created-since filter (https://coda.io/developers/apis/v1#operation/listRows) |
 | apps/cognitoforms |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/coingecko |  | apps/coingecko/README.md Triggers section (verified 2026-11-09) | hand | list-coin-markets is a market-cap ranking, not a chronological record feed (https://docs.coingecko.com/reference/coins-markets) |
 | apps/creditrepaircloud |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/crunchbase |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/cursor |  | no | scan | no newest-first list action found by scan; vendor events not researched |

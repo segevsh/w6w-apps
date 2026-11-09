@@ -1090,12 +1090,13 @@
     "path": "apps/cloudbeds",
     "mechanism": "poll",
     "candidates": [
-      "new-guest-list"
+      "new-reservation",
+      "new-or-updated-reservation"
     ],
-    "pollAction": "guest-list",
-    "reason": "list action guest-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "reservation-list",
+    "reason": "since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated)",
+    "verified": "apps/cloudbeds/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cloudconvert",
@@ -1137,14 +1138,12 @@
   },
   {
     "path": "apps/coda",
-    "mechanism": "poll",
-    "candidates": [
-      "new-rows"
-    ],
-    "pollAction": "list-rows",
-    "reason": "list action list-rows has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "list-rows returns rows by creation time ascending unless sorted, with no descending order or created-since filter (https://coda.io/developers/apis/v1#operation/listRows)",
+    "verified": "apps/coda/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cognitoforms",
@@ -1157,25 +1156,24 @@
   },
   {
     "path": "apps/coingecko",
-    "mechanism": "poll",
-    "candidates": [
-      "new-coin-markets"
-    ],
-    "pollAction": "list-coin-markets",
-    "reason": "list action list-coin-markets has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "list-coin-markets is a market-cap ranking, not a chronological record feed (https://docs.coingecko.com/reference/coins-markets)",
+    "verified": "apps/coingecko/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/companycam",
     "mechanism": "poll",
     "candidates": [
-      "new-checklist-list"
+      "new-checklist",
+      "new-or-updated-checklist"
     ],
     "pollAction": "checklist-list",
-    "reason": "list action checklist-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "checklist-list returns company checklists newest-updated first (page 1 of 50)",
+    "verified": "apps/companycam/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/connecteam",
@@ -1192,12 +1190,12 @@
     "path": "apps/constantcontact",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-lists"
+      "new-contact-list"
     ],
     "pollAction": "list-contact-lists",
-    "reason": "list action list-contact-lists has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "bounded snapshot (<=500 lists, no sort or date filter exists); added-only",
+    "verified": "apps/constantcontact/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/contentful",
@@ -1214,12 +1212,13 @@
     "path": "apps/contentstack",
     "mechanism": "poll",
     "candidates": [
-      "new-assets"
+      "new-asset",
+      "new-or-updated-asset"
     ],
     "pollAction": "list-assets",
-    "reason": "list action list-assets has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-assets takes desc=created_at / desc=updated_at",
+    "verified": "apps/contentstack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/copper",
@@ -1251,12 +1250,13 @@
     "path": "apps/crisp",
     "mechanism": "poll",
     "candidates": [
-      "new-conversations"
+      "new-conversation",
+      "new-or-updated-conversation"
     ],
     "pollAction": "list-conversations",
-    "reason": "list action list-conversations has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter on filter_date_start (additive optional action param); new-conversation keeps created_at in window, dedupe by session_id; updated dedupes by session_id:updated_at",
+    "verified": "apps/crisp/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/crunchbase",
@@ -1327,12 +1327,12 @@
     "path": "apps/deel",
     "mechanism": "poll",
     "candidates": [
-      "new-contract-list"
+      "new-contract"
     ],
     "pollAction": "contract-list",
-    "reason": "list action contract-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order_direction=desc (sort key not stated by the vendor reference; creation order assumed)",
+    "verified": "apps/deel/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/deepgram",
@@ -1374,34 +1374,36 @@
     "path": "apps/deputy",
     "mechanism": "poll",
     "candidates": [
-      "new-employee-search"
+      "new-employee",
+      "new-or-updated-employee"
     ],
     "pollAction": "employee-search",
-    "reason": "list action employee-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "QUERY sort Id desc / Modified desc",
+    "verified": "apps/deputy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/devin",
     "mechanism": "poll",
     "candidates": [
-      "new-session-message-list"
+      "new-session",
+      "new-or-updated-session"
     ],
-    "pollAction": "session-message-list",
-    "reason": "list action session-message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "session-list",
+    "reason": "since-filter created_after / updated_after (no sort), dedupe by session_id",
+    "verified": "apps/devin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dialpad",
     "mechanism": "poll",
     "candidates": [
-      "new-call-list"
+      "new-call"
     ],
     "pollAction": "call-list",
-    "reason": "list action call-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "call-list is documented reverse-chronological by call start time",
+    "verified": "apps/dialpad/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dice",
@@ -1436,12 +1438,12 @@
     "path": "apps/digitalocean",
     "mechanism": "poll",
     "candidates": [
-      "new-domain-record-list"
+      "new-domain-record"
     ],
     "pollAction": "domain-record-list",
-    "reason": "list action domain-record-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly",
+    "verified": "apps/digitalocean/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/discord",
@@ -1496,12 +1498,13 @@
     "path": "apps/document360",
     "mechanism": "poll",
     "candidates": [
-      "new-drive-search"
+      "new-article",
+      "new-or-updated-article"
     ],
-    "pollAction": "drive-search",
-    "reason": "list action drive-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "workspace-article-list",
+    "reason": "bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash",
+    "verified": "apps/document360/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/documerge",
@@ -1525,12 +1528,13 @@
     "path": "apps/docusign",
     "mechanism": "poll",
     "candidates": [
-      "new-envelope-list"
+      "new-envelope",
+      "new-or-updated-envelope"
     ],
     "pollAction": "envelope-list",
-    "reason": "list action envelope-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order_by=created|status_changed with order=desc and a 30-day from_date",
+    "verified": "apps/docusign/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/donorbox",
