@@ -266,6 +266,14 @@ Every `perform` action declares `idempotent` explicitly, and honestly:
 - **`price-list-record-list` records are keyed by variant *and* currency**, so without a `currency`
   filter the same variant appears once per currency and looks duplicated.
 
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | Poll | `order-list` | Each newly created order |
+
+Polled newest-first through the `order-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developer.bigcommerce.com/docs/rest-management/orders) (verified 2026-11-09).
+
 ## Health checks
 
 Five declared checks — four live probes and one declared absence — plus one `auth:access-token`
