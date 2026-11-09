@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/acuityscheduling",
-  "version": "0.1.1",
-  "description": "Manage Acuity Scheduling appointments, appointment types, calendars, clients and availability.",
+  "version": "0.2.0",
+  "description": "Manage Acuity Scheduling appointments, appointment types, calendars, clients and availability, plus triggers that start a workflow when an appointment is booked, rescheduled or canceled.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.acuityscheduling.com"
     ],
-    "longDescription": "Acuity Scheduling handles the booking pages that turn website visitors into calendar appointments, and this app brings that pipeline into a workflow. Create, look up, cancel and reschedule appointments; check open availability before offering a time slot elsewhere; and read back the appointment types, calendars and clients behind a booking.\n\nA common pattern is triggering a workflow off an external event — a form submission, a CRM stage change, a support ticket — and creating the appointment directly, or checking availability before recommending a time. Because Acuity addresses every appointment, calendar and client by a plain numeric ID, these actions are simple lookups and writes rather than multi-step resolution.\n\nThis app covers the appointment lifecycle and the read-only data around it; it does not touch payment processing or custom intake-form fields, which stay specific to each Acuity account.",
+    "longDescription": "Acuity Scheduling handles the booking pages that turn website visitors into calendar appointments, and this app brings that pipeline into a workflow. Create, look up, cancel and reschedule appointments; check open availability before offering a time slot elsewhere; and read back the appointment types, calendars and clients behind a booking.\n\nA common pattern is triggering a workflow off an external event — a form submission, a CRM stage change, a support ticket — and creating the appointment directly, or checking availability before recommending a time. Because Acuity addresses every appointment, calendar and client by a plain numeric ID, these actions are simple lookups and writes rather than multi-step resolution.\n\nThis app covers the appointment lifecycle and the read-only data around it; it does not touch payment processing or custom intake-form fields, which stay specific to each Acuity account.\n\nThree triggers start a workflow when an appointment is booked, rescheduled or canceled: subscribing registers a webhook with Acuity and unsubscribing removes it; every delivery's signature is verified with your API key before a run starts, and the run receives the full appointment.",
     "categories": [
       "calendar"
     ],
@@ -32,7 +32,12 @@
         "acuityscheduling.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -26,6 +26,7 @@ import imageGetMany from "./actions/image-get-many.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newResponse from "./triggers/new-response.ts";
 
 export default {
   actions: [
@@ -44,5 +45,6 @@ export default {
     imageGetMany,
   ],
   auth: [personalAccessToken, oauth2],
+  triggers: [newResponse],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
