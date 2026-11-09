@@ -5,8 +5,13 @@ import getMessage from "../actions/get-message.ts";
 
 /** Seconds of look-back before the previous check, so a message that lands late is still seen. */
 export const OVERLAP_SECONDS = 120;
-/** Page size requested from `users/me/messages`; never above the kit's `maxEvents` (100). */
+/** Page size requested from `users/me/messages`. */
 export const PAGE_SIZE = 100;
+/** Per-check ceiling: 5 pages of 100. Older mail beyond it in one window is not emitted. */
+export const MAX_PAGES = 5;
+export const MAX_EVENTS = 500;
+/** At least MAX_EVENTS + one page, so an overlap re-list never evicts an id emitted last check. */
+export const SEEN_WINDOW = 600;
 const METADATA_HEADERS = ["From", "To", "Cc", "Subject", "Date"];
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
@@ -157,16 +162,18 @@ export async function checkNewEmail(
 
   const { events: listed, nextState } = await pollNewItems<{ id: string }>({
     state,
-    maxPages: 1,
-    maxEvents: PAGE_SIZE,
+    maxPages: MAX_PAGES,
+    maxEvents: MAX_EVENTS,
+    seenWindow: SEEN_WINDOW,
     idOf: (m) => m.id,
-    async fetchPage() {
+    async fetchPage(pageToken) {
       const res = await getManyMessages.execute({
         q: buildQuery(params.q, cursor),
         labelIds: params.labelIds,
         maxResults: PAGE_SIZE,
-      }, ctx) as { messages?: Array<{ id: string }> };
-      return { items: res.messages ?? [] };
+        pageToken,
+      }, ctx) as { messages?: Array<{ id: string }>; nextPageToken?: string };
+      return { items: res.messages ?? [], nextPageToken: res.nextPageToken };
     },
   });
 

@@ -194,3 +194,35 @@ test("a message deleted between list and get is skipped, not fatal", async () =>
   );
   assertEquals(out.events.map((e) => (e as { id: string }).id), ["b"]);
 });
+
+const ids = (from: number, to: number) =>
+  Array.from({ length: to - from + 1 }, (_, i) => `n${from + i}`);
+
+test("T1.2b A1 pages past 100: 130 unseen over two pages, oldest-first, pageToken sent", async () => {
+  at(T0);
+  const seed = await poll({}, {}, mockCtx([list("a")]));
+  at(T0 + 60);
+  const p1 = ids(31, 130);
+  const p2 = ids(1, 30);
+  const page1 = { status: 200, body: { ...list(...p1.reverse()).body, nextPageToken: "p2" } };
+  const all = [...ids(31, 130).reverse(), ...ids(1, 30).reverse()]; // list order, newest first
+  const hydrate = all.slice().reverse().map(got);
+  const r = mockCtx([page1, list(...p2.reverse()), ...hydrate]);
+  const out = await poll({}, seed.nextState, r);
+  assertEquals(out.events.length, 130);
+  assertEquals(out.events.map((e) => e.id), all.slice().reverse());
+  assertEquals(new URL(r.calls[0].url).searchParams.get("pageToken"), null);
+  assertEquals(new URL(r.calls[1].url).searchParams.get("pageToken"), "p2");
+});
+
+test("T1.2b A2 a page holding a seen id stops paging: exactly one list call", async () => {
+  at(T0);
+  const seed = await poll({}, {}, mockCtx([list("a")]));
+  at(T0 + 60);
+  const page1 = { status: 200, body: { ...list("b", "a").body, nextPageToken: "p2" } };
+  const r = mockCtx([page1, got("b")]);
+  const out = await poll({}, seed.nextState, r);
+  assertEquals(out.events.map((e) => e.id), ["b"]);
+  assertEquals(r.calls.length, 2); // one list + one hydrate, no page 2
+  assertEquals(new URL(r.calls[1].url).pathname.endsWith("/messages/b"), true);
+});
