@@ -36,3 +36,29 @@ test("new contact webhook cleanup ignores a missing registration", async () => {
   const { ctx } = mockActiveCampaignCtx([{ status: 410, statusText: "Gone", body: {} }]);
   await newContact.onUnsubscribe!({ params: {}, state: { webhookId: "9" } }, ctx);
 });
+
+const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
+
+test("handleIngest parses a form-encoded delivery into the contact", async () => {
+  const out = evs(
+    await newContact.handleIngest!({
+      raw: {
+        method: "POST",
+        body: "type=subscribe&contact[id]=42&contact[email]=ada%40example.com" +
+          "&contact[first_name]=Ada&contact[last_name]=Lovelace&contact[fields][0]=x",
+      },
+    } as never),
+  );
+  assert.equal(out.length, 1);
+  assert.equal(out[0].id, "42");
+  assert.equal(out[0].email, "ada@example.com");
+  assert.equal(out[0].firstName, "Ada");
+  assert.equal(out[0].lastName, "Lovelace");
+});
+
+test("handleIngest refuses a non-POST delivery", async () => {
+  await assert.rejects(
+    async () => await newContact.handleIngest!({ raw: { method: "GET", body: "" } } as never),
+    /POST/,
+  );
+});

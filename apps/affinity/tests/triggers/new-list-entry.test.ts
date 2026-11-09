@@ -29,3 +29,16 @@ test("new list entry webhook cleanup ignores an already-gone registration", asyn
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: "Unknown API endpoint" }]);
   await newListEntry.onUnsubscribe!({ params: {}, state: { webhookId: "9" } }, ctx);
 });
+
+const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
+
+test("handleIngest yields the delivered body and refuses non-POST", async () => {
+  const body = { type: "list_entry.created", body: { id: 3, list_id: 1 } };
+  assert.deepEqual(await newListEntry.handleIngest!({ raw: { method: "POST", body } } as never), [
+    body,
+  ]);
+  await assert.rejects(
+    async () => await newListEntry.handleIngest!({ raw: { method: "GET" } } as never),
+    /POST/,
+  );
+});

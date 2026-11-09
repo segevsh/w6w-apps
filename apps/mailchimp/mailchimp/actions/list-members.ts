@@ -10,7 +10,7 @@ interface Input {
   beforeTimestampOpt?: string;
   count?: number;
   offset?: number;
-  sort?: "last_changed" | "email_address";
+  sort?: "timestamp_opt" | "timestamp_signup" | "last_changed";
   sortDir?: "ASC" | "DESC";
 }
 
@@ -59,8 +59,9 @@ const listMembers: ActionDefinition<Input> = {
       label: "Sort by",
       type: "select",
       options: [
+        { value: "timestamp_opt", label: "Opt-in time" },
+        { value: "timestamp_signup", label: "Sign-up time" },
         { value: "last_changed", label: "Last changed" },
-        { value: "email_address", label: "Email address" },
       ],
     },
     {
@@ -91,7 +92,7 @@ const listMembers: ActionDefinition<Input> = {
           before_timestamp_opt: input.beforeTimestampOpt,
           count: input.count ?? 500,
           offset: input.offset ?? 0,
-          sort: input.sort,
+          sort_field: input.sort,
           sort_dir: input.sortDir,
         },
       },

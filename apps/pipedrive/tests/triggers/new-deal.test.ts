@@ -38,3 +38,18 @@ test("onUnsubscribe treats Pipedrive 404 as already gone", async () => {
     { method: "DELETE", url: "https://api.pipedrive.com/v1/webhooks/9" },
   ]);
 });
+
+const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
+
+test("handleIngest yields the current deal and refuses non-POST", async () => {
+  const out = evs(
+    await newDeal.handleIngest!({
+      raw: { method: "POST", body: { current: { id: 5, title: "Big" }, previous: null } },
+    } as never),
+  );
+  assert.deepEqual(out, [{ id: 5, title: "Big" }]);
+  await assert.rejects(
+    async () => await newDeal.handleIngest!({ raw: { method: "GET" } } as never),
+    /POST/,
+  );
+});

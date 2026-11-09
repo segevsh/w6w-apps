@@ -34,8 +34,32 @@ async function remove(client: ActiveCampaignClient, webhookId: string): Promise<
   }
 }
 
+/** Parses a urlencoded body, expanding bracket keys like contact[id] into nested objects. */
+export function parseForm(text: string): Record<string, unknown> {
+  const root: Record<string, unknown> = {};
+  for (const [key, value] of new URLSearchParams(text)) {
+    const path = key.split(/\]\[|\[|\]/).filter((part) => part !== "");
+    let node: Record<string, unknown> = root;
+    path.forEach((part, index) => {
+      if (index === path.length - 1) {
+        node[part] = value;
+        return;
+      }
+      const next = node[part];
+      node = typeof next === "object" && next !== null
+        ? next as Record<string, unknown>
+        : (node[part] = {}) as Record<string, unknown>;
+    });
+  }
+  return root;
+}
+
 /** ActiveCampaign's webhook API delivers POST form fields without a signature. */
-export const newContact: TriggerDefinition<Record<string, never>, Record<string, unknown>, TriggerState> = {
+export const newContact: TriggerDefinition<
+  Record<string, never>,
+  Record<string, unknown>,
+  TriggerState
+> = {
   key: "new-contact",
   title: "New Contact",
   description: "Fires when a contact subscribes. The run gets the contact.",
@@ -75,7 +99,13 @@ export const newContact: TriggerDefinition<Record<string, never>, Record<string,
     if (String(call.method).toUpperCase() !== "POST") {
       throw new Error("ActiveCampaign delivers webhooks with POST.");
     }
-    const body = call.body as Record<string, unknown> | undefined;
-    return [(body?.contact ?? body ?? {}) as Record<string, unknown>];
+    const body = typeof call.body === "string"
+      ? parseForm(call.body)
+      : (call.body ?? {}) as Record<string, unknown>;
+    const contact = (body.contact ?? body) as Record<string, unknown>;
+    const out: Record<string, unknown> = { ...contact };
+    out.firstName ??= contact.first_name;
+    out.lastName ??= contact.last_name;
+    return [out];
   },
 };

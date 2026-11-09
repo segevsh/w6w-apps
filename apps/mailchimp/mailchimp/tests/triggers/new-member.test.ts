@@ -41,7 +41,7 @@ test("poll uses the list-members endpoint with the literal newest-first request"
   assert.deepEqual(calls.map(({ method, url, body }) => ({ method, url, body })), [{
     method: "GET",
     url:
-      "https://us14.api.mailchimp.com/3.0/lists/aud_1/members?count=100&offset=0&sort=last_changed&sort_dir=DESC",
+      "https://us14.api.mailchimp.com/3.0/lists/aud_1/members?count=100&offset=0&sort_field=timestamp_opt&sort_dir=DESC",
     body: null,
   }]);
 });

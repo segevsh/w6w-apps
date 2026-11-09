@@ -35,7 +35,11 @@ async function deleteWebhook(client: PipedriveClient, id: string): Promise<void>
 }
 
 /** Pipedrive V1 has no delivery signature; the per-subscription callback URL is the secret. */
-export const newDeal: TriggerDefinition<Record<string, never>, Record<string, unknown>, TriggerState> = {
+export const newDeal: TriggerDefinition<
+  Record<string, never>,
+  Record<string, unknown>,
+  TriggerState
+> = {
   key: "new-deal",
   title: "New Deal",
   description: "Fires when a deal is created. The run gets the new deal.",

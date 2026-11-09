@@ -33,7 +33,11 @@ async function remove(client: AffinityClient, webhookId: string): Promise<void> 
 }
 
 /** Affinity V1 sends unsigned deliveries; the host-issued callback URL is the secret. */
-export const newListEntry: TriggerDefinition<Record<string, never>, Record<string, unknown>, TriggerState> = {
+export const newListEntry: TriggerDefinition<
+  Record<string, never>,
+  Record<string, unknown>,
+  TriggerState
+> = {
   key: "new-list-entry",
   title: "New List Entry",
   description: "Fires when an entry is added to an Affinity list. The run gets the changed record.",

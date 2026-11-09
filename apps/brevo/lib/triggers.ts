@@ -41,7 +41,11 @@ function list(value: unknown): Webhook[] {
 }
 
 /** Brevo can attach caller-chosen auth but does not sign deliveries; the callback URL is the secret. */
-export const newContact: TriggerDefinition<Record<string, never>, Record<string, unknown>, TriggerState> = {
+export const newContact: TriggerDefinition<
+  Record<string, never>,
+  Record<string, unknown>,
+  TriggerState
+> = {
   key: "new-contact",
   title: "New Contact",
   description: "Fires when a contact is added to a Brevo list. The run gets the contact event.",

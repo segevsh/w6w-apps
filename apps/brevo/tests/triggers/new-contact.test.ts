@@ -34,3 +34,16 @@ test("new contact webhook cleanup treats Brevo 404 as already gone", async () =>
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: {} }]);
   await newContact.onUnsubscribe!({ params: {}, state: { webhookId: "9" } }, ctx);
 });
+
+const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
+
+test("handleIngest yields the delivered body and refuses non-POST", async () => {
+  const body = { event: "contact_added", email: "ada@example.com", id: 9 };
+  assert.deepEqual(await newContact.handleIngest!({ raw: { method: "POST", body } } as never), [
+    body,
+  ]);
+  await assert.rejects(
+    async () => await newContact.handleIngest!({ raw: { method: "GET" } } as never),
+    /POST/,
+  );
+});

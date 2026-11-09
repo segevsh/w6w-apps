@@ -36,7 +36,7 @@ export default pollFromListAction<Params>({
     listId,
     count: 100,
     offset: 0,
-    sort: "last_changed",
+    sort: "timestamp_opt",
     sortDir: "DESC",
   }),
   items: members,
