@@ -26,3 +26,17 @@ test("new-pipeline: seeds, emits only new pipelines, retries idempotently, reque
   assertEquals(first.events, [pipeline("b")]);
   assertEquals(retry, first);
 });
+
+test("new-pipeline: finds a new pipeline on a later page whatever the list order", async () => {
+  const prior = { v: 1, kind: "ids", seeded: true, ids: ["a", "b"] };
+  const ctx = mockCtx([
+    { body: { items: [pipeline("a"), pipeline("b")], next_page_token: "tok" } },
+    { body: { items: [pipeline("c")] } },
+  ]);
+  const out = await trigger.poll!({ ...input, state: prior }, ctx.ctx);
+  assertEquals(out.events, [pipeline("c")]);
+  assertEquals(
+    ctx.calls[1].url,
+    "https://circleci.com/api/v2/project/gh/acme/widgets/pipeline?page-token=tok",
+  );
+});

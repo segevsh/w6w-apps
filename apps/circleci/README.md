@@ -8,11 +8,16 @@ Consume CircleCI API
 
 | Key | Title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
-| `new-pipeline` | New Pipeline | poll | `pipeline-list` | Newly created project pipelines |
+| `new-pipeline` | New Pipeline | poll (page walk) | `pipeline-list` | Newly created project pipelines |
 
-CircleCI documents project pipeline listing at
-<https://circleci.com/docs/api/v2/#tag/Pipeline/operation/listPipelinesForProject> (verified
-2026-11-09). No webhook code is included.
+CircleCI's OpenAPI document describes the project pipeline list only as "Returns all pipelines for
+this project" and states no order (<https://circleci.com/docs/api/v2/openapi.json>, verified
+2026-11-09), so the poll does not rely on one: each check makes the same `GET
+/project/{project-slug}/pipeline` request as `pipeline-list`, follows `next_page_token` for up to 10
+pages (20 pipelines per page), sorts what it found by `created_at`, and de-duplicates on the pipeline
+id. A project with more than 10 pages of pipelines is cut at the cap with a warning in the run log;
+set the Branch filter to narrow it. The first check records the current pipelines and emits nothing.
+No webhook code is included.
 
 - **Categories** — devops, developer-tools
 - **Auth methods** — api-token
