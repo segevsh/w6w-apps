@@ -65,6 +65,14 @@ export function customFields(raw: unknown): Array<{ id: number; value: unknown }
   return entries.map(([id, value]) => ({ id: Number(id), value }));
 }
 
+/** A non-2xx Zendesk answer; `status` lets a caller treat 404/410 as "already gone". */
+export class ZendeskError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "ZendeskError";
+  }
+}
+
 /**
  * Thin wrapper over `ctx.fetch`. It never sets Authorization — the runtime
  * routes every request through the auth `sign` hook.
@@ -95,8 +103,9 @@ export class ZendeskClient {
       // Zendesk returns { error, description } or { details: { field: [...] } }
       // — the body is where the actionable part is.
       const detail = await res.text().catch(() => "");
-      throw new Error(
+      throw new ZendeskError(
         `Zendesk ${res.status} ${res.statusText} for ${init.method} ${url.pathname}: ${detail}`,
+        res.status,
       );
     }
     if (res.status === 204) return undefined as T;
