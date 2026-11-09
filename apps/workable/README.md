@@ -6,6 +6,7 @@ account's own **SPI v3 API**.
 - **Categories** — hr
 - **Auth methods** — `access-token`
 - **Actions** — 15 (9 reads, 6 performs)
+- **Triggers** — not shipped (signed)
 - **Health checks** — 3 live (`account`, `quota`, `service`) + the derived `auth:access-token`
   check
 - **Egress allowlist** — `*.workable.com`
@@ -147,6 +148,8 @@ Receiving the event itself (a Trigger, with signature verification of `X-Workabl
 HMAC-SHA256 over the payload) is out of scope for this version — these three actions only manage the
 subscription.
 
+Triggers: not shipped — signed — needs a Claude webhook pass ([Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees)).
+
 ## Deliberately out of scope
 
 - **The HR/Employee endpoints** — `/employees`, time off, time tracking, performance review
@@ -159,7 +162,7 @@ subscription.
   — vendor-side APIs for approved partners, not customer-side recruiting actions.
 - **Talent pool candidates** (`POST /talent_pool/candidates`) — a distinct create path from
   job-scoped candidate creation; may be added alongside a talent-pool read surface later.
-- **Receiving webhook events** (a Trigger) — Workable signs deliveries with `X-Workable-Signature`; this app cannot safely ship the callback without the signed-webhook pass. The existing candidate-list endpoint exposes filters and cursor bounds but no documented newest-first sort, so it cannot safely back the required seed-and-dedupe poll either. Source: [Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees), checked 2026-11-09.
+- **Receiving webhook events** (a Trigger) — Workable signs deliveries with `X-Workable-Signature`; this app cannot safely ship the callback without the signed-webhook pass. The existing candidate-list endpoint exposes filters and cursor bounds but no documented newest-first sort, so it cannot safely back the required seed-and-dedupe poll either. Source: [Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees), verified 2026-11-09.
 
 Nothing was left out because it could not be understood. One genuine gap: the response **shape**
 of `GET /disqualification_reasons` could not be confirmed (the vendor's own OpenAPI schema and

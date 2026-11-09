@@ -6,6 +6,7 @@ Kit (formerly ConvertKit) subscribers, tags, forms, sequences, broadcasts, and c
 - **Categories** — marketing, email
 - **Auth methods** — api-key
 - **Actions** — 18
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.kit.com`
 - **Website** — https://kit.com
 - **API docs** — https://developers.kit.com/api-reference/overview
@@ -82,12 +83,6 @@ Get a key at **kit.com → Settings → Developer**. It must be a **V4** key; V3
 | Custom field | `list-custom-fields`         | `GET /v4/custom_fields`                        |
 | Custom field | `create-custom-field`        | `POST /v4/custom_fields`                       |
 
-## Triggers
-
-| Trigger | Delivery | Source |
-| ------- | -------- | ------ |
-| `new-subscriber` — New Subscriber | Polls `GET /v4/subscribers?per_page=100&sort_field=updated_at&sort_order=desc` every five minutes | [Kit v4 API reference](https://developers.kit.com/api-reference/overview), checked 2026-11-09 |
-
 Every path above was taken from Kit's published v4 OpenAPI document, not from memory.
 
 ### Three behaviours worth knowing before you wire a workflow
@@ -122,6 +117,18 @@ Every list endpoint is cursor-paginated and returns the same envelope:
 Each list action takes `perPage` (default 500, max 1000), `after`, `before`, and
 `includeTotalCount`. To walk forward, pass the previous response's `pagination.end_cursor` as
 `after`. Request `includeTotalCount` on the first page only — Kit warns it is slow.
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+| ------- | --------- | ------------------- | ----------------- |
+| `new-subscriber` — New Subscriber | Poll every five minutes | `list-subscribers`: `GET /v4/subscribers?per_page=100&sort_field=updated_at&sort_order=desc` | Newly observed subscriber records |
+
+Trust model: this poll trigger accepts no inbound delivery; the existing Kit connection signs the
+outbound list request. [Kit v4 API reference](https://developers.kit.com/api-reference/overview), verified 2026-11-09.
+
+Because this order is `updated_at` descending, an unusually busy list can place a new subscriber
+beyond the first page; the trigger's seen-id window still prevents duplicate events for items it sees.
 
 ## Health check
 
