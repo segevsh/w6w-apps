@@ -34,3 +34,12 @@ test("list-bitlinks: passes query, archived and searchAfter through", async () =
   assertEquals(url.searchParams.get("search_after"), "cursor-0");
   assertEquals(out.nextSearchAfter, undefined);
 });
+
+test("list-bitlinks: createdAfter is sent as created_after, and omitted when unset", async () => {
+  const withIt = mockCtx([{ body: { links: [] } }]);
+  await action.execute({ groupGuid: "Ba1bc23dE4F", createdAfter: 1694529902 }, withIt.ctx);
+  assertEquals(new URL(withIt.calls[0].url).searchParams.get("created_after"), "1694529902");
+  const without = mockCtx([{ body: { links: [] } }]);
+  await action.execute({ groupGuid: "Ba1bc23dE4F" }, without.ctx);
+  assertEquals(new URL(without.calls[0].url).searchParams.has("created_after"), false);
+});

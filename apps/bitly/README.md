@@ -2,6 +2,7 @@
 
 Shorten, manage and track Bitly links via the Bitly REST API v4.
 
+- **Triggers** — 1 (poll)
 - **Categories** — marketing, analytics
 - **Auth methods** — access-token
 - **Actions** — 8
@@ -114,4 +115,15 @@ production Bitly node (`api-ssl.bitly.com/v4`, Bearer "Generic Access Token"). S
 surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing
 for everyone at once.
 
-Triggers: not shipped — Bitlink listing is group-scoped cursor pagination with no documented newest-first order or created-since filter (https://dev.bitly.com/api-reference/).
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-bitlink` | New Bitlink | poll (since-filter) | `list-bitlinks` | Each Bitlink created in a group since the last check |
+
+The poll calls the same `GET /groups/{group_guid}/bitlinks` request as `list-bitlinks`, with the new
+optional `createdAfter` input (sent as `created_after`) set to the previous check minus two minutes,
+50 per page, following `search_after` for up to 5 pages, and de-duplicates on the Bitlink id. Bitly
+documents `created_after` as "Timestamp as an integer unix epoch (seconds only)" at
+<https://dev.bitly.com/api-reference/> (verified 2026-11-09). The first check records the current
+window and emits nothing. No webhook code is included.
