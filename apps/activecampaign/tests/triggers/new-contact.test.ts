@@ -62,3 +62,19 @@ test("handleIngest refuses a non-POST delivery", async () => {
     /POST/,
   );
 });
+
+test("handleIngest ignores prototype-polluting form keys", async () => {
+  const out = evs(
+    await newContact.handleIngest!({
+      raw: {
+        method: "POST",
+        body: "contact[id]=1&__proto__[polluted]=yes&contact[__proto__][x]=y" +
+          "&constructor[prototype][polluted]=yes&contact[prototype]=z",
+      },
+    } as never),
+  );
+  assert.equal(out[0].id, "1");
+  assert.equal(({} as Record<string, unknown>).polluted, undefined);
+  assert.equal(Object.hasOwn(out[0], "prototype"), false);
+  assert.equal(Object.getPrototypeOf(out[0]), Object.prototype);
+});

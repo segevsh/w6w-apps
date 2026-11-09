@@ -60,6 +60,7 @@ export const newDeal: TriggerDefinition<
         event_action: "create",
         event_object: "deal",
         name: "w6w New Deal",
+        version: "2.0",
       },
     });
     const id = webhookId(created.data?.id);
@@ -78,6 +79,7 @@ export const newDeal: TriggerDefinition<
       throw new Error("Pipedrive delivers webhooks with POST.");
     }
     const body = call.body as Record<string, unknown> | undefined;
-    return [(body?.current ?? body ?? {}) as Record<string, unknown>];
+    // Webhooks v2.0 delivers {meta, data, previous}; we register v2.0 explicitly.
+    return [(body?.data ?? body ?? {}) as Record<string, unknown>];
   },
 };

@@ -35,10 +35,13 @@ async function remove(client: ActiveCampaignClient, webhookId: string): Promise<
 }
 
 /** Parses a urlencoded body, expanding bracket keys like contact[id] into nested objects. */
+const UNSAFE_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
 export function parseForm(text: string): Record<string, unknown> {
   const root: Record<string, unknown> = {};
   for (const [key, value] of new URLSearchParams(text)) {
     const path = key.split(/\]\[|\[|\]/).filter((part) => part !== "");
+    if (path.some((part) => UNSAFE_KEYS.has(part))) continue;
     let node: Record<string, unknown> = root;
     path.forEach((part, index) => {
       if (index === path.length - 1) {

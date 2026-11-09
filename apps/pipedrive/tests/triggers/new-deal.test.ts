@@ -26,6 +26,7 @@ test("onSubscribe removes a leftover callback registration then creates the deal
         event_action: "create",
         event_object: "deal",
         name: "w6w New Deal",
+        version: "2.0",
       }),
     },
   ]);
@@ -41,10 +42,17 @@ test("onUnsubscribe treats Pipedrive 404 as already gone", async () => {
 
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
-test("handleIngest yields the current deal and refuses non-POST", async () => {
+test("handleIngest yields the v2 data deal and refuses non-POST", async () => {
   const out = evs(
     await newDeal.handleIngest!({
-      raw: { method: "POST", body: { current: { id: 5, title: "Big" }, previous: null } },
+      raw: {
+        method: "POST",
+        body: {
+          meta: { version: "2.0", action: "create", object: "deal" },
+          data: { id: 5, title: "Big" },
+          previous: null,
+        },
+      },
     } as never),
   );
   assert.deepEqual(out, [{ id: 5, title: "Big" }]);
