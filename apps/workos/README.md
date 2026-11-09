@@ -1,5 +1,7 @@
 # WorkOS
 
+Triggers: not shipped — the organization action follows cursors internally rather than exposing one bounded newest-first page (https://workos.com/docs/reference/organization/list-organizations).
+
 Manage the enterprise features a B2B product has to ship before an enterprise
 will buy it: SSO, SCIM user provisioning, audit logs, and the Admin Portal that
 lets a customer configure all three themselves.
