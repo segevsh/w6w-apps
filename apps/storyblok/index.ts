@@ -15,6 +15,7 @@
  * **bigger page is slower**. See `lib/client.ts`.
  */
 import type { AppDefinition } from "@w6w/types";
+import newStory from "./triggers/new-story.ts";
 
 import deliveryToken from "./auth/delivery-token.ts";
 import managementToken from "./auth/management-token.ts";
@@ -54,6 +55,7 @@ const app: AppDefinition = {
     assetList,
     spaceList,
   ],
+  triggers: [newStory],
   auth: [deliveryToken, managementToken],
   healthChecks: [service, api],
 };

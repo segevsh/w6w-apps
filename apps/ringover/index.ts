@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newCall from "./triggers/new-call.ts";
 import blacklistList from "./actions/blacklist-list.ts";
 import callGet from "./actions/call-get.ts";
 import callList from "./actions/call-list.ts";
@@ -67,6 +68,7 @@ export default {
     userList,
     userPresenceGet,
   ],
+  triggers: [newCall],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newIncident from "./triggers/new-incident.ts";
 import incidentList from "./actions/incident-list.ts";
 import incidentGet from "./actions/incident-get.ts";
 import incidentCreate from "./actions/incident-create.ts";
@@ -84,6 +85,7 @@ const app: AppDefinition = {
     shiftList,
     oncallList,
   ],
+  triggers: [newIncident],
   auth: [apiToken],
   healthChecks: [service, api, quota],
 };

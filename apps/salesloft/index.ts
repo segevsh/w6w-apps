@@ -21,6 +21,7 @@
  * cadences, cadence enrollment, calls, notes, tasks and users.
  */
 import type { AppDefinition } from "@w6w/types";
+import newPerson from "./triggers/new-person.ts";
 import apiKey from "./auth/api-key.ts";
 import oauth2 from "./auth/oauth2.ts";
 
@@ -98,6 +99,7 @@ export default {
     userList,
     userGet,
   ],
+  triggers: [newPerson],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

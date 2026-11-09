@@ -10,6 +10,7 @@
  * The gateway answers HTTP 200 to everything; failures are numeric codes in the body.
  */
 import type { AppDefinition } from "@w6w/types";
+import newContact from "./triggers/new-contact.ts";
 import apiKey from "./auth/api-key.ts";
 import analyticsGet from "./actions/analytics-get.ts";
 import balanceGet from "./actions/balance-get.ts";
@@ -80,6 +81,7 @@ export default {
     webhookDelete,
     webhookList,
   ],
+  triggers: [newContact],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;
