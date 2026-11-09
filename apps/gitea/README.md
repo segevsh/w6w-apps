@@ -5,7 +5,7 @@ Manage Gitea repositories, issues, pull requests, releases and files.
 - **Categories** — version-control, developer-tools, devops
 - **Auth methods** — token
 - **Actions** — 26
-- **Triggers** — 2 (poll)
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://about.gitea.com
 - **API docs** — https://docs.gitea.com/api ·
@@ -219,7 +219,6 @@ Poll triggers built on the app's existing `pull-request-list` action (same clien
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
-| `new-pull-request` — New Pull Request | poll | `pull-request-list` | Each newly opened pull request in the chosen repository, oldest first. |
 | `new-or-updated-pull-request` — New or Updated Pull Request | poll | `pull-request-list` | Each pull request in the chosen repository that is new or has been updated, once per update. |
 
 How the feed is read: `GET /repos/{owner}/{repo}/pulls` with `sort=recentupdate` (a documented value of the `sort` enum), `state=all`.

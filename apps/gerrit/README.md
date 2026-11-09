@@ -6,7 +6,7 @@ projects.
 - **Categories** — version-control, developer-tools
 - **Auth methods** — http-password
 - **Actions** — 11
-- **Triggers** — 2 (poll)
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://gerritcodereview.com
 - **API docs** — https://gerrit-review.googlesource.com/Documentation/rest-api.html
@@ -199,7 +199,6 @@ Poll triggers built on the app's existing `change-search` action (same client, e
 
 | Trigger | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
-| `new-change` — New Change | poll | `change-search` | Each newly created Gerrit change matching the query (default open changes), oldest first. |
 | `new-or-updated-change` — New or Updated Change | poll | `change-search` | Each Gerrit change matching the query that is new or has been updated, once per update. |
 
 How the feed is read: `GET /changes/?q=…` ("The change output is sorted by the last update time, most recently updated to oldest updated").

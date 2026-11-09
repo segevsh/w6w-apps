@@ -110,7 +110,6 @@ import userGet from "./actions/user-get.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 import newOrUpdatedPullRequest from "./triggers/new-or-updated-pull-request.ts";
-import newPullRequest from "./triggers/new-pull-request.ts";
 
 export default {
   actions: [
@@ -148,7 +147,7 @@ export default {
     // who this is
     userGet,
   ],
-  triggers: [newOrUpdatedPullRequest, newPullRequest],
+  triggers: [newOrUpdatedPullRequest],
   auth: [token],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

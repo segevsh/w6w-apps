@@ -60,7 +60,12 @@ test("new-or-updated-contact: requests exactly the endpoint the list action call
 });
 
 test("new-or-updated-contact: an edited record is a new event", async () => {
-  const state = seeded;
-  const r = await trigger.poll!({ ...input, state }, ctx([item(1, "2026-11-09T11:00:00Z")]).ctx);
+  const first = await trigger.poll!({ ...input, state: {} }, ctx([item(1)]).ctx);
+  const same = await trigger.poll!({ ...input, state: first.nextState }, ctx([item(1)]).ctx);
+  assertEquals(same.events, []);
+  const r = await trigger.poll!(
+    { ...input, state: same.nextState },
+    ctx([item(1, "2026-11-09T11:00:00Z")]).ctx,
+  );
   assertEquals(r.events, [item(1, "2026-11-09T11:00:00Z")]);
 });
