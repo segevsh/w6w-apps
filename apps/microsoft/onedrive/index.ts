@@ -26,6 +26,7 @@ import createLink from "./actions/create-link.ts";
 import listPermissions from "./actions/list-permissions.ts";
 import deletePermission from "./actions/delete-permission.ts";
 import sendSharingInvite from "./actions/send-sharing-invite.ts";
+import fileChanged from "./triggers/file-changed.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -52,6 +53,7 @@ export default {
     deletePermission,
     sendSharingInvite,
   ],
+  triggers: [fileChanged],
   auth: [oauth2],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;
