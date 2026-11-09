@@ -27,6 +27,7 @@ import deleteUnsubscribe from "./actions/delete-unsubscribe.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newActivity from "./triggers/new-activity.ts";
 
 export default {
   actions: [
@@ -57,4 +58,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newActivity],
 } satisfies AppDefinition;

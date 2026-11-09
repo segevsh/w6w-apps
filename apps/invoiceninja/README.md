@@ -5,6 +5,7 @@ Manage Invoice Ninja clients, invoices, quotes, payments, products, tasks and ex
 - **Categories** — finance, commerce
 - **Auth methods** — api-token
 - **Actions** — 40
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (see "Why not a wildcard apex" below)
 - **Website** — https://www.invoiceninja.com
 - **API docs** — https://api-docs.invoicing.co/
@@ -160,3 +161,12 @@ them.
 Researched and endpoint-verified 2026-09-05 against the OpenAPI 3.0.1 document embedded in
 https://api-docs.invoicing.co/'s Redoc page, plus live probes against `demo.invoiceninja.com` (the
 vendor's own public demo instance, `X-API-TOKEN: TOKEN`) and `status.invoiceninja.com`.
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-invoice` | New Invoice | poll | `invoice-get-many` | Each new invoice |
+
+The existing invoice list request is reused and the first poll seeds its cursor without emitting a
+historical invoice. [Invoice Ninja API docs](https://api-docs.invoicing.co/) verified 2026-11-09.

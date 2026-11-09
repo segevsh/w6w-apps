@@ -7,6 +7,7 @@ transitions, activity history, senders, schedules and the unsubscribe list — v
 - **Id** `io.w6w.lemlist` · **Categories** `marketing`, `email`
 - **Auth** `api-key` — HTTP Basic with an **empty username**
 - **Actions** 18 · **Health checks** `service`, `quota` (+ the derived `auth:api-key`)
+- **Triggers** — 1 (poll)
 - **Egress** `api.lemlist.com` only
 
 > **The name is lowercase.** "lemlist", not "Lemlist" — that is the vendor's own styling.
@@ -393,3 +394,12 @@ All verified to return HTTP 200 on 2026-08-03.
 > Every per-endpoint documentation page is also available as raw markdown by appending
 > `.md`, and each embeds the OpenAPI fragment for that route — which is where this app's
 > exact paths, parameters and response shapes were read from.
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-activity` | New Activity | poll | `list-activities` | Each new campaign activity |
+
+The trigger uses the existing `/activities?version=v2` action and dedupes activity ids after its
+initial seed. [lemlist API overview](https://developer.lemlist.com/api-reference/getting-started/overview) verified 2026-11-09.

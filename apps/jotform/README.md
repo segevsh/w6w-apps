@@ -6,6 +6,7 @@ API.
 - **Categories** — forms, productivity
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.jotform.com`, `eu-api.jotform.com`, `hipaa-api.jotform.com`
 
 ## Links
@@ -200,3 +201,12 @@ with `_tools/audit.ts` conventions in mind if a probe starts failing for everyon
 
 The icon is Jotform's own logomark, copied verbatim from n8n's `nodes-base`
 (`nodes/JotForm/jotform.svg`).
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-submission` | New Submission | poll | `submission-get-many`, `created_at DESC` | Each new form submission |
+
+This polls the selected form's existing submission endpoint in descending creation order. Jotform's
+[webhook endpoint](https://api.jotform.com/docs/) is documented separately; verified 2026-11-09.

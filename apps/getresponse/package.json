@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/getresponse",
-  "version": "0.1.2",
-  "description": "Manage GetResponse contacts, campaigns (lists), tags, custom fields and newsletters — on the retail platform and on GetResponse MAX.",
+  "version": "0.2.0",
+  "description": "Manage GetResponse contacts, campaigns (lists), tags, custom fields and newsletters, and poll for new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "api3.getresponse360.pl"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -91,6 +91,7 @@ import expenseDelete from "./actions/expense-delete.ts";
 
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
+import newInvoice from "./triggers/new-invoice.ts";
 
 export default {
   actions: [
@@ -144,4 +145,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, instance],
+  triggers: [newInvoice],
 } satisfies AppDefinition;

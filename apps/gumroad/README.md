@@ -7,6 +7,8 @@ subscriptions) for sales, refunds, disputes and subscription changes, on the **G
 
 **53 actions**, one access-token auth method, two declared health checks.
 
+- **Triggers** — 1 (poll)
+
 ## Provenance
 
 Every path, verb and parameter comes from Gumroad's own API reference (`https://gumroad.com/api`).
@@ -156,3 +158,12 @@ tests/                 index, auth, client, health, defaults + one test file per
 ```
 
 `deno task fmt && deno task validate && deno task check && deno task lint && deno task test`
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-sale` | New Sale | poll | `sale-list` (Gumroad returns sales newest first) | Each new sale |
+
+The trigger uses the existing sales request and its cursor state to avoid duplicate runs. The API's
+[resource subscriptions](https://gumroad.com/api#resource-subscriptions) remain available for manual integrations; verified 2026-11-09.
