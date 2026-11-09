@@ -63,7 +63,6 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import secretKey from "./auth/secret-key.ts";
-import newUser from "./triggers/new-user.ts";
 
 import userList from "./actions/user-list.ts";
 import userCount from "./actions/user-count.ts";
@@ -105,6 +104,8 @@ import signInTokenRevoke from "./actions/sign-in-token-revoke.ts";
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
 export default {
   actions: [
     // users
@@ -147,5 +148,5 @@ export default {
   ],
   auth: [secretKey],
   healthChecks: [service, instance],
-  triggers: [newUser],
+  triggers: [newUser, newOrUpdatedUser],
 } satisfies AppDefinition;

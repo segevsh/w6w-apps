@@ -44,6 +44,13 @@ const action: ActionDefinition = {
       type: "boolean",
       hint: "Leave unset to return both banned and non-banned users.",
     },
+    {
+      key: "orderBy",
+      label: "Order by",
+      type: "string",
+      advanced: true,
+      hint: "Clerk `order_by`, e.g. `-created_at` (newest first) or `+updated_at`.",
+    },
     ...LIST_PARAMS,
   ],
   output: [
@@ -57,6 +64,7 @@ const action: ActionDefinition = {
         email_address: csv(p.emailAddress),
         query: p.query as string | undefined,
         banned: typeof p.banned === "boolean" ? p.banned : undefined,
+        order_by: (p.orderBy as string | undefined) || undefined,
         limit: (p.limit as number | undefined) ?? 10,
         offset: (p.offset as number | undefined) ?? 0,
       },

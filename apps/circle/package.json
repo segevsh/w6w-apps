@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/circle",
-  "version": "0.1.1",
-  "description": "Manage members, spaces, posts, comments, events and tags in a Circle community via the Circle Admin API v2.",
+  "version": "0.2.0",
+  "description": "Manage members, spaces, posts, comments, events and tags in a Circle community via the Circle Admin API v2. Triggers: new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://api.circle.so/apis/admin-api/usage-and-limits/optimizing-usage"
     ],
-    "longDescription": "Circle is a community platform — spaces, courses, events, and paywalled memberships — and this app manages it through Circle's own Admin API v2, the surface Circle itself recommends over its older v1.\n\nIt covers the operational core of running a community: members (list, get, search, invite, update, deactivate, ban), spaces and space membership, posts and comments, and events with attendee management. Tags let a workflow segment members, message-create sends a direct message or starts a group chat, and a general search reaches across spaces and posts at once.\n\nGood for automating member onboarding — inviting someone and assigning them to spaces, groups and tags in one call — keeping community membership in sync with a CRM, publishing content or announcements from another system, and managing event attendees fed by an external registration form.",
+    "longDescription": "Circle is a community platform — spaces, courses, events, and paywalled memberships — and this app manages it through Circle's own Admin API v2, the surface Circle itself recommends over its older v1.\n\nIt covers the operational core of running a community: members (list, get, search, invite, update, deactivate, ban), spaces and space membership, posts and comments, and events with attendee management. Tags let a workflow segment members, message-create sends a direct message or starts a group chat, and a general search reaches across spaces and posts at once.\n\nGood for automating member onboarding — inviting someone and assigning them to spaces, groups and tags in one call — keeping community membership in sync with a CRM, publishing content or announcements from another system, and managing event attendees fed by an external registration form.\n\nPoll triggers start a workflow when a new record appears, using the same list call as the matching action.",
     "categories": [
       "communication",
       "social-media"

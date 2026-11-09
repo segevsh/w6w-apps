@@ -35,7 +35,6 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
-import newPost from "./triggers/new-post.ts";
 
 import boardList from "./actions/board-list.ts";
 import boardGet from "./actions/board-get.ts";
@@ -88,6 +87,7 @@ import statusChangeList from "./actions/status-change-list.ts";
 
 import service from "./health/service.ts";
 
+import newPost from "./triggers/new-post.ts";
 export default {
   actions: [
     // Boards

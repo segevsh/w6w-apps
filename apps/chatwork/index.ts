@@ -32,7 +32,6 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
-import newMessage from "./triggers/new-message.ts";
 
 import meGet from "./actions/me-get.ts";
 import myStatusGet from "./actions/my-status-get.ts";
@@ -78,6 +77,7 @@ import incomingRequestReject from "./actions/incoming-request-reject.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newMessage from "./triggers/new-message.ts";
 export default {
   actions: [
     // Profile

@@ -5,6 +5,7 @@ Manage ClickHouse Cloud services — and run SQL against them, which is the poin
 - **Categories** — databases, data-warehousing
 - **Auth methods** — api-key, service
 - **Actions** — 15
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.clickhouse.cloud`, `*.clickhouse.cloud`,
   `*.clickhouse.com`, `status.clickhouse.com`
 - **Website** — https://clickhouse.com
@@ -138,6 +139,18 @@ real one.
 - **`backup-list` does not offer to restore.** A ClickHouse Cloud restore
   provisions a **new service** rather than rewinding this one, so it is a
   migration with a cutover and new credentials — a decision, not a button.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-activity` — New Activity | Poll | `activity-list` | Each new organization activity event |
+
+`activity-list` filters by `from_date` and returns one unpaged response, so each check asks for events since last check − 120 s and de-duplicates by activity id. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://clickhouse.com/docs/products/cloud/api-reference/organization/list-of-organization-activities) (verified 2026-11-09).
 
 ## Health checks
 

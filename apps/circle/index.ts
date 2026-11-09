@@ -1,6 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
-import newEvent from "./triggers/new-event.ts";
 
 import memberList from "./actions/member-list.ts";
 import memberGet from "./actions/member-get.ts";
@@ -46,6 +45,7 @@ import search from "./actions/search.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newEvent from "./triggers/new-event.ts";
 export default {
   actions: [
     memberList,

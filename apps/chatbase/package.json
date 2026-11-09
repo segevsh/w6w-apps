@@ -41,12 +41,7 @@
         "www.chatbase.co"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": [
-        "../_shared"
-      ]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

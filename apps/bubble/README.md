@@ -6,6 +6,7 @@ Workflow API.
 - **Categories** — developer-tools, databases
 - **Auth methods** — admin-token
 - **Actions** — 8
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*` (every Bubble app is its own host — see below)
 - **Website** — https://bubble.io
 - **API docs** — https://manual.bubble.io/help-guides/integrations/api/the-bubble-api
@@ -137,6 +138,19 @@ ambiguity spelled out, rather than guessed at either way.
   `Authorization: Bearer <token>`).
 - **Bulk update/delete.** Not documented, and not found — only bulk create
   exists.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-thing` — New Thing | Poll | `data-list` | Each newly created thing of the chosen Data Type |
+| `new-or-updated-thing` — New or Updated Thing | Poll | `data-list` | Each thing created or edited (Modified Date) |
+
+Polled newest-first through `data-list` with `sort_field=Created Date&descending=true` (and `Modified Date` for the second trigger). The `Created Date` / `Modified Date` fields exist on every Bubble thing. The Data Type must be enabled in Settings → API → Data API and visible to the token, as for the action. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://manual.bubble.io/core-resources/api/the-bubble-api/the-data-api/data-api-requests) (verified 2026-11-09).
 
 ## Health checks
 

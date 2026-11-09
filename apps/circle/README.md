@@ -120,6 +120,7 @@ Connection (it identifies the community, like the token) and never on an Action.
 `GET /community` is v2's whoami — there is no `/me`, and the alternatives are collections.
 
 - **401** → the token is wrong, revoked, or the wrong *type*. The message says so, because an
+- **Triggers** — 1 (poll)
   Admin V1 or Headless token fails identically and the fix is different.
 - **403** → the token is fine and the **plan** is not:
   `{"success":false,"message":"The community is not eligible for admin API v2 access."}`. The
@@ -132,6 +133,18 @@ the community's settings withheld that collection, and it would pull a page of m
 the wire to prove a token works.
 
 ---
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | Poll | `event-list` | Each newly created event |
+
+Polled through `event-list` with no `sort`: the Admin API v2 spec documents that the default order is newest by `created_at` ("default is newest (by created_at)"). Records are read from the `records` array. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://api-headless.circle.so/api/admin/v2/swagger.yaml) (verified 2026-11-09).
 
 ## Health checks
 

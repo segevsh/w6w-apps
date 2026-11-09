@@ -45,6 +45,7 @@
 import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
 import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 import oauth2Au from "./auth/oauth2-au.ts";
 import oauth2Ca from "./auth/oauth2-ca.ts";
 import oauth2Eu from "./auth/oauth2-eu.ts";
@@ -124,5 +125,5 @@ export default {
   // One per Clio region — see this file's own doc comment and `auth/oauth2.ts`.
   auth: [oauth2, oauth2Eu, oauth2Ca, oauth2Au],
   healthChecks: [service, quota],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;

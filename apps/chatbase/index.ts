@@ -33,7 +33,6 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
-import newConversation from "./triggers/new-conversation.ts";
 
 import agentList from "./actions/agent-list.ts";
 import agentGet from "./actions/agent-get.ts";
@@ -128,5 +127,4 @@ export default {
   // API key only. Chatbase publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newConversation],
 } satisfies AppDefinition;
