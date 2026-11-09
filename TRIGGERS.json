@@ -1536,12 +1536,12 @@
     "path": "apps/donorbox",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "event-list takes the documented order=desc (default desc); first page holds the newest events",
+    "verified": "apps/donorbox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/drata",
@@ -1623,12 +1623,12 @@
     "path": "apps/easypost",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "events feed pages from the newest with before_id; start_datetime defaults to one month back",
+    "verified": "apps/easypost/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ebay",
@@ -1645,12 +1645,12 @@
     "path": "apps/economic",
     "mechanism": "poll",
     "candidates": [
-      "new-entry-list"
+      "new-booked-invoice"
     ],
-    "pollAction": "entry-list",
-    "reason": "list action entry-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "invoice-booked-list",
+    "reason": "invoice-booked-list sorts -bookedInvoiceNumber (newest first)",
+    "verified": "apps/economic/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ecwid",
@@ -1676,12 +1676,12 @@
     "path": "apps/egnyte",
     "mechanism": "poll",
     "candidates": [
-      "new-link-list"
+      "new-link"
     ],
     "pollAction": "link-list",
-    "reason": "list action link-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "link-list has a created_after filter: since-filter shape with id dedupe (replaces round-1 search-based rejection)",
+    "verified": "apps/egnyte/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/elastic",
@@ -1690,9 +1690,9 @@
       "new-record"
     ],
     "pollAction": "search",
-    "reason": "list action search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "search sorted by a user-named creation timestamp field descending",
+    "verified": "apps/elastic/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/elastic-email",
@@ -1727,34 +1727,35 @@
     "path": "apps/encharge",
     "mechanism": "poll",
     "candidates": [
-      "new-segment-people-list"
+      "new-segment-person"
     ],
     "pollAction": "segment-people-list",
-    "reason": "list action segment-people-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "segment-people-list sort+order=desc on a user-named creation-time person field (sort field name is user-supplied, not documented by the vendor)",
+    "verified": "apps/encharge/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/enrichlayer",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-company-employees-list"
+      "company-employees"
     ],
-    "pollAction": "company-employees-list",
-    "reason": "list action company-employees-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "each poll needs a per-company or per-school URL and spends enrichment credits; no account-wide record feed (https://enrichlayer.com/docs)",
+    "verified": "apps/enrichlayer/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/erpnext",
     "mechanism": "poll",
     "candidates": [
-      "new-documents"
+      "new-document",
+      "new-or-updated-document"
     ],
     "pollAction": "list-documents",
-    "reason": "list action list-documents has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-documents order_by creation desc / modified desc over a user-chosen DocType",
+    "verified": "apps/erpnext/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/esignatures",
@@ -1822,12 +1823,12 @@
     "path": "apps/eztexting",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1)",
+    "verified": "apps/eztexting/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fareharbor",
@@ -1842,12 +1843,12 @@
     "path": "apps/fathom",
     "mechanism": "poll",
     "candidates": [
-      "new-meeting-get-many"
+      "new-meeting"
     ],
     "pollAction": "meeting-get-many",
-    "reason": "list action meeting-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "meeting-get-many lists meetings newest first, no sort arg",
+    "verified": "apps/fathom/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/feedly",
@@ -1888,23 +1889,23 @@
     "path": "apps/fillout",
     "mechanism": "poll",
     "candidates": [
-      "new-submission-list"
+      "new-submission"
     ],
     "pollAction": "submission-list",
-    "reason": "list action submission-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "submission-list sort=desc (default is asc) over a user-chosen form",
+    "verified": "apps/fillout/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/findymail",
     "mechanism": "poll",
     "candidates": [
-      "new-intellimatch-search"
+      "new-list"
     ],
-    "pollAction": "intellimatch-search",
-    "reason": "list action intellimatch-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-lists",
+    "reason": "list-lists is one unpaginated bounded response (contact lists): snapshot, additions only",
+    "verified": "apps/findymail/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fireberry",
@@ -1937,12 +1938,12 @@
     "path": "apps/firestore",
     "mechanism": "poll",
     "candidates": [
-      "new-document-list"
+      "new-document"
     ],
     "pollAction": "document-list",
-    "reason": "list action document-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering",
+    "verified": "apps/firestore/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fivetran",
@@ -1957,12 +1958,13 @@
     "path": "apps/float",
     "mechanism": "poll",
     "candidates": [
-      "new-allocation-list"
+      "new-allocation",
+      "new-or-updated-allocation"
     ],
     "pollAction": "allocation-list",
-    "reason": "list action allocation-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "allocation-list sort=-created / -modified (a - prefix sorts descending)",
+    "verified": "apps/float/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/flodesk",

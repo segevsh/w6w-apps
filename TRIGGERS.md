@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 380, none: 252
+**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 379, none: 253
 
 ## webhook-api (42)
 
@@ -71,7 +71,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (380)
+## poll (379)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -156,26 +156,25 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/docparser | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
 | apps/document360 | drive-search | new-drive-search | no | scan | list action drive-search has pagination and order/since params |
 | apps/docusign | envelope-list | new-envelope-list | no | scan | list action envelope-list has pagination and order/since params |
-| apps/donorbox | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/donorbox | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
 | apps/dub | customer-list | new-customer | apps/dub/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/duda | list-sites | new-site | apps/duda/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-sites |
-| apps/easypost | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/easypost | event-list | new-event | apps/easypost/README.md Triggers section (verified 2026-11-09) | hand | events feed pages from the newest with before_id; start_datetime defaults to one month back |
 | apps/ebay | item-search | new-listing | apps/ebay/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action item-search |
-| apps/economic | entry-list | new-entry-list | no | scan | list action entry-list has pagination and order/since params |
+| apps/economic | invoice-booked-list | new-booked-invoice | apps/economic/README.md Triggers section (verified 2026-11-09) | hand | invoice-booked-list sorts -bookedInvoiceNumber (newest first) |
 | apps/ecwid | customer-search | new-customer | apps/ecwid/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-search |
-| apps/egnyte | link-list | new-link-list | no | scan | list action link-list has pagination and order/since params |
-| apps/elastic | search | new-record | no | scan | list action search has pagination and order/since params |
+| apps/egnyte | link-list | new-link | apps/egnyte/README.md Triggers section (verified 2026-11-09) | hand | link-list has a created_after filter: since-filter shape with id dedupe (replaces round-1 search-based rejection) |
+| apps/elastic | search | new-record | apps/elastic/README.md Triggers section (verified 2026-11-09) | hand | search sorted by a user-named creation timestamp field descending |
 | apps/elevenlabs | voice-list | new-voice | apps/elevenlabs/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action voice-list |
-| apps/encharge | segment-people-list | new-segment-people-list | no | scan | list action segment-people-list has pagination and order/since params |
-| apps/enrichlayer | company-employees-list | new-company-employees-list | no | scan | list action company-employees-list has pagination and order/since params |
-| apps/erpnext | list-documents | new-documents | no | scan | list action list-documents has pagination and order/since params |
-| apps/eztexting | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/fathom | meeting-get-many | new-meeting-get-many | no | scan | list action meeting-get-many has pagination and order/since params |
+| apps/encharge | segment-people-list | new-segment-person | apps/encharge/README.md Triggers section (verified 2026-11-09) | hand | segment-people-list sort+order=desc on a user-named creation-time person field (sort field name is user-supplied, not documented by the vendor) |
+| apps/erpnext | list-documents | new-document, new-or-updated-document | apps/erpnext/README.md Triggers section (verified 2026-11-09) | hand | list-documents order_by creation desc / modified desc over a user-chosen DocType |
+| apps/eztexting | contact-list | new-contact | apps/eztexting/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1) |
+| apps/fathom | meeting-get-many | new-meeting | apps/fathom/README.md Triggers section (verified 2026-11-09) | hand | meeting-get-many lists meetings newest first, no sort arg |
 | apps/fellow | action-item-list | new-action-item | apps/fellow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action action-item-list |
-| apps/fillout | submission-list | new-submission-list | no | scan | list action submission-list has pagination and order/since params |
-| apps/findymail | intellimatch-search | new-intellimatch-search | no | scan | list action intellimatch-search has pagination and order/since params |
-| apps/firestore | document-list | new-document-list | no | scan | list action document-list has pagination and order/since params |
-| apps/float | allocation-list | new-allocation-list | no | scan | list action allocation-list has pagination and order/since params |
+| apps/fillout | submission-list | new-submission | apps/fillout/README.md Triggers section (verified 2026-11-09) | hand | submission-list sort=desc (default is asc) over a user-chosen form |
+| apps/findymail | list-lists | new-list | apps/findymail/README.md Triggers section (verified 2026-11-09) | hand | list-lists is one unpaginated bounded response (contact lists): snapshot, additions only |
+| apps/firestore | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
+| apps/float | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
 | apps/followupboss | list-users | new-users | no | scan | list action list-users has pagination and order/since params |
 | apps/formidableforms | entry-get-many | new-entry-get-many | no | scan | list action entry-get-many has pagination and order/since params |
 | apps/formsite | result-list | new-result-list | no | scan | list action result-list has pagination and order/since params |
@@ -456,7 +455,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (252)
+## none (253)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -519,6 +518,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/edenai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/elastic-email |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/emailoctopus |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/enrichlayer | company-employees | apps/enrichlayer/README.md Triggers section (verified 2026-11-09) | hand | each poll needs a per-company or per-school URL and spends enrichment credits; no account-wide record feed (https://enrichlayer.com/docs) |
 | apps/esignatures |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/everhour |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/exa |  | no | scan | no newest-first list action found by scan; vendor events not researched |
