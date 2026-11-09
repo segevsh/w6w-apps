@@ -27,6 +27,12 @@ import clientList from "./actions/client-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTimeEntry from "./triggers/new-time-entry.ts";
+import timerStarted from "./triggers/timer-started.ts";
+import timerStopped from "./triggers/timer-stopped.ts";
+import newProject from "./triggers/new-project.ts";
+import newClient from "./triggers/new-client.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -41,6 +47,7 @@ export default {
     workspaceList,
     clientList,
   ],
+  triggers: [newTimeEntry, timerStarted, timerStopped, newProject, newClient, newTask],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

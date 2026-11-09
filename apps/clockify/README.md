@@ -2,6 +2,7 @@
 
 Track time entries, projects, clients, and workspaces via the [Clockify REST API v1](https://api.clockify.me/api/v1).
 
+- **Triggers** — 6 (webhook)
 - **Website** — https://clockify.me
 - **API docs** — https://docs.clockify.me/
 
@@ -37,3 +38,34 @@ Deliberately not built: dedicated "get current running entry" / "stop" actions u
 - **`service`** — declared absent. No machine-readable status feed exists for Clockify (verified live 2026-08-01: the standard Statuspage path 404s, no linked status page found).
 - **`quota`** — declared absent. No rate-limit response headers or headroom endpoint (verified live 2026-08-01).
 - **`auth:api-key`** — derived automatically from the auth method's `test` hook.
+
+## Triggers
+
+Webhook triggers on Clockify's workspace webhooks. Each registers itself with
+`POST /workspaces/{workspaceId}/webhooks` (event, `triggerSourceType: WORKSPACE_ID`, the callback URL)
+and deletes the webhook again on unsubscribe. The app has no list action for these records, so there
+is no poll fallback.
+
+| Trigger | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `new-time-entry` — New Time Entry | webhook (API) | `NEW_TIME_ENTRY` | The time entry |
+| `timer-started` — Timer Started | webhook (API) | `NEW_TIMER_STARTED` | The running time entry |
+| `timer-stopped` — Timer Stopped | webhook (API) | `TIMER_STOPPED` | The time entry with its final interval |
+| `new-project` — New Project | webhook (API) | `NEW_PROJECT` | The project |
+| `new-client` — New Client | webhook (API) | `NEW_CLIENT` | The client |
+| `new-task` — New Task | webhook (API) | `NEW_TASK` | The task |
+
+Setup: set **Workspace ID**, or leave it blank when the account has exactly one workspace. Clockify
+limits the number of webhooks per user and workspace by plan (3 on Free).
+
+Trust model: creating a webhook returns a per-webhook token (`authToken`); Clockify says it "will
+always be present in the header" of its deliveries (the header is `Clockify-Signature`; the docs
+page names the token and "the header" but not the header's name, so the name is the planner's
+survey's — **partly UNVERIFIED**). The trigger keeps the token in the subscription state;
+`handleIngest` reads the raw body, requires the stored token to exist, and refuses any delivery
+whose `Clockify-Signature` header is missing or differs (constant-time compare). A shared token proves
+the sender knows it; it does not protect the body from tampering. If Clockify also sends a
+`Clockify-Webhook-Event-Type` header that names another event, the delivery is acknowledged without
+a run.
+
+Vendor docs: <https://docs.clockify.me/> (Webhooks › Create a webhook), verified 2026-11-09.

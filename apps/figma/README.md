@@ -5,6 +5,7 @@ Read Figma files, nodes, images, comments, projects and versions via the Figma R
 - **Categories** — productivity, developer-tools
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 10
+- **Triggers** — 5 (webhook)
 - **Egress allowlist** — `api.figma.com`
 - **Website** — https://www.figma.com
 - **API docs** — https://developers.figma.com/docs/rest-api/
@@ -117,3 +118,35 @@ at load time, so a credential can never reach a status host.
 Researched and endpoint-verified 2026-07-31 against `developers.figma.com/docs/rest-api/`
 and `status.figma.com`. Status surfaces move; re-check if a probe starts failing for everyone
 at once.
+
+## Triggers
+
+Webhook triggers on Figma's webhooks v2. Each one registers itself with `POST /v2/webhooks`
+(event type, `context` team/project/file, the callback URL and a generated passcode) and deletes
+its webhook again on unsubscribe.
+
+| Trigger | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `file-updated` — File Updated | webhook (API) | `FILE_UPDATE` (30 min after editing stops) | File key and name, time, who |
+| `file-deleted` — File Deleted | webhook (API) | `FILE_DELETE` | File key and name, time, who |
+| `file-version-created` — File Version Created | webhook (API) | `FILE_VERSION_UPDATE` | …plus version id, label, description in `data` |
+| `comment-added` — Comment Added | webhook (API) | `FILE_COMMENT` | …plus the comment fragments, mentions, ids in `data` |
+| `library-published` — Library Published | webhook (API) | `LIBRARY_PUBLISH` | …plus the created/modified/deleted assets in `data` |
+
+Setup: choose whether the ID is a team, a project or a file, and give the ID (a file's key is the
+part of its URL after `/design/`). The connection needs the `webhooks:write` scope — a personal
+access token must be created with it, and note that this app's OAuth scope list
+(`auth/oauth2.ts`) does not currently request it, so use a personal access token for triggers
+until it does. Webhooks are created and managed only through the API; Figma has no UI for them.
+
+Trust model: Figma does not sign requests. Instead the trigger registers a random 256-bit
+`passcode` (a caller-chosen secret, kept in the subscription state) and Figma echoes it in every
+payload. `handleIngest` reads the raw body, requires that stored passcode to exist, and refuses any
+delivery whose `passcode` differs (constant-time compare); the passcode is removed from the emitted
+event. A passcode proves the sender knows the secret; it does not protect the body from tampering.
+Figma's debug `PING` on creation and events of another type are acknowledged without a run.
+
+Vendor docs: <https://developers.figma.com/docs/rest-api/webhooks/>,
+<https://developers.figma.com/docs/rest-api/webhooks-events/>,
+<https://developers.figma.com/docs/rest-api/webhooks-endpoints/> and
+<https://developers.figma.com/docs/rest-api/webhooks-security/>, verified 2026-11-09.
