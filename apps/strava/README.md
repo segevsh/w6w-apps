@@ -5,6 +5,7 @@ Read and log activities, comments, kudos and athlete stats via the Strava API v3
 - **Categories** — productivity
 - **Auth methods** — oauth2
 - **Actions** — 9
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `www.strava.com`
 - **Website** — https://www.strava.com
 - **API docs** — https://developers.strava.com/docs/reference/
@@ -27,7 +28,7 @@ All paths are relative to `https://www.strava.com/api/v3`.
 
 Deliberately out of scope for this port, noted in `index.ts`: file-based activity uploads
 (`POST /uploads`, a multipart flow distinct from the manual `POST /activities` this app
-covers), segments/routes/clubs/gear resources, and the webhook push-subscription Trigger.
+covers), segments/routes/clubs/gear resources, and creating the push subscription itself (see Triggers).
 
 `activity-create` and `activity-update` send `sport_type` only — Strava's older `type` field
 is deprecated and silently ignored whenever `sport_type` is present, so sending both would be
@@ -128,3 +129,40 @@ at load time, so a credential can never reach a status host.
 Researched and endpoint-verified 2026-08-01 against `developers.strava.com/docs/` and
 `status.strava.com`. Status surfaces move; re-check if a probe starts failing for everyone at
 once.
+
+## Triggers
+
+Manual-webhook receivers for Strava's push subscriptions. Strava creates a subscription with the
+API application's own `client_id` and `client_secret` (not the athlete's access token), so a
+connection cannot register one; you register the trigger's callback URL once, by hand.
+
+| Trigger | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `activity-created` — Activity Created | webhook (manual) | `object_type=activity`, `aspect_type=create` | The event: activity id, athlete id, event time |
+| `activity-updated` — Activity Updated | webhook (manual) | `object_type=activity`, `aspect_type=update` | The event plus `updates` (the changed fields) |
+| `activity-deleted` — Activity Deleted | webhook (manual) | `object_type=activity`, `aspect_type=delete` | The event: the deleted activity id |
+
+Setup:
+
+1. Add the trigger to a workflow and set **Verify token** to a long random string you choose.
+2. Take the subscription's callback URL and register it with Strava, using the same token:
+
+   ```sh
+   curl -X POST https://www.strava.com/api/v3/push_subscriptions \
+     -F client_id=YOUR_CLIENT_ID -F client_secret=YOUR_CLIENT_SECRET \
+     -F callback_url=THE_CALLBACK_URL -F verify_token=THE_SAME_TOKEN
+   ```
+
+3. Strava sends a `GET` handshake; the trigger answers `{"hub.challenge": "<challenge>"}` only
+   when Strava's `hub.verify_token` equals your **Verify token**, and refuses (no reply) when it
+   differs or when no token is configured.
+
+A Strava application has at most one push subscription; delete the old one
+(`DELETE /push_subscriptions/{id}`) before registering a new URL. Athletes must have authorized
+your Strava application for events to be sent for them.
+
+Trust model: Strava documents **no signature** on event deliveries, so the callback URL (it carries
+the subscription's unguessable id) is the shared secret — keep it private. The handshake is the only
+step gated by the verify token. Optional **Athlete ID** narrows a trigger to one athlete.
+
+Vendor docs: <https://developers.strava.com/docs/webhooks/> (verified 2026-11-09).
