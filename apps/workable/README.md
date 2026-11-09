@@ -6,7 +6,7 @@ account's own **SPI v3 API**.
 - **Categories** — hr
 - **Auth methods** — `access-token`
 - **Actions** — 15 (9 reads, 6 performs)
-- **Triggers** — not shipped (signed)
+- **Triggers** — none (not shipped)
 - **Health checks** — 3 live (`account`, `quota`, `service`) + the derived `auth:access-token`
   check
 - **Egress allowlist** — `*.workable.com`
@@ -168,6 +168,17 @@ Nothing was left out because it could not be understood. One genuine gap: the re
 of `GET /disqualification_reasons` could not be confirmed (the vendor's own OpenAPI schema and
 example for it are both an empty `{}`), so `disqualification-reason-list` forwards the raw body
 rather than declaring a guessed `output`.
+
+## Triggers
+
+Triggers: not shipped — Workable signs every webhook with the account's access token as the HMAC key and does not document the signature's encoding or the delivery's event envelope, and the list endpoint it would otherwise be polled from has no sort order (https://workable.readme.io/reference/webhook-subscriptions-candidates-employees , https://workable.readme.io/reference/job-candidates-index).
+
+Why, as checked on 2026-11-09 against Workable's own reference:
+
+- **Webhook.** The `/subscriptions` endpoint registers a URL, and deliveries are signed: "The key for the signature will be either the account token or the oauth application secret ... HMAC SHA256 on the payload of the request ... sent on the `X-Workable-Signature` header". This app connects with an account access token, so the verification key is the connection's own credential, which app code never reads; the only way to verify would be to paste that token a second time into a trigger param, copying a long-lived credential into trigger parameters. The documentation also does not say whether the digest is hex or base64, or show an example payload with its event name, so there is no vendor source to build or test the check against. A webhook that accepted deliveries without that check is exactly what this pack does not ship.
+- **Poll fallback.** `GET /candidates` has `since_id`, `max_id`, `created_after` and `updated_after` but no sort or order parameter, and its documentation states no default order, so a "newest first" poll cannot be pinned to the vendor's contract.
+
+Revisit when Workable documents the signature encoding (or accepts a per-subscription secret) and an order for the candidate list.
 
 ## Health checks
 
