@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 58, manual-webhook: 6, poll: 367, none: 251
+**Totals:** 682 apps — webhook-api: 58, manual-webhook: 6, poll: 368, none: 250
 
 ## webhook-api (58)
 
@@ -84,7 +84,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/slack | new-message, reaction-added, new-channel | no | survey | Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel. |
 | apps/twilio/twilio | incoming-sms, incoming-call-status, message-status | no | survey | Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL. |
 
-## poll (367)
+## poll (368)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -418,6 +418,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tumblr | blog-posts-list | new-blog-posts-list | no | scan | list action blog-posts-list has pagination and order/since params |
 | apps/twist | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/twitch | search-categories | new-categories | no | scan | list action search-categories has pagination and order/since params |
+| apps/twitter | tweet-search-recent | new-tweet | no | scan | shipped: new-tweet polls the existing tweet-search-recent action (T3.08) |
 | apps/typefully | comment-thread-list | new-comment-thread-list | no | scan | list action comment-thread-list has pagination and order/since params |
 | apps/typesense | document-search | new-document-search | no | scan | list action document-search has pagination and order/since params |
 | apps/unbounce | page-lead-list | new-page-lead-list | no | scan | list action page-lead-list has pagination and order/since params |
@@ -456,7 +457,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (251)
+## none (250)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -683,7 +684,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/tldv |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/twilio/segment |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/twilio/sendgrid |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/twitter |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/upstash |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/uptimerobot |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/uscreen |  | no | scan | no newest-first list action found by scan; vendor events not researched |

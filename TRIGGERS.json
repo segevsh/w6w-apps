@@ -6406,10 +6406,12 @@
   },
   {
     "path": "apps/twitter",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "mechanism": "poll",
+    "candidates": [
+      "new-tweet"
+    ],
+    "pollAction": "tweet-search-recent",
+    "reason": "shipped: new-tweet polls the existing tweet-search-recent action (T3.08)",
     "verified": false,
     "source": "scan"
   },
