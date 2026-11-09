@@ -21,6 +21,7 @@ test("activity-webhook: replaces leftovers, stores its id and secret, tolerates 
     ["POST", "/api/hooks"],
   ]);
   assertEquals(JSON.parse(subscribeMock.calls[2].body!).targetUrl, callbackUrl);
+  assertEquals(JSON.parse(subscribeMock.calls[2].body!).secret, state.secret);
   for (const status of [404, 410]) {
     await trigger.onUnsubscribe!(
       { params: {}, state, subscriptionId: "sub" },
@@ -42,22 +43,40 @@ test("activity-webhook: replaces leftovers, stores its id and secret, tolerates 
     }, mockCtx().ctx),
     [{ _id: "a1" }],
   );
-  await assertRejects(
-    () =>
-      Promise.resolve().then(() =>
-        trigger.handleIngest!({
-          raw: {
-            method: "POST",
-            path: "",
-            query: {},
-            headers: {},
-            body: { _id: "a2", secret: "wrong" },
-          },
-          params: {},
-          state,
-          subscriptionId: "sub",
-        }, mockCtx().ctx)
-      ),
-    "secret",
+  for (const secret of [undefined, state.secret.slice(0, -1), "wrong"]) {
+    await assertRejects(
+      () =>
+        Promise.resolve().then(() =>
+          trigger.handleIngest!({
+            raw: {
+              method: "POST",
+              path: "",
+              query: {},
+              headers: {},
+              body: secret === undefined ? { _id: "a2" } : { _id: "a2", secret },
+            },
+            params: {},
+            state,
+            subscriptionId: "sub",
+          }, mockCtx().ctx)
+        ),
+      "secret",
+    );
+  }
+  // R4-A5: an array body repeating one id yields one event.
+  assertEquals(
+    trigger.handleIngest!({
+      raw: {
+        method: "POST",
+        path: "",
+        query: {},
+        headers: {},
+        body: [{ _id: "d1", secret: state.secret }, { _id: "d1", secret: state.secret }],
+      },
+      params: {},
+      state,
+      subscriptionId: "sub",
+    }, mockCtx().ctx),
+    [{ _id: "d1" }],
   );
 });

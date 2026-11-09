@@ -30,21 +30,37 @@ test("submission-webhook: replaces leftovers, stores its id, tolerates a gone de
       mockCtx([{ status, body: { responseCode: status, message: "gone", content: {} } }]).ctx,
     );
   }
-  assertEquals(
+  const ingest = (headers: Record<string, string>, body: unknown) =>
     trigger.handleIngest!({
-      raw: {
-        method: "POST",
-        path: "",
-        query: {},
-        headers: { "content-type": "multipart/form-data; boundary=JotformBoundary" },
-        body: '--JotformBoundary\r\nContent-Disposition: form-data; name="rawRequest"\r\n\r\n' +
-          "submissionID%3Ds1%26formID%3Df1\r\n" +
-          "--JotformBoundary--",
-      },
+      raw: { method: "POST", path: "", query: {}, headers, body },
       params: {},
       state,
       subscriptionId: "sub",
-    }, mockCtx().ctx),
-    [{ submissionID: "s1", formID: "f1" }],
+    }, mockCtx().ctx);
+  const multipart = { "content-type": "multipart/form-data; boundary=JotformBoundary" };
+  const part = (name: string, value: string) =>
+    `--JotformBoundary\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`;
+
+  // R4-A1: separate top-level parts + JSON rawRequest; top-level wins on collision.
+  const realistic = part("submissionID", "s1") + part("formID", "f1") + part("pretty", "a:b") +
+    part("rawRequest", JSON.stringify({ q3_name: "Ada", submissionID: "WRONG" })) +
+    "--JotformBoundary--";
+  const events = ingest(multipart, realistic) as Record<string, unknown>[];
+  assertEquals(events.length, 1);
+  assertEquals(events[0].submissionID, "s1");
+  assertEquals(events[0].formID, "f1");
+  assertEquals(events[0].q3_name, "Ada");
+
+  // R4-A2: a part value containing a blank line survives intact.
+  const blank = ingest(
+    multipart,
+    part("submissionID", "s2") + part("pretty", "a\r\n\r\nb") + "--JotformBoundary--",
+  ) as Record<string, unknown>[];
+  assertEquals(blank[0].pretty, "a\r\n\r\nb");
+
+  // R4-A5: an array body repeating one id yields one event.
+  assertEquals(
+    ingest({}, [{ submissionID: "d1" }, { submissionID: "d1" }]),
+    [{ submissionID: "d1" }],
   );
 });

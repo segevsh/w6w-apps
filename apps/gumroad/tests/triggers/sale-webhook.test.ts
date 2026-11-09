@@ -47,4 +47,20 @@ test("sale-webhook: replaces leftovers, stores its id, tolerates a gone delete, 
     }, mockCtx().ctx),
     [{ sale_id: "s1", order_number: "42", email: "buyer@example.test" }],
   );
+  // R4-A5: an array body repeating one id yields one event.
+  assertEquals(
+    trigger.handleIngest!({
+      raw: {
+        method: "POST",
+        path: "",
+        query: {},
+        headers: {},
+        body: [{ sale_id: "d1" }, { sale_id: "d1" }],
+      },
+      params: {},
+      state,
+      subscriptionId: "sub",
+    }, mockCtx().ctx),
+    [{ sale_id: "d1" }],
+  );
 });

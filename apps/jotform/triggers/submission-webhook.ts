@@ -28,9 +28,13 @@ function multipartFields(body: string, type: string): Record<string, string> | u
 
   const fields: Record<string, string> = {};
   for (const part of body.split(`--${boundary}`).slice(1, -1)) {
-    const [headers, value] = part.replace(/^\r?\n/, "").split(/\r?\n\r?\n/, 2);
+    const trimmed = part.replace(/^\r?\n/, "");
+    const split = trimmed.search(/\r?\n\r?\n/);
+    if (split < 0) continue;
+    const headers = trimmed.slice(0, split);
+    const value = trimmed.slice(split).replace(/^\r?\n\r?\n/, "");
     const name = /name="([^"]+)"/i.exec(headers)?.[1];
-    if (name && value !== undefined) fields[name] = value.replace(/\r?\n$/, "");
+    if (name) fields[name] = value.replace(/\r?\n$/, "");
   }
   return fields;
 }
@@ -46,11 +50,15 @@ function parsedBody(body: unknown, headers: Record<string, string>): unknown {
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return parsed;
   const rawRequest = (parsed as Record<string, unknown>).rawRequest;
   if (typeof rawRequest !== "string") return parsed;
+  const { rawRequest: _raw, ...fields } = parsed as Record<string, unknown>;
+  let inner: unknown;
   try {
-    return JSON.parse(rawRequest);
+    inner = JSON.parse(rawRequest);
   } catch {
-    return Object.fromEntries(new URLSearchParams(decodeURIComponent(rawRequest)));
+    inner = Object.fromEntries(new URLSearchParams(decodeURIComponent(rawRequest)));
   }
+  if (!inner || typeof inner !== "object" || Array.isArray(inner)) return parsed;
+  return { ...inner, ...fields };
 }
 
 async function remove(client: JotformClient, formId: string, id: string) {
