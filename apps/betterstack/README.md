@@ -3,6 +3,7 @@
 Manage **Better Stack Uptime** from a workflow: monitors, heartbeats, incidents, on-call calendars,
 escalation policies and status pages, over the Uptime API at `uptime.betterstack.com`.
 
+- **Triggers** — 1 (poll)
 - **Categories** — monitoring, developer-tools
 - **Auth methods** — api-token (bearer)
 - **Actions** — 30
@@ -113,4 +114,15 @@ betterstack/
 (`cdn.jsdelivr.net/npm/simple-icons/icons/betterstack.svg`); the dark variant only adds
 `fill="#ffffff"` to the root element.
 
-Triggers: not shipped — Uptime list endpoints paginate without a documented newest-first order or created-since filter (https://betterstack.com/docs/uptime/api/getting-started-with-uptime-api/).
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-incident` | New Incident | poll (since-filter) | `incident-list` | Each incident started since the last check |
+
+The poll calls the same `GET /api/v3/incidents` request as `incident-list` with `from` set to the UTC
+day of the previous check minus two minutes (`per_page=50`, up to 5 pages per check) and
+de-duplicates on the incident id. Better Stack documents `from` as "Return only incidents from a
+certain date (format YYYY-MM-DD)" at <https://betterstack.com/docs/uptime/api/list-all-incidents/>
+(verified 2026-11-09), so the window is a whole day and the id dedupe drops what was already seen.
+The first check records the current window and emits nothing. No webhook code is included.

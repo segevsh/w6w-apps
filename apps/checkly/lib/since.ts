@@ -1,0 +1,73 @@
+import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
+import { pollNewItems } from "../../_shared/poll/mod.ts";
+
+/** Look-back before the previous check, so a record that lands late is still seen. */
+export const OVERLAP_MS = 120_000;
+/** Pages walked per check; `MAX_ITEMS` is `MAX_PAGES` full pages, so a check never emits a partial window. */
+export const MAX_PAGES = 1;
+export const MAX_ITEMS = 1000;
+export const SEEN_WINDOW = 2000;
+
+/** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
+export const clock = { now: (): number => Date.now() };
+
+export interface SinceSpec<T, P = Record<string, unknown>> {
+  key: string;
+  title: string;
+  description: string;
+  params?: Param[];
+  output: OutputField[];
+  sample: unknown;
+  /** One page of records at or after `sinceMs` (epoch ms); `more` is true when another page follows. */
+  fetchPage(
+    sinceMs: number,
+    page: number,
+    ctx: HookContext,
+    params: P,
+  ): Promise<{ items: T[]; more: boolean }>;
+  idOf(item: T): string;
+}
+
+/**
+ * Since-filter poll (brief 9.1 b): list records changed since `cursor - overlap` with the app's
+ * own list action, dedupe by id with `pollNewItems`. The first check records the cursor and the
+ * ids in the window and emits nothing. When the window is longer than `MAX_PAGES` pages the
+ * cursor is held back so the next check re-lists it.
+ */
+export function sinceTrigger<T, P = Record<string, unknown>>(
+  spec: SinceSpec<T, P>,
+): TriggerDefinition<P> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state, params }, ctx) {
+      const checkedAt = clock.now();
+      const prior = state as { cursor?: unknown } | null;
+      const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
+      let truncated = false;
+      const { events, nextState } = await pollNewItems<T>({
+        state,
+        maxPages: 1,
+        maxEvents: MAX_ITEMS,
+        seenWindow: SEEN_WINDOW,
+        idOf: spec.idOf,
+        async fetchPage() {
+          const items: T[] = [];
+          for (let page = 1; page <= MAX_PAGES; page++) {
+            const res = await spec.fetchPage(cursor - OVERLAP_MS, page, ctx, params);
+            items.push(...res.items);
+            if (!res.more) return { items };
+          }
+          truncated = true;
+          return { items };
+        },
+      });
+      return { events, nextState: { ...nextState, cursor: truncated ? cursor : checkedAt } };
+    },
+  };
+}
