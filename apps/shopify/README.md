@@ -5,9 +5,53 @@ Manage Shopify products, orders, customers and inventory through the Admin REST 
 - **Categories** — commerce
 - **Auth methods** — access-token
 - **Actions** — 18
+- **Triggers** — 10 (webhook)
 - **Egress allowlist** — `*.myshopify.com`
 - **Website** — https://www.shopify.com
 - **API docs** — https://shopify.dev
+
+## Triggers
+
+Subscribing registers Shopify **webhook subscriptions** (`POST /admin/api/2024-07/webhooks.json`,
+JSON format) that point at the w6w callback URL; unsubscribing deletes them (a subscription Shopify
+no longer has counts as deleted). Shopify deletes an Admin-API subscription itself after eight
+consecutive failed deliveries.
+
+**One setting to paste: the app client secret.** Shopify signs every webhook with the client secret
+of the app that owns the access token, and that secret is not part of the access token, so each
+trigger asks for it as the secret parameter **App client secret** (Dev Dashboard: the app's
+Settings > Credentials; legacy custom app: Settings > Apps and sales channels > Develop apps > your
+app > API credentials > API secret key). Subscribing without it is refused.
+
+| Trigger | Mechanism | Shopify topic | The run gets |
+| --- | --- | --- | --- |
+| `order-created` | webhook | `orders/create` | the order |
+| `order-paid` | webhook | `orders/paid` | the order |
+| `order-updated` | webhook | `orders/updated` | the order as it is now |
+| `order-cancelled` | webhook | `orders/cancelled` | the order with its cancel reason |
+| `order-fulfilled` | webhook | `orders/fulfilled` | the order and its fulfillments |
+| `customer-created` | webhook | `customers/create` | the customer |
+| `product-created` | webhook | `products/create` | the product |
+| `product-updated` | webhook | `products/update` | the product |
+| `refund-created` | webhook | `refunds/create` | the refund |
+| `event` | webhook | any topics you list | the topic and the resource |
+
+Every event has `topic`, `shopDomain`, `webhookId` (`X-Shopify-Webhook-Id`, unique per delivery:
+use it to skip a duplicate), `eventId`, `triggeredAt`, `apiVersion` and `resource` (the JSON
+Shopify sent). The access token needs the read scope of the topic (for example `read_orders`).
+
+**Trust model.** Every delivery is checked before anything runs: `X-Shopify-Hmac-Sha256` must equal
+the base64 HMAC-SHA256 of the exact raw body under the client secret, compared in constant time,
+and `X-Shopify-Shop-Domain` must be the store the subscription was created on (the same app secret
+signs for every store that installs the app). A delivery with no signature, a bad signature, a
+body that is not an object, another store's, or a subscription with no secret configured is refused
+and no run starts; no unsigned path exists. Shopify defines no signed timestamp, so there is no
+replay window to enforce.
+
+Sources, verified 2026-11-09:
+[verify deliveries](https://shopify.dev/docs/apps/build/webhooks/verify-deliveries),
+[delivery structure](https://shopify.dev/docs/apps/build/webhooks/delivery-structure),
+[Admin REST webhook resource](https://shopify.dev/docs/api/admin-rest/2024-07/resources/webhook).
 
 ## Health check
 

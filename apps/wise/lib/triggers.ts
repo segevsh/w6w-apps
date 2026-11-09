@@ -1,0 +1,236 @@
+import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
+import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
+
+/**
+ * Wise webhook triggers: a manual-webhook receiver
+ * (https://docs.wise.com/guides/developer/webhooks, verified 2026-11-09).
+ *
+ * Wise subscriptions are application-level (client credentials from a Wise Platform partner
+ * agreement) or profile-level (a user token); this app's personal API token reaches neither,
+ * so w6w cannot register the webhook for the user. They create the subscription themselves, in
+ * Developer Hub, pointing at the callback URL this trigger shows. `onSubscribe` therefore makes
+ * no Wise call and `onUnsubscribe` is a no-op.
+ *
+ * Wise signs every request (`X-Signature-SHA256`: Base64 RSA-SHA256, PKCS#1 v1.5, over the
+ * request body) with a key pair whose public half it PUBLISHES, one for production and one for
+ * the sandbox. `handleIngest` verifies the signature over the raw bytes with the pinned public
+ * key before anything is parsed; a delivery that does not verify throws. There is no shared
+ * secret to configure, so none is accepted or needed: the key is Wise's, in this file.
+ *
+ * Wise defines no signed timestamp window (it retries a failed delivery for up to two weeks
+ * with the same `X-Delivery-Id`), so there is no replay window to enforce; every event carries
+ * `deliveryId` for skipping a duplicate.
+ */
+
+/** Wise's production webhook public key (docs.wise.com/guides/developer/webhooks/event-handling). */
+export const WISE_LIVE_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvO8vXV+JksBzZAY6GhSO
+XdoTCfhXaaiZ+qAbtaDBiu2AGkGVpmEygFmWP4Li9m5+Ni85BhVvZOodM9epgW3F
+bA5Q1SexvAF1PPjX4JpMstak/QhAgl1qMSqEevL8cmUeTgcMuVWCJmlge9h7B1CS
+D4rtlimGZozG39rUBDg6Qt2K+P4wBfLblL0k4C4YUdLnpGYEDIth+i8XsRpFlogx
+CAFyH9+knYsDbR43UJ9shtc42Ybd40Afihj8KnYKXzchyQ42aC8aZ/h5hyZ28yVy
+Oj3Vos0VdBIs/gAyJ/4yyQFCXYte64I7ssrlbGRaco4nKF3HmaNhxwyKyJafz19e
+HwIDAQAB
+-----END PUBLIC KEY-----`;
+
+/** Wise's sandbox webhook public key (same page). */
+export const WISE_SANDBOX_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwpb91cEYuyJNQepZAVfP
+ZIlPZfNUefH+n6w9SW3fykqKu938cR7WadQv87oF2VuT+fDt7kqeRziTmPSUhqPU
+ys/V2Q1rlfJuXbE+Gga37t7zwd0egQ+KyOEHQOpcTwKmtZ81ieGHynAQzsn1We3j
+wt760MsCPJ7GMT141ByQM+yW1Bx+4SG3IGjXWyqOWrcXsxAvIXkpUD/jK/L958Cg
+nZEgz0BSEh0QxYLITnW1lLokSx/dTianWPFEhMC9BgijempgNXHNfcVirg1lPSyg
+z7KqoKUN0oHqWLr2U1A+7kqrl6O2nx3CKs1bj1hToT1+p4kcMoHXA7kA+VBLUpEs
+VwIDAQAB
+-----END PUBLIC KEY-----`;
+
+export type WiseEnvironment = "live" | "sandbox";
+
+export interface PublicKeys {
+  live: string;
+  sandbox: string;
+}
+
+export const WISE_PUBLIC_KEYS: PublicKeys = {
+  live: WISE_LIVE_PUBLIC_KEY,
+  sandbox: WISE_SANDBOX_PUBLIC_KEY,
+};
+
+export interface TriggerParams {
+  /** Which Wise environment signs the deliveries; selects the public key. Default `live`. */
+  environment?: string;
+}
+
+/** What `onSubscribe` returns: the URL the user pastes into Wise's Developer Hub. */
+export interface TriggerState {
+  callbackUrl: string;
+}
+
+/** The run's `trigger.event`: the Wise event notification. */
+export interface WiseEvent {
+  eventType: string;
+  deliveryId: string | null;
+  subscriptionId: string | null;
+  schemaVersion: string | null;
+  sentAt: string | null;
+  data: Record<string, unknown>;
+}
+
+const ENVIRONMENT_PARAM: Param = {
+  key: "environment",
+  label: "Wise environment",
+  type: "select",
+  default: "live",
+  options: [
+    { value: "live", label: "Live (wise.com)" },
+    { value: "sandbox", label: "Sandbox (sandbox.transferwise.tech)" },
+  ],
+  hint:
+    "Which Wise environment sends the webhook; it decides the public key deliveries are checked against.",
+};
+
+const EVENT_OUTPUT: OutputField[] = [
+  { key: "eventType", type: "string", label: "Event Type" },
+  { key: "deliveryId", type: "string", label: "Delivery ID" },
+  { key: "subscriptionId", type: "string", label: "Subscription ID" },
+  { key: "schemaVersion", type: "string", label: "Schema Version" },
+  { key: "sentAt", type: "string", label: "Sent At" },
+  { key: "data", type: "object", label: "Event Data" },
+];
+
+function str(v: unknown): string | null {
+  return typeof v === "string" && v !== "" ? v : null;
+}
+
+function asObject(v: unknown): Record<string, unknown> | null {
+  return v !== null && typeof v === "object" && !Array.isArray(v)
+    ? v as Record<string, unknown>
+    : null;
+}
+
+/** PEM `SPKI` public key → DER bytes. */
+function pemToDer(pem: string): Uint8Array<ArrayBuffer> {
+  const b64 = pem.replace(/-----(BEGIN|END) PUBLIC KEY-----/g, "").replace(/\s+/g, "");
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/** Standard padded Base64 only; anything else cannot be a signature. */
+function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> | null {
+  if (b64.length === 0 || b64.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(b64)) return null;
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/** True when `signatureB64` is a valid RSA-SHA256 (PKCS#1 v1.5) signature of `body` under `pem`. */
+export async function verifyRsaSha256(
+  pem: string,
+  body: string,
+  signatureB64: string,
+): Promise<boolean> {
+  const signature = base64ToBytes(signatureB64);
+  if (!signature) return false;
+  const key = await crypto.subtle.importKey(
+    "spki",
+    pemToDer(pem),
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["verify"],
+  );
+  return await crypto.subtle.verify(
+    "RSASSA-PKCS1-v1_5",
+    key,
+    signature,
+    new TextEncoder().encode(body),
+  );
+}
+
+export interface WebhookTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  /** The one Wise event type (`trigger_on`) this trigger fires on. */
+  eventType: string;
+  /** A representative `data` for the sample. */
+  sampleData: Record<string, unknown>;
+}
+
+/**
+ * Build one Wise webhook trigger. `keys` is the public key pair deliveries are verified
+ * against; only a test passes anything but Wise's published keys.
+ */
+export function webhookTrigger(
+  spec: WebhookTriggerSpec,
+  keys: PublicKeys = WISE_PUBLIC_KEYS,
+): TriggerDefinition<TriggerParams, WiseEvent, TriggerState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [ENVIRONMENT_PARAM],
+    output: EVENT_OUTPUT,
+    sample: {
+      eventType: spec.eventType,
+      deliveryId: "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
+      subscriptionId: "01234567-89ab-cdef-0123-456789abcdef",
+      schemaVersion: "4.0.0",
+      sentAt: "2026-11-09T10:12:50.123Z",
+      data: spec.sampleData,
+    } satisfies WiseEvent,
+
+    // Manual webhook: nothing to register with Wise; hand back the URL to paste in Developer Hub.
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Wise delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const body = requireRawBody(raw);
+      const environment = params?.environment ?? "live";
+      if (environment !== "live" && environment !== "sandbox") {
+        throw new Error("Wise delivery refused: the Wise environment is not live or sandbox.");
+      }
+      const signature = header(raw, "x-signature-sha256");
+      if (signature === undefined || signature === "") {
+        throw new Error("Wise delivery refused: the X-Signature-SHA256 header is missing.");
+      }
+      let verified = false;
+      try {
+        verified = await verifyRsaSha256(keys[environment], body, signature.trim());
+      } catch {
+        verified = false;
+      }
+      if (!verified) throw new Error("Wise delivery refused: the signature does not match.");
+
+      // Verified. A test notification (sent when the subscription is created) starts no run.
+      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
+      let event: Record<string, unknown> | null;
+      try {
+        event = asObject(JSON.parse(body));
+      } catch {
+        event = null;
+      }
+      const eventType = str(event?.event_type);
+      if (!event || !eventType) {
+        throw new Error("Not a Wise event notification: expected an object with event_type.");
+      }
+      if (eventType !== spec.eventType) return [];
+      return [{
+        eventType,
+        deliveryId: str(header(raw, "x-delivery-id")),
+        subscriptionId: str(event.subscription_id),
+        schemaVersion: str(event.schema_version),
+        sentAt: str(event.sent_at),
+        data: asObject(event.data) ?? {},
+      }];
+    },
+  };
+}

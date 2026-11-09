@@ -6,6 +6,7 @@ and multi-currency balances, over the **Wise Platform API**.
 - **Categories** — finance, commerce
 - **Auth methods** — api-token (bearer)
 - **Actions** — 19
+- **Triggers** — 4 (manual webhook)
 - **Health checks** — 2 (`service`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.wise.com` (the `service` check adds `status.wise.com` to its own hook
   allowlist, never to the app's)
@@ -182,6 +183,52 @@ legal-detail fields a Profile also carries.
   `rate-get`, and `currency-list` all answer bare JSON arrays (wrapped as `{ items }` here for a
   consistent shape); `recipient-list` alone answers the paged envelope above.
 
+## Triggers
+
+Wise webhooks are a **manual webhook receiver**: w6w cannot register the subscription for you.
+Wise documents creating a subscription with application credentials (client key) or a user token,
+and that call is not among the operations its guide lists for a personal API token, so the app
+makes no registration call. You create the subscription yourself:
+
+1. Subscribe to the trigger in w6w and copy its **callback URL**.
+2. In Wise's [Developer Hub](https://wise.com/developer-hub) open **Webhooks > Subscriptions >
+   Create Subscription** (or call Wise's create-subscription endpoint), paste the callback URL as
+   the notification URL, pick the event type in the table below and the newest schema version.
+   The URL must be HTTPS with no port and no query string.
+3. Set the trigger's **Wise environment** to match (live or sandbox): it chooses the public key
+   deliveries are checked against.
+
+A Wise subscription listens for exactly one event type, so use one trigger (and one subscription)
+per event type. Creating a subscription makes Wise send a test notification; it is verified like
+any delivery and starts no run.
+
+| Trigger | Mechanism | Wise event (`trigger_on`) | The run gets |
+| --- | --- | --- | --- |
+| `transfer-state-changed` | manual webhook | `transfers#state-change` | the transfer, its current and previous state |
+| `transfer-payout-failed` | manual webhook | `transfers#payout-failure` | the transfer and the failure reason |
+| `balance-updated` | manual webhook | `balances#update` | the balance, the amount and the new balance |
+| `profile-state-changed` | manual webhook | `profiles#state-change` | the profile and its current and previous state |
+
+Every event has `eventType`, `deliveryId` (`X-Delivery-Id`, shared by every retry of one delivery:
+use it to skip a duplicate), `subscriptionId`, `schemaVersion`, `sentAt` and `data`. Wise does not
+deliver events in order; reconcile with `data.occurred_at` (see Wise's event ordering guide).
+
+**Trust model.** Wise signs each delivery with a private key and publishes the public halves (one
+for production, one for the sandbox), which are pinned in `lib/triggers.ts`, so there is no secret
+to configure. Every delivery is verified before anything runs: `X-Signature-SHA256` must be a valid
+Base64 RSA-SHA256 (PKCS#1 v1.5) signature of the exact raw body under the key of the chosen
+environment. A delivery with no signature, a signature that does not verify, a body that is not an
+event, or an unknown environment is refused and no run starts; no unsigned path exists. Wise defines
+no timestamp window (it retries for up to two weeks), so there is no replay window to enforce. If
+Wise rotates its key, the pinned PEMs here must be updated from the page below.
+
+Sources, verified 2026-11-09:
+[webhooks guide](https://docs.wise.com/guides/developer/webhooks),
+[event handling and public keys](https://docs.wise.com/guides/developer/webhooks/event-handling),
+[subscribe to webhooks](https://docs.wise.com/guides/developer/webhooks/subscribe-to-webhooks),
+[event types](https://docs.wise.com/api-reference/webhook-event). The signed test vector is from
+Wise's [reference implementation](https://github.com/transferwise/digital-signatures-examples/tree/main/verify-webhook-signature).
+
 ## Health checks
 
 Two declared checks plus the derived `auth:api-token`.
@@ -241,8 +288,10 @@ actually needs. What is left out, and why:
   from the single-transfer path this app builds around; a natural follow-up, not covered here.
 - **Business profile administration** (`profileBusinessCreateV5`, directors, UBOs, business
   representative, update-window) — one-time account setup, not workflow automation.
-- **Webhooks** (`webhook`, `webhook-event` tags) — this app declares no triggers; see
-  `core/docs/build-a-w6w-app.md`'s guidance to add triggers only when asked.
+- **Webhook subscription management** (`webhook` tag) — Wise documents creating subscriptions with
+  application credentials (client key) or a user token, and it is not among the operations its guide lists for a
+  personal API token, so there is no action for it;
+  the triggers below receive the webhooks you subscribe in Wise's Developer Hub.
 - **Embedded flows, link requests, third-party transfers, incoming transfers, GPI tracking,
   comparisons, direct debit accounts, delivery estimates** — real, documented, and out of scope for
   a first pass; none of them was skipped because it couldn't be confirmed against the vendor's own

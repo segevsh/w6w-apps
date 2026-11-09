@@ -5,6 +5,7 @@ Manage products, orders and customers on a self-hosted WooCommerce store.
 - **Categories** — commerce
 - **Auth methods** — api-key
 - **Actions** — 13
+- **Triggers** — 7 (webhook)
 - **Egress allowlist** — `*`
 - **Website** — https://woocommerce.com
 - **API docs** — https://woocommerce.github.io/woocommerce-rest-api-docs/
@@ -34,6 +35,46 @@ URL without touching the credential.
 `delete` on product/order defaults to `force: true` (permanent) and can be
 unset to move the record to trash. `get-many` returns a single page; set `page`
 to walk further pages.
+
+## Triggers
+
+Subscribing creates WooCommerce **webhooks** (`POST /wp-json/wc/v3/webhooks`, one per topic,
+status `active`) that deliver to the w6w callback URL; unsubscribing deletes them
+(`DELETE .../webhooks/<id>?force=true`; one that is already gone counts as deleted). Nothing to
+configure by hand: w6w generates a random signing secret for each subscription, hands it to
+WooCommerce at creation and keeps it in the subscription's state (stored unencrypted by the host;
+it only verifies deliveries to that one subscription). The API key behind the connection needs
+Read/Write permission, and the store must be able to reach the w6w callback URL over HTTPS.
+
+| Trigger | Mechanism | WooCommerce topic | The run gets |
+| --- | --- | --- | --- |
+| `order-created` | webhook | `order.created` | the order |
+| `order-updated` | webhook | `order.updated` | the order as it is now |
+| `order-deleted` | webhook | `order.deleted` | the id of the deleted order |
+| `customer-created` | webhook | `customer.created` | the customer |
+| `product-created` | webhook | `product.created` | the product |
+| `product-updated` | webhook | `product.updated` | the product |
+| `event` | webhook | any topics you list (coupon, customer, order, product, or `action.<hook>`) | the topic and the payload |
+
+Every event has `topic`, `resource`, `event`, `webhookId`, `deliveryId` (`X-WC-Webhook-Delivery-ID`),
+`source` (the store URL) and `payload` (the JSON WooCommerce sent, the same as the REST API would
+return). WooCommerce delivers in the background through WP-Cron, so a delivery can lag the change
+on a low-traffic store, and it disables a webhook after repeated failed deliveries.
+
+**Trust model.** Every delivery is checked before anything runs: `X-WC-Webhook-Signature` must equal
+the base64 HMAC-SHA256 of the exact raw body under the subscription's secret, compared in constant
+time, and `X-WC-Webhook-ID` must be one of this subscription's webhooks. A delivery with no
+signature, a bad signature, a body that is not an object, another webhook's, or a subscription with
+no stored secret is refused and no run starts. The single exception is WooCommerce's own delivery
+URL ping, which WooCommerce sends unsigned and without any `X-WC-*` header (its source builds that
+request with only a `webhook_id=<id>` form body): exactly that body is acknowledged with **no
+event**, so nothing unsigned can start a run. WooCommerce defines no signed timestamp, so there is
+no replay window to enforce; use `deliveryId` to skip a duplicate.
+
+Sources, verified 2026-11-09:
+[webhooks](https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) (topics, headers,
+signature, create, list, delete); the ping body is from WooCommerce's `WC_Webhook::deliver_ping()`
+in [class-wc-webhook.php](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php).
 
 ## Health check
 

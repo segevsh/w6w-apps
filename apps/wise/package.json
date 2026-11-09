@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wise",
-  "version": "0.1.1",
-  "description": "Send cross-border transfers with Wise: quotes, recipients, transfers, and multi-currency balances.",
+  "version": "0.2.0",
+  "description": "Send cross-border transfers with Wise: quotes, recipients, transfers, and multi-currency balances, plus triggers on transfer, payout, balance and profile events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://docs.wise.com/api-reference",
       "https://docs.wise.com/guides/developer/auth-and-security/personal-api-token"
     ],
-    "longDescription": "Wise (formerly TransferWise) moves money across borders at close to the real exchange rate. This app covers the path most Wise automations need: create a quote for a currency pair, attach or create a recipient account, turn the quote into a transfer, fund it from a multi-currency balance, and track its status through to completion.\n\nBeyond the send-money path it also surfaces profile management, live and historical exchange rates, the full currency list, and balance/statement reads for reconciliation.\n\nWise's Personal API Token is documented as a business-account feature with a closed, stated scope (quotes, recipients, transfers, tracking) that does not fully match what its own API reference declares per endpoint — this app documents that gap rather than guessing past it. Two write actions (funding a transfer, reading a balance statement) are Strong Customer Authentication (SCA) protected outside a short list of countries, and are documented as such.",
+    "longDescription": "Wise (formerly TransferWise) moves money across borders at close to the real exchange rate. This app covers the path most Wise automations need: create a quote for a currency pair, attach or create a recipient account, turn the quote into a transfer, fund it from a multi-currency balance, and track its status through to completion.\n\nBeyond the send-money path it also surfaces profile management, live and historical exchange rates, the full currency list, and balance/statement reads for reconciliation.\n\nWise's Personal API Token is documented as a business-account feature with a closed, stated scope (quotes, recipients, transfers, tracking) that does not fully match what its own API reference declares per endpoint — this app documents that gap rather than guessing past it. Two write actions (funding a transfer, reading a balance statement) are Strong Customer Authentication (SCA) protected outside a short list of countries, and are documented as such.\n\nFour triggers start a workflow when Wise sends a webhook: a transfer changing state, a transfer payout failing, a balance credited or debited, or a profile changing state. Wise subscriptions are created in Developer Hub (a personal API token cannot create them), pointing at the callback URL the trigger shows; every delivery is checked against Wise's published public key before a run starts.",
     "categories": [
       "finance",
       "commerce"
@@ -40,7 +40,12 @@
         "api.wise.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
