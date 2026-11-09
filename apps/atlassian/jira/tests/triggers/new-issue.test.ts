@@ -49,3 +49,29 @@ test("new-issue: calls the issue search endpoint with literal newest-first JQL",
     },
   );
 });
+
+for (
+  const [name, jql, expected] of [
+    [
+      "strips ORDER BY rank",
+      "project = ENG ORDER BY rank ASC",
+      "project = ENG ORDER BY created DESC",
+    ],
+    [
+      "strips lowercase order by",
+      "project = ENG order by created",
+      "project = ENG ORDER BY created DESC",
+    ],
+    [
+      "keeps a quoted order by",
+      'summary ~ "order by"',
+      'summary ~ "order by" ORDER BY created DESC',
+    ],
+  ] as const
+) {
+  test(`new-issue: ${name}`, async () => {
+    const { ctx, calls } = mockJiraCtx([{ body: { issues: [] } }]);
+    await trigger.poll!({ params: { jql }, state: {} }, ctx);
+    assertEquals(JSON.parse(calls[0].body!).jql, expected);
+  });
+}
