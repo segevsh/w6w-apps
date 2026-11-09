@@ -6,9 +6,9 @@
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-task` — New Task | poll | `task-list`, newest first by default | Each newly created task for the selected robot |
+| `new-task` — New Task | poll | `task-list` with `sort=-createdAt` (newest first) | Each newly created task for the selected robot |
 
-Vendor reference: https://docs.browse.ai/api/ (verified 2026-11-09).
+Vendor reference: https://docs.browse.ai/api/ (verified 2026-11-09). The vendor documents the `sort` query parameter as "Default sorting is ascending and prefixing field names with a hyphen '-' yields a descending order", so the trigger sends `sort=-createdAt` explicitly and does not rely on a default order.
 
 Run Browse AI **robots** — pre-built or custom web scrapers/monitors — poll the tasks they create,
 manage monitors, bulk runs and webhooks, on the **Browse AI API v2**.

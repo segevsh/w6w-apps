@@ -12,6 +12,7 @@ interface Input {
   internal_ref?: string;
   date_before?: string;
   date_after?: string;
+  creation_date_after?: string;
   paid_date?: string;
   is_paid?: boolean;
   updated_after?: string;
@@ -33,11 +34,17 @@ const invoiceList: ActionDefinition<Input> = {
     },
     { key: "number", label: "Number", type: "string", hint: "Invoice number." },
     { key: "internal_ref", label: "Internal ref", type: "string", hint: "Internal reference." },
-    { key: "date_before", label: "Date before", type: "string", hint: "ISO 8601 date." },
-    { key: "date_after", label: "Date after", type: "string", hint: "ISO 8601 date." },
-    { key: "paid_date", label: "Paid date", type: "string", hint: "ISO 8601 date." },
+    { key: "date_before", label: "Date before", type: "string", hint: "Format DD/MM/YYYY." },
+    { key: "date_after", label: "Date after", type: "string", hint: "Format DD/MM/YYYY." },
+    {
+      key: "creation_date_after",
+      label: "Created after",
+      type: "string",
+      hint: "Invoice creation date after this date. Format DD/MM/YYYY.",
+    },
+    { key: "paid_date", label: "Paid date", type: "string", hint: "Format DD/MM/YYYY." },
     { key: "is_paid", label: "Paid", type: "boolean", hint: "Filter paid or unpaid." },
-    { key: "updated_after", label: "Updated after", type: "string", hint: "ISO 8601 date." },
+    { key: "updated_after", label: "Updated after", type: "string", hint: "Format DD/MM/YYYY." },
   ],
   output: [
     { key: "items", type: "array", label: "Records on this page" },
@@ -53,6 +60,7 @@ const invoiceList: ActionDefinition<Input> = {
         "internal_ref": input.internal_ref,
         "date_before": input.date_before,
         "date_after": input.date_after,
+        "creation_date_after": input.creation_date_after,
         "paid_date": input.paid_date,
         "is_paid": input.is_paid,
         "updated_after": input.updated_after,

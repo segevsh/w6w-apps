@@ -7,7 +7,7 @@ const trigger = pollFromListAction({
   title: "New Task",
   description: "The run gets each newly created task for the selected Browse AI robot.",
   action: action as unknown as ActionDefinition,
-  input: (params) => ({ ...params, page: 1, pageSize: 10 }),
+  input: (params) => ({ ...params, page: 1, pageSize: 10, sort: "-createdAt" }),
   items: (result) => (result as { items?: unknown[] }).items ?? [],
   idOf: (item) => String((item as { id?: string }).id),
   params: action.params,

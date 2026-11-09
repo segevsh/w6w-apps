@@ -17,5 +17,8 @@ test("new-task seeds, emits, retries, and requests the bounded newest-first task
     mockCtx([response([{ id: "b" }, { id: "a" }])]).ctx,
   );
   assertEquals(retry, next);
-  assertEquals(nextCtx.calls[0].url, "https://api.browse.ai/v2/robots/r1/tasks?page=1&pageSize=10");
+  assertEquals(
+    nextCtx.calls[0].url,
+    "https://api.browse.ai/v2/robots/r1/tasks?page=1&pageSize=10&sort=-createdAt",
+  );
 });

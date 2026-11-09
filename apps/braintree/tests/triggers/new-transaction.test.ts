@@ -3,33 +3,50 @@ import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-transaction.ts";
 
-const response = (id: string) => ({
-  body: { data: { transactions: { edges: [{ node: { id } }], pageInfo: {} } } },
-});
-
-test("new-transaction seeds, emits, retries, and posts the bounded transaction search", async () => {
-  const seed = await trigger.poll!({ params: {}, state: {} }, mockCtx([response("a")]).ctx);
-  assertEquals(seed.events, []);
-  const nextCtx = mockCtx([{
-    body: {
-      data: {
-        transactions: { edges: [{ node: { id: "b" } }, { node: { id: "a" } }], pageInfo: {} },
+const response = (...ids: string[]) => ({
+  body: {
+    data: {
+      transactions: {
+        edges: ids.map((id) => ({ node: { id } })),
+        pageInfo: { hasNextPage: false },
       },
     },
-  }]);
-  const next = await trigger.poll!({ params: {}, state: seed.nextState }, nextCtx.ctx);
-  assertEquals(next.events, [{ id: "b" }]);
-  const retry = await trigger.poll!(
-    { params: {}, state: seed.nextState },
-    mockCtx([{
-      body: {
-        data: {
-          transactions: { edges: [{ node: { id: "b" } }, { node: { id: "a" } }], pageInfo: {} },
-        },
-      },
-    }]).ctx,
+  },
+});
+
+async function at<T>(iso: string, fn: () => Promise<T>): Promise<T> {
+  const real = Date.now;
+  Date.now = () => new Date(iso).getTime();
+  try {
+    return await fn();
+  } finally {
+    Date.now = real;
+  }
+}
+
+test("new-transaction seeds, emits, retries, and searches createdAt >= cursor - 120 s", async () => {
+  const seed = await at(
+    "2026-11-09T00:00:00Z",
+    () => trigger.poll!({ params: {}, state: {} }, mockCtx([response("a")]).ctx),
   );
-  assertEquals(retry, next);
-  assertEquals(nextCtx.calls[0].url, "https://payments.braintree-api.com/graphql");
-  assertEquals(JSON.parse(nextCtx.calls[0].body!).variables, { input: {}, first: 100 });
+  assertEquals(seed.events, []);
+  assertEquals((seed.nextState as { seeded: boolean }).seeded, true);
+  const run = async () => {
+    const c = mockCtx([response("b", "a")]);
+    const r = await at(
+      "2026-11-09T00:05:00Z",
+      () => trigger.poll!({ params: {}, state: seed.nextState }, c.ctx),
+    );
+    return { r, c };
+  };
+  const first = await run();
+  assertEquals(first.r.events, [{ id: "b" }]);
+  assertEquals((await run()).r, first.r);
+  const call = first.c.calls[0];
+  assertEquals(call.url, "https://payments.braintree-api.com/graphql");
+  assertEquals(call.method, "POST");
+  assertEquals(JSON.parse(call.body!).variables, {
+    input: { createdAt: { greaterThanOrEqualTo: "2026-11-08T23:58:00.000Z" } },
+    first: 100,
+  });
 });

@@ -7,18 +7,18 @@ test("new-or-updated-campaign emits an edit and requests newest edits first", as
   const opts = { display: { instance: "iad-01" } };
   const seed = await trigger.poll!(
     { params: {}, state: {} },
-    mockCtx([{ body: { campaigns: [{ id: "a", updated_at: "1" }] } }], opts).ctx,
+    mockCtx([{ body: { campaigns: [{ id: "a", last_edited: "1" }] } }], opts).ctx,
   );
   assertEquals(seed.events, []);
   const nextCtx = mockCtx([{
-    body: { campaigns: [{ id: "a", updated_at: "2" }, { id: "a", updated_at: "1" }] },
+    body: { campaigns: [{ id: "a", last_edited: "2" }, { id: "a", last_edited: "1" }] },
   }], opts);
   const next = await trigger.poll!({ params: {}, state: seed.nextState }, nextCtx.ctx);
-  assertEquals(next.events, [{ id: "a", updated_at: "2" }]);
+  assertEquals(next.events, [{ id: "a", last_edited: "2" }]);
   const retry = await trigger.poll!(
     { params: {}, state: seed.nextState },
     mockCtx(
-      [{ body: { campaigns: [{ id: "a", updated_at: "2" }, { id: "a", updated_at: "1" }] } }],
+      [{ body: { campaigns: [{ id: "a", last_edited: "2" }, { id: "a", last_edited: "1" }] } }],
       opts,
     ).ctx,
   );

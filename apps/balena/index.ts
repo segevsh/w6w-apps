@@ -35,7 +35,6 @@ import deviceRestartServices from "./actions/device-restart-services.ts";
 import deviceIdentify from "./actions/device-identify.ts";
 import devicePurgeData from "./actions/device-purge-data.ts";
 import releaseList from "./actions/release-list.ts";
-import newDevice from "./triggers/new-device.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -56,7 +55,6 @@ const app: AppDefinition = {
     devicePurgeData,
     releaseList,
   ],
-  triggers: [newDevice],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 };

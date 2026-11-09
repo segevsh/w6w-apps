@@ -1,6 +1,6 @@
 # Avoma
 
-Triggers: not shipped — `call-list` requires a caller-chosen date window and has no newest-first order or created-since cursor (https://dev.avoma.com/reference/get-calls; verified 2026-11-09).
+Triggers: not shipped — `call-list` only filters by call START time (`from_date`/`to_date` "calls started at or after/before"), with no created-since filter or sort, so a call synced or backfilled after it started lands before any cursor and would never be emitted (https://dev.avoma.com/openapi.yml, `GET /v1/calls/`; verified 2026-11-09).
 
 AI meeting assistant. This app reads Avoma's meetings, recordings, transcripts, AI notes,
 insights, scorecards, users and smart categories, and can submit a call recording for analysis.

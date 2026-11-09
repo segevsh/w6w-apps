@@ -1,17 +1,9 @@
 # balena
 
-- **Triggers** — 1 (poll)
-
-## Triggers
-
-| Key — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-device` — New Device | poll | `device-list` | Each newly visible device in the selected fleet |
-
-Vendor reference: https://docs.balena.io/reference/api/resources/device/ (verified 2026-11-09).
-
 Manage fleets of Linux devices on balenaCloud — inspect them, configure them,
 choose what they run, and reach into them.
+
+Triggers: not shipped — device-list is sorted alphabetically by `device_name` with no created-since filter or newest-first order, so a new device cannot be told apart from the 200-id seen window on a large fleet (https://docs.balena.io/reference/api/resources/device/)
 
 - **Categories** — iot, devops
 - **Auth methods** — api-key

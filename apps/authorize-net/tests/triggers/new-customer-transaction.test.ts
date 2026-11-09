@@ -21,6 +21,11 @@ test("new-customer-transaction seeds, emits, retries, and sends the sorted list 
   );
   assert.deepStrictEqual(retry, next);
   assert.deepStrictEqual(nextCtx.calls[0].url, "https://apitest.authorize.net/xml/v1/request.api");
-  assert.deepStrictEqual(nextCtx.calls[0].unsignedBody.includes("submitTimeUTC"), true);
-  assert.deepStrictEqual(nextCtx.calls[0].unsignedBody.includes("orderDescending"), true);
+  assert.deepStrictEqual(JSON.parse(nextCtx.calls[0].unsignedBody), {
+    getTransactionListForCustomerRequest: {
+      customerProfileId: "p1",
+      sorting: { orderBy: "submitTimeUTC", orderDescending: true },
+      paging: { limit: 100, offset: 1 },
+    },
+  });
 });

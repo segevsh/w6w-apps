@@ -6,9 +6,13 @@
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-transaction` — New Transaction | poll | `transaction-search` | Each newly created transaction |
+| `new-transaction` — New Transaction | poll | `transaction-search` filtered by `createdAt >= cursor - 120 s` | Each newly created transaction |
 
-Vendor reference: https://developer.paypal.com/braintree/graphql/ (verified 2026-11-09).
+Vendor reference: https://developer.paypal.com/braintree/graphql/reference/ (verified 2026-11-09).
+The vendor docs state no default order for `transactions`, so the trigger does not rely on one: it
+filters `TransactionSearchInput.createdAt.greaterThanOrEqualTo` to the last check minus 120 s, reads up
+to 5 pages of 100, and dedupes by id (up to 1000 remembered). The first check records the window and
+the cursor "now" and emits nothing.
 
 Charge, authorize, capture, refund, void and reverse payments, vault and delete payment methods,
 manage customers and search transactions on **Braintree** (PayPal's payment gateway), over its

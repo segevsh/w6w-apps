@@ -1,18 +1,10 @@
 # AWeber
 
-- **Triggers** — 1 (poll)
-
-## Triggers
-
-| Key — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-broadcast` — New Broadcast | poll | `broadcast-list` for sent broadcasts | Each newly sent broadcast in the selected list |
-
-Vendor reference: https://api.aweber.com/#list-broadcasts (verified 2026-11-09).
-
 Manage AWeber email lists, subscribers and broadcast newsletters — add, find, update and move
 subscribers, create and schedule broadcasts, and manage tags, custom fields and segments, on the
 **AWeber API v1**.
+
+Triggers: not shipped — broadcast-list for sent broadcasts is documented only as "sorted by `sent_at`" with no direction and no sent-since filter, so newest-first cannot be relied on (https://api.aweber.com/)
 
 - **Categories** — email, marketing
 - **Auth methods** — oauth2

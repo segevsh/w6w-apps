@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/balena",
-  "version": "0.2.0",
-  "description": "balenaCloud: manage fleets of Linux devices and poll newly visible devices.",
+  "version": "0.1.0",
+  "description": "balenaCloud: manage fleets of Linux devices — inspect, configure, pin releases, and reboot or restart remotely.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,7 +12,6 @@
     "lastReviewed": null
   },
   "w6w": {
-    "build": { "include": ["../_shared"] },
     "id": "io.w6w.balena",
     "displayName": "balena",
     "apiDocs": [

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/aweber",
-  "version": "0.2.0",
-  "description": "Manage AWeber email lists, subscribers and broadcasts, including polling newly sent broadcasts.",
+  "version": "0.1.0",
+  "description": "Manage AWeber email lists, subscribers and broadcasts — add and update subscribers, read and schedule broadcast newsletters, and manage tags and custom fields.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,7 +12,6 @@
     "lastReviewed": null
   },
   "w6w": {
-    "build": { "include": ["../_shared"] },
     "id": "io.w6w.aweber",
     "displayName": "AWeber",
     "apiDocs": [
