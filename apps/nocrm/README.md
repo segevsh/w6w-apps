@@ -13,14 +13,6 @@ predefined tags and webhooks.
 
 ## Auth scheme
 
-## Triggers
-
-| Key — title | Mechanism | Wrapped list action | What the run gets |
-| --- | --- | --- | --- |
-| `new-lead` — New Lead | poll | `lead-get-many` | Newly listed leads |
-
-Source: https://www.nocrm.io/api (verified 2026-11-09).
-
 noCRM.io documents **two separate credential grants**, not one field with a mode switch, so this
 app ships two `AuthDefinition`s:
 
@@ -40,6 +32,14 @@ Like `apps/gorgias`, every noCRM account has its own host — `https://YOUR_SUBD
 so the subdomain is collected as a Connection field on both auth methods, not an Action param, and
 echoed onto the Connection's `display` by `afterConnect`; `lib/client.ts` reads it from there.
 `w6w.network.allow` declares the wildcard `*.nocrm.io`, matching that pattern.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | poll | `lead-get-many` | Newly listed leads |
+
+Source: https://www.nocrm.io/api (verified 2026-11-09).
 
 ## Errors
 

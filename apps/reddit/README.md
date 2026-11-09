@@ -15,6 +15,7 @@ account's identity on Reddit — the OAuth-authenticated Reddit API
 Ported from n8n's `Reddit.node.ts` for the operation set, then re-verified
 endpoint-by-endpoint against Reddit's own
 [`reddit-archive/reddit` wiki](https://github.com/reddit-archive/reddit/wiki)
+(Reddit's canonical, if informal, API reference) on 2026-07-31.
 
 ## Triggers
 
@@ -23,7 +24,6 @@ endpoint-by-endpoint against Reddit's own
 | `new-post` — New Post | poll | `post-list` | Newly listed subreddit posts |
 
 Source: https://www.reddit.com/dev/api (verified 2026-11-09).
-(Reddit's canonical, if informal, API reference) on 2026-07-31.
 
 ## Setup
 

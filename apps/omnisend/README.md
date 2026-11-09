@@ -22,14 +22,6 @@ Omnisend's own automations, segments, and reporting — on the **Omnisend API `2
 
 ## The three things most likely to go wrong
 
-## Triggers
-
-| Key — title | Mechanism | Wrapped list action | What the run gets |
-| --- | --- | --- | --- |
-| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
-
-Source: https://api-docs.omnisend.com/reference/get_contacts (verified 2026-11-09).
-
 ### 1. The auth scheme is not Bearer
 
 Omnisend documents two authentication methods: an API key and OAuth 2.0. The API key is **not**
@@ -65,6 +57,14 @@ Both are capped at **60 requests/minute**, a sixth of the 400/minute default tha
 other endpoint in this app. Selectors (`contactIDs`, `emails`, `phones`, `segmentID`) combine
 additively: a contact matched by more than one selector is tagged/untagged once, and an email or
 phone with no matching contact is silently ignored rather than erroring.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+
+Source: https://api-docs.omnisend.com/reference/get_contacts (verified 2026-11-09).
 
 ## Auth model
 

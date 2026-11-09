@@ -7,15 +7,18 @@ test("new-lead seeds, emits a new lead, retries idempotently, and uses the newes
   const first = { id: 1 };
   const second = { id: 2 };
   const seed = mockNocrmCtx([{ body: [first] }]);
-  const seeded = await trigger.poll!({ params: {}, state: {} } as never, seed.ctx);
+  const seeded = await trigger.poll!({ params: { offset: 100 }, state: {} } as never, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals(seeded.nextState.seeded, true);
   const fresh = mockNocrmCtx([{ body: [second, first] }]);
-  const result = await trigger.poll!({ params: {}, state: seeded.nextState } as never, fresh.ctx);
+  const result = await trigger.poll!(
+    { params: { offset: 100 }, state: seeded.nextState } as never,
+    fresh.ctx,
+  );
   assertEquals(result.events, [second]);
   const retry = mockNocrmCtx([{ body: [second, first] }]);
   assertEquals(
-    await trigger.poll!({ params: {}, state: seeded.nextState } as never, retry.ctx),
+    await trigger.poll!({ params: { offset: 100 }, state: seeded.nextState } as never, retry.ctx),
     result,
   );
   const url = new URL(seed.calls[0].url);

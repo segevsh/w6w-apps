@@ -10,7 +10,6 @@ Manage contacts, companies, deals, next actions, notes and calls on
   `/api/partial-updates`) and live probes the same day. Nothing is inferred from another app.
 - Network: `app.onepagecrm.com` only (API `/api/v3` and the status probe share the host).
 - Icon: the vendor's `apple-touch-icon.png`, byte-for-byte (180x180 PNG).
-
 - **Triggers** — 1 (poll)
 
 ## Triggers

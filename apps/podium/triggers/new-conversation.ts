@@ -12,7 +12,7 @@ export default pollFromListAction<Record<string, unknown>>({
   title: "New Conversation",
   description: "The run gets each conversation newly returned by List Conversations.",
   action: conversationList,
-  input: (params) => ({ ...params, limit: 100, order: "desc" }),
+  input: (params) => ({ ...params, cursor: undefined, limit: 100, order: "desc" }),
   items: (result) => ((result as { items?: unknown[] }).items ?? []),
   idOf,
   params: conversationList.params,

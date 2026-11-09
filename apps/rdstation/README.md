@@ -13,14 +13,6 @@ Manage contacts, organizations, and deals in RD Station CRM.
 
 ## What this app is — and what it deliberately is not
 
-## Triggers
-
-| Key — title | Mechanism | Wrapped list action | What the run gets |
-| --- | --- | --- | --- |
-| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
-
-Source: https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos (verified 2026-11-09).
-
 RD Station (TOTVS, Brazil) is a marketing-and-sales platform. The product this app talks to is
 **RD Station CRM**, its sales CRM: contacts, organizations (empresas), deals (negociações) with
 pipelines and stages, and the account's own users.
@@ -44,6 +36,14 @@ but a token a user can mint in a minute, and its entire surface is documented in
 machine-readable reference, so it is the half that can actually be built and checked. If RDSM
 support is ever wanted, it belongs in a separate app with its own OAuth2 auth method, not bolted
 onto this one.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+
+Source: https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos (verified 2026-11-09).
 
 ## Auth
 

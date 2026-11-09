@@ -7,15 +7,24 @@ test("new-contact seeds, emits a new contact, retries idempotently, and uses the
   const first = { contactID: "c1" };
   const second = { contactID: "c2" };
   const seed = mockCtx([{ body: { contacts: [first] } }]);
-  const seeded = await trigger.poll!({ params: {}, state: {} } as never, seed.ctx);
+  const seeded = await trigger.poll!(
+    { params: { after: "next", before: "previous" }, state: {} } as never,
+    seed.ctx,
+  );
   assertEquals(seeded.events, []);
   assertEquals(seeded.nextState.seeded, true);
   const fresh = mockCtx([{ body: { contacts: [second, first] } }]);
-  const result = await trigger.poll!({ params: {}, state: seeded.nextState } as never, fresh.ctx);
+  const result = await trigger.poll!(
+    { params: { after: "next", before: "previous" }, state: seeded.nextState } as never,
+    fresh.ctx,
+  );
   assertEquals(result.events, [second]);
   const retry = mockCtx([{ body: { contacts: [second, first] } }]);
   assertEquals(
-    await trigger.poll!({ params: {}, state: seeded.nextState } as never, retry.ctx),
+    await trigger.poll!(
+      { params: { after: "next", before: "previous" }, state: seeded.nextState } as never,
+      retry.ctx,
+    ),
     result,
   );
   const url = new URL(seed.calls[0].url);

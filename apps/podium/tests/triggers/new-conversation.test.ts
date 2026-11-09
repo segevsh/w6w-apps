@@ -8,15 +8,24 @@ test("new-conversation seeds, emits a new conversation, retries idempotently, an
   const second = { uid: "c2" };
   const page = (items: unknown[]) => ({ data: items, metadata: { nextCursor: null } });
   const seed = mockCtx([{ body: page([first]) }]);
-  const seeded = await trigger.poll!({ params: {}, state: {} } as never, seed.ctx);
+  const seeded = await trigger.poll!(
+    { params: { cursor: "next-page" }, state: {} } as never,
+    seed.ctx,
+  );
   assertEquals(seeded.events, []);
   assertEquals(seeded.nextState.seeded, true);
   const fresh = mockCtx([{ body: page([second, first]) }]);
-  const result = await trigger.poll!({ params: {}, state: seeded.nextState } as never, fresh.ctx);
+  const result = await trigger.poll!(
+    { params: { cursor: "next-page" }, state: seeded.nextState } as never,
+    fresh.ctx,
+  );
   assertEquals(result.events, [second]);
   const retry = mockCtx([{ body: page([second, first]) }]);
   assertEquals(
-    await trigger.poll!({ params: {}, state: seeded.nextState } as never, retry.ctx),
+    await trigger.poll!(
+      { params: { cursor: "next-page" }, state: seeded.nextState } as never,
+      retry.ctx,
+    ),
     result,
   );
   const url = new URL(seed.calls[0].url);
