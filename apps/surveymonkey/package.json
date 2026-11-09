@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/surveymonkey",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Create and manage SurveyMonkey surveys, responses, collectors and contacts via the SurveyMonkey API, plus a trigger that starts a workflow when a survey response is completed.",
   "license": "MIT",
   "author": {

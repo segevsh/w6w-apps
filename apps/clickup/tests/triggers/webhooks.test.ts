@@ -161,14 +161,7 @@ test("onSubscribe creates a team webhook for the events and keeps the secret", a
 
 test("task-updated, task-deleted and task-comment-posted register their event names", async () => {
   const expected: Array<[typeof taskUpdated, string[]]> = [
-    [taskUpdated, [
-      "taskUpdated",
-      "taskStatusUpdated",
-      "taskAssigneeUpdated",
-      "taskDueDateUpdated",
-      "taskPriorityUpdated",
-      "taskMoved",
-    ]],
+    [taskUpdated, ["taskUpdated"]],
     [taskDeleted, ["taskDeleted"]],
     [taskCommentPosted, ["taskCommentPosted"]],
   ];
@@ -242,4 +235,23 @@ test("onUnsubscribe with no stored webhook makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await taskCreated.onUnsubscribe!({ params: {}, state: {} as never, subscriptionId: "s" }, ctx);
   assertEquals(calls.length, 0);
+});
+
+test("task-updated: one change delivered as taskUpdated + taskStatusUpdated yields ONE event", async () => {
+  const pair = ["taskUpdated", "taskStatusUpdated"].map((event) => {
+    const body = BODY.replace('"event": "taskCreated"', '"event": "' + event + '"');
+    return {
+      ...call({ rawBody: body, headers: { "x-signature": sign(body) } }),
+      body: JSON.parse(body),
+    };
+  });
+  const state = { ...STATE, events: ["taskUpdated"] };
+  const out = [];
+  for (const raw of pair) out.push(...evs(await ingest(raw, state, taskUpdated)));
+  assertEquals(out.length, 1);
+  assertEquals((out[0] as { event: string }).event, "taskUpdated");
+  assertEquals(
+    (out[0] as { idempotencyKey: string }).idempotencyKey,
+    WEBHOOK_ID + ":2800763136717140857",
+  );
 });

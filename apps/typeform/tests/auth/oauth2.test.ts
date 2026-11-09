@@ -10,6 +10,9 @@ test("oauth2: declares Typeform's authorize and token endpoints", () => {
   assertEquals(auth.oauth2?.pkce, false);
   assert(auth.oauth2?.scopes?.includes("forms:read"));
   assert(auth.oauth2?.scopes?.includes("responses:read"));
+  // webhook trigger registration (T3.fx1)
+  assert(auth.oauth2?.scopes?.includes("webhooks:read"));
+  assert(auth.oauth2?.scopes?.includes("webhooks:write"));
 });
 
 test("oauth2: sign uses the Bearer scheme", async () => {

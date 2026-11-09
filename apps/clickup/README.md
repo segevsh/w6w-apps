@@ -46,12 +46,17 @@ verbatim. A `Bearer ` prefix earns a 401.
 | Trigger               | Mechanism | Vendor event                                                                                          | What the run gets                              |
 | --------------------- | --------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | `task-created`        | webhook   | `taskCreated`                                                                                         | task ID, list, and the creation history        |
-| `task-updated`        | webhook   | `taskUpdated`, `taskStatusUpdated`, `taskAssigneeUpdated`, `taskDueDateUpdated`, `taskPriorityUpdated`, `taskMoved` | task ID, event name, before/after history      |
+| `task-updated`        | webhook   | `taskUpdated`                                                                                       | task ID, event name, before/after history      |
 | `task-deleted`        | webhook   | `taskDeleted`                                                                                         | task ID and list                               |
 | `task-comment-posted` | webhook   | `taskCommentPosted`                                                                                   | task ID and the comment in the history items   |
 
-ClickUp also sends `taskStatusUpdated` when a task is created, so `task-updated` fires for a new
-task as well; use `task-created` alone if that matters.
+`task-updated` registers for `taskUpdated` only. ClickUp's webhook docs define it as "triggered when a
+task is updated" (developer.clickup.com/docs/webhooks, checked 2026-11-09), and a single change also
+delivers a specific event (`taskStatusUpdated`, `taskAssigneeUpdated`, …) with the same history item;
+accepting both ran the flow twice per change. Narrowing the registration was chosen over deduping on
+the history-item id because deduping needs state across two separate HTTP deliveries, which a trigger
+ingest does not have. The before/after `historyItems` still say which field changed. ClickUp also
+sends `taskStatusUpdated` when a task is created; `task-updated` no longer reacts to that.
 
 **Setup.** Set *Workspace ID* (ClickUp's team ID) and, optionally, one of *Space ID*, *Folder ID* or
 *List ID* to narrow the scope (the most specific one wins). The trigger registers the webhook itself

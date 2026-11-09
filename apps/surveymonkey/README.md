@@ -51,7 +51,7 @@ Token:     https://api.surveymonkey.com/oauth/token
 
 Scopes are limited to what this app's actions actually use: `users_read`, `surveys_read`,
 `surveys_write`, `responses_read`, `responses_read_detail`, `collectors_read`,
-`collectors_write`, `contacts_read`, `contacts_write`. SurveyMonkey sends `scope` as a
+`collectors_write`, `contacts_read`, `contacts_write`, plus `webhooks_read` / `webhooks_write` for the webhook triggers (developer.surveymonkey.com/api/v3, checked 2026-11-09). SurveyMonkey sends `scope` as a
 **comma-separated** list rather than the OAuth-default space (`scopeSeparator: ","`),
 verified against the vendor's own OAuth credential wiring.
 
