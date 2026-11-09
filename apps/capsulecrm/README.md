@@ -6,6 +6,7 @@ Parties (people and organisations), opportunities (the sales pipeline), tasks, a
 - **Categories** — crm
 - **Auth methods** — personal-access-token
 - **Actions** — 19
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:personal-access-token`
 - **Egress allowlist** — `api.capsulecrm.com`
 - **Website** — https://capsulecrm.com/
@@ -121,6 +122,19 @@ existing precedent for that exact case: wrapping the vendor's own raster asset r
 a vector that doesn't exist (see `apollo`, `blandai`, `chatwork`, `dialpad`, `gorgias`, `kustomer`). It
 is not run through `_tools/icon-normalize.ts`, matching those apps: that tool re-frames genuine vector
 artwork onto the pack's shared 100×100 canvas, and a wrapped raster already fills its own square.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-opportunity` — New Opportunity | Poll | `opportunity-list` | Each opportunity created since the last check |
+| `new-or-updated-opportunity` — New or Updated Opportunity | Poll | `opportunity-list` | Each opportunity created or edited (id + updatedAt) |
+
+`opportunity-list` has a `since` (changed-since) filter but no documented order, so each check lists up to 5 pages of 100 with `since` = last check − 120 s and de-duplicates by id; `new-opportunity` additionally keeps only records whose `createdAt` falls inside the window (an edit to an old record is not new). Up to 500 events per check. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://developer.capsulecrm.com/v2/operations/Opportunity) (verified 2026-11-09).
 
 ## Layout
 

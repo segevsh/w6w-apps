@@ -6,6 +6,7 @@ and update credentials, manage the templates and read the designs they use, and 
 interaction events (views, shares, downloads, verifications).
 
 - **Base URL** `https://api.certifier.io/v1` (the only host in `network.allow`)
+- **Triggers** — 2 (poll)
 - **Auth** a workspace access token, sent as `Authorization: Bearer <token>` plus the required
   `Certifier-Version: 2022-10-26` header, both stamped by the Auth `sign` hook only
   (Certifier > Settings > Developers > Access Tokens)
@@ -44,6 +45,19 @@ interaction events (views, shares, downloads, verifications).
 - **Rate limit** is about 3 requests per second; a 429 carries `Retry-After` (seconds) and the error
   message reports it.
 - Credentials returned by list and search carry each recipient's name and email.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-credential` — New Credential | Poll | `credential-search` | Each newly created credential |
+| `new-or-updated-credential` — New or Updated Credential | Poll | `credential-search` | Each credential created or changed (id + updatedAt) |
+
+Polled newest-first through `credential-search` with `sort: { property: createdAt | updatedAt, order: desc }` (Certifier's documented sortable properties). Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://developers.certifier.io/reference/search-credentials) (verified 2026-11-09).
 
 ## Health checks
 

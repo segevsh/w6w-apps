@@ -34,6 +34,7 @@ import queryRun from "./actions/query-run.ts";
 import queryInsert from "./actions/query-insert.ts";
 import tableList from "./actions/table-list.ts";
 import tableDescribe from "./actions/table-describe.ts";
+import newActivity from "./triggers/new-activity.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -55,6 +56,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey, serviceAuth],
   healthChecks: [serviceStatus, quota],
+  triggers: [newActivity],
 };
 
 export default app;
