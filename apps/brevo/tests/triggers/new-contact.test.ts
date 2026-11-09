@@ -38,10 +38,30 @@ test("new contact webhook cleanup treats Brevo 404 as already gone", async () =>
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
 test("handleIngest yields the delivered body and refuses non-POST", async () => {
-  const body = { event: "contact_added", email: "ada@example.com", id: 9 };
-  assert.deepEqual(await newContact.handleIngest!({ raw: { method: "POST", body } } as never), [
-    body,
+  const body = {
+    id: 1,
+    email: "ada@example.com",
+    event: "list_addition",
+    key: "xxxxxxxx",
+    list_id: [8, 12],
+    date: "2026-11-09 10:00:00",
+    ts: 1794218400,
+    api_key_name: "w6w",
+  };
+  const out = await newContact.handleIngest!({ raw: { method: "POST", body } } as never);
+  assert.deepEqual(out, [body]);
+  const [event] = out as Record<string, unknown>[];
+  for (const field of newContact.output!) assert.ok(field.key in event, field.key);
+  assert.deepEqual(newContact.output!.map((f) => f.key), [
+    "event",
+    "email",
+    "list_id",
+    "date",
+    "ts",
   ]);
+  assert.equal(event.event, "list_addition");
+  assert.deepEqual(event.list_id, [8, 12]);
+  assert.equal(event.ts, 1794218400);
   await assert.rejects(
     async () => await newContact.handleIngest!({ raw: { method: "GET" } } as never),
     /POST/,

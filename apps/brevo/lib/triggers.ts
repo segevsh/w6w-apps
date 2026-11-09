@@ -13,8 +13,9 @@ interface Webhook {
 const output: OutputField[] = [
   { key: "event", type: "string", label: "Event" },
   { key: "email", type: "string", label: "Email" },
-  { key: "contact_id", type: "number", label: "Contact ID" },
+  { key: "list_id", type: "array", label: "List IDs" },
   { key: "date", type: "string", label: "Event date" },
+  { key: "ts", type: "number", label: "Event timestamp" },
 ];
 
 function id(value: unknown): string | undefined {
@@ -51,10 +52,14 @@ export const newContact: TriggerDefinition<
   description: "Fires when a contact is added to a Brevo list. The run gets the contact event.",
   output,
   sample: {
-    event: "listAddition",
+    id: 1,
     email: "ada@example.com",
-    contact_id: 42,
+    event: "list_addition",
+    key: "xxxxxxxx",
+    list_id: [8],
     date: "2026-11-09 10:00:00",
+    ts: 1794218400,
+    api_key_name: "w6w",
   },
 
   async onSubscribe({ callbackUrl }, ctx) {

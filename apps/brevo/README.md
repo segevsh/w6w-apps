@@ -6,7 +6,7 @@
 
 | Key | Title | Mechanism | Vendor event | What the run gets |
 | --- | --- | --- | --- | --- |
-| `new-contact` | New Contact | Webhook | `listAddition` | The contact event |
+| `new-contact` | New Contact | Webhook | `listAddition` | The vendor delivery: `event` (`list_addition`), `email`, `list_id` (array), `date`, `ts` |
 
 Brevo supports optional caller-supplied webhook authentication but does not publish a delivery signature. The callback URL is the shared secret; stale registrations for that URL are removed before creating a replacement.
 
