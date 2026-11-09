@@ -4202,15 +4202,15 @@
   },
   {
     "path": "apps/netlify",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "deploy-succeeded",
       "deploy-failed",
       "form-submission"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
+    "reason": "shipped (T2.08): signed manual-webhook receiver; the REST hook API does not document where the JWS secret goes",
+    "verified": "https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08)",
     "source": "survey"
   },
   {

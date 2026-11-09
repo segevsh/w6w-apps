@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 58, manual-webhook: 6, poll: 369, none: 249
+**Totals:** 682 apps — webhook-api: 57, manual-webhook: 7, poll: 369, none: 249
 
-## webhook-api (58)
+## webhook-api (57)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -52,7 +52,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mautic | contact-added, contact-updated, form-submitted, email-open | no | survey | Custom auth (self-host base url). |
 | apps/meta/facebook | new-post, new-comment, page-mention | no | survey | App secret not in user credential; App Review. Poll posts/comments is the S route. |
 | apps/meta/facebook-lead-ads | new-lead | no | survey | Webhook delivers leadgen_id only -> fetch lead (parseOutput). Poll via list-recent-leads is S. |
-| apps/netlify | deploy-succeeded, deploy-failed, form-submission | no | survey | vendor webhook API |
 | apps/onfleet | task-created, task-started, task-completed, task-failed | no | survey | Validation GET returns check code in body. |
 | apps/paypal | payment-capture-completed, invoice-paid, subscription-activated | no | survey | Verification is an authed API call from handleIngest; custom auth. |
 | apps/pipedrive | deal-added, deal-updated, person-added, organization-added, activity-added | no | survey | Unsigned: put secret in URL/basic auth userfield. |
@@ -73,13 +72,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wufoo | new-entry | no | survey | Poll-friendly: monotonic EntryId. |
 | apps/zendesk/zendesk | ticket-created, ticket-updated, comment-added | no | survey | Webhook alone fires nothing; must create a Zendesk trigger rule. Poll via ticket-get-many/search is S. |
 
-## manual-webhook (6)
+## manual-webhook (7)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
 | apps/chargebee | event-any, subscription-created, invoice-generated, payment-succeeded | no | survey | Events API is a perfect newest-first feed -> poll primary. |
 | apps/customerio | email-delivered, email-opened, email-bounced, unsubscribed | no | survey | Signing secret needs a credential/trigger param; no list actions. |
 | apps/meta/whatsapp | incoming-message, message-status | no | survey | No message list API -> webhook only; app secret from trigger param. |
+| apps/netlify | deploy-succeeded, deploy-failed, form-submission | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | survey | shipped (T2.08): signed manual-webhook receiver; the REST hook API does not document where the JWS secret goes |
 | apps/notion | page-created, page-content-updated, database-row-added | no | survey | Large app (119 actions); confirm query action exists via grep before choosing poll. |
 | apps/slack | new-message, reaction-added, new-channel | no | survey | Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel. |
 | apps/twilio/twilio | incoming-sms, incoming-call-status, message-status | no | survey | Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL. |
