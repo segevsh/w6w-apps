@@ -15,6 +15,8 @@ import webhookSubscriptionGetMany from "./actions/webhook-subscription-get-many.
 import webhookSubscriptionDelete from "./actions/webhook-subscription-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import inviteeCreated from "./triggers/invitee-created.ts";
+import inviteeCanceled from "./triggers/invitee-canceled.ts";
 
 export default {
   actions: [
@@ -39,5 +41,6 @@ export default {
   ],
   // PAT first (single-account default), OAuth for public integrations.
   auth: [personalAccessToken, oauth2],
+  triggers: [inviteeCreated, inviteeCanceled],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

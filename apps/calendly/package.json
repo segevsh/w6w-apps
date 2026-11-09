@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/calendly",
-  "version": "0.1.1",
-  "description": "Read Calendly users, event types, scheduled events and invitees; create single-use scheduling links and manage webhook subscriptions.",
+  "version": "0.2.0",
+  "description": "Read Calendly users, event types, scheduled events and invitees; create single-use scheduling links and manage webhook subscriptions, plus triggers for meetings booked or canceled.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.calendly.com/api-docs"
     ],
-    "longDescription": "Calendly manages who's meeting whom and when. This app reads users, event types, scheduled events and their invitees, generates single-use scheduling links a workflow can hand out, and manages webhook subscriptions so Calendly can notify a workflow when something books or cancels.\n\nEvery object is addressed by Calendly's own absolute identifier, and actions that take a single object accept either that identifier or the bare id, so results from one call feed directly into the next without extra parsing. Reading the current user or looking up a specific scheduled event and its invitees covers the common case of finding out who booked what and when, without opening the Calendly dashboard.\n\nA good fit for workflows built around booking events — creating a one-off scheduling link for a specific request, reacting to a new booking through a webhook, or pulling invitee details into a CRM or support ticket the moment someone schedules time.",
+    "longDescription": "Calendly manages who's meeting whom and when. This app reads users, event types, scheduled events and their invitees, generates single-use scheduling links a workflow can hand out, and manages webhook subscriptions so Calendly can notify a workflow when something books or cancels.\n\nEvery object is addressed by Calendly's own absolute identifier, and actions that take a single object accept either that identifier or the bare id, so results from one call feed directly into the next without extra parsing. Reading the current user or looking up a specific scheduled event and its invitees covers the common case of finding out who booked what and when, without opening the Calendly dashboard.\n\nA good fit for workflows built around booking events — creating a one-off scheduling link for a specific request, reacting to a new booking through a webhook, or pulling invitee details into a CRM or support ticket the moment someone schedules time.\n\nTwo triggers start a workflow when an invitee books or cancels a meeting: subscribing registers a signed webhook subscription with Calendly and unsubscribing removes it; each delivery's signature and timestamp are verified before a run starts.",
     "categories": [
       "calendar",
       "productivity"
@@ -33,7 +33,12 @@
         "api.calendly.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

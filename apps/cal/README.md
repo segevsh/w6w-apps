@@ -6,6 +6,7 @@ platform.
 - **Categories** — calendar
 - **Auth methods** — api-key
 - **Actions** — 8
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `api.cal.com`
 - **Website** — https://cal.com
 - **API docs** — https://cal.com/docs/api-reference/v2/introduction
@@ -57,6 +58,29 @@ Bookings are addressed by their `bookingUid` (returned by `booking-get-many` /
 `booking-create`'s `location` param is a `json` field, not a string — Cal.com v2 expects a
 structured object (`{"type":"attendeeAddress","address":"…"}`,
 `{"type":"integration","integration":"cal-video"}`, etc.), not a bare string.
+
+## Triggers
+
+| trigger — title | mechanism | vendor event | what the run gets |
+|---|---|---|---|
+| `booking-created` — Booking Created | webhook (API-registered) | `BOOKING_CREATED` | the booking, organizer, attendees, form responses |
+| `booking-cancelled` — Booking Cancelled | webhook (API-registered) | `BOOKING_CANCELLED` | the booking and the cancellation reason |
+| `booking-rescheduled` — Booking Rescheduled | webhook (API-registered) | `BOOKING_RESCHEDULED` | the new booking and the reschedule reference |
+
+### Setup
+
+Nothing to paste. Subscribing runs `POST /v2/webhooks` (`subscriberUrl`, one trigger, `active`, and a
+random per-subscription `secret` kept in the subscription's state); unsubscribing runs
+`DELETE /v2/webhooks/{id}` (already gone counts as deleted).
+
+### Trust model
+
+Every delivery's `X-Cal-Signature-256` header (hex HMAC-SHA256 of the exact request body, keyed by
+the subscription's secret) is verified before the body is parsed. A missing or wrong signature, an
+absent raw body or an unset secret refuses the delivery. Cal.com's signature carries no timestamp, so
+there is no replay window.
+
+Docs (verified 2026-11-09): https://cal.com/docs/developing/guides/automation/webhooks, https://cal.com/docs/api-reference/v2/webhooks/create-a-webhook
 
 ## Health check
 

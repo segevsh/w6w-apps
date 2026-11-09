@@ -12,6 +12,9 @@ import clientGetMany from "./actions/client-get-many.ts";
 import availabilityTimeGetMany from "./actions/availability-time-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import appointmentScheduled from "./triggers/appointment-scheduled.ts";
+import appointmentRescheduled from "./triggers/appointment-rescheduled.ts";
+import appointmentCanceled from "./triggers/appointment-canceled.ts";
 
 export default {
   actions: [
@@ -32,5 +35,6 @@ export default {
   ],
   // Basic first (single-account default, matches Acuity's own docs), OAuth for public integrations.
   auth: [basic, oauth2],
+  triggers: [appointmentScheduled, appointmentRescheduled, appointmentCanceled],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

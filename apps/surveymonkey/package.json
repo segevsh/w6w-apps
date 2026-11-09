@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/surveymonkey",
-  "version": "0.1.1",
-  "description": "Create and manage SurveyMonkey surveys, responses, collectors and contacts via the SurveyMonkey API.",
+  "version": "0.2.0",
+  "description": "Create and manage SurveyMonkey surveys, responses, collectors and contacts via the SurveyMonkey API, plus a trigger that starts a workflow when a survey response is completed.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.surveymonkey.com/api/v3/"
     ],
-    "longDescription": "SurveyMonkey puts a survey program's read side into a workflow — list and read surveys, pull a survey's full page and question detail, create a new survey, read bulk survey responses and drill into one response's detail, list and create collectors, list survey pages, and manage contact lists including adding a new contact.\n\nWriting responses back into SurveyMonkey is deliberately left out: that scope needs the vendor's own approval to use in a public app, and this pack has no case yet that needs it. Webhooks are likewise out of scope for an app that only performs actions, not triggers.\n\nSurveyMonkey is one of the few vendors in this pack to publish live, real rate-limit headers rather than leaving quota undocumented — a draft or private app is capped at 120 requests per minute and 500 per day, shared across every connection made through this app rather than metered separately per connection.",
+    "longDescription": "SurveyMonkey puts a survey program's read side into a workflow — list and read surveys, pull a survey's full page and question detail, create a new survey, read bulk survey responses and drill into one response's detail, list and create collectors, list survey pages, and manage contact lists including adding a new contact.\n\nWriting responses back into SurveyMonkey is deliberately left out: that scope needs the vendor's own approval to use in a public app, and this pack has no case yet that needs it. Webhooks are likewise out of scope for an app that only performs actions, not triggers.\n\nSurveyMonkey is one of the few vendors in this pack to publish live, real rate-limit headers rather than leaving quota undocumented — a draft or private app is capped at 120 requests per minute and 500 per day, shared across every connection made through this app rather than metered separately per connection.\n\nA trigger starts a workflow when someone completes a survey: subscribing registers a webhook with SurveyMonkey and unsubscribing removes it; every delivery's signature is verified (with your app's client id and secret) before a run starts, and the run receives the full response.",
     "categories": [
       "forms",
       "productivity"
@@ -33,7 +33,12 @@
         "api.surveymonkey.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
