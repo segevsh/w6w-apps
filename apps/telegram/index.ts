@@ -39,6 +39,8 @@ import fileGet from "./actions/file-get.ts";
 import callbackAnswerQuery from "./actions/callback-answer-query.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
+import update from "./triggers/update.ts";
 
 export default {
   actions: [
@@ -69,5 +71,6 @@ export default {
     callbackAnswerQuery,
   ],
   auth: [botToken],
+  triggers: [newMessage, update],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
