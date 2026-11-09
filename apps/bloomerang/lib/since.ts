@@ -29,8 +29,8 @@ export interface SinceSpec<T> {
 /**
  * Since-filter poll (brief 9.1 b): list records changed since `cursor - overlap` with the app's
  * own list action, dedupe by id with `pollNewItems`. The first check records the cursor and the
- * ids in the window and emits nothing. When the window is longer than `MAX_PAGES` pages the
- * cursor is held back so the next check re-lists it.
+ * ids in the window and emits nothing. A window longer than `MAX_PAGES` pages is cut at the cap
+ * with a warning (holding the cursor back would re-list the same capped pages forever).
  */
 export function sinceTrigger<T>(spec: SinceSpec<T>): TriggerDefinition {
   return {
@@ -62,7 +62,14 @@ export function sinceTrigger<T>(spec: SinceSpec<T>): TriggerDefinition {
           return { items };
         },
       });
-      return { events, nextState: { ...nextState, cursor: truncated ? cursor : checkedAt } };
+      if (truncated) {
+        // Holding the cursor back would re-list the same capped pages forever, so move on and say so.
+        ctx.log(
+          "warn",
+          `${spec.key}: more than ${MAX_ITEMS} records in the window; the rest are skipped`,
+        );
+      }
+      return { events, nextState: { ...nextState, cursor: checkedAt } };
     },
   };
 }

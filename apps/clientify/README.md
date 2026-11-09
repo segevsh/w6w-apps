@@ -74,8 +74,8 @@ was left out because its documented response shows deprecated `type`/`status` fi
 
 Each poll calls the same `GET /v1/contacts/` or `GET /v1/deals/` request as the list action, with
 `created[gte]` (new) or `modified[gte]` (new or updated) set to the UTC day of the previous check
-minus two minutes, 100 records per page, up to 5 pages per check, and de-duplicates on the record id
+minus two minutes, 100 records per page, up to 10 pages per check, and de-duplicates on the record id
 (plus the `modified` stamp for the updated variants). Clientify documents the `created` / `modified`
 date filters with `[gt]`, `[lt]`, `[gte]` and `[lte]` (date granularity, e.g. `created[gt]=2020/01/01`)
 at <https://developer.clientify.com> (verified 2026-11-09). The first check records the current
-window and emits nothing. No webhook code is included.
+window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

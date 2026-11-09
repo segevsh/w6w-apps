@@ -121,8 +121,8 @@ betterstack/
 | `new-incident` | New Incident | poll (since-filter) | `incident-list` | Each incident started since the last check |
 
 The poll calls the same `GET /api/v3/incidents` request as `incident-list` with `from` set to the UTC
-day of the previous check minus two minutes (`per_page=50`, up to 5 pages per check) and
+day of the previous check minus two minutes (`per_page=50`, up to 10 pages per check) and
 de-duplicates on the incident id. Better Stack documents `from` as "Return only incidents from a
 certain date (format YYYY-MM-DD)" at <https://betterstack.com/docs/uptime/api/list-all-incidents/>
 (verified 2026-11-09), so the window is a whole day and the id dedupe drops what was already seen.
-The first check records the current window and emits nothing. No webhook code is included.
+The first check records the current window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

@@ -126,4 +126,4 @@ optional `createdAfter` input (sent as `created_after`) set to the previous chec
 50 per page, following `search_after` for up to 5 pages, and de-duplicates on the Bitlink id. Bitly
 documents `created_after` as "Timestamp as an integer unix epoch (seconds only)" at
 <https://dev.bitly.com/api-reference/> (verified 2026-11-09). The first check records the current
-window and emits nothing. No webhook code is included.
+window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

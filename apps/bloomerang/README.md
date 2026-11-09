@@ -153,4 +153,4 @@ the previous check minus two minutes, and de-duplicates on the transaction id pl
 filter ("filters to transactions last modified after the specified date") at
 <https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json>
 (verified 2026-11-09). The first check records the current window and emits nothing; up to 5 pages
-of 50 are walked per check. No webhook code is included.
+of 50 are walked per check. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

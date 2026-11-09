@@ -9,10 +9,15 @@ subscription limits and directory import. 28 actions, one auth method, one decla
 
 | Key | Title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
-| `new-event` | New Event | poll | `event-list` | Newly recorded organization audit events |
+| `new-event` | New Event | poll (since-filter) | `event-list` | Organization audit events recorded since the last check |
 
-Bitwarden's organization event API is documented at <https://bitwarden.com/help/api/> (verified
-2026-11-09). The poll reads its newest-first event page; no webhook code is included.
+The poll does not depend on the order Bitwarden returns events in: each check calls the same
+`GET /public/events` request as `event-list` with `start` set to the previous check minus two
+minutes, follows the `continuationToken` (up to 20 pages), and de-duplicates on the event id. A window
+longer than the page cap is cut at the cap with a warning in the run log. Bitwarden's organization
+event API (`start`, `end`, `continuationToken`) is documented in the OpenAPI document linked from
+<https://bitwarden.com/help/api/> (verified 2026-11-09). The first check records the current window
+and emits nothing. No webhook code is included.
 
 Every path, verb, parameter and enum comes from the live OpenAPI 3.0.4 document published at
 <https://bitwarden.com/help/api/> (16 paths, 28 operations), and was probed against the live
