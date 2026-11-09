@@ -6,6 +6,7 @@ API.
 - **Categories** — marketing, email
 - **Auth methods** — basic (Site ID + Track API Key)
 - **Actions** — 7
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `track.customer.io`, `track-eu.customer.io`, `api.customer.io`
 - **Website** — https://customer.io
 - **API docs** — https://docs.customer.io/integrations/api/track/
@@ -103,6 +104,38 @@ action uses for a plain id list), not `type: "json"` — the runtime delivers it
 | `track` / `track-anonymous` | `false` | The Track API documents no event id / dedupe key on these endpoints (unlike Segment's `messageId`) — a retry creates a second, distinct event. |
 | `add-to-segment` / `remove-from-segment` | `true` | Set-membership operations; repeating is a no-op. |
 | `merge` | `false` | The secondary profile is permanently deleted by a successful merge, so a retry targets an id Customer.io can no longer resolve. |
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `reporting-event` — Reporting Webhook Event | webhook (manual receiver) | any reporting event; optional **Object Type** and **Metric** filters | The event and its data |
+| `email-opened` — Email Opened | webhook (manual receiver) | `email` / `opened` | The event, customer, recipient and delivery |
+| `email-clicked` — Email Clicked | webhook (manual receiver) | `email` / `clicked` | The event, customer, recipient, delivery and the clicked link (`data.href`) |
+| `customer-unsubscribed` — Customer Unsubscribed | webhook (manual receiver) | `customer` / `unsubscribed` | The event and the person's email address |
+
+**Setup (by hand — this app's Track API credentials cannot create a reporting webhook).**
+
+1. Create the trigger in w6w and copy its callback URL.
+2. In Customer.io open **Integrations > Reporting webhooks**, add a webhook with that URL as the
+   endpoint, and select the events to send (email events and/or customer subscription events).
+3. On the same page copy the webhook's **signing key** and paste it into the trigger's
+   **Signing Key** param. Each reporting webhook has its own key.
+
+Unsubscribing makes no Customer.io call: delete the reporting webhook in Customer.io yourself.
+
+**Trust model.** Customer.io signs every webhook, and the trigger never accepts an unsigned
+delivery. Each delivery is checked, before anything is parsed, against `X-CIO-Signature` = hex
+HMAC-SHA256 of `v0:<X-CIO-Timestamp>:<raw request body>` under the signing key. The check uses
+the exact bytes Customer.io sent, a constant-time compare, and a 5-minute window on the
+timestamp (the Customer.io docs name no window; 5 minutes is this app's choice, so a retry that
+arrives later than that is refused). A missing header, a stale timestamp, an unset signing key or
+a body that was not delivered raw refuses the delivery; the host stores one failed row and starts
+no run. The signing key is a secret-typed trigger param. Webhooks that use the legacy email
+format (`event_type` instead of `object_type` + `metric`) are understood too.
+
+Sources (verified 2026-11-09): https://docs.customer.io/integrations/data-out/connections/webhook/ ,
+https://docs.customer.io/integrations/api/webhooks/
 
 ## Health check
 
