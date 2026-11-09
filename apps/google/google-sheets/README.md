@@ -5,9 +5,39 @@ Read and write Google Sheets: manage spreadsheets, sheets, rows and cells.
 - **Categories** — spreadsheets, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 12
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `sheets.googleapis.com`, `www.googleapis.com`
 - **Website** — https://sheets.google.com
 - **API docs** — https://developers.google.com/workspace/sheets
+
+## Triggers
+
+Poll triggers, checked every minute. Each reads the sheet with the same request as the **Read Rows**
+action (`GET /v4/spreadsheets/{id}/values/{sheet}`, unformatted values) and compares it with the
+previous check. The first check only records what is already there; it starts no runs.
+
+| trigger | title | mechanism | vendor event | what the run gets |
+| --- | --- | --- | --- | --- |
+| `row-added` | New Row | poll | a row appears below the header | `change`, the row's cells by header, and `rowNumber` (or `key`) |
+| `row-updated` | Updated Row | poll | a known row's cells change | the same, with the new cells |
+| `row-added-or-updated` | New or Updated Row | poll | either | the same, `change` says which |
+
+Parameters: `spreadsheetId`, `sheetName` (the tab; row 1 must be its header row) and an optional
+`keyColumn` (a header name).
+
+- **Use a key column.** Without one, rows are identified by row number, so inserting or deleting a row
+  shifts every row below it and they all read as updated. With `keyColumn` set to a column of unique
+  values (an ID), rows are followed by that value, and moving a row is not a change. If two rows hold
+  the same key the check fails with an error naming the column and value; fix the sheet or clear the key.
+- Editing the header row is not an update; blank rows and rows with a blank key are skipped.
+- Up to 5000 data rows; a larger sheet makes the check fail rather than miss rows.
+- Removed rows are not reported.
+- Only cell hashes are kept between checks, never cell values.
+- Trust model: requests go out through the connection's own OAuth or service-account credential;
+  nothing is received from Google.
+
+Vendor docs: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/get
+(verified 2026-11-09).
 
 ## Health check
 
