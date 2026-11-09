@@ -222,6 +222,14 @@ permanently.
 No status host appears in `w6w.network.allow`, and neither check widens egress via `network.allow` —
 because neither check makes a request at all.
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| New Email | `GET /me/messages?$orderby=receivedDateTime desc` | Seeds the current page on its first check, then emits unseen messages oldest first. An optional folder and KQL search narrow the same request used by **List Messages**. |
+
+This poll uses the Graph [List messages](https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09), rather than a webhook subscription: Graph's webhook subscriptions require renewal and a public callback endpoint.
+
 ## Not implemented
 
 Stated plainly rather than left as a silent gap:

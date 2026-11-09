@@ -348,6 +348,14 @@ posture never binds.
 
 ---
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| File Changed | `GET /me/drive/root/delta` | Seeds a Graph delta link using `token=latest`, then emits one bounded delta page and saves its replacement cursor. |
+
+This trigger wraps the same request as **List Changes**, following the Microsoft Graph [driveItem delta](https://learn.microsoft.com/en-us/graph/api/driveitem-delta?view=graph-rest-1.0) protocol (checked 2026-11-09). A page is capped at 100 items so it is within the poll trigger's event limit.
+
 ## Not implemented
 
 Left out deliberately, each with a reason:

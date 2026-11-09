@@ -374,6 +374,14 @@ permanently.
 No status host appears in `w6w.network.allow`, and neither check widens egress via `network.allow` —
 because neither check makes a request at all.
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| New Channel Message | `GET /teams/{team-id}/channels/{channel-id}/messages?$top=50` | Seeds the current page on its first check, then emits unseen root messages. The endpoint has no `$orderby`; Graph returns the latest modified conversation first. |
+
+This trigger uses the Graph [List channel messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09). Microsoft permits this polling endpoint no more than once daily, so the trigger declares that vendor interval floor.
+
 ## Not implemented
 
 Stated plainly rather than left as a silent gap. Beyond the scope table above:

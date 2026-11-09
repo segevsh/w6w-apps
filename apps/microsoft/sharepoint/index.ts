@@ -26,6 +26,7 @@ import listChildren from "./actions/list-children.ts";
 import uploadFile from "./actions/upload-file.ts";
 import getDownloadUrl from "./actions/get-download-url.ts";
 import createFolder from "./actions/create-folder.ts";
+import newListItem from "./triggers/new-list-item.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -50,6 +51,7 @@ export default {
     getDownloadUrl,
     createFolder,
   ],
+  triggers: [newListItem],
   auth: [oauth2],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;
