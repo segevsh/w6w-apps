@@ -169,3 +169,5 @@ and test fixtures (`github.com/clearbit/clearbit-node`), n8n's production Clearb
 calls. `dashboard.clearbit.com/docs` no longer serves public documentation as of this writing —
 re-verify against the SDK source or a live probe before trusting anything here that isn't backed by
 one of those two.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: enrichment.completed (https://dashboard.clearbit.com/docs).

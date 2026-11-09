@@ -112,3 +112,5 @@ betterstack/
 `assets/icon.svg` is the verbatim Simple Icons mark
 (`cdn.jsdelivr.net/npm/simple-icons/icons/betterstack.svg`); the dark variant only adds
 `fill="#ffffff"` to the root element.
+
+Triggers: not shipped — Uptime list endpoints paginate without a documented newest-first order or created-since filter (https://betterstack.com/docs/uptime/api/getting-started-with-uptime-api/).

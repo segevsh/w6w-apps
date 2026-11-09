@@ -90,3 +90,5 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 
 The icon is Clearout's own 512x512 mark, fetched from `clearout.io/fav-icon/icon-512x512.png` (the
 vendor's `<link rel=icon>` set).
+
+Triggers: not shipped — webhook candidate queued for a webhook node: bulk verification completed (https://clearout.io).

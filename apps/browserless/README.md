@@ -71,3 +71,5 @@ Agent Run API (beta), `/download`, BrowserQL, sessions and authenticated profile
 `assets/icon.svg` is the vendor's favicon with its dark-mode `@media` rule replaced by a static
 `fill:black`; `assets/icon.dark.svg` is the same mark in white. The host picks the variant through
 `appearance.darkMode`, and the pack's legibility audit does not evaluate the media rule.
+
+Triggers: not shipped — Crawl jobs are newest-first but the existing list action returns the vendor envelope without a documented stable crawl identifier (https://docs.browserless.io).

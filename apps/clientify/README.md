@@ -60,3 +60,5 @@ management, batch creates, GDPR queries, campaigns, calls, wall entries, product
 taxes, real estate, automations and settings: documented, but not part of this CRM core. Task edit
 was left out because its documented response shows deprecated `type`/`status` fields. The
 `/v1/api-auth/obtain_token/` login is not used so no password is collected.
+
+Triggers: not shipped — Contact search supports created/modified filters but the existing action has no cursor state or documented ordering to make a safe incremental poll (https://developer.clientify.com).

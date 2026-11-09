@@ -113,3 +113,5 @@ Researched and endpoint-verified 2026-08-01 against `dev.bitly.com/api-reference
 production Bitly node (`api-ssl.bitly.com/v4`, Bearer "Generic Access Token"). Status
 surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing
 for everyone at once.
+
+Triggers: not shipped — Bitlink listing is group-scoped cursor pagination with no documented newest-first order or created-since filter (https://dev.bitly.com/api-reference/).

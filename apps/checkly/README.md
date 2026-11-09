@@ -187,3 +187,5 @@ and `account-entitlements-get` offers the allowance as the plain read it is.
 Checkly's envelope is `{statusCode, error, message}`. The message is the useful
 half — *"Missing authentication"* — and validation failures put per-field detail
 there too, so the whole body is surfaced.
+
+Triggers: not shipped — Existing monitor and result lists have no documented newest-first order or created-since filter suitable for a new-record poll (https://api.checklyhq.com/openapi.json).

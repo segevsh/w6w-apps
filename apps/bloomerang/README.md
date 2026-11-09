@@ -139,3 +139,5 @@ Bloomerang publishes no standalone `favicon.svg`. `assets/icon.svg` embeds the v
 256×256 `apple-touch-icon.png` (the "b" flower mark on the brand green background) as a base64
 `<image>` inside an SVG wrapper — the same pattern already used by several sibling apps in this pack
 whose vendor ships only a raster mark.
+
+Triggers: not shipped — Transaction listing has a modified-since filter but no stable documented newest-first ordering for safe first-page polling (https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json).

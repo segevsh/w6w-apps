@@ -131,3 +131,5 @@ Researched and endpoint-verified 2026-08-01 against `developers.cloudflare.com` 
 and n8n's `nodes-base/nodes/Cloudflare` / `credentials/CloudflareApi.credentials.ts` (auth scheme
 cross-check). Status surfaces and deprecations move; re-verify if a probe starts failing for
 everyone at once.
+
+Triggers: not shipped — Zone and DNS record lists are configuration collections without a documented newest-first order or created-since filter (https://developers.cloudflare.com/api/).

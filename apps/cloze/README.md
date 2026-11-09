@@ -90,5 +90,7 @@ OAuth2.
 ## Development
 
 ```
+
+Triggers: not shipped — webhook candidate queued for a webhook node: person.change, project.change, company.change (https://www.cloze.com/).
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
