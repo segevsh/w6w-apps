@@ -1,5 +1,10 @@
 import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
+import {
+  header,
+  requireRawBody,
+  requireSecret,
+  timingSafeEqual,
+} from "../../_shared/webhook/mod.ts";
 
 /**
  * Wise webhook triggers: a manual-webhook receiver
@@ -17,9 +22,22 @@ import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
  * key before anything is parsed; a delivery that does not verify throws. There is no shared
  * secret to configure, so none is accepted or needed: the key is Wise's, in this file.
  *
- * Wise defines no signed timestamp window (it retries a failed delivery for up to two weeks
- * with the same `X-Delivery-Id`), so there is no replay window to enforce; every event carries
- * `deliveryId` for skipping a duplicate.
+ * One signature is not enough: Wise signs EVERY customer's webhooks with that same key, so a valid
+ * signature proves "Wise sent this", not "this is the account you set up". Anyone who learns a
+ * callback URL could create their own Wise subscription pointing at it and have Wise deliver
+ * genuinely signed events about THEIR account. So the user also pastes their Wise profile ID
+ * (`profileId` param), and after the signature verifies, the profile the delivery's own signed body
+ * names (a per-event field of `data`, see `WebhookTriggerSpec.profilePath`; docs.wise.com
+ * /api-reference/webhook-event/*, verified 2026-11-09) must equal it exactly. A missing or empty
+ * configured ID, or a body without the profile field, refuses the delivery. The profile id is
+ * bound rather than the subscription id because it exists BEFORE the callback URL is registered
+ * and never changes on a republish (Wise has no update-subscription call, and the host replaces a
+ * webhook row, so a new URL, whenever its params change).
+ *
+ * Wise defines no replay window to enforce: `sent_at` is in the signed body, but Wise retries a
+ * failed delivery for up to two weeks and says events arrive out of order "due to retries", so a
+ * freshness limit would drop legitimate retries. Every event carries `deliveryId` for skipping
+ * a duplicate.
  */
 
 /** Wise's production webhook public key (docs.wise.com/guides/developer/webhooks/event-handling). */
@@ -59,6 +77,8 @@ export const WISE_PUBLIC_KEYS: PublicKeys = {
 export interface TriggerParams {
   /** Which Wise environment signs the deliveries; selects the public key. Default `live`. */
   environment?: string;
+  /** The user's own Wise profile ID; deliveries naming any other profile are refused. */
+  profileId?: string;
 }
 
 /** What `onSubscribe` returns: the URL the user pastes into Wise's Developer Hub. */
@@ -87,6 +107,15 @@ const ENVIRONMENT_PARAM: Param = {
   ],
   hint:
     "Which Wise environment sends the webhook; it decides the public key deliveries are checked against.",
+};
+
+const PROFILE_ID_PARAM: Param = {
+  key: "profileId",
+  label: "Wise profile ID",
+  type: "string",
+  required: true,
+  hint:
+    "The numeric ID of the Wise profile (personal or business) whose events this trigger should receive: run this app's List Profiles action. Deliveries naming any other profile are refused.",
 };
 
 const EVENT_OUTPUT: OutputField[] = [
@@ -149,12 +178,55 @@ export async function verifyRsaSha256(
   );
 }
 
+/** The value at `path` below `root`, or undefined when any step is not an object. */
+function at(root: unknown, path: readonly string[]): unknown {
+  let cur: unknown = root;
+  for (const k of path) {
+    const o = asObject(cur);
+    if (!o || !Object.hasOwn(o, k)) return undefined;
+    cur = o[k];
+  }
+  return cur;
+}
+
+/**
+ * Throw unless `delivered` (the profile id in the signed body) is exactly the `configured` ID.
+ * An unset, blank or non-string configured ID never matches (no fail-open), a delivered id that is
+ * not a non-empty string or a safe integer never matches, and both sides are compared as strings.
+ * The messages name the profile and echo neither value.
+ */
+function assertOwnProfile(configured: unknown, delivered: unknown): void {
+  let expected: string;
+  try {
+    expected = requireSecret(typeof configured === "string" ? configured.trim() : configured);
+  } catch {
+    throw new Error("Wise delivery refused: the Wise profile ID is not configured.");
+  }
+  const got = typeof delivered === "string" && delivered !== ""
+    ? delivered
+    : typeof delivered === "number" && Number.isSafeInteger(delivered)
+    ? String(delivered)
+    : null;
+  if (got === null || !timingSafeEqual(got, expected)) {
+    throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
+  }
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
   /** The one Wise event type (`trigger_on`) this trigger fires on. */
   eventType: string;
+  /**
+   * Where the signed body names the profile the event is about: a path below `data` (Wise's
+   * per-event payload, e.g. `["resource", "profile_id"]`). The event is refused unless it holds.
+   */
+  profilePath: readonly string[];
+  /** When set, `data.resource.type` must equal it (a profile event's `resource.id` is a profile). */
+  resourceType?: string;
+  /** The schema version the sample (and `profilePath`) documents. Default `4.0.0`. */
+  schemaVersion?: string;
   /** A representative `data` for the sample. */
   sampleData: Record<string, unknown>;
 }
@@ -171,13 +243,13 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [ENVIRONMENT_PARAM],
+    params: [ENVIRONMENT_PARAM, PROFILE_ID_PARAM],
     output: EVENT_OUTPUT,
     sample: {
       eventType: spec.eventType,
       deliveryId: "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
       subscriptionId: "01234567-89ab-cdef-0123-456789abcdef",
-      schemaVersion: "4.0.0",
+      schemaVersion: spec.schemaVersion ?? "4.0.0",
       sentAt: "2026-11-09T10:12:50.123Z",
       data: spec.sampleData,
     } satisfies WiseEvent,
@@ -210,8 +282,7 @@ export function webhookTrigger(
       }
       if (!verified) throw new Error("Wise delivery refused: the signature does not match.");
 
-      // Verified. A test notification (sent when the subscription is created) starts no run.
-      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
+      // Verified.
       let event: Record<string, unknown> | null;
       try {
         event = asObject(JSON.parse(body));
@@ -222,7 +293,18 @@ export function webhookTrigger(
       if (!event || !eventType) {
         throw new Error("Not a Wise event notification: expected an object with event_type.");
       }
+      // Another event type starts nothing here (and has no field this trigger knows to bind on).
       if (eventType !== spec.eventType) return [];
+      // Bind the delivery to the user's own profile (read from the SIGNED body, nowhere else).
+      if (spec.resourceType !== undefined) {
+        if (at(event.data, ["resource", "type"]) !== spec.resourceType) {
+          throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
+        }
+      }
+      assertOwnProfile(params?.profileId, at(event.data, spec.profilePath));
+
+      // A test notification (sent when the subscription is created) starts no run.
+      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
       return [{
         eventType,
         deliveryId: str(header(raw, "x-delivery-id")),

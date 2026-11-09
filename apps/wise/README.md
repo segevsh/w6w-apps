@@ -190,24 +190,40 @@ Wise documents creating a subscription with application credentials (client key)
 and that call is not among the operations its guide lists for a personal API token, so the app
 makes no registration call. You create the subscription yourself:
 
-1. Subscribe to the trigger in w6w and copy its **callback URL**.
-2. In Wise's [Developer Hub](https://wise.com/developer-hub) open **Webhooks > Subscriptions >
+1. On the trigger node, set the required **Wise profile ID** to the numeric id of the profile
+   (personal or business) whose events you want: run this app's **List Profiles** action. Set
+   **Wise environment** to match your subscription (live or sandbox): it chooses the public key
+   deliveries are checked against. Do this **before you publish**, see below.
+2. Publish the workflow and copy the trigger's **callback URL**.
+3. In Wise's [Developer Hub](https://wise.com/developer-hub) open **Webhooks > Subscriptions >
    Create Subscription** (or call Wise's create-subscription endpoint), paste the callback URL as
-   the notification URL, pick the event type in the table below and the newest schema version.
-   The URL must be HTTPS with no port and no query string.
-3. Set the trigger's **Wise environment** to match (live or sandbox): it chooses the public key
-   deliveries are checked against.
+   the notification URL, pick the event type and schema version from the table below (the payload
+   field this trigger binds on is the one that version documents). The URL must be HTTPS with no
+   port and no query string.
+
+Nothing needs a Wise-issued id, so no step waits on Wise: the profile ID exists before the URL is
+registered, which is why it, and not the subscription ID, is what the trigger binds on. The host
+creates a new subscription, with a **new callback URL**, whenever a published trigger's settings
+change (profile ID or environment included; Wise has no call to edit a subscription), so set both
+before step 2, and if you change either later, register the new URL at Wise. The test notification
+Wise sends when a subscription is created is verified like any delivery; if it names another
+profile it is refused (one failed delivery, no run). That is expected.
 
 A Wise subscription listens for exactly one event type, so use one trigger (and one subscription)
 per event type. Creating a subscription makes Wise send a test notification; it is verified like
 any delivery and starts no run.
 
-| Trigger | Mechanism | Wise event (`trigger_on`) | The run gets |
-| --- | --- | --- | --- |
-| `transfer-state-changed` | manual webhook | `transfers#state-change` | the transfer, its current and previous state |
-| `transfer-payout-failed` | manual webhook | `transfers#payout-failure` | the transfer and the failure reason |
-| `balance-updated` | manual webhook | `balances#update` | the balance, the amount and the new balance |
-| `profile-state-changed` | manual webhook | `profiles#state-change` | the profile and its current and previous state |
+| Trigger | Mechanism | Wise event (`trigger_on`), schema | Profile taken from the signed body | The run gets |
+| --- | --- | --- | --- | --- |
+| `transfer-state-changed` | manual webhook | `transfers#state-change`, 4.0.0 | `data.resource.profile_id` | the transfer, its current and previous state |
+| `transfer-payout-failed` | manual webhook | `transfers#payout-failure`, 5.0.0 | `data.profile_id` | the transfer and the failure reason |
+| `balance-updated` | manual webhook | `balances#update`, 4.0.0 | `data.resource.profile_id` | the balance, the amount and the new balance |
+| `profile-state-changed` | manual webhook | `profiles#state-change`, 4.0.0 | `data.resource.id`, when `data.resource.type` is `profile` | the profile and its current state |
+
+`profiles#state-change` supports application-level subscriptions only (Wise: "Profile level
+subscriptions: Not Supported"), which need a Wise Platform application; the other three support
+both. Use the schema version in the table: an older schema's payload is not the one documented
+above, and a delivery whose profile field is not where the table says is refused, never guessed at.
 
 Every event has `eventType`, `deliveryId` (`X-Delivery-Id`, shared by every retry of one delivery:
 use it to skip a duplicate), `subscriptionId`, `schemaVersion`, `sentAt` and `data`. Wise does not
@@ -218,15 +234,44 @@ for production, one for the sandbox), which are pinned in `lib/triggers.ts`, so 
 to configure. Every delivery is verified before anything runs: `X-Signature-SHA256` must be a valid
 Base64 RSA-SHA256 (PKCS#1 v1.5) signature of the exact raw body under the key of the chosen
 environment. A delivery with no signature, a signature that does not verify, a body that is not an
-event, or an unknown environment is refused and no run starts; no unsigned path exists. Wise defines
-no timestamp window (it retries for up to two weeks), so there is no replay window to enforce. If
-Wise rotates its key, the pinned PEMs here must be updated from the page below.
+event, or an unknown environment is refused and no run starts; no unsigned path exists.
 
-Sources, verified 2026-11-09:
+**A valid signature alone is not enough**, because Wise signs every customer's webhooks with the
+same key: anyone who learns your callback URL could create their own Wise subscription pointing at
+it and have Wise deliver genuinely signed events about *their* account into your workflow. So after
+the signature verifies, the profile the signed body names (column "Profile taken from the signed
+body" above) must equal, exactly (compared as strings, Wise sends the number), the **Wise profile
+ID** you configured. A delivery naming another profile, one with no profile field (or one that is
+not a number or non-empty string), and any delivery while the field is empty or blank is refused
+(one failed delivery, no run); the error names neither ID. The value is read from the signed body,
+never a header or the query string. A signed delivery of a different event type than the trigger's
+is acknowledged with no run. The profile ID is bound rather than the subscription ID because the
+profile exists before the callback URL is registered and never changes, whereas Wise issues a
+subscription ID only after the URL is registered and has no call to edit a subscription.
+
+**Not shipped:** none. Every Wise event type this app covers carries a profile id in its documented
+payload (verified 2026-11-09 against each event's reference page); a trigger whose payload had none
+would be removed rather than shipped unbound. Wise events this app does not cover are not
+triggers here.
+
+Wise signs a `sent_at` timestamp, but it retries a failed delivery for up to two weeks and says
+events can arrive out of order because of retries, so no freshness window is enforced (it would
+drop legitimate retries); use `deliveryId` to skip a duplicate. If Wise rotates its key, the pinned
+PEMs here must be updated from the page below.
+
+Sources, verified 2026-11-09 (the pages were fetched that day and the payloads read from them):
 [webhooks guide](https://docs.wise.com/guides/developer/webhooks),
 [event handling and public keys](https://docs.wise.com/guides/developer/webhooks/event-handling),
 [subscribe to webhooks](https://docs.wise.com/guides/developer/webhooks/subscribe-to-webhooks),
-[event types](https://docs.wise.com/api-reference/webhook-event). The signed test vector is from
+per-event payloads:
+[`transfers#state-change`](https://docs.wise.com/api-reference/webhook-event/eventtransfersstatechange)
+(`data.resource.profile_id`, schema 4.0.0),
+[`transfers#payout-failure`](https://docs.wise.com/api-reference/webhook-event/eventtransferspayoutfailure)
+(`data.profile_id`, schema 5.0.0; Wise also documents 4.0.0 and 2.0.0, all with `data.profile_id`),
+[`balances#update`](https://docs.wise.com/api-reference/webhook-event/eventbalancesupdate)
+(`data.resource.profile_id`, schema 4.0.0),
+[`profiles#state-change`](https://docs.wise.com/api-reference/webhook-event/eventprofilesstatechange)
+(`data.resource` = `{type: "profile", id}`, schema 4.0.0). The signed test vector is from
 Wise's [reference implementation](https://github.com/transferwise/digital-signatures-examples/tree/main/verify-webhook-signature).
 
 ## Health checks
