@@ -6,6 +6,7 @@ recordings and transcripts.
 - **Categories** — video, communication
 - **Auth methods** — oauth2, service-account
 - **Actions** — 18
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `meet.googleapis.com` (the API host); `www.googleapis.com` is
   also listed because the OAuth **scope URIs** live on it (the audit reads them out of
   `auth/`, and every sibling Google app carries it). No action calls it.
@@ -17,6 +18,14 @@ The app is built against the Google Meet REST API **v2** discovery document
 truth for every path, parameter and field. `rootUrl` is `https://meet.googleapis.com/`
 with an empty `servicePath`, so every request is `rootUrl + path` — i.e.
 `https://meet.googleapis.com/v2/…`.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-conference-record` — New Conference Record | poll | `list-conference-records` | Each newly started conference record |
+
+Google documents that `conferenceRecords.list` is ordered by start time descending by default; this trigger requests the first 100 records and emits additions. Verified 2026-11-09 against Google's [conferenceRecords.list reference](https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords/list).
 
 ## What it does
 

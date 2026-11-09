@@ -74,3 +74,5 @@ filter through the `filters` JSON object (a named field wins over the same key t
 
 - API v1 (superseded).
 - Webhook receiving/verification — FullEnrich pushes to a URL you host.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: enrichment completion (https://docs.fullenrich.com/api/v2/general/introduction).

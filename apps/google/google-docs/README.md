@@ -79,3 +79,5 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+Triggers: not shipped — the Docs API exposes get and mutation methods for a known document ID, but no document collection list endpoint (https://developers.google.com/docs/api/reference/rest).

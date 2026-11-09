@@ -287,3 +287,5 @@ deno task test       # deno test -A tests/
 
 There is no local `deno` on the dev host; run these inside the `api` container, from
 `apps/giphy/`.
+
+Triggers: not shipped — search, trending, random, and translate endpoints return catalog results rather than account records that change (https://developers.giphy.com/docs/api/).

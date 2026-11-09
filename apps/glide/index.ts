@@ -52,6 +52,7 @@ import stashDelete from "./actions/stash-delete.ts";
 
 import uploadCreate from "./actions/upload-create.ts";
 import uploadComplete from "./actions/upload-complete.ts";
+import newTable from "./triggers/new-table.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -83,4 +84,5 @@ export default {
   // authentication story.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newTable],
 } satisfies AppDefinition;

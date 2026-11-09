@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/glide",
-  "version": "0.1.1",
-  "description": "Read and write rows in Glide Big Tables, manage table schema, and stage large datasets with stashing over the Glide API.",
+  "version": "0.2.0",
+  "description": "Read and write rows in Glide Big Tables, manage table schema, stage large datasets with stashing over the Glide API, and trigger workflows when a Big Table is added.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,12 @@
         "api.glideapps.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -6,6 +6,7 @@ Manage Formbricks surveys, responses, contacts, action classes and webhooks from
 - **Category** — forms (also marketing, analytics)
 - **Auth methods** — `api-key` (an API key sent as the `x-api-key` header)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned
   `GET /health`), `quota` (signed, `x-ratelimit-*` headers) + the derived `auth:api-key`
 - **Egress allowlist** — `app.formbricks.com`
@@ -64,6 +65,14 @@ name only `app.formbricks.com`.
    action-class and webhook lists document no pagination parameters, so none are sent.
 8. **`/health` is real, `/status` is not.** `GET /health` answers `200 {"status":"ok"}`; an unknown
    path is a 404 HTML shell. There is no status page (see below).
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-survey` — New Survey | poll | `survey-list` | Each survey newly added to the workspace |
+
+`GET /api/v1/management/surveys` returns the workspace survey collection in one response; this trigger snapshots up to 5,000 records and emits additions only. Verified 2026-11-09 against Formbricks's [Management API](https://formbricks.com/docs/api-reference/management-api/get-v1-management-surveys).
 
 ## Actions
 
