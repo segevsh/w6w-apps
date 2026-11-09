@@ -537,6 +537,17 @@ for (const s of SHIPPED) {
     }
   });
 
+  test(`${s.name}: only an integer or a non-empty string counts as a profile id`, async () => {
+    // a non-integer number would stringify to something a user could type; it is not a profile
+    for (const [cfg, wire] of [["1.5", "1.5"], ["1e+21", "1e21"], ["0", "0.0"]] as const) {
+      await assertRejects(
+        async () => await ingest(s.trigger, sign_(wire), "live", cfg),
+        Error,
+        REFUSED_PROFILE,
+      );
+    }
+  });
+
   test(`${s.name}: an unset or blank configured profileId refuses every delivery (no fail-open)`, async () => {
     // a delivery that carries the real id, an empty id, none, and a null
     for (const configured of [undefined, "", "   ", "\n", null as unknown as string]) {
