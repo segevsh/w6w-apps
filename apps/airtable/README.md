@@ -6,6 +6,7 @@ schema.
 - **Categories** — spreadsheets, databases, productivity
 - **Auth methods** — personal-access-token, oauth2, api-key
 - **Actions** — 10
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.airtable.com`
 - **Website** — https://www.airtable.com
 - **API docs** — https://airtable.com/developers/web/api/introduction
@@ -80,3 +81,15 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger      | Event                                    | Poll source                                                    |
+| ------------ | ---------------------------------------- | -------------------------------------------------------------- |
+| `new-record` | A record newly added to a selected table | List records, sorted by a chosen Created time field descending |
+
+Choose an Airtable **Created time** field for the trigger. The first poll records the current page
+without emitting it; later polls deduplicate by record id. Airtable documents the list-records
+`sort` parameter and descending direction in its
+[Web API sort guide](https://support.airtable.com/docs/airtable-web-api-using-filterbyformula-or-sort-parameters),
+checked 2026-11-09.

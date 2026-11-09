@@ -14,6 +14,7 @@ import getBaseSchema from "./actions/get-base-schema.ts";
 import getTable from "./actions/get-table.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRecord from "./triggers/new-record.ts";
 
 export default {
   actions: [
@@ -35,4 +36,5 @@ export default {
   // legacy API key last (deprecated).
   auth: [personalAccessToken, oauth2, apiKey],
   healthChecks: [service, quota],
+  triggers: [newRecord],
 } satisfies AppDefinition;

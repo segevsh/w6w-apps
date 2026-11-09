@@ -5,6 +5,7 @@ Forms, fields, entries and reports on the **Wufoo REST API v3**.
 - **Categories** — forms, productivity
 - **Auth methods** — api-key
 - **Actions** — 8
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `*.wufoo.com`
 - **Website** — https://www.wufoo.com/
@@ -219,3 +220,13 @@ deno task check    # typecheck
 deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/
 ```
+
+## Triggers
+
+| Trigger     | Event                               | Poll source                                                            |
+| ----------- | ----------------------------------- | ---------------------------------------------------------------------- |
+| `new-entry` | A new submission to a selected form | `GET /forms/{identifier}/entries.json`, sorted by `EntryId` descending |
+
+The first poll records the current entry page without emitting it; later polls deduplicate by
+`EntryId`. The trigger requests 100 entries, Wufoo's documented page maximum. Wufoo's
+[API reference](https://wufoo.github.io/docs/) was checked 2026-11-09.

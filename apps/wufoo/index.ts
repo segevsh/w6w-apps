@@ -46,6 +46,7 @@ import reportEntries from "./actions/report-entries.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEntry from "./triggers/new-entry.ts";
 
 export default {
   actions: [
@@ -63,4 +64,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEntry],
 } satisfies AppDefinition;
