@@ -10,6 +10,7 @@ data routes, deliveries and PDF tools.
 - **Auth** — HTTP Basic: **API Key** as username, **Secret** as password (`basic`, field type
   `secret`, credential only ever touched in `sign`).
 - **Network** — one host: `www.webmerge.me`.
+- **Triggers** — 1 (poll).
 - **Icon** — the Formstack mark, verbatim (same `assets/icon.svg` as `apps/formstack`; Formstack
   Documents ships under the Formstack brand and the vendor serves no separate favicon SVG).
 
