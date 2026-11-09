@@ -1981,12 +1981,14 @@
   },
   {
     "path": "apps/folk",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-group"
+    ],
+    "pollAction": "list-groups",
+    "reason": "unpaginated group collection is snapshotted for additions",
+    "verified": "apps/folk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/followupboss",
@@ -2001,12 +2003,14 @@
   },
   {
     "path": "apps/formbricks",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-survey"
+    ],
+    "pollAction": "survey-list",
+    "reason": "workspace survey collection is snapshotted for additions",
+    "verified": "apps/formbricks/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/formidableforms",
@@ -2032,12 +2036,14 @@
   },
   {
     "path": "apps/formspark",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "submission.created"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: submission.created",
+    "verified": "apps/formspark/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/formstack",
@@ -2053,12 +2059,14 @@
   },
   {
     "path": "apps/formstack-documents",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-document"
+    ],
+    "pollAction": "document-list",
+    "reason": "unpaginated document template collection is snapshotted for additions",
+    "verified": "apps/formstack-documents/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fortnox",
@@ -2084,12 +2092,14 @@
   },
   {
     "path": "apps/freshbooks",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-invoice"
+    ],
+    "pollAction": "invoice-list",
+    "reason": "polls invoice-list with documented search[updated_min] (day granularity) and dedupes on id+updated (https://www.freshbooks.com/api/invoices)",
+    "verified": "apps/freshbooks/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/freshworks/freshdesk",
@@ -2137,12 +2147,14 @@
   },
   {
     "path": "apps/fullenrich",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "enrichment completion"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: enrichment completion",
+    "verified": "apps/fullenrich/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gamma",
@@ -2160,9 +2172,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "object listings are lexicographic by object name and object-change notifications publish to Pub/Sub rather than an HTTP event subscription",
+    "verified": "apps/gcs/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gerrit",
@@ -2202,9 +2214,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "search, trending, random, and translate endpoints return catalog results rather than account records that change",
+    "verified": "apps/giphy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gitea",
@@ -2273,21 +2285,29 @@
   },
   {
     "path": "apps/glide",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-table"
+    ],
+    "pollAction": "table-list",
+    "reason": "Big Table collection is snapshotted for additions",
+    "verified": "apps/glide/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gocanvas",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "dispatch_create",
+      "submission_create",
+      "submission_edit",
+      "workflow_handoff_create",
+      "submission_custom_status_change"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create",
+    "verified": "apps/gocanvas/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gocardless",
@@ -2316,9 +2336,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "model-list and generation APIs are stateless inference resources, not user records with change events",
+    "verified": "apps/google/gemini/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/gmail",
@@ -2358,9 +2378,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "account and property lists are paginated configuration reads with no documented newest-first order or changed-since filter",
+    "verified": "apps/google/google-analytics/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-business-profile",
@@ -2400,9 +2420,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the Docs API exposes get and mutation methods for a known document ID, but no document collection list endpoint",
+    "verified": "apps/google/google-docs/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-drive",
@@ -2431,18 +2451,20 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "geocoding, routing, places, and elevation APIs are stateless request/response services with no user-record collection",
+    "verified": "apps/google/google-maps/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-meet",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-conference-record"
+    ],
+    "pollAction": "list-conference-records",
+    "reason": "conference records are documented newest-started-first",
+    "verified": "apps/google/google-meet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-sheets",
@@ -2462,18 +2484,20 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the Slides API gets or modifies a known presentation ID but has no presentation list endpoint",
+    "verified": "apps/google/google-slides/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-tasks",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-task"
+    ],
+    "pollAction": "list-tasks",
+    "reason": "tasks.list supports updatedMin and the trigger deduplicates a bounded overlap",
+    "verified": "apps/google/google-tasks/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-vertex-ai",

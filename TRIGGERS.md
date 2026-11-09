@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 377, none: 255
+**Totals:** 683 apps — webhook-api: 44, manual-webhook: 10, poll: 384, none: 245
 
-## webhook-api (42)
+## webhook-api (44)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -30,8 +30,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/eventbrite | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated | no | hand | shipped: webhook registered through the vendor API |
 | apps/figma | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/formstack | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
+| apps/fullenrich | enrichment completion | apps/fullenrich/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: enrichment completion |
 | apps/github | issue, issue-comment, pull-request, push, release, workflow-run | apps/github/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/gitlab | comment, issue, merge-request, pipeline, push, release | apps/gitlab/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/gocanvas | dispatch_create, submission_create, submission_edit, workflow_handoff_create, submission_custom_status_change | apps/gocanvas/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create |
 | apps/gumroad | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/helpscout | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/intercom | conversation-created, contact-created | no | hand | vendor ships a webhook API (model knowledge; not verified against docs) |
@@ -57,11 +59,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (9)
+## manual-webhook (10)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
 | apps/customerio | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/formspark | submission.created | apps/formspark/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission.created |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-lead-ads | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/whatsapp | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
@@ -71,7 +74,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (377)
+## poll (384)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -173,11 +176,15 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/findymail | list-lists | new-list | apps/findymail/README.md Triggers section (verified 2026-11-09) | hand | list-lists is one unpaginated bounded response (contact lists): snapshot, additions only |
 | apps/firestore | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
 | apps/float | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
+| apps/folk | list-groups | new-group | apps/folk/README.md Triggers section (verified 2026-11-09) | hand | unpaginated group collection is snapshotted for additions |
 | apps/followupboss | list-users | new-users | no | scan | list action list-users has pagination and order/since params |
+| apps/formbricks | survey-list | new-survey | apps/formbricks/README.md Triggers section (verified 2026-11-09) | hand | workspace survey collection is snapshotted for additions |
 | apps/formidableforms | entry-get-many | new-entry-get-many | no | scan | list action entry-get-many has pagination and order/since params |
 | apps/formsite | result-list | new-result-list | no | scan | list action result-list has pagination and order/since params |
+| apps/formstack-documents | document-list | new-document | apps/formstack-documents/README.md Triggers section (verified 2026-11-09) | hand | unpaginated document template collection is snapshotted for additions |
 | apps/fortnox | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
 | apps/freeagent | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/freshbooks | invoice-list | new-or-updated-invoice | apps/freshbooks/README.md Triggers section (verified 2026-11-09) | hand | polls invoice-list with documented search[updated_min] (day granularity) and dedupes on id+updated (https://www.freshbooks.com/api/invoices) |
 | apps/freshworks/freshdesk | ticket-get-many | new-ticket-get-many | no | scan | list action ticket-get-many has pagination and order/since params |
 | apps/freshworks/freshsales | contact-get-many | new-contact-get-many | no | scan | list action contact-get-many has pagination and order/since params |
 | apps/freshworks/freshservice | ticket-get-many | new-ticket-get-many | no | scan | list action ticket-get-many has pagination and order/since params |
@@ -189,6 +196,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/gitea | pull-request-list | new-pull-request-list | no | scan | list action pull-request-list has pagination and order/since params |
 | apps/givebutter | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
 | apps/gladia | transcription-list | new-transcription-list | no | scan | list action transcription-list has pagination and order/since params |
+| apps/glide | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
 | apps/gocardless | list-customers | new-customers | no | scan | list action list-customers has pagination and order/since params |
 | apps/google/bigquery | job-list | new-job-list | no | scan | list action job-list has pagination and order/since params |
 | apps/google/gmail | get-many-messages | new-email | apps/google/gmail/README.md Triggers section (verified 2026-11-09) | hand | gmail users.messages.list with q=after:<epoch>; H-1 |
@@ -199,7 +207,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/google/google-contacts | list-contact-groups | new-contact-groups | no | scan | list action list-contact-groups has pagination and order/since params |
 | apps/google/google-drive | file-list | new-file | apps/google/google-drive/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action file-list |
 | apps/google/google-forms | list-forms | new-forms | no | scan | list action list-forms has pagination and order/since params |
+| apps/google/google-meet | list-conference-records | new-conference-record | apps/google/google-meet/README.md Triggers section (verified 2026-11-09) | hand | conference records are documented newest-started-first |
 | apps/google/google-sheets | sheet-read | row-added, row-added-or-updated, row-updated | apps/google/google-sheets/README.md Triggers section (verified 2026-11-09) | hand | poll sheet-read, diff rows against seeded snapshot |
+| apps/google/google-tasks | list-tasks | new-or-updated-task | apps/google/google-tasks/README.md Triggers section (verified 2026-11-09) | hand | tasks.list supports updatedMin and the trigger deduplicates a bounded overlap |
 | apps/google/googlechat | list-messages | new-messages | no | scan | list action list-messages has pagination and order/since params |
 | apps/google/youtube | list-comment-threads | new-comment-threads | no | scan | list action list-comment-threads has pagination and order/since params |
 | apps/gorgias | customer-get-many | new-customer-get-many | no | scan | list action customer-get-many has pagination and order/since params |
@@ -453,7 +463,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (255)
+## none (245)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -530,23 +540,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/fireflies |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/fivetran |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/flodesk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/folk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/formbricks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/formspark |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/formstack-documents |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/freshbooks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/fullenrich |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/gcs |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/giphy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/glide |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/gocanvas |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/gemini |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-analytics |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-docs |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-maps |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-meet |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-slides |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/google-tasks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/gcs |  | apps/gcs/README.md Triggers section (verified 2026-11-09) | hand | object listings are lexicographic by object name and object-change notifications publish to Pub/Sub rather than an HTTP event subscription |
+| apps/giphy |  | apps/giphy/README.md Triggers section (verified 2026-11-09) | hand | search, trending, random, and translate endpoints return catalog results rather than account records that change |
+| apps/google/gemini |  | apps/google/gemini/README.md Triggers section (verified 2026-11-09) | hand | model-list and generation APIs are stateless inference resources, not user records with change events |
+| apps/google/google-analytics |  | apps/google/google-analytics/README.md Triggers section (verified 2026-11-09) | hand | account and property lists are paginated configuration reads with no documented newest-first order or changed-since filter |
+| apps/google/google-docs |  | apps/google/google-docs/README.md Triggers section (verified 2026-11-09) | hand | the Docs API exposes get and mutation methods for a known document ID, but no document collection list endpoint |
+| apps/google/google-maps |  | apps/google/google-maps/README.md Triggers section (verified 2026-11-09) | hand | geocoding, routing, places, and elevation APIs are stateless request/response services with no user-record collection |
+| apps/google/google-slides |  | apps/google/google-slides/README.md Triggers section (verified 2026-11-09) | hand | the Slides API gets or modifies a known presentation ID but has no presentation list endpoint |
 | apps/google/google-vertex-ai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/google/googlesearchconsole |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/google/looker |  | no | scan | no newest-first list action found by scan; vendor events not researched |
