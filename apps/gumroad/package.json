@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gumroad",
-  "version": "0.1.0",
-  "description": "Manage Gumroad products, sales, subscribers, licenses, offer codes and payouts, and subscribe to sale webhooks.",
+  "version": "0.2.0",
+  "description": "Manage Gumroad products, sales, subscribers, licenses, offer codes and payouts, and poll for new sales.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,7 +38,8 @@
         "api.gumroad.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

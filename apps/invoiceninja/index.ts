@@ -32,8 +32,8 @@
  * without a valid token (verified live).
  *
  * Deliberately absent: recurring invoices/quotes/expenses, purchase orders,
- * credits, projects, vendors, bank integrations, designs, subscriptions and
- * webhooks — all real, documented resources this API has, but outside the
+ * credits, projects, vendors, bank integrations, designs and subscriptions —
+ * all real, documented resources this API has, but outside the
  * spec's core-surface list (clients, invoices, quotes, payments, products,
  * tasks, expenses). OAuth2/SSO login is also absent: this API's only
  * documented credential for third-party integrations is the static
@@ -91,6 +91,8 @@ import expenseDelete from "./actions/expense-delete.ts";
 
 import service from "./health/service.ts";
 import instance from "./health/instance.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import invoiceWebhook from "./triggers/invoice-webhook.ts";
 
 export default {
   actions: [
@@ -144,4 +146,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, instance],
+  triggers: [newInvoice, invoiceWebhook],
 } satisfies AppDefinition;
