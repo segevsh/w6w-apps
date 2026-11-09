@@ -76,6 +76,8 @@ callers of this app's `task-create` action supply `boxKey` exactly once.
 ### 5. Two different 401 bodies for two different auth failures — checked live
 
 ```
+
+Triggers: not shipped — `box-list` is scoped to a selected pipeline and has no app-wide newest-first box feed (https://streak.readme.io/docs/api/).
 $ curl -s https://api.streak.com/api/v1/users/me
 {"error":"Authentication required"}
 

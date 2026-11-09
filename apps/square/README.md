@@ -304,3 +304,7 @@ Status surfaces move; re-check if a probe starts failing for everyone at once.
 The icon is Square's own logomark, taken verbatim from the site header of
 `developer.squareup.com` — both paths unchanged, with the page's CSS-variable fill replaced by a
 literal `#000000`.
+
+## Triggers
+
+New Customer wraps `customer-get-many`, ordered by newest `CREATED_AT` first.

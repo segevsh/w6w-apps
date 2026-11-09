@@ -82,3 +82,7 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 ```
 
 The icon in `assets/icon.svg` is Rootly's favicon (`docs.rootly.com/favicon.svg`), stored verbatim.
+
+## Triggers
+
+New Incident wraps `incident-list`, ordered by newest `created_at` first.

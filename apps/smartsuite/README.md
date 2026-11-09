@@ -156,3 +156,5 @@ Endpoints, headers and error bodies verified against
 and its `API US` component id were confirmed live on the same date; status
 surfaces move, so re-run `deno task validate` if a probe starts failing for
 everyone at once.
+
+Triggers: not shipped — `list-records` requires a selected solution/table and has no app-wide newest-first feed (https://developers.smartsuite.com/).

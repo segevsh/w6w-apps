@@ -80,3 +80,7 @@ credential: `POST /emails/send`, `/emails/send-bulk`, `/emails/preview`, email d
 campaign create / update / delete / clone, campaign step CRUD and step actions, template create / update /
 delete, saved-search update, and the OAuth token exchange. The v1 routes are superseded by their v2
 equivalents.
+
+## Triggers
+
+New Task wraps `task-list`, ordered by newest `createdAt` first.

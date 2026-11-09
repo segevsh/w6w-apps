@@ -190,3 +190,7 @@ everything), `webhook-delete`
 Formatted with `deno task fmt` — never bare `deno fmt`, which would rewrite `assets/icon.svg` (the
 vendor's own mark, extracted verbatim from `sendblue.com`'s logo SVG) and falsify this file's
 verbatim-mark claim.
+
+## Triggers
+
+New Message wraps `message-list`, ordered by newest `createdAt` first.

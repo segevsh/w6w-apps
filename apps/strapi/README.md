@@ -187,3 +187,5 @@ against the community-tested `n8n-nodes-base` Strapi node and its `StrapiTokenAp
 docs. Strapi's REST surface has changed across major versions (notably the v4→v5 response
 envelope and `documentId`/`status` rename) — re-check if a probe or an action starts failing
 for everyone at once, and especially before assuming v4-era behavior on a v5 instance.
+
+Triggers: not shipped — `entry-list` is a selected-collection query whose generic REST surface does not promise newest-first ordering (https://docs.strapi.io/cms/api/rest).

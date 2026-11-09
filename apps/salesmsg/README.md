@@ -95,3 +95,7 @@ and async sends (`/async/messages`) and `PUT /messages/{message}` are not covere
 `assets/icon.svg` embeds the vendor's own 256x256 favicon PNG
 (`https://cdn.prod.website-files.com/61e005adf5b93f9f89f0ddd4/61e69bcaba496cec8f1e87a2_fav-256.png`)
 verbatim as base64 inside an SVG `<image>`, the same approach as `apps/addevent`.
+
+## Triggers
+
+New Contact wraps `contact-list`, ordered by newest `created_at` first.

@@ -117,3 +117,7 @@ Unlike some vendors, no ordinary read in this API's documented surface hands bac
 credential (Apify's `proxy.password`, for instance) — `user/info` and `user/limits` return account
 metadata and usage counters, nothing else. So [`lib/client.ts`](lib/client.ts) has no
 `stripSecrets`-equivalent; there is nothing to strip.
+
+## Triggers
+
+New Post wraps `blog-posts-list`, which returns published posts newest first.

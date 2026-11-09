@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.salesloft",
     "displayName": "Salesloft",
     "apiDocs": [

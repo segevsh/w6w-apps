@@ -86,3 +86,7 @@ Documented but left out, not guessed:
   form encoding is not documented.
 - Request signing, OAuth2 bearer tokens, the CSV form of pricing, the deprecated `GET /status`, and the
   legacy GET-based SMS send.
+
+## Triggers
+
+New Contact wraps `contact-list`, ordered newest first by the vendor's contact ordering.

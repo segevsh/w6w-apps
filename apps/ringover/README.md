@@ -81,3 +81,5 @@ the MCP endpoint and SCIM 2.0 provisioning.
 - `quota` — **declared unavailable** (2 requests/second per key, 429 on breach, no headers or
   usage endpoint). Severity `informational`.
 - `auth:api-key` — derived from the auth `test` hook (`GET /teams`, verdict read from the body).
+
+Triggers: not shipped — `call-live-list` is a current-call snapshot, not a newest-first immutable record feed (https://developer.ringover.com/).

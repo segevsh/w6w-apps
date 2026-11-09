@@ -139,3 +139,7 @@ The three questions above map onto declared checks like this:
 
 Researched and endpoint-verified 2026-08-29. Status surfaces and rate-limit defaults move;
 re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+New Person wraps `person-list`, ordered by newest `created_at` first.

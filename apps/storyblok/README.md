@@ -208,3 +208,7 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **every action asserts which credential
 kind it needs**, both content-writing actions **validate the content shape**, and
 `story-delete` gates both confirmation and folder deletion.
+
+## Triggers
+
+New Story wraps `story-list`, ordered by newest `first_published_at` first.
