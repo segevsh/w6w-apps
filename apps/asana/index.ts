@@ -37,6 +37,8 @@ import deleteProject from "./actions/delete-project.ts";
 import getProject from "./actions/get-project.ts";
 import listProjects from "./actions/list-projects.ts";
 import updateProject from "./actions/update-project.ts";
+import newTask from "./triggers/new-task.ts";
+import taskUpdated from "./triggers/task-updated.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -66,5 +68,6 @@ export default {
     updateProject,
   ],
   auth: [accessToken, oauth2],
+  triggers: [newTask, taskUpdated],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
