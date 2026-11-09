@@ -52,7 +52,7 @@ const activityWebhook: TriggerDefinition = {
     const secret = randomSecret();
     const created = await client.request<Record<string, unknown>>("/hooks", {
       method: "POST",
-      body: { url: callbackUrl, secret },
+      body: { targetUrl: callbackUrl, secret },
     });
     const webhookId = String(created.id ?? created._id ?? "");
     if (!webhookId) throw new Error("lemlist created the webhook but returned no id.");

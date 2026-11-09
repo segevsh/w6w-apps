@@ -20,7 +20,7 @@ test("activity-webhook: replaces leftovers, stores its id and secret, tolerates 
     ["DELETE", "/api/hooks/old"],
     ["POST", "/api/hooks"],
   ]);
-  assertEquals(JSON.parse(subscribeMock.calls[2].body!).url, callbackUrl);
+  assertEquals(JSON.parse(subscribeMock.calls[2].body!).targetUrl, callbackUrl);
   await trigger.onUnsubscribe!(
     { params: {}, state, subscriptionId: "sub" },
     mockCtx([{ status: 410, body: {} }]).ctx,
