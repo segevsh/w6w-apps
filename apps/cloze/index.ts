@@ -60,6 +60,9 @@ import webhookUnsubscribe from "./actions/webhook-unsubscribe.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedPerson from "./triggers/new-or-updated-person.ts";
+import newOrUpdatedCompany from "./triggers/new-or-updated-company.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
 
 export default {
   actions: [
@@ -107,4 +110,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newOrUpdatedPerson, newOrUpdatedCompany, newOrUpdatedProject],
 } satisfies AppDefinition;
