@@ -5297,10 +5297,12 @@
   },
   {
     "path": "apps/ringover",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "mechanism": "poll",
+    "candidates": [
+      "new-call"
+    ],
+    "pollAction": "call-list",
+    "reason": "shipped: new-call poll trigger on the existing list action (T3.07)",
     "verified": false,
     "source": "scan"
   },

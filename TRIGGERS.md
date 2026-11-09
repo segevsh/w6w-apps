@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 58, manual-webhook: 6, poll: 368, none: 250
+**Totals:** 682 apps — webhook-api: 58, manual-webhook: 6, poll: 369, none: 249
 
 ## webhook-api (58)
 
@@ -84,7 +84,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/slack | new-message, reaction-added, new-channel | no | survey | Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel. |
 | apps/twilio/twilio | incoming-sms, incoming-call-status, message-status | no | survey | Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL. |
 
-## poll (368)
+## poll (369)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -356,6 +356,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/replicate | prediction-list | new-prediction-list | no | scan | list action prediction-list has pagination and order/since params |
 | apps/replyio | sequence-contact-list | new-sequence-contact-list | no | scan | list action sequence-contact-list has pagination and order/since params |
 | apps/retellai | list-agents | new-agents | no | scan | list action list-agents has pagination and order/since params |
+| apps/ringover | call-list | new-call | no | scan | shipped: new-call poll trigger on the existing list action (T3.07) |
 | apps/rippling | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/rocketchat | list-users | new-users | no | scan | list action list-users has pagination and order/since params |
 | apps/rootly | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
@@ -457,7 +458,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (250)
+## none (249)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -650,7 +651,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/resend |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/respondio |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/ringcentral |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/ringover |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/rocketreach |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/runway |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/salesmate |  | no | scan | no newest-first list action found by scan; vendor events not researched |
