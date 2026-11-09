@@ -69,8 +69,10 @@ test("clockify: a wrong, truncated, extended or flipped token is refused and nev
 });
 
 test("clockify: a missing or empty signature header, or an absent raw body, is refused", async () => {
-  await assertRejects(() => ingest(newTimeEntry, { headers: {} }));
-  await assertRejects(() => ingest(newTimeEntry, { headers: { "clockify-signature": "" } }));
+  for (const headers of [{}, { "clockify-signature": "" }]) {
+    const missing = await assertRejects(() => ingest(newTimeEntry, { headers }));
+    assertEquals(missing.message.includes("signature header is missing"), true);
+  }
   const err = await assertRejects(() => ingest(newTimeEntry, { rawBody: undefined }));
   assertEquals(err.message.includes("raw body"), true);
 });

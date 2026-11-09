@@ -91,8 +91,10 @@ test("onfleet: a signature over the re-serialised body does not verify (raw byte
 });
 
 test("onfleet: a missing or empty signature header, or an absent raw body, is refused", async () => {
-  await assertRejects(() => deliver(taskCompleted, { headers: {} }));
-  await assertRejects(() => deliver(taskCompleted, { headers: { "x-onfleet-signature": "" } }));
+  for (const headers of [{}, { "x-onfleet-signature": "" }]) {
+    const missing = await assertRejects(() => deliver(taskCompleted, { headers }));
+    assertEquals(missing.message.includes("signature header is missing"), true);
+  }
   const err = await assertRejects(() => deliver(taskCompleted, { rawBody: undefined }));
   assertEquals(err.message.includes("raw body"), true);
 });
