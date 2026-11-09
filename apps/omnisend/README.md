@@ -6,6 +6,7 @@ Omnisend's own automations, segments, and reporting — on the **Omnisend API `2
 - **Categories** — marketing, email
 - **Auth methods** — api-key
 - **Actions** — 7
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` + ~~`quota`~~ + the derived `auth:api-key`
 - **Egress allowlist** — `api.omnisend.com` (the `service` check adds `status.omnisend.com` to its
   own hook allowlist, never to the app's)
@@ -20,6 +21,14 @@ Omnisend's own automations, segments, and reporting — on the **Omnisend API `2
 > integration directory.
 
 ## The three things most likely to go wrong
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+
+Source: https://api-docs.omnisend.com/reference/get_contacts (verified 2026-11-09).
 
 ### 1. The auth scheme is not Bearer
 

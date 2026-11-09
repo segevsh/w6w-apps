@@ -6,11 +6,20 @@ predefined tags and webhooks.
 - **Categories** — crm, communication
 - **Auth methods** — api-key, user-token
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.nocrm.io`
 - **Website** — https://www.nocrm.io
 - **API docs** — https://www.nocrm.io/api
 
 ## Auth scheme
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | poll | `lead-get-many` | Newly listed leads |
+
+Source: https://www.nocrm.io/api (verified 2026-11-09).
 
 noCRM.io documents **two separate credential grants**, not one field with a mode switch, so this
 app ships two `AuthDefinition`s:

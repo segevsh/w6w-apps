@@ -6,11 +6,20 @@ templates, webhooks and custom downloads that shape what comes out.
 - **Categories** — ai, documents, productivity
 - **Auth methods** — api-key
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`), both declared absences + the derived `auth:api-key`
 - **Egress allowlist** — `api.parseur.com`
 - **Website** — https://parseur.com/
 - **API docs** — https://developer.parseur.com
 - **OpenAPI** — https://api.parseur.com/openapi.json
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | poll | `document-list` | Newly listed documents |
+
+Source: https://developer.parseur.com/pagination-searching-sorting.md (verified 2026-11-09).
 
 Parseur receives documents — forwarded emails, direct file uploads, or raw email/text posted straight
 to the API — into a **mailbox** (called a "parser" throughout the API and this app's code, to match

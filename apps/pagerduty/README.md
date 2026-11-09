@@ -1,5 +1,7 @@
 # PagerDuty
 
+Triggers: not shipped — incident-list can order by mutable incident fields, so it is not a reliable new-record feed (https://developer.pagerduty.com/api-reference/).
+
 Manage PagerDuty incidents, services, on-call schedules and escalation
 policies.
 

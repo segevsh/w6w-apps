@@ -5,12 +5,21 @@ Manage contacts, organizations, and deals in RD Station CRM.
 - **Categories** — crm
 - **Auth** — `api-key` (a per-user token, sent as the `token` query parameter)
 - **Actions** — 10
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (feed-backed, `informational`) + the derived `auth:api-key`
 - **Egress allowlist** — `crm.rdstation.com`
 - **Website** — https://www.rdstation.com
 - **API docs** — https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos
 
 ## What this app is — and what it deliberately is not
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+
+Source: https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos (verified 2026-11-09).
 
 RD Station (TOTVS, Brazil) is a marketing-and-sales platform. The product this app talks to is
 **RD Station CRM**, its sales CRM: contacts, organizations (empresas), deals (negociações) with

@@ -7,6 +7,7 @@ account's identity on Reddit — the OAuth-authenticated Reddit API
 - **Categories** — social-media
 - **Auth methods** — oauth2
 - **Actions** — 8
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `oauth.reddit.com`, `www.reddit.com`
 - **Website** — https://www.reddit.com
 - **API docs** — https://www.reddit.com/dev/api
@@ -14,6 +15,14 @@ account's identity on Reddit — the OAuth-authenticated Reddit API
 Ported from n8n's `Reddit.node.ts` for the operation set, then re-verified
 endpoint-by-endpoint against Reddit's own
 [`reddit-archive/reddit` wiki](https://github.com/reddit-archive/reddit/wiki)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | poll | `post-list` | Newly listed subreddit posts |
+
+Source: https://www.reddit.com/dev/api (verified 2026-11-09).
 (Reddit's canonical, if informal, API reference) on 2026-07-31.
 
 ## Setup
