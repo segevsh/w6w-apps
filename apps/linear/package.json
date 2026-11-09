@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/linear",
-  "version": "0.2.3",
-  "description": "Create and manage Linear issues, comments, projects and labels through its GraphQL API.",
+  "version": "0.3.0",
+  "description": "Create and manage Linear issues, comments, projects and labels through its GraphQL API, and start workflows on issue, comment, project and cycle changes.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://linear.app/developers"
     ],
-    "longDescription": "Linear creates and manages issues from a workflow through its GraphQL API — creating, updating, fetching and deleting issues, and adding comments to them, so a process outside Linear can file and track work the same way a person would in the app.\n\nProjects can be created directly, and the reference data a workflow needs to build a well-formed issue — teams, labels, workflow states, users — can each be listed, which matters because Linear scopes most of that data per team rather than treating it as global.\n\nA fit for turning an external event — a bug report, a support escalation, a triaged alert — into a tracked Linear issue, or keeping issue status in sync with progress happening in another system.",
+    "longDescription": "Linear creates and manages issues from a workflow through its GraphQL API — creating, updating, fetching and deleting issues, and adding comments to them, so a process outside Linear can file and track work the same way a person would in the app.\n\nProjects can be created directly, and the reference data a workflow needs to build a well-formed issue — teams, labels, workflow states, users — can each be listed, which matters because Linear scopes most of that data per team rather than treating it as global.\n\nA fit for turning an external event — a bug report, a support escalation, a triaged alert — into a tracked Linear issue, or keeping issue status in sync with progress happening in another system.\n\nTriggers start a workflow when an issue, comment, project or cycle is created, updated or removed. Activating one registers a Linear webhook (workspace admin required) and every delivery is verified against a per-subscription secret.",
     "categories": [
       "project-management",
       "developer-tools"
@@ -33,7 +33,12 @@
         "api.linear.app"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

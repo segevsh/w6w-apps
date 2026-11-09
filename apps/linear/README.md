@@ -5,9 +5,41 @@ Create and manage Linear issues, comments, projects and labels through its Graph
 - **Categories** — project-management, developer-tools
 - **Auth methods** — api-key, oauth2
 - **Actions** — 11
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `api.linear.app`
 - **Website** — https://linear.app
 - **API docs** — https://linear.app/developers
+
+## Triggers
+
+Every trigger is a signed webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
+Activating one registers a webhook in Linear for you (the `webhookCreate` mutation) and removes it when
+the trigger is deactivated (`webhookDelete`). Only a workspace admin, or an OAuth app with the `admin`
+scope, can create or read webhooks, so the connection must be one of those.
+
+| Trigger | Mechanism | Linear resource | The run gets |
+|---|---|---|---|
+| `issue` — Issue Event | webhook | `Issue` | action, issue, previous values on an update |
+| `comment` — Comment Event | webhook | `Comment` | action, comment |
+| `project` — Project Event | webhook | `Project` | action, project, previous values |
+| `cycle` — Cycle Event | webhook | `Cycle` | action, cycle, previous values |
+
+Every run also gets `resourceType`, `action` (`create`, `update`, `remove`), `deliveryId`
+(`Linear-Delivery`), `id`, `url`, `actor`, `createdAt`, the record as `data` and, on an update,
+`updatedFrom`. Each trigger takes an optional **Team** (blank watches every public team) and an
+optional **Only these actions** list such as `create,update`.
+
+**Trust model.** On activation a random 256-bit secret is generated per subscription and given to
+Linear as the webhook's `secret`; it is kept in the subscription's state next to the webhook id.
+Each delivery's `Linear-Signature` (hex HMAC-SHA256 of the exact request body) is checked in
+constant time before the body is read, and the signed `webhookTimestamp` (milliseconds) must be
+within 60 seconds of now, as Linear recommends against replays. A delivery with no signature, a
+wrong one, a stale one, or no secret on record is refused and starts no run.
+
+Vendor docs (verified 2026-11-09):
+[Linear webhooks](https://linear.app/developers/webhooks) (create via API, securing webhooks) and
+[Linear's GraphQL schema](https://github.com/linear/linear/blob/master/packages/sdk/src/schema.graphql)
+(`WebhookCreateInput.secret`).
 
 ## Health check
 
