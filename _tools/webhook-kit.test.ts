@@ -2,6 +2,7 @@ import {
   assert,
   assertEquals,
   assertNotEquals,
+  assertRejects,
   assertThrows,
 } from "@std/assert";
 import { createHmac } from "node:crypto";
@@ -10,6 +11,7 @@ import {
   hmac,
   randomSecret,
   requireRawBody,
+  requireSecret,
   timingSafeEqual,
   withinTolerance,
 } from "../apps/_shared/webhook/mod.ts";
@@ -103,7 +105,7 @@ Deno.test("randomSecret: 64 hex chars by default, differs per call, honours byte
   const a = randomSecret();
   assert(/^[0-9a-f]{64}$/.test(a));
   assertNotEquals(a, randomSecret());
-  assertEquals(randomSecret(8).length, 16);
+  assertEquals(randomSecret(16).length, 32);
 });
 
 Deno.test("header: case-insensitive lookup, undefined when absent", () => {
@@ -111,4 +113,75 @@ Deno.test("header: case-insensitive lookup, undefined when absent", () => {
   assertEquals(header(raw, "X-Signature"), "v");
   assertEquals(header(raw, "x-other"), "w");
   assertEquals(header(raw, "missing"), undefined);
+});
+
+Deno.test("timingSafeEqual: non-string input is never equal", () => {
+  assertEquals(timingSafeEqual(undefined as never, undefined as never), false);
+  assertEquals(timingSafeEqual(null as never, "null"), false);
+  assertEquals(timingSafeEqual(123 as never, "123"), false);
+  assertEquals(timingSafeEqual({} as never, "[object Object]"), false);
+  assertEquals(timingSafeEqual("a", undefined as never), false);
+  assertEquals(timingSafeEqual("", ""), true);
+  assertEquals(timingSafeEqual("abc", "abc"), true);
+  assertEquals(timingSafeEqual("abc", "abd"), false);
+});
+
+Deno.test("hmac: rejects bad keys and data with the kit's own message", async () => {
+  const bad: unknown[] = [
+    5,
+    true,
+    "",
+    new Uint8Array(0),
+    { length: 4 },
+    undefined,
+    null,
+  ];
+  for (const k of bad) {
+    const e = await assertRejects(
+      () => hmac("SHA-256", k as never, "x", "hex"),
+      Error,
+    );
+    assert(
+      e.message.includes("key") && e.message.startsWith("hmac refused"),
+      e.message,
+    );
+  }
+  for (const d of [5, undefined, null, { length: 1 }]) {
+    const e = await assertRejects(
+      () => hmac("SHA-256", "k", d as never, "hex"),
+      Error,
+    );
+    assert(
+      e.message.includes("data") && e.message.startsWith("hmac refused"),
+      e.message,
+    );
+  }
+  assertEquals(await hmac("SHA-256", KEY, DATA, "hex"), SHA256_HEX);
+  assertEquals(
+    await hmac(
+      "SHA-256",
+      new TextEncoder().encode(KEY),
+      new TextEncoder().encode(DATA),
+      "hex",
+    ),
+    SHA256_HEX,
+  );
+  assertEquals(typeof (await hmac("SHA-256", "k", "", "hex")), "string");
+});
+
+Deno.test("randomSecret: refuses weak or non-integer sizes", () => {
+  for (const n of [0, 15, NaN, 16.5, -1, Infinity, "32" as never]) {
+    assertThrows(() => randomSecret(n), Error, "at least 16");
+  }
+  assertEquals(randomSecret().length, 64);
+});
+
+Deno.test("requireSecret: throws on unset or empty, returns a real secret, never echoes", () => {
+  for (const v of [undefined, null, "", 5, {}]) {
+    const e = assertThrows(() => requireSecret(v), Error);
+    assert(e.message.includes("secret"));
+  }
+  const e = assertThrows(() => requireSecret(12345), Error);
+  assert(!e.message.includes("12345"));
+  assertEquals(requireSecret("s3cret"), "s3cret");
 });

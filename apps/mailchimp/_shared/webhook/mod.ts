@@ -41,16 +41,53 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
-/** HMAC of `data` (UTF-8) under `key`, encoded as lowercase hex or standard padded base64. */
+/**
+ * Throws unless `s` is a non-empty string, else returns it. Call it on a configured secret before
+ * comparing: `timingSafeEqual("", "")` is `true`, so an unset secret met by an absent header would
+ * otherwise verify. The message names "secret" and echoes nothing.
+ */
+export function requireSecret(s: unknown): string {
+  if (typeof s !== "string" || s.length === 0) {
+    throw new Error(
+      "webhook delivery refused: the signing secret is not configured",
+    );
+  }
+  return s;
+}
+
+function toBytes(
+  v: unknown,
+  what: "key" | "data",
+  allowEmpty: boolean,
+): Uint8Array<ArrayBuffer> {
+  const bytes = typeof v === "string"
+    ? encoder.encode(v)
+    : v instanceof Uint8Array
+    ? new Uint8Array(v)
+    : null;
+  if (bytes === null || (!allowEmpty && bytes.length === 0)) {
+    throw new Error(
+      `hmac refused: ${what} must be a ${
+        allowEmpty ? "string or Uint8Array" : "non-empty string or Uint8Array"
+      }`,
+    );
+  }
+  return bytes;
+}
+
+/**
+ * HMAC of `data` (UTF-8 when a string) under `key`, encoded as lowercase hex or standard padded
+ * base64. `key` must be a non-empty string or Uint8Array and `data` a string or Uint8Array;
+ * anything else rejects (an `{length: n}` or number key would otherwise sign under zero bytes).
+ */
 export async function hmac(
   alg: "SHA-256" | "SHA-1",
   key: string | Uint8Array,
-  data: string,
+  data: string | Uint8Array,
   enc: "hex" | "base64",
 ): Promise<string> {
-  const keyBytes = new Uint8Array(
-    typeof key === "string" ? encoder.encode(key) : key,
-  );
+  const keyBytes = toBytes(key, "key", false);
+  const dataBytes = toBytes(data, "data", true);
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     keyBytes,
@@ -59,7 +96,7 @@ export async function hmac(
     ["sign"],
   );
   const sig = new Uint8Array(
-    await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(data)),
+    await crypto.subtle.sign("HMAC", cryptoKey, dataBytes),
   );
   return enc === "hex" ? bytesToHex(sig) : bytesToBase64(sig);
 }
@@ -67,9 +104,12 @@ export async function hmac(
 /**
  * Constant-time string equality over the UTF-8 bytes. Visits every byte of the longer input (a
  * missing byte counts as a mismatch) and never returns from inside the loop; a length mismatch is
- * folded into the result and reported only after the loop.
+ * folded into the result and reported only after the loop. Non-string input is never equal (JS
+ * callers and unset config can pass `undefined`). `("", "")` is `true`: callers must reject an
+ * empty expected secret themselves, see `requireSecret`.
  */
 export function timingSafeEqual(a: string, b: string): boolean {
+  if (typeof a !== "string" || typeof b !== "string") return false;
   const x = encoder.encode(a);
   const y = encoder.encode(b);
   const n = Math.max(x.length, y.length);
@@ -90,8 +130,16 @@ export function withinTolerance(
   return Math.abs(nowMs / 1000 - tsSeconds) <= toleranceSec;
 }
 
-/** Random secret as lowercase hex (2 characters per byte) from `crypto.getRandomValues`. */
+/**
+ * Random secret as lowercase hex (2 characters per byte) from `crypto.getRandomValues`. Throws
+ * unless `bytes` is an integer of at least 16 (128 bits).
+ */
 export function randomSecret(bytes = 32): string {
+  if (!Number.isInteger(bytes) || bytes < 16) {
+    throw new Error(
+      "randomSecret refused: bytes must be an integer of at least 16",
+    );
+  }
   return bytesToHex(crypto.getRandomValues(new Uint8Array(bytes)));
 }
 
