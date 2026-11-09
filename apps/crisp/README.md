@@ -3,10 +3,11 @@
 Manage conversations, messages, and contact ("people") profiles on Crisp — customer messaging and
 support.
 
+Triggers: not shipped — `list-people` accepts `sort_field`, but Crisp documents it only as "available search field names, eg. nickname" (<https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles>, verified 2026-11-09); a creation-time sort is not documented, so a newest-first poll cannot be relied on.
+
 - **Categories** — support, communication
 - **Auth methods** — basic (Website Token)
 - **Actions** — 12
-- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.crisp.chat`
 
 ## Links
@@ -194,17 +195,6 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 business calling it. The `service` check widens egress for its own unsigned probe only.
 
 ## Not built, and why
-
-## Triggers
-
-| Key — title | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-person` — New Person | poll | `list-people`, by `created_at` descending | Each newly observed Crisp people profile |
-
-Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
-it accepts no inbound webhook delivery.
-
-Vendor reference: <https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles> (verified 2026-11-09).
 
 Crisp's REST API is much broader than "conversation/people/website" — the reference lists 190+
 operations. Left out, and why:
