@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/circleci",
-  "version": "0.1.2",
-  "description": "Consume CircleCI API",
+  "version": "0.2.0",
+  "description": "Consume the CircleCI API and trigger workflows on new project pipelines.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,10 @@
         "circleci.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

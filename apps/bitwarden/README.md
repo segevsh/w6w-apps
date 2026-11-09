@@ -3,6 +3,17 @@
 The Bitwarden **organization Public API**: members, groups, collections, policies, event logs,
 subscription limits and directory import. 28 actions, one auth method, one declared health absence.
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-event` | New Event | poll | `event-list` | Newly recorded organization audit events |
+
+Bitwarden's organization event API is documented at <https://bitwarden.com/help/api/> (verified
+2026-11-09). The poll reads its newest-first event page; no webhook code is included.
+
 Every path, verb, parameter and enum comes from the live OpenAPI 3.0.4 document published at
 <https://bitwarden.com/help/api/> (16 paths, 28 operations), and was probed against the live
 identity and API hosts on 2026-10-05.

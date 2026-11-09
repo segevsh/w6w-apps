@@ -2,6 +2,18 @@
 
 Consume CircleCI API
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-pipeline` | New Pipeline | poll | `pipeline-list` | Newly created project pipelines |
+
+CircleCI documents project pipeline listing at
+<https://circleci.com/docs/api/v2/#tag/Pipeline/operation/listPipelinesForProject> (verified
+2026-11-09). No webhook code is included.
+
 - **Categories** — devops, developer-tools
 - **Auth methods** — api-token
 - **Actions** — 8
