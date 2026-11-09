@@ -1,5 +1,9 @@
 # Kudosity
 
+## Triggers
+
+- **New SMS** (`new-sms`) polls the newest-first `sms-list` action every five minutes.
+
 Send SMS, MMS, WhatsApp and RCS messages, check RCS reachability, read message history and manage
 webhooks on **Kudosity's Transmit Message API v2**.
 
