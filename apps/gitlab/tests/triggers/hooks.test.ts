@@ -148,19 +148,76 @@ test("a signature made with another key is refused", async () => {
 });
 
 test("each signature header missing is refused", async () => {
-  for (const drop of ["webhook-id", "webhook-timestamp", "webhook-signature"]) {
+  for (const drop of ["webhook-id", "webhook-timestamp"]) {
     const h: Record<string, string> = { ...headersFor() };
     delete h[drop];
     await assertRejects(() => ingest(push, call(BODY, h)), Error, "no signature");
   }
+  // No signature header at all is the legacy path; with no token either it is refused.
+  const h: Record<string, string> = { ...headersFor() };
+  delete h["webhook-signature"];
+  await assertRejects(() => ingest(push, call(BODY, h)), Error, "no valid signature or token");
 });
 
-test("a delivery signed only with the plain X-Gitlab-Token is refused (no unsigned path)", async () => {
+const LEGACY = { "x-gitlab-token": TOKEN, "x-gitlab-event": "Push Hook" };
+
+test("unsigned + correct X-Gitlab-Token (GitLab before 19.0) -> one event", async () => {
+  const out = evs(await ingest(push, call(BODY, LEGACY)));
+  assertEquals(out.length, 1);
+  assertEquals((out[0] as { deliveryId: unknown }).deliveryId, null);
+  // Header name is case-insensitive.
+  assertEquals(evs(await ingest(push, call(BODY, { "X-Gitlab-Token": TOKEN }))).length, 1);
+});
+
+test("unsigned + wrong, missing, empty or near-miss X-Gitlab-Token is refused", async () => {
+  for (const given of ["wrong", "", TOKEN + "x", TOKEN.slice(0, -1)]) {
+    await assertRejects(
+      () => ingest(push, call(BODY, { "x-gitlab-token": given })),
+      Error,
+      "no valid signature or token",
+    );
+  }
   await assertRejects(
-    () => ingest(push, call(BODY, { "x-gitlab-token": TOKEN, "x-gitlab-event": "Push Hook" })),
+    () => ingest(push, call(BODY, { "x-gitlab-event": "Push Hook" })),
+    Error,
+    "no valid signature or token",
+  );
+});
+
+test("signed with a bad signature is refused even with the correct X-Gitlab-Token (no downgrade)", async () => {
+  const bad = sign("msg_123", NOW, BODY, Buffer.from("fedcba9876543210fedcba9876543210"));
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": bad, ...LEGACY })),
+    Error,
+    "signature does not match",
+  );
+  // An empty signature header still counts as signed: refused, never the token path.
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": "", ...LEGACY })),
     Error,
     "no signature",
   );
+  // A stale timestamp on a signed delivery is not rescued by the token either.
+  await assertRejects(
+    () => ingest(push, call(BODY, { ...headersFor(BODY, NOW - 9999), ...LEGACY })),
+    Error,
+    "5-minute window",
+  );
+  // Signed + valid, with a wrong token also present: the signature alone decides.
+  const out = evs(await ingest(push, call(BODY, { ...headersFor(), "x-gitlab-token": "wrong" })));
+  assertEquals(out.length, 1);
+});
+
+test("unset or empty stored secret refuses an unsigned delivery, even with an empty/absent token", async () => {
+  for (const signingToken of [undefined, ""]) {
+    for (const headers of [{}, { "x-gitlab-token": "" }, { "x-gitlab-token": "undefined" }]) {
+      await assertRejects(
+        () => ingest(push, call(BODY, headers), { state: { ...STATE, signingToken } }),
+        Error,
+        "secret",
+      );
+    }
+  }
 });
 
 test("a stale or future timestamp is refused, even with a valid signature over it", async () => {
@@ -219,6 +276,7 @@ test("error text never echoes the token, a signature or a header value", async (
   const cases: Array<() => Promise<unknown>> = [
     () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": bad })),
     () => ingest(push, call(undefined, headersFor())),
+    () => ingest(push, call(BODY, { "x-gitlab-token": "leaky-token-value" })),
     () => ingest(push, call(BODY, headersFor(BODY, NOW - 9999))),
     () => ingest(push, call(BODY, headersFor()), { state: { ...STATE, signingToken: "" } }),
     () =>
@@ -233,7 +291,16 @@ test("error text never echoes the token, a signature or a header value", async (
     }
     assert(threw, "should have thrown");
     const m = threw!.message;
-    for (const leak of [TOKEN, KEY.toString("base64"), bad, "msg_123", String(NOW)]) {
+    for (
+      const leak of [
+        TOKEN,
+        KEY.toString("base64"),
+        bad,
+        "msg_123",
+        String(NOW),
+        "leaky-token-value",
+      ]
+    ) {
       assert(!m.includes(leak), `leaked ${leak}`);
     }
   }
@@ -290,6 +357,7 @@ test("onSubscribe: deletes a leftover hook, creates one with a signing token, st
   assertEquals(JSON.parse(calls[2].body!), {
     url: CALLBACK,
     signing_token: state.signingToken,
+    token: state.signingToken,
     enable_ssl_verification: true,
     push_events: true,
   });

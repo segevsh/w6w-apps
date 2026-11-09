@@ -15,18 +15,20 @@ import { GitLabClient, projectPath } from "./client.ts";
  *
  *   - `onSubscribe` registers a project webhook pointed at the host's `callbackUrl` with a
  *     per-subscription SIGNING token (D5 (1)): `whsec_` + base64 of 32 random bytes, which GitLab's
- *     API accepts as `signing_token`. It first deletes any webhook already pointed there. No
- *     plain-text `token` (`X-Gitlab-Token`) is registered, and none is ever accepted.
+ *     API accepts as `signing_token`. The same value is also sent as the legacy `token`, so a
+ *     GitLab older than 19.0 (which ignores `signing_token`) still sends `X-Gitlab-Token`. It first
+ *     deletes any webhook already pointed there.
  *   - `onUnsubscribe` deletes that webhook; one GitLab no longer has counts as deleted.
  *   - `handleIngest` verifies the Standard Webhooks signature BEFORE parsing: `webhook-signature`
  *     is a space-separated list of `v1,<base64 HMAC-SHA256>` over `<webhook-id>.<webhook-timestamp>.<raw body>`
- *     keyed with the decoded token, and `webhook-timestamp` must be within 5 minutes. A GitLab too
- *     old to sign (before 19.0) sends no signature, so its deliveries are refused rather than
- *     trusted.
+ *     keyed with the decoded token, and `webhook-timestamp` must be within 5 minutes. A delivery
+ *     that carries `webhook-signature` is judged by it ALONE (never downgraded to the token). Only
+ *     when that header is absent (GitLab before 19.0) is `X-Gitlab-Token` accepted, compared in
+ *     constant time with the stored secret: a shared password in a header, not bound to the body.
  *
  * Docs (verified 2026-11-09): https://docs.gitlab.com/user/project/integrations/webhooks/
  * (signing token, "Verify the signature") and https://docs.gitlab.com/api/project_webhooks/
- * (`signing_token`, `*_events` flags).
+ * (`signing_token`, `token`, `*_events` flags).
  */
 
 export interface TriggerParams {
@@ -169,6 +171,14 @@ async function verifiedPayload(
   const id = header(raw, "webhook-id");
   const ts = header(raw, "webhook-timestamp");
   const signatures = header(raw, "webhook-signature");
+  if (signatures === undefined) {
+    // No signature header at all (GitLab before 19.0): the legacy shared token, constant time.
+    const given = header(raw, "x-gitlab-token");
+    if (!given || !timingSafeEqual(given, token)) {
+      throw new Error("GitLab delivery refused: it carries no valid signature or token.");
+    }
+    return parseObject(rawBody);
+  }
   const key = keyOf(token);
   if (!id || !ts || !signatures) {
     throw new Error("GitLab delivery refused: it carries no signature.");
@@ -182,6 +192,10 @@ async function verifiedPayload(
   let ok = false;
   for (const given of signatures.split(" ")) ok = timingSafeEqual(given, expected) || ok;
   if (!ok) throw new Error("GitLab delivery refused: the signature does not match.");
+  return parseObject(rawBody);
+}
+
+function parseObject(rawBody: string): Record<string, unknown> {
   let payload: unknown;
   try {
     payload = JSON.parse(rawBody);
@@ -245,6 +259,7 @@ export function webhookTrigger(
           body: {
             url: callbackUrl,
             signing_token: signingToken,
+            token: signingToken,
             enable_ssl_verification: true,
             push_events: false,
             [spec.flag]: true,
