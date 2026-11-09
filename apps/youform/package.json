@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/youform",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read Youform forms and submissions, manage submission webhooks and enable submission refill links.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.youform",
     "displayName": "Youform",
     "apiDocs": [

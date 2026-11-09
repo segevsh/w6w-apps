@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/wordpress",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Create, read, update and delete posts, pages and users on a WordPress site.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.wordpress",
     "displayName": "WordPress",
     "apiDocs": [

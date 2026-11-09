@@ -1,5 +1,15 @@
 # WebinarGeek
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `message-list` | New chat messages |
+
+WebinarGeek API docs: https://api.webinargeek.com/ (verified 2026-11-09).
+
 Manage WebinarGeek webinars, broadcasts and subscribers.
 
 - **Categories** — video, communication

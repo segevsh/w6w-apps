@@ -1,5 +1,15 @@
 # WordPress
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `post-get-all` | Newly published posts |
+
+WordPress REST API docs: https://developer.wordpress.org/rest-api/ (verified 2026-11-09).
+
 Create, read, update and delete posts, pages and users on a WordPress site.
 
 - **Categories** — cms
