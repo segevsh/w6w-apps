@@ -29,8 +29,11 @@ without ever seeing the key.
 
 ## Triggers
 
-- **New Record** (`new-record`) polls `record-list` with descending `_md` (last modified). It
-  deduplicates record ids, so updates to a previously seen record are not emitted again.
+- **New or Updated Record** (`new-or-updated-record`) polls `record-list` with `sort=-_md` (last
+  modified, the only documented sort) and fires when a record is created or modified. Dedupe key
+  is `<id>:<_md>`, so each modification fires once and a repeat check never re-emits it. The
+  first check only seeds. Source: https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api
+  (verified 2026-11-09).
 
 | Area       | Actions                                                                                         |
 | ---------- | ----------------------------------------------------------------------------------------------- |

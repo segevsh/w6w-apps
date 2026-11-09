@@ -21,7 +21,7 @@
  *     `filters`; this app sends `filter`.
  */
 import type { AppDefinition } from "@w6w/types";
-import newRecord from "./triggers/new-record.ts";
+import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
 import apiKey from "./auth/api-key.ts";
 
 import workspaceGet from "./actions/workspace-get.ts";
@@ -80,7 +80,7 @@ export default {
     reportGet,
     reportPrint,
   ],
-  triggers: [newRecord],
+  triggers: [newOrUpdatedRecord],
   // Workspace API key + workspace id. Ninox publishes no OAuth surface for the public API.
   auth: [apiKey],
   healthChecks: [service, api],

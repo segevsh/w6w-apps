@@ -10,7 +10,7 @@ interface Params {
 function requiredString(input: Record<string, unknown>, key: string): string {
   const value = input[key];
   if (typeof value !== "string") {
-    throw new Error(`new-record: ${key} must be a string`);
+    throw new Error(`new-or-updated-record: ${key} must be a string`);
   }
   return value;
 }
@@ -29,9 +29,10 @@ const pollAction: ActionDefinition = {
 };
 
 const trigger = pollFromListAction<Params>({
-  key: "new-record",
-  title: "New Record",
-  description: "Fires for newly created table records.",
+  key: "new-or-updated-record",
+  title: "New or Updated Record",
+  description:
+    "The run gets each table record that is created or modified, newest modification first. Fires once per modification.",
   action: pollAction,
   params: [{ key: "moduleName", label: "Module", type: "string", required: true }, {
     key: "tableName",
@@ -47,9 +48,16 @@ const trigger = pollFromListAction<Params>({
     offset: 0,
   }),
   items: (result) => (result as { records?: unknown[] }).records ?? [],
-  idOf: (item) => String((item as { id?: unknown }).id),
-  output: [{ key: "id", type: "string", label: "Record ID" }],
-  sample: { id: "record-1", values: {} },
+  idOf: (item) => {
+    const record = item as { id?: unknown; _md?: unknown; values?: { _md?: unknown } };
+    // `_md` is the last-modified stamp; one id fires once per modification.
+    return `${String(record.id)}:${String(record._md ?? record.values?._md ?? "")}`;
+  },
+  output: [
+    { key: "id", type: "string", label: "Record ID" },
+    { key: "values", type: "object", label: "Field values" },
+  ],
+  sample: { id: "record-1", values: { _md: "2026-11-09T10:00:00.000Z" } },
   maxPages: 1,
 });
 

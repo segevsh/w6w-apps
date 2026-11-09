@@ -126,6 +126,8 @@ import authOauthClient from "./auth/oauth-client.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newDatabasePage from "./triggers/new-database-page.ts";
+
 export default {
   actions: [
     actionAdminAddLegalHoldUsers,
@@ -256,4 +258,5 @@ export default {
     authOauthClient,
   ],
   healthChecks: [service, quota],
+  triggers: [newDatabasePage],
 } satisfies AppDefinition;

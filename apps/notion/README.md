@@ -1,6 +1,18 @@
 # Notion
 
-Triggers: not shipped — verification_token cannot be retrieved on this host (setup POST leaves no recorded call) (https://developers.notion.com/reference/webhooks)
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-database-page` — New Database Page | poll (5 min) | `get-many-database-pages`, `POST /v1/data_sources/{id}/query` with `sorts: [{timestamp: "created_time", direction: "descending"}]`, `page_size` 25 | each page created since the previous check |
+
+The first check only records the newest page ids (nothing fires); later checks emit unseen ids
+oldest-first. One page of 25 is read per check. Trust model: polling over the connection's own
+credentials; no inbound callback. Notion webhooks were not used because their verification token
+cannot be obtained on this host. Source: https://developers.notion.com/reference/post-database-query
+(verified 2026-11-09).
 
 119 workflow actions covering all 107 operations in Notion's public and Admin OpenAPI schemas,
 plus compatibility and convenience actions. Public requests use `Notion-Version: 2026-03-11`;

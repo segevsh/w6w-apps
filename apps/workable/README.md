@@ -6,7 +6,7 @@ account's own **SPI v3 API**.
 - **Categories** — hr
 - **Auth methods** — `access-token`
 - **Actions** — 15 (9 reads, 6 performs)
-- **Triggers** — none (not shipped)
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 live (`account`, `quota`, `service`) + the derived `auth:access-token`
   check
 - **Egress allowlist** — `*.workable.com`
@@ -148,8 +148,6 @@ Receiving the event itself (a Trigger, with signature verification of `X-Workabl
 HMAC-SHA256 over the payload) is out of scope for this version — these three actions only manage the
 subscription.
 
-Triggers: not shipped — signed — needs a Claude webhook pass ([Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees)).
-
 ## Deliberately out of scope
 
 - **The HR/Employee endpoints** — `/employees`, time off, time tracking, performance review
@@ -162,7 +160,7 @@ Triggers: not shipped — signed — needs a Claude webhook pass ([Webhook Subsc
   — vendor-side APIs for approved partners, not customer-side recruiting actions.
 - **Talent pool candidates** (`POST /talent_pool/candidates`) — a distinct create path from
   job-scoped candidate creation; may be added alongside a talent-pool read surface later.
-- **Receiving webhook events** (a Trigger) — Workable signs deliveries with `X-Workable-Signature`; this app cannot safely ship the callback without the signed-webhook pass. The existing candidate-list endpoint exposes filters and cursor bounds but no documented newest-first sort, so it cannot safely back the required seed-and-dedupe poll either. Source: [Webhook Subscriptions — Candidates & Employees](https://workable.readme.io/reference/webhook-subscriptions-candidates-employees), verified 2026-11-09.
+- **Receiving signed webhook events** — see Triggers; only the poll trigger ships.
 
 Nothing was left out because it could not be understood. One genuine gap: the response **shape**
 of `GET /disqualification_reasons` could not be confirmed (the vendor's own OpenAPI schema and
@@ -171,14 +169,19 @@ rather than declaring a guessed `output`.
 
 ## Triggers
 
-Triggers: not shipped — Workable signs every webhook with the account's access token as the HMAC key whose key is the account token or the OAuth app secret (not a param this app reads), does not document the signature's digest encoding, and the list endpoint it would otherwise be polled from has no sort order (https://workable.readme.io/reference/webhook-subscriptions-candidates-employees , https://workable.readme.io/reference/job-candidates-index).
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | poll (5 min) | `candidate-list`, `GET /candidates?shortcode=…&created_after=<now − look-back>&limit=50`, following `paging.next` up to 3 pages | each candidate created since the previous check |
 
-Why, as checked on 2026-11-09 against Workable's own reference:
-
-- **Webhook.** The `/subscriptions` endpoint registers a URL, and deliveries are signed: "The key for the signature will be either the account token or the oauth application secret ... HMAC SHA256 on the payload of the request ... sent on the `X-Workable-Signature` header". This app connects with an account access token, so the verification key is the connection's own credential, which app code never reads; the only way to verify would be to paste that token a second time into a trigger param, copying a long-lived credential into trigger parameters. The documentation also does not say whether the digest is hex or base64, so there is no vendor source to build or test the check against. (Workable does document the delivery envelope: top-level `event_type`, `fired_at`, `id`, `resource_type` beside `data.*`, see https://workable.readme.io/reference/candidate-events and /employee-events; that is not the blocker.) A webhook that accepted deliveries without that check is exactly what this pack does not ship.
-- **Poll fallback.** `GET /candidates` has `since_id`, `max_id`, `created_after` and `updated_after` but no sort or order parameter, and its documentation states no default order, so a "newest first" poll cannot be pinned to the vendor's contract.
-
-Revisit when Workable documents the signature encoding (or accepts a per-subscription secret) and an order for the candidate list.
+Workable documents no sort order for `GET /candidates`, so the trigger does not rely on one: every
+check asks only for candidates created inside a look-back window (`created_after`, default 24 h,
+param `lookbackHours`) and de-duplicates by candidate id. The first check records ids and fires
+nothing. Keep the look-back longer than any outage of the poller; candidates created before the
+window and never seen are missed. Trust model: polling over the connection's own access token; no
+inbound callback. Signed webhooks stay unshipped (the signing key is the account token, and the
+digest encoding is undocumented). Sources:
+https://workable.readme.io/reference/job-candidates-index and
+https://workable.readme.io/reference/webhook-subscriptions-candidates-employees (verified 2026-11-09).
 
 ## Health checks
 
