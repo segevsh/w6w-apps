@@ -4244,7 +4244,7 @@
     "path": "apps/ninox",
     "mechanism": "poll",
     "candidates": [
-      "new-record-changes-list"
+      "new-or-updated-record"
     ],
     "pollAction": "record-changes-list",
     "reason": "list action record-changes-list has pagination and order/since params",
@@ -4275,14 +4275,12 @@
   },
   {
     "path": "apps/notion",
-    "mechanism": "manual-webhook",
+    "mechanism": "poll",
     "candidates": [
-      "page-created",
-      "page-content-updated",
-      "database-row-added"
+      "new-database-page"
     ],
-    "pollAction": null,
-    "reason": "Large app (119 actions); confirm query action exists via grep before choosing poll.",
+    "pollAction": "get-many-database-pages",
+    "reason": "shipped (T3.fx2): poll on get-many-database-pages sorted created_time desc; webhook verification token unobtainable on this host",
     "verified": false,
     "source": "survey"
   },
@@ -6783,13 +6781,12 @@
   },
   {
     "path": "apps/workable",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "candidate-created",
-      "candidate-moved"
+      "new-candidate"
     ],
-    "pollAction": null,
-    "reason": "vendor webhook API",
+    "pollAction": "candidate-list",
+    "reason": "shipped (T3.fx2): poll on candidate-list with created_after; signed webhooks deferred",
     "verified": false,
     "source": "survey"
   },

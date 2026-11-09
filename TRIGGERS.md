@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 56, manual-webhook: 8, poll: 369, none: 249
+**Totals:** 682 apps — webhook-api: 55, manual-webhook: 7, poll: 371, none: 249
 
-## webhook-api (56)
+## webhook-api (55)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -67,11 +67,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/webex | message-created, membership-created, room-created | no | survey | vendor webhook API |
 | apps/webflow | form-submission, collection-item-created, collection-item-changed, ecomm-new-order | no | survey | vendor webhook API |
 | apps/woocommerce | order-created, order-updated, customer-created, product-created | no | survey | vendor webhook API |
-| apps/workable | candidate-created, candidate-moved | no | survey | vendor webhook API |
 | apps/wufoo | new-entry | no | survey | Poll-friendly: monotonic EntryId. |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | no | survey | shipped (T2.12): API-registered signed webhooks (new-ticket, ticket-comment-added, ticket-status-changed); no Zendesk trigger rule needed |
 
-## manual-webhook (8)
+## manual-webhook (7)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -79,12 +78,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/customerio | email-delivered, email-opened, email-bounced, unsubscribed | no | survey | Signing secret needs a credential/trigger param; no list actions. |
 | apps/meta/whatsapp | incoming-message, message-status | no | survey | No message list API -> webhook only; app secret from trigger param. |
 | apps/netlify | deploy-succeeded, deploy-failed, form-submission | https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08) | survey | shipped (T2.08): signed manual-webhook receiver; the REST hook API does not document where the JWS secret goes |
-| apps/notion | page-created, page-content-updated, database-row-added | no | survey | Large app (119 actions); confirm query action exists via grep before choosing poll. |
 | apps/slack | new-message, reaction-added, new-channel | no | survey | Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel. |
 | apps/twilio/twilio | incoming-sms, incoming-call-status, message-status | no | survey | Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL. |
 | apps/wise | transfer-state-change, balance-credit, transfer-created | no | survey | shipped (T2.09): signed manual-webhook receiver (Wise signs with its published RSA key; subscription created in the Wise dashboard) |
 
-## poll (369)
+## poll (371)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -301,9 +299,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/mural | mural-list | new-mural-list | no | scan | list action mural-list has pagination and order/since params |
 | apps/mux | asset-list | new-asset-list | no | scan | list action asset-list has pagination and order/since params |
 | apps/nationbuilder | person-list | new-person-list | no | scan | list action person-list has pagination and order/since params |
-| apps/ninox | record-changes-list | new-record-changes-list | no | scan | list action record-changes-list has pagination and order/since params |
+| apps/ninox | record-changes-list | new-or-updated-record | no | scan | list action record-changes-list has pagination and order/since params |
 | apps/nocodb | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
 | apps/nocrm | lead-comment-get-many | new-lead-comment-get-many | no | scan | list action lead-comment-get-many has pagination and order/since params |
+| apps/notion | get-many-database-pages | new-database-page | no | survey | shipped (T3.fx2): poll on get-many-database-pages sorted created_time desc; webhook verification token unobtainable on this host |
 | apps/odoo | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
 | apps/omnisend | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
 | apps/oncehub | sms-notification-list | new-sms-notification-list | no | scan | list action sms-notification-list has pagination and order/since params |
@@ -439,6 +438,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wix | list-contacts | new-contacts | no | scan | list action list-contacts has pagination and order/since params |
 | apps/woodpecker | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/wordpress | post-get-all | new-post-get-all | no | scan | list action post-get-all has pagination and order/since params |
+| apps/workable | candidate-list | new-candidate | no | survey | shipped (T3.fx2): poll on candidate-list with created_after; signed webhooks deferred |
 | apps/workos | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
 | apps/wrike | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
 | apps/xai | list-files | new-files | no | scan | list action list-files has pagination and order/since params |
