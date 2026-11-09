@@ -20,6 +20,7 @@ import updateGoal from "./actions/update-goal.ts";
 import authToken from "./auth/auth-token.ts";
 import api from "./health/api.ts";
 import service from "./health/service.ts";
+import newDatapoint from "./triggers/new-datapoint.ts";
 
 /**
  * Beeminder — goal tracking with commitment contracts (goals, datapoints, pledges, charges).
@@ -56,6 +57,7 @@ const app: AppDefinition = {
   ],
   auth: [authToken],
   healthChecks: [service, api],
+  triggers: [newDatapoint],
 };
 
 export default app;

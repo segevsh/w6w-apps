@@ -7,6 +7,7 @@ re-authenticate.
 - **Categories** — social-media, communication
 - **Auth methods** — app-password
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `bsky.social`, `public.api.bsky.app`, `bsky.app`, `*`
 - **Website** — https://bsky.app
 - **API docs** — https://docs.bsky.app
@@ -205,6 +206,14 @@ client names a non-JSON body for what it is.
   holds the name today.
 - **Both delete actions treat "nothing to remove" as success**, not an error —
   the desired state is already the actual state.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `post-search` | Each new post matching the search query |
+
+Polled newest-first through the `post-search` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://docs.bsky.app/docs/api/app-bsky-feed-search-posts) (verified 2026-11-09).
 
 ## Health checks
 

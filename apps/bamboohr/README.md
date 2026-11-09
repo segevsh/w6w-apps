@@ -304,6 +304,14 @@ max 1000).
 
 ---
 
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-employee` — New Employee | Poll | `list-employees` | Each newly added employee |
+
+Polled newest-first through the `list-employees` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://documentation.bamboohr.com/reference/get-employees) (verified 2026-11-09).
+
 ## Health checks
 
 ### `service` — BambooHR platform status (real, feed-backed)

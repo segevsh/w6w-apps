@@ -7,6 +7,7 @@ the applicant tracking system, over the **Breezy v3 API**.
 - **Auth methods** — access-token (`Authorization: <token>`, a Personal Access Token or a
   `/signin` session token)
 - **Actions** — 32
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (declared unavailable, informational), `api` (unsigned `GET /user`,
   a schema-correct auth error passes), `quota` (rate-limit headers off a signed `GET /user`,
   informational) + the derived `auth:access-token`
@@ -79,3 +80,11 @@ upsert, delete) and background checks. File endpoints are multipart or binary, w
 cannot carry; the rest were trimmed to keep the action count near 30. Webhook payload verification
 (`webhook-security`) and the event catalogue (`webhook-events`) were not read, and no trigger is
 declared.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | Poll | `candidate-search` | Each newly created candidate matching the search query |
+
+Polled newest-first through the `candidate-search` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developer.breezy.hr/reference/overview) (verified 2026-11-09).

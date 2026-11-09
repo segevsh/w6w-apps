@@ -6,6 +6,7 @@ subscriptions and charges held in Baremetrics' API source, over the **Baremetric
 - **Categories** — analytics, finance
 - **Auth methods** — api-key (`Authorization: Bearer <key>`)
 - **Actions** — 30
+- **Triggers** — 1 (poll)
 - **Health checks** — `quota` (hourly request headroom), `service` (declared unavailable) + the
   derived `auth:api-key`
 - **Egress allowlist** — `api.baremetrics.com`
@@ -60,3 +61,11 @@ Left out, not guessed: refund/charge-free areas that are write-only or low value
 (reasons, events), segments, attributes and attribute fields, goals/annotations writes, users,
 cohorts (`/v1/metrics/cohorts`, whose parameters the reference does not document), and OAuth (the app
 takes an API key). The sandbox host `api-sandbox.baremetrics.com` is not on the allowlist.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | Poll | `customer-list` | Each newly created customer in the selected source |
+
+Polled newest-first through the `customer-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://developers.baremetrics.com/reference/list-customers) (verified 2026-11-09).
