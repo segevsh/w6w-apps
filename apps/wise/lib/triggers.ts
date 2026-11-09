@@ -1,5 +1,10 @@
 import type { OutputField, Param, TriggerDefinition } from "@w6w/types";
-import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
+import {
+  header,
+  requireRawBody,
+  requireSecret,
+  timingSafeEqual,
+} from "../../_shared/webhook/mod.ts";
 
 /**
  * Wise webhook triggers: a manual-webhook receiver
@@ -17,9 +22,19 @@ import { header, requireRawBody } from "../../_shared/webhook/mod.ts";
  * key before anything is parsed; a delivery that does not verify throws. There is no shared
  * secret to configure, so none is accepted or needed: the key is Wise's, in this file.
  *
- * Wise defines no signed timestamp window (it retries a failed delivery for up to two weeks
- * with the same `X-Delivery-Id`), so there is no replay window to enforce; every event carries
- * `deliveryId` for skipping a duplicate.
+ * One signature is not enough: Wise signs EVERY customer's webhooks with that same key, so a valid
+ * signature proves "Wise sent this", not "this is the subscription you set up". Anyone who learns
+ * a callback URL could create their own Wise subscription pointing at it and have Wise deliver
+ * genuinely signed events about THEIR account. So the user also pastes their subscription's ID
+ * (`subscriptionId` param), and after the signature verifies, the delivery's own
+ * `subscription_id` (a field of the signed body: "ID of the webhook subscription that triggered
+ * the event notification", docs.wise.com/guides/developer/webhooks/event-handling, verified
+ * 2026-11-09) must equal it exactly. A missing or empty configured ID refuses every delivery.
+ *
+ * Wise defines no replay window to enforce: `sent_at` is in the signed body, but Wise retries a
+ * failed delivery for up to two weeks and says events arrive out of order "due to retries", so a
+ * freshness limit would drop legitimate retries. Every event carries `deliveryId` for skipping
+ * a duplicate.
  */
 
 /** Wise's production webhook public key (docs.wise.com/guides/developer/webhooks/event-handling). */
@@ -59,6 +74,8 @@ export const WISE_PUBLIC_KEYS: PublicKeys = {
 export interface TriggerParams {
   /** Which Wise environment signs the deliveries; selects the public key. Default `live`. */
   environment?: string;
+  /** The ID of the user's own Wise webhook subscription; deliveries from any other are refused. */
+  subscriptionId?: string;
 }
 
 /** What `onSubscribe` returns: the URL the user pastes into Wise's Developer Hub. */
@@ -87,6 +104,15 @@ const ENVIRONMENT_PARAM: Param = {
   ],
   hint:
     "Which Wise environment sends the webhook; it decides the public key deliveries are checked against.",
+};
+
+const SUBSCRIPTION_ID_PARAM: Param = {
+  key: "subscriptionId",
+  label: "Wise subscription ID",
+  type: "string",
+  required: true,
+  hint:
+    "The ID of the Wise webhook subscription you created for this trigger: Developer Hub > Webhooks > Subscriptions > click the subscription > Subscription ID (the API returns it as `id` when you create one). Deliveries from any other subscription are refused.",
 };
 
 const EVENT_OUTPUT: OutputField[] = [
@@ -149,6 +175,23 @@ export async function verifyRsaSha256(
   );
 }
 
+/**
+ * Throw unless `delivered` (the signed body's `subscription_id`) is exactly the `configured` ID.
+ * An unset, blank or non-string configured ID never matches: no fail-open. The messages name the
+ * subscription and echo neither value.
+ */
+function assertOwnSubscription(configured: unknown, delivered: unknown): void {
+  let expected: string;
+  try {
+    expected = requireSecret(typeof configured === "string" ? configured.trim() : configured);
+  } catch {
+    throw new Error("Wise delivery refused: the Wise subscription ID is not configured.");
+  }
+  if (typeof delivered !== "string" || !timingSafeEqual(delivered, expected)) {
+    throw new Error("Wise delivery refused: it is not from the configured Wise subscription.");
+  }
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
@@ -171,7 +214,7 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [ENVIRONMENT_PARAM],
+    params: [ENVIRONMENT_PARAM, SUBSCRIPTION_ID_PARAM],
     output: EVENT_OUTPUT,
     sample: {
       eventType: spec.eventType,
@@ -210,8 +253,7 @@ export function webhookTrigger(
       }
       if (!verified) throw new Error("Wise delivery refused: the signature does not match.");
 
-      // Verified. A test notification (sent when the subscription is created) starts no run.
-      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
+      // Verified.
       let event: Record<string, unknown> | null;
       try {
         event = asObject(JSON.parse(body));
@@ -222,6 +264,11 @@ export function webhookTrigger(
       if (!event || !eventType) {
         throw new Error("Not a Wise event notification: expected an object with event_type.");
       }
+      // Bind the delivery to the user's own subscription (the id is read from the SIGNED body).
+      assertOwnSubscription(params?.subscriptionId, event.subscription_id);
+
+      // A test notification (sent when the subscription is created) starts no run.
+      if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
       if (eventType !== spec.eventType) return [];
       return [{
         eventType,

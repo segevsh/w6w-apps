@@ -197,6 +197,13 @@ makes no registration call. You create the subscription yourself:
    The URL must be HTTPS with no port and no query string.
 3. Set the trigger's **Wise environment** to match (live or sandbox): it chooses the public key
    deliveries are checked against.
+4. Copy the new subscription's **Subscription ID** (in Developer Hub, click the subscription in
+   **Webhooks > Subscriptions**: the detail page shows "Subscription ID"; the create-subscription
+   API returns it as `id`) and paste it into the trigger's required **Wise subscription ID**
+   field. Wise only learns your callback URL in step 2, so you cannot have the ID before then:
+   the test notification Wise sends when the subscription is created is refused (one failed
+   delivery, no run) until the ID is saved. Use the Developer Hub's retry afterwards if you want
+   to see a delivery pass.
 
 A Wise subscription listens for exactly one event type, so use one trigger (and one subscription)
 per event type. Creating a subscription makes Wise send a test notification; it is verified like
@@ -218,15 +225,27 @@ for production, one for the sandbox), which are pinned in `lib/triggers.ts`, so 
 to configure. Every delivery is verified before anything runs: `X-Signature-SHA256` must be a valid
 Base64 RSA-SHA256 (PKCS#1 v1.5) signature of the exact raw body under the key of the chosen
 environment. A delivery with no signature, a signature that does not verify, a body that is not an
-event, or an unknown environment is refused and no run starts; no unsigned path exists. Wise defines
-no timestamp window (it retries for up to two weeks), so there is no replay window to enforce. If
-Wise rotates its key, the pinned PEMs here must be updated from the page below.
+event, or an unknown environment is refused and no run starts; no unsigned path exists.
+
+**A valid signature alone is not enough**, because Wise signs every customer's webhooks with the
+same key: anyone who learns your callback URL could create their own Wise subscription pointing at
+it and have Wise deliver genuinely signed events about *their* account into your workflow. So after
+the signature verifies, the `subscription_id` inside the signed body ("ID of the webhook
+subscription that triggered the event notification") must equal, exactly, the **Wise subscription
+ID** you configured. A delivery from any other subscription, one with no `subscription_id`, or any
+delivery while the field is empty or blank is refused (one failed delivery, no run); the error
+names neither ID. The value is read from the signed body, never a header or the query string.
+
+Wise signs a `sent_at` timestamp, but it retries a failed delivery for up to two weeks and says
+events can arrive out of order because of retries, so no freshness window is enforced (it would
+drop legitimate retries); use `deliveryId` to skip a duplicate. If Wise rotates its key, the pinned
+PEMs here must be updated from the page below.
 
 Sources, verified 2026-11-09:
 [webhooks guide](https://docs.wise.com/guides/developer/webhooks),
 [event handling and public keys](https://docs.wise.com/guides/developer/webhooks/event-handling),
 [subscribe to webhooks](https://docs.wise.com/guides/developer/webhooks/subscribe-to-webhooks),
-[event types](https://docs.wise.com/api-reference/webhook-event). The signed test vector is from
+[event types and payload, incl. `subscription_id`](https://docs.wise.com/api-reference/webhook-event). The signed test vector is from
 Wise's [reference implementation](https://github.com/transferwise/digital-signatures-examples/tree/main/verify-webhook-signature).
 
 ## Health checks

@@ -17,6 +17,10 @@ import {
 const CALLBACK = "https://api.example.test/triggers/webhooks/sub_abc";
 const HOST = "https://api.example.test";
 
+// The subscription the user configured; `WISE_BODY` was sent by Wise for its own vector's subscription.
+const SUB = "01234567-89ab-cdef-0123-456789abcdef";
+const WISE_SUB = "90aa8e14-4ef1-4a56-861c-f3c9cde097ea";
+
 const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
 
 // A delivery signed by Wise itself: the body and signature are the ones in Wise's own reference
@@ -52,9 +56,17 @@ function ingest(
   trigger: typeof transferStateChanged,
   call: TriggerCall,
   environment: string | undefined,
+  ...sub: [subscriptionId?: string]
 ) {
+  // omitted -> the configured SUB; an explicit undefined stays undefined (an unset param)
+  const subscriptionId = sub.length > 0 ? sub[0] : SUB;
   return trigger.handleIngest!(
-    { raw: call, params: { environment }, state: { callbackUrl: CALLBACK }, subscriptionId: "s" },
+    {
+      raw: call,
+      params: { environment, subscriptionId },
+      state: { callbackUrl: CALLBACK },
+      subscriptionId: "s",
+    },
     mockCtx().ctx,
   );
 }
@@ -66,7 +78,7 @@ test("handleIngest: a delivery signed by Wise verifies against the pinned sandbo
     "X-Signature-SHA256": WISE_SIGNATURE,
     "X-Delivery-Id": "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
   });
-  assertEquals(evs(await ingest(transferStateChanged, call, "sandbox")), [{
+  assertEquals(evs(await ingest(transferStateChanged, call, "sandbox", WISE_SUB)), [{
     eventType: "transfers#state-change",
     deliveryId: "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
     subscriptionId: "90aa8e14-4ef1-4a56-861c-f3c9cde097ea",
@@ -101,7 +113,7 @@ test("handleIngest: one flipped byte in Wise's signed body throws", async () => 
     "x-signature-sha256": WISE_SIGNATURE,
   });
   await assertRejects(
-    async () => await ingest(transferStateChanged, call, "sandbox"),
+    async () => await ingest(transferStateChanged, call, "sandbox", WISE_SUB),
     Error,
     "signature does not match",
   );
@@ -115,6 +127,7 @@ test("handleIngest: a flipped byte in Wise's signature throws", async () => {
         transferStateChanged,
         delivery(WISE_BODY, { "x-signature-sha256": bad }),
         "sandbox",
+        WISE_SUB,
       ),
     Error,
     "signature does not match",
@@ -318,5 +331,138 @@ test("onSubscribe makes no Wise call and returns the callback URL; onUnsubscribe
 
 test("handleIngest: a Wise-signed delivery of another event type is acknowledged with none", async () => {
   const call = delivery(WISE_BODY, { "x-signature-sha256": WISE_SIGNATURE });
-  assertEquals(evs(await ingest(balanceUpdated, call, "sandbox")), []);
+  assertEquals(evs(await ingest(balanceUpdated, call, "sandbox", WISE_SUB)), []);
+});
+
+// ---- Subscription binding: a valid Wise signature is not proof the delivery is for YOU -----------
+
+const REFUSED_SUBSCRIPTION = "subscription";
+
+test("handleIngest: a signed delivery from ANOTHER subscription is refused, zero events", async () => {
+  for (
+    const other of [SUB.replace("0123", "0124"), SUB.toUpperCase(), SUB + "0", SUB.slice(0, -1)]
+  ) {
+    await assertRejects(
+      async () => await ingest(transfers, signed(BODY), "live", other),
+      Error,
+      REFUSED_SUBSCRIPTION,
+    );
+  }
+});
+
+test("handleIngest: a signed delivery with no subscription_id is refused", async () => {
+  const noId = BODY.replace(/"subscription_id": "[^"]*",\s*/, "");
+  assertEquals(noId.includes("subscription_id"), false);
+  await assertRejects(
+    async () => await ingest(transfers, signed(noId), "live"),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+  for (const bad of ["null", "123", '""', "{}", "[]"]) {
+    const body = BODY.replace(/"subscription_id": "[^"]*"/, `"subscription_id": ${bad}`);
+    await assertRejects(
+      async () => await ingest(transfers, signed(body), "live"),
+      Error,
+      REFUSED_SUBSCRIPTION,
+    );
+  }
+});
+
+test("handleIngest: an unset or blank configured subscriptionId refuses every delivery (no fail-open)", async () => {
+  const emptyId = BODY.replace(SUB, "");
+  for (const configured of [undefined, "", "   ", null as unknown as string]) {
+    // a delivery that carries the real id, one that carries an empty id, one that carries none
+    for (const body of [BODY, emptyId, BODY.replace(/"subscription_id": "[^"]*",\s*/, "")]) {
+      await assertRejects(
+        async () => await ingest(transfers, signed(body), "live", configured),
+        Error,
+        REFUSED_SUBSCRIPTION,
+      );
+    }
+  }
+  // also with no params object at all
+  await assertRejects(
+    async () =>
+      await transfers.handleIngest!(
+        {
+          raw: signed(),
+          params: undefined as never,
+          state: { callbackUrl: CALLBACK },
+          subscriptionId: "s",
+        },
+        mockCtx().ctx,
+      ),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+});
+
+test("handleIngest: a matching subscription_id yields the event (surrounding whitespace in the pasted id is trimmed)", async () => {
+  assertEquals(evs(await ingest(transfers, signed(), "live", ` ${SUB}\n`)).length, 1);
+});
+
+test("handleIngest: the id compared is the one in the signed body, not a header or the query", async () => {
+  const call = signed(BODY, { "x-subscription-id": SUB });
+  call.query = { subscription_id: SUB };
+  await assertRejects(
+    async () => await ingest(transfers, call, "live", "ffffffff-0000-0000-0000-000000000000"),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+  // a forged parsed body does not matter either: the signed raw text decides
+  const forged = signed(BODY.replace(SUB, "ffffffff-0000-0000-0000-000000000000"));
+  forged.body = JSON.parse(BODY);
+  await assertRejects(
+    async () => await ingest(transfers, forged, "live", SUB),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+});
+
+test("handleIngest: an unsigned or badly signed delivery is refused on the signature first", async () => {
+  await assertRejects(
+    async () => await ingest(transfers, delivery(BODY, {}), "live"),
+    Error,
+    "X-Signature-SHA256",
+  );
+});
+
+test("handleIngest: a test notification and an other-event delivery from another subscription are refused too", async () => {
+  await assertRejects(
+    async () =>
+      await ingest(transfers, signed(BODY, { "x-test-notification": "true" }), "live", "other"),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+  await assertRejects(
+    async () => await ingest(balances, signed(), "live", "other"),
+    Error,
+    REFUSED_SUBSCRIPTION,
+  );
+});
+
+test("handleIngest: the subscription errors echo neither the configured nor the delivered id", async () => {
+  const configured = "ffffffff-1111-2222-3333-444444444444";
+  const messages: string[] = [];
+  for (const cfg of [configured, undefined]) {
+    try {
+      await ingest(transfers, signed(), "live", cfg);
+    } catch (err) {
+      messages.push((err as Error).message);
+    }
+  }
+  assertEquals(messages.length, 2);
+  for (const m of messages) {
+    assertEquals(m.includes(configured) || m.includes(SUB) || m.includes("0123"), false);
+  }
+});
+
+test("every Wise trigger declares a required string subscriptionId param", () => {
+  for (const t of app.triggers ?? []) {
+    const p = (t.params ?? []).find((x) => x.key === "subscriptionId");
+    assertEquals(p?.type, "string", t.key);
+    assertEquals(p?.required, true, t.key);
+    assertEquals(p?.label, "Wise subscription ID", t.key);
+    assertEquals((p?.hint ?? "").length > 20, true, t.key);
+  }
 });
