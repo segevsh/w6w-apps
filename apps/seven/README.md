@@ -4,6 +4,7 @@ Send SMS and text-to-speech voice calls, look up and validate phone numbers (for
 RCS capability), read the logbooks and account usage, and manage contacts, groups and webhooks on
 **seven** (seven.io, formerly sms77), over its HTTP gateway.
 
+- **Triggers** — 1 (poll)
 - **Categories** — communication, marketing
 - **Auth methods** — api-key (`X-Api-Key: <key>`)
 - **Actions** — 31
@@ -89,4 +90,18 @@ Documented but left out, not guessed:
 
 ## Triggers
 
-New Contact wraps `contact-list`, ordered newest first by the vendor's contact ordering.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll (every 5 minutes at most) | `contact-list`, ordered `created` descending (unverified column name; see note) | each newly created contact |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `contact-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://docs.seven.io/en/rest-api/first-steps> (verified 2026-11-09).
+
+Note: the sort column name above could not be confirmed from the vendor's published docs on 2026-11-09; if the vendor ignores or rejects it the check fails or returns the vendor's default order, which can miss new items.

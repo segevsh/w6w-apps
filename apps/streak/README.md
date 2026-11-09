@@ -77,7 +77,7 @@ callers of this app's `task-create` action supply `boxKey` exactly once.
 
 ```
 
-Triggers: not shipped — `box-list` is scoped to a selected pipeline and has no app-wide newest-first box feed (https://streak.readme.io/docs/api/).
+Triggers: not shipped — `box-list` accepts `sortBy=creationTimestamp` but neither the action nor Streak's published reference (https://streak.readme.io/, JS-rendered, unreadable 2026-11-09) states the sort direction, and a poll needs newest-first guaranteed (https://streak.readme.io/).
 $ curl -s https://api.streak.com/api/v1/users/me
 {"error":"Authentication required"}
 

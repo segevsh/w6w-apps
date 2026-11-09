@@ -3,6 +3,7 @@
 Read and post to Tumblr blogs, manage likes and follows, and check a connected user's dashboard,
 on the **Tumblr API v2**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — social-media, cms
 - **Auth methods** — oauth2
 - **Actions** — 23
@@ -120,4 +121,16 @@ metadata and usage counters, nothing else. So [`lib/client.ts`](lib/client.ts) h
 
 ## Triggers
 
-New Post wraps `blog-posts-list`, which returns published posts newest first.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | poll (every 5 minutes at most) | `blog-posts-list`, ordered newest first (`sort=desc`); the trigger takes the blog identifier as a parameter | each newly published post of the chosen blog |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `blog-posts-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://www.tumblr.com/docs/en/api/v2> (verified 2026-11-09).

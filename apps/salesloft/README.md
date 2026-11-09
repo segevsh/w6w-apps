@@ -3,6 +3,7 @@
 Manage Salesloft people, accounts, cadences, cadence enrollment, calls, notes, tasks and users
 through the v2 REST API.
 
+- **Triggers** — 1 (poll)
 - **Categories** — crm, communication
 - **Auth methods** — api-key, oauth2
 - **Actions** — 26
@@ -142,4 +143,16 @@ re-check with `_tools/audit.ts` conventions in mind if a probe starts failing fo
 
 ## Triggers
 
-New Person wraps `person-list`, ordered by newest `created_at` first.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-person` — New Person | poll (every 5 minutes at most) | `person-list`, ordered `created_at` descending | each newly created person |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `person-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://developers.salesloft.com/docs/api/> (verified 2026-11-09).

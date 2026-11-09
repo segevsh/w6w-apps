@@ -3,6 +3,7 @@
 Send and receive iMessage, SMS, and RCS business messages — plus contacts, webhooks, TOTP,
 seats, location sharing, and phone verification — through the **Sendblue REST API**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — communication
 - **Auth methods** — api-keys (two custom headers: `sb-api-key-id` + `sb-api-secret-key`)
 - **Actions** — 47
@@ -193,4 +194,16 @@ verbatim-mark claim.
 
 ## Triggers
 
-New Message wraps `message-list`, ordered by newest `createdAt` first.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | poll (every 5 minutes at most) | `message-list`, ordered `createdAt` descending | each new message, inbound or outbound, identified by `message_handle` |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `message-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://docs.sendblue.com/api-v2/messages/> (verified 2026-11-09).

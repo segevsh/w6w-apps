@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/rootly",
-  "version": "0.1.0",
-  "description": "Declare, update, mitigate and resolve incidents, manage alerts, services, teams and on-call, through Rootly's incident-management API.",
+  "version": "0.2.0",
+  "description": "Declare, update, mitigate and resolve incidents, manage alerts, services, teams and on-call, through Rootly's incident-management API. Polling trigger: New Incident.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
     "apiDocs": [
       "https://docs.rootly.com/api-reference"
     ],
-    "longDescription": "Rootly is an incident-management platform. This app connects a workflow to its REST API with an API token.\\n\\nA workflow can list and fetch incidents, declare one, update it, mitigate it and resolve it, add timeline notes and action items, and read the timeline back. It can list, create, update and resolve alerts, browse and edit the service and team catalog, list severities, environments and functionalities, look up users, and read schedules, shifts and who is on call right now.\\n\\nRootly speaks JSON:API; this app hides the envelope, taking plain fields in and returning each record flattened to its attributes plus `id` and `type`. Side-loaded related records come back under `included`. The rate limit is 3,000 requests per 60 seconds.",
+    "longDescription": "Rootly is an incident-management platform. This app connects a workflow to its REST API with an API token.\\n\\nA workflow can list and fetch incidents, declare one, update it, mitigate it and resolve it, add timeline notes and action items, and read the timeline back. It can list, create, update and resolve alerts, browse and edit the service and team catalog, list severities, environments and functionalities, look up users, and read schedules, shifts and who is on call right now.\\n\\nRootly speaks JSON:API; this app hides the envelope, taking plain fields in and returning each record flattened to its attributes plus `id` and `type`. Side-loaded related records come back under `included`. The rate limit is 3,000 requests per 60 seconds.\n\nTriggers: New Incident polls the app's incident-list action and starts a workflow for each new item.",
     "categories": [
       "monitoring",
       "developer-tools"

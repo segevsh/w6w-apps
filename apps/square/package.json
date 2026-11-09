@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/square",
-  "version": "0.1.2",
-  "description": "Read and write Square payments, refunds, orders, customers, catalog items, locations and invoices via the Square Connect v2 API.",
+  "version": "0.2.0",
+  "description": "Read and write Square payments, refunds, orders, customers, catalog items, locations and invoices via the Square Connect v2 API. Polling trigger: New Customer.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -20,7 +20,7 @@
       "https://developer.squareup.com/reference/square",
       "https://developer.squareup.com/docs/build-basics/versioning-overview"
     ],
-    "longDescription": "Square runs payments and point-of-sale for a huge range of in-person and online sellers, and this app lets a workflow act on that transaction data directly. Create a payment and, when something needs to be undone, refund it, then list and look up individual payments and refunds to reconcile what actually happened. Search and read orders, and look up a seller's locations to know where a sale took place.\n\nOn the customer and catalog side, create, update, list and look up customers, and browse the whole catalog or search it for a specific item. List invoices to see what has been billed.\n\nEvery write is idempotent by default — a retried call reuses the same id rather than creating a second charge or a second refund — and this app talks to whichever of Square's production or sandbox environments the connected token belongs to.",
+    "longDescription": "Square runs payments and point-of-sale for a huge range of in-person and online sellers, and this app lets a workflow act on that transaction data directly. Create a payment and, when something needs to be undone, refund it, then list and look up individual payments and refunds to reconcile what actually happened. Search and read orders, and look up a seller's locations to know where a sale took place.\n\nOn the customer and catalog side, create, update, list and look up customers, and browse the whole catalog or search it for a specific item. List invoices to see what has been billed.\n\nEvery write is idempotent by default — a retried call reuses the same id rather than creating a second charge or a second refund — and this app talks to whichever of Square's production or sandbox environments the connected token belongs to.\n\nTriggers: New Customer polls the app's customer-get-many action and starts a workflow for each new item.",
     "categories": [
       "commerce",
       "finance"

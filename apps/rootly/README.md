@@ -4,6 +4,8 @@ Incident management from a workflow: declare, update, mitigate and resolve incid
 timelines and action items, raise and resolve alerts, browse and edit the service and team catalog,
 and ask who is on call. Vendor docs: <https://docs.rootly.com/api-reference>.
 
+- **Triggers** — 1 (poll)
+
 ## Connecting
 
 Create an API token in Rootly under **Organization Settings > API Keys** (Global, Team or Personal;
@@ -85,4 +87,16 @@ The icon in `assets/icon.svg` is Rootly's favicon (`docs.rootly.com/favicon.svg`
 
 ## Triggers
 
-New Incident wraps `incident-list`, ordered by newest `created_at` first.
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-incident` — New Incident | poll (every 5 minutes at most) | `incident-list`, ordered `created_at` descending | each newly declared incident |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `incident-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://docs.rootly.com/api-reference> (verified 2026-11-09).
