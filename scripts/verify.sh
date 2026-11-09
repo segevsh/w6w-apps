@@ -22,6 +22,9 @@ step() { printf '\n== %s\n' "$*"; }
 step "publish + selection scripts"
 node --test .github/scripts/publish-apps.test.mjs .github/scripts/changed-apps.test.mjs
 
+step "triggers coverage file"
+deno run --no-check -A --no-lock --config _tools/deno.json _tools/triggers-coverage.ts --check
+
 base="${VERIFY_BASE:-}"
 if [ -z "$base" ]; then
   for r in upstream/main origin/main; do
