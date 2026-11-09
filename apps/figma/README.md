@@ -134,10 +134,10 @@ its webhook again on unsubscribe.
 | `library-published` — Library Published | webhook (API) | `LIBRARY_PUBLISH` | …plus the created/modified/deleted assets in `data` |
 
 Setup: choose whether the ID is a team, a project or a file, and give the ID (a file's key is the
-part of its URL after `/design/`). The connection needs the `webhooks:write` scope — a personal
-access token must be created with it, and note that this app's OAuth scope list
-(`auth/oauth2.ts`) does not currently request it, so use a personal access token for triggers
-until it does. Webhooks are created and managed only through the API; Figma has no UI for them.
+part of its URL after `/design/`). The connection needs the `webhooks:write` scope (and `webhooks:read` to list them): the OAuth scope
+list (`auth/oauth2.ts`) requests both, and a personal access token must be created with them.
+A connection made before these scopes were added must be reconnected to pick them up.
+Webhooks are created and managed only through the API; Figma has no UI for them.
 
 Trust model: Figma does not sign requests. Instead the trigger registers a random 256-bit
 `passcode` (a caller-chosen secret, kept in the subscription state) and Figma echoes it in every

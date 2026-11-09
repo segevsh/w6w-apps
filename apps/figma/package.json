@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/figma",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Read Figma files, nodes, images, comments, projects and versions via the Figma REST API. Triggers fire on Figma webhooks for file updates, deletes, new versions, comments and library publishes.",
   "license": "MIT",
   "author": {

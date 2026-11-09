@@ -173,10 +173,12 @@ rather than declaring a guessed `output`.
 | --- | --- | --- | --- |
 | `new-candidate` — New Candidate | poll (5 min) | `candidate-list`, `GET /candidates?shortcode=…&created_after=<now − look-back>&limit=50`, following `paging.next` up to 3 pages | each candidate created since the previous check |
 
-Workable documents no sort order for `GET /candidates`, so the trigger does not rely on one: every
-check asks only for candidates created inside a look-back window (`created_after`, default 24 h,
-param `lookbackHours`) and de-duplicates by candidate id. The first check records ids and fires
-nothing. Keep the look-back longer than any outage of the poller; candidates created before the
+Workable documents no sort order for `GET /candidates`. Each check asks only for candidates created
+inside a look-back window (`created_after`, default 24 h, param `lookbackHours`), follows `paging.next`
+up to 3 pages of 50, and de-duplicates by candidate id. It stops at the first page that holds an
+already-seen candidate, so if Workable lists oldest-first and more than one page of candidates is
+created within the look-back, some new candidates can be missed. The first check records ids and
+fires nothing. Keep the look-back longer than any outage of the poller; candidates created before the
 window and never seen are missed. Trust model: polling over the connection's own access token; no
 inbound callback. Signed webhooks stay unshipped (the signing key is the account token, and the
 digest encoding is undocumented). Sources:
