@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/anchor",
-  "version": "0.1.0",
-  "description": "Manage Anchor proposals, agreements, invoices, payouts, contacts and webhooks.",
+  "version": "0.2.0",
+  "description": "Manage Anchor billing data and trigger workflows on new invoices.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.sayanchor.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

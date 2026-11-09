@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/addevent",
-  "version": "0.1.0",
-  "description": "Create, search, update and delete calendar events and calendars, manage RSVP attendees and calendar subscribers, and generate \"add to calendar\" links with AddEvent's Calendar & Events API v2.",
+  "version": "0.2.0",
+  "description": "Manage AddEvent calendars and templates, and trigger workflows on new event templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.addevent.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

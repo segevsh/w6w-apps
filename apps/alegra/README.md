@@ -73,3 +73,11 @@ Costa Rica, Chile, …) — e.g. `{"stamp":{"generateStamp":true}}` for an elect
 - **An inactive item cannot be edited** unless `status: "active"` is sent in the same call.
 - **Docs pages bundle several endpoints**, and some `$ref`s point at paths in another page, so a
   page's OpenAPI block is not a safe single source for one endpoint.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+
+Polled through `contact-list` ordered by descending ID. Source: [Alegra API docs](https://developer.alegra.com/) (verified 2026-11-09).

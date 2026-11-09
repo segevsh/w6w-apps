@@ -80,3 +80,11 @@ false and `trained_at` is set, then Add Knowledge to a chatbot / inbox / form.
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-ticket` — New Ticket | Poll | `ticket-list` | Each newly created ticket |
+
+Polled through `ticket-list` with its bounded ticket-form request. Source: [Aidbase API docs](https://docs.aidbase.ai) (verified 2026-11-09).

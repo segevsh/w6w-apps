@@ -125,3 +125,11 @@ deno task lint        # deno lint
 deno task fmt         # format — always via this task, never a bare `deno fmt`
 deno task test        # unit tests (87 cases across every action, auth and health check)
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event-template` — New Event Template | Poll | `event-template-list` | Each newly created event template |
+
+Polled through `event-template-list`, which the API documents newest-first. Source: [AddEvent API docs](https://www.addevent.com/c/documentation/calendar-events-api) (verified 2026-11-09).

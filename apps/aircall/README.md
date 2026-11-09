@@ -435,3 +435,11 @@ checks, and the client and params libraries. Every hook is exercised against a m
 
 The size, viewBox, colours and the absence of text elements are all asserted by a test, so a redraw
 or a bare `deno fmt` rewriting the asset fails the suite rather than shipping.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-call` — New Call | Poll | `call-list` | Each newly created call |
+
+Polled through `call-list` with `order=desc`. Source: [Aircall API reference](https://developer.aircall.io/api-references/) (verified 2026-11-09).

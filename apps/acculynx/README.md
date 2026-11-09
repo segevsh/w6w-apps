@@ -163,3 +163,11 @@ acculynx/
 
 Run from this directory: `deno task validate && deno task check && deno task lint && deno task fmt &&
 deno task test`.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-job-invoice` — New Job Invoice | Poll | `job-invoices-list` | Each newly created job invoice |
+
+Polled through `job-invoices-list` in descending order. Source: [AccuLynx API docs](https://apidocs.acculynx.com/reference/) (verified 2026-11-09).

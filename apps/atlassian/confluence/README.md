@@ -260,3 +260,11 @@ Cloud REST API v2 OpenAPI document (151 paths), the v1 document alongside it,
 and a live probe of `confluence.status.atlassian.com`. The connection model and
 health checks follow this pack's `jira` app. Status surfaces move; re-check if
 a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-page` — New Page | Poll | `page-list` | Each newly created page |
+
+Polled through `page-list` with `sort=-created-date`. Source: [Confluence REST API v2](https://developer.atlassian.com/cloud/confluence/rest/v2/) (verified 2026-11-09).

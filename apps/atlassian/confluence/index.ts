@@ -69,6 +69,7 @@ import userCurrent from "./actions/user-current.ts";
 import service from "./health/service.ts";
 import site from "./health/site.ts";
 import quota from "./health/quota.ts";
+import newPage from "./triggers/new-page.ts";
 
 export default {
   actions: [
@@ -105,4 +106,5 @@ export default {
   ],
   auth: [apiToken, oauth2],
   healthChecks: [service, site, quota],
+  triggers: [newPage],
 } satisfies AppDefinition;

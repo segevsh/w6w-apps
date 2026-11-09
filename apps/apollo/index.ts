@@ -93,6 +93,7 @@ import creditUsageStatsGet from "./actions/credit-usage-stats-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import newDeal from "./triggers/new-deal.ts";
 
 export default {
   actions: [
@@ -153,4 +154,5 @@ export default {
   // user's own account, not for a workspace connecting its own — see auth/api-key.ts.
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
+  triggers: [newDeal],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/alegra",
-  "version": "0.1.0",
-  "description": "Manage Alegra accounting data — invoices, contacts, items, payments, quotes and supplier bills — through Alegra's REST API.",
+  "version": "0.2.0",
+  "description": "Manage Alegra accounting data and trigger workflows on new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -32,7 +32,8 @@
         "api.alegra.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

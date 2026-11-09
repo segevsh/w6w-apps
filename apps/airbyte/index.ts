@@ -29,6 +29,7 @@ import sourceList from "./actions/source-list.ts";
 import destinationList from "./actions/destination-list.ts";
 import streamPropertiesGet from "./actions/stream-properties-get.ts";
 import workspaceList from "./actions/workspace-list.ts";
+import newDestination from "./triggers/new-destination.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -47,6 +48,7 @@ const app: AppDefinition = {
   ],
   auth: [application],
   healthChecks: [service, api],
+  triggers: [newDestination],
 };
 
 export default app;

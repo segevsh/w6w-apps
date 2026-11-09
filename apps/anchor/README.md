@@ -77,3 +77,11 @@ starter (components named `API (example)` and `Management Portal (example)`, cre
 is linked from nowhere Anchor publishes, so it would report `ok` whatever happens. `quota` reads the
 IETF `RateLimit-*` headers from `GET /me`; the credential probe is the same endpoint, which returns
 only the business id and name.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | Poll | `invoice-list` | Each newly created invoice |
+
+Polled through `invoice-list` ordered by descending issue date. Source: [Anchor API docs](https://docs.sayanchor.com/reference/get-started) (verified 2026-11-09).

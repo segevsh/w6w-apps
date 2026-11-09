@@ -55,6 +55,7 @@ import stateList from "./actions/state-list.ts";
 import ping from "./health/ping.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newJobInvoice from "./triggers/new-job-invoice.ts";
 
 export default {
   actions: [
@@ -91,4 +92,5 @@ export default {
   // A single static API key sent as a bearer token is AccuLynx's whole authentication story.
   auth: [bearerToken],
   healthChecks: [service, ping, quota],
+  triggers: [newJobInvoice],
 } satisfies AppDefinition;

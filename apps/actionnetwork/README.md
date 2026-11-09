@@ -125,3 +125,11 @@ for cancelling or stopping a message.
   message may be created only once per 30 seconds. The docs say `reply-to` but the API takes `reply_to`.
 - Referenced tag names that do not exist are silently ignored; `country` defaults to US as soon as any
   other address part is sent.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-person` — New Person | Poll | `person-list` | Each newly created person |
+
+Polled through `person-list` with Action Network's `modified_date` filter. Source: [Action Network API docs](https://actionnetwork.org/docs/) (verified 2026-11-09).

@@ -43,6 +43,7 @@ import locationList from "./actions/location-list.ts";
 import sourceList from "./actions/source-list.ts";
 import archiveReasonList from "./actions/archive-reason-list.ts";
 import apiKeyInfo from "./actions/api-key-info.ts";
+import newUser from "./triggers/new-user.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -76,6 +77,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, permissions, quota],
+  triggers: [newUser],
 };
 
 export default app;

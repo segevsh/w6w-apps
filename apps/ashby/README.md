@@ -281,3 +281,11 @@ A refusal reads as `Ashby refused <endpoint>: <message> (<code>) [requestId …]
 Transport failures keep their own meaning: `401` means no key arrived, and `403`
 means the key is deactivated or lacks that endpoint's module permission, which
 is granted in the Ashby app rather than here.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-user` — New User | Poll | `user-list` | Each newly created user |
+
+Polled through the bounded `user-list` request. Source: [Ashby API docs](https://developers.ashbyhq.com/reference/introduction) (verified 2026-11-09).

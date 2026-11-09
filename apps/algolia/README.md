@@ -250,3 +250,5 @@ document (the `algolia/api-clients-automation` monorepo, "Search API" v1.0.0, 60
 paths — confirmed via the GitHub API to be Algolia's org repo and not a fork),
 plus live probes of `status.algolia.com`. Status surfaces move; re-check if a
 probe starts failing for everyone at once.
+
+Triggers: not shipped — `search-multi` is a caller-defined federated search request, not a persistent record list ([Algolia Search API docs](https://www.algolia.com/doc/rest-api/search/)).
