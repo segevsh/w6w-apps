@@ -551,7 +551,7 @@ for (const s of SHIPPED) {
   test(`${s.name}: an unset or blank configured profileId refuses every delivery (no fail-open)`, async () => {
     // a delivery that carries the real id, an empty id, none, and a null
     for (const configured of [undefined, "", "   ", "\n", null as unknown as string]) {
-      for (const wire of ["222", '""', null, "null"]) {
+      for (const wire of ["222", '""', null, "null", '"undefined"', '"null"', '"5"']) {
         await assertRejects(
           async () => await ingest(s.trigger, sign_(wire), "live", configured),
           Error,
@@ -587,8 +587,13 @@ for (const s of SHIPPED) {
       REFUSED_PROFILE,
     );
     // ... and so does a signed body naming no profile at all
-    const none = sign_(null, { "x-profile-id": PROFILE });
-    none.query = { profile_id: PROFILE };
+    const none = sign_(null, {
+      "x-profile-id": PROFILE,
+      "x-wise-profile-id": PROFILE,
+      "x-profileid": PROFILE,
+      "profile-id": PROFILE,
+    });
+    none.query = { profile_id: PROFILE, profileId: PROFILE, profile: PROFILE, id: PROFILE };
     await assertRejects(async () => await ingest(s.trigger, none, "live"), Error, REFUSED_PROFILE);
     // the reverse: the signed body carries the configured profile, header and query carry others
     // -> accepted, the body wins
@@ -685,7 +690,7 @@ test("no Wise trigger declares a subscriptionId param; every one declares a requ
     assertEquals(p?.type, "string", t.key);
     assertEquals(p?.required, true, t.key);
     assertEquals(p?.label, "Wise profile ID", t.key);
-    assertEquals((p?.hint ?? "").includes("Profile List"), true, t.key);
+    assertEquals((p?.hint ?? "").includes("List Profiles"), true, t.key);
     // the emitted event still carries the subscription id as data
     assertEquals((t.output ?? []).some((o) => o.key === "subscriptionId"), true, t.key);
   }

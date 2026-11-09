@@ -191,9 +191,9 @@ and that call is not among the operations its guide lists for a personal API tok
 makes no registration call. You create the subscription yourself:
 
 1. On the trigger node, set the required **Wise profile ID** to the numeric id of the profile
-   (personal or business) whose events you want: run this app's **Profile List** action, or read
-   it from Wise. Set **Wise environment** to match your subscription (live or sandbox): it chooses
-   the public key deliveries are checked against. Do this **before you publish**, see below.
+   (personal or business) whose events you want: run this app's **List Profiles** action. Set
+   **Wise environment** to match your subscription (live or sandbox): it chooses the public key
+   deliveries are checked against. Do this **before you publish**, see below.
 2. Publish the workflow and copy the trigger's **callback URL**.
 3. In Wise's [Developer Hub](https://wise.com/developer-hub) open **Webhooks > Subscriptions >
    Create Subscription** (or call Wise's create-subscription endpoint), paste the callback URL as
@@ -267,7 +267,7 @@ per-event payloads:
 [`transfers#state-change`](https://docs.wise.com/api-reference/webhook-event/eventtransfersstatechange)
 (`data.resource.profile_id`, schema 4.0.0),
 [`transfers#payout-failure`](https://docs.wise.com/api-reference/webhook-event/eventtransferspayoutfailure)
-(`data.profile_id`, schema 5.0.0; its only documented payload),
+(`data.profile_id`, schema 5.0.0; Wise also documents 4.0.0 and 2.0.0, all with `data.profile_id`),
 [`balances#update`](https://docs.wise.com/api-reference/webhook-event/eventbalancesupdate)
 (`data.resource.profile_id`, schema 4.0.0),
 [`profiles#state-change`](https://docs.wise.com/api-reference/webhook-event/eventprofilesstatechange)

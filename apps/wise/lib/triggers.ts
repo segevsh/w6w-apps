@@ -115,7 +115,7 @@ const PROFILE_ID_PARAM: Param = {
   type: "string",
   required: true,
   hint:
-    "The numeric ID of the Wise profile (personal or business) whose events this trigger should receive: run this app's Profile List action, or find it in Wise under your profile's settings or in the URL. Deliveries naming any other profile are refused.",
+    "The numeric ID of the Wise profile (personal or business) whose events this trigger should receive: run this app's List Profiles action. Deliveries naming any other profile are refused.",
 };
 
 const EVENT_OUTPUT: OutputField[] = [
