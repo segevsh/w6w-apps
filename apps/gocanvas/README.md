@@ -102,4 +102,4 @@ create/update/delete, report (PDF) download, token exchange and OAuth.
 
 `assets/icon.svg` is the vendor's own mark path, unmodified apart from the fill colour.
 
-Triggers: not shipped — submission lists require a form, user, or email selector and the API does not document a bounded newest-first result order for polling (https://api.gocanvas.com/api/v3/docs).
+Triggers: not shipped — webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create (https://api.gocanvas.com/api/v3/docs).
