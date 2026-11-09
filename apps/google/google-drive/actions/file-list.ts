@@ -6,6 +6,7 @@ interface Input {
   q?: string;
   pageSize?: number;
   pageToken?: string;
+  orderBy?: "createdTime desc" | "modifiedTime desc";
   fields?: string;
   driveId?: string;
   includeTrashed?: boolean;
@@ -25,6 +26,15 @@ const listFiles: ActionDefinition<Input> = {
     { key: "q", label: "Query", type: "string", hint: "Google Drive `q` search syntax." },
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "pageToken", label: "Page token", type: "string" },
+    {
+      key: "orderBy",
+      label: "Order by",
+      type: "select",
+      options: [
+        { value: "createdTime desc", label: "Newest created first" },
+        { value: "modifiedTime desc", label: "Most recently modified first" },
+      ],
+    },
     { key: "fields", label: "Fields", type: "string", default: "nextPageToken, files(*)" },
     { key: "driveId", label: "Drive ID", type: "string" },
     { key: "includeTrashed", label: "Include trashed", type: "boolean", default: false },
@@ -39,6 +49,7 @@ const listFiles: ActionDefinition<Input> = {
       q: clauses.length ? clauses.join(" and ") : undefined,
       pageSize: input.pageSize ?? 100,
       pageToken: input.pageToken,
+      orderBy: input.orderBy,
       fields: input.fields ?? "nextPageToken, files(*)",
       ...ALL_DRIVES_QS,
       spaces: "drive",

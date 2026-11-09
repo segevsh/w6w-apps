@@ -5,7 +5,7 @@ interface Input {
   locationId: string;
   answersPerQuestion?: number;
   ignoreAnswered?: boolean;
-  orderBy?: "update_time desc" | "upvote_count desc";
+  orderBy?: "updateTime desc" | "upvoteCount desc";
   pageSize?: number;
   pageToken?: string;
 }
@@ -39,8 +39,8 @@ const listQuestions: ActionDefinition<Input> = {
       label: "Order by",
       type: "select",
       options: [
-        { value: "update_time desc", label: "Most recently updated" },
-        { value: "upvote_count desc", label: "Most upvoted" },
+        { value: "updateTime desc", label: "Most recently updated" },
+        { value: "upvoteCount desc", label: "Most upvoted" },
       ],
     },
     { key: "pageSize", label: "Page size", type: "number", default: 10 },
