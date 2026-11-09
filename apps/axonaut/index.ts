@@ -50,6 +50,8 @@ import taskCreate from "./actions/task-create.ts";
 import taskUpdate from "./actions/task-update.ts";
 import projectList from "./actions/project-list.ts";
 import projectGet from "./actions/project-get.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
 
 export default {
   actions: [
@@ -85,6 +87,7 @@ export default {
     projectList,
     projectGet,
   ],
+  triggers: [newInvoice, newOrUpdatedInvoice],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

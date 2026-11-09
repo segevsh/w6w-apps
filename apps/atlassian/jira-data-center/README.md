@@ -1,5 +1,15 @@
 # Jira Data Center
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-comment` — New Comment | poll | `comment-get-many` ordered by newest creation | Each newly created issue comment |
+
+Vendor reference: https://developer.atlassian.com/server/jira/platform/jira-rest-api-examples/ (verified 2026-11-09).
+
 Create, search and transition issues on a **self-hosted Jira Data Center or Jira
 Server** instance — a genuinely different product from the sibling
 [`jira`](../jira/README.md) app in this pack, which is Jira **Cloud** only (scoped to

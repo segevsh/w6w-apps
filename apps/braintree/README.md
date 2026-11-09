@@ -1,5 +1,15 @@
 # Braintree
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transaction` — New Transaction | poll | `transaction-search` | Each newly created transaction |
+
+Vendor reference: https://developer.paypal.com/braintree/graphql/ (verified 2026-11-09).
+
 Charge, authorize, capture, refund, void and reverse payments, vault and delete payment methods,
 manage customers and search transactions on **Braintree** (PayPal's payment gateway), over its
 GraphQL API.

@@ -1,5 +1,15 @@
 # Browse AI
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | poll | `task-list`, newest first by default | Each newly created task for the selected robot |
+
+Vendor reference: https://docs.browse.ai/api/ (verified 2026-11-09).
+
 Run Browse AI **robots** — pre-built or custom web scrapers/monitors — poll the tasks they create,
 manage monitors, bulk runs and webhooks, on the **Browse AI API v2**.
 

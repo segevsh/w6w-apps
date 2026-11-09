@@ -98,6 +98,7 @@ import segmentList from "./actions/segment-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBroadcast from "./triggers/new-broadcast.ts";
 
 export default {
   actions: [
@@ -143,6 +144,7 @@ export default {
     // Segments
     segmentList,
   ],
+  triggers: [newBroadcast],
   // OAuth 2.0 only. AWeber's older OAuth 1.0a is still accepted by the API
   // (see the module docs, finding 1) but is not implemented here — AWeber's
   // own guidance is to move off it.

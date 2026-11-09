@@ -1,5 +1,7 @@
 # Attio
 
+Triggers: not shipped — `list-record-attribute-values` is an oldest-first history sub-resource, not a primary record feed (https://docs.attio.com/rest-api/endpoint-reference/records/list-attribute-values; verified 2026-11-09).
+
 Attio CRM records, list entries, attributes, notes, tasks and workspace members, on the **Attio REST
 API v2**.
 

@@ -1,5 +1,15 @@
 # balena
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-device` — New Device | poll | `device-list` | Each newly visible device in the selected fleet |
+
+Vendor reference: https://docs.balena.io/reference/api/resources/device/ (verified 2026-11-09).
+
 Manage fleets of Linux devices on balenaCloud — inspect them, configure them,
 choose what they run, and reach into them.
 

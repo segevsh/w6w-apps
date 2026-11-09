@@ -1,5 +1,7 @@
 # Avoma
 
+Triggers: not shipped — `call-list` requires a caller-chosen date window and has no newest-first order or created-since cursor (https://dev.avoma.com/reference/get-calls; verified 2026-11-09).
+
 AI meeting assistant. This app reads Avoma's meetings, recordings, transcripts, AI notes,
 insights, scorecards, users and smart categories, and can submit a call recording for analysis.
 

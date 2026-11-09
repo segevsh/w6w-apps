@@ -1,5 +1,16 @@
 # Axonaut
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | poll | `invoice-list` filtered by `date_after` | Each newly created invoice |
+| `new-or-updated-invoice` — New or Updated Invoice | poll | `invoice-list` filtered by `updated_after` | Each newly created or updated invoice |
+
+Vendor reference: https://axonaut.com/api/v2/doc (verified 2026-11-09).
+
 French all-in-one CRM and invoicing for small businesses, driven through the Axonaut REST API v2
 (`https://axonaut.com/api/v2`). Docs are mostly French; this app is in English.
 

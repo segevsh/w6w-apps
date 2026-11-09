@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/braze",
-  "version": "0.1.0",
-  "description": "Track user data, trigger campaigns and Canvases, send messages, and manage email subscriptions in Braze.",
+  "version": "0.2.0",
+  "description": "Track user data, manage Braze campaigns, and poll newly created or updated campaigns.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.braze",
     "displayName": "Braze",
     "apiDocs": [

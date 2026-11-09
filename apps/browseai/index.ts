@@ -73,6 +73,7 @@ import statusGet from "./actions/status-get.ts";
 import service from "./health/service.ts";
 import queue from "./health/queue.ts";
 import quota from "./health/quota.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -101,6 +102,7 @@ export default {
     // System
     statusGet,
   ],
+  triggers: [newTask],
   // API key only. Browse AI publishes no OAuth surface for third-party apps;
   // the key is the whole authentication story.
   auth: [apiKey],
