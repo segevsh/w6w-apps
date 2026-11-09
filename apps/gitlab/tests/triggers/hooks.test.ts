@@ -197,6 +197,19 @@ test("signed with a bad signature is refused even with the correct X-Gitlab-Toke
     Error,
     "no signature",
   );
+  // Signature present but webhook-id / webhook-timestamp missing: refused despite the token.
+  for (const drop of ["webhook-id", "webhook-timestamp"]) {
+    const h: Record<string, string> = { ...headersFor(), ...LEGACY };
+    delete h[drop];
+    await assertRejects(() => ingest(push, call(BODY, h)), Error, "no signature");
+  }
+  // Non-empty signature header with no `v1,` entry: refused despite the token.
+  for (const sig of ["v2,AAAA", "garbage", " "]) {
+    await assertRejects(
+      () => ingest(push, call(BODY, { ...headersFor(), "webhook-signature": sig, ...LEGACY })),
+      Error,
+    );
+  }
   // A stale timestamp on a signed delivery is not rescued by the token either.
   await assertRejects(
     () => ingest(push, call(BODY, { ...headersFor(BODY, NOW - 9999), ...LEGACY })),

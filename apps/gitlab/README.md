@@ -34,7 +34,7 @@ self-hostable apps in this pack carry.
 
 ## Triggers
 
-Every trigger is a signed webhook trigger
+Every trigger is a webhook trigger, signed where GitLab can sign it (see the trust model below)
 ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)). Activating one
 registers a project webhook on GitLab for you (`POST /projects/:id/hooks`) and removes it when the
 trigger is deactivated. The token needs the `api` scope and the Maintainer role on the project.
@@ -63,11 +63,15 @@ optional **Only these actions** list such as `open,merge`.
   before the body is read, and `webhook-timestamp` must be within 5 minutes. A delivery that carries
   `webhook-signature` is judged by the signature alone: a bad one is refused even when a correct
   `X-Gitlab-Token` rides along.
-- **Unsigned (GitLab before 19.0) — a shared password.** When there is no `webhook-signature` header
-  at all, the delivery is accepted only if its `X-Gitlab-Token` equals the subscription's secret
-  (compared in constant time). That token is a shared password in a header: nothing binds it to the
-  body, so a captured delivery could be altered and replayed, and the 5-minute window does not
-  apply. Use GitLab 19.0 or later where this matters.
+- **Unsigned (legacy `X-Gitlab-Token`) — a shared password, enabled on every subscription.** When
+  there is no `webhook-signature` header at all, the delivery is accepted if its `X-Gitlab-Token`
+  equals the subscription's secret (compared in constant time). That token is a shared password in a
+  header: nothing binds it to the body, so a captured delivery could be altered and replayed, and
+  the 5-minute window does not apply. This path is open on every subscription, GitLab 19.0 and later
+  and GitLab.com included, because activation always registers `token`: someone who captured a
+  signed delivery can strip its signature headers, alter the body and still be accepted. The token
+  is the same value as the signing token, so treat it as the signing key: anyone who learns it can
+  also forge signed deliveries.
 
 Activation sends the same secret as both `signing_token` and the webhook's `token` (GitLab's "Secret
 token to validate received payloads"), so older servers, which ignore `signing_token`, still send
