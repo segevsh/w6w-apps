@@ -47,3 +47,10 @@ test("new-domain-record: a domain larger than one page is refused, not silently 
     /at most 200/,
   );
 });
+
+test("new-domain-record: an edited existing record is not a new record", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([rec(1)]).ctx);
+  const edited = { ...rec(1), data: "203.0.113.9" };
+  const result = await trigger.poll!({ ...input, state: seeded.nextState }, ctx([edited]).ctx);
+  assertEquals(result.events, []);
+});

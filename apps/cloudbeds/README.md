@@ -1,15 +1,12 @@
 # Cloudbeds
 
-Triggers: not shipped — `reservation-list` has `sortByRecent`, but Cloudbeds documents it as most
-recent activity rather than reservation creation, so it cannot safely define a new-reservation feed
-(<https://developers.cloudbeds.com/reference/get-reservations>, verified 2026-11-09), and `guest-list` sorts by creation or modification with no documented direction.
-
 Search and create reservations, check room-type availability and rate plans, and read or update
 guest and property records, on the **Cloudbeds PMS API v1.3**.
 
 - **Categories** — crm, commerce, calendar
 - **Auth methods** — oauth2 (authorization_code, technology-partner flow)
 - **Actions** — 13
+- **Triggers** — 2 (poll)
 - **Health checks** — `service` (component-scoped) + `quota` (declared absence, `informational`) +
   the derived `auth:oauth2`
 - **Egress allowlist** — `api.cloudbeds.com` (the `service` check adds `status.cloudbeds.com` to its
@@ -24,6 +21,28 @@ guest and property records, on the **Cloudbeds PMS API v1.3**.
 > `reference/tech-specs`), and live probes against `api.cloudbeds.com` and `status.cloudbeds.com`.
 > Nothing here came from a third-party integration directory, and nothing was inferred from a sibling
 > app's shape.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-reservation` | poll | `reservation-list` | Each reservation booked since the last check |
+| `new-or-updated-reservation` | poll | `reservation-list` | Each reservation booked or modified since the last check |
+
+Both call the existing `reservation-list` action (`GET /getReservations`, `pageSize` 100, up to 3 pages
+per check) with its own date-window filter set to the previous check minus a 2-minute overlap:
+`resultsFrom` ("Lower limit on the booking date (when the reservation was created)") for
+`new-reservation`, `modifiedFrom` ("the right filter for an incremental sync") for
+`new-or-updated-reservation`, and dedupe by `reservationID` (the second trigger by
+`reservationID:dateModified`, so an edit is a new event). The first check only records the position.
+More than 300 reservations in one 5-minute window would be cut at three pages.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same
+authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://developers.cloudbeds.com/reference/get-reservations> (verified 2026-11-09:
+the parameter names and semantics are those the `reservation-list` action already documents from the
+vendor's OpenAPI; the reference page itself is JS-rendered and was not re-quoted).
 
 ## The three things most likely to go wrong
 

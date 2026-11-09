@@ -45,3 +45,12 @@ test("new-contact-list: an account beyond one page is refused, not silently trun
     "at most 500",
   );
 });
+
+test("new-contact-list: a renamed existing list is not a new list", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([list("a")]).ctx);
+  const result = await trigger.poll!(
+    { ...input, state: seeded.nextState },
+    ctx([{ ...list("a"), name: "renamed" }]).ctx,
+  );
+  assertEquals(result.events, []);
+});

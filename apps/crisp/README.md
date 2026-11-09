@@ -5,10 +5,11 @@ support.
 
 ## Triggers
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
+| `new-conversation` | poll | `list-conversations` | Each conversation started since the last check (updated in the window AND `created_at` in the window; deduped by `session_id`) |
 | `new-or-updated-conversation` | poll | `list-conversations` | Each conversation created or with activity since the last check (`session_id` + `updated_at`) |
 
 `list-conversations` documents no sort, so the trigger uses Crisp's `filter_date_start` ("when to start relative to conversation update date"), which this change exposes on the action as the optional `Filter: updated since` parameter (additive; unset it changes nothing). Each check asks for conversations updated since the previous check minus 2 minutes and dedupes by `session_id:updated_at`; at most 3 pages of 50 per check.

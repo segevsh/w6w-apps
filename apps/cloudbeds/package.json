@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cloudbeds",
-  "version": "0.1.0",
-  "description": "Manage reservations, guests, room types, rates and properties on the Cloudbeds hotel/property-management platform.",
+  "version": "0.2.0",
+  "description": "Manage reservations, guests, room types, rates and properties on the Cloudbeds hotel/property-management platform, with New Reservation and New or Updated Reservation triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.cloudbeds.com/reference/about-pms-api",
       "https://developers.cloudbeds.com/favicon.ico"
     ],
-    "longDescription": "Cloudbeds is a hotel and property-management platform: the system a property runs its front desk, reservations, rates and guest records on. This app covers the core of the PMS API v1.3 that a workflow actually needs — searching and creating reservations, checking room-type availability and rate plans for a date range, reading and updating guest records, and reading a property's own details and daily dashboard.\n\nTwo vendor quirks shape the client rather than being left as surprises: some failures answer HTTP 200 with `{success: false, message}` instead of a 4xx, and the real API base and OAuth authorize/token URLs differ from what a quick guess would produce. Health checks track Cloudbeds' own status page, scoped to the one component (\"Property Management System\") this app's actions actually depend on, so an unrelated marketing-connector incident elsewhere on the page never drags this app's health down with it.\n\nThe full Cloudbeds surface is far larger than this app covers — allotment blocks, payments and items, housekeeping, webhooks, accounting/fiscal documents, the Insights datasets API, and the channel-manager callback operations are all out of scope for this first pass. See the README for what's not yet covered.",
+    "longDescription": "Cloudbeds is a hotel and property-management platform: the system a property runs its front desk, reservations, rates and guest records on. This app covers the core of the PMS API v1.3 that a workflow actually needs — searching and creating reservations, checking room-type availability and rate plans for a date range, reading and updating guest records, and reading a property's own details and daily dashboard.\n\nTwo vendor quirks shape the client rather than being left as surprises: some failures answer HTTP 200 with `{success: false, message}` instead of a 4xx, and the real API base and OAuth authorize/token URLs differ from what a quick guess would produce. Health checks track Cloudbeds' own status page, scoped to the one component (\"Property Management System\") this app's actions actually depend on, so an unrelated marketing-connector incident elsewhere on the page never drags this app's health down with it.\n\nThe full Cloudbeds surface is far larger than this app covers — allotment blocks, payments and items, housekeeping, webhooks, accounting/fiscal documents, the Insights datasets API, and the channel-manager callback operations are all out of scope for this first pass. See the README for what's not yet covered. Polling triggers: New Reservation and New or Updated Reservation.",
     "categories": [
       "crm",
       "commerce",
@@ -35,7 +35,8 @@
         "api.cloudbeds.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

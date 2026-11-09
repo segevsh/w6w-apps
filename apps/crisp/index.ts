@@ -19,6 +19,7 @@ import updatePeopleProfile from "./actions/update-people-profile.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newConversation from "./triggers/new-conversation.ts";
 import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
 
 export default {
@@ -42,5 +43,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
-  triggers: [newOrUpdatedConversation],
+  triggers: [newConversation, newOrUpdatedConversation],
 } satisfies AppDefinition;

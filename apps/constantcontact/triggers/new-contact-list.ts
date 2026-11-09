@@ -36,7 +36,7 @@ const trigger: TriggerDefinition = {
     }
     const { events, nextState } = await pollSnapshot({
       state,
-      emit: { added: true },
+      emit: { added: true, updated: false },
       rows: (res.lists ?? []).map((l) => ({ key: String(l.list_id), values: l })),
     });
     return { events: events.map((e) => e.values), nextState };
