@@ -13,7 +13,7 @@ export default pollFromListAction<Parameters<NonNullable<typeof listPeople.execu
     pageNumber: 1,
     perPage: 50,
     sortField: "created_at",
-    sortOrder: "desc",
+    sortOrder: "descending",
   }),
   items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => String((item as { people_id: unknown }).people_id),

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/datadog",
-  "version": "0.1.3",
-  "description": "Submit metrics and events to Datadog, query timeseries, and read monitors, downtimes, dashboards, logs, hosts and users across every Datadog site.",
+  "version": "0.2.0",
+  "description": "Submit metrics and events to Datadog, read operational data, and poll for new log events across every Datadog site.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.datadoghq.com/api/latest/"
     ],
-    "longDescription": "Datadog brings observability data into a workflow that already handles the rest of a deploy or an incident — metrics and events go in, and monitors, downtimes, dashboards, logs, hosts and access records come back out, across any of Datadog's nine regional sites (US, EU, AP, UK and both government clouds).\n\nMetrics can be pushed and queried, events posted and searched, and monitors and downtimes listed, inspected, scheduled or cancelled — enough to mute a noisy alert during a deploy and un-mute it afterward, or pull dashboard and host inventory for a status report. Log search reaches Datadog's own indexed logs directly, and account and user lookups round out the picture for reporting who has access.\n\nA single connection is scoped to one site and one organization's api and application keys, so this fits infrastructure and on-call workflows that need to read or write Datadog state as part of a larger deploy, incident-response or reporting pipeline, without a separate credential per region.",
+    "longDescription": "Datadog brings observability data into a workflow that already handles the rest of a deploy or an incident — metrics and events go in, and monitors, downtimes, dashboards, logs, hosts and access records come back out, across any of Datadog's nine regional sites (US, EU, AP, UK and both government clouds).\n\nMetrics can be pushed and queried, events posted and searched, and monitors and downtimes listed, inspected, scheduled or cancelled — enough to mute a noisy alert during a deploy and un-mute it afterward, or pull dashboard and host inventory for a status report. Log search reaches Datadog's own indexed logs directly, and account and user lookups round out the picture for reporting who has access.\n\nA single connection is scoped to one site and one organization's api and application keys, so this fits infrastructure and on-call workflows that need to read or write Datadog state as part of a larger deploy, incident-response or reporting pipeline, without a separate credential per region.\n\nA poll trigger emits newly observed log events for downstream workflow steps.",
     "categories": [
       "monitoring",
       "devops",

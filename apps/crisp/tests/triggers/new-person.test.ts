@@ -23,7 +23,7 @@ test("new-person seeds, emits once, retries idempotently, and requests newest pe
   }, {
     method: "GET",
     path: "/v1/website/site_1/people/profiles/1",
-    query: { per_page: "50", sort_field: "created_at", sort_order: "desc" },
+    query: { per_page: "50", sort_field: "created_at", sort_order: "descending" },
   });
   assertEquals(
     await trigger.poll!({ params, state: seeded.nextState }, mockCtx([next], "site_1").ctx),

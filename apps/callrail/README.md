@@ -6,6 +6,7 @@ companies, tags and users, on the **CallRail API v3**.
 - **Categories** — marketing, communication, analytics
 - **Auth methods** — api-token
 - **Actions** — 26
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.callrail.com` (the `service` check adds `status.callrail.com` to its
   own hook allowlist, never to the app's)
@@ -215,7 +216,14 @@ Notifications, Caller IDs, Integrations, Integration Triggers, Summary Emails, a
 
 ## Triggers
 
-- **New Call** (`new-call`) polls the `call-list` action newest-first by `start_time`.
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-call` — New Call | poll | `call-list`, newest-first by `start_time` | Each newly observed CallRail call |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://apidocs.callrail.com/> (verified 2026-11-09).
 
 ```bash
 deno task validate   # manifest checks (@w6w/validator)

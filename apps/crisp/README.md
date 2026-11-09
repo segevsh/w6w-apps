@@ -6,6 +6,7 @@ support.
 - **Categories** — support, communication
 - **Auth methods** — basic (Website Token)
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.crisp.chat`
 
 ## Links
@@ -196,7 +197,14 @@ business calling it. The `service` check widens egress for its own unsigned prob
 
 ## Triggers
 
-- **New Person** (`new-person`) polls the `list-people` action newest-first by `created_at`.
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-person` — New Person | poll | `list-people`, by `created_at` descending | Each newly observed Crisp people profile |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles> (verified 2026-11-09).
 
 Crisp's REST API is much broader than "conversation/people/website" — the reference lists 190+
 operations. Left out, and why:

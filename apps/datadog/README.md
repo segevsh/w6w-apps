@@ -6,6 +6,7 @@ logs, hosts and users — on any of Datadog's nine sites.
 - **App id:** `io.w6w.datadog`
 - **Auth:** API key, plus an optional application key, plus the site (`api-key`)
 - **Actions:** 22
+- **Triggers** — 1 (poll)
 - **Health checks:** `service` · `api` · ~~`quota`~~ · 1 derived (`auth:api-key`)
 - **Egress:** the nine `api.<site>` hosts. Status hosts belong to the `service` check's own
   allowlist, not the app's.
@@ -325,7 +326,14 @@ step that un-mutes production. Nothing else in this app has an idempotency key o
 
 ## Triggers
 
-- **New Log** (`new-log`) polls the `log-search` action newest-first by timestamp.
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-log` — New Log | poll | `log-search`, newest-first by timestamp | Each newly observed log event |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://docs.datadoghq.com/api/latest/logs/#search-logs> (verified 2026-11-09).
 
 `assets/icon.svg` is the Datadog mark from
 `https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/datadog.svg`, downloaded verbatim on
