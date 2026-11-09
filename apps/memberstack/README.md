@@ -21,6 +21,10 @@ Manage members and their free plans, verify member tokens, and read and write Da
 
 ## Actions
 
+## Triggers
+
+- **New Member** (`new-member`) polls `member-list` with `order=DESC`.
+
 | Action | Route |
 |---|---|
 | `member-list` | `GET /members` (`limit` ≤ 100, `after` cursor, `order`, `includeJSON`) |

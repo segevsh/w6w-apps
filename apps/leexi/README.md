@@ -21,6 +21,10 @@ live probes of `public-api.leexi.ai` and `status.leexi.ai`.
 
 ## Things most likely to go wrong
 
+## Triggers
+
+- **New Meeting Event** (`new-meeting-event`) polls `meeting-event-list` with `created_at desc`.
+
 1. **Errors are mostly empty.** An unauthenticated `GET /v1/users` and one with a bogus Basic pair
    both answer `401` with an **empty `text/html` body**, and an unknown path answers `404` the same
    way. There is no vendor error code to read, so the credential test classifies by the documented

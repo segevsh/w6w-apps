@@ -19,6 +19,10 @@ own OpenAPI fragment, which were merged and read) and unauthenticated probes of 
 
 ## Actions
 
+## Triggers
+
+- **New Unsubscribe** (`new-unsubscribe`) polls `unsubscribe-list` by descending `createdAt`.
+
 | Area | Actions |
 |---|---|
 | User | `user-get` |

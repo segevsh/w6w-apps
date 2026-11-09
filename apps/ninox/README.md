@@ -25,6 +25,10 @@ without ever seeing the key.
 
 ## Actions (22)
 
+## Triggers
+
+- **New Record** (`new-record`) polls `record-list` with descending `_createdAt`.
+
 | Area       | Actions                                                                                         |
 | ---------- | ----------------------------------------------------------------------------------------------- |
 | Workspace  | `workspace-get`, `schema-changes-list`                                                          |

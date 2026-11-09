@@ -37,6 +37,10 @@ The connect-time `test` probes each key you supplied on its own host and classif
 
 ## Actions
 
+## Triggers
+
+- **New Domain** (`new-domain`) polls `list-domains` by descending domain id.
+
 | Group | Actions |
 |---|---|
 | Send (Sending Key) | `send-email`, `send-templated-email`, `send-bulk-emails` (up to 500 messages), `list-scheduled-emails`, `delete-scheduled-email` |

@@ -33,6 +33,10 @@ List actions prefill a small page size (25) and expose `nextCursor` (cursor list
 
 ## Things worth knowing
 
+## Triggers
+
+- **New Order** (`new-order`) polls `order-list` with descending order.
+
 - **Failures arrive with HTTP 200.** Cancel, flag, close, remove and process answer `true` on success
   and `{"errors": {"message": …}}` with status 200 on refusal; return details answers
   `{"error": {"message"}}` with 200 when nothing matches. The client decides from the body, and

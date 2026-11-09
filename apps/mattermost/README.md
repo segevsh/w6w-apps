@@ -218,3 +218,5 @@ deno task check    # typecheck
 deno task lint
 deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 ```
+
+Triggers: not shipped — `post-search` is relevance-ordered search, not a newest-first feed (https://api.mattermost.com/#tag/posts/operation/SearchPosts).

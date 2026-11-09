@@ -1,5 +1,6 @@
 import type { AppDefinition } from "@w6w/types";
 import basic from "./auth/basic.ts";
+import newMeetingEvent from "./triggers/new-meeting-event.ts";
 
 import userList from "./actions/user-list.ts";
 import userGet from "./actions/user-get.ts";
@@ -102,5 +103,6 @@ export default {
     clientUserDeactivate,
   ],
   auth: [basic],
+  triggers: [newMeetingEvent],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

@@ -194,3 +194,5 @@ Researched and endpoint-verified 2026-09-06 against the OpenAPI document embedde
 `developers.livestorm.co`'s own page data and live probes against `api.livestorm.co` /
 `status.livestorm.co`. Status surfaces move; re-check if a probe starts failing for everyone
 at once.
+
+Triggers: not shipped — `people-attribute-list` lists schema attributes, not a primary new-record feed (https://developers.livestorm.co/reference/list-people-attributes).

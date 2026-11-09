@@ -24,6 +24,10 @@ only a count.
 
 ## Actions
 
+## Triggers
+
+- **New Candidate** (`new-candidate`) polls `job-candidates-list` by descending application date.
+
 **account**
 
 | Action | Type | Title |

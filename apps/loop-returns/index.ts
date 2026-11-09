@@ -19,6 +19,7 @@
  *  4. **`process` only queues.** `true` means Loop accepted the work, not that it finished.
  */
 import type { AppDefinition } from "@w6w/types";
+import newOrder from "./triggers/new-order.ts";
 import apiKey from "./auth/api-key.ts";
 
 import returnList from "./actions/return-list.ts";
@@ -89,6 +90,7 @@ export default {
     labelRequestList,
     bulkOperationList,
   ],
+  triggers: [newOrder],
   // API key only. Loop also defines an OAuth2 flow, but only for the programmatic-webhooks API
   // (scope `developer_tools`); every other endpoint takes the key.
   auth: [apiKey],

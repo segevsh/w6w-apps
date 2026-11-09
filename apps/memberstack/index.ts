@@ -9,6 +9,7 @@
  * SDK is not part of this API and is not covered.
  */
 import type { AppDefinition } from "@w6w/types";
+import newMember from "./triggers/new-member.ts";
 import memberList from "./actions/member-list.ts";
 import memberGet from "./actions/member-get.ts";
 import memberCreate from "./actions/member-create.ts";
@@ -46,6 +47,7 @@ export default {
     dataRecordUpdate,
     dataRecordDelete,
   ],
+  triggers: [newMember],
   auth: [secretKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
