@@ -13,7 +13,7 @@ interface DriveItem {
   deleted?: unknown;
 }
 
-async function deltaLink(
+async function deltaCursor(
   params: Params,
   token: "latest" | string,
   ctx: Parameters<NonNullable<typeof listChanges.execute>>[1],
@@ -24,10 +24,11 @@ async function deltaLink(
       : { driveId: params.driveId, deltaLink: token, top: 100, all: false },
     ctx,
   );
-  if (!result.deltaLink) {
-    throw new Error("OneDrive delta response did not contain a delta link; reduce the page size.");
+  const cursor = result.nextLink ?? result.deltaLink;
+  if (!cursor) {
+    throw new Error("OneDrive delta response did not contain a continuation or delta link.");
   }
-  return result;
+  return { items: result.value, cursor };
 }
 
 const trigger: TriggerDefinition<Params, DriveItem> = {
@@ -48,10 +49,10 @@ const trigger: TriggerDefinition<Params, DriveItem> = {
   async poll({ params, state }, ctx) {
     return await pollToken<DriveItem>({
       state,
-      seed: async () => (await deltaLink(params, "latest", ctx)).deltaLink!,
+      seed: async () => (await deltaCursor(params, "latest", ctx)).cursor,
       changes: async (token) => {
-        const result = await deltaLink(params, token, ctx);
-        return { items: result.value, nextToken: result.deltaLink! };
+        const result = await deltaCursor(params, token, ctx);
+        return { items: result.items, nextToken: result.cursor };
       },
       maxEvents: 100,
     });

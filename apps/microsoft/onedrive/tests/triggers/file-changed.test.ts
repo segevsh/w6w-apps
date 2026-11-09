@@ -39,3 +39,12 @@ test("file-changed is idempotent for the same delta cursor and response", async 
   );
   assertEquals(one, two);
 });
+
+test("file-changed persists a delta page continuation before its final delta link", async () => {
+  const next = "https://graph.microsoft.com/v1.0/me/drive/root/delta?skiptoken=page-2";
+  const { ctx } = mockCtx([{ body: { value: [{ id: "new" }], "@odata.nextLink": next } }]);
+  const state = { v: 1 as const, kind: "token" as const, seeded: true as const, token: DELTA };
+  const result = await trigger.poll!({ params: {}, state, subscriptionId: "sub" }, ctx);
+  assertEquals(result.events, [{ id: "new" }]);
+  assertEquals(result.nextState?.token, next);
+});
