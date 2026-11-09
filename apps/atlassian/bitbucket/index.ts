@@ -13,6 +13,13 @@ import deleteWorkspaceHook from "./actions/delete-workspace-hook.ts";
 import listRepositoryHooks from "./actions/list-repository-hooks.ts";
 import createRepositoryHook from "./actions/create-repository-hook.ts";
 import deleteRepositoryHook from "./actions/delete-repository-hook.ts";
+import push from "./triggers/push.ts";
+import pullRequestCreated from "./triggers/pull-request-created.ts";
+import pullRequestUpdated from "./triggers/pull-request-updated.ts";
+import pullRequestMerged from "./triggers/pull-request-merged.ts";
+import pullRequestDeclined from "./triggers/pull-request-declined.ts";
+import pullRequestComment from "./triggers/pull-request-comment.ts";
+import issueCreated from "./triggers/issue-created.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -30,6 +37,15 @@ export default {
     listRepositoryHooks,
     createRepositoryHook,
     deleteRepositoryHook,
+  ],
+  triggers: [
+    push,
+    pullRequestCreated,
+    pullRequestUpdated,
+    pullRequestMerged,
+    pullRequestDeclined,
+    pullRequestComment,
+    issueCreated,
   ],
   auth: [basic, accessToken],
   healthChecks: [service, quota],

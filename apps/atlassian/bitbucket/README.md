@@ -5,9 +5,42 @@ Read repositories, workspaces and manage webhooks on Bitbucket Cloud.
 - **Categories** — developer-tools
 - **Auth methods** — basic, access-token
 - **Actions** — 12
+- **Triggers** — 7 (webhook)
 - **Egress allowlist** — `api.bitbucket.org`
 - **Website** — https://bitbucket.org
 - **API docs** — https://developer.atlassian.com/cloud/bitbucket/rest/intro/
+
+## Triggers
+
+Every trigger is a signed webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
+Activating one registers a repository webhook on Bitbucket for you
+(`POST /2.0/repositories/{workspace}/{repo_slug}/hooks`) and removes it when the trigger is
+deactivated. The credential needs the webhook scope and repository admin access.
+
+| Trigger | Mechanism | Bitbucket event key | The run gets |
+|---|---|---|---|
+| `push` — New Push | webhook | `repo:push` | the branch and tag changes |
+| `pull-request-created` — New Pull Request | webhook | `pullrequest:created` | the pull request |
+| `pull-request-updated` — Pull Request Updated | webhook | `pullrequest:updated` | the pull request |
+| `pull-request-merged` — Pull Request Merged | webhook | `pullrequest:fulfilled` | the pull request, merge commit |
+| `pull-request-declined` — Pull Request Declined | webhook | `pullrequest:rejected` | the pull request, reason |
+| `pull-request-comment` — New Pull Request Comment | webhook | `pullrequest:comment_created` | the comment, the pull request |
+| `issue-created` — New Issue | webhook | `issue:created` | the issue (needs the repository's issue tracker enabled) |
+
+Every run also gets `event` (the `X-Event-Key`), `deliveryId` (`X-Request-UUID`), `repository`
+(`workspace/slug`), `actor` and the full Bitbucket `payload`.
+
+**Trust model.** On activation a random 256-bit secret is generated per subscription and given to
+Bitbucket as the webhook's secret; it is kept in the subscription's state next to the webhook uuid.
+Bitbucket then signs every delivery: `X-Hub-Signature: sha256=<hex HMAC-SHA256 of the exact request
+body>`. The signature is checked in constant time before the body is read; a delivery with no
+signature, a wrong one, or no secret on record is refused and starts no run. Bitbucket documents
+no signed timestamp, so a captured delivery is replayable; the per-subscription secret and
+callback URL limit who could capture one.
+
+Vendor docs (verified 2026-11-09):
+[manage webhooks and secure them](https://support.atlassian.com/bitbucket-cloud/docs/manage-webhooks/),
+[event payloads and headers](https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/).
 
 ## Health check
 
