@@ -134,8 +134,8 @@ a body that was not delivered raw refuses the delivery; the host stores one fail
 no run. The signing key is a secret-typed trigger param. Webhooks that use the legacy email
 format (`event_type` instead of `object_type` + `metric`) are understood too.
 
-Sources (verified 2026-11-09): https://docs.customer.io/integrations/data-out/connections/webhook/ ,
-https://docs.customer.io/integrations/api/webhooks/
+Sources (verified 2026-11-09): https://docs.customer.io/integrations/api/webhooks/ (the `X-CIO-Signature` / `v0:` scheme) ,
+https://docs.customer.io/journeys/reporting-webhooks/ (the hex encoding is inferred from its Go sample, which decodes the signature with `hex.DecodeString`; the page does not state it in prose)
 
 ## Health check
 

@@ -167,7 +167,8 @@ trigger emits one run per payload of its own event type.
 **Trust model.** Mautic signs every webhook, and the trigger never accepts an unsigned
 delivery. Each delivery is checked, before anything is parsed, against the `Webhook-Signature`
 header = base64(HMAC-SHA256(secret, raw request body)). The check uses the exact bytes Mautic
-sent and a constant-time compare. The scheme has no timestamp, so there is no replay window. A
+sent and a constant-time compare. The scheme has no timestamp or nonce, so a captured delivery stays
+verifiable indefinitely (there is no replay protection). A
 missing header, an unset secret or a body that was not delivered raw refuses the delivery; the
 host stores one failed row and starts no run. The secret is kept in the subscription state, which
 the host stores unsealed.

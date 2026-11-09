@@ -153,8 +153,8 @@ subscribe first deletes any webhook already pointing at its callback URL.
 **Trust model.** MailerLite signs every webhook, and the trigger never accepts an unsigned
 delivery. Each delivery is checked, before anything is parsed, against the `Signature` header =
 hex HMAC-SHA256 of the raw request body under the webhook's secret. The check uses the exact
-bytes MailerLite sent and a constant-time compare. The scheme has no timestamp, so there is no
-replay window; MailerLite retries a failed delivery three more times, so a repeat is possible
+bytes MailerLite sent and a constant-time compare. The scheme has no timestamp or nonce, so a
+captured delivery stays verifiable indefinitely (there is no replay protection); MailerLite retries a failed delivery three more times, so a repeat is possible
 (`resource.id` and `resource.updated_at` identify one). A missing header, an unset secret or a
 body that was not delivered raw refuses the delivery; the host stores one failed row and starts
 no run. The secret is kept in the subscription state, which the host stores unsealed.

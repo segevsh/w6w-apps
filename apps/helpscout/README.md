@@ -140,8 +140,8 @@ a Help Scout user allowed to manage Apps.
 **Trust model.** Help Scout signs every webhook, and the trigger never accepts an unsigned
 delivery. Each delivery is checked, before anything is parsed, against `X-HelpScout-Signature` =
 base64(HMAC-SHA1(secret, raw request body)) — SHA-1 is Help Scout's choice, not ours. The check
-uses the exact bytes Help Scout sent and a constant-time compare. The scheme has no timestamp,
-so there is no replay window. A missing header, an unset secret or a body that was not
+uses the exact bytes Help Scout sent and a constant-time compare. The scheme has no timestamp or
+nonce, so a captured delivery stays verifiable indefinitely (there is no replay protection). A missing header, an unset secret or a body that was not
 delivered raw refuses the delivery; the host stores one failed row and starts no run. The
 secret is kept in the subscription state, which the host stores unsealed. `payloadVersion` is
 `V3` (V2 is deprecated; V3 differs only in how system users appear in conversation payloads).
