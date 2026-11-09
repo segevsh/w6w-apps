@@ -27,7 +27,7 @@ Manage Intercom contacts, companies, conversations, notes and tags via its REST 
 
 No poll trigger: `conversation-get-many` takes no sort or since filter and the Intercom docs checked do not state a newest-first order for `GET /conversations`.
 
-Docs (verified 2026-11-09): https://developers.intercom.com/docs/webhooks and https://developers.intercom.com/docs/webhooks/webhook-models
+Docs (verified 2026-11-09): https://developers.intercom.com/docs/webhooks and https://developers.intercom.com/docs/references/webhooks/webhook-models
 
 Every request pins the API version with an `Intercom-Version` header (currently `2.11`)
 so response shapes stay predictable across workspaces. Note that **listing contacts is a

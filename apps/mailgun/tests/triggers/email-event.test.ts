@@ -278,3 +278,44 @@ test("onUnsubscribe DELETEs each hook; 404 is already gone; 500 propagates", asy
     )
   );
 });
+
+test("vendor-shaped payload: domain is an object with a name", async () => {
+  const ts = String(NOW);
+  const token = "tok0123456789abcdef";
+  const b = JSON.stringify({
+    signature: { timestamp: ts, token, signature: sig(ts, token) },
+    "event-data": {
+      event: "delivered",
+      id: "EVT2",
+      timestamp: NOW + 0.5,
+      recipient: "ada@example.com",
+      domain: { name: "mg.example.com" },
+      tags: ["webhook_payload"],
+      message: { headers: { "message-id": "m2@mg.example.com" } },
+    },
+  });
+  const out = evs(await ingest(call(b))) as Array<Record<string, unknown>>;
+  assertEquals(out.length, 1);
+  assertEquals(out[0].domain, "mg.example.com");
+});
+
+test("onSubscribe and onUnsubscribe URL-encode the domain in the path", async () => {
+  const dom = "a/b?c";
+  const sub = mockCtx([{ body: {} }]);
+  await trigger.onSubscribe!(
+    {
+      params: { domain: dom, events: "delivered" },
+      subscriptionId: "s",
+      callbackUrl: CALLBACK,
+      hostUrl: "",
+    },
+    sub.ctx,
+  );
+  assertEquals(new URL(sub.calls[0].url).pathname, "/v3/domains/a%2Fb%3Fc/webhooks");
+  const un = mockCtx([{ body: {} }]);
+  await trigger.onUnsubscribe!(
+    { params: { domain: dom }, state: { domain: dom, hooks: ["delivered"] }, subscriptionId: "s" },
+    un.ctx,
+  );
+  assertEquals(new URL(un.calls[0].url).pathname, "/v3/domains/a%2Fb%3Fc/webhooks/delivered");
+});

@@ -149,3 +149,12 @@ test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscri
   await conversation.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
   assertEquals(calls.length, 0);
 });
+
+test("a body with leading and trailing whitespace is verified over the exact bytes", async () => {
+  const b = `\n  ${CONV}  \n`;
+  const out = evs(await ingest(conversation, call(b, { headers: { "x-hub-signature": sign(b) } })));
+  assertEquals(out.length, 1);
+  await assertRejects(() =>
+    ingest(conversation, call(b, { headers: { "x-hub-signature": sign(b.trim()) } }))
+  );
+});

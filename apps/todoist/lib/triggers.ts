@@ -16,7 +16,7 @@ import {
  *   - `handleIngest` verifies `X-Todoist-Hmac-SHA256` (base64 HMAC-SHA256 of the exact request body
  *     under the app's client secret, D5 (2)) BEFORE it parses anything, then emits one event.
  *
- * Docs (verified 2026-11-09): https://developer.todoist.com/sync/v9/#webhooks
+ * Docs (verified 2026-11-09): https://developer.todoist.com/api/v1/#tag/Webhooks
  */
 
 export interface TriggerParams {

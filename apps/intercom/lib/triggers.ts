@@ -17,7 +17,7 @@ import {
  *     under the app's client secret, D5 (2)) BEFORE it parses anything, then emits one event.
  *
  * Docs (verified 2026-11-09): https://developers.intercom.com/docs/webhooks and
- * https://developers.intercom.com/docs/webhooks/webhook-models
+ * https://developers.intercom.com/docs/references/webhooks/webhook-models
  */
 
 export interface TriggerParams {

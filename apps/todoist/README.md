@@ -26,9 +26,9 @@ Manage Todoist tasks, projects, sections, comments and labels via the REST v2 AP
 
 **Trust model.** Todoist sends `X-Todoist-Hmac-SHA256`, the base64 HMAC-SHA256 of the exact request body under the client secret. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. The signature carries no timestamp, so a captured delivery can be replayed. Other events are acknowledged without a run.
 
-No poll trigger: `task-get-many` has no created-at order, sort or since filter in the REST v2 docs.
+No poll trigger: `task-get-many` takes a free-form `filter` and Todoist's filter language has `created after:`, but that is day-granular, covers active tasks only and has not been verified against a live account, so no poll is shipped (assumed, not confirmed).
 
-Docs (verified 2026-11-09): https://developer.todoist.com/sync/v9/#webhooks
+Docs (verified 2026-11-09): https://developer.todoist.com/api/v1/#tag/Webhooks
 
 ## Actions
 

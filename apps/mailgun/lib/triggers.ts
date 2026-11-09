@@ -25,8 +25,9 @@ import { csv, MailgunClient } from "./client.ts";
  * captured (timestamp, token, signature) triple could be replayed with a different body for five
  * minutes. Token replay caching needs a state write, which `handleIngest` cannot do.
  *
- * Docs (verified 2026-11-09): https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/#webhooks
- * and https://documentation.mailgun.com/docs/mailgun/api-reference/openapi-final/tag/Webhooks/
+ * Docs (verified 2026-11-09): https://documentation.mailgun.com/docs/mailgun/user-manual/webhooks/webhooks,
+ * https://documentation.mailgun.com/docs/mailgun/user-manual/webhooks/securing-webhooks and
+ * https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/domain-webhooks
  */
 
 export interface TriggerParams {
@@ -93,7 +94,7 @@ const SIGNING_KEY_PARAM: Param = {
   type: "secret",
   required: true,
   hint:
-    "Mailgun Control Panel, Webhooks (or Settings, API Security), HTTP webhook signing key. Mailgun signs every delivery with it; a delivery that does not verify is refused.",
+    "Mailgun Settings, API Security, HTTP webhook signing key (account-wide). Mailgun signs every delivery with it; a delivery that does not verify is refused.",
 };
 
 const OUTPUT: OutputField[] = [
@@ -220,7 +221,7 @@ export function normalizeDelivery(parsed: Record<string, unknown>): MailgunEvent
     eventId: str(d.id),
     timestamp: Number.isFinite(Number(d.timestamp)) ? Number(d.timestamp) : null,
     recipient: str(d.recipient),
-    domain: str(d.domain) ?? str(asObject(d.envelope)?.domain),
+    domain: str(asObject(d.domain)?.name) ?? str(d.domain) ?? str(asObject(d.envelope)?.domain),
     messageId: str(message?.["message-id"]) ?? str(d["message-id"]) ?? str(d["Message-Id"]),
     severity: str(d.severity),
     reason: str(d.reason) ?? str(status?.description) ?? str(flags?.reason),

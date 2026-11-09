@@ -142,3 +142,12 @@ test("onSubscribe makes no vendor call and returns the callback URL; onUnsubscri
   await added.onUnsubscribe!({ params: {}, state, subscriptionId: "sub_1" }, ctx);
   assertEquals(calls.length, 0);
 });
+
+test("a body with leading and trailing whitespace is verified over the exact bytes", async () => {
+  const b = `\n  ${ADDED}  \n`;
+  const out = evs(await ingest(added, call(b, { headers: { "x-todoist-hmac-sha256": sign(b) } })));
+  assertEquals(out.length, 1);
+  await assertRejects(() =>
+    ingest(added, call(b, { headers: { "x-todoist-hmac-sha256": sign(b.trim()) } }))
+  );
+});
