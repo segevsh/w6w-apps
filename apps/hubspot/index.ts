@@ -65,6 +65,7 @@ import listForms from "./actions/list-forms.ts";
 import submitForm from "./actions/submit-form.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   auth: [privateAppToken, oauth2, apiKey],
@@ -121,5 +122,6 @@ export default {
     listForms,
     submitForm,
   ],
+  triggers: [newContact],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
