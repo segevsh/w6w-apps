@@ -37,9 +37,8 @@ test("submission-webhook: replaces leftovers, stores its id, tolerates a gone de
         path: "",
         query: {},
         headers: { "content-type": "multipart/form-data; boundary=JotformBoundary" },
-        body:
-          '--JotformBoundary\r\nContent-Disposition: form-data; name="submissionID"\r\n\r\ns1\r\n' +
-          '--JotformBoundary\r\nContent-Disposition: form-data; name="formID"\r\n\r\nf1\r\n' +
+        body: '--JotformBoundary\r\nContent-Disposition: form-data; name="rawRequest"\r\n\r\n' +
+          "submissionID%3Ds1%26formID%3Df1\r\n" +
           "--JotformBoundary--",
       },
       params: {},

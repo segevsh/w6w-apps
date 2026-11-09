@@ -34,8 +34,8 @@ const saleWebhook: TriggerDefinition = {
   key: "sale-webhook",
   title: "New Sale (Webhook)",
   description: "The run gets each Gumroad sale delivered to this private callback URL.",
-  output: [{ key: "id", type: "string", label: "Sale ID" }],
-  sample: { id: "sale_123", email: "buyer@example.test" },
+  output: [{ key: "sale_id", type: "string", label: "Sale ID" }],
+  sample: { sale_id: "sale_123", email: "buyer@example.test" },
   async onSubscribe({ callbackUrl }, ctx) {
     const client = new GumroadClient(ctx);
     const listed = await client.call("GET", "/resource_subscriptions", {

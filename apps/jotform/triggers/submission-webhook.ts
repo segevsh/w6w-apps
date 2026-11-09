@@ -49,7 +49,7 @@ function parsedBody(body: unknown, headers: Record<string, string>): unknown {
   try {
     return JSON.parse(rawRequest);
   } catch {
-    return Object.fromEntries(new URLSearchParams(rawRequest));
+    return Object.fromEntries(new URLSearchParams(decodeURIComponent(rawRequest)));
   }
 }
 
