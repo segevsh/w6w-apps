@@ -6682,7 +6682,7 @@
     ],
     "pollAction": null,
     "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
-    "verified": "apps/wise/README.md (verified 2026-09-05)",
+    "verified": "apps/wise/README.md Triggers section (verified 2026-11-09)",
     "source": "hand"
   },
   {
