@@ -1,5 +1,7 @@
 # Fortnox
 
+Triggers: not shipped — `customer-list` can only be ordered by customer number or name (no newest-first order) and its `lastmodified` filter returns edited customers as well as new ones, so a new customer cannot be told from an edited one (https://developer.fortnox.se/documentation/resources/customers/, page is client-rendered; reason taken from the action's own documented params, 2026-11-09).
+
 Customers, suppliers, articles, customer invoices, orders, offers, supplier invoices, vouchers, the
 chart of accounts, invoice payments, projects and cost centers in Fortnox, the Swedish cloud
 accounting / invoicing / ERP platform, over the REST API v3 (`api.fortnox.se`).
@@ -153,7 +155,3 @@ found only that operation and asset *depreciation* fields.
 - Supplier-invoice create requires only `supplierNumber` (the reference's one required field); Fortnox will still reject an unbalanced debit/credit (error 2000755).
 - Error bodies are read in both spellings (`ErrorInformation.Message/Code` per the reference, lower-case per the guide) — not verified against a live response.
 - The reference never documents `limit`/`page` per operation; they are applied to list endpoints from the Parameters guide.
-## Triggers
-
-- `new-customer` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://developer.fortnox.se/documentation/resources/customers/> (verified 2026-11-09).

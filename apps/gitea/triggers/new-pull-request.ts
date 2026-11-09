@@ -1,36 +1,45 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition } from "@w6w/types";
 import pullRequestList from "../actions/pull-request-list.ts";
+import { OWNER_PARAM, REPO_PARAM } from "../lib/params.ts";
 
-const listItems = (result: unknown): unknown[] => {
-  const seen = new Set<unknown>();
-  const visit = (value: unknown): unknown[] => {
-    if (Array.isArray(value)) return value;
-    if (!value || typeof value !== "object" || seen.has(value)) return [];
-    seen.add(value);
-    for (const child of Object.values(value as Record<string, unknown>)) {
-      const items = visit(child);
-      if (items.length) return items;
-    }
-    return [];
-  };
-  return visit(result);
-};
+type Item = Record<string, unknown>;
 
-export default pollFromListAction({
+export default pollFromListAction<Record<string, unknown>>({
   key: "new-pull-request",
   title: "New Pull Request",
-  description: "The run gets each newly created pull request.",
-  action: pullRequestList,
+  description:
+    "The run gets each newly opened pull request in the chosen repository, oldest first.",
+  action: pullRequestList as unknown as ActionDefinition,
+  params: [REPO_PARAM, OWNER_PARAM],
   input: (params) => ({
     ...(params as Record<string, unknown>),
+    state: "all",
     sort: "recentupdate",
-    state: "open",
-    page: 1,
     limit: 50,
   }),
-  items: listItems,
-  idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Pull Request ID" }],
-  sample: { id: "example-1" },
+  items: (result) => Array.isArray(result) ? result : [],
+  idOf: (item) => {
+    const i = item as Item;
+    return String(i.id ?? "");
+  },
+  output: [
+    { key: "id", type: "number", label: "Pull request ID" },
+    { key: "number", type: "number", label: "Number" },
+    { key: "title", type: "string", label: "Title" },
+    { key: "state", type: "string", label: "State" },
+    { key: "html_url", type: "string", label: "URL" },
+    { key: "created_at", type: "string", label: "Created" },
+    { key: "updated_at", type: "string", label: "Updated" },
+  ],
+  sample: {
+    id: 9001,
+    number: 12,
+    title: "Add retries",
+    state: "open",
+    html_url: "https://git.example.test/acme/api/pulls/12",
+    created_at: "2026-11-09T10:00:00Z",
+    updated_at: "2026-11-09T10:00:00Z",
+  },
   maxPages: 1,
 });

@@ -1,6 +1,6 @@
 # Formidable Forms
 
-Triggers: not shipped — `entry-get-many` has no documented newest-first sort token or page size, so a reliable newest-first entry feed cannot be verified (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/).
+Triggers: not shipped — the entries list documents only `form_id, date, search, sort, is_draft` and unnamed pagination filters: no sort token, no created-since semantics and no page size are specified, so a newest-first or since-filter feed cannot be verified (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/, verified 2026-11-09).
 
 Manage forms, entries and Views on a **self-hosted** Formidable Forms site, through its own
 `/frm/v3` REST API on top of WordPress' REST API.
@@ -237,4 +237,3 @@ Only URLs verified on 2026-09-05 are listed.
 - **Legacy `/frm/v2` "Send API Data" article** (read only to confirm what `/frm/v2` is and is not,
   and for the `stats` type names it still documents):
   <https://formidableforms.com/knowledgebase/formidable-api/>
-Triggers: not shipped — Entry listing does not document a bounded newest-first page contract (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/).

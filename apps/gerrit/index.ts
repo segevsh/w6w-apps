@@ -22,7 +22,6 @@ import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 
 import changeSearch from "./actions/change-search.ts";
-import newChange from "./triggers/new-change.ts";
 import changeGet from "./actions/change-get.ts";
 import changeReview from "./actions/change-review.ts";
 import changeSubmit from "./actions/change-submit.ts";
@@ -33,6 +32,8 @@ import changeFilesList from "./actions/change-files-list.ts";
 import projectList from "./actions/project-list.ts";
 import accountSearch from "./actions/account-search.ts";
 import serverInfoGet from "./actions/server-info-get.ts";
+import newChange from "./triggers/new-change.ts";
+import newOrUpdatedChange from "./triggers/new-or-updated-change.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -48,7 +49,7 @@ const app: AppDefinition = {
     accountSearch,
     serverInfoGet,
   ],
-  triggers: [newChange],
+  triggers: [newChange, newOrUpdatedChange],
   auth: [httpPassword],
   healthChecks: [service, instance],
 };

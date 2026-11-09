@@ -1,27 +1,17 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import type { ActionDefinition } from "@w6w/types";
 import contactGetMany from "../actions/contact-get-many.ts";
+import { viewIdParam } from "../lib/params.ts";
 
-const listItems = (result: unknown): unknown[] => {
-  const seen = new Set<unknown>();
-  const visit = (value: unknown): unknown[] => {
-    if (Array.isArray(value)) return value;
-    if (!value || typeof value !== "object" || seen.has(value)) return [];
-    seen.add(value);
-    for (const child of Object.values(value as Record<string, unknown>)) {
-      const items = visit(child);
-      if (items.length) return items;
-    }
-    return [];
-  };
-  return visit(result);
-};
+type Item = Record<string, unknown>;
 
-export default pollFromListAction<{ viewId: number }>({
+export default pollFromListAction<Record<string, unknown>>({
   key: "new-contact",
   title: "New Contact",
-  description: "The run gets each newly created contact.",
+  description:
+    "The run gets each newly created Freshsales contact in the chosen view, oldest first.",
   action: contactGetMany as unknown as ActionDefinition,
+  params: [viewIdParam("contacts")],
   input: (params) => ({
     ...(params as Record<string, unknown>),
     sort: "created_at",
@@ -29,9 +19,26 @@ export default pollFromListAction<{ viewId: number }>({
     page: 1,
     perPage: 100,
   }),
-  items: listItems,
-  idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Contact ID" }],
-  sample: { id: "example-1" },
+  items: (result) => (result as { contacts?: unknown[] }).contacts ?? [],
+  idOf: (item) => {
+    const i = item as Item;
+    return String(i.id ?? "");
+  },
+  output: [
+    { key: "id", type: "number", label: "Contact ID" },
+    { key: "first_name", type: "string", label: "First name" },
+    { key: "last_name", type: "string", label: "Last name" },
+    { key: "email", type: "string", label: "Email" },
+    { key: "created_at", type: "string", label: "Created" },
+    { key: "updated_at", type: "string", label: "Updated" },
+  ],
+  sample: {
+    id: 5001,
+    first_name: "Ada",
+    last_name: "Lovelace",
+    email: "ada@example.test",
+    created_at: "2026-11-09T10:00:00Z",
+    updated_at: "2026-11-09T10:00:00Z",
+  },
   maxPages: 1,
 });

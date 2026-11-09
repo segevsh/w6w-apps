@@ -5,6 +5,7 @@ Manage Freshdesk tickets, contacts and companies.
 - **Categories** — support
 - **Auth methods** — api-key
 - **Actions** — 13
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.freshdesk.com`
 - **Website** — https://www.freshworks.com/freshdesk/
 - **API docs** — https://developers.freshdesk.com/api/
@@ -84,7 +85,18 @@ identical scheme.
 Researched and endpoint-verified 2026-08-01 against developers.freshdesk.com/api/ and
 n8n's `packages/nodes-base/nodes/Freshdesk/`. Status surfaces move; re-check if a probe
 starts failing for everyone at once.
+
 ## Triggers
 
-- `new-ticket` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://developers.freshdesk.com/api/#list_all_tickets> (verified 2026-11-09).
+Poll triggers built on the app's existing `ticket-get-many` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-ticket` — New Ticket | poll | `ticket-get-many` | Each newly created Freshdesk ticket, oldest first. |
+| `new-or-updated-ticket` — New or Updated Ticket | poll | `ticket-get-many` | Each Freshdesk ticket that is newly created or updated, once per update. |
+
+How the feed is read: `GET /api/v2/tickets` with `order_by=created_at` / `updated_at` and `order_type=desc`.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://developers.freshdesk.com/api/#list_all_tickets> (verified 2026-11-09).

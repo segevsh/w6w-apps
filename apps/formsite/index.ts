@@ -17,7 +17,6 @@ import formList from "./actions/form-list.ts";
 import formGet from "./actions/form-get.ts";
 import formItemsList from "./actions/form-items-list.ts";
 import resultList from "./actions/result-list.ts";
-import newResult from "./triggers/new-result.ts";
 import resultSearch from "./actions/result-search.ts";
 import webhookList from "./actions/webhook-list.ts";
 import webhookCreate from "./actions/webhook-create.ts";
@@ -25,6 +24,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import domain from "./health/domain.ts";
+import newResult from "./triggers/new-result.ts";
 
 export default {
   actions: [

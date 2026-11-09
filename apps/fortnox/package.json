@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/fortnox",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Manage customers, suppliers, articles, invoices, orders, offers, supplier invoices, vouchers, accounts, projects and payments in Fortnox, the Swedish cloud accounting and ERP platform.",
   "license": "MIT",
   "author": {
@@ -36,10 +36,7 @@
         "api.fortnox.se"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": ["../_shared"]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

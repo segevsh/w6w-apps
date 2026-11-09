@@ -37,8 +37,11 @@ import getIdentity from "./actions/get-identity.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedPerson from "./triggers/new-or-updated-person.ts";
+import newPerson from "./triggers/new-person.ts";
 
 export default {
+  triggers: [newOrUpdatedPerson, newPerson],
   actions: [
     // Person — the contact everything else hangs off
     searchPeople,

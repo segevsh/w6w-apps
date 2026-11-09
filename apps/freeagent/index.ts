@@ -44,7 +44,6 @@ import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
 
 import contactList from "./actions/contact-list.ts";
-import newContact from "./triggers/new-contact.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactUpdate from "./actions/contact-update.ts";
@@ -82,6 +81,8 @@ import userGet from "./actions/user-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -122,7 +123,7 @@ export default {
     userList,
     userGet,
   ],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

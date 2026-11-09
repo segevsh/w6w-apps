@@ -6,6 +6,7 @@ tasks and users.
 - **Categories** — finance
 - **Auth methods** — oauth2
 - **Actions** — 28
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.freeagent.com`
 - **Website** — https://www.freeagent.com
 - **API docs** — https://dev.freeagent.com/docs
@@ -189,7 +190,18 @@ contacts, invoices, expenses, bank_transactions, bank_transaction_explanations,
 timeslips, projects, tasks), plus a direct fetch of
 `status.freeagent.com/api/v2/summary.json`. Status surfaces and rate limits move;
 re-check if a probe starts failing for everyone at once.
+
 ## Triggers
 
-- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://dev.freeagent.com/docs/contacts> (verified 2026-11-09).
+Poll triggers built on the app's existing `contact-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created FreeAgent contact (customer or supplier), oldest first. |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each FreeAgent contact that is newly created or edited, once per edit. |
+
+How the feed is read: `GET /v2/contacts` with `sort=-created_at` / `sort=-updated_at` ("to sort in descending order, the sort parameter can be prefixed with a hyphen"); contacts carry no id field, so their `url` is the identity.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://dev.freeagent.com/docs/contacts> (verified 2026-11-09).

@@ -7,6 +7,7 @@ available models.
 - **Categories** — ai, video
 - **Auth methods** — `api-key` (`x-gladia-key` header)
 - **Actions** — 6
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (status.gladia.io, `API` + `Pre-Recorded v2` components decide),
   `api` (unsigned reachability, passes on the documented 401 envelope), `quota` (declared
   unavailable, informational) + the derived `auth:api-key`
@@ -65,7 +66,17 @@ so Gladia calls you when it finishes. Do not resubmit an accepted job.
 - **Audio download** (`GET /v2/pre-recorded/{id}/file`) — returns binary.
 - **Deprecated** `/v2/transcription*` and `/v1/history` (lists live jobs too) endpoints.
 - Webhooks (`transcription.created/success/error`) are inbound events, not callable endpoints.
+
 ## Triggers
 
-- `new-transcription` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://docs.gladia.io/api-reference/v2/pre-recorded/list> (verified 2026-11-09).
+Poll triggers built on the app's existing `transcription-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-transcription` — New Transcription | poll | `transcription-list` | Each pre-recorded transcription job created since the last check. |
+
+How the feed is read: `GET /v2/pre-recorded` with the `after_date` created-after filter (no sort order is documented, so the trigger is a since-filter poll).
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://docs.gladia.io/api-reference/v2/pre-recorded/list> (verified 2026-11-09).

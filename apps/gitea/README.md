@@ -5,6 +5,7 @@ Manage Gitea repositories, issues, pull requests, releases and files.
 - **Categories** — version-control, developer-tools, devops
 - **Auth methods** — token
 - **Actions** — 26
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://about.gitea.com
 - **API docs** — https://docs.gitea.com/api ·
@@ -211,7 +212,18 @@ Gitea's envelope is `{message, url}`, where `url` points at the API
 documentation for the endpoint — more useful than it sounds when an instance is
 running an older version than you expected. Failures surface the status and the
 whole body.
+
 ## Triggers
 
-- `new-pull-request` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://docs.gitea.com/api/1.24/#tag/repository/operation/repoListPullRequests> (verified 2026-11-09).
+Poll triggers built on the app's existing `pull-request-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-pull-request` — New Pull Request | poll | `pull-request-list` | Each newly opened pull request in the chosen repository, oldest first. |
+| `new-or-updated-pull-request` — New or Updated Pull Request | poll | `pull-request-list` | Each pull request in the chosen repository that is new or has been updated, once per update. |
+
+How the feed is read: `GET /repos/{owner}/{repo}/pulls` with `sort=recentupdate` (a documented value of the `sort` enum), `state=all`.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://docs.gitea.com/api/1.24/#tag/repository/operation/repoListPullRequests> (verified 2026-11-09).

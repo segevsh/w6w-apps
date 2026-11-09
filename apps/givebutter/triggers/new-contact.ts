@@ -1,30 +1,35 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition } from "@w6w/types";
 import contactList from "../actions/contact-list.ts";
 
-const listItems = (result: unknown): unknown[] => {
-  const seen = new Set<unknown>();
-  const visit = (value: unknown): unknown[] => {
-    if (Array.isArray(value)) return value;
-    if (!value || typeof value !== "object" || seen.has(value)) return [];
-    seen.add(value);
-    for (const child of Object.values(value as Record<string, unknown>)) {
-      const items = visit(child);
-      if (items.length) return items;
-    }
-    return [];
-  };
-  return visit(result);
-};
+type Item = Record<string, unknown>;
 
-export default pollFromListAction({
+export default pollFromListAction<Record<string, unknown>>({
   key: "new-contact",
   title: "New Contact",
-  description: "The run gets each newly created contact.",
-  action: contactList,
-  input: (params) => ({ ...(params as Record<string, unknown>), page: 1, perPage: 100 }),
-  items: listItems,
-  idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Contact ID" }],
-  sample: { id: "example-1" },
+  description: "The run gets each newly created Givebutter contact, oldest first.",
+  action: contactList as unknown as ActionDefinition,
+  input: () => ({ sortByDesc: "created_at", page: 1, per_page: 100 }),
+  items: (result) => (result as { data?: unknown[] }).data ?? [],
+  idOf: (item) => {
+    const i = item as Item;
+    return String(i.id ?? "");
+  },
+  output: [
+    { key: "id", type: "number", label: "Contact ID" },
+    { key: "first_name", type: "string", label: "First name" },
+    { key: "last_name", type: "string", label: "Last name" },
+    { key: "primary_email", type: "string", label: "Primary email" },
+    { key: "created_at", type: "string", label: "Created" },
+    { key: "updated_at", type: "string", label: "Updated" },
+  ],
+  sample: {
+    id: 3301,
+    first_name: "Ada",
+    last_name: "Lovelace",
+    primary_email: "ada@example.test",
+    created_at: "2026-11-09T10:00:00Z",
+    updated_at: "2026-11-09T10:00:00Z",
+  },
   maxPages: 1,
 });

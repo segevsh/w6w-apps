@@ -6,6 +6,7 @@ projects.
 - **Categories** — version-control, developer-tools
 - **Auth methods** — http-password
 - **Actions** — 11
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://gerritcodereview.com
 - **API docs** — https://gerrit-review.googlesource.com/Documentation/rest-api.html
@@ -191,7 +192,18 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **no action parses a response body
 itself** (which would skip the magic prefix), **the client forces `/a/` while
 the health check stays bare**, and submitting requires a confirmation.
+
 ## Triggers
 
-- `new-change` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes> (verified 2026-11-09).
+Poll triggers built on the app's existing `change-search` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-change` — New Change | poll | `change-search` | Each newly created Gerrit change matching the query (default open changes), oldest first. |
+| `new-or-updated-change` — New or Updated Change | poll | `change-search` | Each Gerrit change matching the query that is new or has been updated, once per update. |
+
+How the feed is read: `GET /changes/?q=…` ("The change output is sorted by the last update time, most recently updated to oldest updated").
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#query-changes> (verified 2026-11-09).

@@ -1,35 +1,38 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition } from "@w6w/types";
 import ticketGetMany from "../actions/ticket-get-many.ts";
 
-const listItems = (result: unknown): unknown[] => {
-  const seen = new Set<unknown>();
-  const visit = (value: unknown): unknown[] => {
-    if (Array.isArray(value)) return value;
-    if (!value || typeof value !== "object" || seen.has(value)) return [];
-    seen.add(value);
-    for (const child of Object.values(value as Record<string, unknown>)) {
-      const items = visit(child);
-      if (items.length) return items;
-    }
-    return [];
-  };
-  return visit(result);
-};
+type Item = Record<string, unknown>;
 
-export default pollFromListAction({
+export default pollFromListAction<Record<string, unknown>>({
   key: "new-ticket",
   title: "New Ticket",
-  description: "The run gets each newly created ticket.",
-  action: ticketGetMany,
-  input: (params) => ({
-    ...(params as Record<string, unknown>),
-    orderType: "desc",
-    page: 1,
-    perPage: 100,
-  }),
-  items: listItems,
-  idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Ticket ID" }],
-  sample: { id: "example-1" },
+  description:
+    "The run gets each newly created Freshservice ticket from the last 30 days, oldest first.",
+  action: ticketGetMany as unknown as ActionDefinition,
+  input: () => ({ orderType: "desc", page: 1, perPage: 100 }),
+  items: (result) => (result as { tickets?: unknown[] }).tickets ?? [],
+  idOf: (item) => {
+    const i = item as Item;
+    return String(i.id ?? "");
+  },
+  output: [
+    { key: "id", type: "number", label: "Ticket ID" },
+    { key: "subject", type: "string", label: "Subject" },
+    { key: "status", type: "number", label: "Status" },
+    { key: "priority", type: "number", label: "Priority" },
+    { key: "requester_id", type: "number", label: "Requester ID" },
+    { key: "created_at", type: "string", label: "Created" },
+    { key: "updated_at", type: "string", label: "Updated" },
+  ],
+  sample: {
+    id: 88,
+    subject: "Laptop request",
+    status: 2,
+    priority: 2,
+    requester_id: 41,
+    created_at: "2026-11-09T10:00:00Z",
+    updated_at: "2026-11-09T10:00:00Z",
+  },
   maxPages: 1,
 });

@@ -7,6 +7,7 @@ the **Givebutter API v1**.
 - **Categories** — crm, commerce, communication
 - **Auth methods** — api-key
 - **Actions** — 43
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.givebutter.com` (the `service` check adds `givebutter.statuspage.io` to
   its own hook allowlist, never to the app's)
@@ -254,7 +255,18 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests (110 Deno.test cases across 48 files)
 deno task validate       # @w6w/validator conformance audit
 ```
+
 ## Triggers
 
-- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://docs.givebutter.com/api-reference/contacts/list-contacts> (verified 2026-11-09).
+Poll triggers built on the app's existing `contact-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-list` | Each newly created Givebutter contact, oldest first. |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each Givebutter contact that is newly created or edited, once per edit. |
+
+How the feed is read: `GET /contacts` with `sortByDesc=created_at` for new contacts and the `updatedAfter` filter for the updated variant.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://docs.givebutter.com/api-reference/contacts/list-all-contacts> (verified 2026-11-09).

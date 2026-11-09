@@ -92,7 +92,6 @@ import issueEdit from "./actions/issue-edit.ts";
 import issueCommentList from "./actions/issue-comment-list.ts";
 import issueCommentCreate from "./actions/issue-comment-create.ts";
 import pullRequestList from "./actions/pull-request-list.ts";
-import newPullRequest from "./triggers/new-pull-request.ts";
 import pullRequestGet from "./actions/pull-request-get.ts";
 import pullRequestCreate from "./actions/pull-request-create.ts";
 import pullRequestMerge from "./actions/pull-request-merge.ts";
@@ -110,6 +109,8 @@ import userGet from "./actions/user-get.ts";
 
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
+import newOrUpdatedPullRequest from "./triggers/new-or-updated-pull-request.ts";
+import newPullRequest from "./triggers/new-pull-request.ts";
 
 export default {
   actions: [
@@ -147,7 +148,7 @@ export default {
     // who this is
     userGet,
   ],
-  triggers: [newPullRequest],
+  triggers: [newOrUpdatedPullRequest, newPullRequest],
   auth: [token],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

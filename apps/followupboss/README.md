@@ -6,6 +6,7 @@ action plans and account metadata, on the **Follow Up Boss API v1**.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 26
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.followupboss.com`
 - **Health checks** — `service` (live), `quota` (live)
 
@@ -408,4 +409,18 @@ All documentation claims in this app were verified against
 on the wire rather than from docs are marked as such where they appear: the docs-host redirect, the
 website redirect, the `WWW-Authenticate` challenge and error-body shape, the absence of rate-limit
 headers on a 401, the status-page path probes, and the `status.followupboss.com` NXDOMAIN.
-Triggers: not shipped — List Users has no documented newest-first order or created-since filter (https://docs.followupboss.com/).
+
+## Triggers
+
+Poll triggers built on the app's existing `search-people` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-person` — New Person | poll | `search-people` | Each newly created person (lead) in Follow Up Boss, oldest first. |
+| `new-or-updated-person` — New or Updated Person | poll | `search-people` | Each person that is newly created or edited in Follow Up Boss, once per edit. |
+
+How the feed is read: `GET /people` sorted newest first with `sort=-created` / `sort=-updated` (the `sort` parameter lists `created` and `updated`; a leading `-` is descending).
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://docs.followupboss.com/reference/people-get> (verified 2026-11-09).

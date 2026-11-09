@@ -5,6 +5,7 @@ Manage Freshsales Suite (Freshworks CRM) contacts, accounts and deals.
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.myfreshworks.com`
 - **Website** — https://www.freshworks.com/crm/sales/
 - **API docs** — https://developers.freshworks.com/crm/api/
@@ -151,7 +152,18 @@ this pack models Anthropic's `x-api-key` header.
 
 Researched and endpoint-verified 2026-09-01 against developers.freshworks.com/crm/api/.
 Status surfaces move; re-check if a probe starts failing for everyone at once.
+
 ## Triggers
 
-- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://developers.freshworks.com/crm/api/#view-contacts> (verified 2026-11-09).
+Poll triggers built on the app's existing `contact-get-many` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | `contact-get-many` | Each newly created Freshsales contact in the chosen view, oldest first. |
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-get-many` | Each contact in the chosen Freshsales view that is newly created or edited, once per edit. |
+
+How the feed is read: `GET /api/contacts/view/{view_id}` with `sort=created_at` / `updated_at` and `sort_type=desc` (the documented sortable fields); it needs a saved view ID.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://developers.freshworks.com/crm/api/#view-contacts> (verified 2026-11-09).

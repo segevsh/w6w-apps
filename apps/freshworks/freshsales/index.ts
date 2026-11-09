@@ -39,7 +39,6 @@ import apiKey from "./auth/api-key.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactGetMany from "./actions/contact-get-many.ts";
-import newContact from "./triggers/new-contact.ts";
 import contactUpdate from "./actions/contact-update.ts";
 import contactDelete from "./actions/contact-delete.ts";
 
@@ -66,6 +65,8 @@ import viewGetMany from "./actions/view-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -96,7 +97,7 @@ export default {
     // views (backs every *-get-many action's "View ID" param)
     viewGetMany,
   ],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

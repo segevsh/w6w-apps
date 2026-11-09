@@ -25,7 +25,6 @@ import apiKey from "./auth/api-key.ts";
 import ticketCreate from "./actions/ticket-create.ts";
 import ticketGet from "./actions/ticket-get.ts";
 import ticketGetMany from "./actions/ticket-get-many.ts";
-import newTicket from "./triggers/new-ticket.ts";
 import ticketUpdate from "./actions/ticket-update.ts";
 import ticketDelete from "./actions/ticket-delete.ts";
 import ticketAddNote from "./actions/ticket-add-note.ts";
@@ -42,6 +41,8 @@ import companyGetMany from "./actions/company-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newOrUpdatedTicket from "./triggers/new-or-updated-ticket.ts";
+import newTicket from "./triggers/new-ticket.ts";
 
 export default {
   actions: [
@@ -62,7 +63,7 @@ export default {
     companyGet,
     companyGetMany,
   ],
-  triggers: [newTicket],
+  triggers: [newOrUpdatedTicket, newTicket],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

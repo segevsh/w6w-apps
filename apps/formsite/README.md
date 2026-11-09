@@ -5,6 +5,7 @@ Read Formsite forms, items and results, and manage result-completed webhooks.
 - **Categories** — forms
 - **Auth methods** — token (bearer access token + server + user directory)
 - **Actions** — 8
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.formsite.com`
 - **Website** — https://www.formsite.com
 - **API docs** — https://support.formsite.com/hc/en-us/articles/46181026038931-API
@@ -62,7 +63,17 @@ No rate-limit headers are documented, so there is no quota check.
 | --- | --- | --- | --- | --- | --- | --- |
 | `service` | service | — | — | informational | — | unavailable (see above) |
 | `domain` | dependency | connection | context | degraded | 120 s | unsigned `GET /{user_dir}/forms`; 401 passes, 404/5xx down, 429 degraded |
+
 ## Triggers
 
-- `new-result` — poll trigger wrapping the existing list action; the run gets each new record.
-- Vendor list API: <https://support.formsite.com/hc/en-us/articles/360000434834-API> (verified 2026-11-09).
+Poll triggers built on the app's existing `result-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-result` — New Result | poll | `result-list` | Each newly submitted result of the chosen Formsite form, oldest first. |
+
+How the feed is read: `GET /forms/{formDir}/results` with `sort_direction=desc` on the default sort field, the result ID (the API documents `sort_id` default `result_id` and `sort_direction` default `desc`).
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://support.formsite.com/hc/en-us/articles/360000434834-API> (verified 2026-11-09).
