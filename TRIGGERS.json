@@ -6703,14 +6703,14 @@
   },
   {
     "path": "apps/wise",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "transfer-state-change",
       "balance-credit",
       "transfer-created"
     ],
     "pollAction": null,
-    "reason": "RSA verify with fixed public key (WebCrypto available in sandbox? verify).",
+    "reason": "shipped (T2.09): signed manual-webhook receiver (Wise signs with its published RSA key; subscription created in the Wise dashboard)",
     "verified": false,
     "source": "survey"
   },

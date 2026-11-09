@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 57, manual-webhook: 7, poll: 369, none: 249
+**Totals:** 682 apps — webhook-api: 56, manual-webhook: 8, poll: 369, none: 249
 
-## webhook-api (57)
+## webhook-api (56)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -66,13 +66,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/typeform | form-response | no | survey | Single event type. |
 | apps/webex | message-created, membership-created, room-created | no | survey | vendor webhook API |
 | apps/webflow | form-submission, collection-item-created, collection-item-changed, ecomm-new-order | no | survey | vendor webhook API |
-| apps/wise | transfer-state-change, balance-credit, transfer-created | no | survey | RSA verify with fixed public key (WebCrypto available in sandbox? verify). |
 | apps/woocommerce | order-created, order-updated, customer-created, product-created | no | survey | vendor webhook API |
 | apps/workable | candidate-created, candidate-moved | no | survey | vendor webhook API |
 | apps/wufoo | new-entry | no | survey | Poll-friendly: monotonic EntryId. |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | no | survey | shipped (T2.12): API-registered signed webhooks (new-ticket, ticket-comment-added, ticket-status-changed); no Zendesk trigger rule needed |
 
-## manual-webhook (7)
+## manual-webhook (8)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -83,6 +82,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/notion | page-created, page-content-updated, database-row-added | no | survey | Large app (119 actions); confirm query action exists via grep before choosing poll. |
 | apps/slack | new-message, reaction-added, new-channel | no | survey | Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel. |
 | apps/twilio/twilio | incoming-sms, incoming-call-status, message-status | no | survey | Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL. |
+| apps/wise | transfer-state-change, balance-credit, transfer-created | no | survey | shipped (T2.09): signed manual-webhook receiver (Wise signs with its published RSA key; subscription created in the Wise dashboard) |
 
 ## poll (369)
 
