@@ -23,13 +23,16 @@ import {
  * secret to configure, so none is accepted or needed: the key is Wise's, in this file.
  *
  * One signature is not enough: Wise signs EVERY customer's webhooks with that same key, so a valid
- * signature proves "Wise sent this", not "this is the subscription you set up". Anyone who learns
- * a callback URL could create their own Wise subscription pointing at it and have Wise deliver
- * genuinely signed events about THEIR account. So the user also pastes their subscription's ID
- * (`subscriptionId` param), and after the signature verifies, the delivery's own
- * `subscription_id` (a field of the signed body: "ID of the webhook subscription that triggered
- * the event notification", docs.wise.com/guides/developer/webhooks/event-handling, verified
- * 2026-11-09) must equal it exactly. A missing or empty configured ID refuses every delivery.
+ * signature proves "Wise sent this", not "this is the account you set up". Anyone who learns a
+ * callback URL could create their own Wise subscription pointing at it and have Wise deliver
+ * genuinely signed events about THEIR account. So the user also pastes their Wise profile ID
+ * (`profileId` param), and after the signature verifies, the profile the delivery's own signed body
+ * names (a per-event field of `data`, see `WebhookTriggerSpec.profilePath`; docs.wise.com
+ * /api-reference/webhook-event/*, verified 2026-11-09) must equal it exactly. A missing or empty
+ * configured ID, or a body without the profile field, refuses the delivery. The profile id is
+ * bound rather than the subscription id because it exists BEFORE the callback URL is registered
+ * and never changes on a republish (Wise has no update-subscription call, and the host replaces a
+ * webhook row, so a new URL, whenever its params change).
  *
  * Wise defines no replay window to enforce: `sent_at` is in the signed body, but Wise retries a
  * failed delivery for up to two weeks and says events arrive out of order "due to retries", so a
@@ -74,8 +77,8 @@ export const WISE_PUBLIC_KEYS: PublicKeys = {
 export interface TriggerParams {
   /** Which Wise environment signs the deliveries; selects the public key. Default `live`. */
   environment?: string;
-  /** The ID of the user's own Wise webhook subscription; deliveries from any other are refused. */
-  subscriptionId?: string;
+  /** The user's own Wise profile ID; deliveries naming any other profile are refused. */
+  profileId?: string;
 }
 
 /** What `onSubscribe` returns: the URL the user pastes into Wise's Developer Hub. */
@@ -106,13 +109,13 @@ const ENVIRONMENT_PARAM: Param = {
     "Which Wise environment sends the webhook; it decides the public key deliveries are checked against.",
 };
 
-const SUBSCRIPTION_ID_PARAM: Param = {
-  key: "subscriptionId",
-  label: "Wise subscription ID",
+const PROFILE_ID_PARAM: Param = {
+  key: "profileId",
+  label: "Wise profile ID",
   type: "string",
   required: true,
   hint:
-    "The ID of the Wise webhook subscription you created for this trigger: Developer Hub > Webhooks > Subscriptions > click the subscription > Subscription ID (the API returns it as `id` when you create one). Deliveries from any other subscription are refused.",
+    "The numeric ID of the Wise profile (personal or business) whose events this trigger should receive: run this app's Profile List action, or find it in Wise under your profile's settings or in the URL. Deliveries naming any other profile are refused.",
 };
 
 const EVENT_OUTPUT: OutputField[] = [
@@ -175,20 +178,37 @@ export async function verifyRsaSha256(
   );
 }
 
+/** The value at `path` below `root`, or undefined when any step is not an object. */
+function at(root: unknown, path: readonly string[]): unknown {
+  let cur: unknown = root;
+  for (const k of path) {
+    const o = asObject(cur);
+    if (!o || !Object.hasOwn(o, k)) return undefined;
+    cur = o[k];
+  }
+  return cur;
+}
+
 /**
- * Throw unless `delivered` (the signed body's `subscription_id`) is exactly the `configured` ID.
- * An unset, blank or non-string configured ID never matches: no fail-open. The messages name the
- * subscription and echo neither value.
+ * Throw unless `delivered` (the profile id in the signed body) is exactly the `configured` ID.
+ * An unset, blank or non-string configured ID never matches (no fail-open), a delivered id that is
+ * not a non-empty string or a safe integer never matches, and both sides are compared as strings.
+ * The messages name the profile and echo neither value.
  */
-function assertOwnSubscription(configured: unknown, delivered: unknown): void {
+function assertOwnProfile(configured: unknown, delivered: unknown): void {
   let expected: string;
   try {
     expected = requireSecret(typeof configured === "string" ? configured.trim() : configured);
   } catch {
-    throw new Error("Wise delivery refused: the Wise subscription ID is not configured.");
+    throw new Error("Wise delivery refused: the Wise profile ID is not configured.");
   }
-  if (typeof delivered !== "string" || !timingSafeEqual(delivered, expected)) {
-    throw new Error("Wise delivery refused: it is not from the configured Wise subscription.");
+  const got = typeof delivered === "string" && delivered !== ""
+    ? delivered
+    : typeof delivered === "number" && Number.isSafeInteger(delivered)
+    ? String(delivered)
+    : null;
+  if (got === null || !timingSafeEqual(got, expected)) {
+    throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
   }
 }
 
@@ -198,6 +218,15 @@ export interface WebhookTriggerSpec {
   description: string;
   /** The one Wise event type (`trigger_on`) this trigger fires on. */
   eventType: string;
+  /**
+   * Where the signed body names the profile the event is about: a path below `data` (Wise's
+   * per-event payload, e.g. `["resource", "profile_id"]`). The event is refused unless it holds.
+   */
+  profilePath: readonly string[];
+  /** When set, `data.resource.type` must equal it (a profile event's `resource.id` is a profile). */
+  resourceType?: string;
+  /** The schema version the sample (and `profilePath`) documents. Default `4.0.0`. */
+  schemaVersion?: string;
   /** A representative `data` for the sample. */
   sampleData: Record<string, unknown>;
 }
@@ -214,13 +243,13 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [ENVIRONMENT_PARAM, SUBSCRIPTION_ID_PARAM],
+    params: [ENVIRONMENT_PARAM, PROFILE_ID_PARAM],
     output: EVENT_OUTPUT,
     sample: {
       eventType: spec.eventType,
       deliveryId: "5a1d3c70-2b8e-4a6f-9f0e-7c2d1e4b8a93",
       subscriptionId: "01234567-89ab-cdef-0123-456789abcdef",
-      schemaVersion: "4.0.0",
+      schemaVersion: spec.schemaVersion ?? "4.0.0",
       sentAt: "2026-11-09T10:12:50.123Z",
       data: spec.sampleData,
     } satisfies WiseEvent,
@@ -264,12 +293,18 @@ export function webhookTrigger(
       if (!event || !eventType) {
         throw new Error("Not a Wise event notification: expected an object with event_type.");
       }
-      // Bind the delivery to the user's own subscription (the id is read from the SIGNED body).
-      assertOwnSubscription(params?.subscriptionId, event.subscription_id);
+      // Another event type starts nothing here (and has no field this trigger knows to bind on).
+      if (eventType !== spec.eventType) return [];
+      // Bind the delivery to the user's own profile (read from the SIGNED body, nowhere else).
+      if (spec.resourceType !== undefined) {
+        if (at(event.data, ["resource", "type"]) !== spec.resourceType) {
+          throw new Error("Wise delivery refused: it is not for the configured Wise profile.");
+        }
+      }
+      assertOwnProfile(params?.profileId, at(event.data, spec.profilePath));
 
       // A test notification (sent when the subscription is created) starts no run.
       if (header(raw, "x-test-notification")?.toLowerCase() === "true") return [];
-      if (eventType !== spec.eventType) return [];
       return [{
         eventType,
         deliveryId: str(header(raw, "x-delivery-id")),

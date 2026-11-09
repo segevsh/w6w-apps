@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/wise",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Send cross-border transfers with Wise: quotes, recipients, transfers, and multi-currency balances, plus triggers on transfer, payout, balance and profile events.",
   "license": "MIT",
   "author": {
