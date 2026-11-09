@@ -1,5 +1,7 @@
 # Loop Returns
 
+- **Triggers** — 1 (poll)
+
 Drive [Loop Returns](https://www.loopreturns.com) (the Shopify returns and exchanges platform) from a
 workflow, over the Loop API v1 at `https://api.loopreturns.com/api/v1`.
 
@@ -32,6 +34,10 @@ List actions prefill a small page size (25) and expose `nextCursor` (cursor list
 (label requests).
 
 ## Things worth knowing
+
+## Triggers
+
+- **New Order** (`new-order`) polls `order-list` with descending order.
 
 - **Failures arrive with HTTP 200.** Cancel, flag, close, remove and process answer `true` on success
   and `{"errors": {"message": …}}` with status 200 on refusal; return details answers

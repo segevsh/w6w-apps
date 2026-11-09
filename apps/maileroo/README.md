@@ -1,5 +1,7 @@
 # Maileroo
 
+- **Triggers** — 1 (poll)
+
 Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions,
 templates and applications, and run OTP verifications with [Maileroo](https://maileroo.com).
 28 actions.
@@ -36,6 +38,10 @@ The connect-time `test` probes each key you supplied on its own host and classif
   missing scope still proves the key is valid; a `403` about the IP allowlist, or a `401`, fails.
 
 ## Actions
+
+## Triggers
+
+- **New Domain** (`new-domain`) polls `list-domains` by descending domain id.
 
 | Group | Actions |
 |---|---|

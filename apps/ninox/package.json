@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ninox",
-  "version": "0.1.0",
-  "description": "Read and write Ninox 4 records, inspect modules, tables, fields, views and reports, poll record changes, and run scripts in a Ninox workspace.",
+  "version": "0.2.0",
+  "description": "Read and write Ninox 4 records, inspect modules, tables, fields, views and reports, poll record changes, trigger on new records, and run scripts in a Ninox workspace.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api"
     ],
-    "longDescription": "Ninox 4 is a low-code platform for building business apps: a workspace holds modules, each module holds tables, and each table holds fields and records. This app connects a workflow to one Ninox workspace through its public API.\n\nIt reads and writes records (list with filters, sorting and field selection; create, update, delete and upsert in batches of records), polls the change log of a table or of the workspace schema for incremental sync, and runs a Ninox script against a record. It also exposes the structure around the data: modules, tables, fields, views, reports and global function scripts, and renders a report to a PDF for a record.\n\nA Ninox API key belongs to exactly one workspace, so a Connection is a workspace id plus its key. Creating or altering modules, tables and fields, file uploads and CSV import are not covered by this version.",
+    "longDescription": "Ninox 4 is a low-code platform for building business apps: a workspace holds modules, each module holds tables, and each table holds fields and records. This app connects a workflow to one Ninox workspace through its public API.\n\nIt reads and writes records (list with filters, sorting and field selection; create, update, delete and upsert in batches of records), polls the change log of a table or of the workspace schema for incremental sync, and runs a Ninox script against a record. It also exposes the structure around the data: modules, tables, fields, views, reports and global function scripts, and renders a report to a PDF for a record. Its New Record poll trigger uses descending last-modified order and deduplicates record ids.\n\nA Ninox API key belongs to exactly one workspace, so a Connection is a workspace id plus its key. Creating or altering modules, tables and fields, file uploads and CSV import are not covered by this version.",
     "categories": [
       "databases",
       "productivity"
@@ -33,7 +33,8 @@
         "go.ninox.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -213,3 +213,5 @@ Meilisearch's envelope is `{message, code, type, link}`. `code` is the
 machine-readable half — `index_not_found`, `invalid_search_filter`,
 `invalid_api_key` — and `link` points at the documentation for it, so the whole
 body is surfaced rather than a summary.
+
+Triggers: not shipped — `search` can sort only a user-configured sortable field, so no universal newest-first document feed exists (https://www.meilisearch.com/docs/reference/api/search).
