@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/vapi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Place and manage voice AI phone calls, and read the assistant, phone number, squad, tool and file catalogs behind them, on Vapi.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.vapi",
     "displayName": "Vapi",
     "apiDocs": [

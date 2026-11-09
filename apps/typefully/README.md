@@ -1,5 +1,15 @@
 # Typefully
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-draft` — New Draft | Poll | `draft-list` | New drafts in a social set |
+
+Typefully API docs: https://typefully.com/docs/api (verified 2026-11-09).
+
 Write, schedule, and publish social media drafts across X, LinkedIn, Mastodon, Threads, Bluesky,
 and Substack Notes, on the **Typefully Public API v2**.
 

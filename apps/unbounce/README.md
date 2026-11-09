@@ -1,5 +1,15 @@
 # Unbounce
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | Poll | `page-lead-list` | New leads for a page |
+
+Unbounce API reference: https://developer.unbounce.com/api_reference/ (verified 2026-11-09).
+
 Landing pages, pop-ups and sticky bars for conversion campaigns, over the
 [Unbounce REST API v0.4](https://developer.unbounce.com/api_reference/)
 (`api.unbounce.com`). Verified 2026-08-30 against Unbounce's own developer
