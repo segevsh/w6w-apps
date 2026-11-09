@@ -5,6 +5,7 @@ Consume Netlify API
 - **Categories** — devops
 - **Auth methods** — personal-access-token
 - **Actions** — 10
+- **Triggers** — 3 (manual webhook)
 - **Egress allowlist** — `api.netlify.com`
 - **Website** — https://www.netlify.com
 - **API docs** — https://docs.netlify.com/api/get-started/
@@ -81,6 +82,44 @@ under a site. `site_id` is an optional *filter*/*target* query param on top of t
 replacement path. The account ID (or slug) is visible in the Netlify dashboard URL
 (`app.netlify.com/teams/<slug>/...`) or via `GET /accounts` (not modeled here — out of scope, one
 call per Connection setup rather than a recurring action).
+
+## Triggers
+
+Every trigger is a signed manual-webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
+This app does not create the Netlify notification for you: Netlify's REST `hooks` resource does not
+document the field that carries a JWS secret, so you create the notification once in Netlify and the
+trigger verifies what it sends.
+
+| Trigger | Mechanism | Netlify notification | The run gets |
+|---|---|---|---|
+| `deploy` — Deploy Event | manual webhook | any deploy event (optional **Only these deploy states** filter) | the deploy, its state and site |
+| `deploy-succeeded` — Deploy Succeeded | manual webhook | Deploy succeeded (`state: ready`) | the deploy, URLs, branch, commit |
+| `deploy-failed` — Deploy Failed | manual webhook | Deploy failed (`state: error`) | the deploy, error message, branch, commit |
+
+Every run gets `deployId`, `siteId`, `siteName`, `state`, `context`, `branch`, `commitRef`, `url`,
+`deployUrl`, `errorMessage`, `createdAt` and the full Netlify `deploy` object.
+
+**Setup.**
+
+1. Pick a long random string for the **JWS secret token** and enter it in this trigger's *JWS secret
+   token* field.
+2. Activate the trigger and copy the callback URL it shows.
+3. In Netlify open *Project configuration > Notifications > Deploy notifications > Add notification >
+   Outgoing webhook*, choose the event (for `deploy-succeeded` pick *Deploy succeeded*, for
+   `deploy-failed` pick *Deploy failed*), paste the callback URL as **URL to notify** and the same
+   string as **JWS secret token**.
+
+**Trust model.** Netlify signs a delivery only when the notification has a JWS secret token, and
+this trigger refuses any delivery that is not validly signed, so an empty secret is rejected rather
+than skipped. The `X-Webhook-Signature` header is a compact JWS: the trigger checks, in constant time
+and before the body is read, that its header says `HS256` (never `none`), that the HMAC-SHA256 over
+`header.payload` under your secret matches, that the `iss` claim is `netlify`, and that the `sha256`
+claim equals the SHA-256 of the exact request body. Netlify documents no timestamp claim, so a
+captured delivery is replayable; the secret and callback URL limit who could capture one.
+
+Vendor docs (verified 2026-11-09):
+[deploy notifications and the payload signature](https://docs.netlify.com/deploy/deploy-notifications),
+[Netlify API (`hooks`, `deploy`)](https://open-api.netlify.com/).
 
 ## Health check
 

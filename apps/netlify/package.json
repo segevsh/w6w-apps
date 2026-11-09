@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/netlify",
-  "version": "0.1.1",
-  "description": "Consume Netlify API",
+  "version": "0.2.0",
+  "description": "Consume Netlify API, and start workflows on signed deploy notifications.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://docs.netlify.com/api/get-started/",
       "https://docs.netlify.com/api/get-started/#rate-limiting"
     ],
-    "longDescription": "Netlify hosts and builds sites from Git, and this app manages the deploys, environment variables, and form submissions around a site: listing sites and their deploy history, triggering a fresh deploy from a site's connected repository, cancelling one in progress, and reading a specific deploy's status. It is the app to reach for when a workflow needs to kick off a rebuild in response to something else happening — a CMS update, a scheduled trigger — without going through the Netlify dashboard.\n\nEnvironment variables can be read and set per deploy context, useful for rotating a value or configuring a site as part of a larger provisioning workflow. Netlify's built-in form handling is also covered: a workflow can list which forms a site has detected and read the submissions across all of them, which is a lightweight way to react to a form submission without standing up a separate webhook receiver.",
+    "longDescription": "Netlify hosts and builds sites from Git, and this app manages the deploys, environment variables, and form submissions around a site: listing sites and their deploy history, triggering a fresh deploy from a site's connected repository, cancelling one in progress, and reading a specific deploy's status. It is the app to reach for when a workflow needs to kick off a rebuild in response to something else happening — a CMS update, a scheduled trigger — without going through the Netlify dashboard.\n\nEnvironment variables can be read and set per deploy context, useful for rotating a value or configuring a site as part of a larger provisioning workflow. Netlify's built-in form handling is also covered: a workflow can list which forms a site has detected and read the submissions across all of them, which is a lightweight way to react to a form submission without standing up a separate webhook receiver.\n\nTriggers start a workflow from a Netlify deploy notification (any deploy event, succeeded, or failed). Point an Outgoing webhook notification at the trigger's URL with a JWS secret token; every delivery is signature-verified against it.",
     "categories": [
       "devops"
     ],
@@ -33,7 +33,12 @@
         "api.netlify.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -34,6 +34,12 @@ import fileUpdate from "./actions/file-update.ts";
 import releaseCreate from "./actions/release-create.ts";
 import releaseGetMany from "./actions/release-get-many.ts";
 import userGetCurrent from "./actions/user-get-current.ts";
+import push from "./triggers/push.ts";
+import mergeRequestEvent from "./triggers/merge-request.ts";
+import issueEvent from "./triggers/issue.ts";
+import comment from "./triggers/comment.ts";
+import pipeline from "./triggers/pipeline.ts";
+import releaseEvent from "./triggers/release.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -62,6 +68,7 @@ export default {
     // user
     userGetCurrent,
   ],
+  triggers: [push, mergeRequestEvent, issueEvent, comment, pipeline, releaseEvent],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

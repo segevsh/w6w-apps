@@ -6,6 +6,7 @@ self-managed instance.
 - **Categories** — developer-tools, version-control
 - **Auth methods** — access-token, oauth2
 - **Actions** — 16
+- **Triggers** — 6 (webhook)
 - **Egress allowlist** — `gitlab.com`
 - **Website** — https://about.gitlab.com
 - **API docs** — https://docs.gitlab.com/ee/api/
@@ -31,6 +32,41 @@ The manifest's egress allowlist ships only `gitlab.com`. Pointing a connection a
 self-managed host (via the access-token **Instance URL** field) therefore also requires
 **adding that host to the connection's own egress allowlist** — the same dynamic-host note
 that the WordPress and other self-hostable apps in this pack carry.
+
+## Triggers
+
+Every trigger is a signed webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
+Activating one registers a project webhook on GitLab for you (`POST /projects/:id/hooks`) and
+removes it when the trigger is deactivated. The token needs the `api` scope and the Maintainer role
+on the project.
+
+| Trigger | Mechanism | GitLab event | The run gets |
+|---|---|---|---|
+| `push` — New Push | webhook | Push events | ref, before/after commit, commits |
+| `merge-request` — Merge Request Event | webhook | Merge request events | action, merge request |
+| `issue` — Issue Event | webhook | Issues events | action, issue |
+| `comment` — New Comment | webhook | Comments | comment, what it is on |
+| `pipeline` — Pipeline Event | webhook | Pipeline events | pipeline, status, builds |
+| `release` — Release Event | webhook | Releases events | action, release |
+
+Every run also gets `kind` (GitLab's `object_kind`), `action`, `deliveryId` (`webhook-id`),
+`project`, `user` and the full GitLab `payload`. Merge request, issue and release triggers take an
+optional **Only these actions** list such as `open,merge`.
+
+**Trust model.** GitLab 19.0 added a *signing token* that signs every delivery per the Standard
+Webhooks spec, and the project-hooks API accepts it as `signing_token`. On activation a random
+signing token (`whsec_` + 32 random bytes, base64) is generated per subscription, registered with the
+webhook and kept in the subscription's state. Each delivery's `webhook-signature` (`v1,` + base64
+HMAC-SHA256 of `webhook-id.webhook-timestamp.raw body`, keyed with the decoded token) is checked in
+constant time before the body is read, and `webhook-timestamp` must be within 5 minutes. Nothing
+unsigned is accepted: the older plain-text `X-Gitlab-Token` is neither registered nor honoured, and a
+GitLab instance older than 19.0 (which ignores `signing_token` and sends no signature) has every
+delivery refused, so these triggers need GitLab.com or a self-managed 19.0 or later. A self-managed
+host must also be on the connection's egress allowlist.
+
+Vendor docs (verified 2026-11-09):
+[webhooks and the signing token](https://docs.gitlab.com/user/project/integrations/webhooks/),
+[project webhooks API](https://docs.gitlab.com/api/project_webhooks/).
 
 ## Health check
 
