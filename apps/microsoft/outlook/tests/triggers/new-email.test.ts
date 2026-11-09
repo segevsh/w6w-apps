@@ -40,3 +40,18 @@ test("new-email is idempotent for the same cursor and response", async () => {
   );
   assertEquals(one, two);
 });
+
+test("new-email uses Graph's search order without sending $orderby", async () => {
+  const { ctx, calls } = mockCtx([PAGE]);
+  await trigger.poll!(
+    { params: { search: "from:alice@example.com" }, state: {}, subscriptionId: "sub" },
+    ctx,
+  );
+  assertEquals(calls[0], {
+    method: "GET",
+    url:
+      "https://graph.microsoft.com/v1.0/me/messages?%24search=%22from%3Aalice%40example.com%22&%24top=100",
+    headers: {},
+    body: null,
+  });
+});

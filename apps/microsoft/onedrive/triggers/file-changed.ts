@@ -13,6 +13,8 @@ interface DriveItem {
   deleted?: unknown;
 }
 
+const DELTA_PAGE_MAX = 999;
+
 async function deltaCursor(
   params: Params,
   token: "latest" | string,
@@ -20,8 +22,8 @@ async function deltaCursor(
 ) {
   const result = await listChanges.execute(
     token === "latest"
-      ? { driveId: params.driveId, token, top: 100, all: false }
-      : { driveId: params.driveId, deltaLink: token, top: 100, all: false },
+      ? { driveId: params.driveId, token, top: DELTA_PAGE_MAX, all: false }
+      : { driveId: params.driveId, deltaLink: token, top: DELTA_PAGE_MAX, all: false },
     ctx,
   );
   const cursor = result.nextLink ?? result.deltaLink;
@@ -54,7 +56,10 @@ const trigger: TriggerDefinition<Params, DriveItem> = {
         const result = await deltaCursor(params, token, ctx);
         return { items: result.items, nextToken: result.cursor };
       },
-      maxEvents: 100,
+      // Graph continuation links are replayed verbatim, so a resumed delta
+      // request can omit `$top`. Its documented maximum page size is still 999.
+      maxEvents: DELTA_PAGE_MAX,
+      isExpired: (err) => err instanceof Error && /Microsoft Graph 410\b/.test(err.message),
     });
   },
 };

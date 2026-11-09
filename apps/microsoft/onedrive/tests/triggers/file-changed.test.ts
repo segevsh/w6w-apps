@@ -20,7 +20,7 @@ test("file-changed seeds from token=latest without emitting, then emits the delt
   assertEquals(next.events, [{ id: "new", name: "Report.docx" }]);
   assertEquals(calls[0], {
     method: "GET",
-    url: "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=latest&%24top=100",
+    url: "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=latest&%24top=999",
     headers: {},
     body: null,
   });
@@ -46,5 +46,32 @@ test("file-changed persists a delta page continuation before its final delta lin
   const state = { v: 1 as const, kind: "token" as const, seeded: true as const, token: DELTA };
   const result = await trigger.poll!({ params: {}, state, subscriptionId: "sub" }, ctx);
   assertEquals(result.events, [{ id: "new" }]);
+  assertEquals(result.nextState?.token, next);
+});
+
+test("file-changed advances past a resumed delta page larger than 100 items", async () => {
+  const items = Array.from({ length: 150 }, (_, i) => ({ id: `item-${i}` }));
+  const state = { v: 1 as const, kind: "token" as const, seeded: true as const, token: DELTA };
+  const { ctx, calls } = mockCtx([{ body: { value: items, "@odata.deltaLink": "next" } }]);
+  const result = await trigger.poll!({ params: {}, state, subscriptionId: "sub" }, ctx);
+  assertEquals(result.events, items);
+  assertEquals(result.nextState?.token, "next");
+  assertEquals(calls[0], {
+    method: "GET",
+    url: DELTA,
+    headers: {},
+    body: null,
+  });
+});
+
+test("file-changed reseeds when Graph expires a delta cursor", async () => {
+  const state = { v: 1 as const, kind: "token" as const, seeded: true as const, token: DELTA };
+  const next = "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=fresh";
+  const { ctx } = mockCtx([
+    { status: 410, statusText: "Gone", body: { error: { code: "resyncRequired" } } },
+    { body: { value: [], "@odata.deltaLink": next } },
+  ]);
+  const result = await trigger.poll!({ params: {}, state, subscriptionId: "sub" }, ctx);
+  assertEquals(result.events, []);
   assertEquals(result.nextState?.token, next);
 });

@@ -14,7 +14,9 @@ export default pollFromListAction<Params>({
   input: ({ folderId, search }) => ({
     folderId,
     search,
-    orderby: "receivedDateTime desc",
+    // Graph rejects `$orderby` when `$search` is present; search results use
+    // Graph's sent-date order instead.
+    orderby: search ? undefined : "receivedDateTime desc",
     top: 100,
     all: false,
   }),
