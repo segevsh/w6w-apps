@@ -1,5 +1,7 @@
 # Leexi
 
+- **Triggers** — 1 (poll)
+
 Read Leexi calls, transcripts and AI summaries, import recordings, manage meeting events and the
 Leexi meeting assistant, and administer users and teams (plus the reseller endpoints), over the
 **Leexi public API** (v1).

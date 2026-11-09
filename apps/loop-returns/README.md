@@ -1,5 +1,7 @@
 # Loop Returns
 
+- **Triggers** — 1 (poll)
+
 Drive [Loop Returns](https://www.loopreturns.com) (the Shopify returns and exchanges platform) from a
 workflow, over the Loop API v1 at `https://api.loopreturns.com/api/v1`.
 

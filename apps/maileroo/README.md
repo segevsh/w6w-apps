@@ -1,5 +1,7 @@
 # Maileroo
 
+- **Triggers** — 1 (poll)
+
 Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions,
 templates and applications, and run OTP verifications with [Maileroo](https://maileroo.com).
 28 actions.

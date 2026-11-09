@@ -1,5 +1,7 @@
 # Ninox
 
+- **Triggers** — 1 (poll)
+
 Read and write records in a [Ninox 4](https://ninox.com) workspace, inspect its modules, tables,
 fields, views and reports, poll change feeds for incremental sync, run scripts, and render reports
 to PDF — over the Ninox 4 public API v1 (`https://go.ninox.com/api/v1`).
@@ -27,7 +29,8 @@ without ever seeing the key.
 
 ## Triggers
 
-- **New Record** (`new-record`) polls `record-list` with descending `_createdAt`.
+- **New Record** (`new-record`) polls `record-list` with descending `_md` (last modified). It
+  deduplicates record ids, so updates to a previously seen record are not emitted again.
 
 | Area       | Actions                                                                                         |
 | ---------- | ----------------------------------------------------------------------------------------------- |

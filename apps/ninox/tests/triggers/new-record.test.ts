@@ -11,7 +11,7 @@ test("new-record seeds, emits, retries, and requests the newest page", async () 
   assertEquals((seeded.nextState as { seeded: boolean }).seeded, true);
   assertEquals(
     seed.calls[0].url,
-    "https://go.ninox.com/api/v1/workspace/abcdefghij12/modules/crm/tables/contacts/records?sort=-_createdAt&limit=100&offset=0",
+    "https://go.ninox.com/api/v1/workspace/abcdefghij12/modules/crm/tables/contacts/records?sort=-_md&limit=100&offset=0",
   );
   const responses = [{
     body: listEnvelope([{ id: "new", values: {} }, { id: "old", values: {} }]),

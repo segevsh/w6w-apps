@@ -1,4 +1,5 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition } from "@w6w/types";
 import action from "../actions/record-list.ts";
 
 interface Params {
@@ -6,11 +7,32 @@ interface Params {
   tableName: string;
 }
 
+function requiredString(input: Record<string, unknown>, key: string): string {
+  const value = input[key];
+  if (typeof value !== "string") {
+    throw new Error(`new-record: ${key} must be a string`);
+  }
+  return value;
+}
+
+const pollAction: ActionDefinition = {
+  ...action,
+  execute(input, ctx) {
+    return action.execute({
+      moduleName: requiredString(input, "moduleName"),
+      tableName: requiredString(input, "tableName"),
+      sort: typeof input.sort === "string" ? input.sort : undefined,
+      limit: typeof input.limit === "number" ? input.limit : undefined,
+      offset: typeof input.offset === "number" ? input.offset : undefined,
+    }, ctx);
+  },
+};
+
 const trigger = pollFromListAction<Params>({
   key: "new-record",
   title: "New Record",
   description: "Fires for newly created table records.",
-  action: action as never,
+  action: pollAction,
   params: [{ key: "moduleName", label: "Module", type: "string", required: true }, {
     key: "tableName",
     label: "Table",
@@ -20,7 +42,7 @@ const trigger = pollFromListAction<Params>({
   input: ({ moduleName, tableName }) => ({
     moduleName,
     tableName,
-    sort: "-_createdAt",
+    sort: "-_md",
     limit: 100,
     offset: 0,
   }),

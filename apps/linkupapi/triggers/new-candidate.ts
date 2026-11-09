@@ -1,4 +1,5 @@
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
+import type { ActionDefinition } from "@w6w/types";
 import action from "../actions/job-candidates-list.ts";
 
 interface Params {
@@ -6,11 +7,32 @@ interface Params {
   jobId: string;
 }
 
+function requiredString(input: Record<string, unknown>, key: string): string {
+  const value = input[key];
+  if (typeof value !== "string") {
+    throw new Error(`new-candidate: ${key} must be a string`);
+  }
+  return value;
+}
+
+const pollAction: ActionDefinition = {
+  ...action,
+  execute(input, ctx) {
+    return action.execute({
+      accountId: requiredString(input, "accountId"),
+      jobId: requiredString(input, "jobId"),
+      count: typeof input.count === "number" ? input.count : undefined,
+      sortType: typeof input.sortType === "string" ? input.sortType : undefined,
+      sortOrder: typeof input.sortOrder === "string" ? input.sortOrder : undefined,
+    }, ctx);
+  },
+};
+
 const trigger = pollFromListAction<Params>({
   key: "new-candidate",
   title: "New Candidate",
   description: "Fires for newly applied job candidates.",
-  action: action as never,
+  action: pollAction,
   params: [{ key: "accountId", label: "Account ID", type: "string", required: true }, {
     key: "jobId",
     label: "Job ID",

@@ -1,5 +1,7 @@
 # Mixmax
 
+- **Triggers** — 1 (poll)
+
 Send and schedule email, run sequences and read templates, tasks, teams and unsubscribes in
 **Mixmax**, the email-engagement and sales-outreach platform, over the **Mixmax REST API (v1)**.
 
