@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 382, none: 250
+**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 380, none: 252
 
 ## webhook-api (42)
 
@@ -71,7 +71,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (382)
+## poll (380)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -116,24 +116,22 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/braze | campaign-list | new-campaign-list | no | scan | list action campaign-list has pagination and order/since params |
 | apps/breezyhr | candidate-search | new-candidate | apps/breezyhr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-search |
 | apps/browseai | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
-| apps/bubble | data-list | new-data-list | no | scan | list action data-list has pagination and order/since params |
-| apps/buffer | post-list | new-post-list | no | scan | list action post-list has pagination and order/since params |
+| apps/bubble | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
+| apps/buffer | post-list | new-post | apps/buffer/README.md Triggers section (verified 2026-11-09) | hand | post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed |
 | apps/callrail | call-list | new-call | apps/callrail/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
-| apps/campaignmonitor | list-stats-get | new-stats-get | no | scan | list action list-stats-get has pagination and order/since params |
-| apps/canny | post-list | new-post-list | no | scan | list action post-list has pagination and order/since params |
+| apps/campaignmonitor | list-subscribers-get | new-subscriber | apps/campaignmonitor/README.md Triggers section (verified 2026-11-09) | hand | active subscribers ordered by date desc; list-stats-get is analytics and unused |
+| apps/canny | post-list | new-post | apps/canny/README.md Triggers section (verified 2026-11-09) | hand | post-list sort=newest; no updated-time sort |
 | apps/canva | list-designs | new-design | apps/canva/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-designs |
-| apps/capsulecrm | opportunity-list | new-opportunity-list | no | scan | list action opportunity-list has pagination and order/since params |
-| apps/certifier | credential-search | new-credential-search | no | scan | list action credential-search has pagination and order/since params |
+| apps/capsulecrm | opportunity-list | new-opportunity, new-or-updated-opportunity | apps/capsulecrm/README.md Triggers section (verified 2026-11-09) | hand | since (changed-since) filter, no documented order: cursor window + id dedupe |
+| apps/certifier | credential-search | new-credential, new-or-updated-credential | apps/certifier/README.md Triggers section (verified 2026-11-09) | hand | credential-search sorted createdAt/updatedAt desc |
 | apps/chargebee | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
-| apps/chatbase | conversation-user-list | new-conversation-user-list | no | scan | list action conversation-user-list has pagination and order/since params |
-| apps/chatwork | room-message-list | new-room-message-list | no | scan | list action room-message-list has pagination and order/since params |
-| apps/circle | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
-| apps/clerk | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/cleverreach | group-list | new-group-list | no | scan | list action group-list has pagination and order/since params |
-| apps/clickhouse | activity-list | new-activity-list | no | scan | list action activity-list has pagination and order/since params |
+| apps/chatwork | room-message-list | new-message | apps/chatwork/README.md Triggers section (verified 2026-11-09) | hand | force=1 returns the latest 100 messages, re-sorted by send_time desc |
+| apps/circle | event-list | new-event | apps/circle/README.md Triggers section (verified 2026-11-09) | hand | Admin API v2 documents default order newest by created_at; records array |
+| apps/clerk | user-list | new-user, new-or-updated-user | apps/clerk/README.md Triggers section (verified 2026-11-09) | hand | order_by=-created_at / -updated_at via new optional orderBy input |
+| apps/cleverreach | group-list | new-group | apps/cleverreach/README.md Triggers section (verified 2026-11-09) | hand | order=created DESC; changed-field name not verified so no updated trigger |
+| apps/clickhouse | activity-list | new-activity | apps/clickhouse/README.md Triggers section (verified 2026-11-09) | hand | from_date filter, unpaged, id dedupe with cursor window |
 | apps/clicksend | sms-history-list | new-sms | apps/clicksend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action sms-history-list |
-| apps/clio | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/clockodo | list-entries | new-entries | no | scan | list action list-entries has pagination and order/since params |
+| apps/clio | contact-list | new-contact, new-or-updated-contact | apps/clio/README.md Triggers section (verified 2026-11-09) | hand | created_since / updated_since filters, id(asc) order: cursor window + id dedupe |
 | apps/close | list-opportunities | new-opportunity | apps/close/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-opportunities |
 | apps/cloudbeds | guest-list | new-guest-list | no | scan | list action guest-list has pagination and order/since params |
 | apps/cloudinary | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |
@@ -458,7 +456,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (250)
+## none (252)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -487,11 +485,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/brandfetch |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/brex |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/browserless |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/chatbase |  | apps/chatbase/README.md Triggers section (verified 2026-11-09) | hand | conversation-list is ordered by createdAt with no documented direction and the action exposes no sort or since filter (https://chatbase.co/docs/api-reference/v2/conversations/list-conversations.md) |
 | apps/checkly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/circleci |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/clearbit |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/clearout |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/clientify |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/clockodo |  | apps/clockodo/README.md Triggers section (verified 2026-11-09) | hand | list-entries requires a time_since/time_until window over the entry's own time with no created/updated filter or sort, so back-dated entries never look new (https://www.clockodo.com/en/api/) |
 | apps/cloudconvert |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/cloudflare |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/cloze |  | no | scan | no newest-first list action found by scan; vendor events not researched |

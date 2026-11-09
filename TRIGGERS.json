@@ -780,23 +780,24 @@
     "path": "apps/bubble",
     "mechanism": "poll",
     "candidates": [
-      "new-data-list"
+      "new-thing",
+      "new-or-updated-thing"
     ],
     "pollAction": "data-list",
-    "reason": "list action data-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc",
+    "verified": "apps/bubble/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/buffer",
     "mechanism": "poll",
     "candidates": [
-      "new-post-list"
+      "new-post"
     ],
     "pollAction": "post-list",
-    "reason": "list action post-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed",
+    "verified": "apps/buffer/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cal",
@@ -838,23 +839,23 @@
     "path": "apps/campaignmonitor",
     "mechanism": "poll",
     "candidates": [
-      "new-stats-get"
+      "new-subscriber"
     ],
-    "pollAction": "list-stats-get",
-    "reason": "list action list-stats-get has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-subscribers-get",
+    "reason": "active subscribers ordered by date desc; list-stats-get is analytics and unused",
+    "verified": "apps/campaignmonitor/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/canny",
     "mechanism": "poll",
     "candidates": [
-      "new-post-list"
+      "new-post"
     ],
     "pollAction": "post-list",
-    "reason": "list action post-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "post-list sort=newest; no updated-time sort",
+    "verified": "apps/canny/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/canva",
@@ -871,23 +872,25 @@
     "path": "apps/capsulecrm",
     "mechanism": "poll",
     "candidates": [
-      "new-opportunity-list"
+      "new-opportunity",
+      "new-or-updated-opportunity"
     ],
     "pollAction": "opportunity-list",
-    "reason": "list action opportunity-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since (changed-since) filter, no documented order: cursor window + id dedupe",
+    "verified": "apps/capsulecrm/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/certifier",
     "mechanism": "poll",
     "candidates": [
-      "new-credential-search"
+      "new-credential",
+      "new-or-updated-credential"
     ],
     "pollAction": "credential-search",
-    "reason": "list action credential-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "credential-search sorted createdAt/updatedAt desc",
+    "verified": "apps/certifier/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/chargebee",
@@ -902,25 +905,23 @@
   },
   {
     "path": "apps/chatbase",
-    "mechanism": "poll",
-    "candidates": [
-      "new-conversation-user-list"
-    ],
-    "pollAction": "conversation-user-list",
-    "reason": "list action conversation-user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "conversation-list is ordered by createdAt with no documented direction and the action exposes no sort or since filter (https://chatbase.co/docs/api-reference/v2/conversations/list-conversations.md)",
+    "verified": "apps/chatbase/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/chatwork",
     "mechanism": "poll",
     "candidates": [
-      "new-room-message-list"
+      "new-message"
     ],
     "pollAction": "room-message-list",
-    "reason": "list action room-message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "force=1 returns the latest 100 messages, re-sorted by send_time desc",
+    "verified": "apps/chatwork/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/checkly",
@@ -935,12 +936,12 @@
     "path": "apps/circle",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Admin API v2 documents default order newest by created_at; records array",
+    "verified": "apps/circle/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/circleci",
@@ -973,34 +974,35 @@
     "path": "apps/clerk",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-user",
+      "new-or-updated-user"
     ],
     "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order_by=-created_at / -updated_at via new optional orderBy input",
+    "verified": "apps/clerk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cleverreach",
     "mechanism": "poll",
     "candidates": [
-      "new-group-list"
+      "new-group"
     ],
     "pollAction": "group-list",
-    "reason": "list action group-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "order=created DESC; changed-field name not verified so no updated trigger",
+    "verified": "apps/cleverreach/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clickhouse",
     "mechanism": "poll",
     "candidates": [
-      "new-activity-list"
+      "new-activity"
     ],
     "pollAction": "activity-list",
-    "reason": "list action activity-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "from_date filter, unpaged, id dedupe with cursor window",
+    "verified": "apps/clickhouse/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clicksend",
@@ -1040,12 +1042,13 @@
     "path": "apps/clio",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "created_since / updated_since filters, id(asc) order: cursor window + id dedupe",
+    "verified": "apps/clio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clockify",
@@ -1065,14 +1068,12 @@
   },
   {
     "path": "apps/clockodo",
-    "mechanism": "poll",
-    "candidates": [
-      "new-entries"
-    ],
-    "pollAction": "list-entries",
-    "reason": "list action list-entries has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "list-entries requires a time_since/time_until window over the entry's own time with no created/updated filter or sort, so back-dated entries never look new (https://www.clockodo.com/en/api/)",
+    "verified": "apps/clockodo/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/close",
