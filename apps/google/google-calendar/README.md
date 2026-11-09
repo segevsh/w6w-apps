@@ -6,19 +6,10 @@ calendar events.
 - **Categories** — calendar, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 8
-- **Triggers** — not shipped — the existing `list-events` action can order by `updated` only
-  ascending, while the shared poll cursor requires a newest-first page
-  (https://developers.google.com/workspace/calendar/api/v3/reference/events/list; verified 2026-11-09).
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `www.googleapis.com`
 - **Website** — https://calendar.google.com
 - **API docs** — https://developers.google.com/workspace/calendar
-
-## Triggers
-
-Not shipped: Calendar's existing `events.list` endpoint exposes `orderBy=updated` only in ascending
-order, so it cannot safely back the shared newest-first polling cursor without a different,
-token-based action path. Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
-(verified 2026-11-09).
 
 ## Health check
 
@@ -80,6 +71,28 @@ reach a status host.
 **`quota` is declared absent.** Google publishes no headroom endpoint or rate-limit headers. Quota is per-project, billed in method-specific units and visible only in the Google Cloud console; exhaustion surfaces as 429 `rateLimitExceeded` or 403 `userRateLimitExceeded`.
 A declared absence always reports `unknown`, so it carries `severity: "informational"` —
 otherwise it would pin every verdict for this app at `unknown` forever.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `event-changed` — Event Changed | poll | `list-events` with `syncToken` | One event that was created, updated or cancelled since the last check, plus `changeType` (`created`, `updated` or `cancelled`) |
+
+The first check does a full `events.list` walk on the chosen calendar (page size 250, no time or
+query filters, `singleEvents=true`) and stores the final `nextSyncToken`; it emits nothing. Each later
+check sends one `events.list` page with `syncToken=<stored token>` and `maxResults=100`, and nothing
+Google forbids alongside a sync token (`timeMin`, `timeMax`, `updatedMin`, `q`, `iCalUID`, `orderBy`).
+Cancelled events are emitted with `changeType: "cancelled"` (Google always returns deleted entries on
+an incremental sync). `changeType` is `created` when the event's `updated` is within two seconds of
+its `created`, otherwise `updated`. If Google answers `410 GONE` the token is invalid and the
+trigger re-syncs from scratch and emits nothing for that check, so changes made in between are not
+reported. If a changes page has a following page, the next check continues from it.
+Trust model: the trigger only reads the calendar through the connection's own credential; nothing is
+received from outside.
+
+Verified 2026-11-09: sync guide https://developers.google.com/calendar/api/guides/sync (initial
+full sync, `nextSyncToken` only on the last page, 410 means full re-sync) and the `syncToken`
+parameter of https://developers.google.com/workspace/calendar/api/v3/reference/events/list.
 
 ---
 
