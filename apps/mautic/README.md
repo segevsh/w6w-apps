@@ -5,6 +5,7 @@ Manage Mautic contacts, segments, companies, campaigns and email sends.
 - **Categories** — marketing, email, crm
 - **Auth methods** — client-credentials (OAuth2 Client Credentials grant)
 - **Actions** — 28
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `*` (self-hosted — see below)
 - **Website** — https://www.mautic.org
 - **API docs** — https://developer.mautic.org (redirects to
@@ -145,6 +146,35 @@ building this app — the shape is taken from the documentation's own example.
 - **A contact's `id` is the only identifier its endpoints take** — there is
   no separate "number" the way Gitea distinguishes an issue's number from its
   internal id.
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | webhook (API-registered) | `mautic.lead_post_save_new` | The new contact |
+| `contact-updated` — Contact Updated | webhook (API-registered) | `mautic.lead_post_save_update` | The contact after the update |
+| `contact-deleted` — Contact Deleted | webhook (API-registered) | `mautic.lead_post_delete` | The id of the deleted contact |
+| `form-submitted` — Form Submitted | webhook (API-registered) | `mautic.form_on_submit` | The submission (form, contact, submitted values) |
+
+**Setup.** None by hand, but the Mautic API user needs the Webhooks permissions. Subscribing
+generates a random 64-character secret and calls `POST /api/hooks/new` (`name`, `webhookUrl`,
+`secret`, `triggers`, `isPublished`); a retried subscribe first looks up `GET /api/hooks?search=<name>`
+and deletes a webhook already pointing at its callback URL. Unsubscribing calls
+`DELETE /api/hooks/{id}/delete` (one Mautic no longer has counts as deleted). If Mautic is set to
+queue webhook events, one delivery can carry several payloads (and several event types); the
+trigger emits one run per payload of its own event type.
+
+**Trust model.** Mautic signs every webhook, and the trigger never accepts an unsigned
+delivery. Each delivery is checked, before anything is parsed, against the `Webhook-Signature`
+header = base64(HMAC-SHA256(secret, raw request body)). The check uses the exact bytes Mautic
+sent and a constant-time compare. The scheme has no timestamp, so there is no replay window. A
+missing header, an unset secret or a body that was not delivered raw refuses the delivery; the
+host stores one failed row and starts no run. The secret is kept in the subscription state, which
+the host stores unsealed.
+
+Sources (verified 2026-11-09): https://devdocs.mautic.org/en/7.1/rest_api/webhooks.html ,
+https://devdocs.mautic.org/en/7.1/webhooks/getting_started.html ,
+https://devdocs.mautic.org/en/7.1/webhooks/events/index.html
 
 ## Health checks
 

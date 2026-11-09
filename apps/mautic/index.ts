@@ -66,10 +66,17 @@
  * contact's points, segment history and Do Not Contact record are gone with
  * it.
  *
+ * ## Triggers are signed webhooks
+ *
+ * `lib/triggers.ts` registers a webhook through the Webhooks REST API
+ * (`POST /api/hooks/new`) with a per-subscription secret and verifies
+ * `Webhook-Signature` (base64 HMAC-SHA256 of the raw body) on every delivery.
+ * The API user needs the Webhooks permissions.
+ *
  * Deliberately out of scope: the campaign builder itself (creating or editing
  * a campaign's event graph), forms, landing pages, dynamic content, focus
  * items, themes, assets, reports, stats, plugin/integration configuration,
- * webhooks and Mautic's own user management. Each is its own surface, and
+ * webhook management actions and Mautic's own user management. Each is its own surface, and
  * none of it is the daily loop of managing contacts and sending mail a
  * workflow actually touches.
  */
@@ -105,6 +112,10 @@ import emailSendToSegment from "./actions/email-send-to-segment.ts";
 import tagList from "./actions/tag-list.ts";
 import userGetSelf from "./actions/user-get-self.ts";
 
+import newContact from "./triggers/new-contact.ts";
+import contactUpdated from "./triggers/contact-updated.ts";
+import contactDeleted from "./triggers/contact-deleted.ts";
+import formSubmitted from "./triggers/form-submitted.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 
@@ -146,6 +157,7 @@ export default {
     // who this is
     userGetSelf,
   ],
+  triggers: [newContact, contactUpdated, contactDeleted, formSubmitted],
   auth: [clientCredentials],
   healthChecks: [instance, service],
 } satisfies AppDefinition;
