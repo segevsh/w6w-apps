@@ -6,6 +6,7 @@ Manage people, projects, allocations, time off, milestones, clients, statuses an
 - **Categories** — project-management, hr
 - **Auth methods** — api-token
 - **Actions** — 40 (full list/get/create/update/delete for each of 8 resources)
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-token`
 - **Egress allowlist** — `api.float.com` (the `service` check adds `status.float.com` to its own
   hook allowlist, never to the app's)
@@ -134,3 +135,16 @@ the response body, which stays a bare array. `list`/`get` actions in this app re
 A real Float error is `{"name", "message", "code", "status"}` (e.g. `{"name":"Unauthorized",
 "message":"Your request was made with invalid credentials.","code":0,"status":401}`). See finding #1
 above for the one case where you get something else entirely.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-allocation` — New Allocation | poll | List Allocations (`GET /v3/tasks`, `sort=-created`) | each newly created allocation |
+| `new-or-updated-allocation` — New or Updated Allocation | poll | List Allocations (`sort=-modified`) | each created or edited allocation (an edit is a new event) |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `allocation-list` action is sorted by `created` or `modified` descending (a `-` prefix means descending). Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://developer.float.com/ (sorting and pagination) (verified 2026-11-09).

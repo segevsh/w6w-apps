@@ -7,6 +7,7 @@ List campaigns, donations, recurring plans, donors, events, tickets and event ti
 - **Categories** — commerce, crm
 - **Auth methods** — basic
 - **Actions** — 7 (all `search`/list — the API is read-only)
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:basic`
 - **Egress allowlist** — `donorbox.org` (the `service` check adds `status.donorbox.org` to its own
   hook allowlist, never to the app's)
@@ -154,3 +155,15 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests
 deno task validate       # @w6w/validator conformance audit
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-event` — New Event | poll | List Events (`GET /api/v1/events`, `order=desc`) | each newly listed event |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `event-list` action is called with `order=desc`, Donorbox's documented ordering parameter (default `desc`). Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://github.com/donorbox/donorbox-api (Ordering and Pagination sections) (verified 2026-11-09).

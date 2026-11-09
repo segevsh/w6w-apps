@@ -37,6 +37,7 @@ import getCredits from "./actions/get-credits.ts";
 import getUsage from "./actions/get-usage.ts";
 import getTeamUsage from "./actions/get-team-usage.ts";
 
+import newList from "./triggers/new-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -84,6 +85,7 @@ export default {
     getUsage,
     getTeamUsage,
   ],
+  triggers: [newList],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

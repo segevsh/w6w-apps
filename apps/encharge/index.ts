@@ -19,6 +19,7 @@ import tagAdd from "./actions/tag-add.ts";
 import tagRemove from "./actions/tag-remove.ts";
 import segmentList from "./actions/segment-list.ts";
 import segmentPeopleList from "./actions/segment-people-list.ts";
+import newSegmentPerson from "./triggers/new-segment-person.ts";
 import fieldList from "./actions/field-list.ts";
 import fieldCreate from "./actions/field-create.ts";
 import fieldDelete from "./actions/field-delete.ts";
@@ -50,6 +51,7 @@ export default {
     emailSend,
     eventTrack,
   ],
+  triggers: [newSegmentPerson],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;
