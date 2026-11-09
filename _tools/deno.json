@@ -11,7 +11,7 @@
     "icons:fix": "deno run --allow-read --allow-write icon-legibility.ts fix",
     "icons:normalize": "deno run --allow-read --allow-write --allow-run --allow-env icon-normalize.ts --all",
     "coverage": "deno run --no-check -A output-coverage.ts",
-    "test": "deno test -A --unstable-worker-options audit.test.ts app-paths.test.ts output-coverage.test.ts sync-shared.test.ts poll-kit.test.ts poll-kit-sandbox.test.ts"
+    "test": "deno test -A --unstable-worker-options audit.test.ts app-paths.test.ts output-coverage.test.ts sync-shared.test.ts poll-kit.test.ts poll-kit-sandbox.test.ts triggers-coverage.test.ts"
   },
   "fmt": {
     "exclude": [
