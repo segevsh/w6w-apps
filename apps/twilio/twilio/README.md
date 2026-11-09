@@ -23,7 +23,7 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 2. Paste it into the number's (or messaging service's) **A message comes in** webhook, method `POST`; for status updates, use it as the `StatusCallback` URL.
 3. Paste your **Auth Token** (Twilio Console, Account info) into the trigger's `authToken` param.
 
-**Trust model.** `X-Twilio-Signature` must equal the base64 HMAC-SHA1, keyed by the Auth Token, of the callback URL followed by every POST parameter as name + value sorted by name. A missing or empty Auth Token, a missing signature or a mismatch refuses the delivery. Only form-encoded webhooks are accepted. Twilio expects TwiML as the reply to an incoming message; the host's JSON acknowledgement is read as an empty reply, so answer through the Send SMS action.
+**Trust model.** `X-Twilio-Signature` must equal the base64 HMAC-SHA1, keyed by the Auth Token, of the callback URL followed by every POST parameter as name + value sorted by name. A missing or empty Auth Token, a missing signature or a mismatch refuses the delivery. Only form-encoded webhooks are accepted. Twilio expects TwiML as the reply to an incoming message; the host replies with a JSON acknowledgement, not TwiML, so Twilio may log a warning per inbound message (not verified); answer through the Send SMS action.
 
 Sources (verified 2026-11-09): https://www.twilio.com/docs/usage/webhooks/webhooks-security , https://www.twilio.com/docs/messaging/guides/webhook-request
 

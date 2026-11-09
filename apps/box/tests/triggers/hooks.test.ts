@@ -329,3 +329,17 @@ test("triggers outside the subscription are acknowledged without an event", asyn
     1,
   );
 });
+
+test("a truncated or extended signature (both keys) -> refused", async () => {
+  const ts = stamp();
+  const p = sign(BODY, ts, PRIMARY);
+  const s = sign(BODY, ts, SECONDARY);
+  for (const [a, b] of [[p.slice(0, -1), s.slice(0, -1)], [p + "0", s + "0"]]) {
+    const raw = call(BODY, {
+      "box-delivery-timestamp": ts,
+      "box-signature-primary": a,
+      "box-signature-secondary": b,
+    });
+    await assert.rejects(ingest(fileUploaded, raw), /does not match/);
+  }
+});

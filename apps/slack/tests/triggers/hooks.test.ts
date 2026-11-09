@@ -268,3 +268,12 @@ test("non-event payloads (app_rate_limited) acknowledge with no event", async ()
   const body = JSON.stringify({ type: "app_rate_limited", minute_rate_limited: 1 });
   assert.deepEqual(evs(await ingest(event, signed(body))), []);
 });
+
+test("a truncated or extended signature -> refused", async () => {
+  const ts = String(Math.floor(Date.now() / 1000));
+  const good = sign(BODY, ts);
+  for (const sig of [good.slice(0, -1), good + "0"]) {
+    const raw = call(BODY, { "x-slack-request-timestamp": ts, "x-slack-signature": sig });
+    await assert.rejects(ingest(newMessage, raw), /signature does not match/);
+  }
+});

@@ -165,3 +165,13 @@ test("message-status: a status callback fires it and incoming-message ignores it
   assert.deepEqual(evs(await ingest(incoming, signed(body))), []);
   assert.deepEqual(evs(await ingest(status, signed())), []);
 });
+
+test("a truncated or extended signature -> refused", async () => {
+  const good = sign(URL_, BODY);
+  for (const sig of [good.slice(0, -1), good + "0"]) {
+    await assert.rejects(
+      ingest(incoming, call(BODY, { "x-twilio-signature": sig })),
+      /signature does not match/,
+    );
+  }
+});

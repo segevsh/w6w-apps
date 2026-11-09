@@ -253,3 +253,13 @@ test("parseOutput: fetches the message text; a message the connection cannot rea
   }, gone.ctx) as { text: unknown; message: unknown };
   assert.deepEqual([out2.text, out2.message], [null, null]);
 });
+
+test("a truncated or extended signature -> refused", async () => {
+  const good = sign(BODY);
+  for (const sig of [good.slice(0, -1), good + "0"]) {
+    await assert.rejects(
+      ingest(newMessage, call(BODY, { "x-spark-signature": sig })),
+      /does not match/,
+    );
+  }
+});

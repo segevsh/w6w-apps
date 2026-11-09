@@ -164,6 +164,7 @@ test("wrong secret, one flipped byte, missing header, empty header -> refused", 
       { "x-telegram-bot-api-secret-token": "wrong" },
       { "x-telegram-bot-api-secret-token": SECRET.slice(0, -1) + "X" },
       { "x-telegram-bot-api-secret-token": SECRET + "x" },
+      { "x-telegram-bot-api-secret-token": SECRET.slice(0, -1) },
       { "x-telegram-bot-api-secret-token": "" },
       {},
     ]
@@ -227,4 +228,20 @@ test("callback_query: text is the button data, chat comes from its message", asy
     "77",
     4,
   ]);
+});
+
+test("onSubscribe: no update types chosen (unset or empty) sends allowed_updates: [] explicitly", async () => {
+  for (const params of [{}, { updateTypes: "" }]) {
+    const m = mockCtx([
+      { body: { ok: true, result: { url: "" } } },
+      { body: { ok: true, result: true } },
+    ]);
+    await update.onSubscribe!(
+      { params, subscriptionId: "s", callbackUrl: CALLBACK, hostUrl: "h" },
+      m.ctx,
+    );
+    const body = JSON.parse(m.calls[1].body!);
+    assert.deepEqual(Object.keys(body).sort(), ["allowed_updates", "secret_token", "url"]);
+    assert.deepEqual(body.allowed_updates, []);
+  }
 });

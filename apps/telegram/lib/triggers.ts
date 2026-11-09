@@ -185,7 +185,8 @@ export function telegramTrigger(
       }
       const secretToken = randomSecret();
       const body: Record<string, unknown> = { url: callbackUrl, secret_token: secretToken };
-      if (allowedUpdates) body.allowed_updates = allowedUpdates;
+      // Omitting it makes Telegram reuse the bot's previous setting; [] is the explicit default set.
+      body.allowed_updates = allowedUpdates ?? [];
       await client.call("setWebhook", { method: "POST", body });
       return { secretToken, callbackUrl, allowedUpdates };
     },
