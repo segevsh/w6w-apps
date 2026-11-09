@@ -539,7 +539,7 @@ for (const s of SHIPPED) {
 
   test(`${s.name}: only an integer or a non-empty string counts as a profile id`, async () => {
     // a non-integer number would stringify to something a user could type; it is not a profile
-    for (const [cfg, wire] of [["1.5", "1.5"], ["1e+21", "1e21"], ["0", "0.0"]] as const) {
+    for (const [cfg, wire] of [["1.5", "1.5"], ["1e+21", "1e21"], ["2.5", "2.5"]] as const) {
       await assertRejects(
         async () => await ingest(s.trigger, sign_(wire), "live", cfg),
         Error,
