@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/formstack-documents",
-  "version": "0.1.0",
-  "description": "Generate documents from templates: merge data into Formstack Documents (WebMerge) templates and data routes, manage deliveries, and combine, convert, compress, encrypt or split PDFs.",
+  "version": "0.2.0",
+  "description": "Generate documents from templates: merge data into Formstack Documents (WebMerge) templates and data routes, manage deliveries, and combine, convert, compress, encrypt or split PDFs, and trigger workflows on new document templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,12 @@
         "www.webmerge.me"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

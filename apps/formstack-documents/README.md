@@ -16,6 +16,14 @@ data routes, deliveries and PDF tools.
 Verified 2026-10-06 against the developer docs and live unauthenticated probes
 (`/api/documents` and `/api/routes` answer a bare 401).
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-document` — New Document | poll | `document-list` | Each document template newly added to the account |
+
+`GET /api/documents` returns the account document templates in one response; this trigger snapshots up to 5,000 documents and emits additions only. Verified 2026-11-09 against Formstack Documents's [API reference](https://www.webmerge.me/developers).
+
 ## Actions
 
 | Group | Actions |
