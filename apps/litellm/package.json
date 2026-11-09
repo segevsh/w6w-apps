@@ -1,0 +1,42 @@
+{
+  "name": "@w6w-apps/litellm",
+  "version": "0.1.0",
+  "description": "Reach 15 model vendors \u2014 Gemini, Groq, OpenRouter, Together and more \u2014 through the LiteLLM proxy built into W6W.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.litellm",
+    "modelProvider": {
+      "modelTypes": [
+        "llm"
+      ]
+    },
+    "displayName": "LiteLLM",
+    "apiDocs": [
+      "https://docs.litellm.ai/docs/providers"
+    ],
+    "longDescription": "One connection type for every model vendor W6W doesn't have a native app for. Pick the vendor, paste that vendor's own API key, and its chat models become available to model routes, Functions and agents like any other provider's.\n\nCalls run through the LiteLLM proxy that W6W runs beside its API, so nothing extra has to be deployed. The proxy holds no keys of its own: each call carries the connection's key, and the key only ever goes to the vendor the connection names.\n\nA fit for trying a model from Gemini, Groq, OpenRouter, Together, Fireworks, Cerebras and the rest without waiting for a dedicated integration.",
+    "categories": [
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "LiteLLM"
+      }
+    },
+    "network": {
+      "allow": []
+    },
+    "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --alias:@w6w/types=../../../core/packages/types/mod.ts --outfile=dist/app.js"
+  }
+}

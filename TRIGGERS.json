@@ -3406,6 +3406,15 @@
     "source": "hand"
   },
   {
+    "path": "apps/litellm",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "no actions: a model-provider connection used only by the host's model layer",
+    "verified": false,
+    "source": "hand"
+  },
+  {
     "path": "apps/littlegreenlight",
     "mechanism": "poll",
     "candidates": [

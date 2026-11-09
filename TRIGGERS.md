@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 42, manual-webhook: 9, poll: 382, none: 249
+**Totals:** 683 apps — webhook-api: 42, manual-webhook: 9, poll: 382, none: 250
 
 ## webhook-api (42)
 
@@ -458,7 +458,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (249)
+## none (250)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -579,6 +579,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/line |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/linkedin/linkedin-conversions |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/linkup |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/litellm |  | no | hand | no actions: a model-provider connection used only by the host's model layer |
 | apps/livechat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/lob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/lokalise |  | no | scan | no newest-first list action found by scan; vendor events not researched |
