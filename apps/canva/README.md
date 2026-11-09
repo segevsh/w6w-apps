@@ -6,6 +6,7 @@ API.
 - **Categories** — productivity, documents
 - **Auth methods** — oauth2
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.canva.com`
 - **Website** — https://www.canva.com
 - **API docs** — https://www.canva.dev/docs/connect/
@@ -181,6 +182,21 @@ before the next call gets throttled", so this app declares the check `unavailabl
 probing something that would prove nothing.
 
 ## Declared health checks
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-design` — New Design | poll | `list-designs`, by modification time descending | Each newly observed design |
+
+Canva's list endpoint exposes modification ordering, not creation ordering. This trigger therefore
+discovers recently modified designs; an old design edited after it has fallen out of the seen window
+can be emitted again.
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://www.canva.dev/docs/connect/api-reference/designs/list-designs/> (verified 2026-11-09).
 
 Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
 The three questions above map onto declared checks like this:

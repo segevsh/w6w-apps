@@ -5,6 +5,7 @@ Read and manage Contentful spaces, content types, entries, assets and locales.
 - **Categories** — cms
 - **Auth methods** — access-token
 - **Actions** — 10
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `cdn.contentful.com`, `preview.contentful.com`, `api.contentful.com`, `upload.contentful.com`
 - **Website** — https://www.contentful.com
 - **API docs** — https://www.contentful.com/developers/docs/references/content-delivery-api/
@@ -70,6 +71,17 @@ reach a status host.
 
 
 ## Icon
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-entry` — New Entry | poll | `list-entries`, newest-first by `sys.createdAt` | Each newly observed Contentful entry |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/entries/entries-collection> (verified 2026-11-09).
 
 `assets/icon.svg` — vector, in Contentful's own palette — replaces a 60px colormapped PNG.
 
