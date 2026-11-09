@@ -42,6 +42,7 @@ import documentCreate from "./actions/document-create.ts";
 import documentUpdate from "./actions/document-update.ts";
 import documentDelete from "./actions/document-delete.ts";
 import documentList from "./actions/document-list.ts";
+import newDocument from "./triggers/new-document.ts";
 import collectionListIds from "./actions/collection-list-ids.ts";
 import queryRun from "./actions/query-run.ts";
 import queryRunAggregation from "./actions/query-run-aggregation.ts";
@@ -53,6 +54,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
+  triggers: [newDocument],
   actions: [
     // database
     databaseGet,

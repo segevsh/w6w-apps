@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/fillout",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Read Fillout forms and their submissions, import submissions, and subscribe webhooks, over the Fillout REST API v1.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.fillout",
     "displayName": "Fillout",
     "apiDocs": [

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/donorbox",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "List campaigns, donations, recurring plans, donors, events, tickets and purchases on Donorbox, the nonprofit fundraising platform.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.donorbox",
     "displayName": "Donorbox",
     "apiDocs": [

@@ -5,6 +5,8 @@ import apiKey from "./auth/api-key.ts";
 // Item, Lead, Employee, or a custom app's own DocType) shares this one
 // endpoint shape, because that IS Frappe's REST API.
 import listDocuments from "./actions/list-documents.ts";
+import newDocument from "./triggers/new-document.ts";
+import newOrUpdatedDocument from "./triggers/new-or-updated-document.ts";
 import getDocument from "./actions/get-document.ts";
 import countDocuments from "./actions/count-documents.ts";
 import createDocument from "./actions/create-document.ts";
@@ -36,6 +38,7 @@ export default {
     getLoggedUser,
     callMethod,
   ],
+  triggers: [newDocument, newOrUpdatedDocument],
   auth: [apiKey],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

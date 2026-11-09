@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/economic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read and write customers, products, draft and booked invoices, and read orders, suppliers, accounts and bookkeeping entries in Visma e-conomic accounting.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.economic",
     "displayName": "e-conomic",
     "apiDocs": [

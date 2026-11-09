@@ -8,6 +8,7 @@ import customerGroupList from "./actions/customer-group-list.ts";
 import customerList from "./actions/customer-list.ts";
 import employeeList from "./actions/employee-list.ts";
 import entryList from "./actions/entry-list.ts";
+import newBookedInvoice from "./triggers/new-booked-invoice.ts";
 import invoiceBook from "./actions/invoice-book.ts";
 import invoiceBookedGet from "./actions/invoice-booked-get.ts";
 import invoiceBookedList from "./actions/invoice-booked-list.ts";
@@ -34,6 +35,7 @@ import quota from "./health/quota.ts";
 import service from "./health/service.ts";
 
 export default {
+  triggers: [newBookedInvoice],
   actions: [
     accountingYearList,
     accountList,

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/float",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage people, projects, allocations, time off, milestones, clients, statuses and logged time in Float — the resource scheduling and team capacity planning tool.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.float",
     "displayName": "Float",
     "apiDocs": [

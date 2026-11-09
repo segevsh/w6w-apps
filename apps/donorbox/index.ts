@@ -46,6 +46,7 @@ import donorList from "./actions/donor-list.ts";
 import eventList from "./actions/event-list.ts";
 import ticketList from "./actions/ticket-list.ts";
 import purchaseList from "./actions/purchase-list.ts";
+import newEvent from "./triggers/new-event.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -60,6 +61,7 @@ export default {
     ticketList,
     purchaseList,
   ],
+  triggers: [newEvent],
   // Basic auth only. Donorbox publishes no OAuth surface for third-party
   // integrations — the account's login email plus a paid API key is the
   // entire authentication story.

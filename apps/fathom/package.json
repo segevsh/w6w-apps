@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/fathom",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Read Fathom meeting recordings, transcripts, summaries, action items and downloads, list teams and users, and manage webhooks via the Fathom External API.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.fathom",
     "displayName": "Fathom",
     "apiDocs": [

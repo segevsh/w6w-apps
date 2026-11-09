@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/encharge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Encharge marketing automation: create and update people, tag them, read segments and person fields, send transactional email, track events and subscribe webhooks.",
   "license": "MIT",
   "author": {
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.encharge",
     "displayName": "Encharge",
     "apiDocs": [
