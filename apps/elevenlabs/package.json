@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/elevenlabs",
   "version": "0.2.0",
-  "description": "Generate speech, sound effects and transcripts with ElevenLabs: text-to-speech with character timestamps, speech-to-text, the voice library, models, generation history and plan usage. Poll for newly created account voices.",
+  "description": "Generate speech, sound effects and transcripts with ElevenLabs: text-to-speech with character timestamps, speech-to-text, the voice library, models, generation history and plan usage. Poll new voices.",
   "license": "MIT",
   "author": {
     "name": "w6w"
