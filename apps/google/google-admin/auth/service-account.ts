@@ -1,5 +1,6 @@
 import type { AuthDefinition } from "@w6w/types";
 import { API_URL } from "../lib/client.ts";
+import { serviceAccountSetup } from "../../_shared/service-account-setup.ts";
 
 /**
  * Service Account (`serviceAccount`). The user pastes the downloaded service
@@ -16,6 +17,7 @@ const serviceAccount: AuthDefinition = {
   displayName: "Google Service Account",
   description:
     "Google service account JSON key with domain-wide delegation. The host mints the access token; paste the key once.",
+  setup: serviceAccountSetup("Admin SDK API", "admin.googleapis.com", "required"),
   fields: [
     {
       key: "serviceAccountKey",

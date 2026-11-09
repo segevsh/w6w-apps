@@ -53,6 +53,13 @@ const appPassword: AuthDefinition = {
     "A handle and an APP PASSWORD — not the account password. Exchanged once for a session, " +
     "because creating sessions is limited to roughly ten a day.",
   connectionLabel: "{{handle}}",
+  setup: [
+    {
+      text:
+        "In Bluesky, open Settings → Privacy and security → App passwords and add one. Paste it below with your handle.",
+      url: "https://bsky.app/settings/app-passwords",
+    },
+  ],
   fields: [
     {
       key: "service",

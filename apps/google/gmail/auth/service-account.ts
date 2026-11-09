@@ -1,5 +1,6 @@
 import type { AuthDefinition } from "@w6w/types";
 import { API_URL } from "../lib/client.ts";
+import { serviceAccountSetup } from "../../_shared/service-account-setup.ts";
 
 /**
  * Service Account (`serviceAccount`). The user pastes the downloaded service
@@ -17,6 +18,7 @@ const serviceAccount: AuthDefinition = {
   description:
     "Google service account JSON key with domain-wide delegation. The host mints the access token; paste the key once.",
   connectionLabel: "{{user.email}}",
+  setup: serviceAccountSetup("Gmail API", "gmail.googleapis.com", "required"),
   fields: [
     {
       key: "serviceAccountKey",
@@ -42,7 +44,7 @@ const serviceAccount: AuthDefinition = {
         type: "string",
         required: true,
         hint:
-          "Workspace user to act as. Required: a service account has no mailbox or admin rights of its own.",
+          "The Google Workspace email whose mailbox this connection reads and sends from, e.g. you@yourcompany.com. A service account has no mailbox of its own.",
       },
     ],
   },
