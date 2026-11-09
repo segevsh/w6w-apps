@@ -105,6 +105,7 @@ import webhooksDelete from "./actions/webhooks-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newListEntry from "./triggers/new-list-entry.ts";
 
 export default {
   actions: [
@@ -159,5 +160,6 @@ export default {
   ],
   // API key only. Affinity publishes no OAuth surface for third-party apps.
   auth: [bearerToken],
+  triggers: [newListEntry],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
