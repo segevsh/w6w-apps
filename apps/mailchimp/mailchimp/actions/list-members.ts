@@ -10,6 +10,8 @@ interface Input {
   beforeTimestampOpt?: string;
   count?: number;
   offset?: number;
+  sort?: "last_changed" | "email_address";
+  sortDir?: "ASC" | "DESC";
 }
 
 /**
@@ -52,6 +54,24 @@ const listMembers: ActionDefinition<Input> = {
     { key: "beforeTimestampOpt", label: "Before opt-in timestamp (ISO 8601)", type: "string" },
     { key: "count", label: "Count", type: "number", default: 500 },
     { key: "offset", label: "Offset", type: "number", default: 0 },
+    {
+      key: "sort",
+      label: "Sort by",
+      type: "select",
+      options: [
+        { value: "last_changed", label: "Last changed" },
+        { value: "email_address", label: "Email address" },
+      ],
+    },
+    {
+      key: "sortDir",
+      label: "Sort direction",
+      type: "select",
+      options: [
+        { value: "DESC", label: "Descending" },
+        { value: "ASC", label: "Ascending" },
+      ],
+    },
   ],
   output: [
     { key: "members", type: "array", label: "Members" },
@@ -71,6 +91,8 @@ const listMembers: ActionDefinition<Input> = {
           before_timestamp_opt: input.beforeTimestampOpt,
           count: input.count ?? 500,
           offset: input.offset ?? 0,
+          sort: input.sort,
+          sort_dir: input.sortDir,
         },
       },
     );
