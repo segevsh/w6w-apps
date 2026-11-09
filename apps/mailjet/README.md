@@ -6,6 +6,7 @@ senders and statistics behind it.
 - **Categories** — email, marketing
 - **Auth methods** — basic
 - **Actions** — 17
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.mailjet.com`
 
 ## Links
@@ -138,6 +139,15 @@ dedupe. All three send actions are `false` — a retry delivers the mail twice. 
 `update-contact`, `manage-contact-lists` and `manage-many-contacts` are `true`: each sets named
 state to a fixed value, and Mailjet guarantees the bulk path converges ("multiple entries or
 subsequent uploads will not add duplicate entries").
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+| ------- | --------- | ------------------- | ----------------- |
+| `new-message` — New Message | Poll every five minutes | `list-messages`: `GET /v3/REST/message?Limit=100&Sort=ArrivedAt+DESC` | Newly observed Mailjet message records |
+
+Trust model: this poll trigger accepts no inbound delivery; the existing Mailjet connection signs
+the outbound list request. [Mailjet pagination reference](https://dev.mailjet.com/docs/api-reference/email-api/email-api-overview/pagination), verified 2026-11-09.
 
 ## Health checks
 
