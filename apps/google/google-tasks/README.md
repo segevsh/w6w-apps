@@ -27,7 +27,7 @@ load-bearing; either alone 404s.
 |---|---|---|---|
 | `new-or-updated-task` — New or Updated Task | poll | `list-tasks` | Each task created or updated since the previous check |
 
-Google Tasks supports `updatedMin` on `tasks.list`; this trigger keeps a two-minute overlap and deduplicates task IDs. Verified 2026-11-09 against Google's [tasks.list reference](https://developers.google.com/tasks/reference/rest/v1/tasks/list).
+Google Tasks supports `updatedMin` on `tasks.list`; this trigger keeps a two-minute overlap and deduplicates on task ID plus its `updated` stamp, so an edit emits again. Verified 2026-11-09 against Google's [tasks.list reference](https://developers.google.com/tasks/reference/rest/v1/tasks/list).
 
 ## Actions
 

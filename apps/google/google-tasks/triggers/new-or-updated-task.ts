@@ -36,12 +36,12 @@ const trigger: TriggerDefinition<{ taskList: string }> = {
     const now = clock.now();
     const prior = state as { cursor?: unknown } | null;
     const cursor = typeof prior?.cursor === "number" ? prior.cursor : now;
-    const { events, nextState } = await pollNewItems<{ id?: string }>({
+    const { events, nextState } = await pollNewItems<{ id?: string; updated?: string }>({
       state,
       maxPages: 1,
       maxEvents: PAGE_SIZE,
       seenWindow: 200,
-      idOf: (task) => String(task.id ?? ""),
+      idOf: (task) => `${task.id ?? ""}:${task.updated ?? ""}`,
       async fetchPage(pageToken) {
         const result = await listTasks.execute({
           taskList: params.taskList,

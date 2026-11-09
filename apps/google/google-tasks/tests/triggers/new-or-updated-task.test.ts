@@ -34,3 +34,22 @@ test("new-or-updated-task: seeds, emits updates, retries idempotently, and uses 
     clock.now = originalNow;
   }
 });
+
+test("new-or-updated-task: an edit (same id, newer updated) emits exactly one event", async () => {
+  const originalNow = clock.now;
+  clock.now = () => Date.parse("2026-11-09T10:00:00Z");
+  try {
+    const seeded = await trigger.poll!(
+      { ...input, state: {} },
+      mockCtx([{ body: { items: [task("a")] } }]).ctx,
+    );
+    const edited = { ...task("a"), updated: "2026-11-09T09:30:00Z" };
+    const result = await trigger.poll!(
+      { ...input, state: seeded.nextState },
+      mockCtx([{ body: { items: [edited, task("a")] } }]).ctx,
+    );
+    assertEquals(result.events, [edited]);
+  } finally {
+    clock.now = originalNow;
+  }
+});
