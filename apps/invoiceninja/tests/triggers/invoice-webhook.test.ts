@@ -9,7 +9,7 @@ test("invoice-webhook: replaces leftovers, stores its id, tolerates a gone delet
   const subscribeMock = mockNinjaCtx([
     { body: { data: [{ id: "old", target_url: callbackUrl }] } },
     { body: {} },
-    { body: { id: "new" } },
+    { body: { data: { id: "new" } } },
   ]);
   const state = await trigger.onSubscribe!({
     params: { eventId: "invoice.created" },
@@ -27,10 +27,12 @@ test("invoice-webhook: replaces leftovers, stores its id, tolerates a gone delet
     target_url: callbackUrl,
     format: "JSON",
   });
-  await trigger.onUnsubscribe!(
-    { params: {}, state, subscriptionId: "sub" },
-    mockNinjaCtx([{ status: 410, body: {} }]).ctx,
-  );
+  for (const status of [404, 410]) {
+    await trigger.onUnsubscribe!(
+      { params: {}, state, subscriptionId: "sub" },
+      mockNinjaCtx([{ status, body: {} }]).ctx,
+    );
+  }
   assertEquals(
     trigger.handleIngest!({
       raw: { method: "POST", path: "", query: {}, headers: {}, body: [{ id: "e1" }, { id: "e1" }] },

@@ -207,7 +207,6 @@ The icon is Jotform's own logomark, copied verbatim from n8n's `nodes-base`
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-submission` | New Submission | poll | `submission-get-many`, `created_at DESC` | Each new form submission |
-
 | `submission-webhook` | New Submission (Webhook) | webhook | `createFormWebhook` | Each delivered submission |
 
 `submission-webhook` removes callback-URL leftovers before registering a fresh form webhook and

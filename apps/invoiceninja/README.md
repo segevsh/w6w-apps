@@ -167,7 +167,6 @@ vendor's own public demo instance, `X-API-TOKEN: TOKEN`) and `status.invoiceninj
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-invoice` | New Invoice | poll | `invoice-get-many` | Each new invoice |
-
 | `invoice-webhook` | Invoice Event (Webhook) | webhook | `/api/v1/webhooks` | Each selected delivery |
 
 `invoice-webhook` removes callback-URL leftovers, creates a webhook, and stores its id. The OpenAPI

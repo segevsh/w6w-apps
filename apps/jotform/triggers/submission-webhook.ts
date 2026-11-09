@@ -18,6 +18,41 @@ function items(body: unknown): Record<string, unknown>[] {
   });
 }
 
+function contentType(headers: Record<string, string>): string {
+  return Object.entries(headers).find(([key]) => key.toLowerCase() === "content-type")?.[1] ?? "";
+}
+
+function multipartFields(body: string, type: string): Record<string, string> | undefined {
+  const boundary = /boundary=(?:"([^"]+)"|([^;\s]+))/i.exec(type)?.slice(1).find(Boolean);
+  if (!boundary) return undefined;
+
+  const fields: Record<string, string> = {};
+  for (const part of body.split(`--${boundary}`).slice(1, -1)) {
+    const [headers, value] = part.replace(/^\r?\n/, "").split(/\r?\n\r?\n/, 2);
+    const name = /name="([^"]+)"/i.exec(headers)?.[1];
+    if (name && value !== undefined) fields[name] = value.replace(/\r?\n$/, "");
+  }
+  return fields;
+}
+
+function parsedBody(body: unknown, headers: Record<string, string>): unknown {
+  if (typeof body !== "string") return body;
+  const type = contentType(headers);
+  const parsed = type.includes("multipart/form-data")
+    ? multipartFields(body, type)
+    : type.includes("application/x-www-form-urlencoded")
+    ? Object.fromEntries(new URLSearchParams(body))
+    : body;
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return parsed;
+  const rawRequest = (parsed as Record<string, unknown>).rawRequest;
+  if (typeof rawRequest !== "string") return parsed;
+  try {
+    return JSON.parse(rawRequest);
+  } catch {
+    return Object.fromEntries(new URLSearchParams(rawRequest));
+  }
+}
+
 async function remove(client: JotformClient, formId: string, id: string) {
   try {
     await client.content(`/form/${encodeURIComponent(formId)}/webhooks/${encodeURIComponent(id)}`, {
@@ -53,7 +88,11 @@ const submissionWebhook: TriggerDefinition = {
         form: { webhookURL: callbackUrl },
       },
     );
-    const webhookId = String(created.id ?? created.webhookID ?? "");
+    const webhookId = String(
+      Object.entries(created).find(([, url]) => url === callbackUrl)?.[0] ??
+        created.id ?? created.webhookID ??
+        "",
+    );
     if (!webhookId) throw new Error("Jotform created the webhook but returned no id.");
     return { webhookId, formId } satisfies WebhookState;
   },
@@ -67,7 +106,7 @@ const submissionWebhook: TriggerDefinition = {
     if (raw.method.toUpperCase() !== "POST") {
       throw new Error("Jotform delivers webhooks with POST.");
     }
-    return items(raw.body);
+    return items(parsedBody(raw.body, raw.headers));
   },
 };
 

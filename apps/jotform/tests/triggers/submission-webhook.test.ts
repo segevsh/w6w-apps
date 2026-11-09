@@ -7,7 +7,7 @@ const callbackUrl = "https://hooks.example.test/jotform/sub_1";
 
 test("submission-webhook: replaces leftovers, stores its id, tolerates a gone delete, and maps duplicate payloads", async () => {
   const subscribeMock = mockCtx([{ body: envelope({ old: callbackUrl }) }, { body: envelope({}) }, {
-    body: envelope({ id: "new" }),
+    body: envelope({ new: callbackUrl }),
   }]);
   const state = await trigger.onSubscribe!({
     params: { formId: "f1" },
@@ -24,23 +24,28 @@ test("submission-webhook: replaces leftovers, stores its id, tolerates a gone de
     subscribeMock.calls[2].body,
     "webhookURL=https%3A%2F%2Fhooks.example.test%2Fjotform%2Fsub_1",
   );
-  await trigger.onUnsubscribe!(
-    { params: {}, state, subscriptionId: "sub" },
-    mockCtx([{ status: 404, body: { responseCode: 404, message: "gone", content: {} } }]).ctx,
-  );
+  for (const status of [404, 410]) {
+    await trigger.onUnsubscribe!(
+      { params: {}, state, subscriptionId: "sub" },
+      mockCtx([{ status, body: { responseCode: status, message: "gone", content: {} } }]).ctx,
+    );
+  }
   assertEquals(
     trigger.handleIngest!({
       raw: {
         method: "POST",
         path: "",
         query: {},
-        headers: {},
-        body: [{ submissionID: "s1" }, { submissionID: "s1" }],
+        headers: { "content-type": "multipart/form-data; boundary=JotformBoundary" },
+        body:
+          '--JotformBoundary\r\nContent-Disposition: form-data; name="submissionID"\r\n\r\ns1\r\n' +
+          '--JotformBoundary\r\nContent-Disposition: form-data; name="formID"\r\n\r\nf1\r\n' +
+          "--JotformBoundary--",
       },
       params: {},
       state,
       subscriptionId: "sub",
     }, mockCtx().ctx),
-    [{ submissionID: "s1" }],
+    [{ submissionID: "s1", formID: "f1" }],
   );
 });

@@ -11,16 +11,34 @@ function randomSecret(): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-function items(body: unknown): Record<string, unknown>[] {
+function sameSecret(actual: unknown, expected: string): boolean {
+  if (typeof actual !== "string") return false;
+  const actualBytes = new TextEncoder().encode(actual);
+  const expectedBytes = new TextEncoder().encode(expected);
+  let difference = actualBytes.length ^ expectedBytes.length;
+  const length = Math.max(actualBytes.length, expectedBytes.length);
+  for (let index = 0; index < length; index++) {
+    difference |= (actualBytes[index] ?? 0) ^ (expectedBytes[index] ?? 0);
+  }
+  return difference === 0;
+}
+
+function items(body: unknown, secret: string): Record<string, unknown>[] {
   const values = Array.isArray(body) ? body : [body];
   const ids = new Set<string>();
-  return values.filter((value): value is Record<string, unknown> => {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const events: Record<string, unknown>[] = [];
+  for (const value of values) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) continue;
+    if (!sameSecret(value.secret, secret)) {
+      throw new Error("lemlist webhook secret did not match.");
+    }
     const id = String(value._id ?? value.id ?? "");
-    if (!id || ids.has(id)) return false;
+    if (!id || ids.has(id)) continue;
     ids.add(id);
-    return true;
-  });
+    const { secret: _secret, ...event } = value;
+    events.push(event);
+  }
+  return events;
 }
 
 async function remove(client: LemlistClient, id: string) {
@@ -45,8 +63,9 @@ const activityWebhook: TriggerDefinition = {
     >("/hooks");
     const hooks = Array.isArray(listed) ? listed : listed.data ?? [];
     for (const item of hooks) {
-      if ((item.url === callbackUrl || item.targetUrl === callbackUrl) && item.id != null) {
-        await remove(client, String(item.id));
+      const id = item._id ?? item.id;
+      if ((item.url === callbackUrl || item.targetUrl === callbackUrl) && id != null) {
+        await remove(client, String(id));
       }
     }
     const secret = randomSecret();
@@ -62,11 +81,13 @@ const activityWebhook: TriggerDefinition = {
     const id = String((state as Partial<WebhookState> | undefined)?.webhookId ?? "");
     if (id) await remove(new LemlistClient(ctx), id);
   },
-  handleIngest({ raw }) {
+  handleIngest({ raw, state }) {
     if (raw.method.toUpperCase() !== "POST") {
       throw new Error("lemlist delivers webhooks with POST.");
     }
-    return items(raw.body);
+    const secret = (state as Partial<WebhookState> | undefined)?.secret;
+    if (!secret) throw new Error("lemlist webhook secret is missing.");
+    return items(raw.body, secret);
   },
 };
 

@@ -44,7 +44,9 @@ const invoiceWebhook: TriggerDefinition = {
       method: "POST",
       body: { event_id: params.eventId, target_url: callbackUrl, format: "JSON" },
     });
-    const webhookId = String(created.id ?? "");
+    const webhookId = String(
+      (created.data as Record<string, unknown> | undefined)?.id ?? created.id ?? "",
+    );
     if (!webhookId) throw new Error("Invoice Ninja created the webhook but returned no id.");
     return { webhookId } satisfies WebhookState;
   },

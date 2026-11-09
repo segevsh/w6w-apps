@@ -26,17 +26,25 @@ test("sale-webhook: replaces leftovers, stores its id, tolerates a gone delete, 
     subscribeMock.calls[2].body,
     "resource_name=sale&post_url=https%3A%2F%2Fhooks.example.test%2Fgumroad%2Fsub_1",
   );
-  await trigger.onUnsubscribe!(
-    { params: {}, state, subscriptionId: "sub" },
-    mockCtx([{ status: 404, body: { success: false } }]).ctx,
-  );
+  for (const status of [404, 410]) {
+    await trigger.onUnsubscribe!(
+      { params: {}, state, subscriptionId: "sub" },
+      mockCtx([{ status, body: { success: false } }]).ctx,
+    );
+  }
   assertEquals(
     trigger.handleIngest!({
-      raw: { method: "POST", path: "", query: {}, headers: {}, body: [{ id: "s1" }, { id: "s1" }] },
+      raw: {
+        method: "POST",
+        path: "",
+        query: {},
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: "sale_id=s1&order_number=42&email=buyer%40example.test",
+      },
       params: {},
       state,
       subscriptionId: "sub",
     }, mockCtx().ctx),
-    [{ id: "s1" }],
+    [{ sale_id: "s1", order_number: "42", email: "buyer@example.test" }],
   );
 });

@@ -10,11 +10,15 @@ function asItems(body: unknown): Record<string, unknown>[] {
   const seen = new Set<string>();
   return value.filter((item): item is Record<string, unknown> => {
     if (!item || typeof item !== "object" || Array.isArray(item)) return false;
-    const id = String(item.id ?? "");
+    const id = String(item.id ?? item.sale_id ?? item.order_number ?? "");
     if (!id || seen.has(id)) return false;
     seen.add(id);
     return true;
   });
+}
+
+function contentType(headers: Record<string, string>): string {
+  return Object.entries(headers).find(([key]) => key.toLowerCase() === "content-type")?.[1] ?? "";
 }
 
 async function remove(client: GumroadClient, id: string) {
@@ -62,7 +66,11 @@ const saleWebhook: TriggerDefinition = {
     if (raw.method.toUpperCase() !== "POST") {
       throw new Error("Gumroad delivers webhooks with POST.");
     }
-    return asItems(raw.body);
+    const body = typeof raw.body === "string" &&
+        contentType(raw.headers).includes("application/x-www-form-urlencoded")
+      ? Object.fromEntries(new URLSearchParams(raw.body))
+      : raw.body;
+    return asItems(body);
   },
 };
 

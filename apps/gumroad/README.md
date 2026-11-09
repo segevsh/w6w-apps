@@ -164,7 +164,6 @@ tests/                 index, auth, client, health, defaults + one test file per
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-sale` | New Sale | poll | `sale-list` (Gumroad returns sales newest first) | Each new sale |
-
 | `sale-webhook` | New Sale (Webhook) | webhook | `resource_subscriptions` | Each delivered sale |
 
 The poll trigger uses the existing sales request and its cursor state to avoid duplicate runs.
