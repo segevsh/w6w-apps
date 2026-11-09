@@ -5,6 +5,7 @@ Read Facebook Lead Ads forms and their recent leads via the Facebook Graph API.
 - **Categories** — marketing, social-media
 - **Auth methods** — oauth2, page-token
 - **Actions** — 2
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `graph.facebook.com`
 - **Website** — https://www.facebook.com/business/ads/lead-ads
 - **API docs** — https://developers.facebook.com/documentation/ads-commerce/marketing-api/guides/lead-ads
@@ -68,3 +69,33 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `new-lead` — New Lead | webhook (manual, signed) | Page `leadgen` field: a Lead Ads form submission | lead ID, form, ad, ad set and Page IDs, created time |
+
+The event carries the lead's ID, not its answers (that is what Meta sends); read the answers with the
+**List Recent Leads** action for the same form.
+
+Meta has no API to register a webhook for these events, so the subscription is made by hand in the
+Meta app dashboard (a manual webhook):
+
+1. Create the trigger in w6w and paste your **App Secret** (App settings → Basic) and a **Verify Token**
+   of your choosing into its parameters. The trigger shows its webhook URL.
+2. In the Meta app dashboard → Webhooks, add a subscription for ****Page**** with that URL and the same
+   verify token, then subscribe to the **`leadgen`** field (the app needs `leads_retrieval` and the Page subscribed).
+3. Meta confirms the URL with a one-time `GET` carrying `hub.mode=subscribe`, `hub.verify_token` and
+   `hub.challenge`; the trigger answers it with the challenge only when the verify token matches.
+
+**Trust model.** Every delivery is verified against `X-Hub-Signature-256` (`sha256=` HMAC-SHA256 of the
+exact request body, keyed with the App Secret) before anything is parsed. A missing or wrong signature,
+a missing raw body, or an App Secret / Verify Token that was never configured refuses the delivery; the
+host records one failed call and starts no run. Meta's scheme carries no timestamp, so there is no
+replay window; Meta retries unacknowledged deliveries, so a workflow may see an event twice.
+
+Docs (verified 2026-11-09): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
+https://developers.facebook.com/docs/graph-api/webhooks/getting-started/webhooks-for-pages
+
+Lead Ads docs (verified 2026-11-09): https://developers.facebook.com/docs/marketing-api/guides/lead-ads/retrieving

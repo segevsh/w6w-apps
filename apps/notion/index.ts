@@ -123,6 +123,7 @@ import authOauth2 from "./auth/oauth2.ts";
 import authPersonalAccessToken from "./auth/personal-access-token.ts";
 import authOrganizationToken from "./auth/organization-token.ts";
 import authOauthClient from "./auth/oauth-client.ts";
+import workspaceEvent from "./triggers/workspace-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -248,6 +249,7 @@ export default {
     actionUpdateSession,
     actionUpdateView,
   ],
+  triggers: [workspaceEvent],
   auth: [
     authInternalSecret,
     authOauth2,
