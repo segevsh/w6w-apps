@@ -1,5 +1,7 @@
 # Grist
 
+Triggers: not shipped — `list-records` has no app-independent creation-time sort; each table's schema chooses its own columns, so it cannot provide a universal New Record feed (https://support.getgrist.com/api/).
+
 Grist documents, tables, columns and records — plus read-only SQL — on the **Grist API v1**, against
 hosted **and** self-hosted sites.
 

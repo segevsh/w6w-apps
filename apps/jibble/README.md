@@ -1,5 +1,7 @@
 # Jibble
 
+Triggers: not shipped — `timesheet-list` returns computed date-period totals rather than stable source records, so it is not a New <record> feed (https://docs.api.jibble.io/).
+
 Track time, manage people, and run attendance reports against the **Jibble** time-tracking API.
 
 - **Categories** — productivity, hr
