@@ -1,5 +1,9 @@
 # Hostaway
 
+## Triggers
+
+- **New Reservation** (`new-reservation`) polls the newest-first `list-reservations` action every five minutes.
+
 Manage Hostaway vacation-rental listings, calendars, reservations, guest conversations,
 reviews, tasks and financial reports.
 

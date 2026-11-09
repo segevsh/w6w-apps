@@ -41,6 +41,7 @@ import senderRegistrationList from "./actions/sender-registration-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSms from "./triggers/new-sms.ts";
 
 export default {
   actions: [
@@ -64,5 +65,6 @@ export default {
     senderRegistrationList,
   ],
   auth: [apiKey],
+  triggers: [newSms],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

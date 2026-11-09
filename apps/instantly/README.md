@@ -1,5 +1,9 @@
 # Instantly
 
+## Triggers
+
+- **New Email** (`new-email`) polls the newest-first `email-list` action every five minutes.
+
 Manage cold-email campaigns, leads, sending accounts and the Unibox on the **Instantly API v2**.
 
 - **Categories** — marketing, email, crm

@@ -54,6 +54,7 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import reachability from "./health/reachability.ts";
 import quota from "./health/quota.ts";
+import newReservation from "./triggers/new-reservation.ts";
 
 export default {
   actions: [
@@ -87,5 +88,6 @@ export default {
     listPropertyTypes,
   ],
   auth: [clientCredentials],
+  triggers: [newReservation],
   healthChecks: [service, api, reachability, quota],
 } satisfies AppDefinition;

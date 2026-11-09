@@ -91,6 +91,7 @@ import workspaceGet from "./actions/workspace-get.ts";
 
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
+import newEmail from "./triggers/new-email.ts";
 
 export default {
   actions: [
@@ -141,5 +142,6 @@ export default {
   // API key only. Instantly publishes no OAuth surface for third-party apps;
   // the key is the whole authentication story.
   auth: [apiKey],
+  triggers: [newEmail],
   healthChecks: [service, rateLimit],
 } satisfies AppDefinition;

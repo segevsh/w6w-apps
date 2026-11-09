@@ -8,6 +8,10 @@ Admin API.
 - **Actions** — 11
 - **Egress allowlist** — `*`
 
+## Triggers
+
+- **New Post** (`new-post`) polls the newest-first `list-posts` action every five minutes.
+
 ## Links
 
 - **Website** — https://ghost.org

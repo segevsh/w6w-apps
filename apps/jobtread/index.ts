@@ -20,6 +20,7 @@ import createJob from "./actions/create-job.ts";
 import listDocuments from "./actions/list-documents.ts";
 
 import service from "./health/service.ts";
+import newJob from "./triggers/new-job.ts";
 
 export default {
   actions: [
@@ -43,5 +44,6 @@ export default {
     listDocuments,
   ],
   auth: [grantKey],
+  triggers: [newJob],
   healthChecks: [service],
 } satisfies AppDefinition;

@@ -1,5 +1,9 @@
 # Kommo
 
+## Triggers
+
+- **New Lead** (`new-lead`) polls the newest-first `lead-list` action every five minutes.
+
 Kommo (rebranded from **amoCRM** in 2024) is a messenger-based sales CRM built around leads
 moving through a pipeline. This app covers the core record CRUD a workflow touches day to day:
 leads, contacts and companies.
