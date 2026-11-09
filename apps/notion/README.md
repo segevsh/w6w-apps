@@ -1,5 +1,7 @@
 # Notion
 
+Triggers: not shipped — verification_token cannot be retrieved on this host (setup POST leaves no recorded call) (https://developers.notion.com/reference/webhooks)
+
 119 workflow actions covering all 107 operations in Notion's public and Admin OpenAPI schemas,
 plus compatibility and convenience actions. Public requests use `Notion-Version: 2026-03-11`;
 Admin requests use `2026-06-01`. Documentation was downloaded on 2026-10-19.
