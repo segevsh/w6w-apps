@@ -162,3 +162,15 @@ three consecutive golden-path runs.
 ```bash
 deno task check && deno task test && deno task lint && deno task validate
 ```
+
+## Triggers
+
+| Key | Type | Source action | Ordering |
+|---|---|---|---|
+| `new-row` | poll | `query` | chosen id or timestamp column descending |
+
+`new-row` calls the existing socket-backed `query` action with a fixed `SELECT *`, quoted table
+and column identifiers, `ORDER BY … DESC`, and `LIMIT 100`. It deliberately does not change that
+action's `perform` classification: the reusable action accepts arbitrary Simple Query SQL, so
+relabeling it as read-only would be unsafe. The trigger itself constructs only a bounded SELECT;
+identifiers are double-quoted (including each schema segment) and no values are interpolated.

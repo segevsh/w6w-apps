@@ -271,7 +271,7 @@ async function checkHealthLive(connection: Connection): Promise<HealthReport> {
       entryPath: loadedApp.entryPath,
       selector: { kind: "health", key: "service" },
       input: {},
-      readScope: loadedApp.dir,
+      readScope: [loadedApp.dir, new URL("../../_shared/", import.meta.url).pathname],
       connection: redact(connection),
       onSocket: session.onSocket,
     });

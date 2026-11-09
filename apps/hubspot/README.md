@@ -73,5 +73,18 @@ reach a status host.
 
 ---
 
+## Triggers
+
+| Key | Type | Source action | Ordering |
+|---|---|---|---|
+| `new-contact` | poll | `search-contacts` | `createdate DESCENDING` |
+
+`new-contact` uses the existing CRM Search endpoint with a fixed
+`sorts: [{ propertyName: "createdate", direction: "DESCENDING" }]` request and an optional
+full-text query. HubSpot documents CRM Search and its sort support at
+https://developers.hubspot.com/docs/api-reference/search/guide and
+https://developers.hubspot.com/blog/when-to-use-crm-search-api-vs.-object-specific-apis
+(checked 2026-11-09).
+
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.

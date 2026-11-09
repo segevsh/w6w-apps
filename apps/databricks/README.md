@@ -32,6 +32,13 @@ Every workspace has its own full host URL (e.g. `https://adb-1234567890123456.7.
 
 **Deliberately not built**: Jobs (run/list/get-status) and Clusters (list/start/terminate) actions. n8n's own current Databricks node doesn't implement either resource, and their exact request/response shapes couldn't be independently verified in this environment — nothing was invented for them.
 
+## Triggers
+
+No trigger ships yet. Databricks documents a Jobs `List Runs` endpoint at
+https://docs.databricks.com/api/jobs/v2/list-runs (checked 2026-11-09), but this app has no existing
+job/run list action to wrap. The available catalog/table list actions do not represent new job runs,
+so adding a trigger here would require a new API path and violates the existing-action rule.
+
 ## Health checks
 
 - **`service`** — declared absent. Every workspace is a separate per-customer deployment; Databricks publishes no aggregate status feed across them.
