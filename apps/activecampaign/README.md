@@ -1,5 +1,17 @@
 # ActiveCampaign
 
+- **Triggers** — 1 webhook
+
+## Triggers
+
+| Key | Title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-contact` | New Contact | Webhook | `subscribe` | The subscribing contact |
+
+ActiveCampaign sends these webhook fields in an unsigned POST. The callback URL is the shared secret; stale registrations for it are removed before a replacement is created.
+
+Vendor documentation: [Webhooks](https://developers.activecampaign.com/page/webhooks) and [Webhook API](https://developers.activecampaign.com/reference/get-webhook) (verified 2026-11-09).
+
 Manage ActiveCampaign contacts, deals, campaigns and automations.
 
 - **Categories** — marketing, crm

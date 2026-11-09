@@ -17,6 +17,7 @@ import getCampaign from "./actions/get-campaign.ts";
 import listAutomations from "./actions/list-automations.ts";
 import getAutomation from "./actions/get-automation.ts";
 import addContactToAutomation from "./actions/add-contact-to-automation.ts";
+import newContact from "./triggers/new-contact.ts";
 
 import service from "./health/service.ts";
 import site from "./health/site.ts";
@@ -39,5 +40,6 @@ export default {
     addContactToAutomation,
   ],
   auth: [apiKey],
+  triggers: [newContact],
   healthChecks: [service, site, quota],
 } satisfies AppDefinition;
