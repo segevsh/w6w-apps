@@ -191,3 +191,7 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: **no action parses a response body
 itself** (which would skip the magic prefix), **the client forces `/a/` while
 the health check stays bare**, and submitting requires a confirmation.
+## Triggers
+
+- `new-change` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes> (verified 2026-11-09).

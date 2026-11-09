@@ -408,3 +408,4 @@ All documentation claims in this app were verified against
 on the wire rather than from docs are marked as such where they appear: the docs-host redirect, the
 website redirect, the `WWW-Authenticate` challenge and error-body shape, the absence of rate-limit
 headers on a 401, the status-page path probes, and the `status.followupboss.com` NXDOMAIN.
+Triggers: not shipped — List Users has no documented newest-first order or created-since filter (https://docs.followupboss.com/).

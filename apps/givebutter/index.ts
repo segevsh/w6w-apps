@@ -48,6 +48,7 @@ import campaignUpdate from "./actions/campaign-update.ts";
 import campaignDelete from "./actions/campaign-delete.ts";
 
 import contactList from "./actions/contact-list.ts";
+import newContact from "./triggers/new-contact.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactUpdate from "./actions/contact-update.ts";
@@ -158,6 +159,7 @@ export default {
   // API key only. Givebutter publishes no OAuth surface for third-party apps;
   // the two `/sso/v1/*` endpoints that look like they might be a session/JWT
   // alternative are unreachable with a bearer API key (see module doc, #4).
+  triggers: [newContact],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

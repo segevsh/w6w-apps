@@ -44,6 +44,7 @@ import meGet from "./actions/me-get.ts";
 import financialYearList from "./actions/financial-year-list.ts";
 import financialYearGet from "./actions/financial-year-get.ts";
 import customerList from "./actions/customer-list.ts";
+import newCustomer from "./triggers/new-customer.ts";
 import customerGet from "./actions/customer-get.ts";
 import customerCreate from "./actions/customer-create.ts";
 import customerUpdate from "./actions/customer-update.ts";
@@ -154,6 +155,7 @@ export default {
     projectCreate,
     costCenterList,
   ],
+  triggers: [newCustomer],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

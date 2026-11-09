@@ -151,3 +151,7 @@ this pack models Anthropic's `x-api-key` header.
 
 Researched and endpoint-verified 2026-09-01 against developers.freshworks.com/crm/api/.
 Status surfaces move; re-check if a probe starts failing for everyone at once.
+## Triggers
+
+- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://developers.freshworks.com/crm/api/#view-contacts> (verified 2026-11-09).

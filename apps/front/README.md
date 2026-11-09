@@ -253,3 +253,7 @@ is fine, a loop hammering one is not.
 Front answers with `{"_error":{"status","title","message","details"}}`. The
 `message` names the field and `details` usually holds the actual reason, so both
 are surfaced rather than the top-level status alone.
+## Triggers
+
+- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://dev.frontapp.com/reference/list-contacts> (verified 2026-11-09).

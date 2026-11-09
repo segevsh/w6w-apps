@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/freshdesk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Manage Freshdesk tickets, contacts and companies.",
   "license": "MIT",
   "author": {
@@ -32,7 +32,10 @@
         "*.freshdesk.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

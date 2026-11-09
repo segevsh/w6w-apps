@@ -62,3 +62,7 @@ No rate-limit headers are documented, so there is no quota check.
 | --- | --- | --- | --- | --- | --- | --- |
 | `service` | service | — | — | informational | — | unavailable (see above) |
 | `domain` | dependency | connection | context | degraded | 120 s | unsigned `GET /{user_dir}/forms`; 401 passes, 404/5xx down, 429 degraded |
+## Triggers
+
+- `new-result` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://support.formsite.com/hc/en-us/articles/360000434834-API> (verified 2026-11-09).

@@ -4,6 +4,7 @@ import apiKey from "./auth/api-key.ts";
 import transcriptionStart from "./actions/transcription-start.ts";
 import transcriptionGet from "./actions/transcription-get.ts";
 import transcriptionList from "./actions/transcription-list.ts";
+import newTranscription from "./triggers/new-transcription.ts";
 import transcriptionDelete from "./actions/transcription-delete.ts";
 import audioUploadUrl from "./actions/audio-upload-url.ts";
 import modelList from "./actions/model-list.ts";
@@ -25,6 +26,7 @@ export default {
     audioUploadUrl,
     modelList,
   ],
+  triggers: [newTranscription],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

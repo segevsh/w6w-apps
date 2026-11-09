@@ -211,3 +211,7 @@ Gitea's envelope is `{message, url}`, where `url` points at the API
 documentation for the endpoint — more useful than it sounds when an instance is
 running an older version than you expected. Failures surface the status and the
 whole body.
+## Triggers
+
+- `new-pull-request` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://docs.gitea.com/api/1.24/#tag/repository/operation/repoListPullRequests> (verified 2026-11-09).

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/freshservice",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Manage Freshservice ITSM tickets, problems, changes, releases, assets and the service catalog.",
   "license": "MIT",
   "author": {
@@ -33,7 +33,10 @@
         "*.freshservice.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

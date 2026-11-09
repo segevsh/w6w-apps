@@ -17,6 +17,7 @@ import formList from "./actions/form-list.ts";
 import formGet from "./actions/form-get.ts";
 import formItemsList from "./actions/form-items-list.ts";
 import resultList from "./actions/result-list.ts";
+import newResult from "./triggers/new-result.ts";
 import resultSearch from "./actions/result-search.ts";
 import webhookList from "./actions/webhook-list.ts";
 import webhookCreate from "./actions/webhook-create.ts";
@@ -36,6 +37,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [newResult],
   auth: [token],
   healthChecks: [service, domain],
 } satisfies AppDefinition;

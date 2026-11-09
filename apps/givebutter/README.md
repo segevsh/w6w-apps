@@ -254,3 +254,7 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests (110 Deno.test cases across 48 files)
 deno task validate       # @w6w/validator conformance audit
 ```
+## Triggers
+
+- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://docs.givebutter.com/api-reference/contacts/list-contacts> (verified 2026-11-09).

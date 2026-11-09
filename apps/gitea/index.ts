@@ -92,6 +92,7 @@ import issueEdit from "./actions/issue-edit.ts";
 import issueCommentList from "./actions/issue-comment-list.ts";
 import issueCommentCreate from "./actions/issue-comment-create.ts";
 import pullRequestList from "./actions/pull-request-list.ts";
+import newPullRequest from "./triggers/new-pull-request.ts";
 import pullRequestGet from "./actions/pull-request-get.ts";
 import pullRequestCreate from "./actions/pull-request-create.ts";
 import pullRequestMerge from "./actions/pull-request-merge.ts";
@@ -146,6 +147,7 @@ export default {
     // who this is
     userGet,
   ],
+  triggers: [newPullRequest],
   auth: [token],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

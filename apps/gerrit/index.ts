@@ -22,6 +22,7 @@ import service from "./health/service.ts";
 import instance from "./health/instance.ts";
 
 import changeSearch from "./actions/change-search.ts";
+import newChange from "./triggers/new-change.ts";
 import changeGet from "./actions/change-get.ts";
 import changeReview from "./actions/change-review.ts";
 import changeSubmit from "./actions/change-submit.ts";
@@ -47,6 +48,7 @@ const app: AppDefinition = {
     accountSearch,
     serverInfoGet,
   ],
+  triggers: [newChange],
   auth: [httpPassword],
   healthChecks: [service, instance],
 };

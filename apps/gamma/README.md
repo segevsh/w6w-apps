@@ -109,3 +109,7 @@ Every Gamma failure is `{"message": string, "statusCode": number}`. `formatGamma
 [`lib/client.ts`](lib/client.ts) surfaces the vendor's own message verbatim and adds an actionable
 sentence for `402` (out of credits) and `429` (rate limited), because "check your input" is the wrong
 fix for either.
+## Triggers
+
+- `new-gamma-comment` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://developers.gamma.app/api-reference/management/get-gamma-comments> (verified 2026-11-09).

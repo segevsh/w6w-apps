@@ -51,6 +51,7 @@ import searchGammas from "./actions/search-gammas.ts";
 import searchTemplates from "./actions/search-templates.ts";
 import getGamma from "./actions/get-gamma.ts";
 import listGammaComments from "./actions/list-gamma-comments.ts";
+import newGammaComment from "./triggers/new-gamma-comment.ts";
 import archiveGamma from "./actions/archive-gamma.ts";
 import exportGamma from "./actions/export-gamma.ts";
 import getExportStatus from "./actions/get-export-status.ts";
@@ -92,6 +93,7 @@ export default {
     getGammaViewerDetailAnalytics,
   ],
   // API key only — see the module comment for why OAuth is left out.
+  triggers: [newGammaComment],
   auth: [apiKey],
   healthChecks: [service],
 } satisfies AppDefinition;

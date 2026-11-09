@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/gitea",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Gitea repositories, issues, pull requests, releases and files.",
   "license": "MIT",
   "author": {
@@ -34,7 +34,10 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

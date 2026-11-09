@@ -39,6 +39,7 @@ import apiKey from "./auth/api-key.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactGetMany from "./actions/contact-get-many.ts";
+import newContact from "./triggers/new-contact.ts";
 import contactUpdate from "./actions/contact-update.ts";
 import contactDelete from "./actions/contact-delete.ts";
 
@@ -95,6 +96,7 @@ export default {
     // views (backs every *-get-many action's "View ID" param)
     viewGetMany,
   ],
+  triggers: [newContact],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

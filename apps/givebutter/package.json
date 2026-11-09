@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/givebutter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Givebutter campaigns, contacts, transactions, funds, households and webhooks — the nonprofit fundraising and donor-CRM platform.",
   "license": "MIT",
   "author": {
@@ -34,7 +34,10 @@
         "api.givebutter.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

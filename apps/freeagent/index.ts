@@ -44,6 +44,7 @@ import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
 
 import contactList from "./actions/contact-list.ts";
+import newContact from "./triggers/new-contact.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactUpdate from "./actions/contact-update.ts";
@@ -121,6 +122,7 @@ export default {
     userList,
     userGet,
   ],
+  triggers: [newContact],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

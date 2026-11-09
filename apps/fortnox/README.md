@@ -153,3 +153,7 @@ found only that operation and asset *depreciation* fields.
 - Supplier-invoice create requires only `supplierNumber` (the reference's one required field); Fortnox will still reject an unbalanced debit/credit (error 2000755).
 - Error bodies are read in both spellings (`ErrorInformation.Message/Code` per the reference, lower-case per the guide) — not verified against a live response.
 - The reference never documents `limit`/`page` per operation; they are applied to list endpoints from the Parameters guide.
+## Triggers
+
+- `new-customer` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://developer.fortnox.se/documentation/resources/customers/> (verified 2026-11-09).

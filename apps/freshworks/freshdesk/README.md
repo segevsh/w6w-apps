@@ -84,3 +84,7 @@ identical scheme.
 Researched and endpoint-verified 2026-08-01 against developers.freshdesk.com/api/ and
 n8n's `packages/nodes-base/nodes/Freshdesk/`. Status surfaces move; re-check if a probe
 starts failing for everyone at once.
+## Triggers
+
+- `new-ticket` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://developers.freshdesk.com/api/#list_all_tickets> (verified 2026-11-09).

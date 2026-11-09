@@ -65,3 +65,7 @@ so Gladia calls you when it finishes. Do not resubmit an accepted job.
 - **Audio download** (`GET /v2/pre-recorded/{id}/file`) — returns binary.
 - **Deprecated** `/v2/transcription*` and `/v1/history` (lists live jobs too) endpoints.
 - Webhooks (`transcription.created/success/error`) are inbound events, not callable endpoints.
+## Triggers
+
+- `new-transcription` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://docs.gladia.io/api-reference/v2/pre-recorded/list> (verified 2026-11-09).

@@ -88,6 +88,7 @@ import conversationCommentList from "./actions/conversation-comment-list.ts";
 import messageGet from "./actions/message-get.ts";
 import messageSend from "./actions/message-send.ts";
 import contactList from "./actions/contact-list.ts";
+import newContact from "./triggers/new-contact.ts";
 import contactGet from "./actions/contact-get.ts";
 import contactCreate from "./actions/contact-create.ts";
 import contactUpdate from "./actions/contact-update.ts";
@@ -143,6 +144,7 @@ export default {
     tagList,
     statusList,
   ],
+  triggers: [newContact],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

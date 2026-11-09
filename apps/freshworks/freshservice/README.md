@@ -282,3 +282,7 @@ Researched and endpoint-verified 2026-08-03 against <https://api.freshservice.co
 Freshstatus account id and the `ignore_overall_status` convention were read off
 `updates.freshservice.com` and Freshworks' own status client. Status surfaces move;
 re-check if a probe starts failing for everyone at once.
+## Triggers
+
+- `new-ticket` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://api.freshservice.com/#view_all_ticket> (verified 2026-11-09).

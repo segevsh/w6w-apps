@@ -25,6 +25,7 @@ import apiKey from "./auth/api-key.ts";
 import ticketCreate from "./actions/ticket-create.ts";
 import ticketGet from "./actions/ticket-get.ts";
 import ticketGetMany from "./actions/ticket-get-many.ts";
+import newTicket from "./triggers/new-ticket.ts";
 import ticketUpdate from "./actions/ticket-update.ts";
 import ticketDelete from "./actions/ticket-delete.ts";
 import ticketAddNote from "./actions/ticket-add-note.ts";
@@ -61,6 +62,7 @@ export default {
     companyGet,
     companyGetMany,
   ],
+  triggers: [newTicket],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

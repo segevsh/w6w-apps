@@ -189,3 +189,7 @@ contacts, invoices, expenses, bank_transactions, bank_transaction_explanations,
 timeslips, projects, tasks), plus a direct fetch of
 `status.freeagent.com/api/v2/summary.json`. Status surfaces and rate limits move;
 re-check if a probe starts failing for everyone at once.
+## Triggers
+
+- `new-contact` — poll trigger wrapping the existing list action; the run gets each new record.
+- Vendor list API: <https://dev.freeagent.com/docs/contacts> (verified 2026-11-09).

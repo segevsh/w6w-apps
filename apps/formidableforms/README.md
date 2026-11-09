@@ -237,3 +237,4 @@ Only URLs verified on 2026-09-05 are listed.
 - **Legacy `/frm/v2` "Send API Data" article** (read only to confirm what `/frm/v2` is and is not,
   and for the `stats` type names it still documents):
   <https://formidableforms.com/knowledgebase/formidable-api/>
+Triggers: not shipped — Entry listing does not document a bounded newest-first page contract (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/).

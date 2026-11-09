@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/freeagent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage FreeAgent contacts, invoices, expenses, bank transactions, timeslips, projects and tasks.",
   "license": "MIT",
   "author": {
@@ -33,7 +33,10 @@
         "api.freeagent.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
