@@ -57,3 +57,28 @@ Deno.test("sync-shared: a missing group copy is reported", async () => {
     await Deno.remove(root, { recursive: true });
   }
 });
+
+Deno.test("sync-shared: the webhook kit is copied into every group", async () => {
+  const canon = await Deno.readFile(join(REPO, "apps/_shared/webhook/mod.ts"));
+  for (const g of GROUPS) {
+    assertEquals(
+      await Deno.readFile(join(REPO, `apps/${g}/_shared/webhook/mod.ts`)),
+      canon,
+    );
+  }
+});
+
+Deno.test("sync-shared: a changed byte in a webhook copy is reported", async () => {
+  const root = await tempRoot();
+  try {
+    const file = join(root, "apps/meta/_shared/webhook/mod.ts");
+    const bytes = await Deno.readFile(file);
+    bytes[10] = bytes[10] ^ 1;
+    await Deno.writeFile(file, bytes);
+    assertEquals(await syncShared(root, true), [
+      "apps/meta/_shared/webhook/mod.ts",
+    ]);
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
