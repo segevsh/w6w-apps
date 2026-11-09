@@ -19,6 +19,8 @@ One poll trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/ma
 |---|---|---|---|
 | `new-email` — New Email | poll, at most once a minute | `get-many-messages`, `get-message` | `id`, `threadId`, `from`, `to`, `cc`, `subject`, `snippet`, `date`, `labelIds` (+ `body` with **Include body**) |
 
+Each check fetches at most 500 new messages; if more arrive within one check window (the interval plus 120 s), the oldest beyond 500 are not emitted.
+
 Each check lists `users/me/messages` with `q = "<your query> after:<last check epoch seconds − 120>"`
 (just `after:…` when no query is given) and your `labelIds`, then fetches every message it has not
 emitted before (`format=metadata`, or `format=full` with **Include body**). The `after:` window follows

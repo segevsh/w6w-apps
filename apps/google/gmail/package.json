@@ -35,7 +35,6 @@
       ]
     },
     "entry": "./index.ts",
-    "test:runtime": "deno test -A --no-check --unstable-worker-options \"tests/**/*.runtime.ts\"",
     "build": {
       "include": [
         "../_shared"
