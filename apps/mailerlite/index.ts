@@ -21,6 +21,11 @@ import scheduleCampaign from "./actions/schedule-campaign.ts";
 import listFields from "./actions/list-fields.ts";
 import listSegments from "./actions/list-segments.ts";
 
+import newSubscriber from "./triggers/new-subscriber.ts";
+import subscriberUpdated from "./triggers/subscriber-updated.ts";
+import subscriberUnsubscribed from "./triggers/subscriber-unsubscribed.ts";
+import campaignSent from "./triggers/campaign-sent.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -47,6 +52,7 @@ export default {
     listFields,
     listSegments,
   ],
+  triggers: [newSubscriber, subscriberUpdated, subscriberUnsubscribed, campaignSent],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -46,6 +46,14 @@ export interface RequestOptions {
   body?: unknown;
 }
 
+/** A non-2xx MailerLite answer; `status` lets a caller treat 404/410 as "already gone". */
+export class MailerLiteError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "MailerLiteError";
+  }
+}
+
 /**
  * Thin wrapper over `ctx.fetch`. Note we never set an auth header here — the
  * runtime routes the request through the auth `sign` hook, which injects the
@@ -79,8 +87,9 @@ export class MailerLiteClient {
       try {
         detail = await res.text();
       } catch { /* ignore */ }
-      throw new Error(
+      throw new MailerLiteError(
         `MailerLite ${res.status} ${res.statusText} for ${method} ${url.pathname}: ${detail}`,
+        res.status,
       );
     }
     // 204 No Content is the documented success for every DELETE.
