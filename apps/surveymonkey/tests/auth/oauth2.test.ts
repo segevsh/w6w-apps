@@ -13,6 +13,9 @@ test("oauth2: declares SurveyMonkey's authorize and token endpoints", () => {
   assert(auth.oauth2?.scopes?.includes("responses_read_detail"));
   assert(auth.oauth2?.scopes?.includes("collectors_write"));
   assert(auth.oauth2?.scopes?.includes("contacts_write"));
+  // webhook trigger registration (T3.fx1)
+  assert(auth.oauth2?.scopes?.includes("webhooks_read"));
+  assert(auth.oauth2?.scopes?.includes("webhooks_write"));
 });
 
 test("oauth2: sign uses the Bearer scheme", async () => {

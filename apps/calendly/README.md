@@ -48,6 +48,7 @@ unsubscribing runs `DELETE /webhook_subscriptions/{uuid}` (already gone counts a
 defaults to the whole organization; choose "Only my events" to limit it to the connected user.
 **OAuth connections:** Calendly signs an OAuth app's webhooks with the app's own webhook signing key,
 so paste it into the trigger's *Signing key* param; with a personal access token leave it blank.
+The OAuth flow requests `users:read`, `event_types:read`, `scheduled_events:read`, `scheduling_links:write`, `webhooks:read` and `webhooks:write` (developer.calendly.com/scopes, checked 2026-11-09); a newly created Calendly OAuth app is granted nothing until scopes are requested.
 Webhook subscriptions need a Calendly plan that allows them.
 
 ### Trust model

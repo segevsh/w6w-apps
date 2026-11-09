@@ -21,7 +21,7 @@ Create and manage Typeform forms, responses, workspaces, themes and images via t
 Nothing to paste. Subscribing needs the form's id (`typeform.com/to/<id>`) and runs
 `PUT /forms/{uid}/webhooks/{tag}` with a random per-subscription secret that is kept in the
 subscription's state; unsubscribing runs `DELETE` on the same path (a webhook already gone counts as
-deleted). The connection's token needs the `webhooks:write` scope.
+deleted). The connection's token needs the `webhooks:read` and `webhooks:write` scopes; the OAuth flow requests both (Typeform OAuth scopes, developer doc checked 2026-11-09).
 
 ### Trust model
 
