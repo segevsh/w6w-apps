@@ -35,6 +35,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
+import newPost from "./triggers/new-post.ts";
 
 import boardList from "./actions/board-list.ts";
 import boardGet from "./actions/board-get.ts";
@@ -142,4 +143,5 @@ export default {
   // API key only. Canny publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newPost],
 } satisfies AppDefinition;

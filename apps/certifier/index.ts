@@ -23,6 +23,7 @@ import templateUpdate from "./actions/template-update.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
+import newCredential from "./triggers/new-credential.ts";
 
 /**
  * Certifier — digital certificates and badges. Every path, field and enum here
@@ -54,4 +55,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, api],
+  triggers: [newCredential],
 } satisfies AppDefinition;

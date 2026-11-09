@@ -32,6 +32,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
+import newMessage from "./triggers/new-message.ts";
 
 import meGet from "./actions/me-get.ts";
 import myStatusGet from "./actions/my-status-get.ts";
@@ -124,4 +125,5 @@ export default {
   // Personal API token only — see auth/api-token.ts for why OAuth2 is not implemented.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

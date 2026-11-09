@@ -63,6 +63,7 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import secretKey from "./auth/secret-key.ts";
+import newUser from "./triggers/new-user.ts";
 
 import userList from "./actions/user-list.ts";
 import userCount from "./actions/user-count.ts";
@@ -146,4 +147,5 @@ export default {
   ],
   auth: [secretKey],
   healthChecks: [service, instance],
+  triggers: [newUser],
 } satisfies AppDefinition;

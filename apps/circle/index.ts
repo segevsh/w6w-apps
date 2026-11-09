@@ -1,5 +1,6 @@
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
+import newEvent from "./triggers/new-event.ts";
 
 import memberList from "./actions/member-list.ts";
 import memberGet from "./actions/member-get.ts";
@@ -83,4 +84,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newEvent],
 } satisfies AppDefinition;

@@ -79,6 +79,7 @@ import ideaCreate from "./actions/idea-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPost from "./triggers/new-post.ts";
 
 export default {
   actions: [
@@ -99,4 +100,5 @@ export default {
   ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
+  triggers: [newPost],
 } satisfies AppDefinition;

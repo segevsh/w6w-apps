@@ -57,6 +57,7 @@ import workflowTrigger from "./actions/workflow-trigger.ts";
 
 import service from "./health/service.ts";
 import app from "./health/app.ts";
+import newThing from "./triggers/new-thing.ts";
 
 export default {
   actions: [
@@ -73,4 +74,5 @@ export default {
   ],
   auth: [adminToken],
   healthChecks: [service, app],
+  triggers: [newThing],
 } satisfies AppDefinition;
