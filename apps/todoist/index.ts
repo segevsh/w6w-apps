@@ -33,6 +33,9 @@ import commentGetMany from "./actions/comment-get-many.ts";
 import labelGetMany from "./actions/label-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import taskAdded from "./triggers/task-added.ts";
+import taskCompleted from "./triggers/task-completed.ts";
+import taskUpdated from "./triggers/task-updated.ts";
 
 export default {
   actions: [
@@ -56,6 +59,7 @@ export default {
     // label
     labelGetMany,
   ],
+  triggers: [taskAdded, taskCompleted, taskUpdated],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
