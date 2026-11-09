@@ -6,6 +6,7 @@ self-hosted instances alike.
 - **Categories** — databases, spreadsheets, productivity
 - **Auth methods** — database-token
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:database-token`
 - **Egress allowlist** — `*` (see below — the instance is per-connection)
 - **Website** — https://baserow.io/
@@ -170,6 +171,14 @@ id.
 **`sendWebhookEvents` is exposed on every write.** Baserow fires the table's webhooks after a write
 unless it is off, and a bulk load that fans out to every webhook is a real way to melt a downstream
 system.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-row` — New Row | Poll | `row-list` | Each newly added row in the selected table |
+
+Polled newest-first through the `row-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://baserow.io/api-docs) (verified 2026-11-09).
 
 ## Health checks
 

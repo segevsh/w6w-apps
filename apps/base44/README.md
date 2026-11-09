@@ -6,6 +6,7 @@ Enterprise audit log events and app security-scan findings.
 - **Categories** — developer-tools, ai, analytics
 - **Auth methods** — api-key
 - **Actions** — 11
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.base44.com`
 - **Website** — https://base44.com
 - **API docs** — https://docs.base44.com/developers/references/enterprise-apis
@@ -123,6 +124,14 @@ which surface it verified.
 
 No `perform` actions: everything the Monitoring and Audit Logs APIs expose is
 a read.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-audit-log` — New Audit Log Event | Poll | `list-audit-logs` | Each newly recorded workspace audit-log event |
+
+Polled newest-first through the `list-audit-logs` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://docs.base44.com/developers/references/enterprise-apis) (verified 2026-11-09).
 
 ## Health checks
 
