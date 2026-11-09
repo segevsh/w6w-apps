@@ -17,6 +17,7 @@ import apiToken from "./auth/api-token.ts";
 
 import service from "./health/service.ts";
 import site from "./health/site.ts";
+import newComment from "./triggers/new-comment.ts";
 
 export default {
   actions: [
@@ -34,5 +35,6 @@ export default {
     fileDownload,
   ],
   auth: [apiToken],
+  triggers: [newComment],
   healthChecks: [service, site],
 } satisfies AppDefinition;

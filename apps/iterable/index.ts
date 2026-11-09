@@ -56,6 +56,7 @@ import bulkUpdateSubscriptions from "./actions/bulk-update-subscriptions.ts";
 import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCampaign from "./triggers/new-campaign.ts";
 
 export default {
   actions: [
@@ -115,5 +116,6 @@ export default {
     bulkUpdateSubscriptions,
   ],
   auth: [apiKey],
+  triggers: [newCampaign],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
