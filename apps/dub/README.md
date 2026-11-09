@@ -66,3 +66,5 @@ discount codes, and the analytics groupings/filters `top_partners`, `top_groups`
 `top_partner_tags`, `partnerId`, `groupId`, `partnerTagId`); listing domains (the docs have no page,
 though `GET /domains` exists); registering domains (Enterprise only); link A/B-test fields
 (`testVariants` etc.); `programId`/`partnerId` on links; `groupBy` on `link-count`; `track/open`.
+
+Triggers: not shipped — the existing customer, event and tag lists do not document a newest-first creation order (https://dub.co/docs/api-reference, verified 2026-11-09).

@@ -80,6 +80,7 @@ import usageCharacterStatsGet from "./actions/usage-character-stats-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import newVoice from "./triggers/new-voice.ts";
 
 export default {
   actions: [
@@ -117,5 +118,6 @@ export default {
   // own guidance for a backend integration is a service-account key, scoped and
   // IP-restricted.
   auth: [apiKey],
+  triggers: [newVoice],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

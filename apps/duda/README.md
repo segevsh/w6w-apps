@@ -6,6 +6,7 @@ accounts through the Partner API.
 - **Categories** — cms, forms, marketing
 - **Auth methods** — basic
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.duda.co`, `api.eu.duda.co`
 - **Website** — https://www.duda.co
 - **API docs** — https://developer.duda.co/reference/getting-started-with-the-duda-api
@@ -105,3 +106,11 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 Researched and endpoint-verified live 2026-09-22 against `developer.duda.co`'s machine-readable
 markdown mirrors (each reference page's embedded OpenAPI fragment) and `curl` probes of both
 regional hosts and the status page.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-site` — New Site | poll | `list-sites` | Each newly created site |
+
+The poll requests `CREATION_DATE` in descending order. Source: https://developer.duda.co/reference/getting-started-with-the-duda-api (verified 2026-11-09).

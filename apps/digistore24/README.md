@@ -6,6 +6,7 @@ IPN connections on the **Digistore24 API** (vendor view).
 - **Categories** — commerce
 - **Auth methods** — api-key (`X-DS-API-KEY` header)
 - **Actions** — 36
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `www.digistore24.com` (the `service` check adds `status.digistore24.com` to
   its own hook allowlist, never to the app's)
@@ -130,3 +131,11 @@ Left out to keep a coherent core; none was skipped because it could not be verif
 `deno task test` — 164 tests with a mocked `HookContext` (fake `ctx.fetch`, no-op `ctx.log`): every
 action's wire name, method and encoding, the HTTP-200 error envelope, the client's bracket-notation
 flattening, the auth probe and its rejection classification, and all three health checks.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-purchase` — New Purchase | poll | `list-purchases` | Each newly recorded purchase |
+
+The poll requests date order descending. Source: https://digistore24.com/api/docs/index.html (verified 2026-11-09).

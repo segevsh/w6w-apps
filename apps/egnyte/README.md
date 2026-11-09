@@ -74,3 +74,5 @@ Three different questions, kept apart:
 
 Authenticated calls were not made against a live account: every request shape here
 is taken from the vendor reference, not replayed.
+
+Triggers: not shipped — the existing search endpoint does not document a newest-first result order (https://developers.egnyte.com/docs, verified 2026-11-09).

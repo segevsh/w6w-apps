@@ -7,6 +7,7 @@ profile and settings.
 - **Categories** — commerce, productivity
 - **Auth methods** — api-key (a store id plus a custom app's secret access token)
 - **Actions** — 23
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `app.ecwid.com` (the `service` health check adds `status.ecwid.com` to its
   own hook allowlist, never to the app's — no action ever reaches it)
@@ -198,3 +199,11 @@ Unit tests mock `HookContext` (`ctx.fetch`, no-op `ctx.log`) via [`tests/_helper
 `sign` would, so path and query assertions read like the real request. Run with `deno task test` from
 this directory; `deno task check`, `deno task lint`, `deno task fmt` and `deno task validate` (the
 pack auditor) are the rest of the gate.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-search` | Each newly registered customer |
+
+The poll requests `REGISTERED_DATE_DESC`. Source: https://docs.ecwid.com/api-reference/rest-api/rest-api-overview (verified 2026-11-09).

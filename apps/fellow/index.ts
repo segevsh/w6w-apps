@@ -32,6 +32,7 @@ import webhookList from "./actions/webhook-list.ts";
 
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
+import newActionItem from "./triggers/new-action-item.ts";
 
 export default {
   actions: [
@@ -60,5 +61,6 @@ export default {
     webhookList,
   ],
   auth: [apiKey],
+  triggers: [newActionItem],
   healthChecks: [service, rateLimit],
 } satisfies AppDefinition;

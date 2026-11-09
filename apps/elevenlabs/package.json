@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/elevenlabs",
-  "version": "0.1.3",
-  "description": "Generate speech, sound effects and transcripts with ElevenLabs: text-to-speech with character timestamps, speech-to-text, the voice library, models, generation history and plan usage.",
+  "version": "0.2.0",
+  "description": "Generate audio with ElevenLabs and poll for newly created voices.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.elevenlabs",
     "modelProvider": {
       "modelTypes": [

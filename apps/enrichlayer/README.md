@@ -85,3 +85,5 @@ instead, ready to feed back in: `nextToken` (people and company search, `next_to
 deno task validate && deno task check && deno task lint && deno task test
 deno task fmt   # never bare `deno fmt`
 ```
+
+Triggers: not shipped — employee and student search results are enrichment lookups, not a stable newest-first record feed (https://enrichlayer.com/docs, verified 2026-11-09).

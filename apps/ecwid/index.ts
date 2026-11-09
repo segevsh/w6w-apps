@@ -66,6 +66,7 @@ import customerUpdate from "./actions/customer-update.ts";
 
 import discountCouponSearch from "./actions/discount-coupon-search.ts";
 import discountCouponCreate from "./actions/discount-coupon-create.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -105,5 +106,6 @@ export default {
   // the vendor's own quickstart says to skip it and use the custom app's secret
   // token.
   auth: [apiKey],
+  triggers: [newCustomer],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -7,6 +7,8 @@ ElevenLabs API at `api.elevenlabs.io`.
 **22 actions · 1 auth method · 3 declared health checks (2 live probes + 1 declared absence) · 169
 unit tests.**
 
+- **Triggers** — 1 (poll)
+
 ## How it was built
 
 Every path, verb, query parameter, body field and enum in this app was verified on **2026-08-11**
@@ -376,3 +378,11 @@ covered the moment it is written rather than when someone remembers to extend a 
 
 It is not edited, re-drawn or re-formatted — which is why `deno task fmt` is scoped to the source
 directories and never touches `assets/`, and why a byte-count-and-path assertion guards it.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-voice` — New Voice | poll | `voice-list` | Each newly created account voice |
+
+The poll requests `created_at_unix` descending. Source: https://elevenlabs.io/docs/llms.txt (verified 2026-11-09).

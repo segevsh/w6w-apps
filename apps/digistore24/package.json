@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/digistore24",
-  "version": "0.1.0",
-  "description": "Digistore24 digital-product commerce: purchases, refunds and rebilling, buyers, products, affiliate commissions, vouchers, deliveries and IPN connections.",
+  "version": "0.2.0",
+  "description": "Digistore24 commerce actions and polling for newly recorded purchases.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.digistore24",
     "displayName": "Digistore24",
     "apiDocs": [
