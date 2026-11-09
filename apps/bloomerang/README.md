@@ -3,6 +3,7 @@
 Bloomerang nonprofit donor/fundraising CRM — constituents, donations, funds, notes and tasks, on the
 **Bloomerang REST API v2**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — crm, finance
 - **Auth methods** — api-key
 - **Actions** — 10
@@ -140,4 +141,16 @@ Bloomerang publishes no standalone `favicon.svg`. `assets/icon.svg` embeds the v
 `<image>` inside an SVG wrapper — the same pattern already used by several sibling apps in this pack
 whose vendor ships only a raster mark.
 
-Triggers: not shipped — Transaction listing has a modified-since filter but no stable documented newest-first ordering for safe first-page polling (https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json).
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-or-updated-transaction` | New or Updated Transaction | poll (since-filter) | `list-transactions` | Each transaction created or edited since the last check, once per edit |
+
+The poll calls the same `GET /transactions` request as `list-transactions` with `lastModified` set to
+the previous check minus two minutes, and de-duplicates on the transaction id plus its
+`AuditTrail.LastModifiedDate` (so an edit is a new event). Bloomerang documents the `lastModified`
+filter ("filters to transactions last modified after the specified date") at
+<https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json>
+(verified 2026-11-09). The first check records the current window and emits nothing; up to 5 pages
+of 50 are walked per check. No webhook code is included.
