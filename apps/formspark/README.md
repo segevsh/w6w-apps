@@ -122,3 +122,5 @@ there is no SVG to ship. The manifest references it as `icon.url`.
 
 `unavailable` entries always report `unknown`, so both carry `severity: informational` or they would
 pin the app's verdict there forever.
+
+Triggers: not shipped — submission lists are cursor-paginated but do not document a newest-first order or a created-since filter (https://documentation.formspark.io/).

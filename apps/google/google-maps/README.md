@@ -301,3 +301,5 @@ hook — plus three specific to this app: nothing sets an `X-Goog-Api-Key` heade
 (which would work on half the hosts and silently fail on the other half),
 nothing decides success from `res.ok` or an HTTP status code, and nothing logs
 an address, a coordinate or a MAC address.
+
+Triggers: not shipped — geocoding, routing, places, and elevation APIs are stateless request/response services with no user-record collection (https://developers.google.com/maps/documentation).

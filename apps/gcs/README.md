@@ -232,3 +232,5 @@ a credential **or a private key** — plus three specific to this app: **every
 irreversible or exposure-widening path still has its gate**, **creating a bucket
 still defaults closed**, and **nothing logs a signed URL, an object's contents
 or a key**, checked on the log call's values rather than its keys.
+
+Triggers: not shipped — object listings are lexicographic by object name and the API's object-change notifications publish to Pub/Sub rather than an HTTP event subscription (https://cloud.google.com/storage/docs/json_api/v1/objects/list).

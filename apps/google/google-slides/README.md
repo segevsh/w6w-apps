@@ -346,3 +346,5 @@ Researched and endpoint-verified 2026-08-03 against the live discovery document
 reference pages under `developers.google.com/workspace/slides`, and the usage-limits page.
 Status surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts
 failing for everyone at once.
+
+Triggers: not shipped — the Slides API gets or modifies a known presentation ID but has no presentation list endpoint (https://developers.google.com/workspace/slides/api/reference/rest).

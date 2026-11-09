@@ -182,3 +182,5 @@ authentication, identity_model, scopes, clients, invoices, expenses, time_entrie
 project, errors, limits pages) and a direct fetch of
 `status.freshbooks.com/api/v2/summary.json`. Status surfaces and scope names move;
 re-check if a probe starts failing for everyone at once.
+
+Triggers: not shipped — existing invoice, client, expense, project, and time-entry lists are page/search actions without a documented newest-first order or since filter (https://www.freshbooks.com/api/start).

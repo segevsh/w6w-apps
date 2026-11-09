@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-tasks",
-  "version": "0.1.3",
-  "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work.",
+  "version": "0.2.0",
+  "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work, and trigger workflows when a task is created or updated.",
   "license": "MIT",
   "author": {
     "name": "w6w"

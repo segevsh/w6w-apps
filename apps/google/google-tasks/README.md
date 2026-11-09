@@ -6,6 +6,7 @@ work.
 - **Categories** — productivity, project-management
 - **Auth methods** — oauth2
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `tasks.googleapis.com`
 - **Website** — https://tasks.google.com
 - **API docs** — https://developers.google.com/workspace/tasks/reference/rest
@@ -19,6 +20,14 @@ https://tasks.googleapis.com/tasks/v1
 The version prefix is part of the **path**, not the host, and the host is `tasks.googleapis.com` —
 not the `www.googleapis.com` that Calendar, Drive, Docs and Sheets use. Both halves are
 load-bearing; either alone 404s.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-or-updated-task` — New or Updated Task | poll | `list-tasks` | Each task created or updated since the previous check |
+
+Google Tasks supports `updatedMin` on `tasks.list`; this trigger keeps a two-minute overlap and deduplicates task IDs. Verified 2026-11-09 against Google's [tasks.list reference](https://developers.google.com/tasks/reference/rest/v1/tasks/list).
 
 ## Actions
 
