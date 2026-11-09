@@ -31,12 +31,12 @@ test("list-questions: forwards orderBy and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { questions: [] } }]);
   await action.execute!({
     locationId: "1",
-    orderBy: "upvote_count desc",
+    orderBy: "upvoteCount desc",
     pageSize: 5,
     pageToken: "next",
   }, ctx);
   const params = new URL(calls[0].url).searchParams;
-  assertEquals(params.get("orderBy"), "upvote_count desc");
+  assertEquals(params.get("orderBy"), "upvoteCount desc");
   assertEquals(params.get("pageSize"), "5");
   assertEquals(params.get("pageToken"), "next");
 });

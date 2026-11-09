@@ -6,9 +6,19 @@ calendar events.
 - **Categories** — calendar, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 8
+- **Triggers** — not shipped — the existing `list-events` action can order by `updated` only
+  ascending, while the shared poll cursor requires a newest-first page
+  (https://developers.google.com/workspace/calendar/api/v3/reference/events/list; verified 2026-11-09).
 - **Egress allowlist** — `www.googleapis.com`
 - **Website** — https://calendar.google.com
 - **API docs** — https://developers.google.com/workspace/calendar
+
+## Triggers
+
+Not shipped: Calendar's existing `events.list` endpoint exposes `orderBy=updated` only in ascending
+order, so it cannot safely back the shared newest-first polling cursor without a different,
+token-based action path. Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
+(verified 2026-11-09).
 
 ## Health check
 
