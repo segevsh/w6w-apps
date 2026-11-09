@@ -5,7 +5,7 @@ Manage Invoice Ninja clients, invoices, quotes, payments, products, tasks and ex
 - **Categories** — finance, commerce
 - **Auth methods** — api-token
 - **Actions** — 40
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll, webhook)
 - **Egress allowlist** — `*` (see "Why not a wildcard apex" below)
 - **Website** — https://www.invoiceninja.com
 - **API docs** — https://api-docs.invoicing.co/
@@ -167,6 +167,13 @@ vendor's own public demo instance, `X-API-TOKEN: TOKEN`) and `status.invoiceninj
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-invoice` | New Invoice | poll | `invoice-get-many` | Each new invoice |
+
+| `invoice-webhook` | Invoice Event (Webhook) | webhook | `/api/v1/webhooks` | Each selected delivery |
+
+`invoice-webhook` removes callback-URL leftovers, creates a webhook, and stores its id. The OpenAPI
+describes no delivery signature; the callback URL is the secret. Vendor mechanism:
+<https://raw.githubusercontent.com/invoiceninja/invoiceninja/v5-stable/openapi/api-docs.yaml>
+(verified 2026-11-09).
 
 The existing invoice list request is reused and the first poll seeds its cursor without emitting a
 historical invoice. [Invoice Ninja API docs](https://api-docs.invoicing.co/) verified 2026-11-09.

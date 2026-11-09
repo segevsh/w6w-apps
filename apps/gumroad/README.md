@@ -7,7 +7,7 @@ subscriptions) for sales, refunds, disputes and subscription changes, on the **G
 
 **53 actions**, one access-token auth method, two declared health checks.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll, webhook)
 
 ## Provenance
 
@@ -165,5 +165,9 @@ tests/                 index, auth, client, health, defaults + one test file per
 | --- | --- | --- | --- | --- |
 | `new-sale` | New Sale | poll | `sale-list` (Gumroad returns sales newest first) | Each new sale |
 
-The trigger uses the existing sales request and its cursor state to avoid duplicate runs. The API's
-[resource subscriptions](https://gumroad.com/api#resource-subscriptions) remain available for manual integrations; verified 2026-11-09.
+| `sale-webhook` | New Sale (Webhook) | webhook | `resource_subscriptions` | Each delivered sale |
+
+The poll trigger uses the existing sales request and its cursor state to avoid duplicate runs.
+`sale-webhook` removes callback-URL leftovers, creates a `sale` subscription, and stores its id.
+Gumroad documents no delivery signature; the callback URL is the secret. Vendor mechanism:
+<https://gumroad.com/api> (verified 2026-11-09).

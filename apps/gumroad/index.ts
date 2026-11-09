@@ -91,6 +91,7 @@ import taxFormList from "./actions/tax-form-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newSale from "./triggers/new-sale.ts";
+import saleWebhook from "./triggers/sale-webhook.ts";
 
 export default {
   actions: [
@@ -162,5 +163,5 @@ export default {
   // states the authorization/token URLs, so no oauth2 method is declared.
   auth: [accessToken],
   healthChecks: [service, quota],
-  triggers: [newSale],
+  triggers: [newSale, saleWebhook],
 } satisfies AppDefinition;

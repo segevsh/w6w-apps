@@ -7,7 +7,7 @@ transitions, activity history, senders, schedules and the unsubscribe list — v
 - **Id** `io.w6w.lemlist` · **Categories** `marketing`, `email`
 - **Auth** `api-key` — HTTP Basic with an **empty username**
 - **Actions** 18 · **Health checks** `service`, `quota` (+ the derived `auth:api-key`)
-- **Triggers** — 1 (poll)
+- **Triggers** — 2 (poll, webhook)
 - **Egress** `api.lemlist.com` only
 
 > **The name is lowercase.** "lemlist", not "Lemlist" — that is the vendor's own styling.
@@ -400,6 +400,13 @@ All verified to return HTTP 200 on 2026-08-03.
 | Key | Title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-activity` | New Activity | poll | `list-activities` | Each new campaign activity |
+
+| `activity-webhook` | New Activity (Webhook) | webhook | `/hooks` | Each delivered activity |
+
+`activity-webhook` removes callback-URL leftovers, creates a `/hooks` subscription, and stores its
+id plus a generated caller-chosen secret. lemlist does not document an HMAC/signature; the callback
+URL is the secret. Vendor mechanism:
+<https://developer.lemlist.com/api-reference/endpoints/webhooks/add-webhook.md> (verified 2026-11-09).
 
 The trigger uses the existing `/activities?version=v2` action and dedupes activity ids after its
 initial seed. [lemlist API overview](https://developer.lemlist.com/api-reference/getting-started/overview) verified 2026-11-09.
