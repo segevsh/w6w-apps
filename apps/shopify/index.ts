@@ -17,8 +17,9 @@
  *     once a cursor is supplied Shopify REJECTS the other filters, so the list
  *     actions drop them when paging.
  *
- * Deliberately absent: the webhook trigger (a Trigger, not an Action), and the
- * GraphQL Admin API, which is a separate surface from this REST one.
+ * Triggers (`lib/triggers.ts`) register REST webhook subscriptions and verify each delivery's
+ * `X-Shopify-Hmac-Sha256` with the app's client secret (a trigger parameter: it is not in the
+ * access token). Deliberately absent: the GraphQL Admin API, a separate surface from this REST one.
  */
 import type { AppDefinition } from "@w6w/types";
 import accessToken from "./auth/access-token.ts";
@@ -44,6 +45,17 @@ import customerGetOrders from "./actions/customer-get-orders.ts";
 import inventoryLevelSet from "./actions/inventory-level-set.ts";
 import locationGetMany from "./actions/location-get-many.ts";
 import shopGet from "./actions/shop-get.ts";
+import orderCreatedTrigger from "./triggers/order-created.ts";
+import orderPaidTrigger from "./triggers/order-paid.ts";
+import orderUpdatedTrigger from "./triggers/order-updated.ts";
+import orderCancelledTrigger from "./triggers/order-cancelled.ts";
+import orderFulfilledTrigger from "./triggers/order-fulfilled.ts";
+import customerCreatedTrigger from "./triggers/customer-created.ts";
+import productCreatedTrigger from "./triggers/product-created.ts";
+import productUpdatedTrigger from "./triggers/product-updated.ts";
+import refundCreatedTrigger from "./triggers/refund-created.ts";
+import eventTrigger from "./triggers/event.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import store from "./health/store.ts";
@@ -72,6 +84,18 @@ export default {
     inventoryLevelSet,
     locationGetMany,
     shopGet,
+  ],
+  triggers: [
+    orderCreatedTrigger,
+    orderPaidTrigger,
+    orderUpdatedTrigger,
+    orderCancelledTrigger,
+    orderFulfilledTrigger,
+    customerCreatedTrigger,
+    productCreatedTrigger,
+    productUpdatedTrigger,
+    refundCreatedTrigger,
+    eventTrigger,
   ],
   auth: [accessToken],
   healthChecks: [service, quota, store],
