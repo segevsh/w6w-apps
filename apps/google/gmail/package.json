@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gmail",
-  "version": "0.3.0",
-  "description": "Send, read, and manage Gmail messages, drafts, labels, and threads.",
+  "version": "0.4.0",
+  "description": "Send, read, and manage Gmail messages, drafts, labels, and threads, and trigger a workflow on each new email.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,6 +35,7 @@
       ]
     },
     "entry": "./index.ts",
+    "test:runtime": "deno test -A --no-check --unstable-worker-options \"tests/**/*.runtime.ts\"",
     "build": {
       "include": [
         "../_shared"
@@ -45,6 +46,7 @@
   "main": "./dist/app.js",
   "scripts": {
     "test": "node --test --experimental-transform-types --no-warnings --import ./tests/_register.mjs \"tests/**/*.test.ts\"",
+    "test:runtime": "deno test -A --no-check --unstable-worker-options \"tests/**/*.runtime.ts\"",
     "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --alias:@w6w/types=../../../../core/packages/types/mod.ts --outfile=dist/app.js"
   }
 }
