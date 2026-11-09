@@ -11,7 +11,7 @@ const manifest = JSON.parse(
     network: { allow: string[] };
     categories: string[];
     apiDocs: string[];
-    appearance: { icon: { url: string }; darkMode: { icon: { url: string } } };
+    appearance: { icon: { svg: string }; darkMode: { icon: { svg: string } } };
   };
 };
 
@@ -68,7 +68,7 @@ test("index: the manifest admits any host, and names the real icon files", () =>
   assertEquals(manifest.w6w.id, "io.w6w.ollama");
   assertEquals(manifest.w6w.categories, ["ai", "developer-tools"]);
   assertEquals(manifest.w6w.apiDocs, ["https://github.com/ollama/ollama/blob/main/docs/api.md"]);
-  for (const url of [manifest.w6w.appearance.icon.url, manifest.w6w.appearance.darkMode.icon.url]) {
+  for (const url of [manifest.w6w.appearance.icon.svg, manifest.w6w.appearance.darkMode.icon.svg]) {
     assert(denoStatSync(new URL(`../${url}`, import.meta.url)).isFile, url);
   }
 });

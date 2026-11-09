@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: w6w-io/w6w-core
-          ref: b35a5f7b2323702507169642ad7c51a7e79f5273
+          ref: 71a2c08a1588ee0548f893262df530e80ed8e302
           path: core
 
       - uses: denoland/setup-deno@v2

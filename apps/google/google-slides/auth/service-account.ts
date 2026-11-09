@@ -1,5 +1,6 @@
 import type { AuthDefinition } from "@w6w/types";
 import { SLIDES_API } from "../lib/client.ts";
+import { serviceAccountSetup } from "../../_shared/service-account-setup.ts";
 
 const SENTINEL_PRESENTATION_ID = "w6w-credential-probe-nonexistent";
 
@@ -18,6 +19,7 @@ const serviceAccount: AuthDefinition = {
   displayName: "Google Service Account",
   description:
     "Google service account JSON key with domain-wide delegation. The host mints the access token; paste the key once.",
+  setup: serviceAccountSetup("Google Slides API", "slides.googleapis.com", "optional"),
   fields: [
     {
       key: "serviceAccountKey",

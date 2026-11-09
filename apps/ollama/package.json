@@ -30,12 +30,12 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "Ollama"
       },
       "darkMode": {
         "icon": {
-          "url": "./assets/icon.dark.png",
+          "svg": "./assets/icon.dark.svg",
           "alt": "Ollama"
         }
       }

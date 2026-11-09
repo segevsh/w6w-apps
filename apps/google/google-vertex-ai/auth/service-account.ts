@@ -1,6 +1,7 @@
 import type { AuthDefinition, ConnectionBinding } from "@w6w/types";
 import { CLOUD_PLATFORM_SCOPE, probe } from "./_probe.ts";
 import { LOCATIONS } from "../lib/regions.ts";
+import { serviceAccountSetup } from "../../_shared/service-account-setup.ts";
 
 /**
  * What a signed-path hook is handed (R-14): no credential (it is `null`), the
@@ -39,6 +40,7 @@ const serviceAccount: AuthDefinition = {
     "Server-to-server auth with a Google service account. Paste the downloaded JSON key, and " +
     "grant the account a Vertex AI role on the project. The host mints the access token.",
   connectionLabel: "{{clientEmail}} ({{projectId}})",
+  setup: serviceAccountSetup("Vertex AI API", "aiplatform.googleapis.com", "none"),
   fields: [
     {
       key: "serviceAccountKey",
