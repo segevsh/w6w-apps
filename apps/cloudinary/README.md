@@ -227,6 +227,10 @@ else is skipped rather than guessed at.
 
 ## What this app deliberately does not do
 
+## Triggers
+
+- **New Asset** (`new-asset`) polls the `asset-search` action newest-first by `created_at`.
+
 - **Signed delivery URLs and signed uploads.** Both need the API secret to sign
   a string that is not a request, and only the auth hook may touch a credential.
 - **Multipart uploads of raw bytes** — a sandbox has no local file. Remote URLs

@@ -1,5 +1,7 @@
 # Close
 
+Triggers: not shipped — the existing lead list has no documented chronological sort (<https://developer.close.com/api/resources/leads/>).
+
 Close CRM leads, contacts, opportunities, activities, tasks and org metadata, on the **Close API
 v1**.
 

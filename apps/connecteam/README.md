@@ -231,6 +231,10 @@ connecteam/
 
 ## Development
 
+## Triggers
+
+- **New Shift** (`new-shift`) polls the `shift-list` action newest-first by `created_at`.
+
 From this directory, inside the `api` container:
 
 ```bash

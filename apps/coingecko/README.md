@@ -1,5 +1,7 @@
 # CoinGecko
 
+Triggers: not shipped — coin-market ordering is ranking, not a chronological record feed (<https://docs.coingecko.com/reference/coins-markets>).
+
 Crypto prices, market data, charts, search, trending, global stats and exchanges from the
 CoinGecko v3 API. App id `io.w6w.coingecko`, categories `finance`, `analytics`.
 

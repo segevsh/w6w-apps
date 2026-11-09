@@ -1,5 +1,7 @@
 # CleverReach
 
+Triggers: not shipped — the existing receiver list has pagination but no documented newest-first order (<https://rest.cleverreach.com/explorer/v3/>).
+
 Manage CleverReach email marketing from a workflow: add, update, upsert, activate, deactivate and
 delete receivers (subscribers); manage groups (receiver lists); create attributes; tag receivers;
 read mailings and their reports; and manage the blacklist. Built on the REST API v3

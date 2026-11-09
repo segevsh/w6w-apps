@@ -213,6 +213,10 @@ Notifications, Caller IDs, Integrations, Integration Triggers, Summary Emails, a
 
 ## Development
 
+## Triggers
+
+- **New Call** (`new-call`) polls the `call-list` action newest-first by `start_time`.
+
 ```bash
 deno task validate   # manifest checks (@w6w/validator)
 deno task check       # typecheck

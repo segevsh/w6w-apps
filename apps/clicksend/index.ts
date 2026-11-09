@@ -48,6 +48,7 @@ import basicAuth from "./auth/basic-auth.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSms from "./triggers/new-sms.ts";
 
 export default {
   actions: [
@@ -70,5 +71,6 @@ export default {
   ],
   // Basic auth only — ClickSend publishes no OAuth surface for third-party apps.
   auth: [basicAuth],
+  triggers: [newSms],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

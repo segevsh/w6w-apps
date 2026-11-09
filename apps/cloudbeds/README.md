@@ -1,5 +1,7 @@
 # Cloudbeds
 
+Triggers: not shipped — the existing guest list does not document a newest-first order (<https://developers.cloudbeds.com/reference/list-guests>).
+
 Search and create reservations, check room-type availability and rate plans, and read or update
 guest and property records, on the **Cloudbeds PMS API v1.3**.
 

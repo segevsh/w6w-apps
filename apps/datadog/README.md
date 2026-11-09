@@ -323,6 +323,10 @@ step that un-mutes production. Nothing else in this app has an idempotency key o
 
 ## Icon
 
+## Triggers
+
+- **New Log** (`new-log`) polls the `log-search` action newest-first by timestamp.
+
 `assets/icon.svg` is the Datadog mark from
 `https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/datadog.svg`, downloaded verbatim on
 2026-08-11: 2,998 bytes, `<title>Datadog</title>`, `viewBox="0 0 24 24"`. A test asserts the byte

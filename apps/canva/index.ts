@@ -74,6 +74,7 @@ import getUserCapabilities from "./actions/get-user-capabilities.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDesign from "./triggers/new-design.ts";
 
 export default {
   actions: [
@@ -117,5 +118,6 @@ export default {
   // OAuth2 + PKCE only. Canva publishes no other auth model for third-party
   // integrations.
   auth: [oauth2],
+  triggers: [newDesign],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

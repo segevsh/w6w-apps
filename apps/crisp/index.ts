@@ -19,6 +19,7 @@ import updatePeopleProfile from "./actions/update-people-profile.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPerson from "./triggers/new-person.ts";
 
 export default {
   actions: [
@@ -40,5 +41,6 @@ export default {
     updatePeopleProfile,
   ],
   auth: [basic],
+  triggers: [newPerson],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

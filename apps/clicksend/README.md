@@ -277,6 +277,10 @@ clicksend/
 
 ## Development
 
+## Triggers
+
+- **New SMS** (`new-sms`) polls the `sms-history-list` action newest-first by message date.
+
 From this directory, inside the `api` container:
 
 ```bash

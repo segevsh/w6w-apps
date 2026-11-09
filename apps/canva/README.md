@@ -182,6 +182,10 @@ probing something that would prove nothing.
 
 ## Declared health checks
 
+## Triggers
+
+- **New Design** (`new-design`) polls the `list-designs` action newest-first by modification time.
+
 Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
 The three questions above map onto declared checks like this:
 

@@ -71,6 +71,10 @@ reach a status host.
 
 ## Icon
 
+## Triggers
+
+- **New Entry** (`new-entry`) polls the `list-entries` action newest-first by `sys.createdAt`.
+
 `assets/icon.svg` — vector, in Contentful's own palette — replaces a 60px colormapped PNG.
 
 Taken from <https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/contentful.svg> on 2026-08-15.

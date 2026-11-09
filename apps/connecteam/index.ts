@@ -75,6 +75,7 @@ import taskUpdate from "./actions/task-update.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newShift from "./triggers/new-shift.ts";
 
 export default {
   actions: [
@@ -116,5 +117,6 @@ export default {
   // API key only. See the module docs above for why the documented OAuth2
   // client-credentials flow is not also implemented.
   auth: [apiKey],
+  triggers: [newShift],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

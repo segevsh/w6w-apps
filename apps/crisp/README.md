@@ -194,6 +194,10 @@ business calling it. The `service` check widens egress for its own unsigned prob
 
 ## Not built, and why
 
+## Triggers
+
+- **New Person** (`new-person`) polls the `list-people` action newest-first by `created_at`.
+
 Crisp's REST API is much broader than "conversation/people/website" — the reference lists 190+
 operations. Left out, and why:
 
