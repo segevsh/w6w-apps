@@ -1,5 +1,7 @@
 # Plivo
 
+Triggers: not shipped — list-messages exposes time filters but no documented newest-first sort control (https://www.plivo.com/docs/sms/api/message/).
+
 Send SMS/MMS, place and manage voice calls, search and manage phone numbers, and read account
 details via Plivo.
 

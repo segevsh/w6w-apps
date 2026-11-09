@@ -33,6 +33,7 @@ import listPipelines from "./actions/list-pipelines.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -68,4 +69,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, api, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;
