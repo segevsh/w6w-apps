@@ -1,5 +1,7 @@
 # Notion
 
+Triggers: not shipped — verification_token cannot be retrieved on this host (setup POST leaves no recorded call) (https://developers.notion.com/reference/webhooks)
+
 119 workflow actions covering all 107 operations in Notion's public and Admin OpenAPI schemas,
 plus compatibility and convenience actions. Public requests use `Notion-Version: 2026-03-11`;
 Admin requests use `2026-06-01`. Documentation was downloaded on 2026-10-19.
@@ -152,28 +154,3 @@ The service/quota declarations remain informational and report `unknown`. The ve
 quota-headroom endpoint. The published integration allowance averages three requests per second;
 429 responses supply `Retry-After`. Workspace credential tests use `/users/me`, which does not
 require sharing a page first. Admin/token-management credential checks are local only, as noted above.
-
-## Triggers
-
-| Trigger | Mechanism | Vendor event | The run gets |
-|---|---|---|---|
-| `workspace-event` — Workspace Event | webhook (manual, signed) | Notion integration webhook: `page.*`, `data_source.*`, `comment.*` events | event type, entity ID and type, authors, workspace, event data |
-
-Notion has no API to create a webhook subscription; it is made by hand in the integration's settings
-(a manual webhook):
-
-1. Create the trigger in w6w and copy its webhook URL.
-2. In notion.so/profile/integrations → your integration → **Webhooks**, create a subscription with that URL
-   and choose the event types.
-3. Notion immediately sends one unsigned `POST` containing only `{"verification_token": "…"}`. The trigger
-   acknowledges it and emits no event. Find the token in the trigger's recorded calls, paste it into the
-   trigger's **Verification Token** parameter, then click **Verify** in Notion.
-
-**Trust model.** Every later delivery is verified against `X-Notion-Signature` (`sha256=` HMAC-SHA256 of the
-exact request body, keyed with the verification token) before it is parsed. A missing or wrong signature,
-a missing raw body, or a token that was never pasted refuses the delivery (one failed call, no run). Only a
-body that is exactly `{"verification_token": …}` is accepted unsigned, and it never produces an event.
-Notion's scheme carries no signed timestamp, so there is no replay window.
-
-Docs (verified 2026-11-09): https://developers.notion.com/reference/webhooks ·
-https://developers.notion.com/reference/webhooks-events-delivery

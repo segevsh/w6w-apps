@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/notion",
-  "version": "0.4.0",
-  "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, and Enterprise administration. Trigger: workspace webhook events (signed).",
+  "version": "0.3.1",
+  "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, and Enterprise administration.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://developers.notion.com/guides/get-started/upgrade-guide-2025-09-03",
       "https://developers.notion.com/guides/get-started/upgrade-guide-2026-03-11"
     ],
-    "longDescription": "Create and update Notion pages using properties, blocks, Markdown, or templates. Create private workspace pages with OAuth or a personal access token, or choose a parent page or data source. Search shared content and query database rows with filters, sorting, and cursor pagination.\n\nManage databases, data sources and templates, blocks, comments, file uploads, views and view queries, users, custom emojis, meeting notes, agents, and sessions. Enterprise Admin actions cover legal holds, workspace exports, groups and members, token administration, agent management, and analytics reports.\n\nIncludes internal integration, OAuth, personal access token, Enterprise organization token, and OAuth client authentication. Existing workflow action keys remain available with compatibility handling for database IDs, archived flags, and block positions.\n\nIt also ships a trigger: Workspace Event, fired by Notion integration webhooks (signature verified).",
+    "longDescription": "Create and update Notion pages using properties, blocks, Markdown, or templates. Create private workspace pages with OAuth or a personal access token, or choose a parent page or data source. Search shared content and query database rows with filters, sorting, and cursor pagination.\n\nManage databases, data sources and templates, blocks, comments, file uploads, views and view queries, users, custom emojis, meeting notes, agents, and sessions. Enterprise Admin actions cover legal holds, workspace exports, groups and members, token administration, agent management, and analytics reports.\n\nIncludes internal integration, OAuth, personal access token, Enterprise organization token, and OAuth client authentication. Existing workflow action keys remain available with compatibility handling for database IDs, archived flags, and block positions.",
     "categories": [
       "productivity",
       "documents"
@@ -41,12 +41,7 @@
         "api.notion.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": {
-      "include": [
-        "../_shared"
-      ]
-    }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -238,3 +238,16 @@ test("a signed non-JSON body is refused", async () => {
 test("another method is refused", async () => {
   await assertRejects(() => ingest(T, { ...post(BODY, sign(BODY)), method: "PUT" }), Error, "POST");
 });
+
+test("configured secret with a present-but-empty signature header is refused", async () => {
+  for (const sig of ["", "sha256="]) {
+    await assertRejects(() => ingest(T, post(BODY, sig)), Error, "Meta webhook refused");
+  }
+});
+
+test("a digest differing only in its last hex digit is refused", async () => {
+  const good = sign(BODY);
+  const last = good.slice(-1);
+  const bad = good.slice(0, -1) + (last === "0" ? "1" : "0");
+  await assertRejects(() => ingest(T, post(BODY, bad)), Error, "signature");
+});
