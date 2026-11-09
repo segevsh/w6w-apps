@@ -7,9 +7,15 @@ export default pollFromListAction({
   description: "The run gets each newly created contract.",
   action: contractList,
   input: () => ({ limit: 100, orderDirection: "desc" }),
-  items: (result) => (result as { data?: unknown[] }).data ?? [],
+  // `contract-list` returns the contracts array itself (it walks `page.cursor` internally).
+  items: (result) => Array.isArray(result) ? result : [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),
-  output: [{ key: "id", type: "string", label: "Contract ID" }],
-  sample: { id: "contract-1" },
+  output: [
+    { key: "id", type: "string", label: "Contract ID" },
+    { key: "title", type: "string", label: "Title" },
+    { key: "type", type: "string", label: "Contract type" },
+    { key: "status", type: "string", label: "Status" },
+  ],
+  sample: { id: "abc123", title: "Design retainer", type: "ongoing_time_based", status: "new" },
   maxPages: 1,
 });

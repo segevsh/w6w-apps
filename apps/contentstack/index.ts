@@ -37,6 +37,7 @@ import managementToken from "./auth/management-token.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newAsset from "./triggers/new-asset.ts";
+import newOrUpdatedAsset from "./triggers/new-or-updated-asset.ts";
 
 export default {
   actions: [
@@ -77,5 +78,5 @@ export default {
   ],
   auth: [managementToken],
   healthChecks: [service, quota],
-  triggers: [newAsset],
+  triggers: [newAsset, newOrUpdatedAsset],
 } satisfies AppDefinition;

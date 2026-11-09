@@ -2,32 +2,17 @@
 
 ## Triggers
 
+- **Triggers** — 1 (poll)
+
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-call` | poll | `call-list` | Newly concluded calls |
+| `new-call` | poll | `call-list` | Each call that has concluded since the last check |
 
-Dialpad documents reverse-chronological call listing at <https://developers.dialpad.com/reference/list-calls> (verified 2026-11-09).
+`call-list` is documented as "reverse-chronological order by call start time (i.e. recent calls first)" and lists concluded calls only; a company-level key sees the whole company, a user-level key only that user's calls.
 
-Calls, SMS, users, contacts, call routers, rooms and webhooks on **Dialpad**, the cloud business
-phone and contact center platform, over its **Admin API v2**.
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-- **Categories** — communication, support
-- **Auth methods** — api-key
-- **Actions** — 35
-- **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
-- **Egress allowlist** — `dialpad.com` (the `service` check adds `status.dialpad.com` to its own
-  hook allowlist, never to the app's)
-- **Website** — https://dialpad.com/
-- **API docs** — https://developers.dialpad.com/reference
-- **Status page** — https://status.dialpad.com/
-
-> **Everything below was verified against Dialpad's own sources on 2026-08-29** — its
-> machine-readable OpenAPI 3.1 document, fetched live from
-> `dash.readme.com/api/v1/api-registry/cwu1asmtbsrjuf` (the registry id
-> `developers.dialpad.com/reference` itself resolves in its server-rendered page props,
-> `oasPublicUrl: "@dialpad/v1.0#cwu1asmtbsrjuf"`), plus live probes against `dialpad.com`,
-> `sandbox.dialpad.com` and `status.dialpad.com`. Nothing here came from a third-party integration
-> directory.
+Vendor reference: <https://developers.dialpad.com/reference/calllist> (verified 2026-11-09).
 
 ## The three things most likely to go wrong
 

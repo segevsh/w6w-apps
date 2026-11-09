@@ -2,24 +2,18 @@
 
 ## Triggers
 
+- **Triggers** — 2 (poll)
+
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-employee` | poll | `employee-search` | Newly created employee records |
+| `new-employee` | poll | `employee-search` | Each newly created employee (sorted by `Id` descending) |
+| `new-or-updated-employee` | poll | `employee-search` | Each employee created or edited since the last check (sorted by `Modified` descending, id + `Modified`) |
 
-Deputy documents employee queries at <https://developer.deputy.com/docs/resource-employee> (verified 2026-11-09).
+`employee-search` is Deputy's `POST /resource/Employee/QUERY`, which takes an explicit `sort`; the first 100 rows are read each check.
 
-Manage Deputy employees, timesheets, leave, areas and locations — the daily
-loop of a workforce scheduling install.
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-- **Categories** — hr, calendar, productivity
-- **Auth methods** — permanent-token (a per-install Bearer token)
-- **Actions** — 18
-- **Egress allowlist** — `*` (per-install subdomain — see below)
-- **Website** — https://www.deputy.com
-- **API docs** — https://developer.deputy.com (the catalog's older
-  `www.deputy.com/api-doc/API-Introduction` link 301-redirects here) —
-  append `.md` to any page for its clean markdown, `/llms.txt` for the full
-  page index; read 2026-09-22.
+Vendor reference: <https://developer.deputy.com/> (Employee resource QUERY, verified 2026-11-09).
 
 ## Setup
 

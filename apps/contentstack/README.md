@@ -2,20 +2,18 @@
 
 ## Triggers
 
+- **Triggers** — 2 (poll)
+
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-asset` | poll | `list-assets` | Newly created assets |
+| `new-asset` | poll | `list-assets` | Each newly created asset (`desc=created_at`) |
+| `new-or-updated-asset` | poll | `list-assets` | Each asset created or edited since the last check (`desc=updated_at`, id + `updated_at`) |
 
-Contentstack documents asset sorting at <https://www.contentstack.com/docs/developers/apis/content-management-api/#assets> (verified 2026-11-09).
+`list-assets` takes a `desc` field (sort descending) and returns up to 100 per call; page 1 holds the newest.
 
-Manage Contentstack content from a workflow through the **Content Management API (CMA) v3**:
-read the content model, create/update/delete entries, publish and unpublish entries and assets
-(singly or in bulk), build and deploy releases, move entries through workflow stages and manage
-webhooks.
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Verified 2026-10-06 against the CMA reference
-(`https://www.contentstack.com/docs/developers/apis/content-management-api.md`) and the OpenAPI file
-it links (`cma-openapi-3.json` v3.0.1, 138 paths). Every endpoint below is in that file.
+Vendor reference: <https://www.contentstack.com/docs/developers/apis/content-management-api> (verified 2026-11-09).
 
 ## Auth
 

@@ -72,6 +72,7 @@ import userList from "./actions/user-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newEnvelope from "./triggers/new-envelope.ts";
+import newOrUpdatedEnvelope from "./triggers/new-or-updated-envelope.ts";
 
 export default {
   actions: [
@@ -99,5 +100,5 @@ export default {
   ],
   auth: [oauth2, oauth2Demo],
   healthChecks: [service, quota],
-  triggers: [newEnvelope],
+  triggers: [newEnvelope, newOrUpdatedEnvelope],
 } satisfies AppDefinition;

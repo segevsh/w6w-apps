@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/digitalocean",
-  "version": "0.1.1",
-  "description": "DigitalOcean: droplets, volumes, snapshots, reserved IPs, DNS and managed databases — with the billing surprises made explicit.",
+  "version": "0.2.0",
+  "description": "DigitalOcean: droplets, volumes, snapshots, reserved IPs, DNS and managed databases — with the billing surprises made explicit, with a New DNS Record trigger.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.digitalocean.com/reference/api/"
     ],
-    "longDescription": "DigitalOcean brings droplets, storage, DNS and managed databases into a workflow, with the billing surprises that catch people off guard made explicit rather than left to the invoice. Droplet actions cover the full lifecycle — create, power on or off, resize and delete — with the reversible, gentler operations chosen as the default over their permanent or forceful counterparts.\n\nThe app calls out costs that a plain API response would hide: a powered-off droplet still bills until it is archived, destroying a droplet leaves its volumes and snapshots behind still costing money, and a reserved IP bills precisely while it looks unused. Listing droplets counts how many are off but still billing, and deleting one requires acknowledging what it will orphan.\n\nBeyond droplets, the app manages block storage volumes, snapshots, reserved IPs, DNS records and managed database clusters — stripping admin passwords out of database connection details before they ever reach a workflow's data. DNS record creation catches the common mistake of accidentally doubling a fully-qualified domain name onto its zone.",
+    "longDescription": "DigitalOcean brings droplets, storage, DNS and managed databases into a workflow, with the billing surprises that catch people off guard made explicit rather than left to the invoice. Droplet actions cover the full lifecycle — create, power on or off, resize and delete — with the reversible, gentler operations chosen as the default over their permanent or forceful counterparts.\n\nThe app calls out costs that a plain API response would hide: a powered-off droplet still bills until it is archived, destroying a droplet leaves its volumes and snapshots behind still costing money, and a reserved IP bills precisely while it looks unused. Listing droplets counts how many are off but still billing, and deleting one requires acknowledging what it will orphan.\n\nBeyond droplets, the app manages block storage volumes, snapshots, reserved IPs, DNS records and managed database clusters — stripping admin passwords out of database connection details before they ever reach a workflow's data. DNS record creation catches the common mistake of accidentally doubling a fully-qualified domain name onto its zone. Polling triggers: a New DNS Record trigger.",
     "categories": [
       "devops",
       "storage"

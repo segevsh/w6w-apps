@@ -1,12 +1,6 @@
 # Document360
 
-## Triggers
-
-| Key | Mechanism | Wrapped action | What the run gets |
-| --- | --- | --- | --- |
-| `new-drive-file` | poll | `drive-search` | Newly indexed Drive files |
-
-Document360 documents Drive search filters at <https://apidocs.document360.com/apidocs/drive-search> (verified 2026-11-09).
+Triggers: not shipped — `drive-search` needs a search keyword and offers neither a creation sort nor a created-since filter (only an "updated on or after" bound on keyword matches), so it is not a new-file feed (<https://apidocs.document360.com/>, verified 2026-11-09).
 
 Manage a Document360 knowledge base from a workflow: browse projects, workspaces and the category
 tree, read, create, update, publish, unpublish, fork, archive and delete articles, manage

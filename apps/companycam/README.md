@@ -2,31 +2,18 @@
 
 ## Triggers
 
+- **Triggers** — 2 (poll)
+
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-checklist` | poll | `checklist-list` | Newly created checklists |
+| `new-checklist` | poll | `checklist-list` | Each newly created checklist |
+| `new-or-updated-checklist` | poll | `checklist-list` | Each checklist created or edited since the last check (id + `updated_at`) |
 
-CompanyCam documents the checklist list endpoint at <https://docs.companycam.com/reference/list-checklists> (verified 2026-11-09).
+`checklist-list` returns the company's checklists newest-updated first, so page 1 (50 rows) holds anything created or edited since the last check.
 
-Photo documentation for contractors. This app reads and writes **projects** and everything filed
-under them — photos, videos, documents, comments, checklists, labels — plus the **users**, **groups**,
-**tags** and **webhooks** around them, over the CompanyCam Core API v2.
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-- **API**: `https://api.companycam.com/v2`
-- **Auth**: `Authorization: Bearer <token>` — an access token from
-  [app.companycam.com/access_tokens](https://app.companycam.com/access_tokens), or an OAuth 2.0
-  access token
-- **Actions**: 62, one per operation in the vendor's OpenAPI document
-- **Health checks**: `service` (Statuspage) · ~~`quota`~~ (declared absence) · 2 derived `auth:*`
-
-Everything here was verified on **2026-08-11** against CompanyCam's own OpenAPI 3.0 document —
-[`github.com/CompanyCam/openapi-spec/openapi.yaml`](https://github.com/CompanyCam/openapi-spec/blob/main/openapi.yaml),
-187,449 bytes, md5 `37293f27eff6886fbffe4c49e7f4f409`, last commit 2026-08-07 — which is the same
-document ReadMe renders at `docs.companycam.com/reference/*`, plus the vendor's guides and
-changelog and live probes against `api.companycam.com` and `status.companycam.com`. Nothing came
-from a third-party integration directory.
-
----
+Vendor reference: <https://docs.companycam.com/reference/listchecklists> (verified 2026-11-09).
 
 ## Read this first: the API this app targets has an announced end date
 
