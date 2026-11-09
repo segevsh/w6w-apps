@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Booked Invoice",
   description: "The run gets each newly booked invoice.",
   action: invoiceBookedList,
-  input: () => ({ pageSize: 100, skipPages: 0, sort: "date desc" }),
+  input: () => ({ pageSize: 100, skipPages: 0, sort: "-bookedInvoiceNumber" }),
   items: (result) =>
     Array.isArray((result as { items?: unknown[] }).items)
       ? (result as { items: unknown[] }).items

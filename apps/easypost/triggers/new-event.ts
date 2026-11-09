@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Event",
   description: "The run gets each newly returned EasyPost event.",
   action: eventList,
-  input: () => ({ startDatetime: "1970-01-01T00:00:00Z", limit: 100 }),
+  input: () => ({ limit: 100 }),
   items: (result) =>
     Array.isArray((result as { events?: unknown[] }).events)
       ? (result as { events: unknown[] }).events

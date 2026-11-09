@@ -6,6 +6,7 @@ Send SMS/MMS, manage contacts and groups, read the two-way inbox, and subscribe 
 - **Categories** - communication, marketing
 - **Auth methods** - basic (HTTP Basic)
 - **Actions** - 31
+- **Triggers** — 1 (poll)
 - **Health checks** - 2 (`service`, `quota`) + the derived `auth:basic`
 - **Egress allowlist** - `a.eztexting.com` (the `service` health check adds `status.eztexting.com`
   to its own hook allowlist, never to the app's)
@@ -141,3 +142,15 @@ Left out on purpose, not forgotten:
 ```bash
 deno task validate && deno task check && deno task lint && deno task fmt && deno task test
 ```
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-contact` — New Contact | poll | List Contacts (`GET /v1/contacts`, `sort=created,desc`) | each newly created contact |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `contact-list` action is called with the documented `sort=created,desc`; the contact is identified by its phone number. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://developers.eztexting.com/reference/list-1 (List Contacts) (verified 2026-11-09).

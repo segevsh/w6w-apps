@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Allocation",
   description: "The run gets each newly created Float allocation.",
   action: allocationList,
-  input: () => ({ page: 1, "per-page": 100, sort: "created_at:desc" }),
+  input: () => ({ page: 1, "per-page": 100, sort: "-created" }),
   items: (result) =>
     Array.isArray((result as { items?: unknown[] }).items)
       ? (result as { items: unknown[] }).items

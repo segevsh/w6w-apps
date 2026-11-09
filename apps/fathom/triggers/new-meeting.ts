@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Meeting",
   description: "The run gets each newly created meeting.",
   action: meetingGetMany,
-  input: () => ({ createdAfter: "1970-01-01T00:00:00Z" }),
+  input: () => ({}),
   items: (result) =>
     Array.isArray((result as { items?: unknown[] }).items)
       ? (result as { items: unknown[] }).items

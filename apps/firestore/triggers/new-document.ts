@@ -9,11 +9,17 @@ export default pollFromListAction<{ collectionPath?: string; orderBy?: string }>
   input: (params) => ({
     collectionPath: params.collectionPath,
     pageSize: 100,
-    orderBy: params.orderBy ?? "__name__ desc",
+    orderBy: params.orderBy,
   }),
   params: [
     { key: "collectionPath", label: "Collection path", type: "string", required: true },
-    { key: "orderBy", label: "Newest-first order", type: "string", default: "__name__ desc" },
+    {
+      key: "orderBy",
+      label: "Newest-first order",
+      type: "string",
+      required: true,
+      hint: "Your creation-timestamp field, newest first, e.g. `createdAt desc`.",
+    },
   ],
   items: (result) =>
     Array.isArray((result as { documents?: unknown[] }).documents)

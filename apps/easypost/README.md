@@ -6,6 +6,7 @@ addresses before they cost a return, and insure what matters.
 - **Categories** — commerce, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.easypost.com` (the `service` health check adds
   `www.easypoststatus.com`)
 - **Website** — https://www.easypost.com
@@ -252,3 +253,15 @@ acted on:
 - The RFC's rule 5 says an out-of-vocabulary category "SHOULD log a warning",
   while `_tools/audit.ts` treats it as a hard **error**. The tool is stricter
   than the spec it enforces.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-event` — New Event | poll | List Events (`GET /v2/events`) | each newly returned EasyPost event |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `event-list` action is called with `page_size=100` and no start filter (EasyPost defaults it to one month back, and pages with `before_id` from the newest event). Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://docs.easypost.com/docs/events (verified 2026-11-09).

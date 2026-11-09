@@ -6,16 +6,16 @@ export default pollFromListAction({
   title: "New or Updated Allocation",
   description: "The run gets each newly created or updated Float allocation.",
   action: allocationList,
-  input: () => ({ page: 1, "per-page": 100, sort: "modified_at:desc" }),
+  input: () => ({ page: 1, "per-page": 100, sort: "-modified" }),
   items: (result) =>
     Array.isArray((result as { items?: unknown[] }).items)
       ? (result as { items: unknown[] }).items
       : [],
   idOf: (item) =>
     `${String((item as { task_id?: unknown }).task_id ?? "")}:${
-      String((item as { modified_at?: unknown }).modified_at ?? "")
+      String((item as { modified?: unknown }).modified ?? "")
     }`,
   output: [{ key: "task_id", type: "number", label: "Allocation ID" }],
-  sample: { task_id: 101, modified_at: "2026-11-09T12:00:00Z" },
+  sample: { task_id: 101, modified: "2026-11-09 12:00:00" },
   maxPages: 1,
 });

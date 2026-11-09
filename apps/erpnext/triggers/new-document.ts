@@ -8,7 +8,7 @@ export default pollFromListAction<{ doctype?: string }>({
   action: listDocuments as never,
   input: (params) => ({
     doctype: params.doctype,
-    fields: "name,creation,modified",
+    fields: "*",
     orderBy: "creation desc",
     limitStart: 0,
     limitPageLength: 100,
