@@ -34,7 +34,7 @@ const trigger: TriggerDefinition = {
   ],
   sample: {
     id: "crawl_abc123def456",
-    url: "https://www.browserless.io",
+    url: "https://example.com",
     status: "in-progress",
     createdAt: "2026-11-09T09:00:00.000Z",
   },

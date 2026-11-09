@@ -39,8 +39,8 @@ export default sinceTrigger<Bitlink, Params>({
     { key: "created_at", type: "string", label: "Created at" },
   ],
   sample: {
-    id: "bit.ly/3xYz9Ab",
-    link: "https://bit.ly/3xYz9Ab",
+    id: "example.com/3xYz9Ab",
+    link: "https://example.com/3xYz9Ab",
     long_url: "https://example.com/launch",
     title: "Launch page",
     created_at: "2026-11-09T09:00:00+0000",
