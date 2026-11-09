@@ -11,7 +11,7 @@ export default pollFromListAction<Params>({
   key: "new-comment",
   title: "New Comment",
   description: "Fires when a comment is added to the selected Kintone record.",
-  action: commentsList as ActionDefinition,
+  action: commentsList as unknown as ActionDefinition,
   params: [
     { key: "appId", label: "App ID", type: "string", required: true },
     { key: "recordId", label: "Record ID", type: "string", required: true },
