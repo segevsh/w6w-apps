@@ -70,7 +70,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | order-created, order-updated, customer-created, product-created | no | survey | vendor webhook API |
 | apps/workable | candidate-created, candidate-moved | no | survey | vendor webhook API |
 | apps/wufoo | new-entry | no | survey | Poll-friendly: monotonic EntryId. |
-| apps/zendesk/zendesk | ticket-created, ticket-updated, comment-added | no | survey | Webhook alone fires nothing; must create a Zendesk trigger rule. Poll via ticket-get-many/search is S. |
+| apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | no | survey | shipped (T2.12): API-registered signed webhooks (new-ticket, ticket-comment-added, ticket-status-changed); no Zendesk trigger rule needed |
 
 ## manual-webhook (7)
 
