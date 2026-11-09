@@ -131,5 +131,6 @@ for cancelling or stopping a message.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-person` — New Person | Poll | `person-list` | Each newly created person |
+| `new-or-updated-person` — New or Updated Person | Poll | `person-list` | Each newly created or updated person |
 
 Polled through `person-list` with Action Network's `modified_date` filter. Source: [Action Network API docs](https://actionnetwork.org/docs/) (verified 2026-11-09).
