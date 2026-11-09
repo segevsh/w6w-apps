@@ -4,6 +4,17 @@ Headless Chrome as a service, driven from a workflow: screenshots, PDFs, rendere
 scraping, your own Puppeteer code, Lighthouse audits, stealth page loads, site mapping, web search,
 smart scraping and asynchronous crawls. Vendor docs: <https://docs.browserless.io>.
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-crawl` | New Crawl | poll | `crawl-list` | Newly created crawl jobs |
+
+Browserless documents the crawl API at <https://docs.browserless.io> (verified 2026-11-09). The
+poll reads its documented newest-first crawl page; no webhook code is included.
+
 ## Connecting
 
 Create an API token at <https://www.browserless.io/account> (an account can hold up to 20 tokens;
@@ -72,4 +83,3 @@ Agent Run API (beta), `/download`, BrowserQL, sessions and authenticated profile
 `fill:black`; `assets/icon.dark.svg` is the same mark in white. The host picks the variant through
 `appearance.darkMode`, and the pack's legibility audit does not evaluate the media rule.
 
-Triggers: not shipped — Crawl jobs are newest-first but the existing list action returns the vendor envelope without a documented stable crawl identifier (https://docs.browserless.io).

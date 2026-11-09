@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/browserless",
-  "version": "0.1.0",
-  "description": "Render, scrape, search and crawl the web through Browserless's headless-browser REST APIs.",
+  "version": "0.2.0",
+  "description": "Render, scrape, search and crawl the web through Browserless's headless-browser REST APIs, and trigger workflows on new crawls.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -44,7 +44,10 @@
         "status.browserless.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
