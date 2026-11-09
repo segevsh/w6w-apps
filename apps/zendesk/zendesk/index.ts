@@ -14,8 +14,10 @@
  *     there — so the client can address the right host without ever seeing a
  *     credential.
  *
- * Deliberately absent: the webhook/trigger surface (a Trigger, not an Action),
- * and Zendesk's automation/trigger/view admin objects.
+ * Triggers are signed event-subscription webhooks (`lib/triggers.ts`): `onSubscribe` registers
+ * the webhook through the Webhooks API and keeps its signing secret in the subscription state.
+ *
+ * Deliberately absent: Zendesk's automation/trigger/view admin objects.
  */
 import type { AppDefinition } from "@w6w/types";
 import apiToken from "./auth/api-token.ts";
@@ -41,6 +43,10 @@ import organizationGet from "./actions/organization-get.ts";
 import organizationGetMany from "./actions/organization-get-many.ts";
 
 import ticketFieldGetMany from "./actions/ticket-field-get-many.ts";
+
+import newTicket from "./triggers/new-ticket.ts";
+import ticketStatusChanged from "./triggers/ticket-status-changed.ts";
+import ticketCommentAdded from "./triggers/ticket-comment-added.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import account from "./health/account.ts";
@@ -69,6 +75,7 @@ export default {
     // ticket field
     ticketFieldGetMany,
   ],
+  triggers: [newTicket, ticketStatusChanged, ticketCommentAdded],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota, account],
 } satisfies AppDefinition;

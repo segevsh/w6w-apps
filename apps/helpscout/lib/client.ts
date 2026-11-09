@@ -41,6 +41,14 @@ export interface CreateResult {
   location?: string;
 }
 
+/** A non-2xx Help Scout answer; `status` lets a caller treat 404/410 as "already gone". */
+export class HelpScoutError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "HelpScoutError";
+  }
+}
+
 /**
  * Thin wrapper over `ctx.fetch`. It never sets Authorization — the runtime
  * routes every request through the auth `sign` hook.
@@ -71,8 +79,9 @@ export class HelpScoutClient {
       // Help Scout returns { message, _embedded: { errors: [{ path, message }] } }
       // for validation failures — the body is where the actionable part is.
       const detail = await res.text().catch(() => "");
-      throw new Error(
+      throw new HelpScoutError(
         `Help Scout ${res.status} ${res.statusText} for ${init.method} ${url.pathname}: ${detail}`,
+        res.status,
       );
     }
     return res;

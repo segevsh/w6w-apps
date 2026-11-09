@@ -5,6 +5,7 @@ Manage MailerLite subscribers, groups, fields, segments, and email campaigns.
 - **Categories** — marketing, email
 - **Auth methods** — api-key (Bearer token)
 - **Actions** — 16
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `connect.mailerlite.com`
 
 ## Which MailerLite API this targets
@@ -132,6 +133,37 @@ Also worth stating plainly: **MailerLite's current API publishes no account or `
 endpoint.** There is nothing to read an account name, plan or owner email from, which is why
 this app declares no `afterConnect` hook and no `connectionLabel` — there is no account
 metadata to label a connection with, and inventing one would mean guessing.
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `new-subscriber` — New Subscriber | webhook (API-registered) | `subscriber.created` | The new subscriber |
+| `subscriber-updated` — Subscriber Updated | webhook (API-registered) | `subscriber.updated` | The subscriber after a field change or a subscription confirmation |
+| `subscriber-unsubscribed` — Subscriber Unsubscribed | webhook (API-registered) | `subscriber.unsubscribed` | The subscriber with its new status |
+| `campaign-sent` — Campaign Sent | webhook (API-registered) | `campaign.sent` | The campaign (name, recipient count, preview link) |
+
+**Setup.** None by hand. Subscribing calls `POST /api/webhooks` (`name`, `events`, `url`,
+`enabled`) on `connect.mailerlite.com`; MailerLite generates the signing secret and returns it
+as `data.secret`, which is kept in the subscription state (a response without one is treated as
+a failed subscribe and the webhook is removed again). Unsubscribing calls
+`DELETE /api/webhooks/{id}` (one MailerLite no longer has counts as deleted). A retried
+subscribe first deletes any webhook already pointing at its callback URL.
+
+**Trust model.** MailerLite signs every webhook, and the trigger never accepts an unsigned
+delivery. Each delivery is checked, before anything is parsed, against the `Signature` header =
+hex HMAC-SHA256 of the raw request body under the webhook's secret. The check uses the exact
+bytes MailerLite sent and a constant-time compare. The scheme has no timestamp or nonce, so a
+captured delivery stays verifiable indefinitely (there is no replay protection); MailerLite retries a failed delivery three more times, so a repeat is possible
+(`resource.id` and `resource.updated_at` identify one). A missing header, an unset secret or a
+body that was not delivered raw refuses the delivery; the host stores one failed row and starts
+no run. The secret is kept in the subscription state, which the host stores unsealed.
+
+Only the four events with a flat payload are offered. The group, automation, bounce and
+`batchable` events (`campaign.open`, `campaign.click`, `subscriber.deleted`) arrive in other
+shapes and are not covered.
+
+Sources (verified 2026-11-09): https://developers.mailerlite.com/docs/webhooks.html
 
 ## Health check
 

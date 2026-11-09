@@ -13,11 +13,14 @@
  *
  * Deliberately absent: attachments, custom fields, snooze, schedules,
  * saved replies, routing config, organizations, properties, ratings,
- * reports, teams, system users, webhooks and workflows — all real Mailbox
+ * reports, teams, system users, webhook management actions and workflows — all real Mailbox
  * API surfaces, but well beyond the 8–14 action budget for a first pass.
  * The 13 actions here are the ones named in scope: reading and writing
  * conversations and their threads, customers, and the reference lookups
  * (inboxes, current user, tags) other actions' ID params depend on.
+ *
+ * Triggers are signed webhooks (`lib/triggers.ts`): `onSubscribe` registers the webhook through
+ * the Mailbox API with a per-subscription secret and `handleIngest` verifies its HMAC-SHA1.
  */
 import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
@@ -39,6 +42,10 @@ import updateCustomer from "./actions/update-customer.ts";
 import getCurrentUser from "./actions/get-current-user.ts";
 import listTags from "./actions/list-tags.ts";
 
+import newConversation from "./triggers/new-conversation.ts";
+import customerReplied from "./triggers/customer-replied.ts";
+import conversationStatusChanged from "./triggers/conversation-status-changed.ts";
+import newCustomer from "./triggers/new-customer.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -62,6 +69,7 @@ export default {
     getCurrentUser,
     listTags,
   ],
+  triggers: [newConversation, customerReplied, conversationStatusChanged, newCustomer],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

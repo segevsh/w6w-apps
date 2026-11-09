@@ -5,6 +5,7 @@ Manage Help Scout conversations, customers and inboxes via the Mailbox API 2.0.
 - **Categories** — support
 - **Auth methods** — oauth2
 - **Actions** — 13
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `api.helpscout.net`
 - **Website** — https://www.helpscout.com
 - **API docs** — https://developer.helpscout.com/mailbox-api/
@@ -115,6 +116,40 @@ routing config, organizations + organization properties, customer properties, sa
 ratings, every Reports endpoint, teams, system users, webhooks and workflows. The 13 actions
 here are conversations/threads (read + write), customers (read + write), and the reference
 lookups (`list-mailboxes`, `get-current-user`, `list-tags`) the ID params above depend on.
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` — New Conversation | webhook (API-registered) | `convo.created` | The new conversation |
+| `customer-replied` — Customer Replied | webhook (API-registered) | `convo.customer.reply.created` | The conversation the reply belongs to |
+| `conversation-status-changed` — Conversation Status Changed | webhook (API-registered) | `convo.status` | The conversation with its new status |
+| `new-customer` — New Customer | webhook (API-registered) | `customer.created` | The new customer (any inbox) |
+
+The three conversation triggers take an optional **Inbox IDs** param (comma-separated; blank
+watches every inbox). Help Scout cannot filter `customer.created` by inbox.
+
+**Setup.** None by hand. Subscribing generates a random 40-character secret and calls
+`POST /v2/webhooks` (`url`, `events`, `secret`, `payloadVersion: "V3"`, `label`, optional
+`mailboxIds`); the new webhook's id comes from the `Resource-ID` response header (or, if the
+header is not exposed, from `GET /v2/webhooks`). Unsubscribing calls `DELETE /v2/webhooks/{id}`
+(one Help Scout no longer has counts as deleted). A retried subscribe first deletes any webhook
+already pointing at its callback URL. Creating webhooks needs the OAuth app to be authorised by
+a Help Scout user allowed to manage Apps.
+
+**Trust model.** Help Scout signs every webhook, and the trigger never accepts an unsigned
+delivery. Each delivery is checked, before anything is parsed, against `X-HelpScout-Signature` =
+base64(HMAC-SHA1(secret, raw request body)) — SHA-1 is Help Scout's choice, not ours. The check
+uses the exact bytes Help Scout sent and a constant-time compare. The scheme has no timestamp or
+nonce, so a captured delivery stays verifiable indefinitely (there is no replay protection). A missing header, an unset secret or a body that was not
+delivered raw refuses the delivery; the host stores one failed row and starts no run. The
+secret is kept in the subscription state, which the host stores unsealed. `payloadVersion` is
+`V3` (V2 is deprecated; V3 differs only in how system users appear in conversation payloads).
+
+Sources (verified 2026-11-09): https://developer.helpscout.com/mailbox-api/endpoints/webhooks/create/ ,
+https://developer.helpscout.com/mailbox-api/endpoints/webhooks/list/ ,
+https://developer.helpscout.com/mailbox-api/endpoints/webhooks/delete/ ,
+https://developer.helpscout.com/webhooks/
 
 ## Health check
 

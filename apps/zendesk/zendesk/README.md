@@ -5,9 +5,41 @@ Manage Zendesk Support tickets, users and organizations.
 - **Categories** — support, crm
 - **Auth methods** — api-token, oauth2
 - **Actions** — 17
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `*.zendesk.com`
 - **Website** — https://www.zendesk.com
 - **API docs** — https://developer.zendesk.com/api-reference/
+
+## Triggers
+
+| Key — title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `new-ticket` — New Ticket | webhook (API-registered) | `zen:event-type:ticket.created` | The new ticket and the event that announced it |
+| `ticket-status-changed` — Ticket Status Changed | webhook (API-registered) | `zen:event-type:ticket.status_changed` | The ticket, with the previous and current status in `event` |
+| `ticket-comment-added` — Ticket Comment Added | webhook (API-registered) | `zen:event-type:ticket.comment_added` | The ticket and the comment (author, body, public or private) in `event` |
+
+**Setup.** None by hand. Subscribing to a trigger calls `POST /api/v2/webhooks` to create an
+event-subscription webhook named `w6w <subscription id>` that delivers to the host's callback URL,
+then reads its signing secret with `GET /api/v2/webhooks/{id}/signing_secret`. Unsubscribing
+deletes the webhook (`DELETE /api/v2/webhooks/{id}`; one Zendesk no longer has counts as
+deleted). The connected user must be allowed to manage webhooks (Zendesk: admins); the OAuth
+connection's `read write` scopes cover it. A subscription that is retried first deletes any
+webhook of the same name already pointing at its callback URL.
+
+**Trust model.** Zendesk signs every webhook it creates, and the trigger never accepts an
+unsigned delivery. Each delivery is checked, before anything is parsed, against
+`X-Zendesk-Webhook-Signature` = base64(HMAC-SHA256(signing secret, `X-Zendesk-Webhook-Signature-Timestamp`
++ raw request body)). The check uses the exact bytes Zendesk sent, a constant-time compare, and
+a 5-minute window on the timestamp (Zendesk's docs say the signature helps against replay but
+name no window; 5 minutes is this app's choice). A missing header, a stale timestamp, an unset
+secret or a body that was not delivered raw refuses the delivery; the host stores one failed row
+and starts no run. The signing secret is kept in the subscription state, which the host stores
+unsealed. Zendesk's "Test webhook" button before a webhook exists signs with a fixed dummy secret,
+so such a test is refused by design.
+
+Sources (verified 2026-11-09): https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/ ,
+https://developer.zendesk.com/documentation/webhooks/verifying/ ,
+https://developer.zendesk.com/api-reference/webhooks/event-types/ticket-events/
 
 ## Health check
 
