@@ -378,7 +378,6 @@ covered the moment it is written rather than when someone remembers to extend a 
 
 It is not edited, re-drawn or re-formatted — which is why `deno task fmt` is scoped to the source
 directories and never touches `assets/`, and why a byte-count-and-path assertion guards it.
-
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |

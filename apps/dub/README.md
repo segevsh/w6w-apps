@@ -6,6 +6,7 @@ analytics and events, and record lead and sale conversions, over the **Dub API**
 - **Categories** — marketing, analytics
 - **Auth methods** — api-key (`Authorization: Bearer dub_xxx`)
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (status.dub.co, API component), `api` (unsigned reachability),
   `quota` (rate-limit headroom) + the derived `auth:api-key`
 - **Egress allowlist** — `api.dub.co`
@@ -47,6 +48,15 @@ probes of `api.dub.co`.
 | Customers | `customer-list`, `customer-get`, `customer-update`, `customer-delete`                                                    |
 | Tracking  | `track-lead`, `track-sale`                                                                                               |
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-list` | Each newly created customer |
+
+The poll requests `customer-list` with `sortBy=createdAt`, `sortOrder=desc`, and `pageSize=100`.
+Source: https://dub.co/docs/api-reference/customers/list-customers (verified 2026-11-09).
+
 ## Health
 
 - **Credential** — derived from `Auth.test`, which probes `GET /links?pageSize=1` (Dub has no whoami
@@ -66,5 +76,3 @@ discount codes, and the analytics groupings/filters `top_partners`, `top_groups`
 `top_partner_tags`, `partnerId`, `groupId`, `partnerTagId`); listing domains (the docs have no page,
 though `GET /domains` exists); registering domains (Enterprise only); link A/B-test fields
 (`testVariants` etc.); `programId`/`partnerId` on links; `groupBy` on `link-count`; `track/open`.
-
-Triggers: not shipped — the existing customer, event and tag lists do not document a newest-first creation order (https://dub.co/docs/api-reference, verified 2026-11-09).

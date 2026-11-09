@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fellow",
   "version": "0.2.0",
-  "description": "Work with Fellow meeting records and poll for newly created action items.",
+  "description": "Read Fellow meeting notes, recordings, transcripts and action items, edit note agendas, upload recordings and manage webhooks. Poll for newly created action items.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -8,6 +8,7 @@ export default pollFromListAction({
   action,
   input: (params) => ({
     ...params,
+    nextPageToken: undefined,
     pageSize: 100,
     sort: "created_at_unix",
     sortDirection: "desc",

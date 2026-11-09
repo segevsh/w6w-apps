@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/duda",
   "version": "0.2.0",
-  "description": "Manage Duda records and poll for newly created sites.",
+  "description": "Manage Duda sites, pages, form submissions, collections and accounts through the Partner API. Poll for newly created sites.",
   "license": "MIT",
   "author": {
     "name": "w6w"

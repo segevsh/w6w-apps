@@ -8,16 +8,17 @@ const page = (data: unknown[]) => ({
 });
 
 test("new-action-item seeds, emits unseen items, retries idempotently, and requests newest first", async () => {
+  const params = { cursor: "old-page" };
   const seeded = await trigger.poll!(
-    { params: {}, state: {} } as never,
+    { params, state: {} } as never,
     mockCtx([page([{ id: "a" }])]).ctx,
   ) as never as { events: unknown[]; nextState: unknown };
   assertEquals(seeded.events, []);
   const nextCtx = mockCtx([page([{ id: "b" }, { id: "a" }])]);
-  const next = await trigger.poll!({ params: {}, state: seeded.nextState } as never, nextCtx.ctx);
+  const next = await trigger.poll!({ params, state: seeded.nextState } as never, nextCtx.ctx);
   assertEquals((next as never as { events: unknown[] }).events, [{ id: "b" }]);
   const retry = await trigger.poll!(
-    { params: {}, state: seeded.nextState } as never,
+    { params, state: seeded.nextState } as never,
     mockCtx([page([{ id: "b" }, { id: "a" }])]).ctx,
   );
   assertEquals(retry, next);

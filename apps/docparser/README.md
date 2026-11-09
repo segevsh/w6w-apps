@@ -68,7 +68,6 @@ documented examples were not verifiable without a key.
 - **`auth:api-key`** (derived from the auth `test` hook): `GET /v1/ping` as above.
 - No quota check: the API only reports quota inside upload responses (`quota_left`,
   `quota_refill`), not on a read endpoint.
-
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |

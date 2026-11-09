@@ -86,4 +86,4 @@ deno task validate && deno task check && deno task lint && deno task test
 deno task fmt   # never bare `deno fmt`
 ```
 
-Triggers: not shipped — employee and student search results are enrichment lookups, not a stable newest-first record feed (https://enrichlayer.com/docs, verified 2026-11-09).
+Triggers: not shipped — each poll requires a per-company or per-school URL and consumes enrichment credits (https://enrichlayer.com/docs, verified 2026-11-09).

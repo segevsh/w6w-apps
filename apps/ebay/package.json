@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ebay",
   "version": "0.2.0",
-  "description": "Search eBay listings and poll for newly listed matching items.",
+  "description": "Search and read live eBay listings through the Buy Browse API. Poll for newly listed matching items.",
   "license": "MIT",
   "author": {
     "name": "w6w"

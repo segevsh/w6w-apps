@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ecwid",
   "version": "0.2.0",
-  "description": "Manage an Ecwid store and poll for newly registered customers.",
+  "description": "Manage an Ecwid store: products and stock, categories, orders, customers, discount coupons and the store profile. Poll for newly registered customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

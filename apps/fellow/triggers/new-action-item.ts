@@ -6,7 +6,7 @@ export default pollFromListAction({
   title: "New Action Item",
   description: "The run gets each newly created Fellow action item.",
   action,
-  input: (params) => ({ ...params, pageSize: 50, orderBy: "created_at_desc" }),
+  input: (params) => ({ ...params, cursor: undefined, pageSize: 50, orderBy: "created_at_desc" }),
   items: (result) => (result as { items?: unknown[] }).items ?? [],
   idOf: (item) => String((item as { id: string }).id),
   params: action.params,
