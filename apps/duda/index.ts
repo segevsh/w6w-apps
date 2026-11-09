@@ -57,6 +57,7 @@ import createAccount from "./actions/create-account.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSite from "./triggers/new-site.ts";
 
 export default {
   actions: [
@@ -84,5 +85,6 @@ export default {
   // but it is fed by an admin "Temporary Token" flow that is not the
   // partner-facing mechanism the getting-started guide documents.
   auth: [basic],
+  triggers: [newSite],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fellow",
-  "version": "0.1.0",
-  "description": "Read Fellow meeting notes, recordings, transcripts and action items, edit note agendas, upload recordings and manage webhooks.",
+  "version": "0.2.0",
+  "description": "Read Fellow meeting notes, recordings, transcripts and action items, edit note agendas, upload recordings and manage webhooks. Poll for newly created action items.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.fellow",
     "displayName": "Fellow",
     "apiDocs": [

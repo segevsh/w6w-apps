@@ -52,6 +52,7 @@ import itemGroupGet from "./actions/item-group-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newListing from "./triggers/new-listing.ts";
 
 export default {
   actions: [
@@ -61,5 +62,6 @@ export default {
     itemGroupGet,
   ],
   auth: [clientCredentials],
+  triggers: [newListing],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

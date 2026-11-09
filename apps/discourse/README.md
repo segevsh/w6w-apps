@@ -6,6 +6,7 @@ self-hosted or Discourse-hosted — over the **Discourse REST API**.
 - **Categories** — communication, social-media
 - **Auth methods** — api-key
 - **Actions** — 26
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (see below — the forum's host is the customer's own domain)
 - **Website** — https://www.discourse.org/
 - **Source** — https://github.com/discourse/discourse (GPL-2.0, Ruby on Rails + Ember)
@@ -521,3 +522,11 @@ checking for a 200.
   — the ground truth for `Api-Key` / `Api-Username` and the Single-User-vs-All-Users behaviour
 - **Rate limiter source** — https://github.com/discourse/discourse/blob/main/lib/middleware/request_tracker.rb
   — the ground truth for "no readable headroom"
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-topic` — New Topic | poll | `topic-list-latest` | Each newly created topic |
+
+The poll requests descending `created` order. Source: https://docs.discourse.org/ (verified 2026-11-09).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/docparser",
-  "version": "0.1.0",
-  "description": "Import documents into Docparser parsers and fetch the structured data parsed from them.",
+  "version": "0.2.0",
+  "description": "Import documents into Docparser parsers and fetch the structured data parsed from them. Poll for newly parsed results.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.docparser",
     "displayName": "Docparser",
     "apiDocs": [

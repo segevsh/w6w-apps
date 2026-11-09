@@ -41,6 +41,7 @@ import statsSalesSummary from "./actions/stats-sales-summary.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newPurchase from "./triggers/new-purchase.ts";
 
 export default {
   actions: [
@@ -82,5 +83,6 @@ export default {
     statsSalesSummary,
   ],
   auth: [apiKey],
+  triggers: [newPurchase],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

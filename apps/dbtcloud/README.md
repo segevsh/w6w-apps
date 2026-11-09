@@ -7,6 +7,7 @@ behind them.
 - **Categories** — data-warehousing, devops, analytics
 - **Auth methods** — token
 - **Actions** — 23
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `cloud.getdbt.com`, `*.dbt.com` (the `service` health
   check adds `status.getdbt.com`)
 - **Website** — https://www.getdbt.com
@@ -248,3 +249,11 @@ for five minutes — and a retry loop that tightens on failure makes it worse. S
 `developer_message` is appended when dbt sends one. A `401` names the
 wrong-region possibility alongside a bad token, and a `429` reports the
 retry-after value and the five-minute cooldown.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-run` — New Run | poll | `run-list` | Each newly created run |
+
+The poll requests `run-list` with `orderBy=-id`. Source: https://docs.getdbt.com/docs/dbt-cloud-apis/admin-cloud-api (verified 2026-11-09).
