@@ -46,6 +46,10 @@ import checklistUpdateItem from "./actions/checklist-update-item.ts";
 
 import labelCreate from "./actions/label-create.ts";
 import labelGetMany from "./actions/label-get-many.ts";
+import cardCreated from "./triggers/card-created.ts";
+import cardMoved from "./triggers/card-moved.ts";
+import cardUpdated from "./triggers/card-updated.ts";
+import commentAdded from "./triggers/comment-added.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -85,5 +89,6 @@ export default {
     labelGetMany,
   ],
   auth: [apiKey],
+  triggers: [cardCreated, cardMoved, cardUpdated, commentAdded],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

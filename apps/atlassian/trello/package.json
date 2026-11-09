@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/trello",
-  "version": "0.2.1",
-  "description": "Manage Trello boards, lists, cards, checklists, labels and members.",
+  "version": "0.3.0",
+  "description": "Manage Trello boards, lists, cards, checklists, labels and members, and start workflows from new, moved or commented cards.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.atlassian.com/cloud/trello/rest/"
     ],
-    "longDescription": "Trello manages boards, lists and cards from a workflow — creating and updating cards, adding comments, attachments and labels to them, and moving work through lists that can themselves be created, updated and read.\n\nChecklists are a full sub-resource: created on a card, read back, and updated item by item, which is the granularity a workflow needs to track a card's own sub-tasks rather than treating a checklist as one opaque field. Board membership is manageable too — members can be added to or removed from a board — and a list's cards can all be archived at once, the bulk action for clearing out a completed list.\n\nA fit for turning an external event into a new Trello card, keeping card status in sync as work progresses through a workflow, or automating board housekeeping like archiving finished lists.",
+    "longDescription": "Trello manages boards, lists and cards from a workflow — creating and updating cards, adding comments, attachments and labels to them, and moving work through lists that can themselves be created, updated and read.\n\nChecklists are a full sub-resource: created on a card, read back, and updated item by item, which is the granularity a workflow needs to track a card's own sub-tasks rather than treating a checklist as one opaque field. Board membership is manageable too — members can be added to or removed from a board — and a list's cards can all be archived at once, the bulk action for clearing out a completed list.\n\nA fit for turning an external event into a new Trello card, keeping card status in sync as work progresses through a workflow, or automating board housekeeping like archiving finished lists.\n\nTriggers start a workflow from Trello itself: a card created, edited or moved, or a comment added, on a board, list or card you watch. Each delivery is signed by Trello and verified with your Power-Up secret before it starts a run.",
     "categories": [
       "project-management",
       "productivity"
@@ -33,7 +33,12 @@
         "api.trello.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -6,9 +6,38 @@ API.
 - **Categories** — productivity, project-management
 - **Auth methods** — access-token, oauth2
 - **Actions** — 22
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `app.asana.com`
 - **Website** — https://asana.com
 - **API docs** — https://developers.asana.com
+
+## Triggers
+
+| Trigger        | Mechanism | Vendor event                                    | What the run gets                                        |
+| -------------- | --------- | ----------------------------------------------- | -------------------------------------------------------- |
+| `new-task`     | webhook   | a task is `added` to the watched project        | task ID, who added it, when, the parent project ID       |
+| `task-updated` | webhook   | a task in the watched project is `changed`      | task ID, the changed field and its new value, who, when  |
+
+**Setup.** Set *Project ID* to the project to watch. The trigger registers the webhook itself
+(`POST /webhooks` on the project, filtered to `resource_type: task` and one action) and removes it
+when the subscription is deleted. Asana's webhook handshake is handled for you: while the webhook
+is being created Asana POSTs the callback URL with an `X-Hook-Secret` header and the trigger echoes
+it back, as Asana requires.
+
+**Trust model.** The signing secret comes back in Asana's create response and is kept in the
+subscription state. Every delivery must carry an `X-Hook-Signature` header equal to the hex
+HMAC-SHA256 of the raw request body under that secret; anything else is refused and starts no run.
+The `X-Hook-Secret` echo is answered only while the subscription has no stored secret, i.e. during
+that one registration handshake. Asana's periodic empty heartbeat is verified and acknowledged
+without starting a run. Asana events are compact (task ID, action, changed field); fetch the full
+task with the *Get Task* action. Asana deletes a webhook whose endpoint fails for 24 hours; delete
+and re-add the trigger to register a new one.
+
+**Assumption to check on first use.** Asana's guide shows the secret as a top-level `X-Hook-Secret`
+key of the create response. If an account's response omits it, registration fails with an explicit
+error and the webhook is deleted again, rather than accepting unsigned deliveries.
+
+Docs: <https://developers.asana.com/docs/webhooks-guide>, verified 2026-11-09.
 
 ## Health check
 

@@ -13,6 +13,10 @@ import commentCreate from "./actions/comment-create.ts";
 import commentGetMany from "./actions/comment-get-many.ts";
 import timeEntryCreate from "./actions/time-entry-create.ts";
 import timeEntryGetMany from "./actions/time-entry-get-many.ts";
+import taskCreatedTrigger from "./triggers/task-created.ts";
+import taskUpdatedTrigger from "./triggers/task-updated.ts";
+import taskDeletedTrigger from "./triggers/task-deleted.ts";
+import taskCommentPostedTrigger from "./triggers/task-comment-posted.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -32,5 +36,6 @@ export default {
     timeEntryGetMany,
   ],
   auth: [apiToken, oauth2],
+  triggers: [taskCreatedTrigger, taskUpdatedTrigger, taskDeletedTrigger, taskCommentPostedTrigger],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
