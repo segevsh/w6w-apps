@@ -1,5 +1,17 @@
 # Brevo
 
+- **Triggers** — 1 webhook
+
+## Triggers
+
+| Key | Title | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-contact` | New Contact | Webhook | `listAddition` | The contact event |
+
+Brevo supports optional caller-supplied webhook authentication but does not publish a delivery signature. The callback URL is the shared secret; stale registrations for that URL are removed before creating a replacement.
+
+Vendor documentation: [Create a webhook](https://developers.brevo.com/reference/create-webhook) and [Secure webhook calls](https://developers.brevo.com/docs/secured-webhooks) (verified 2026-11-09).
+
 Manage Brevo (formerly Sendinblue) contacts, senders, attributes, and send transactional
 emails.
 
