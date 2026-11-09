@@ -14,6 +14,11 @@ test("oauth2: declares Figma's authorize/token URLs and a space scope separator"
   assert(auth.oauth2?.scopes?.includes("current_user:read"));
 });
 
+test("oauth2: requests the webhook scopes the Figma webhook triggers need", () => {
+  assert(auth.oauth2?.scopes?.includes("webhooks:write"));
+  assert(auth.oauth2?.scopes?.includes("webhooks:read"));
+});
+
 test("oauth2: sign appends Bearer using credential.accessToken", async () => {
   const { ctx } = mockCtx();
   const request = {

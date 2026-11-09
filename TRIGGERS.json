@@ -43,29 +43,25 @@
     "path": "apps/activecampaign",
     "mechanism": "webhook-api",
     "candidates": [
-      "contact-added",
-      "contact-updated",
-      "deal-added",
-      "campaign-sent"
+      "new-contact"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/activecampaign/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/acuityscheduling",
     "mechanism": "webhook-api",
     "candidates": [
-      "appointment-scheduled",
-      "appointment-rescheduled",
       "appointment-canceled",
-      "appointment-changed"
+      "appointment-rescheduled",
+      "appointment-scheduled"
     ],
     "pollAction": null,
-    "reason": "Notification carries ids only -> parseOutput fetch.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/acuityscheduling/README.md (verified 2026-08-01)",
+    "source": "hand"
   },
   {
     "path": "apps/acumbamail",
@@ -109,15 +105,12 @@
     "path": "apps/affinity",
     "mechanism": "webhook-api",
     "candidates": [
-      "list-entry-created",
-      "person-created",
-      "organization-created",
-      "note-created"
+      "new-list-entry"
     ],
     "pollAction": null,
-    "reason": "Account-level cap on subscriptions.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/affinity/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/agencyzoom",
@@ -185,15 +178,14 @@
   },
   {
     "path": "apps/airtable",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "record-created",
-      "record-updated"
+      "new-record"
     ],
-    "pollAction": null,
-    "reason": "Ping+payload-cursor model, 7-day expiry; poll via search-records sort createdTime is the S fallback.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "search-records",
+    "reason": "shipped poll trigger(s) over list action search-records",
+    "verified": "apps/airtable/README.md (verified 2026-07-26)",
+    "source": "hand"
   },
   {
     "path": "apps/airtop",
@@ -259,12 +251,12 @@
     "path": "apps/apify",
     "mechanism": "poll",
     "candidates": [
-      "new-actor-list"
+      "new-actor"
     ],
     "pollAction": "actor-list",
-    "reason": "list action actor-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action actor-list",
+    "verified": "apps/apify/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/apitemplateio",
@@ -290,14 +282,13 @@
     "path": "apps/asana",
     "mechanism": "webhook-api",
     "candidates": [
-      "task-created",
-      "task-changed",
-      "project-added"
+      "new-task",
+      "task-updated"
     ],
     "pollAction": null,
-    "reason": "Handshake request must be answered with echoed header - verify host adapter supports response headers.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/asana/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/ashby",
@@ -323,15 +314,18 @@
     "path": "apps/atlassian/bitbucket",
     "mechanism": "webhook-api",
     "candidates": [
-      "push",
+      "issue-created",
+      "pull-request-comment",
       "pull-request-created",
+      "pull-request-declined",
       "pull-request-merged",
-      "issue-created"
+      "pull-request-updated",
+      "push"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/atlassian/bitbucket/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/confluence",
@@ -346,16 +340,14 @@
   },
   {
     "path": "apps/atlassian/jira",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "issue-created",
-      "issue-updated",
-      "comment-added"
+      "new-issue"
     ],
-    "pollAction": null,
-    "reason": "Two registration APIs by auth kind; 30-day expiry renew; poll JQL fallback is S.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "issue-search",
+    "reason": "shipped poll trigger(s) over list action issue-search",
+    "verified": "apps/atlassian/jira/README.md (verified 2026-07-26)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/jira-data-center",
@@ -383,12 +375,13 @@
     "candidates": [
       "card-created",
       "card-moved",
+      "card-updated",
       "comment-added"
     ],
     "pollAction": null,
-    "reason": "Custom auth key+token; app secret not in credential - signature may be unverifiable; document trust model.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/atlassian/trello/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/attio",
@@ -405,12 +398,12 @@
     "path": "apps/auth0",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-log"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "log-list",
+    "reason": "shipped poll trigger(s) over list action log-list",
+    "verified": "apps/auth0/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/authorize-net",
@@ -498,12 +491,12 @@
     "path": "apps/bamboohr",
     "mechanism": "poll",
     "candidates": [
-      "new-employees"
+      "new-employee"
     ],
     "pollAction": "list-employees",
-    "reason": "list action list-employees has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-employees",
+    "verified": "apps/bamboohr/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/bannerbear",
@@ -518,23 +511,23 @@
     "path": "apps/baremetrics",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action customer-list",
+    "verified": "apps/baremetrics/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/base44",
     "mechanism": "poll",
     "candidates": [
-      "new-user-apps"
+      "new-audit-log"
     ],
-    "pollAction": "list-user-apps",
-    "reason": "list action list-user-apps has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-audit-logs",
+    "reason": "shipped poll trigger(s) over list action list-audit-logs",
+    "verified": "apps/base44/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/basecamp",
@@ -549,12 +542,12 @@
     "path": "apps/baserow",
     "mechanism": "poll",
     "candidates": [
-      "new-row-list"
+      "new-row"
     ],
     "pollAction": "row-list",
-    "reason": "list action row-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action row-list",
+    "verified": "apps/baserow/README.md (verified 2026-08-10)",
+    "source": "hand"
   },
   {
     "path": "apps/beehiiv",
@@ -571,12 +564,12 @@
     "path": "apps/beeminder",
     "mechanism": "poll",
     "candidates": [
-      "new-datapoints"
+      "new-datapoint"
     ],
     "pollAction": "list-datapoints",
-    "reason": "list action list-datapoints has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-datapoints",
+    "verified": "apps/beeminder/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/betterstack",
@@ -591,23 +584,23 @@
     "path": "apps/bexio",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/bexio/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bigcommerce",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-order"
     ],
-    "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "order-list",
+    "reason": "shipped poll trigger(s) over list action order-list",
+    "verified": "apps/bigcommerce/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/bitly",
@@ -660,12 +653,12 @@
     "path": "apps/bluesky",
     "mechanism": "poll",
     "candidates": [
-      "new-followers-list"
+      "new-post"
     ],
-    "pollAction": "followers-list",
-    "reason": "list action followers-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "post-search",
+    "reason": "shipped poll trigger(s) over list action post-search",
+    "verified": "apps/bluesky/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/boldsign",
@@ -693,15 +686,13 @@
     "path": "apps/box",
     "mechanism": "webhook-api",
     "candidates": [
-      "file-uploaded",
-      "file-downloaded",
-      "folder-created",
-      "comment-created"
+      "activity",
+      "file-uploaded"
     ],
     "pollAction": null,
-    "reason": "Signature keys are developer-console config, not in credential.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/box/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/braintree",
@@ -738,26 +729,23 @@
     "path": "apps/breezyhr",
     "mechanism": "poll",
     "candidates": [
-      "new-candidate-list"
+      "new-candidate"
     ],
-    "pollAction": "candidate-list",
-    "reason": "list action candidate-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "candidate-search",
+    "reason": "shipped poll trigger(s) over list action candidate-search",
+    "verified": "apps/breezyhr/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/brevo",
     "mechanism": "webhook-api",
     "candidates": [
-      "contact-created",
-      "contact-updated",
-      "email-delivered",
-      "email-opened"
+      "new-contact"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/brevo/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/brex",
@@ -814,39 +802,37 @@
     "path": "apps/cal",
     "mechanism": "webhook-api",
     "candidates": [
-      "booking-created",
       "booking-cancelled",
-      "booking-rescheduled",
-      "meeting-ended"
+      "booking-created",
+      "booking-rescheduled"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/cal/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/calendly",
     "mechanism": "webhook-api",
     "candidates": [
-      "invitee-created",
       "invitee-canceled",
-      "routing-form-submitted"
+      "invitee-created"
     ],
     "pollAction": null,
-    "reason": "Plan gating -> README blocker note.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/calendly/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/callrail",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-call"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "call-list",
+    "reason": "shipped poll trigger(s) over list action call-list",
+    "verified": "apps/callrail/README.md (verified 2026-08-15)",
+    "source": "hand"
   },
   {
     "path": "apps/campaignmonitor",
@@ -874,12 +860,12 @@
     "path": "apps/canva",
     "mechanism": "poll",
     "candidates": [
-      "new-folder-items"
+      "new-design"
     ],
-    "pollAction": "list-folder-items",
-    "reason": "list action list-folder-items has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-designs",
+    "reason": "shipped poll trigger(s) over list action list-designs",
+    "verified": "apps/canva/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/capsulecrm",
@@ -905,17 +891,14 @@
   },
   {
     "path": "apps/chargebee",
-    "mechanism": "manual-webhook",
+    "mechanism": "poll",
     "candidates": [
-      "event-any",
-      "subscription-created",
-      "invoice-generated",
-      "payment-succeeded"
+      "new-event"
     ],
-    "pollAction": null,
-    "reason": "Events API is a perfect newest-first feed -> poll primary.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "list-events",
+    "reason": "shipped poll trigger(s) over list action list-events",
+    "verified": "apps/chargebee/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/chatbase",
@@ -1023,26 +1006,26 @@
     "path": "apps/clicksend",
     "mechanism": "poll",
     "candidates": [
-      "new-mms-history-list"
+      "new-sms"
     ],
-    "pollAction": "mms-history-list",
-    "reason": "list action mms-history-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "sms-history-list",
+    "reason": "shipped poll trigger(s) over list action sms-history-list",
+    "verified": "apps/clicksend/README.md (verified 2026-08-24)",
+    "source": "hand"
   },
   {
     "path": "apps/clickup",
     "mechanism": "webhook-api",
     "candidates": [
+      "task-comment-posted",
       "task-created",
-      "task-updated",
-      "task-status-updated",
-      "comment-posted"
+      "task-deleted",
+      "task-updated"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/clickup/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clientify",
@@ -1068,15 +1051,17 @@
     "path": "apps/clockify",
     "mechanism": "webhook-api",
     "candidates": [
+      "new-client",
+      "new-project",
+      "new-task",
       "new-time-entry",
       "timer-started",
-      "timer-stopped",
-      "new-project"
+      "timer-stopped"
     ],
     "pollAction": null,
-    "reason": "No list-time-entries action (only get/create): poll would need a new action.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/clockify/README.md (verified 2026-08-01)",
+    "source": "hand"
   },
   {
     "path": "apps/clockodo",
@@ -1093,12 +1078,12 @@
     "path": "apps/close",
     "mechanism": "poll",
     "candidates": [
-      "new-tasks"
+      "new-opportunity"
     ],
-    "pollAction": "list-tasks",
-    "reason": "list action list-tasks has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-opportunities",
+    "reason": "shipped poll trigger(s) over list action list-opportunities",
+    "verified": "apps/close/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/cloudbeds",
@@ -1133,12 +1118,12 @@
     "path": "apps/cloudinary",
     "mechanism": "poll",
     "candidates": [
-      "new-asset-list"
+      "new-asset"
     ],
-    "pollAction": "asset-list",
-    "reason": "list action asset-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "asset-search",
+    "reason": "shipped poll trigger(s) over list action asset-search",
+    "verified": "apps/cloudinary/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cloze",
@@ -1195,12 +1180,12 @@
     "path": "apps/connecteam",
     "mechanism": "poll",
     "candidates": [
-      "new-job-list"
+      "new-shift"
     ],
-    "pollAction": "job-list",
-    "reason": "list action job-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "shift-list",
+    "reason": "shipped poll trigger(s) over list action shift-list",
+    "verified": "apps/connecteam/README.md (verified 2026-08-29)",
+    "source": "hand"
   },
   {
     "path": "apps/constantcontact",
@@ -1217,12 +1202,12 @@
     "path": "apps/contentful",
     "mechanism": "poll",
     "candidates": [
-      "new-assets"
+      "new-entry"
     ],
-    "pollAction": "list-assets",
-    "reason": "list action list-assets has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-entries",
+    "reason": "shipped poll trigger(s) over list action list-entries",
+    "verified": "apps/contentful/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/contentstack",
@@ -1239,15 +1224,18 @@
     "path": "apps/copper",
     "mechanism": "webhook-api",
     "candidates": [
-      "person-created",
-      "lead-created",
-      "opportunity-created",
-      "task-updated"
+      "new-company",
+      "new-lead",
+      "new-opportunity",
+      "new-person",
+      "new-task",
+      "updated-opportunity",
+      "updated-person"
     ],
     "pollAction": null,
-    "reason": "Auth kind 'secret' (custom); search-* are POST.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/copper/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/creditrepaircloud",
@@ -1291,15 +1279,15 @@
     "path": "apps/customerio",
     "mechanism": "manual-webhook",
     "candidates": [
-      "email-delivered",
+      "customer-unsubscribed",
+      "email-clicked",
       "email-opened",
-      "email-bounced",
-      "unsubscribed"
+      "reporting-event"
     ],
     "pollAction": null,
-    "reason": "Signing secret needs a credential/trigger param; no list actions.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/customerio/README.md (verified 2026-08-01)",
+    "source": "hand"
   },
   {
     "path": "apps/databricks",
@@ -1316,23 +1304,23 @@
     "path": "apps/datadog",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-log"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "log-search",
+    "reason": "shipped poll trigger(s) over list action log-search",
+    "verified": "apps/datadog/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dbtcloud",
     "mechanism": "poll",
     "candidates": [
-      "new-run-list"
+      "new-run"
     ],
     "pollAction": "run-list",
-    "reason": "list action run-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action run-list",
+    "verified": "apps/dbtcloud/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/deel",
@@ -1436,12 +1424,12 @@
     "path": "apps/digistore24",
     "mechanism": "poll",
     "candidates": [
-      "new-deliveries"
+      "new-purchase"
     ],
-    "pollAction": "list-deliveries",
-    "reason": "list action list-deliveries has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-purchases",
+    "reason": "shipped poll trigger(s) over list action list-purchases",
+    "verified": "apps/digistore24/README.md (verified 2026-10-05)",
+    "source": "hand"
   },
   {
     "path": "apps/digitalocean",
@@ -1467,12 +1455,12 @@
     "path": "apps/discourse",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-topic"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "topic-list-latest",
+    "reason": "shipped poll trigger(s) over list action topic-list-latest",
+    "verified": "apps/discourse/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/dixa",
@@ -1487,12 +1475,12 @@
     "path": "apps/docparser",
     "mechanism": "poll",
     "candidates": [
-      "new-results-list"
+      "new-result"
     ],
     "pollAction": "results-list",
-    "reason": "list action results-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action results-list",
+    "verified": "apps/docparser/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/documenso",
@@ -1603,23 +1591,23 @@
     "path": "apps/dub",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action customer-list",
+    "verified": "apps/dub/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/duda",
     "mechanism": "poll",
     "candidates": [
-      "new-sites"
+      "new-site"
     ],
     "pollAction": "list-sites",
-    "reason": "list action list-sites has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-sites",
+    "verified": "apps/duda/README.md (verified 2026-09-22)",
+    "source": "hand"
   },
   {
     "path": "apps/dust",
@@ -1645,12 +1633,12 @@
     "path": "apps/ebay",
     "mechanism": "poll",
     "candidates": [
-      "new-item-search"
+      "new-listing"
     ],
     "pollAction": "item-search",
-    "reason": "list action item-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action item-search",
+    "verified": "apps/ebay/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/economic",
@@ -1667,12 +1655,12 @@
     "path": "apps/ecwid",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-search"
+      "new-customer"
     ],
     "pollAction": "customer-search",
-    "reason": "list action customer-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action customer-search",
+    "verified": "apps/ecwid/README.md (verified 2026-09-22)",
+    "source": "hand"
   },
   {
     "path": "apps/edenai",
@@ -1718,12 +1706,12 @@
     "path": "apps/elevenlabs",
     "mechanism": "poll",
     "candidates": [
-      "new-history-list"
+      "new-voice"
     ],
-    "pollAction": "history-list",
-    "reason": "list action history-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "voice-list",
+    "reason": "shipped poll trigger(s) over list action voice-list",
+    "verified": "apps/elevenlabs/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/emailoctopus",
@@ -1780,13 +1768,26 @@
     "path": "apps/eventbrite",
     "mechanism": "webhook-api",
     "candidates": [
-      "order-placed",
+      "activity",
+      "attendee-checked-in",
+      "attendee-checked-out",
+      "attendee-updated",
       "event-created",
-      "attendee-updated"
+      "event-published",
+      "event-unpublished",
+      "event-updated",
+      "order-placed",
+      "order-refunded",
+      "order-updated",
+      "organizer-updated",
+      "ticket-class-created",
+      "ticket-class-deleted",
+      "ticket-class-updated",
+      "venue-updated"
     ],
     "pollAction": null,
-    "reason": "Eventbrite webhook API; triggers shipped",
-    "verified": false,
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/eventbrite/README.md (verified 2026-07-26)",
     "source": "hand"
   },
   {
@@ -1860,26 +1861,27 @@
     "path": "apps/fellow",
     "mechanism": "poll",
     "candidates": [
-      "new-action-item-list"
+      "new-action-item"
     ],
     "pollAction": "action-item-list",
-    "reason": "list action action-item-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action action-item-list",
+    "verified": "apps/fellow/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/figma",
     "mechanism": "webhook-api",
     "candidates": [
-      "file-comment",
-      "file-update",
-      "file-version-update",
-      "library-publish"
+      "comment-added",
+      "file-deleted",
+      "file-updated",
+      "file-version-created",
+      "library-published"
     ],
     "pollAction": null,
-    "reason": "Team-scoped, needs team id; comment poll is per-file.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/figma/README.md (verified 2026-07-31)",
+    "source": "hand"
   },
   {
     "path": "apps/fillout",
@@ -2034,12 +2036,13 @@
     "path": "apps/formstack",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-submission"
+      "new-submission",
+      "new-submission-poll"
     ],
     "pollAction": null,
-    "reason": "shipped (T2.15): signed webhook + poll fallback on submission-list",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/formstack/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/formstack-documents",
@@ -2167,28 +2170,25 @@
   },
   {
     "path": "apps/getresponse",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "contact-subscribed",
-      "contact-unsubscribed",
-      "email-opened",
-      "email-clicked"
+      "new-contact"
     ],
-    "pollAction": null,
-    "reason": "Single account-level callback: onSubscribe must not clobber others; poll contact-list is S.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "contact-list",
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/getresponse/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/ghost",
     "mechanism": "poll",
     "candidates": [
-      "new-posts"
+      "new-post"
     ],
     "pollAction": "list-posts",
-    "reason": "list action list-posts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-posts",
+    "verified": "apps/ghost/README.md (verified 2026-08-02)",
+    "source": "hand"
   },
   {
     "path": "apps/giphy",
@@ -2214,32 +2214,33 @@
     "path": "apps/github",
     "mechanism": "webhook-api",
     "candidates": [
-      "push",
-      "issue-opened",
+      "issue",
+      "issue-comment",
       "pull-request",
-      "release-published",
-      "star",
+      "push",
+      "release",
       "workflow-run"
     ],
     "pollAction": null,
-    "reason": "Secret generated by us in onSubscribe, stored in state. ping event filter.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/github/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gitlab",
     "mechanism": "webhook-api",
     "candidates": [
-      "push",
+      "comment",
       "issue",
       "merge-request",
       "pipeline",
+      "push",
       "release"
     ],
     "pollAction": null,
-    "reason": "Custom auth (self-hosted base url).",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/gitlab/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/givebutter",
@@ -2320,7 +2321,7 @@
     ],
     "pollAction": "get-many-messages",
     "reason": "gmail users.messages.list with q=after:<epoch>; H-1",
-    "verified": false,
+    "verified": "apps/google/gmail/README.md (verified 2026-11-09)",
     "source": "hand"
   },
   {
@@ -2358,26 +2359,23 @@
     "path": "apps/google/google-business-profile",
     "mechanism": "poll",
     "candidates": [
-      "new-question",
-      "new-review"
+      "new-question"
     ],
     "pollAction": "list-questions",
-    "reason": "Only questions list exists; reviews not in actions.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action list-questions",
+    "verified": "apps/google/google-business-profile/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-calendar",
     "mechanism": "poll",
     "candidates": [
-      "event-created",
-      "event-updated",
-      "event-cancelled"
+      "event-changed"
     ],
     "pollAction": "list-events",
-    "reason": "syncToken cursor; 410 Gone -> reseed.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action list-events",
+    "verified": "apps/google/google-calendar/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-contacts",
@@ -2403,13 +2401,12 @@
     "path": "apps/google/google-drive",
     "mechanism": "poll",
     "candidates": [
-      "new-file",
-      "file-changed"
+      "new-file"
     ],
     "pollAction": "file-list",
-    "reason": "change-token cursor shape; list action lacks orderBy.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action file-list",
+    "verified": "apps/google/google-drive/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-forms",
@@ -2444,11 +2441,13 @@
     "path": "apps/google/google-sheets",
     "mechanism": "poll",
     "candidates": [
-      "new-row"
+      "row-added",
+      "row-added-or-updated",
+      "row-updated"
     ],
     "pollAction": "sheet-read",
     "reason": "poll sheet-read, diff rows against seeded snapshot",
-    "verified": false,
+    "verified": "apps/google/google-sheets/README.md (verified 2026-11-09)",
     "source": "hand"
   },
   {
@@ -2626,26 +2625,24 @@
     "path": "apps/gumroad",
     "mechanism": "webhook-api",
     "candidates": [
-      "sale",
-      "refund",
-      "dispute",
-      "cancellation"
+      "new-sale",
+      "sale-webhook"
     ],
     "pollAction": null,
-    "reason": "Create action is the registration call.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/gumroad/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/guru",
     "mechanism": "poll",
     "candidates": [
-      "new-folder-list"
+      "new-card"
     ],
-    "pollAction": "folder-list",
-    "reason": "list action folder-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "card-search",
+    "reason": "shipped poll trigger(s) over list action card-search",
+    "verified": "apps/guru/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/gusto",
@@ -2700,15 +2697,15 @@
     "path": "apps/helpscout",
     "mechanism": "webhook-api",
     "candidates": [
-      "conversation-created",
-      "customer-created",
-      "conversation-reply",
-      "tag-created"
+      "conversation-status-changed",
+      "customer-replied",
+      "new-conversation",
+      "new-customer"
     ],
     "pollAction": null,
-    "reason": "Custom auth (OAuth client creds).",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/helpscout/README.md (verified 2026-08-02)",
+    "source": "hand"
   },
   {
     "path": "apps/hex",
@@ -2781,12 +2778,12 @@
     "path": "apps/honeybook",
     "mechanism": "poll",
     "candidates": [
-      "new-pipeline-list"
+      "new-project"
     ],
-    "pollAction": "pipeline-list",
-    "reason": "list action pipeline-list has pagination and order/since params",
+    "pollAction": "project-list",
+    "reason": "shipped poll trigger(s) over list action project-list",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/hospitable",
@@ -2803,12 +2800,12 @@
     "path": "apps/hostaway",
     "mechanism": "poll",
     "candidates": [
-      "new-listings"
+      "new-reservation"
     ],
-    "pollAction": "list-listings",
-    "reason": "list action list-listings has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-reservations",
+    "reason": "shipped poll trigger(s) over list action list-reservations",
+    "verified": "apps/hostaway/README.md (verified 2026-09-22)",
+    "source": "hand"
   },
   {
     "path": "apps/hotmart",
@@ -2843,18 +2840,14 @@
   },
   {
     "path": "apps/hubspot",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "contact-created",
-      "contact-updated",
-      "deal-created",
-      "deal-stage-changed",
-      "company-created"
+      "new-contact"
     ],
-    "pollAction": null,
-    "reason": "Webhook needs client secret (not in private-app credential): likely poll via search. Add search action.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "search-contacts",
+    "reason": "shipped poll trigger(s) over list action search-contacts",
+    "verified": "apps/hubspot/README.md (verified 2026-07-26)",
+    "source": "hand"
   },
   {
     "path": "apps/hubstaff",
@@ -2902,12 +2895,12 @@
     "path": "apps/iclosed",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-deal"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
+    "pollAction": "deal-list",
+    "reason": "shipped poll trigger(s) over list action deal-list",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/inoreader",
@@ -2933,12 +2926,12 @@
     "path": "apps/instantly",
     "mechanism": "poll",
     "candidates": [
-      "new-lead-list"
+      "new-email"
     ],
-    "pollAction": "lead-list",
-    "reason": "list action lead-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "email-list",
+    "reason": "shipped poll trigger(s) over list action email-list",
+    "verified": "apps/instantly/README.md (verified 2026-08-29)",
+    "source": "hand"
   },
   {
     "path": "apps/instapaper",
@@ -2965,15 +2958,13 @@
     "path": "apps/invoiceninja",
     "mechanism": "webhook-api",
     "candidates": [
-      "invoice-created",
-      "payment-created",
-      "client-created",
-      "quote-created"
+      "invoice-webhook",
+      "new-invoice"
     ],
     "pollAction": null,
-    "reason": "Event ids are numeric enums.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/invoiceninja/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/ironclad",
@@ -2990,12 +2981,12 @@
     "path": "apps/iterable",
     "mechanism": "poll",
     "candidates": [
-      "new-catalog-items"
+      "new-campaign"
     ],
-    "pollAction": "list-catalog-items",
-    "reason": "list action list-catalog-items has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-campaigns",
+    "reason": "shipped poll trigger(s) over list action list-campaigns",
+    "verified": "apps/iterable/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/jenkins",
@@ -3061,23 +3052,24 @@
     "path": "apps/jobtread",
     "mechanism": "poll",
     "candidates": [
-      "new-accounts"
+      "new-job"
     ],
-    "pollAction": "list-accounts",
-    "reason": "list action list-accounts has pagination and order/since params",
+    "pollAction": "list-jobs",
+    "reason": "shipped poll trigger(s) over list action list-jobs",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/jotform",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-submission"
+      "new-submission",
+      "submission-webhook"
     ],
     "pollAction": null,
-    "reason": "Body multipart/form-data.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/jotform/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/judgeme",
@@ -3125,40 +3117,34 @@
     "path": "apps/keap",
     "mechanism": "poll",
     "candidates": [
-      "contact-added",
-      "order-added",
-      "appointment-added",
-      "tag-applied"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "shipped (T2.15): poll on contact-list; REST hook handshake secret cannot be persisted on this host",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/keap/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/kintone",
     "mechanism": "poll",
     "candidates": [
-      "new-comments-list"
+      "new-comment"
     ],
     "pollAction": "comments-list",
-    "reason": "list action comments-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action comments-list",
+    "verified": "apps/kintone/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/kit",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "subscriber-activated",
-      "subscriber-unsubscribed",
-      "form-subscribed",
-      "tag-added"
+      "new-subscriber"
     ],
-    "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "list-subscribers",
+    "reason": "shipped poll trigger(s) over list action list-subscribers",
+    "verified": "apps/kit/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/klaviyo",
@@ -3202,23 +3188,23 @@
     "path": "apps/kommo",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-lead"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "lead-list",
+    "reason": "shipped poll trigger(s) over list action lead-list",
+    "verified": "apps/kommo/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/kudosity",
     "mechanism": "poll",
     "candidates": [
-      "new-sms-list"
+      "new-sms"
     ],
     "pollAction": "sms-list",
-    "reason": "list action sms-list has pagination and order/since params",
+    "reason": "shipped poll trigger(s) over list action sms-list",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/kustomer",
@@ -3293,26 +3279,24 @@
     "path": "apps/leexi",
     "mechanism": "poll",
     "candidates": [
-      "new-meeting-event-list"
+      "new-meeting-event"
     ],
     "pollAction": "meeting-event-list",
-    "reason": "list action meeting-event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action meeting-event-list",
+    "verified": "apps/leexi/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/lemlist",
     "mechanism": "webhook-api",
     "candidates": [
-      "email-sent",
-      "email-opened",
-      "reply",
-      "lead-interested"
+      "activity-webhook",
+      "new-activity"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
+    "verified": "apps/lemlist/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/lemonsqueezy",
@@ -3360,15 +3344,15 @@
     "path": "apps/linear",
     "mechanism": "webhook-api",
     "candidates": [
-      "issue-created",
-      "issue-updated",
-      "comment-created",
-      "project-updated"
+      "comment",
+      "cycle",
+      "issue",
+      "project"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/linear/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/linkedin/linkedin",
@@ -3414,12 +3398,12 @@
     "path": "apps/linkupapi",
     "mechanism": "poll",
     "candidates": [
-      "new-job-candidates-list"
+      "new-candidate"
     ],
     "pollAction": "job-candidates-list",
-    "reason": "list action job-candidates-list has pagination and order/since params",
+    "reason": "shipped poll trigger(s) over list action job-candidates-list",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/littlegreenlight",
@@ -3496,12 +3480,12 @@
     "path": "apps/loop-returns",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-order"
     ],
-    "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
+    "pollAction": "order-list",
+    "reason": "shipped poll trigger(s) over list action order-list",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/loops",
@@ -3556,17 +3540,14 @@
   },
   {
     "path": "apps/mailchimp/mailchimp",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "subscribe",
-      "unsubscribe",
-      "profile-update",
-      "campaign-sent"
+      "new-member"
     ],
-    "pollAction": null,
-    "reason": "Body is x-www-form-urlencoded with bracket keys; check TriggerCall raw handling.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "list-members",
+    "reason": "shipped poll trigger(s) over list action list-members",
+    "verified": "apps/mailchimp/mailchimp/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/mailchimp/mandrill",
@@ -3581,25 +3562,26 @@
     "path": "apps/mailerlite",
     "mechanism": "webhook-api",
     "candidates": [
-      "subscriber-created",
+      "campaign-sent",
+      "new-subscriber",
       "subscriber-unsubscribed",
-      "campaign-sent"
+      "subscriber-updated"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/mailerlite/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/maileroo",
     "mechanism": "poll",
     "candidates": [
-      "new-domains"
+      "new-domain"
     ],
     "pollAction": "list-domains",
-    "reason": "list action list-domains has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-domains",
+    "verified": "apps/maileroo/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/mailersend",
@@ -3626,17 +3608,14 @@
   },
   {
     "path": "apps/mailjet",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "email-sent",
-      "email-opened",
-      "email-bounced",
-      "email-clicked"
+      "new-message"
     ],
-    "pollAction": null,
-    "reason": "One URL per event type.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "list-messages",
+    "reason": "shipped poll trigger(s) over list action list-messages",
+    "verified": "apps/mailjet/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/maintainx",
@@ -3713,15 +3692,15 @@
     "path": "apps/mautic",
     "mechanism": "webhook-api",
     "candidates": [
-      "contact-added",
+      "contact-deleted",
       "contact-updated",
       "form-submitted",
-      "email-open"
+      "new-contact"
     ],
     "pollAction": null,
-    "reason": "Custom auth (self-host base url).",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/mautic/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/meilisearch",
@@ -3760,12 +3739,12 @@
     "path": "apps/memberstack",
     "mechanism": "poll",
     "candidates": [
-      "new-member-list"
+      "new-member"
     ],
     "pollAction": "member-list",
-    "reason": "list action member-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action member-list",
+    "verified": "apps/memberstack/README.md (verified 2026-10-05)",
+    "source": "hand"
   },
   {
     "path": "apps/mercury",
@@ -3789,16 +3768,15 @@
   },
   {
     "path": "apps/meta/facebook",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
-      "new-post",
       "new-comment",
-      "page-mention"
+      "page-feed"
     ],
     "pollAction": null,
-    "reason": "App secret not in user credential; App Review. Poll posts/comments is the S route.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/facebook/README.md (verified 2026-08-02)",
+    "source": "hand"
   },
   {
     "path": "apps/meta/facebook-conversions",
@@ -3820,14 +3798,14 @@
   },
   {
     "path": "apps/meta/facebook-lead-ads",
-    "mechanism": "webhook-api",
+    "mechanism": "manual-webhook",
     "candidates": [
       "new-lead"
     ],
     "pollAction": null,
-    "reason": "Webhook delivers leadgen_id only -> fetch lead (parseOutput). Poll via list-recent-leads is S.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/facebook-lead-ads/README.md (verified 2026-07-26)",
+    "source": "hand"
   },
   {
     "path": "apps/meta/facebook-messenger",
@@ -3853,13 +3831,13 @@
     "path": "apps/meta/whatsapp",
     "mechanism": "manual-webhook",
     "candidates": [
-      "incoming-message",
+      "message-received",
       "message-status"
     ],
     "pollAction": null,
-    "reason": "No message list API -> webhook only; app secret from trigger param.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/meta/whatsapp/README.md (verified 2026-07-31)",
+    "source": "hand"
   },
   {
     "path": "apps/metabase",
@@ -3936,13 +3914,12 @@
     "path": "apps/microsoft/onedrive",
     "mechanism": "poll",
     "candidates": [
-      "file-changed",
-      "new-file"
+      "file-changed"
     ],
     "pollAction": "list-changes",
-    "reason": "list-changes already exposes deltaLink -> natural vendor-change-token cursor.",
+    "reason": "shipped poll trigger(s) over list action list-changes",
     "verified": false,
-    "source": "survey"
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/onenote",
@@ -3959,13 +3936,12 @@
     "path": "apps/microsoft/outlook",
     "mechanism": "poll",
     "candidates": [
-      "new-email",
-      "new-calendar-event"
+      "new-email"
     ],
     "pollAction": "list-messages",
-    "reason": "Graph family shares client; action list-messages has no orderBy/filter param, add.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action list-messages",
+    "verified": "apps/microsoft/outlook/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/powerbi",
@@ -3980,25 +3956,23 @@
     "path": "apps/microsoft/sharepoint",
     "mechanism": "poll",
     "candidates": [
-      "new-list-item",
-      "updated-list-item"
+      "new-list-item"
     ],
     "pollAction": "list-items",
-    "reason": "poll",
+    "reason": "shipped poll trigger(s) over list action list-items",
     "verified": false,
-    "source": "survey"
+    "source": "hand"
   },
   {
     "path": "apps/microsoft/teams",
     "mechanism": "poll",
     "candidates": [
-      "new-channel-message",
-      "new-chat-message"
+      "new-channel-message"
     ],
     "pollAction": "list-channel-messages",
-    "reason": "Teams message list needs delegated scopes; some endpoints are protected/metered APIs.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action list-channel-messages",
+    "verified": "apps/microsoft/teams/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/mighty-networks",
@@ -4062,12 +4036,12 @@
     "path": "apps/mixmax",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-unsubscribe"
     ],
-    "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "unsubscribe-list",
+    "reason": "shipped poll trigger(s) over list action unsubscribe-list",
+    "verified": "apps/mixmax/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/mixpanel",
@@ -4204,14 +4178,14 @@
     "path": "apps/netlify",
     "mechanism": "manual-webhook",
     "candidates": [
-      "deploy-succeeded",
+      "deploy",
       "deploy-failed",
-      "form-submission"
+      "deploy-succeeded"
     ],
     "pollAction": null,
-    "reason": "shipped (T2.08): signed manual-webhook receiver; the REST hook API does not document where the JWS secret goes",
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
     "verified": "https://docs.netlify.com/api/get-started/ (fetched 2026-11-09, T2.08)",
-    "source": "survey"
+    "source": "hand"
   },
   {
     "path": "apps/netsuite",
@@ -4246,10 +4220,10 @@
     "candidates": [
       "new-or-updated-record"
     ],
-    "pollAction": "record-changes-list",
-    "reason": "list action record-changes-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "record-list",
+    "reason": "shipped poll trigger(s) over list action record-list",
+    "verified": "apps/ninox/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/nocodb",
@@ -4266,12 +4240,12 @@
     "path": "apps/nocrm",
     "mechanism": "poll",
     "candidates": [
-      "new-lead-comment-get-many"
+      "new-lead"
     ],
-    "pollAction": "lead-comment-get-many",
-    "reason": "list action lead-comment-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "lead-get-many",
+    "reason": "shipped poll trigger(s) over list action lead-get-many",
+    "verified": "apps/nocrm/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/notion",
@@ -4280,9 +4254,9 @@
       "new-database-page"
     ],
     "pollAction": "get-many-database-pages",
-    "reason": "shipped (T3.fx2): poll on get-many-database-pages sorted created_time desc; webhook verification token unobtainable on this host",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action get-many-database-pages",
+    "verified": "apps/notion/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/nutshell",
@@ -4335,12 +4309,12 @@
     "path": "apps/omnisend",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/omnisend/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/oncehub",
@@ -4357,12 +4331,12 @@
     "path": "apps/onepagecrm",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/onepagecrm/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/onepassword",
@@ -4397,15 +4371,17 @@
     "path": "apps/onfleet",
     "mechanism": "webhook-api",
     "candidates": [
-      "task-created",
-      "task-started",
+      "task-assigned",
       "task-completed",
-      "task-failed"
+      "task-created",
+      "task-failed",
+      "task-started",
+      "task-updated"
     ],
     "pollAction": null,
-    "reason": "Validation GET returns check code in body.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/onfleet/README.md (verified 2026-08-29)",
+    "source": "hand"
   },
   {
     "path": "apps/ontraport",
@@ -4487,12 +4463,12 @@
     "path": "apps/pagerduty",
     "mechanism": "poll",
     "candidates": [
-      "new-incident-list"
+      "new-incident"
     ],
     "pollAction": "incident-list",
-    "reason": "list action incident-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action incident-list",
+    "verified": "apps/pagerduty/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pandadoc",
@@ -4529,12 +4505,12 @@
     "path": "apps/parseur",
     "mechanism": "poll",
     "candidates": [
-      "new-document-list"
+      "new-document"
     ],
     "pollAction": "document-list",
-    "reason": "list action document-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action document-list",
+    "verified": "apps/parseur/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/particle",
@@ -4569,14 +4545,17 @@
     "path": "apps/paypal",
     "mechanism": "webhook-api",
     "candidates": [
-      "payment-capture-completed",
+      "event",
       "invoice-paid",
-      "subscription-activated"
+      "order-approved",
+      "payment-captured",
+      "payment-refunded",
+      "payout-item-succeeded"
     ],
     "pollAction": null,
-    "reason": "Verification is an authed API call from handleIngest; custom auth.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/paypal/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/paystack",
@@ -4662,12 +4641,12 @@
     "path": "apps/perspective",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/perspective/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/phantombuster",
@@ -4715,16 +4694,12 @@
     "path": "apps/pipedrive",
     "mechanism": "webhook-api",
     "candidates": [
-      "deal-added",
-      "deal-updated",
-      "person-added",
-      "organization-added",
-      "activity-added"
+      "new-deal"
     ],
     "pollAction": null,
-    "reason": "Unsigned: put secret in URL/basic auth userfield.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/pipedrive/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/pipefy",
@@ -4801,12 +4776,12 @@
     "path": "apps/podium",
     "mechanism": "poll",
     "candidates": [
-      "new-message-list"
+      "new-conversation"
     ],
-    "pollAction": "message-list",
-    "reason": "list action message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "conversation-list",
+    "reason": "shipped poll trigger(s) over list action conversation-list",
+    "verified": "apps/podium/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/postbin",
@@ -4821,13 +4796,12 @@
     "path": "apps/postgres",
     "mechanism": "poll",
     "candidates": [
-      "new-row",
-      "updated-row"
+      "new-row"
     ],
     "pollAction": "query",
-    "reason": "Design-heavy: parameterized identifiers, max-id commit race; only 2 actions.",
+    "reason": "shipped poll trigger(s) over list action query",
     "verified": false,
-    "source": "survey"
+    "source": "hand"
   },
   {
     "path": "apps/posthog",
@@ -4840,19 +4814,14 @@
   },
   {
     "path": "apps/postmark",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
-      "delivery",
-      "bounce",
-      "open",
-      "click",
-      "spam-complaint",
-      "inbound"
+      "new-outbound-message"
     ],
-    "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "list-outbound-messages",
+    "reason": "shipped poll trigger(s) over list action list-outbound-messages",
+    "verified": "apps/postmark/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/practicebetter",
@@ -5082,12 +5051,12 @@
     "path": "apps/rdstation",
     "mechanism": "poll",
     "candidates": [
-      "new-contacts"
+      "new-contact"
     ],
     "pollAction": "list-contacts",
-    "reason": "list action list-contacts has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action list-contacts",
+    "verified": "apps/rdstation/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/read-ai",
@@ -5175,12 +5144,12 @@
     "path": "apps/reddit",
     "mechanism": "poll",
     "candidates": [
-      "new-post-list"
+      "new-post"
     ],
     "pollAction": "post-list",
-    "reason": "list action post-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action post-list",
+    "verified": "apps/reddit/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/redtail-crm",
@@ -5300,9 +5269,9 @@
       "new-call"
     ],
     "pollAction": "call-list",
-    "reason": "shipped: new-call poll trigger on the existing list action (T3.07)",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action call-list",
+    "verified": "apps/ringover/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/rippling",
@@ -5339,12 +5308,12 @@
     "path": "apps/rootly",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-incident"
     ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "incident-list",
+    "reason": "shipped poll trigger(s) over list action incident-list",
+    "verified": "apps/rootly/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/runway",
@@ -5359,24 +5328,23 @@
     "path": "apps/salesforce",
     "mechanism": "poll",
     "candidates": [
-      "new-record",
-      "updated-record"
+      "new-record"
     ],
     "pollAction": "query",
-    "reason": "SOQL poll with sobject param; query action takes raw soql.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action query",
+    "verified": "apps/salesforce/README.md (verified 2026-07-26)",
+    "source": "hand"
   },
   {
     "path": "apps/salesloft",
     "mechanism": "poll",
     "candidates": [
-      "new-account-list"
+      "new-person"
     ],
-    "pollAction": "account-list",
-    "reason": "list action account-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "person-list",
+    "reason": "shipped poll trigger(s) over list action person-list",
+    "verified": "apps/salesloft/README.md (verified 2026-08-29)",
+    "source": "hand"
   },
   {
     "path": "apps/salesmate",
@@ -5391,12 +5359,12 @@
     "path": "apps/salesmsg",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/salesmsg/README.md (verified 2026-10-05)",
+    "source": "hand"
   },
   {
     "path": "apps/salla",
@@ -5453,24 +5421,23 @@
     "path": "apps/seamlessai",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action task-list",
+    "verified": "apps/seamlessai/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/seatable",
     "mechanism": "poll",
     "candidates": [
-      "row-added",
-      "row-updated"
+      "new-row"
     ],
     "pollAction": "row-list",
-    "reason": "Dtable rows have _ctime/_mtime.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action row-list",
+    "verified": "apps/seatable/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/sellsy",
@@ -5494,12 +5461,12 @@
     "path": "apps/sendblue",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-message"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "message-list",
+    "reason": "shipped poll trigger(s) over list action message-list",
+    "verified": "apps/sendblue/README.md (verified 2026-08-25)",
+    "source": "hand"
   },
   {
     "path": "apps/sender",
@@ -5587,12 +5554,12 @@
     "path": "apps/seven",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action contact-list",
+    "verified": "apps/seven/README.md (verified 2026-10-06)",
+    "source": "hand"
   },
   {
     "path": "apps/sharetribe",
@@ -5629,16 +5596,21 @@
     "path": "apps/shopify",
     "mechanism": "webhook-api",
     "candidates": [
-      "order-created",
-      "order-paid",
-      "product-created",
       "customer-created",
-      "fulfillment-created"
+      "event",
+      "order-cancelled",
+      "order-created",
+      "order-fulfilled",
+      "order-paid",
+      "order-updated",
+      "product-created",
+      "product-updated",
+      "refund-created"
     ],
     "pollAction": null,
-    "reason": "Signing key = app API secret; check credential has it. Custom auth.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/shopify/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/short-io",
@@ -5740,14 +5712,13 @@
     "path": "apps/slack",
     "mechanism": "manual-webhook",
     "candidates": [
-      "new-message",
-      "reaction-added",
-      "new-channel"
+      "event",
+      "new-message"
     ],
     "pollAction": null,
-    "reason": "Needs signing secret in credential (not in bearer/oauth creds today) + challenge response; check host adapter capability. Poll fallback: channel-history per channel.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/slack/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/slite",
@@ -5857,12 +5828,12 @@
     "path": "apps/square",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-get-many"
+      "new-customer"
     ],
     "pollAction": "customer-get-many",
-    "reason": "list action customer-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action customer-get-many",
+    "verified": "apps/square/README.md (verified 2026-08-03)",
+    "source": "hand"
   },
   {
     "path": "apps/squarespace-commerce",
@@ -5901,36 +5872,36 @@
     "path": "apps/storyblok",
     "mechanism": "poll",
     "candidates": [
-      "new-space-list"
+      "new-story"
     ],
-    "pollAction": "space-list",
-    "reason": "list action space-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "story-list",
+    "reason": "shipped poll trigger(s) over list action story-list",
+    "verified": "apps/storyblok/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/strapi",
     "mechanism": "poll",
     "candidates": [
-      "new-entry-list"
+      "new-entry"
     ],
     "pollAction": "entry-list",
-    "reason": "list action entry-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action entry-list",
+    "verified": "apps/strapi/README.md (verified 2026-08-01)",
+    "source": "hand"
   },
   {
     "path": "apps/strava",
     "mechanism": "manual-webhook",
     "candidates": [
       "activity-created",
-      "activity-updated",
-      "activity-deleted"
+      "activity-deleted",
+      "activity-updated"
     ],
     "pollAction": null,
-    "reason": "shipped (T2.15): manual-webhook receiver with hub.challenge reply and verify token",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/strava/README.md (verified 2026-08-01)",
+    "source": "hand"
   },
   {
     "path": "apps/streak",
@@ -5958,16 +5929,21 @@
     "path": "apps/stripe",
     "mechanism": "webhook-api",
     "candidates": [
-      "charge-succeeded",
-      "invoice-paid",
+      "charge-refunded",
+      "checkout-completed",
       "customer-created",
-      "subscription-updated",
-      "payment-intent-*"
+      "event",
+      "invoice-paid",
+      "invoice-payment-failed",
+      "payment-failed",
+      "payment-succeeded",
+      "subscription-canceled",
+      "subscription-created"
     ],
     "pollAction": null,
-    "reason": "Bearer auth (secret key) - signing secret stored in subscription state.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/stripe/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/supabase",
@@ -6006,13 +5982,12 @@
     "path": "apps/surveymonkey",
     "mechanism": "webhook-api",
     "candidates": [
-      "response-completed",
-      "response-created"
+      "response-completed"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/surveymonkey/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/synthflow",
@@ -6155,14 +6130,13 @@
     "path": "apps/telegram",
     "mechanism": "webhook-api",
     "candidates": [
-      "message",
-      "callback-query",
-      "channel-post"
+      "new-message",
+      "update"
     ],
     "pollAction": null,
-    "reason": "Replaces any existing bot webhook; no list action (getUpdates conflicts with webhook). Preserve-unrelated rule: document single-webhook limit.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/telegram/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/telnyx",
@@ -6309,14 +6283,14 @@
     "path": "apps/toggl",
     "mechanism": "webhook-api",
     "candidates": [
+      "project-created",
       "time-entry-created",
-      "time-entry-updated",
-      "project-created"
+      "time-entry-updated"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/toggl/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/tremendous",
@@ -6344,12 +6318,12 @@
     "path": "apps/tumblr",
     "mechanism": "poll",
     "candidates": [
-      "new-blog-posts-list"
+      "new-post"
     ],
     "pollAction": "blog-posts-list",
-    "reason": "list action blog-posts-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action blog-posts-list",
+    "verified": "apps/tumblr/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/twilio/segment",
@@ -6373,14 +6347,13 @@
     "path": "apps/twilio/twilio",
     "mechanism": "manual-webhook",
     "candidates": [
-      "incoming-sms",
-      "incoming-call-status",
+      "incoming-message",
       "message-status"
     ],
     "pollAction": null,
-    "reason": "Only 2 actions (send-sms, make-call); auth token is the basic password -> verifiable. Form-encoded; needs exact public URL.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/twilio/twilio/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/twist",
@@ -6411,31 +6384,31 @@
       "new-tweet"
     ],
     "pollAction": "tweet-search-recent",
-    "reason": "shipped: new-tweet polls the existing tweet-search-recent action (T3.08)",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action tweet-search-recent",
+    "verified": "apps/twitter/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/typeform",
     "mechanism": "webhook-api",
     "candidates": [
-      "form-response"
+      "new-response"
     ],
     "pollAction": null,
-    "reason": "Single event type.",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/typeform/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/typefully",
     "mechanism": "poll",
     "candidates": [
-      "new-comment-thread-list"
+      "new-draft"
     ],
-    "pollAction": "comment-thread-list",
-    "reason": "list action comment-thread-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "draft-list",
+    "reason": "shipped poll trigger(s) over list action draft-list",
+    "verified": "apps/typefully/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/typesense",
@@ -6452,12 +6425,12 @@
     "path": "apps/unbounce",
     "mechanism": "poll",
     "candidates": [
-      "new-page-lead-list"
+      "new-lead"
     ],
     "pollAction": "page-lead-list",
-    "reason": "list action page-lead-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action page-lead-list",
+    "verified": "apps/unbounce/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/upsales",
@@ -6501,23 +6474,23 @@
     "path": "apps/vanta",
     "mechanism": "poll",
     "candidates": [
-      "new-issue-list"
+      "new-issue"
     ],
     "pollAction": "issue-list",
-    "reason": "list action issue-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action issue-list",
+    "verified": "apps/vanta/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vapi",
     "mechanism": "poll",
     "candidates": [
-      "new-phone-number-list"
+      "new-phone-number"
     ],
     "pollAction": "phone-number-list",
-    "reason": "list action phone-number-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action phone-number-list",
+    "verified": "apps/vapi/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vbout",
@@ -6552,12 +6525,12 @@
     "path": "apps/videoask",
     "mechanism": "poll",
     "candidates": [
-      "new-conversation-list"
+      "new-conversation"
     ],
     "pollAction": "conversation-list",
-    "reason": "list action conversation-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action conversation-list",
+    "verified": "apps/videoask/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/vimeo",
@@ -6623,39 +6596,38 @@
     "path": "apps/webex",
     "mechanism": "webhook-api",
     "candidates": [
-      "message-created",
-      "membership-created",
-      "room-created"
+      "new-membership",
+      "new-message"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/webex/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/webflow",
     "mechanism": "webhook-api",
     "candidates": [
-      "form-submission",
-      "collection-item-created",
       "collection-item-changed",
-      "ecomm-new-order"
+      "collection-item-created",
+      "form-submission",
+      "new-order"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/webflow/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/webinargeek",
     "mechanism": "poll",
     "candidates": [
-      "new-message-list"
+      "new-message"
     ],
     "pollAction": "message-list",
-    "reason": "list action message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action message-list",
+    "verified": "apps/webinargeek/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/webinarjam",
@@ -6703,14 +6675,15 @@
     "path": "apps/wise",
     "mechanism": "manual-webhook",
     "candidates": [
-      "transfer-state-change",
-      "balance-credit",
-      "transfer-created"
+      "balance-updated",
+      "profile-state-changed",
+      "transfer-payout-failed",
+      "transfer-state-changed"
     ],
     "pollAction": null,
-    "reason": "shipped (T2.09): signed manual-webhook receiver (Wise signs with its published RSA key; subscription created in the Wise dashboard)",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
+    "verified": "apps/wise/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/wistia",
@@ -6747,15 +6720,18 @@
     "path": "apps/woocommerce",
     "mechanism": "webhook-api",
     "candidates": [
-      "order-created",
-      "order-updated",
       "customer-created",
-      "product-created"
+      "event",
+      "order-created",
+      "order-deleted",
+      "order-updated",
+      "product-created",
+      "product-updated"
     ],
     "pollAction": null,
-    "reason": "vendor webhook API",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/woocommerce/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/woodpecker",
@@ -6772,12 +6748,12 @@
     "path": "apps/wordpress",
     "mechanism": "poll",
     "candidates": [
-      "new-post-get-all"
+      "new-post"
     ],
     "pollAction": "post-get-all",
-    "reason": "list action post-get-all has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action post-get-all",
+    "verified": "apps/wordpress/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/workable",
@@ -6786,9 +6762,9 @@
       "new-candidate"
     ],
     "pollAction": "candidate-list",
-    "reason": "shipped (T3.fx2): poll on candidate-list with created_after; signed webhooks deferred",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped poll trigger(s) over list action candidate-list",
+    "verified": "apps/workable/README.md (verified 2026-09-05)",
+    "source": "hand"
   },
   {
     "path": "apps/workday",
@@ -6841,14 +6817,14 @@
   },
   {
     "path": "apps/wufoo",
-    "mechanism": "webhook-api",
+    "mechanism": "poll",
     "candidates": [
       "new-entry"
     ],
-    "pollAction": null,
-    "reason": "Poll-friendly: monotonic EntryId.",
-    "verified": false,
-    "source": "survey"
+    "pollAction": "entry-list",
+    "reason": "shipped poll trigger(s) over list action entry-list",
+    "verified": "apps/wufoo/README.md (verified 2026-08-11)",
+    "source": "hand"
   },
   {
     "path": "apps/xai",
@@ -6894,12 +6870,12 @@
     "path": "apps/youform",
     "mechanism": "poll",
     "candidates": [
-      "new-submission-list"
+      "new-submission"
     ],
     "pollAction": "submission-list",
-    "reason": "list action submission-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shipped poll trigger(s) over list action submission-list",
+    "verified": "apps/youform/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zendesk/zendesk",
@@ -6910,9 +6886,9 @@
       "ticket-status-changed"
     ],
     "pollAction": null,
-    "reason": "shipped (T2.12): API-registered signed webhooks (new-ticket, ticket-comment-added, ticket-status-changed); no Zendesk trigger rule needed",
-    "verified": false,
-    "source": "survey"
+    "reason": "shipped: webhook registered through the vendor API",
+    "verified": "apps/zendesk/zendesk/README.md (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zendesk/zendesk-sell",
