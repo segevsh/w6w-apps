@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/copper",
   "version": "0.2.0",
-  "description": "Manage Copper CRM people, companies, opportunities, leads, tasks, activities and org metadata via the Copper Developer API v1. Triggers fire on Copper webhooks for new people, leads, companies, opportunities and tasks, and for changed people and opportunities.",
+  "description": "Manage Copper CRM people, companies, opportunities, leads, tasks and activities via the Copper Developer API v1. Triggers fire on Copper webhooks for new records and changed people and opportunities.",
   "license": "MIT",
   "author": {
     "name": "w6w"

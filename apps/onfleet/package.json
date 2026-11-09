@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/onfleet",
   "version": "0.2.0",
-  "description": "Dispatch and track last-mile deliveries — create tasks, manage workers, teams and hubs, and get notified as tasks move through Onfleet. Triggers fire on Onfleet webhooks for task created, started, completed, failed, assigned and updated, verified with the organization's webhook secret.",
+  "description": "Dispatch and track last-mile deliveries — manage tasks, workers, teams and hubs. Triggers fire on signed Onfleet webhooks for task created, started, completed, failed, assigned and updated.",
   "license": "MIT",
   "author": {
     "name": "w6w"
