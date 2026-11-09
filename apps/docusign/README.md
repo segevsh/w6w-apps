@@ -1,5 +1,13 @@
 # Docusign
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-envelope` | poll | `envelope-list` | Newly created envelopes |
+
+Docusign documents envelope status listing at <https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/liststatuschanges/> (verified 2026-11-09).
+
 Send agreements for signature with the **Docusign eSignature REST API v2.1**, track them, read
 what recipients filled in, and download the signed PDFs.
 

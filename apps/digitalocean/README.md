@@ -1,5 +1,13 @@
 # DigitalOcean
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-domain-record` | poll | `domain-record-list` | Newly created DNS records |
+
+DigitalOcean documents domain-record listing at <https://docs.digitalocean.com/reference/api/api-reference/#operation/domains_list_records> (verified 2026-11-09).
+
 Droplets, block storage, snapshots, reserved IPs, DNS and managed databases —
 with the billing surprises made explicit rather than left to the invoice.
 

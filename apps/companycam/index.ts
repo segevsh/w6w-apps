@@ -124,6 +124,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newChecklist from "./triggers/new-checklist.ts";
 
 export default {
   actions: [
@@ -207,4 +208,5 @@ export default {
   // in two hours and carry the read/write/destroy scopes.
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newChecklist],
 } satisfies AppDefinition;

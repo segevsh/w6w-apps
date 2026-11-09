@@ -31,6 +31,7 @@ import getAccountSummary from "./actions/get-account-summary.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContactList from "./triggers/new-contact-list.ts";
 
 export default {
   actions: [
@@ -65,4 +66,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newContactList],
 } satisfies AppDefinition;

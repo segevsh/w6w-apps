@@ -3,7 +3,13 @@
 Manage conversations, messages, and contact ("people") profiles on Crisp — customer messaging and
 support.
 
-Triggers: not shipped — `list-people` accepts `sort_field`, but Crisp documents it only as "available search field names, eg. nickname" (<https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles>, verified 2026-11-09); a creation-time sort is not documented, so a newest-first poll cannot be relied on.
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` | poll | `list-conversations` | Newly created conversations |
+
+Crisp documents conversation list pagination at <https://docs.crisp.chat/references/rest-api/v1/#list-conversations> (verified 2026-11-09).
 
 - **Categories** — support, communication
 - **Auth methods** — basic (Website Token)

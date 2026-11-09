@@ -1,5 +1,13 @@
 # Constant Contact
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact-list` | poll | `list-contact-lists` | Newly created contact lists |
+
+Constant Contact documents contact-list reads at <https://developer.constantcontact.com/api_guide/contact_lists_overview.html> (verified 2026-11-09).
+
 Manage Constant Contact contacts, contact lists, custom fields, and email campaigns through the
 V3 API.
 

@@ -1,8 +1,12 @@
 # Cloudbeds
 
-Triggers: not shipped — `reservation-list` has `sortByRecent`, but Cloudbeds documents it as most
-recent activity rather than reservation creation, so it cannot safely define a new-reservation feed
-(<https://developers.cloudbeds.com/reference/get-reservations>).
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-guest` | poll | `guest-list` | Newly created guest records |
+
+Cloudbeds documents guest-list sorting and creation filters at <https://developers.cloudbeds.com/reference/get-guest-list> (verified 2026-11-09).
 
 Search and create reservations, check room-type availability and rate plans, and read or update
 guest and property records, on the **Cloudbeds PMS API v1.3**.

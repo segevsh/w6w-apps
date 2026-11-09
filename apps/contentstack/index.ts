@@ -36,6 +36,7 @@ import listBranches from "./actions/list-branches.ts";
 import managementToken from "./auth/management-token.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAsset from "./triggers/new-asset.ts";
 
 export default {
   actions: [
@@ -76,4 +77,5 @@ export default {
   ],
   auth: [managementToken],
   healthChecks: [service, quota],
+  triggers: [newAsset],
 } satisfies AppDefinition;

@@ -1,5 +1,13 @@
 # CompanyCam
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-checklist` | poll | `checklist-list` | Newly created checklists |
+
+CompanyCam documents the checklist list endpoint at <https://docs.companycam.com/reference/list-checklists> (verified 2026-11-09).
+
 Photo documentation for contractors. This app reads and writes **projects** and everything filed
 under them — photos, videos, documents, comments, checklists, labels — plus the **users**, **groups**,
 **tags** and **webhooks** around them, over the CompanyCam Core API v2.

@@ -89,6 +89,7 @@ import officesList from "./actions/offices-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCall from "./triggers/new-call.ts";
 
 export default {
   actions: [
@@ -143,4 +144,5 @@ export default {
   // auth/api-key.ts.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCall],
 } satisfies AppDefinition;

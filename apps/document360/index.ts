@@ -68,6 +68,7 @@ import workflowStatusList from "./actions/workflow-status-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newDriveFile from "./triggers/new-drive-file.ts";
 
 export default {
   actions: [
@@ -113,4 +114,5 @@ export default {
   // acting on behalf of a person; an API key is the integration credential.
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newDriveFile],
 } satisfies AppDefinition;

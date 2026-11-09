@@ -1,6 +1,12 @@
 # Coda
 
-Triggers: not shipped — the rows action exposes creation sorting but no descending newest-first order (<https://coda.io/developers/apis/v1#operation/listRows>).
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-row` | poll | `list-rows` | Newly created table rows |
+
+Coda documents row creation ordering at <https://coda.io/developers/apis/v1#operation/listRows> (verified 2026-11-09).
 
 Read and write Coda docs, tables and rows via the Coda REST API.
 

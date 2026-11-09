@@ -1,5 +1,13 @@
 # Dialpad
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-call` | poll | `call-list` | Newly concluded calls |
+
+Dialpad documents reverse-chronological call listing at <https://developers.dialpad.com/reference/list-calls> (verified 2026-11-09).
+
 Calls, SMS, users, contacts, call routers, rooms and webhooks on **Dialpad**, the cloud business
 phone and contact center platform, over its **Admin API v2**.
 

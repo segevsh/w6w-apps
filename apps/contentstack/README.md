@@ -1,5 +1,13 @@
 # Contentstack
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-asset` | poll | `list-assets` | Newly created assets |
+
+Contentstack documents asset sorting at <https://www.contentstack.com/docs/developers/apis/content-management-api/#assets> (verified 2026-11-09).
+
 Manage Contentstack content from a workflow through the **Content Management API (CMA) v3**:
 read the content model, create/update/delete entries, publish and unpublish entries and assets
 (singly or in bulk), build and deploy releases, move entries through workflow stages and manage

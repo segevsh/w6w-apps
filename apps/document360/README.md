@@ -1,5 +1,13 @@
 # Document360
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-drive-file` | poll | `drive-search` | Newly indexed Drive files |
+
+Document360 documents Drive search filters at <https://apidocs.document360.com/apidocs/drive-search> (verified 2026-11-09).
+
 Manage a Document360 knowledge base from a workflow: browse projects, workspaces and the category
 tree, read, create, update, publish, unpublish, fork, archive and delete articles, manage
 categories, search a workspace, work with the Drive, and read team accounts, groups and readers —

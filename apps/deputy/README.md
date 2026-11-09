@@ -1,5 +1,13 @@
 # Deputy
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-employee` | poll | `employee-search` | Newly created employee records |
+
+Deputy documents employee queries at <https://developer.deputy.com/docs/resource-employee> (verified 2026-11-09).
+
 Manage Deputy employees, timesheets, leave, areas and locations — the daily
 loop of a workforce scheduling install.
 

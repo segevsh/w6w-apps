@@ -1,5 +1,13 @@
 # Deel
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contract` | poll | `contract-list` | Newly created contracts |
+
+Deel documents contract list ordering at <https://developer.deel.com/docs/api/contracts> (verified 2026-11-09).
+
 Manage Deel contracts, people, time off, timesheets and invoice adjustments.
 
 - **Categories** — hr, finance

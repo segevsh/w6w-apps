@@ -15,6 +15,7 @@ import getMutationStatus from "./actions/get-mutation-status.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRow from "./triggers/new-row.ts";
 
 export default {
   actions: [
@@ -37,4 +38,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newRow],
 } satisfies AppDefinition;
