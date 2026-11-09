@@ -1,0 +1,15 @@
+{
+  "name": "@w6w-fixtures/trigger-subtle",
+  "version": "1.0.0",
+  "description": "Fixture app with one poll trigger that hashes with crypto.subtle; no auth, no network.",
+  "license": "MIT",
+  "author": { "name": "w6w" },
+  "categories": ["developer-tools"],
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.trigger-subtle",
+    "displayName": "Trigger Subtle",
+    "appearance": { "icon": { "svg": "./assets/icon.svg" } },
+    "entry": "./index.ts"
+  }
+}
