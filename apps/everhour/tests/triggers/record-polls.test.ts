@@ -90,6 +90,24 @@ async function withNow<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
+describe("new-timecard key", () => {
+  test("two timecards for one user on different dates stay distinct", async () => {
+    await withNow(async () => {
+      const row = (date: string) => ({ user: 1, date, clockIn: "09:00" });
+      const input = (state: unknown) => ({ params: {}, state, subscriptionId: "sub_1" });
+      const seeded = await newTimecard.poll!(
+        input({}),
+        mockCtx([{ body: [row("2026-11-09")] }]).ctx,
+      );
+      const next = await newTimecard.poll!(
+        input(seeded.nextState),
+        mockCtx([{ body: [row("2026-11-09"), row("2026-11-10")] }]).ctx,
+      );
+      assertEquals(next.events, [row("2026-11-10")]);
+    });
+  });
+});
+
 describe("record poll triggers", () => {
   for (const c of cases) {
     const input = (state: unknown) => ({ params: c.params, state, subscriptionId: "sub_1" });

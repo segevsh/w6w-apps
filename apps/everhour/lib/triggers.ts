@@ -52,7 +52,7 @@ export function snapshotTrigger(spec: SnapshotSpec): TriggerDefinition {
         if (res.nextPage === null || res.nextPage === undefined) break;
         if (page >= maxPages) {
           throw new Error(
-            `Everhour: more than ${maxPages} pages of ${spec.noun}; narrow the trigger settings`,
+            `Everhour: more than ${maxPages} pages of ${spec.noun}; too many to read in one check`,
           );
         }
         page = res.nextPage;

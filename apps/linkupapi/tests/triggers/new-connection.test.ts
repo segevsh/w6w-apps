@@ -34,3 +34,16 @@ test("new-connection seeds, emits, retries, and requests the newest cached page"
   assertEquals(first.events, [connection("new")]);
   assertEquals(retry, first);
 });
+
+test("new-connection stays unseeded while the stored copy is not synced", async () => {
+  const unsynced = [{ body: { success: true, data: { connections: [], cache_synced: false } } }];
+  const a = await trigger.poll!({ state: {}, params } as never, mockCtx(unsynced).ctx);
+  assertEquals(a.events, []);
+  assertEquals(a.nextState, {});
+  const synced = [{
+    body: { success: true, data: { connections: [connection("old")], cache_synced: true } },
+  }];
+  const b = await trigger.poll!({ state: a.nextState, params } as never, mockCtx(synced).ctx);
+  assertEquals(b.events, []);
+  assertEquals((b.nextState as { seeded: boolean }).seeded, true);
+});

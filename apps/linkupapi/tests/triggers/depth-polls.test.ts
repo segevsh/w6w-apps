@@ -40,7 +40,10 @@ describe("new-account", () => {
 });
 
 describe("new-invitation", () => {
-  const inv = (id: string) => ({ entity_urn: `urn:li:fsd_invitation:${id}`, type: "CONNECTION" });
+  const inv = (id: string) => ({
+    entity_urn: `urn:li:fsd_invitation:${id}`,
+    invitation_type: "CONNECTION",
+  });
   const page = (ids: string[], hasMore = false) =>
     ok({ invitations: ids.map(inv), pagination: { has_more: hasMore } });
   const params = { accountId: "account-1" };
@@ -87,6 +90,16 @@ describe("new-invitation", () => {
       Error,
       "more than 100",
     );
+  });
+
+  test("an edited invitation does not emit", async () => {
+    const seeded = await run(newInvitation, params, {}, mockCtx([page(["1"])]).ctx as never);
+    const edited = ok({
+      invitations: [{ ...inv("1"), invitation_type: "ORGANIZATION" }],
+      pagination: { has_more: false },
+    });
+    const next = await run(newInvitation, params, seeded.nextState, mockCtx([edited]).ctx as never);
+    assertEquals(next.events, []);
   });
 });
 

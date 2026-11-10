@@ -44,9 +44,9 @@ for accounts subscribed to the `accepted_invitation` webhook event; without it t
 and nothing fires. `new-invitation` and `new-job` read the whole (small) list and diff it; more than
 100 entries makes the check fail with an error rather than read part of an unordered list.
 `new-webhook-event` reads the stored events of a webhook oldest first after a stable `event_id`
-cursor, so a backlog drains over successive checks; it is the way to react to inbox messages
-(the `inbox-list` records) without credits. Calls are billed per result returned, so the credit
-metered triggers run every 15 to 60 minutes. Not covered: searches (credit-billed), comment and
+cursor, so a backlog drains over successive checks; it fires only for a webhook you already
+created, so inbox conversations (`inbox-list`) have no poll. Calls are billed per result returned, so the credit
+metered triggers run every 15 to 60 minutes. Not covered: the inbox list (credit-billed per result), searches (credit-billed), comment and
 reaction lists, profile viewers, sent invitations (no documented order, unbounded), API logs,
 recommendations and webhook registrations. Ordering, credits and cursors are from the
 [LinkupAPI V2 reference](https://docs.linkupapi.com/api-reference/v2) (verified 2026-11-10:

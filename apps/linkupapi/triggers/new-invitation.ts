@@ -20,9 +20,28 @@ const trigger: TriggerDefinition = {
   params: [{ key: "accountId", label: "Account ID", type: "string", required: true }],
   output: [
     { key: "entity_urn", type: "string", label: "Invitation URN" },
-    { key: "type", type: "string", label: "Invitation type" },
+    { key: "invitation_type", type: "string", label: "Invitation type" },
+    { key: "sent_time", type: "string", label: "Sent time" },
+    { key: "shared_secret", type: "string", label: "Shared secret" },
+    {
+      key: "sender",
+      type: "object",
+      label: "Sender (first_name, last_name, headline, linkedin_url, profile_picture_url)",
+    },
   ],
-  sample: { entity_urn: "urn:li:fsd_invitation:sample-1", type: "CONNECTION" },
+  sample: {
+    entity_urn: "urn:li:fsd_invitation:sample-1",
+    invitation_type: "CONNECTION",
+    sent_time: "2 days ago",
+    shared_secret: "sample-secret",
+    sender: {
+      first_name: "Avery",
+      last_name: "Example",
+      headline: "Head of Growth",
+      linkedin_url: "/in/avery-example",
+      profile_picture_url: "/media/avery.jpg",
+    },
+  },
   minIntervalMs: 900_000,
   async poll({ state, params }, ctx) {
     const result = await invitationList.execute({
@@ -32,7 +51,9 @@ const trigger: TriggerDefinition = {
     }, ctx) as { data?: { invitations?: unknown; pagination?: { has_more?: unknown } } };
     const invitations = Array.isArray(result?.data?.invitations) ? result.data.invitations : [];
     if (result?.data?.pagination?.has_more === true) {
-      throw new Error(`LinkupAPI: more than ${CAP} pending invitations; clear some and retry`);
+      throw new Error(
+        `LinkupAPI: more than ${CAP} pending invitations; accept or decline some and retry`,
+      );
     }
     const { events, nextState } = await pollSnapshot({
       state,
