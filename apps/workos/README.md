@@ -7,6 +7,15 @@
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-event` — New Event | Poll | `event-list` | Each new WorkOS event |
+| `new-organization` — New Organization | Poll (newest first) | `organization-list` | Each newly created organization |
+| `new-connection` — New SSO Connection | Poll (newest first) | `connection-list` | Each newly created SSO connection |
+| `new-directory` — New Directory | Poll (newest first) | `directory-list` | Each newly connected SCIM directory |
+| `new-directory-user` — New Directory User | Poll (newest first) | `directory-user-list` | Each user newly provisioned into the chosen directory |
+| `new-directory-group` — New Directory Group | Poll (newest first) | `directory-group-list` | Each group newly pushed into the chosen directory |
+| `new-user` — New User | Poll (newest first) | `user-list` | Each newly created user |
+| `new-organization-membership` — New Organization Membership | Poll (newest first) | `organization-membership-list` | Each new membership in the chosen organization |
+
+Each list trigger asks its action for `order=desc` ("Order the results by the creation time"), 50 per page, newest first; the actions gained an optional `order` input for this (empty = unchanged request). Directory users and groups ask for a directory, memberships for an organization. These lists carry no update stamp, so there is no `new-or-updated-…` sibling; `new-event` already reports changes (`user.updated`, `dsync.user.updated`, …). Sources: [Organization](https://workos.com/docs/reference/organization/list), [Connection](https://workos.com/docs/reference/sso/connection/list), [Directory](https://workos.com/docs/reference/directory-sync/directory/list), [Directory User](https://workos.com/docs/reference/directory-sync/directory-user/list), [Directory Group](https://workos.com/docs/reference/directory-sync/directory-group/list), [User](https://workos.com/docs/reference/user-management/user/list), [Organization Membership](https://workos.com/docs/reference/user-management/organization-membership/list), verified 2026-11-10.
 
 `GET /events` returns events oldest first and pages forward with `after` ("Events are returned oldest first; use `after` to page forward"), so the trigger keeps the last event id it read and asks for events `after` it; the first read starts at `range_start` = the moment the first check ran, which reads nothing itself. A window over 5 pages (100 each) is drained across successive checks. Source: https://workos.com/docs/reference/events (verified 2026-11-09).
 
@@ -21,8 +30,6 @@ lets a customer configure all three themselves.
   `status.workos.com`)
 - **Website** — https://workos.com
 - **API docs** — https://workos.com/docs/reference
-
-Each list trigger asks its action for `order=desc` ("Order the results by the creation time"), 50 per page, newest first; the actions gained an optional `order` input for this (empty = unchanged request). Directory users and groups ask for a directory, memberships for an organization. These lists carry no update stamp, so there is no `new-or-updated-…` sibling; `new-event` already reports changes (`user.updated`, `dsync.user.updated`, …). Sources: [Organization](https://workos.com/docs/reference/organization/list), [Connection](https://workos.com/docs/reference/sso/connection/list), [Directory](https://workos.com/docs/reference/directory-sync/directory/list), [Directory User](https://workos.com/docs/reference/directory-sync/directory-user/list), [Directory Group](https://workos.com/docs/reference/directory-sync/directory-group/list), [User](https://workos.com/docs/reference/user-management/user/list), [Organization Membership](https://workos.com/docs/reference/user-management/organization-membership/list), verified 2026-11-10.
 
 ## Setup
 
@@ -225,13 +232,6 @@ step can branch without touching it.
 | `service` | service | Is WorkOS up — the API, and the paths customers' staff depend on? |
 | `environment` | dependency | Which environment is this key pointed at, and does it work? |
 | `quota` | quota | Declared absence — see below |
-| `new-organization` — New Organization | Poll (newest first) | `organization-list` | Each newly created organization |
-| `new-connection` — New SSO Connection | Poll (newest first) | `connection-list` | Each newly created SSO connection |
-| `new-directory` — New Directory | Poll (newest first) | `directory-list` | Each newly connected SCIM directory |
-| `new-directory-user` — New Directory User | Poll (newest first) | `directory-user-list` | Each user newly provisioned into the chosen directory |
-| `new-directory-group` — New Directory Group | Poll (newest first) | `directory-group-list` | Each group newly pushed into the chosen directory |
-| `new-user` — New User | Poll (newest first) | `user-list` | Each newly created user |
-| `new-organization-membership` — New Organization Membership | Poll (newest first) | `organization-membership-list` | Each new membership in the chosen organization |
 
 `service` reads `status.workos.com`'s Statuspage per component. The split worth
 making is between **the API this app calls** and the **runtime paths a

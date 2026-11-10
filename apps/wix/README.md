@@ -7,6 +7,19 @@
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll | `list-contacts` | Each newly created contact |
+| `new-product` — New Product | Poll (newest first) | `query-products` | Each newly created Stores product |
+| `new-or-updated-product` — New or Updated Product | Poll (newest updated first) | `query-products` | Each Stores product created or edited |
+| `new-order` — New Order | Poll (newest first) | `search-orders` | Each newly placed eCommerce order |
+| `new-or-updated-order` — New or Updated Order | Poll (newest updated first) | `search-orders` | Each order placed or changed |
+| `new-site` — New Site | Poll (newest first) | `query-sites` | Each newly created site in the account (needs the Account ID) |
+| `new-or-updated-site` — New or Updated Site | Poll (newest updated first) | `query-sites` | Each site created or edited |
+| `new-data-item` — New Data Item | Poll (newest first) | `query-data-items` | Each item newly added to the chosen CMS collection |
+| `new-or-updated-data-item` — New or Updated Data Item | Poll (newest updated first) | `query-data-items` | Each item added or edited in the chosen CMS collection |
+| `new-collection` — New CMS Collection | Poll (snapshot) | `list-collections` | Each newly created CMS collection |
+
+Each newest-first trigger calls the action with a sort on `createdDate` (or `updatedDate` for the `new-or-updated-…` ones, whose ids carry the update stamp so an edit is a new event) and `limit` 50, newest first. `query-contacts` returns the same contacts as `new-contact`, so it is covered by that trigger (Wix cannot sort contacts by `updatedDate`). `new-data-item` and `new-or-updated-data-item` sort on the `_createdDate` / `_updatedDate` system fields of the collection you choose. `new-collection` reads every page of `list-collections` and diffs the ids. Sources: [Query Products](https://dev.wix.com/docs/rest/business-solutions/stores/catalog-v3/products-v3/query-products), [Search Orders](https://dev.wix.com/docs/rest/business-solutions/e-commerce/orders/search-orders), [Query Sites](https://dev.wix.com/docs/api-reference/account-level/sites/sites/query-sites), [Data Item object](https://dev.wix.com/docs/api-reference/business-solutions/cms/data-items/data-item-object), [Query Contacts](https://dev.wix.com/docs/api-reference/crm/members-contacts/contacts/contacts/contact-v4/query-contacts), verified 2026-11-10.
+
+Not covered: `list-labels` (contact-label definitions, reference data used to look up label keys).
 
 Polled newest-first by `createdDate` through `list-contacts`. Source: https://dev.wix.com/docs/sdk/backend-modules/crm/contacts/list-contacts (verified 2026-11-09).
 
@@ -17,10 +30,6 @@ contacts and labels, its Stores catalog, and its eCommerce orders — over the W
 24 actions, one auth method, two health checks.
 
 ---
-
-Each newest-first trigger calls the action with a sort on `createdDate` (or `updatedDate` for the `new-or-updated-…` ones, whose ids carry the update stamp so an edit is a new event) and `limit` 50, newest first. `query-contacts` returns the same contacts as `new-contact`, so it is covered by that trigger (Wix cannot sort contacts by `updatedDate`). `new-data-item` and `new-or-updated-data-item` sort on the `_createdDate` / `_updatedDate` system fields of the collection you choose. `new-collection` reads every page of `list-collections` and diffs the ids. Sources: [Query Products](https://dev.wix.com/docs/rest/business-solutions/stores/catalog-v3/products-v3/query-products), [Search Orders](https://dev.wix.com/docs/rest/business-solutions/e-commerce/orders/search-orders), [Query Sites](https://dev.wix.com/docs/api-reference/account-level/sites/sites/query-sites), [Data Item object](https://dev.wix.com/docs/api-reference/business-solutions/cms/data-items/data-item-object), [Query Contacts](https://dev.wix.com/docs/api-reference/crm/members-contacts/contacts/contacts/contact-v4/query-contacts), verified 2026-11-10.
-
-Not covered: `list-labels` (contact-label definitions, reference data used to look up label keys).
 
 ## A note on the API docs link
 
@@ -149,15 +158,6 @@ touches.
 | --- | --- |
 | `get-site-properties` | `GET /site-properties/v4/properties` |
 | `query-sites` | `POST /site-list/v2/sites/query` *(account-level)* |
-| `new-product` — New Product | Poll (newest first) | `query-products` | Each newly created Stores product |
-| `new-or-updated-product` — New or Updated Product | Poll (newest updated first) | `query-products` | Each Stores product created or edited |
-| `new-order` — New Order | Poll (newest first) | `search-orders` | Each newly placed eCommerce order |
-| `new-or-updated-order` — New or Updated Order | Poll (newest updated first) | `search-orders` | Each order placed or changed |
-| `new-site` — New Site | Poll (newest first) | `query-sites` | Each newly created site in the account (needs the Account ID) |
-| `new-or-updated-site` — New or Updated Site | Poll (newest updated first) | `query-sites` | Each site created or edited |
-| `new-data-item` — New Data Item | Poll (newest first) | `query-data-items` | Each item newly added to the chosen CMS collection |
-| `new-or-updated-data-item` — New or Updated Data Item | Poll (newest updated first) | `query-data-items` | Each item added or edited in the chosen CMS collection |
-| `new-collection` — New CMS Collection | Poll (snapshot) | `list-collections` | Each newly created CMS collection |
 
 `query-sites` earns its place despite being the only account-scoped action: every other action needs
 a site ID, and this is the documented way to discover one from inside a workflow rather than copying
