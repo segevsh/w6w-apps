@@ -4136,12 +4136,25 @@
     "path": "apps/hospitable",
     "mechanism": "poll",
     "candidates": [
-      "new-reservation"
+      "new-reservation",
+      "new-property",
+      "new-payout",
+      "new-teammate",
+      "new-property-image",
+      "new-property-review",
+      "new-reservation-message",
+      "new-task",
+      "new-or-updated-inquiry"
     ],
     "pollAction": "reservation-list",
-    "reason": "Reservations can be requested newest booked first with stable IDs.",
-    "verified": "apps/hospitable/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Reservations can be requested newest booked first; inquiries use the last_message_at filter; properties, payouts, teammates, tasks, reviews, images and messages are compared as bounded lists.",
+    "verified": "apps/hospitable/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "channel-list": "reference data: the booking channels connected to the account, not records a workflow reacts to",
+      "property-search": "availability query that requires stay dates and guest counts and returns a result set per query, not a record feed",
+      "transaction-list": "every payment line across all reservations: only page/per_page, no sort or date filter in the action, so it exceeds the 5000-row snapshot cap (https://developer.hospitable.com/)"
+    }
   },
   {
     "path": "apps/hostaway",
@@ -5528,12 +5541,26 @@
     "path": "apps/meistertask",
     "mechanism": "poll",
     "candidates": [
-      "new-checklist-item"
+      "new-checklist-item",
+      "new-project",
+      "new-section",
+      "new-task",
+      "new-or-updated-task",
+      "new-comment",
+      "new-subtask",
+      "new-checklist",
+      "new-label",
+      "new-project-person",
+      "new-person",
+      "new-task-label"
     ],
     "pollAction": "checklist-item-list",
-    "reason": "sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page",
-    "verified": "apps/meistertask/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page; unpaginated lists (labels, persons, task labels) are compared as bounded lists.",
+    "verified": "apps/meistertask/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "project-members-list": "membership detail read: returns project rights plus Business-plan group and team memberships, which the persons delivered by new-project-person do not carry"
+    }
   },
   {
     "path": "apps/mem",
@@ -6018,12 +6045,25 @@
     "mechanism": "poll",
     "candidates": [
       "new-mural",
-      "new-or-updated-mural"
+      "new-or-updated-mural",
+      "new-workspace",
+      "new-room",
+      "new-room-folder",
+      "new-room-member",
+      "new-mural-user",
+      "new-mural-tag",
+      "new-widget"
     ],
     "pollAction": "mural-list",
-    "reason": "new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn (developers.mural.co getworkspacemurals documents both sorts and updatedOn)",
-    "verified": "apps/mural/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn; workspaces, rooms, folders, members, mural users, tags and widgets are compared as bounded lists (next-token paging).",
+    "verified": "apps/mural/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "room-mural-list": "new-mural",
+      "mural-recent-list": "new-mural",
+      "mural-search": "new-mural",
+      "room-search": "new-room"
+    }
   },
   {
     "path": "apps/murf",
@@ -7271,11 +7311,22 @@
     "path": "apps/razorpay",
     "mechanism": "poll",
     "candidates": [
-      "new-order"
+      "new-order",
+      "new-payment",
+      "new-refund",
+      "new-settlement",
+      "new-invoice",
+      "new-subscription",
+      "new-customer",
+      "new-dispute",
+      "new-item",
+      "new-plan",
+      "new-payment-link",
+      "new-order-payment"
     ],
     "pollAction": "order-list",
-    "reason": "poll since-filter: order-list from=<last check-120s> with skip paging; no sort arg documented, no update stamp",
-    "verified": "apps/razorpay/README.md Triggers section (verified 2026-11-09)",
+    "reason": "poll since-filter: from=<last check-120s> with skip paging on orders, payments, refunds, settlements, invoices and subscriptions (openapi.json documents from/to/count/skip); customers, disputes, items, plans, payment links and an order's payments have no date filter and are compared as bounded lists.",
+    "verified": "apps/razorpay/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {

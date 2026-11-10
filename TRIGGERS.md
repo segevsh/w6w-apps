@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1692 triggers, 2700 unaccounted list actions in 551 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -32,11 +32,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/deel | 1 | 12 | 11 |
 | apps/findymail | 1 | 12 | 11 |
 | apps/gumroad | 2 | 12 | 11 |
-| apps/hospitable | 1 | 12 | 11 |
 | apps/lokalise | 5 | 11 | 11 |
-| apps/meistertask | 1 | 12 | 11 |
-| apps/mural | 2 | 12 | 11 |
-| apps/razorpay | 1 | 12 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
 | apps/circle | 1 | 11 | 10 |
 | apps/followupboss | 2 | 11 | 10 |
@@ -615,6 +611,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/greenhouse | 2 | 17 | 0 |
 | apps/gusto | 15 | 14 | 0 |
 | apps/hibob | 7 | 13 | 0 |
+| apps/hospitable | 9 | 12 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
@@ -634,9 +631,11 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/livestorm | 9 | 13 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
+| apps/meistertask | 12 | 12 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/missive | 10 | 15 | 0 |
 | apps/mollie | 9 | 15 | 0 |
+| apps/mural | 9 | 12 | 0 |
 | apps/notion | 42 | 30 | 0 |
 | apps/omnisend | 1 | 1 | 0 |
 | apps/onesignal | 1 | 0 | 0 |
@@ -651,6 +650,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/productboard | 12 | 20 | 0 |
 | apps/productive | 2 | 17 | 0 |
 | apps/pylon | 8 | 13 | 0 |
+| apps/razorpay | 12 | 12 | 0 |
 | apps/rootly | 13 | 13 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
@@ -988,7 +988,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/heyreach | 1 | list-get-leads | new-lead | apps/heyreach/README.md Triggers section (verified 2026-11-09) | hand | shape b: createdFrom since-filter (cursor minus 2 min) on list-get-leads, every page of the window read, deduped by lead id (https://docs.heyreach.io/openapi.json) |
 | apps/hibob | 7 | tasks-list | new-attendance-entry, new-employee, new-employment-history-entry, new-lifecycle-history-entry, new-or-updated-employee, new-task, new-work-history-entry | apps/hibob/README.md Triggers section (verified 2026-11-10) | hand | New Task snapshots the open-task endpoint; employees, employee tables and attendance are snapshot-diffed through their existing read/search actions. |
 | apps/honeybook | 1 | project-list | new-project | no | hand | shipped poll trigger(s) over list action project-list |
-| apps/hospitable | 1 | reservation-list | new-reservation | apps/hospitable/README.md Triggers section (verified 2026-11-09) | hand | Reservations can be requested newest booked first with stable IDs. |
+| apps/hospitable | 9 | reservation-list | new-reservation, new-property, new-payout, new-teammate, new-property-image, new-property-review, new-reservation-message, new-task, new-or-updated-inquiry | apps/hospitable/README.md Triggers section (verified 2026-11-10) | hand | Reservations can be requested newest booked first; inquiries use the last_message_at filter; properties, payouts, teammates, tasks, reviews, images and messages are compared as bounded lists. |
 | apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
 | apps/hotmart | 1 | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
 | apps/housecallpro | 14 | customer-list | new-customer, new-employee, new-estimate, new-or-updated-estimate, new-estimate-option-line-item, new-event, new-or-updated-event, new-invoice, new-job-appointment, new-job-invoice, new-job-line-item, new-job, new-or-updated-job, new-lead | apps/housecallpro/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover operational records; the listed static or derived lists are intentionally skipped. |
@@ -1054,7 +1054,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/matrix | 1 | get-messages | new-room-message | apps/matrix/README.md Triggers section (verified 2026-11-09) | hand | get-messages supports backwards (newest-first) room timeline paging; trigger keeps only m.room.message events (https://spec.matrix.org/latest/client-server-api/) |
 | apps/mattermost | 1 | posts-for-channel | new-post | apps/mattermost/README.md Triggers section (verified 2026-11-09) | hand | since=cursor-120s ms (vendor: all posts modified since, ordered by create time, <=1000, no paging); read order.map(id=>posts[id]), create_at filter drops edits |
 | apps/meilisearch | 1 | task-list | new-task | apps/meilisearch/README.md Triggers section (verified 2026-11-09) | hand | vendor: tasks returned in descending uid order by default (https://www.meilisearch.com/docs/reference/api/tasks/list-tasks); search/document-list/index-list unused |
-| apps/meistertask | 1 | checklist-item-list | new-checklist-item | apps/meistertask/README.md Triggers section (verified 2026-11-09) | hand | sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page |
+| apps/meistertask | 12 | checklist-item-list | new-checklist-item, new-project, new-section, new-task, new-or-updated-task, new-comment, new-subtask, new-checklist, new-label, new-project-person, new-person, new-task-label | apps/meistertask/README.md Triggers section (verified 2026-11-10) | hand | sort=-id (vendor: '-' prefix descending, default ascending id) per developers.meistertask.com sorting page; unpaginated lists (labels, persons, task labels) are compared as bounded lists. |
 | apps/mem | 2 | task-list | new-task, new-or-updated-task | apps/mem/README.md Triggers section (verified 2026-11-09) | hand | task-list with order_by=created_at and order_by=updated_at (id includes updated_at); both documented in Mem's OpenAPI. |
 | apps/memberstack | 1 | member-list | new-member | no | hand | shipped poll trigger(s) over list action member-list |
 | apps/mercury | 1 | customer-list | new-customer | apps/mercury/README.md Triggers section (verified 2026-11-09) | hand | Customers requested in descending order. |
@@ -1078,7 +1078,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/moneybird | 3 | sales-invoice-list | new-sales-invoice, new-or-updated-sales-invoice, new-contact | apps/moneybird/README.md Triggers section (verified 2026-11-10) | hand | sales-invoice-list polls (created_after/updated_after, round 2 P-batch) plus new-contact as a signed API-registered webhook (contact_created; Moneybird-Signature HMAC-SHA256 over t.body, 5 min window) because contact-list has no filter (https://developer.moneybird.com/webhooks/verifying-signatures) |
 | apps/mongodb-atlas | 1 | event-list | new-event | apps/mongodb-atlas/README.md Triggers section (verified 2026-11-09) | hand | event-list minDate set to cursor minus 2 min overlap, deduped by event id (shape b); no sort order is documented. |
 | apps/moonclerk | 1 | customer-list | new-customer | apps/moonclerk/README.md Triggers section (verified 2026-11-09) | hand | Customer list has a bounded 100-row page and documented checkout_from creation-date filter; the trigger uses overlap plus ID deduplication |
-| apps/mural | 2 | mural-list | new-mural, new-or-updated-mural | apps/mural/README.md Triggers section (verified 2026-11-09) | hand | new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn (developers.mural.co getworkspacemurals documents both sorts and updatedOn) |
+| apps/mural | 9 | mural-list | new-mural, new-or-updated-mural, new-workspace, new-room, new-room-folder, new-room-member, new-mural-user, new-mural-tag, new-widget | apps/mural/README.md Triggers section (verified 2026-11-10) | hand | new-mural wraps mural-list sortBy=lastCreated; new-or-updated-mural sortBy=lastModified with idOf id:updatedOn; workspaces, rooms, folders, members, mural users, tags and widgets are compared as bounded lists (next-token paging). |
 | apps/nationbuilder | 2 | person-list | new-person, new-or-updated-person | apps/nationbuilder/README.md Triggers section (verified 2026-11-09) | hand | wraps person-list with sort=-created_at / -updated_at; the v2 spec documents JSON:API sort but not a default order, so the sort is explicit |
 | apps/ninox | 1 | record-list | new-or-updated-record | apps/ninox/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action record-list |
 | apps/nocodb | 1 | record-list | new-record | apps/nocodb/README.md Triggers section (verified 2026-11-09) | hand | wraps record-list with sort=-Id (auto-increment primary key; sort documented as column name, - for descending) on a user-chosen table |
@@ -1134,7 +1134,7 @@ depth: 682 apps, 1655 triggers, 2744 unaccounted list actions in 555 apps, n8n-p
 | apps/quo | 2 | conversation-list | new-conversation, new-or-updated-conversation | apps/quo/README.md Triggers section (verified 2026-11-09) | hand | GET /v1/conversations takes createdAfter and updatedAfter; call/message webhooks also exist (see webhooks file) |
 | apps/raindrop | 2 | raindrop-search | new-bookmark, new-collection | apps/raindrop/README.md Triggers section (verified 2026-11-09) | hand | poll: raindrop-search sort=-created (documented default newest first); new-collection is a snapshot diff of collection-list |
 | apps/raisely | 2 | campaign-list | new-campaign, new-or-updated-campaign | apps/raisely/README.md Triggers section (verified 2026-11-09) | hand | poll: campaign-list sort=createdAt\|updatedAt order=desc (documented sort/order params) |
-| apps/razorpay | 1 | order-list | new-order | apps/razorpay/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: order-list from=<last check-120s> with skip paging; no sort arg documented, no update stamp |
+| apps/razorpay | 12 | order-list | new-order, new-payment, new-refund, new-settlement, new-invoice, new-subscription, new-customer, new-dispute, new-item, new-plan, new-payment-link, new-order-payment | apps/razorpay/README.md Triggers section (verified 2026-11-10) | hand | poll since-filter: from=<last check-120s> with skip paging on orders, payments, refunds, settlements, invoices and subscriptions (openapi.json documents from/to/count/skip); customers, disputes, items, plans, payment links and an order's payments have no date filter and are compared as bounded lists. |
 | apps/rdstation | 1 | list-contacts | new-contact | apps/rdstation/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-contacts |
 | apps/read-ai | 1 | list-meetings | new-meeting | apps/read-ai/README.md Triggers section (verified 2026-11-09) | hand | GET /v1/meetings is newest first and bounded to ten records |
 | apps/readwise | 1 | book-list | new-or-updated-book | apps/readwise/README.md Triggers section (verified 2026-11-09) | hand | poll since-filter: book-list updated__gt; no creation filter so no pure new-book |
