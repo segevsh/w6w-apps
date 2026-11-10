@@ -1,16 +1,42 @@
 # Brevo
 
-- **Triggers** — 1 webhook
+- **Triggers** — 12 (10 webhook, 2 poll)
 
 ## Triggers
 
-| Key | Title | Mechanism | Vendor event | What the run gets |
+| Key | Title | Mechanism | Vendor event / wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
-| `new-contact` | New Contact | Webhook | `listAddition` | The vendor delivery: `event` (`list_addition`), `email`, `list_id` (array), `date`, `ts` |
+| `new-contact` | New Contact | Webhook | marketing `listAddition` | The vendor delivery: `event` (`list_addition`), `email`, `list_id` (array), `date`, `ts` |
+| `contact-created` | Contact Created | Poll | `list-contacts` (`GET /contacts?sort=desc`, newest first) | Each newly created contact, any list |
+| `new-sender` | New Sender | Poll | `list-senders` (`GET /senders`, small unpaged list, diffed) | Each newly added sender identity |
+| `contact-updated` | Contact Updated | Webhook (API) | marketing `contactUpdated` | The contact event with the changed attributes in `content` |
+| `contact-deleted` | Contact Deleted | Webhook (API) | marketing `contactDeleted` | The contact event (email, list ids) |
+| `email-delivered` | Email Delivered | Webhook (API) | transactional `delivered` | The delivery event |
+| `email-opened` | Email Opened | Webhook (API) | transactional `opened` | The open event |
+| `email-clicked` | Email Clicked | Webhook (API) | transactional `click` | The click event with the link |
+| `email-bounced` | Email Bounced | Webhook (API) | transactional `hardBounce` + `softBounce` | The bounce event (`event` says which) |
+| `email-unsubscribed` | Email Unsubscribed | Webhook (API) | transactional `unsubscribed` | The unsubscribe event |
+| `inbound-email` | Inbound Email | Webhook (API) | inbound `inboundEmailProcessed` | One event per parsed message; needs your **Inbound domain** |
+| `any-event` | Any Event | Webhook (API) | the **Events** you list for the chosen **Webhook type** (empty = every event of that type): transactional `sent`/`request`/`delivered`/`hardBounce`/`softBounce`/`blocked`/`spam`/`invalid`/`deferred`/`click`/`opened`/`uniqueOpened`/`unsubscribed`; marketing `spam`/`opened`/`click`/`hardBounce`/`softBounce`/`unsubscribed`/`listAddition`/`delivered`/`contactUpdated`/`contactDeleted`; inbound `inboundEmailProcessed` | The vendor delivery |
 
-Brevo supports optional caller-supplied webhook authentication but does not publish a delivery signature. The callback URL is the shared secret; stale registrations for that URL are removed before creating a replacement.
+Every webhook trigger registers itself with `POST /v3/webhooks` and removes itself on unsubscribe. Each
+new webhook tells Brevo to send a caller-chosen bearer token (`auth: { type: "bearer", token }`, a random
+secret kept in the subscription state); a delivery is accepted only when its `Authorization` header is
+`Bearer <that token>` (constant-time compare, fail closed; the raw body must be present). Brevo
+publishes no body signature, and the exact header Brevo sends for a bearer webhook is the docs' "token-based
+header authentication" (partly UNVERIFIED: if Brevo sent another header the trigger would refuse every
+delivery rather than accept an unverified one). `new-contact` (older) has no token: its callback URL is the secret.
+Brevo's marketing contact events carry an internal `key` field; the new triggers drop it before the run.
 
-Vendor documentation: [Create a webhook](https://developers.brevo.com/reference/create-webhook) and [Secure webhook calls](https://developers.brevo.com/docs/secured-webhooks) (verified 2026-11-09).
+Not covered: `list-attributes` is account field-definition data (reference data, no records).
+
+Vendor documentation (verified 2026-11-10): [Create a webhook](https://developers.brevo.com/reference/create-webhook),
+[Secure webhook calls](https://developers.brevo.com/docs/secured-webhooks),
+[Transactional webhooks](https://developers.brevo.com/docs/transactional-webhooks),
+[Marketing webhooks](https://developers.brevo.com/docs/marketing-webhooks),
+[Inbound parsing webhooks](https://developers.brevo.com/docs/inbound-parse-webhooks),
+[Get contacts](https://developers.brevo.com/reference/get-contacts),
+[Get senders](https://developers.brevo.com/reference/get-senders).
 
 Manage Brevo (formerly Sendinblue) contacts, senders, attributes, and send transactional
 emails.
