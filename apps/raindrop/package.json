@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/raindrop",
   "version": "0.3.0",
-  "description": "Manage Raindrop.io bookmarks: collections, raindrops, highlights, tags and the saved-link search behind them. Includes poll triggers for new bookmarks, collections, sub-collections, tags, backups and collaborators.",
+  "description": "Manage Raindrop.io bookmarks: collections, raindrops, highlights, tags and saved-link search. Poll triggers fire on new bookmarks, collections, sub-collections, tags, backups and collaborators.",
   "license": "MIT",
   "author": {
     "name": "w6w"
