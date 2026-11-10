@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/razorpay",
   "version": "0.3.0",
-  "description": "Accept payments, manage orders, refunds, customers, invoices and subscriptions on Razorpay, India's payment gateway. Includes poll triggers for new orders, payments, refunds, settlements, invoices, subscriptions, customers, disputes, items, plans and payment links.",
+  "description": "Accept payments and manage orders, refunds, customers, invoices and subscriptions on Razorpay, with poll triggers for new orders, payments, refunds, settlements, invoices and customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"

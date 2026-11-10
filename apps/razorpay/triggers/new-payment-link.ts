@@ -16,7 +16,7 @@ export default boundedList({
   ],
   sample: {
     id: "plink_1",
-    short_url: "https://rzp.io/i/test",
+    short_url: "short-link-1",
     status: "created",
     created_at: 1700000000,
   },

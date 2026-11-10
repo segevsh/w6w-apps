@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hospitable",
   "version": "0.3.0",
-  "description": "Manage Hospitable short-term-rental properties, reservations, guest messages, reviews, calendars and operations tasks, with triggers for new reservations, properties, payouts, teammates, tasks, reviews, messages and inquiries.",
+  "description": "Manage Hospitable rental properties, reservations, guest messages, reviews, calendars and tasks, with poll triggers for new reservations, properties, payouts, tasks and inquiries.",
   "license": "MIT",
   "author": {
     "name": "w6w"
