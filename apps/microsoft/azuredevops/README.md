@@ -5,9 +5,18 @@
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-build` — New Pipeline Run | poll | `build-list` | Each pipeline run since the previous check |
+| `new-work-item` — New Work Item | poll | `work-item-query` | Each work item created in the project since the previous check |
+| `new-or-updated-work-item` — New or Updated Work Item | poll | `work-item-query` | Each work item created or changed since the previous check |
 
-The build list supports `minTime` filtering and returns pipeline runs newest first. [Azure DevOps builds list API](https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/list)
+`new-build` filters the build list with `minTime` and de-duplicates on the build id; it does not rely
+on any default result order. [Azure DevOps builds list API](https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/list)
 verified 2026-11-09.
+
+The work item triggers build their own WIQL with an explicit `ORDER BY [System.CreatedDate] DESC`
+(`[System.ChangedDate] DESC` for the updated one), run it through the same `work-item-query` action
+and de-duplicate on `id` (`id:System.ChangedDate` for the updated trigger). WIQL `ORDER BY` and the
+`@project` macro are documented at
+[WIQL syntax](https://learn.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax) verified 2026-11-09.
 
 Work an Azure DevOps organization — repositories and pull requests, pipeline
 runs and their artifacts, and work items queried with WIQL.

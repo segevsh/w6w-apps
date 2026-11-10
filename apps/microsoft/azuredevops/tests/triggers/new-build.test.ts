@@ -35,6 +35,7 @@ test("2 a new build is emitted", async () => {
   at(1_700_000_060);
   const value = await poll(seed.nextState, [response(2, 1)]).out;
   assertEquals(value.events.map((event) => (event as { id: number }).id), [2]);
+  assertEquals((value.nextState as { cursor: number }).cursor, 1_700_000_060_000);
 });
 
 test("3 repeated check is idempotent", async () => {
