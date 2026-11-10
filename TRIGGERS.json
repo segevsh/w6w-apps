@@ -5563,23 +5563,44 @@
     "mechanism": "poll",
     "candidates": [
       "new-record",
-      "new-or-updated-record"
+      "new-or-updated-record",
+      "new-workflow",
+      "new-or-updated-workflow",
+      "new-or-updated-entity"
     ],
     "pollAction": "record-list",
-    "reason": "Records support descending agreement-date and last-updated sorts with stable IDs.",
-    "verified": "apps/ironclad/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "records sort by agreementDate/lastUpdated DESC; entities sort by lastUpdated DESC; workflows have no sort but a lastUpdated since-date filter (https://developer.ironcladapp.com/reference/list-all-workflows)",
+    "verified": "apps/ironclad/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhook-list": "integration setup (the registered webhook subscriptions), not a business record feed",
+      "workflow-schemas-list": "reference data: launch-form schemas of workflow templates",
+      "workflow-approvals-list": "per-workflow approval groups and reviewers carry no stable id (https://developer.ironcladapp.com/reference/list-all-workflow-approvals); progress is visible through new-or-updated-workflow",
+      "workflow-signers-list": "per-workflow signers carry no stable id, only name/email/role and a status (https://developer.ironcladapp.com/reference/list-all-workflow-signers); progress is visible through new-or-updated-workflow",
+      "workflow-comments-list": "per-workflow comments: no documented order or date filter, page/pageSize only, unbounded (https://developer.ironcladapp.com/reference/list-all-comments-in-a-workflow)"
+    }
   },
   {
     "path": "apps/iterable",
     "mechanism": "poll",
     "candidates": [
-      "new-campaign"
+      "new-campaign",
+      "new-template",
+      "new-or-updated-template",
+      "new-journey",
+      "new-or-updated-journey",
+      "new-list",
+      "new-catalog"
     ],
     "pollAction": "list-campaigns",
-    "reason": "shipped poll trigger(s) over list action list-campaigns",
-    "verified": "apps/iterable/README.md Triggers section (verified 2026-10-06)",
-    "source": "hand"
+    "reason": "newest-first sorts (-createdAt/-updatedAt) on campaigns, templates and journeys; bounded snapshots for lists and catalog names",
+    "verified": "apps/iterable/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-channels": "project configuration (message channels), not a record feed",
+      "list-message-types": "project configuration (message types), not a record feed",
+      "list-catalog-items": "no created/modified filter; orderBy works only on catalog fields marked orderable, so no newest-first order for an unbounded collection (https://api.iterable.com/api-docs)"
+    }
   },
   {
     "path": "apps/jenkins",
@@ -5847,11 +5868,18 @@
     "mechanism": "poll",
     "candidates": [
       "new-dashboard",
-      "new-data-source"
+      "new-data-source",
+      "new-klip",
+      "new-user",
+      "new-group",
+      "new-client",
+      "new-data-source-instance",
+      "new-group-user",
+      "new-klip-client-instance"
     ],
     "pollAction": "dashboard-list",
-    "reason": "dashboard-list and datasource-list return the whole account collection through limit/offset with a total (https://apidocs.klipfolio.com/)",
-    "verified": "apps/klipfolio/README.md Triggers section (verified 2026-11-09)",
+    "reason": "limit/offset account collections (with a total) diffed as snapshots, and per-parent group/klip lists with the parent id as a param (https://apidocs.klipfolio.com/)",
+    "verified": "apps/klipfolio/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -5991,12 +6019,22 @@
     "path": "apps/leexi",
     "mechanism": "poll",
     "candidates": [
-      "new-meeting-event"
+      "new-meeting-event",
+      "new-call",
+      "new-or-updated-call",
+      "new-user",
+      "new-team",
+      "new-client-company",
+      "new-client-team",
+      "new-client-user"
     ],
     "pollAction": "meeting-event-list",
-    "reason": "shipped poll trigger(s) over list action meeting-event-list",
-    "verified": false,
-    "source": "hand"
+    "reason": "calls and meeting events support order created_at desc / updated_at desc (https://docs.public-api.leexi.ai/reference/list-calls.md); workspace users/teams and reseller lists are small page/items collections diffed by uuid",
+    "verified": "apps/leexi/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "call-note-list": "per-parent list of one call's notes; a single call is not something a user would pick to watch (new calls arrive via new-call)"
+    }
   },
   {
     "path": "apps/lemlist",
@@ -6208,23 +6246,44 @@
     "mechanism": "poll",
     "candidates": [
       "new-constituent",
-      "new-or-updated-constituent"
+      "new-or-updated-constituent",
+      "new-gift",
+      "new-or-updated-gift",
+      "new-appeal",
+      "new-campaign",
+      "new-fund",
+      "new-group",
+      "new-constituent-note"
     ],
     "pollAction": "constituent-search",
-    "reason": "constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key)",
-    "verified": "apps/littlegreenlight/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "constituent-search and gift-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; sort-less appeal/campaign/fund/group/note indexes read whole and diffed by id (https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/gifts.json)",
+    "verified": "apps/littlegreenlight/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "gift-list": "new-gift"
+    }
   },
   {
     "path": "apps/livechat",
     "mechanism": "poll",
     "candidates": [
-      "new-chat-thread"
+      "new-chat-thread",
+      "new-agent",
+      "new-group",
+      "new-tag"
     ],
     "pollAction": "list-archives",
-    "reason": "list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api)",
-    "verified": "apps/livechat/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "list-archives with the documented filters.from since-filter and sort_order desc; bounded unpaginated configuration lists (agents, groups, tags) diffed by id/name (https://platform.text.com/docs/management/configuration-api)",
+    "verified": "apps/livechat/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-chats": "new-chat-thread",
+      "list-threads": "new-chat-thread"
+    },
+    "skipped": {
+      "list-channels": "reference data: the fixed channel kinds (code, direct_link, integration), not user records",
+      "list-routing-statuses": "each agent's current routing state (a status value, not a record with an id or creation event)"
+    }
   },
   {
     "path": "apps/livestorm",

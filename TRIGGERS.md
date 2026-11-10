@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2416 triggers, 1800 unaccounted list actions in 447 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -44,12 +44,6 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/google/google-ads | 0 | 7 | 7 |
 | apps/google/looker | 0 | 7 | 7 |
 | apps/hostaway | 1 | 8 | 7 |
-| apps/ironclad | 2 | 8 | 7 |
-| apps/iterable | 1 | 8 | 7 |
-| apps/klipfolio | 2 | 9 | 7 |
-| apps/leexi | 1 | 8 | 7 |
-| apps/littlegreenlight | 2 | 8 | 7 |
-| apps/livechat | 1 | 8 | 7 |
 | apps/lob | 1 | 8 | 7 |
 | apps/loop-returns | 1 | 8 | 7 |
 | apps/maileroo | 1 | 8 | 7 |
@@ -567,6 +561,8 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/iclosed | 9 | 13 | 0 |
 | apps/insightly | 8 | 4 | 0 |
 | apps/intercom | 17 | 5 | 0 |
+| apps/ironclad | 5 | 8 | 0 |
+| apps/iterable | 7 | 8 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
 | apps/jibble | 10 | 10 | 0 |
 | apps/jobber | 10 | 9 | 0 |
@@ -574,15 +570,19 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/kajabi | 18 | 19 | 0 |
 | apps/keap | 17 | 17 | 0 |
 | apps/klaviyo | 2 | 0 | 0 |
+| apps/klipfolio | 9 | 9 | 0 |
 | apps/knack | 1 | 1 | 0 |
 | apps/kustomer | 8 | 9 | 0 |
 | apps/leadfeeder | 7 | 10 | 0 |
+| apps/leexi | 8 | 8 | 0 |
 | apps/lemonsqueezy | 10 | 11 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
 | apps/linear | 7 | 5 | 0 |
 | apps/linkedin/linkedin | 2 | 1 | 0 |
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
 | apps/linkupapi | 7 | 20 | 0 |
+| apps/littlegreenlight | 9 | 8 | 0 |
+| apps/livechat | 4 | 8 | 0 |
 | apps/livestorm | 9 | 13 | 0 |
 | apps/lofty | 5 | 10 | 0 |
 | apps/lokalise | 15 | 11 | 0 |
@@ -1001,8 +1001,8 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/insightly | 8 | contact-get-many | new-contact, new-lead, new-opportunity, new-organisation, new-or-updated-contact, new-or-updated-lead, new-or-updated-opportunity, new-or-updated-organisation | apps/insightly/README.md Triggers section (verified 2026-11-09) | hand | *-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded |
 | apps/instantly | 1 | email-list | new-email | apps/instantly/README.md Triggers section (verified 2026-08-29) | hand | shipped poll trigger(s) over list action email-list |
 | apps/instapaper | 1 | folders-list | new-folder | apps/instapaper/README.md Triggers section (verified 2026-11-09) | hand | folders-list is a small whole-account snapshot (https://www.instapaper.com/api/full); bookmarks-list has no documented order or since filter, so bookmarks are not polled |
-| apps/ironclad | 2 | record-list | new-record, new-or-updated-record | apps/ironclad/README.md Triggers section (verified 2026-11-09) | hand | Records support descending agreement-date and last-updated sorts with stable IDs. |
-| apps/iterable | 1 | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
+| apps/ironclad | 5 | record-list | new-record, new-or-updated-record, new-workflow, new-or-updated-workflow, new-or-updated-entity | apps/ironclad/README.md Triggers section (verified 2026-11-10) | hand | records sort by agreementDate/lastUpdated DESC; entities sort by lastUpdated DESC; workflows have no sort but a lastUpdated since-date filter (https://developer.ironcladapp.com/reference/list-all-workflows) |
+| apps/iterable | 7 | list-campaigns | new-campaign, new-template, new-or-updated-template, new-journey, new-or-updated-journey, new-list, new-catalog | apps/iterable/README.md Triggers section (verified 2026-11-10) | hand | newest-first sorts (-createdAt/-updatedAt) on campaigns, templates and journeys; bounded snapshots for lists and catalog names |
 | apps/jenkins | 2 | get-job-info | new-build, new-job | apps/jenkins/README.md Triggers section (verified 2026-11-09) | hand | get-job-info exposes the job's builds, sorted by number in the trigger; list-jobs is a whole-root snapshot (https://www.jenkins.io/doc/book/using/remote-access-api/) |
 | apps/jibble | 10 | activity-list | new-activity, new-client, new-group, new-location, new-member, new-or-updated-member, new-or-updated-time-entry, new-project, new-time-entry, new-time-off-request | apps/jibble/README.md Triggers section (verified 2026-11-10) | hand | shape a: $orderby=createdAt\|updatedAt desc on Activity, Project, Client, Location, Group, Person and TimeEntry (https://workspace.prod.jibble.io/v1/$metadata); time-off requests via bounded snapshot of not-yet-ended requests |
 | apps/jobber | 10 | invoice-list | new-invoice, new-or-updated-invoice, new-or-updated-client, new-or-updated-job, new-quote, new-request, new-visit, new-product, new-property, new-user | apps/jobber/README.md Triggers section (verified 2026-11-10) | hand | invoice, quote, request and visit lists sorted newest first (CREATED_AT / REQUESTED_AT); client and job offer only UPDATED_AT so they are new-or-updated; products, properties, users have no sort and are walked and snapshotted (https://developer.getjobber.com/docs/) |
@@ -1016,7 +1016,7 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/kit | 1 | list-subscribers | new-subscriber | apps/kit/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-subscribers |
 | apps/klaviyo | 2 | get-profiles | new-profile, new-or-updated-profile | apps/klaviyo/README.md Triggers section (verified 2026-11-09) | hand | get-profiles sorted -created / -updated, both documented sort fields (https://developers.klaviyo.com/en/reference/get_profiles) |
 | apps/klicktipp | 1 | subscriber-changed | contact-changed | apps/klicktipp/README.md Triggers section (verified 2026-11-09) | hand | subscriber-changed is a documented since-filter feed of changed contact ids with cursor paging (https://developers.klicktipp.com/) |
-| apps/klipfolio | 2 | dashboard-list | new-dashboard, new-data-source | apps/klipfolio/README.md Triggers section (verified 2026-11-09) | hand | dashboard-list and datasource-list return the whole account collection through limit/offset with a total (https://apidocs.klipfolio.com/) |
+| apps/klipfolio | 9 | dashboard-list | new-dashboard, new-data-source, new-klip, new-user, new-group, new-client, new-data-source-instance, new-group-user, new-klip-client-instance | apps/klipfolio/README.md Triggers section (verified 2026-11-10) | hand | limit/offset account collections (with a total) diffed as snapshots, and per-parent group/klip lists with the parent id as a param (https://apidocs.klipfolio.com/) |
 | apps/knack | 1 | record-list | new-record | apps/knack/README.md Triggers section (verified 2026-11-09) | hand | record-list sorted descending by a caller-named creation-time field (sort_field / sort_order, https://docs.knack.com/reference/sorting) |
 | apps/kommo | 1 | lead-list | new-lead | apps/kommo/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action lead-list |
 | apps/kudosity | 1 | sms-list | new-sms | no | hand | shipped poll trigger(s) over list action sms-list |
@@ -1026,7 +1026,7 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/lawmatics | 1 | list-contacts | new-contact | apps/lawmatics/README.md Triggers section (verified 2026-11-09) | hand | list-contacts sort_by=created_at&sort_order=desc (https://docs.lawmatics.com/api/collections/26379991/2sA3JM7gbw) |
 | apps/leadfeeder | 7 | visitor-company-list | new-visitor-company, new-campaign, new-custom-feed, new-tag, new-list, new-list-item, new-web-visit | apps/leadfeeder/README.md Triggers section (verified 2026-11-10) | hand | visitor-company-list most-recent-visitor-first by documented default (https://api.leadfeeder.com/openapi.yaml); bounded snapshots for campaigns, custom feeds, tags, lists and one list's items; web visits via a since-filter (start_date/end_date) poll on web-visit-search |
 | apps/learnworlds | 1 | users-list | new-user | apps/learnworlds/README.md Triggers section (verified 2026-11-09) | hand | users-list returns users newest registered first per the existing action's own documented behaviour; the vendor portal is JavaScript-rendered so the order is not independently re-verified (https://www.learnworlds.dev/) |
-| apps/leexi | 1 | meeting-event-list | new-meeting-event | no | hand | shipped poll trigger(s) over list action meeting-event-list |
+| apps/leexi | 8 | meeting-event-list | new-meeting-event, new-call, new-or-updated-call, new-user, new-team, new-client-company, new-client-team, new-client-user | apps/leexi/README.md Triggers section (verified 2026-11-10) | hand | calls and meeting events support order created_at desc / updated_at desc (https://docs.public-api.leexi.ai/reference/list-calls.md); workspace users/teams and reseller lists are small page/items collections diffed by uuid |
 | apps/lemonsqueezy | 10 | order-list | new-order, new-checkout, new-customer, new-discount, new-license-key, new-price, new-subscription, new-product, new-variant, new-store | apps/lemonsqueezy/README.md Triggers section (verified 2026-11-10) | hand | nine list actions behind poll triggers (documented created_at/id-descending defaults, or a whole-collection snapshot for name/sort-ordered catalogues); https://docs.lemonsqueezy.com/api |
 | apps/lever | 2 | posting-list | new-posting, new-or-updated-posting | apps/lever/README.md Triggers section (verified 2026-11-09) | hand | posting-list read as a bounded whole-collection snapshot (cursor pages of 100, max 5000), no sort relied on (https://hire.lever.co/developer/documentation#list-all-postings) |
 | apps/lexware-office | 2 | voucher-list | new-voucher, new-or-updated-voucher | apps/lexware-office/README.md Triggers section (verified 2026-11-09) | hand | voucher-list sort=createdDate,DESC / updatedDate,DESC (https://developers.lexware.io/docs/) |
@@ -1035,8 +1035,8 @@ depth: 682 apps, 2383 triggers, 1842 unaccounted list actions in 453 apps, n8n-p
 | apps/linkedin/linkedin-conversions | 1 | conversion-rule-list | new-conversion-rule | apps/linkedin/linkedin-conversions/README.md Triggers section (verified 2026-11-09) | hand | conversion-rule-list returns every rule of one Ad Account through start/count with paging.total (https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api) |
 | apps/linkup | 6 | tasks-list | new-task, new-research-task, new-extract-task, new-or-updated-task, new-or-updated-research-task, new-or-updated-extract-task | apps/linkup/README.md Triggers section (verified 2026-11-09) | hand | tasks-list, research-list and extract-list document sortBy=createdAt\|updatedAt and sortDirection=desc; task outputs carry updatedAt, so new-or-updated-* de-duplicate on id:updatedAt (https://api.linkup.so/v1/openapi.json) |
 | apps/linkupapi | 7 | account-list | new-candidate, new-connection, new-profile-post, new-account, new-invitation, new-job, new-webhook-event | apps/linkupapi/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (accounts, stored connections, profile posts, candidates), bounded snapshots (received invitations, job postings) and the stored webhook-event stream by event_id cursor. Webhook push is queued separately. |
-| apps/littlegreenlight | 2 | constituent-search | new-constituent, new-or-updated-constituent | apps/littlegreenlight/README.md Triggers section (verified 2026-11-09) | hand | constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key) |
-| apps/livechat | 1 | list-archives | new-chat-thread | apps/livechat/README.md Triggers section (verified 2026-11-09) | hand | list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api) |
+| apps/littlegreenlight | 9 | constituent-search | new-constituent, new-or-updated-constituent, new-gift, new-or-updated-gift, new-appeal, new-campaign, new-fund, new-group, new-constituent-note | apps/littlegreenlight/README.md Triggers section (verified 2026-11-10) | hand | constituent-search and gift-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; sort-less appeal/campaign/fund/group/note indexes read whole and diffed by id (https://api.littlegreenlight.com/api-docs/json/lgl_api/v1/gifts.json) |
+| apps/livechat | 4 | list-archives | new-chat-thread, new-agent, new-group, new-tag | apps/livechat/README.md Triggers section (verified 2026-11-10) | hand | list-archives with the documented filters.from since-filter and sort_order desc; bounded unpaginated configuration lists (agents, groups, tags) diffed by id/name (https://platform.text.com/docs/management/configuration-api) |
 | apps/livestorm | 9 | event-list | new-event, new-or-updated-event, new-session, new-or-updated-session, new-session-registrant, new-or-updated-session-registrant, new-session-question, new-session-recording, new-user | apps/livestorm/README.md Triggers section (verified 2026-11-10) | hand | since-filter polls (filter[created_since]/[updated_since]) over event-list, session-list and session-people-list, plus whole-collection snapshots for questions, recordings and users (https://developers.livestorm.co/reference/get_sessions) |
 | apps/lob | 1 | address-list | new-address | apps/lob/README.md Triggers section (verified 2026-11-09) | hand | address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list) |
 | apps/lofty | 5 | lead-list | new-appointment, new-lead, new-note, new-task, new-team-member | apps/lofty/README.md Triggers section (verified 2026-11-10) | hand | new-lead is newest-first (sort=CreateTime desc); tasks, appointments, notes (per lead) and team members have no sort or filter so they diff the whole list by id (https://api.lofty.com/docs/) |
