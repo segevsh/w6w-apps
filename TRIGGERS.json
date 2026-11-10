@@ -5984,12 +5984,13 @@
     "path": "apps/servicem8",
     "mechanism": "poll",
     "candidates": [
-      "new-category-list"
+      "new-category",
+      "new-or-updated-category"
     ],
     "pollAction": "category-list",
-    "reason": "list action category-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "snapshot (c) of the bounded Job Categories list (one GET /category.json?cursor=-1, <=1000 per response); no created_at field is documented",
+    "verified": "apps/servicem8/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/servicenow",
@@ -6030,12 +6031,12 @@
     "path": "apps/sharetribe",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sequence-id token: first check records createdAtStart, then startAfterSequenceId=last event (vendor log is ascending from the earliest event)",
+    "verified": "apps/sharetribe/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/shippo",
@@ -6052,12 +6053,13 @@
     "path": "apps/shipstation",
     "mechanism": "poll",
     "candidates": [
-      "new-shipment-list"
+      "new-shipment",
+      "new-or-updated-shipment"
     ],
     "pollAction": "shipment-list",
-    "reason": "list action shipment-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "GET /v2/shipments with documented sort_by=created_at|modified_at&sort_dir=desc (additive sortBy/sortDir action params)",
+    "verified": "apps/shipstation/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/shopify",
@@ -6083,12 +6085,12 @@
     "path": "apps/short-io",
     "mechanism": "poll",
     "candidates": [
-      "new-link-list"
+      "new-link"
     ],
     "pollAction": "link-list",
-    "reason": "list action link-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "GET /api/links with documented dateSortOrder=desc; links carry no update stamp",
+    "verified": "apps/short-io/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/shortcut",
@@ -6153,23 +6155,25 @@
     "path": "apps/simplero",
     "mechanism": "poll",
     "candidates": [
-      "new-purchase-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
-    "pollAction": "purchase-list",
-    "reason": "list action purchase-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "contact-list",
+    "reason": "GET /api/v2/customers documents created_at/updated_at DateFilter (custom from/to dates); date-window poll with after-cursor resume (https://simplero.com/api/v2/docs/openapi.json)",
+    "verified": "apps/simplero/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/simpletexting",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter window on GET /api/contacts (vendor sorts/filters by updated, no created filter): new-contact keeps created in window; resumes by page",
+    "verified": "apps/simpletexting/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/simplybook",
@@ -6209,34 +6213,36 @@
     "path": "apps/slite",
     "mechanism": "poll",
     "candidates": [
-      "new-km-note-list"
+      "new-or-updated-note"
     ],
-    "pollAction": "km-note-list",
-    "reason": "list action km-note-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "note-list",
+    "reason": "GET /v1/notes?orderBy=lastEditedAt_DESC (documented enum); no created-time order is documented so no new-note",
+    "verified": "apps/slite/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/smartsheet",
     "mechanism": "poll",
     "candidates": [
-      "new-container-children"
+      "new-sheet",
+      "new-or-updated-sheet"
     ],
-    "pollAction": "list-container-children",
-    "reason": "list action list-container-children has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-sheets",
+    "reason": "since-filter window on GET /sheets (documented modifiedSince, no sort): new-sheet keeps createdAt in window; resumes by page; list-container-children/reports/workspaces/users considered and not shipped",
+    "verified": "apps/smartsheet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/smartsuite",
     "mechanism": "poll",
     "candidates": [
-      "new-records"
+      "new-record",
+      "new-or-updated-record"
     ],
     "pollAction": "list-records",
-    "reason": "list action list-records has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "POST records/list sorted by system field first_created / last_updated desc (documented sort syntax and sortable First Created / Last Updated fields)",
+    "verified": "apps/smartsuite/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/snowflake",
@@ -6251,23 +6257,24 @@
     "path": "apps/snyk",
     "mechanism": "poll",
     "candidates": [
-      "new-issue-list"
+      "new-issue",
+      "new-or-updated-issue"
     ],
     "pollAction": "issue-list",
-    "reason": "list action issue-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter window on GET /rest/orgs/{org_id}/issues (documented created_after / updated_after, no sort); action returnAll drains the window",
+    "verified": "apps/snyk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/softr",
     "mechanism": "poll",
     "candidates": [
-      "new-record-list"
+      "new-database"
     ],
-    "pollAction": "record-list",
-    "reason": "list action record-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "database-list",
+    "reason": "GET /databases takes no parameters and returns every database in one request: snapshot poll for new databases; record-list has no sort/filter and record-search sorts only by a table-specific field id (https://docs.softr.io/softr-api/softr-database-api/databases/get-databases)",
+    "verified": "apps/softr/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/solapi",
@@ -6285,12 +6292,13 @@
     "path": "apps/splitwise",
     "mechanism": "poll",
     "candidates": [
-      "new-expenses"
+      "new-expense",
+      "new-or-updated-expense"
     ],
     "pollAction": "list-expenses",
-    "reason": "list action list-expenses has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter window on GET /get_expenses (documented updated_after, no sort or created filter): new-expense keeps created_at in window; resumes by offset",
+    "verified": "apps/splitwise/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/splunk",
@@ -6305,12 +6313,12 @@
     "path": "apps/spotify",
     "mechanism": "poll",
     "candidates": [
-      "new-record"
+      "new-playlist"
     ],
-    "pollAction": "search",
-    "reason": "list action search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "playlist-get-user-playlists",
+    "reason": "snapshot (c) of the user's playlist library (limit=50 pages, refused above 500); search is a query-dependent catalog endpoint",
+    "verified": "apps/spotify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/square",
@@ -6327,12 +6335,13 @@
     "path": "apps/squarespace-commerce",
     "mechanism": "poll",
     "candidates": [
-      "new-orders"
+      "new-order",
+      "new-or-updated-order"
     ],
     "pollAction": "list-orders",
-    "reason": "list action list-orders has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "since-filter window on GET /1.0/commerce/orders (documented modifiedAfter+modifiedBefore, ordered by modifiedOn, direction not stated); new-order keeps createdOn in window; resumes by nextPageCursor",
+    "verified": "apps/squarespace-commerce/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/stackexchange",
