@@ -929,12 +929,33 @@
     "path": "apps/bigcommerce",
     "mechanism": "poll",
     "candidates": [
-      "new-order"
+      "new-order",
+      "new-product",
+      "new-or-updated-product",
+      "new-customer",
+      "new-or-updated-customer",
+      "new-price-list",
+      "new-or-updated-price-list",
+      "new-brand",
+      "new-inventory-location",
+      "new-category-tree",
+      "new-or-updated-price-list-record"
     ],
-    "pollAction": "order-list",
-    "reason": "shipped poll trigger(s) over list action order-list",
-    "verified": "apps/bigcommerce/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "product-list",
+    "reason": "Orders, products and customers poll with vendor-documented sort tokens (products by id for creation order); price lists, brands, inventory locations and category trees are small bounded collections diffed as snapshots; price list records use the documented date_modified:min filter for one chosen price list.",
+    "verified": "apps/bigcommerce/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "category-list": "GET /v3/catalog/trees/categories documents only category_id/uuid, tree_id, parent_id, name, page_title, keyword and is_visible filters: no created/modified filter or sort, and no documented size bound (https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/category-trees/categories/get-all-categories)",
+      "customer-address-list": "sub-list of one individual customer record (not a container a user would pick to watch); vendor documents only page/limit, no date filter; new customers come from new-customer (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/customers/v2/customer-addresses/get-customer-addresses)",
+      "inventory-item-list": "only page/limit and id filters, no date filter or sort; unbounded (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/inventory/items/get-inventory-items)",
+      "order-product-list": "sub-list of one individual order record (not a container a user would pick to watch); vendor documents only page/limit, no date filter; new orders come from new-order (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/orders/order-products/get-order-products)",
+      "order-shipping-address-list": "sub-list of one individual order record (not a container a user would pick to watch); vendor documents only page/limit, no date filter; new orders come from new-order (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/orders/order-shipping-addresses/get-order-shipping-addresses)",
+      "order-status-list": "reference order-status vocabulary, not changing workflow records (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/orders/order-status/get-order-statuses)",
+      "order-transaction-list": "sub-list of one individual order record (not a container a user would pick to watch); vendor documents no query parameters at all; new orders come from new-order (https://docs.bigcommerce.com/developer/api-reference/rest/admin/management/order-operations/get-order-transactions)",
+      "variant-list": "only page/limit and id/sku/upc/product_id filters, no date filter or sort; unbounded (https://docs.bigcommerce.com/developer/api-reference/rest/admin/catalog/product-variants/variants-batch/get-variants)",
+      "webhook-list": "API-account administration output, not store workflow records (https://docs.bigcommerce.com/developer/api-reference/rest/integrations/webhooks/get-webhooks)"
+    }
   },
   {
     "path": "apps/bitly",
@@ -6930,12 +6951,31 @@
     "path": "apps/seamlessai",
     "mechanism": "poll",
     "candidates": [
-      "new-task"
+      "new-task",
+      "new-contact",
+      "new-company",
+      "new-saved-search",
+      "new-campaign",
+      "new-campaign-contact",
+      "new-activity",
+      "new-or-updated-activity",
+      "new-list",
+      "new-or-updated-list",
+      "new-template"
     ],
     "pollAction": "task-list",
-    "reason": "shipped poll trigger(s) over list action task-list",
-    "verified": "apps/seamlessai/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Eleven poll triggers: newest-first (task, saved search, campaign, activity: documented order), since-filter (contacts, companies: startDate/endDate), snapshots (lists, templates, campaign contacts).",
+    "verified": "apps/seamlessai/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contacts-search": "credit-consuming search charges 1 credit per 50 results (https://docs.seamless.ai/api-catalog/contact-search)",
+      "companies-search": "credit-consuming search charges 1 credit per 50 results (https://docs.seamless.ai/api-catalog/company-search)",
+      "call-dispositions-list": "reference vocabulary of call dispositions (https://docs.seamless.ai/api-reference/v2/calls/list-call-dispositions)",
+      "call-sentiments-list": "reference vocabulary of call sentiments (https://docs.seamless.ai/api-reference/v2/calls/list-call-sentiments)",
+      "contact-statuses-list": "reference vocabulary of contact statuses (https://docs.seamless.ai/api-catalog/account)",
+      "engagement-statuses-list": "reference vocabulary of engagement statuses (https://docs.seamless.ai/api-catalog/account)",
+      "email-accounts-list": "reference value (vendor Account API groups it with reference values, https://docs.seamless.ai/api-catalog/account)"
+    }
   },
   {
     "path": "apps/seatable",

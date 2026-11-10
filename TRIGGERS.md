@@ -12,19 +12,17 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1295 triggers, 3148 unaccounted list actions in 600 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
 | apps/streamtime | 0 | 24 | 24 |
 | apps/eventbrite | 16 | 23 | 23 |
-| apps/bigcommerce | 1 | 17 | 16 |
 | apps/heartbeat | 8 | 16 | 16 |
 | apps/ashby | 1 | 16 | 15 |
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/keap | 1 | 17 | 15 |
 | apps/podium | 1 | 16 | 15 |
-| apps/seamlessai | 1 | 16 | 15 |
 | apps/twist | 1 | 16 | 15 |
 | apps/acculynx | 2 | 15 | 14 |
 | apps/document360 | 2 | 15 | 14 |
@@ -624,6 +622,7 @@ depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-p
 | apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
+| apps/bigcommerce | 11 | 17 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/clickup | 20 | 5 | 0 |
 | apps/companycam | 20 | 20 | 0 |
@@ -663,6 +662,7 @@ depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-p
 | apps/productive | 2 | 17 | 0 |
 | apps/salesforce | 2 | 3 | 0 |
 | apps/samcart | 8 | 19 | 0 |
+| apps/seamlessai | 11 | 16 | 0 |
 | apps/shopify | 18 | 4 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
@@ -841,7 +841,7 @@ depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-p
 | apps/beeminder | 1 | list-datapoints | new-datapoint | apps/beeminder/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-datapoints |
 | apps/betterstack | 1 | incident-list | new-incident | apps/betterstack/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe |
 | apps/bexio | 1 | contact-list | new-contact | apps/bexio/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
-| apps/bigcommerce | 1 | order-list | new-order | apps/bigcommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action order-list |
+| apps/bigcommerce | 11 | product-list | new-order, new-product, new-or-updated-product, new-customer, new-or-updated-customer, new-price-list, new-or-updated-price-list, new-brand, new-inventory-location, new-category-tree, new-or-updated-price-list-record | apps/bigcommerce/README.md Triggers section (verified 2026-11-10) | hand | Orders, products and customers poll with vendor-documented sort tokens (products by id for creation order); price lists, brands, inventory locations and category trees are small bounded collections diffed as snapshots; price list records use the documented date_modified:min filter for one chosen price list. |
 | apps/bitly | 1 | list-bitlinks | new-bitlink | apps/bitly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-bitlinks gained an additive createdAfter input for the documented created_after filter (https://dev.bitly.com/api-reference/) |
 | apps/bitrix24 | 1 | contact-list | new-contact | apps/bitrix24/README.md Triggers section (verified 2026-11-09) | hand | Contact list accepts DATE_CREATE descending order. |
 | apps/bitwarden | 1 | event-list | new-event | apps/bitwarden/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll windowed by the documented start filter of event-list with continuation tokens; order-independent, id dedupe |
@@ -1162,7 +1162,7 @@ depth: 682 apps, 1275 triggers, 3179 unaccounted list actions in 602 apps, n8n-p
 | apps/salla | 2 | order-list | new-order, new-or-updated-order | apps/salla/README.md Triggers section (verified 2026-11-09) | hand | order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md) |
 | apps/samcart | 8 | order-list | new-order, new-charge, new-failed-charge, new-customer, new-product, new-subscription, subscription-status-changed, new-refund | apps/samcart/README.md Triggers section (verified 2026-11-10) | hand | created_at_min since-filter polls (overlap, offset resume, seed floor) on order/charge/failed-charge/customer/product/subscription/subscription-history lists; refund-list id-cursor poll (https://developer.samcart.com/specs/openapi.yaml) |
 | apps/scoreapp | 1 | result-list | new-result | apps/scoreapp/README.md Triggers section (verified 2026-11-09) | hand | result-list order_by=created_at order_dir=desc (https://support.scoreapp.com/article/217-scoreapp-public-api-getting-started) |
-| apps/seamlessai | 1 | task-list | new-task | apps/seamlessai/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action task-list |
+| apps/seamlessai | 11 | task-list | new-task, new-contact, new-company, new-saved-search, new-campaign, new-campaign-contact, new-activity, new-or-updated-activity, new-list, new-or-updated-list, new-template | apps/seamlessai/README.md Triggers section (verified 2026-11-10) | hand | Eleven poll triggers: newest-first (task, saved search, campaign, activity: documented order), since-filter (contacts, companies: startDate/endDate), snapshots (lists, templates, campaign contacts). |
 | apps/seatable | 1 | row-list | new-row | apps/seatable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
 | apps/sellsy | 2 | company-search | new-company, new-or-updated-company | apps/sellsy/README.md Triggers section (verified 2026-11-09) | hand | company search supports created_at and updated_at descending sort |
 | apps/sendblue | 1 | message-list | new-message | apps/sendblue/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action message-list |
