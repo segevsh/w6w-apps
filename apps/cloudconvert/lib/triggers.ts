@@ -1,4 +1,4 @@
-import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
+import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import {
   header,
   hmac,
@@ -183,6 +183,109 @@ export function webhookTrigger(
       // The webhook is registered for one event; anything else is acknowledged without a run.
       if (event.event !== spec.event) return [];
       return [event];
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Any Event: one webhook registered for the events the user lists.
+// ---------------------------------------------------------------------------------------------
+
+/** Every webhook event CloudConvert documents (https://cloudconvert.com/api/v2/webhooks, verified 2026-11-10). */
+export const CLOUDCONVERT_EVENTS = ["job.created", "job.finished", "job.failed"] as const;
+
+/** What the Any Event `onSubscribe` returns: the named state plus the registered events. */
+export interface AnyEventState extends TriggerState {
+  events: string[];
+}
+
+export interface AnyEventParams {
+  /** Comma-separated CloudConvert events; empty = all of them. */
+  events?: string;
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint: `Comma-separated CloudConvert webhook events (${
+    CLOUDCONVERT_EVENTS.join(", ")
+  }). Leave empty for all of them.`,
+};
+
+/** The comma-separated `events` param → the events to register (empty = all; unknown refused). */
+export function chooseEvents(events: string | undefined): string[] {
+  const asked = (events ?? "").split(",").map((e) => e.trim()).filter((e) => e !== "");
+  if (asked.length === 0) return [...CLOUDCONVERT_EVENTS];
+  const known = new Set<string>(CLOUDCONVERT_EVENTS);
+  const bad = asked.filter((e) => !known.has(e));
+  if (bad.length > 0) throw new Error(`Unknown CloudConvert webhook event(s): ${bad.join(", ")}.`);
+  return [...new Set(asked)];
+}
+
+/**
+ * The Any Event trigger: the webhook is registered with the chosen `events` list (CloudConvert's
+ * `POST /v2/webhooks` takes an array), verified exactly like the named triggers
+ * (`verifySignature` first), and a delivery of an event outside that list is acknowledged with no run.
+ */
+export function anyEventTrigger(
+  spec: { key: string; title: string; description: string; sample: CloudConvertEvent },
+): TriggerDefinition<AnyEventParams, CloudConvertEvent, AnyEventState> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [EVENTS_PARAM],
+    output: OUTPUT,
+    sample: spec.sample,
+
+    async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
+      const events = chooseEvents(params?.events);
+      const created = await new CloudConvertClient(ctx).data<
+        { id?: number | string; signing_secret?: string }
+      >("/webhooks", { method: "POST", body: { url: callbackUrl, events } });
+      const webhookId = str(created?.id);
+      const signingSecret = str(created?.signing_secret);
+      if (!webhookId || !signingSecret) {
+        if (webhookId) {
+          try {
+            await new CloudConvertClient(ctx).status(
+              `/webhooks/${encodeURIComponent(webhookId)}`,
+              { method: "DELETE" },
+            );
+          } catch { /* best-effort rollback */ }
+        }
+        throw new Error("CloudConvert created the webhook but returned no id or signing secret.");
+      }
+      return { webhookId, signingSecret, events };
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      const s = state as Partial<AnyEventState> | undefined;
+      if (!s?.webhookId) return;
+      try {
+        await new CloudConvertClient(ctx).status(
+          `/webhooks/${encodeURIComponent(s.webhookId)}`,
+          { method: "DELETE" },
+        );
+      } catch (err) {
+        if (!isGone(err)) throw err;
+      }
+    },
+
+    async handleIngest({ raw, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`CloudConvert delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const body = await verifySignature(raw, state?.signingSecret);
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(body);
+      } catch {
+        throw new Error("CloudConvert delivery refused: the body is not JSON.");
+      }
+      const event = normalizeDelivery(parsed);
+      return (state?.events ?? []).includes(event.event) ? [event] : [];
     },
   };
 }

@@ -6,7 +6,7 @@ Convert, compress and manipulate files through CloudConvert's job/task pipeline,
 - **Categories** — documents, developer-tools
 - **Auth methods** — api-token
 - **Actions** — 18
-- **Triggers** — 3 (webhook)
+- **Triggers** — 4 (webhook)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.cloudconvert.com`, `sync.api.cloudconvert.com` (the `service` check
   adds `status.cloudconvert.com` to its own hook allowlist, never to the app's)
@@ -129,14 +129,17 @@ scope is absent — `test` has already established the key works for whatever it
 | `job-finished` — Job Finished | webhook (API-registered, signed) | `job.finished` | job id, tag, status, timestamps and tasks (with the export tasks' file URLs), plus the full job |
 | `job-failed` — Job Failed | webhook (API-registered, signed) | `job.failed` | the same, for a job that failed |
 | `job-created` — Job Created | webhook (API-registered, signed) | `job.created` | the same, as the job starts |
+| `any-event` — Any Event | webhook (API-registered, signed) | the `events` you list (default: all three) | the same, for each listed event; others are acknowledged without a run |
 
 **Setup.** Nothing to paste. Subscribing runs `POST /v2/webhooks` with the callback URL and the trigger's one event, and keeps the webhook id and the `signing_secret` CloudConvert returns in the subscription's state; unsubscribing runs `DELETE /v2/webhooks/{id}` (a webhook already gone, 404 or 410, counts as deleted). The connection's API key needs the `webhook.write` scope (the same scope `webhook-create` and `webhook-delete` need).
 
 **Trust model.** CloudConvert sends `CloudConvert-Signature`, the hex HMAC-SHA256 of the full request body under the webhook's signing secret. The trigger checks it against the raw bytes received, in constant time, before parsing; a missing secret, header or raw body, or a mismatch, refuses the delivery. The signature carries no timestamp, so a captured delivery can be replayed. The webhook is account-wide: it reports every job on the account, including ones started outside this workflow, so match on `tag` or `jobId` when only some jobs matter. A delivery for a different event than the trigger registered is acknowledged without a run.
 
-No poll trigger ships: `job-list` exposes status, tag and API-key filters but no sort or since argument, and the webhook reports jobs as they happen.
+CloudConvert documents exactly three webhook events (`job.created`, `job.finished`, `job.failed`), all shipped above; `any-event` registers one webhook for the events in its `events` parameter (comma-separated, empty = all three) and verifies it exactly like the named triggers.
 
-Docs (verified 2026-11-10): https://cloudconvert.com/docs/api-reference/webhooks
+No poll trigger ships. `job-list` is covered by `job-created` (an account-wide webhook that reports every job as it is created; the list exposes status, tag and API-key filters but no sort or since argument). `task-list` has no sort or created filter and no documented order, and the tasks of each job arrive in the `tasks` field of the job events. `operation-list` is reference data (the supported operations and formats) and `webhook-list` is account configuration (the webhook endpoints themselves), neither a record feed.
+
+Docs (verified 2026-11-10): https://cloudconvert.com/docs/api-reference/webhooks (events, signing), https://cloudconvert.com/api/v2/webhooks, https://cloudconvert.com/api/v2/jobs and https://cloudconvert.com/api/v2/tasks (list parameters)
 
 ## Actions
 
