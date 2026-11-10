@@ -973,9 +973,6 @@
       "path": "./apps/lexware-office"
     },
     {
-      "path": "./apps/litellm"
-    },
-    {
       "path": "./apps/line"
     },
     {

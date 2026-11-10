@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 65, manual-webhook: 31, poll: 486, none: 101
+**Totals:** 682 apps — webhook-api: 65, manual-webhook: 31, poll: 486, none: 100
 
 ## webhook-api (65)
 
@@ -607,7 +607,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zulip | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (101)
+## none (100)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -651,7 +651,6 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/jev |  | apps/jev/README.md Triggers section (verified 2026-11-09) | hand | stateless typed-evaluation API: `evaluate` is a compute call and `list-models` returns the static model catalog, so there are no user records that change (https://docs.typesafe.ai) |
 | apps/jinaai |  | apps/jinaai/README.md Triggers section (verified 2026-11-09) | hand | `batches-list` takes only a `limit` (no documented sort or created-after filter) and is not the whole collection, and `classifiers-list` was measured returning `500` for every request, so no list action is a reliable record feed; the rest is stateless embeddings, rerank and classify compute (https://api.jina.ai/openapi.json: /v1/batches takes only `limit`) |
 | apps/kvcore | new-user | apps/kvcore/README.md Triggers section (verified 2026-11-09) | hand | user-list takes only an updated-since filter and documents no created-time field or sort, so a new user cannot be told from an edited one (https://developer.insiderealestate.com/publicv2/reference/get_v2-public-users) |
-| apps/litellm |  | no | hand | no actions: a model-provider connection used only by the host's model layer |
 | apps/lodgify |  | no | hand | list-bookings has no sort order and no created-since filter, only updatedSince with no documented booking stamp to tell new from edited; vendor docs 403 to curl so default order unverifiable (https://docs.lodgify.com/reference/list-bookings) |
 | apps/mailcheck |  | no | hand | email-validation API lists batch-operation jobs, not durable created records |
 | apps/meta/facebook-conversions |  | no | hand | dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists |
