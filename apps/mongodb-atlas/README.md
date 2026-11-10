@@ -245,3 +245,7 @@ a credential — plus three specific to this app: **every destructive or
 perimeter-widening path still has its gate**, **no action claims to read
 documents**, and **nothing logs a password, a connection string or a record
 set**, checked on the log call's values rather than its keys.
+
+## Triggers
+
+- **New Event** wraps `event-list`, whose project events page is newest first. [MongoDB Atlas project events](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-getallprojectevents), verified 2026-11-09.
