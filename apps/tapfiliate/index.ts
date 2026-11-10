@@ -107,6 +107,12 @@ import clickGet from "./actions/click-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newConversion from "./triggers/new-conversion.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newClick from "./triggers/new-click.ts";
+import newProgram from "./triggers/new-program.ts";
+import newAffiliateGroup from "./triggers/new-affiliate-group.ts";
+import newAffiliatePayment from "./triggers/new-affiliate-payment.ts";
+import newAffiliateProgram from "./triggers/new-affiliate-program.ts";
 
 export default {
   actions: [
@@ -171,5 +177,13 @@ export default {
   // authentication story.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newConversion],
+  triggers: [
+    newConversion,
+    newCustomer,
+    newClick,
+    newProgram,
+    newAffiliateGroup,
+    newAffiliatePayment,
+    newAffiliateProgram,
+  ],
 } satisfies AppDefinition;
