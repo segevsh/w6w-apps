@@ -16,7 +16,7 @@ test("new-habit: seeds without emitting, then emits exactly the added habit (ide
   const rows = [habit("h1"), habit("h2")];
   const first = await trigger.poll!({ ...input, state: seeded.nextState }, ctx(rows).ctx);
   const retry = await trigger.poll!({ ...input, state: seeded.nextState }, ctx(rows).ctx);
-  assertEquals(first.events, [{ change: "added", key: "h2", values: habit("h2") }]);
+  assertEquals(first.events, [habit("h2")]);
   assertEquals(retry, first);
   // An edited or removed habit is not a "new habit".
   const quiet = await trigger.poll!(
@@ -32,4 +32,14 @@ test("new-habit: requests the habit collection", async () => {
   assertEquals(m.calls.length, 1);
   assertEquals(m.calls[0].method, "GET");
   assertEquals(m.calls[0].url, "https://api.ticktick.com/open/v1/habit");
+});
+
+test("new-habit: emits the flat habit that output and sample declare", async () => {
+  const seeded = await trigger.poll!({ ...input, state: {} }, ctx([]).ctx);
+  const out = await trigger.poll!({ ...input, state: seeded.nextState }, ctx([habit("h9")]).ctx);
+  const event = out.events[0] as Record<string, unknown>;
+  for (const f of trigger.output) assertEquals(f.key in event, true, f.key);
+  assertEquals(Object.keys(trigger.sample as object).sort(), ["id", "name"]);
+  assertEquals(event.id, "h9");
+  assertEquals(trigger.minIntervalMs, 300_000);
 });

@@ -410,6 +410,6 @@ credential, and this app does not pretend otherwise.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-habit` — New Habit | Poll | `list-habits` | Each habit added to the account |
+| `new-habit` — New Habit | Poll | `list-habits` | Each habit added to the account (the habit itself: `id`, `name`, …) |
 
 `list-habits` returns the whole (small, unpaged) habit collection in one request, so the trigger compares it with the previous check and emits additions only; edits and removals are ignored. Nothing to set up on the vendor side. Source: [TickTick Open API](https://developer.ticktick.com/docs/openapi.md) (verified 2026-11-09).

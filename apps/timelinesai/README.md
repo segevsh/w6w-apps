@@ -103,4 +103,4 @@ still consumes a credit.
 | --- | --- | --- | --- |
 | `new-message` — New Message | Poll | `messages-list` | Each new message in the chat you choose (Chat ID) |
 
-Polled newest-first through the `messages-list` action (`sorting_order=desc`, for the chat you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [TimelinesAI API](https://app.timelines.ai/integrations/api/) (verified 2026-11-09).
+Polled newest-first through the `messages-list` action (`sorting_order=desc`, for the chat you pick); the first check records what exists without firing, later checks emit only unseen items. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [TimelinesAI get chat messages](https://timelines.ai/docs/public-api-reference/get-filtered-chat-history-messages-only-of-the-chat.md) (documents `sorting_order` asc/desc) (verified 2026-11-09).
