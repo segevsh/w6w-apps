@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mollie",
-  "version": "0.2.0",
-  "description": "Accept Mollie payments and manage customers, and trigger workflows on new customers.",
+  "version": "0.3.0",
+  "description": "Accept Mollie payments and manage customers, and trigger workflows on new customers, chargebacks, refunds, payments, and subscriptions.",
   "license": "MIT",
   "author": {
     "name": "w6w"

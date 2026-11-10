@@ -1,9 +1,14 @@
 import type { ActionDefinition } from "@w6w/types";
 import { SenderClient, type SenderListPage } from "../lib/client.ts";
+import { paginationParams, paginationQuery } from "../lib/params.ts";
 
 /** `GET /v2/groups/{id}/subscribers` — every subscriber in a group. */
 interface Input {
   id: string;
+  page?: number;
+  limit?: number;
+  order?: string;
+  direction?: string;
 }
 
 const groupSubscribersList: ActionDefinition<Input> = {
@@ -12,7 +17,7 @@ const groupSubscribersList: ActionDefinition<Input> = {
   resource: "group",
   title: "List Subscribers In Group",
   description: "List every subscriber in the specified group.",
-  params: [{ key: "id", label: "Group ID", type: "string", required: true }],
+  params: [{ key: "id", label: "Group ID", type: "string", required: true }, ...paginationParams()],
   output: [
     { key: "data", type: "array", label: "Subscribers" },
     { key: "meta", type: "object", label: "Pagination metadata" },
@@ -21,6 +26,7 @@ const groupSubscribersList: ActionDefinition<Input> = {
   execute(input, ctx) {
     return new SenderClient(ctx).json<SenderListPage<unknown>>(
       `/groups/${encodeURIComponent(input.id)}/subscribers`,
+      { query: paginationQuery(input) },
     );
   },
 };

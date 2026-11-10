@@ -41,6 +41,15 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
 import update from "./triggers/update.ts";
+import editedMessage from "./triggers/edited-message.ts";
+import channelPost from "./triggers/channel-post.ts";
+import editedChannelPost from "./triggers/edited-channel-post.ts";
+import callbackQuery from "./triggers/callback-query.ts";
+import inlineQuery from "./triggers/inline-query.ts";
+import shippingQuery from "./triggers/shipping-query.ts";
+import preCheckoutQuery from "./triggers/pre-checkout-query.ts";
+import poll from "./triggers/poll.ts";
+import chatMemberUpdated from "./triggers/chat-member-updated.ts";
 
 export default {
   actions: [
@@ -71,6 +80,18 @@ export default {
     callbackAnswerQuery,
   ],
   auth: [botToken],
-  triggers: [newMessage, update],
+  triggers: [
+    newMessage,
+    editedMessage,
+    channelPost,
+    editedChannelPost,
+    callbackQuery,
+    inlineQuery,
+    shippingQuery,
+    preCheckoutQuery,
+    poll,
+    chatMemberUpdated,
+    update,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/shopify",
-  "version": "0.3.0",
-  "description": "Manage Shopify products, orders, customers and inventory through the Admin REST API, plus triggers on orders, customers, products and refunds.",
+  "version": "0.4.0",
+  "description": "Manage Shopify products, orders, customers and inventory through the Admin REST API, plus triggers on orders, customers, products, inventory levels, locations and refunds.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://shopify.dev/docs/api/admin-rest"
     ],
-    "longDescription": "Shopify manages products, orders, customers and inventory from a workflow through the Admin API — creating and updating products, and reading and managing orders including canceling or closing one directly, without a person opening the Shopify admin.\n\nCustomers can be created, updated, searched and looked up by their order history, and inventory levels can be set directly at a location, which covers keeping stock counts accurate as they change outside Shopify itself. Store locations can be listed, and the shop's own record fetched, giving a workflow the context it needs before acting on a specific order or inventory item.\n\nA fit for syncing inventory from an external warehouse system, automating order fulfillment steps like cancellation or closing, or keeping customer records in sync between Shopify and a CRM.\n\nTen triggers start a workflow when something happens in the store: an order placed, paid, updated, cancelled or fulfilled, a customer or product created, a product updated, a refund created, or any webhook topics you list. Subscribing registers the webhooks with Shopify and unsubscribing removes them. Shopify signs deliveries with the app's client secret, which the trigger asks for as a secret parameter; a delivery that fails the signature check never starts a run.",
+    "longDescription": "Shopify manages products, orders, customers and inventory from a workflow through the Admin API — creating and updating products, and reading and managing orders including canceling or closing one directly, without a person opening the Shopify admin.\n\nCustomers can be created, updated, searched and looked up by their order history, and inventory levels can be set directly at a location, which covers keeping stock counts accurate as they change outside Shopify itself. Store locations can be listed, and the shop's own record fetched, giving a workflow the context it needs before acting on a specific order or inventory item.\n\nA fit for syncing inventory from an external warehouse system, automating order fulfillment steps like cancellation or closing, or keeping customer records in sync between Shopify and a CRM.\n\nEighteen triggers start a workflow when something happens in the store: an order placed, paid, updated, cancelled, fulfilled or deleted, a customer created, updated or deleted, a product created, updated or deleted, an inventory level updated, a location created, updated or deleted, a refund created, or any webhook topics you list. Subscribing registers the webhooks with Shopify and unsubscribing removes them. Shopify signs deliveries with the app's client secret, which the trigger asks for as a secret parameter; a delivery that fails the signature check never starts a run.",
     "categories": [
       "commerce"
     ],

@@ -14,15 +14,25 @@ spaces), so nothing was taken from it alone.
 | Key | Mechanism | Wrapped list action | The run gets |
 |---|---|---|---|
 | `new-list` | poll (5 min) | `list-list` | each email-marketing contact list newly created in Vbout |
+| `new-contact` | poll (5 min) | `contact-list` | each contact newly added to the list you pick (`listId`) |
+| `new-audience` | poll (5 min) | `audience-list` | each audience newly created |
+| `new-campaign` | poll (5 min) | `campaign-list` | each email campaign (draft, scheduled or sent) newly created |
+| `new-email-template` | poll (5 min) | `email-template-list` | each email template newly added |
+| `new-goal` | poll (5 min) | `goal-list` | each conversion goal newly created |
+| `new-social-channel` | poll (5 min) | `social-channel-list` | each social page or profile newly connected |
 
-`GET /1/emailmarketing/getlists.json` takes no paging parameters and returns every list of the
-account in one response, so the trigger snapshot-diffs it (additions only; more than 5000 lists
-throws). The first check only records the lists. Contacts and campaigns are not triggers:
-`getcontacts` is per list with no documented sort or since filter, and `campaigns` pages with no
-documented order. The OpenAPI document's `Webhook/*` paths describe popups (their parameters are
-popup fields), so no webhook offering is recorded.
+Every Vbout list endpoint documents no order and no since filter, so each trigger snapshot-diffs the
+whole collection (additions only; the first check only records what exists; more than 5000 rows
+throws). `getlists`, `getaudiences`, `getemailtemplates`, `goal/lists` and `socialmedia/channels` take
+no paging parameters and return everything in one response; `getcontacts` takes only `listid`;
+`campaigns` takes `limit`/`page`, so `new-campaign` reads pages of 100 until one adds no new id.
 
-Source: https://developers.vbout.com/scripts/openapi.json (`EmailMarketing/GetLists`; verified 2026-11-09).
+Not covered: `social-stats-list` (click/track analytics for posted links, documented only with an
+`asc|desc` sort of unnamed order). The OpenAPI document's `Webhook/*` paths describe popups (their
+parameters are popup fields), so no webhook offering is recorded.
+
+Source: https://developers.vbout.com/scripts/openapi.json (`EmailMarketing/GetLists`, `GetContacts`,
+`GetAudiences`, `Campaigns`, `GetEmailTemplates`, `Goal/Lists`, `SocialMedia/Channels`; verified 2026-11-10).
 
 ## Auth
 

@@ -6,6 +6,7 @@ tasks, projects and follow-ups Mem derives from your notes, over the v2 API at `
 - **Categories** — productivity, ai
 - **Auth methods** — api-key (bearer)
 - **Actions** — 26
+- **Triggers** — 10 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.mem.ai` (the `service` check adds `status.mem.ai` to its own hook
   allowlist, never to the app's)
@@ -64,3 +65,22 @@ event types; the agent message endpoint; the MCP/ChatGPT helper routes; Set Note
 ## Triggers
 
 - **New Task** (poll) wraps `task-list` with `order_by=created_at`; **New or Updated Task** (poll) wraps it with `order_by=updated_at` and dedupes on `id:updated_at`, so an edit is a new event. Mem's OpenAPI documents `created_at` as newest-created-first and `updated_at` as newest-updated-first, limit max 100. [Mem OpenAPI](https://docs.mem.ai/api-reference/openapi.json), verified 2026-11-09.
+
+### More triggers (depth, verified 2026-11-10)
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Note (`new-note`) | poll | `note-list` with `order_by=created_at` | each newly created note |
+| New or Updated Note (`new-or-updated-note`) | poll | `note-list` with `order_by=updated_at` (id includes `updated_at`) | each note created or edited since the last check |
+| New Collection (`new-collection`) | poll | `collection-list` with `order_by=created_at` | each newly created collection |
+| New or Updated Collection (`new-or-updated-collection`) | poll | `collection-list` with `order_by=updated_at` | each collection created or edited since the last check |
+| New Follow-up (`new-follow-up`) | poll | `follow-up-list` with `order_by=created_at` | each newly created follow-up |
+| New or Updated Follow-up (`new-or-updated-follow-up`) | poll | `follow-up-list` with `order_by=updated_at` | each follow-up created or updated since the last check |
+| New Project (`new-project`) | poll | `project-list` with `order_by=created_at` | each newly identified project |
+| New or Updated Project (`new-or-updated-project`) | poll | `project-list` with `order_by=updated_at` | each project created or updated since the last check |
+
+Mem's OpenAPI documents `order_by` (`created_at` / `updated_at`, with `_asc` variants for oldest-first), a cursor `page` and `limit` 1..100 on `GET /v2/notes`, `/v2/collections`, `/v2/follow-ups` and `/v2/projects`; each trigger reads one page of 100 newest-first and dedupes by id (the `new-or-updated-*` ones by `id:updated_at`, so an edit is a new event). `collection-search` is covered by `new-collection`, and `note-search` and `note-extended-search` by `new-note` (same record types).
+
+Not covered: `note-related-list` (relevance-scored suggestions derived from one note; a similarity ranking, not a record feed).
+
+Vendor documentation: https://docs.mem.ai/api-reference/openapi.json (verified 2026-11-10).

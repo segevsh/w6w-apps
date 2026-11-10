@@ -27,6 +27,16 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newTask from "./triggers/new-task.ts";
+import newContact from "./triggers/new-contact.ts";
+import newCompany from "./triggers/new-company.ts";
+import newSavedSearch from "./triggers/new-saved-search.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newCampaignContact from "./triggers/new-campaign-contact.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newOrUpdatedActivity from "./triggers/new-or-updated-activity.ts";
+import newList from "./triggers/new-list.ts";
+import newOrUpdatedList from "./triggers/new-or-updated-list.ts";
+import newTemplate from "./triggers/new-template.ts";
 import apiKey from "./auth/api-key.ts";
 
 import contactsSearch from "./actions/contacts-search.ts";
@@ -126,7 +136,19 @@ export default {
     userGet,
     featuresGet,
   ],
-  triggers: [newTask],
+  triggers: [
+    newTask,
+    newContact,
+    newCompany,
+    newSavedSearch,
+    newCampaign,
+    newCampaignContact,
+    newActivity,
+    newOrUpdatedActivity,
+    newList,
+    newOrUpdatedList,
+    newTemplate,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

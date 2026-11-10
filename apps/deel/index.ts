@@ -78,6 +78,13 @@ import webhookEventList from "./actions/webhook-event-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContract from "./triggers/new-contract.ts";
+import newPerson from "./triggers/new-person.ts";
+import newLegalEntity from "./triggers/new-legal-entity.ts";
+import newWebhook from "./triggers/new-webhook.ts";
+import newContractMilestone from "./triggers/new-contract-milestone.ts";
+import newTimeOffRequest from "./triggers/new-time-off-request.ts";
+import newTimesheet from "./triggers/new-timesheet.ts";
+import newInvoiceAdjustment from "./triggers/new-invoice-adjustment.ts";
 
 export default {
   actions: [
@@ -116,5 +123,14 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newContract],
+  triggers: [
+    newContract,
+    newPerson,
+    newLegalEntity,
+    newWebhook,
+    newContractMilestone,
+    newTimeOffRequest,
+    newTimesheet,
+    newInvoiceAdjustment,
+  ],
 } satisfies AppDefinition;

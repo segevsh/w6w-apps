@@ -99,6 +99,12 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
 import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newTransaction from "./triggers/new-transaction.ts";
+import newOrUpdatedTransaction from "./triggers/new-or-updated-transaction.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newFund from "./triggers/new-fund.ts";
+import newPayout from "./triggers/new-payout.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -160,7 +166,16 @@ export default {
   // API key only. Givebutter publishes no OAuth surface for third-party apps;
   // the two `/sso/v1/*` endpoints that look like they might be a session/JWT
   // alternative are unreachable with a bearer API key (see module doc, #4).
-  triggers: [newContact, newOrUpdatedContact],
+  triggers: [
+    newContact,
+    newOrUpdatedContact,
+    newTransaction,
+    newOrUpdatedTransaction,
+    newCampaign,
+    newFund,
+    newPayout,
+    newMessage,
+  ],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

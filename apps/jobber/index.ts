@@ -89,6 +89,14 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newInvoice from "./triggers/new-invoice.ts";
 import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newOrUpdatedClient from "./triggers/new-or-updated-client.ts";
+import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newQuote from "./triggers/new-quote.ts";
+import newRequest from "./triggers/new-request.ts";
+import newVisit from "./triggers/new-visit.ts";
+import newProduct from "./triggers/new-product.ts";
+import newProperty from "./triggers/new-property.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -131,6 +139,17 @@ export default {
     graphqlQuery,
   ],
   auth: [oauth2],
-  triggers: [newInvoice, newOrUpdatedInvoice],
+  triggers: [
+    newInvoice,
+    newOrUpdatedInvoice,
+    newOrUpdatedClient,
+    newOrUpdatedJob,
+    newQuote,
+    newRequest,
+    newVisit,
+    newProduct,
+    newProperty,
+    newUser,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

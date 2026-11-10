@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/esignatures",
-  "version": "0.2.0",
-  "description": "Send contracts for e-signature from a template, manage signers and content, and track signing on eSignatures.com, with signed webhook triggers for contract and signer events.",
+  "version": "0.3.0",
+  "description": "Send contracts for e-signature from a template, manage signers and content, and track signing on eSignatures.com, with signed webhook triggers for contract events and polls for new templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://esignatures.com/docs/api"
     ],
-    "longDescription": "eSignatures.com sends legally binding contracts for signature from a template. A workflow can create and send a contract in one call, fill its placeholder fields, add, correct or re-notify signers, edit the contract text before it is signed, withdraw it, and manage the reusable templates and their collaborators. Webhook delivery of signing events is configured in the eSignatures.com dashboard, not through this app; webhook triggers (contract sent, contract signed, signer signed, signer declined, or every event) receive those signed deliveries once the dashboard URL points at the trigger's callback URL.",
+    "longDescription": "eSignatures.com sends legally binding contracts for signature from a template. A workflow can create and send a contract in one call, fill its placeholder fields, add, correct or re-notify signers, edit the contract text before it is signed, withdraw it, and manage the reusable templates and their collaborators. Webhook delivery of signing events is configured in the eSignatures.com dashboard, not through this app; webhook triggers (contract sent, reminder sent, signed, withdrawn, signer viewed, signer signed, signer declined, delivery error, or any event with a filter) receive those signed deliveries once the dashboard URL points at the trigger's callback URL.",
     "categories": [
       "legal",
       "documents"

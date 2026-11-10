@@ -64,6 +64,16 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newConversation from "./triggers/new-conversation.ts";
+import newFeedback from "./triggers/new-feedback.ts";
+import newLocation from "./triggers/new-location.ts";
+import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
+import newOrUpdatedCall from "./triggers/new-or-updated-call.ts";
+import newOrUpdatedCampaign from "./triggers/new-or-updated-campaign.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newOrUpdatedReview from "./triggers/new-or-updated-review.ts";
+import newReviewInvite from "./triggers/new-review-invite.ts";
+import newReview from "./triggers/new-review.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -119,5 +129,17 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
-  triggers: [newConversation],
+  triggers: [
+    newConversation,
+    newFeedback,
+    newLocation,
+    newOrUpdatedAppointment,
+    newOrUpdatedCall,
+    newOrUpdatedCampaign,
+    newOrUpdatedContact,
+    newOrUpdatedReview,
+    newReviewInvite,
+    newReview,
+    newUser,
+  ],
 } satisfies AppDefinition;

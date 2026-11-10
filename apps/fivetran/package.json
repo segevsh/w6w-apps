@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fivetran",
-  "version": "0.3.0",
-  "description": "Run the pipelines that fill a warehouse: trigger and watch syncs, pause them, run dbt transformations, read destinations, and trigger on new connections, sync start and end, and failures.",
+  "version": "0.4.0",
+  "description": "Run the pipelines that fill a warehouse: trigger and watch syncs, run dbt transformations, read destinations. Triggers fire on sync, transformation and connection events and on new connections.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://fivetran.com/docs/rest-api"
     ],
-    "longDescription": "Fivetran automates the pipelines that load a data warehouse, and this app reaches into that pipeline from a workflow: list and inspect connections, trigger an incremental sync or a full historical resync, pause and resume a connection, and run or cancel the dbt transformations that turn raw rows into models.\n\nIt also reads the destinations, connector types, sync history and account info behind those pipelines, so a workflow can answer practical questions — which connections are broken, which are merely paused, which destination is failing every connection writing to it — without opening the Fivetran dashboard. Sync and resync are kept distinct on purpose: an incremental sync is the routine, low-cost call, while a full resync rereads a source's entire history and is billed accordingly, so it requires an explicit acknowledgement rather than being one flag away from the ordinary sync.\n\nThis app is built for operating pipelines that already exist — triggering and monitoring syncs and transformations, reading what is broken or paused — rather than for creating connections and destinations or managing who can reach them, neither of which is exposed here.\n\nA poll trigger starts workflows for new connections, and signed webhook triggers (registered through the Webhook API) start them when a sync starts, when it ends, or when a connection fails.",
+    "longDescription": "Fivetran automates the pipelines that load a data warehouse, and this app reaches into that pipeline from a workflow: list and inspect connections, trigger an incremental sync or a full historical resync, pause and resume a connection, and run or cancel the dbt transformations that turn raw rows into models.\n\nIt also reads the destinations, connector types, sync history and account info behind those pipelines, so a workflow can answer practical questions — which connections are broken, which are merely paused, which destination is failing every connection writing to it — without opening the Fivetran dashboard. Sync and resync are kept distinct on purpose: an incremental sync is the routine, low-cost call, while a full resync rereads a source's entire history and is billed accordingly, so it requires an explicit acknowledgement rather than being one flag away from the ordinary sync.\n\nThis app is built for operating pipelines that already exist — triggering and monitoring syncs and transformations, reading what is broken or paused — rather than for creating connections and destinations or managing who can reach them, neither of which is exposed here.\n\nPoll triggers start workflows for new connections, destinations, transformations, transformation projects and users, and signed webhook triggers (registered through the Webhook API) start them on sync, transformation and connection events, with an Any Event trigger for the rest.",
     "categories": [
       "data-warehousing",
       "devops",

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/twist",
-  "version": "0.2.0",
-  "description": "Post and read Twist threads, comments and conversations; manage channels, groups, workspace users, reactions and the inbox. Poll trigger: new messages in a conversation.",
+  "version": "0.3.0",
+  "description": "Twist messaging for threads, comments and conversations, with poll triggers for new and updated threads, conversations, comments, messages, channels, groups, workspaces and users.",
   "license": "MIT",
   "author": {
     "name": "w6w"

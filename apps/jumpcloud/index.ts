@@ -110,6 +110,14 @@ import organizationList from "./actions/organization-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newUser from "./triggers/new-user.ts";
+import newSystem from "./triggers/new-system.ts";
+import newCommandResult from "./triggers/new-command-result.ts";
+import newCommand from "./triggers/new-command.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newSystemGroup from "./triggers/new-system-group.ts";
+import newUserGroup from "./triggers/new-user-group.ts";
+import newUserGroupMember from "./triggers/new-user-group-member.ts";
+import newUserSshkey from "./triggers/new-user-sshkey.ts";
 
 export default {
   actions: [
@@ -151,6 +159,16 @@ export default {
     organizationList,
   ],
   auth: [apiKey],
-  triggers: [newUser],
+  triggers: [
+    newUser,
+    newSystem,
+    newCommandResult,
+    newCommand,
+    newOrganization,
+    newSystemGroup,
+    newUserGroup,
+    newUserGroupMember,
+    newUserSshkey,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

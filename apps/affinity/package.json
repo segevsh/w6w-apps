@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/affinity",
-  "version": "0.2.0",
-  "description": "Manage Affinity CRM records and trigger on new list entries.",
+  "version": "0.3.0",
+  "description": "Manage Affinity CRM records and trigger on 20+ Affinity webhook events (lists, list entries, notes, fields, field values, persons, organizations, opportunities, or any event).",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developer.affinity.co/",
       "https://api-docs.affinity.co/"
     ],
-    "longDescription": "Affinity is a relationship-intelligence CRM built around three top-level objects — Persons, Organizations, and Opportunities — plus the Lists (spreadsheet-like views) and Fields (columns) that organize them. This app covers that core: read and search all three entity types, manage list membership through List Entries, read and write custom Field Values (including the Ranked Dropdown fields Affinity uses for pipeline stages), and attach Notes to any entity.\n\nIt also covers the automation surface a workflow needs: the New List Entry trigger registers an Affinity webhook so a workflow can react immediately, and health checks monitor the vendor's own status page and its per-minute/per-month rate limit accounting.\n\nAffinity documents two ways to present the same API key — HTTP Basic (key as password, no username) or a Bearer token — for one API generation (v1); this app uses the Bearer form. It does not cover Interactions, Reminders, Entity Files, or Field Value Changes, all of which are documented by the vendor but left for a follow-up.",
+    "longDescription": "Affinity is a relationship-intelligence CRM built around three top-level objects — Persons, Organizations, and Opportunities — plus the Lists (spreadsheet-like views) and Fields (columns) that organize them. This app covers that core: read and search all three entity types, manage list membership through List Entries, read and write custom Field Values (including the Ranked Dropdown fields Affinity uses for pipeline stages), and attach Notes to any entity.\n\nIt also covers the automation surface a workflow needs: 23 named webhook triggers (created, updated and deleted for lists, notes, fields, field values, persons, organizations and opportunities, plus list entries) and an Any Event trigger register an Affinity webhook so a workflow can react immediately (Affinity allows three webhook subscriptions per instance, so Any Event with an events list covers more), and health checks monitor the vendor's own status page and its per-minute/per-month rate limit accounting.\n\nAffinity documents two ways to present the same API key — HTTP Basic (key as password, no username) or a Bearer token — for one API generation (v1); this app uses the Bearer form. It does not cover Interactions, Reminders, Entity Files, or Field Value Changes, all of which are documented by the vendor but left for a follow-up.",
     "categories": [
       "crm"
     ],

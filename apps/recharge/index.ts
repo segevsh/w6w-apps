@@ -65,6 +65,16 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newOrder from "./triggers/new-order.ts";
 import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newAddress from "./triggers/new-address.ts";
+import newOrUpdatedAddress from "./triggers/new-or-updated-address.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
+import newOnetime from "./triggers/new-onetime.ts";
+import newDiscount from "./triggers/new-discount.ts";
+import newCharge from "./triggers/new-charge.ts";
+import newOrUpdatedCharge from "./triggers/new-or-updated-charge.ts";
 
 export default {
   actions: [
@@ -113,5 +123,18 @@ export default {
   // authentication story.
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newOrder, newOrUpdatedOrder],
+  triggers: [
+    newOrder,
+    newOrUpdatedOrder,
+    newCustomer,
+    newOrUpdatedCustomer,
+    newAddress,
+    newOrUpdatedAddress,
+    newSubscription,
+    newOrUpdatedSubscription,
+    newOnetime,
+    newDiscount,
+    newCharge,
+    newOrUpdatedCharge,
+  ],
 } satisfies AppDefinition;

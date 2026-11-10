@@ -42,6 +42,29 @@ import subscriptionCanceledTrigger from "./triggers/subscription-canceled.ts";
 import checkoutCompletedTrigger from "./triggers/checkout-completed.ts";
 import customerCreatedTrigger from "./triggers/customer-created.ts";
 import eventTrigger from "./triggers/event.ts";
+import customerUpdatedTrigger from "./triggers/customer-updated.ts";
+import customerDeletedTrigger from "./triggers/customer-deleted.ts";
+import subscriptionUpdatedTrigger from "./triggers/subscription-updated.ts";
+import invoiceCreatedTrigger from "./triggers/invoice-created.ts";
+import invoiceFinalizedTrigger from "./triggers/invoice-finalized.ts";
+import invoiceVoidedTrigger from "./triggers/invoice-voided.ts";
+import paymentIntentCreatedTrigger from "./triggers/payment-intent-created.ts";
+import paymentIntentCanceledTrigger from "./triggers/payment-intent-canceled.ts";
+import chargeSucceededTrigger from "./triggers/charge-succeeded.ts";
+import chargeFailedTrigger from "./triggers/charge-failed.ts";
+import chargeUpdatedTrigger from "./triggers/charge-updated.ts";
+import chargeCapturedTrigger from "./triggers/charge-captured.ts";
+import invoiceUpdatedTrigger from "./triggers/invoice-updated.ts";
+import invoiceDeletedTrigger from "./triggers/invoice-deleted.ts";
+import refundCreatedTrigger from "./triggers/refund-created.ts";
+import refundUpdatedTrigger from "./triggers/refund-updated.ts";
+import productCreatedTrigger from "./triggers/product-created.ts";
+import productUpdatedTrigger from "./triggers/product-updated.ts";
+import productDeletedTrigger from "./triggers/product-deleted.ts";
+import priceCreatedTrigger from "./triggers/price-created.ts";
+import priceUpdatedTrigger from "./triggers/price-updated.ts";
+import priceDeletedTrigger from "./triggers/price-deleted.ts";
+import checkoutExpiredTrigger from "./triggers/checkout-expired.ts";
 
 import customerCreate from "./actions/customer-create.ts";
 import customerGet from "./actions/customer-get.ts";
@@ -118,6 +141,29 @@ export default {
     subscriptionCanceledTrigger,
     checkoutCompletedTrigger,
     customerCreatedTrigger,
+    customerUpdatedTrigger,
+    customerDeletedTrigger,
+    subscriptionUpdatedTrigger,
+    invoiceCreatedTrigger,
+    invoiceFinalizedTrigger,
+    invoiceVoidedTrigger,
+    paymentIntentCreatedTrigger,
+    paymentIntentCanceledTrigger,
+    chargeSucceededTrigger,
+    chargeFailedTrigger,
+    chargeUpdatedTrigger,
+    chargeCapturedTrigger,
+    invoiceUpdatedTrigger,
+    invoiceDeletedTrigger,
+    refundCreatedTrigger,
+    refundUpdatedTrigger,
+    productCreatedTrigger,
+    productUpdatedTrigger,
+    productDeletedTrigger,
+    priceCreatedTrigger,
+    priceUpdatedTrigger,
+    priceDeletedTrigger,
+    checkoutExpiredTrigger,
     eventTrigger,
   ],
   auth: [apiKey],

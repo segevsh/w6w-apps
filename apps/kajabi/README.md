@@ -3,7 +3,7 @@
 Creator commerce — courses, memberships and digital products — via the **Kajabi Public API v1**.
 
 49 actions across contacts, tags, offers, products, courses, orders, purchases, transactions,
-payouts and forms; one OAuth2 client-credentials auth method; two health checks.
+payouts and forms; one OAuth2 client-credentials auth method; two health checks; 18 poll triggers.
 
 Everything here is transcribed from Kajabi's **vendor-generated OpenAPI document** or verified on
 the wire against `api.kajabi.com` on **2026-08-03**. Nothing is recalled.
@@ -379,7 +379,7 @@ This forwards a **documented** surface; it is not a route to undocumented endpoi
 
 | Not built | Why |
 |---|---|
-| **Triggers / webhooks** | Kajabi's outbound webhooks (form submitted, purchase made, payment succeeded, order created, tag added/removed) are a real and well-documented surface — the spec even ships `/v1/hooks/*_sample` endpoints returning example payloads. **This pack has no trigger surface.** Registering a webhook via `POST /v1/hooks` without anywhere to receive it would create a subscription pointing at nothing, so `hooks` is deliberately absent entirely. This is the single largest gap and it is architectural, not a research failure. |
+| **Triggers / webhooks** | Kajabi's outbound webhooks (form submitted, purchase made, payment succeeded, order created, tag added/removed) are a real and well-documented surface — the spec even ships `/v1/hooks/*_sample` endpoints returning example payloads. Webhook triggers are not built here — `hooks` stays absent, and the app's poll triggers (see *Triggers*) cover the same record types instead. |
 | **Blog posts, podcasts, landing pages, website pages** | Read-only CMS collections (`/v1/blog_posts`, `/v1/podcasts`, `/v1/landing_pages`, `/v1/website_pages`). Genuinely available and trivially addable, but they are site-content browsing rather than commerce or CRM, and none is writable — there is no endpoint to publish a post or edit a page. Left out to keep the app's 49 actions on the four things the product is for. |
 | **Course authoring and learner progress** | Does not exist in the API. `/v1/courses` is `GET`-only; nothing creates a course, adds a lesson, or reads completion. `filter[completed_assessment_id]` on the contact collection is the only progress signal exposed anywhere, and it is a filter, not a resource. |
 | **Tag creation** | The document declares only `GET` on `/v1/contact_tags` and `/v1/contact_tags/{id}`. Tags can be *applied* through this app but not *created* — a tag must already exist in Kajabi. Inventing a create action would mean guessing at an unpublished endpoint. |
@@ -443,7 +443,7 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 Use `deno task fmt`, never bare `deno fmt` — the bare form would rewrite `assets/icon.svg` and
 falsify the verbatim-mark claim above.
 
-**237 tests**, covering every action's path/method/query/body mapping, the client's JSON:API
+**237 action, auth and health tests plus the trigger tests**, covering every action's path/method/query/body mapping, the client's JSON:API
 handling and both error envelopes, all seven auth hooks, and both health checks.
 
 ---
@@ -459,12 +459,35 @@ serialisation of the repeated product-type filter — the app says so rather tha
 
 ## Triggers
 
+- **Triggers** — 18 (poll)
+
 | Trigger | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| New Contact (`new-contact`) | poll | `contact-list` — by `created_at` descending (`sort=-created_at`) | each newly created contact |
+| New Contact (`new-contact`) | poll | `contact-list` — `sort=-created_at` | each newly created contact |
+| New Customer (`new-customer`) | poll | `customer-list` — `sort=-created_at` | each new customer |
+| New Order (`new-order`) | poll | `order-list` — `sort=-created_at` | each new order |
+| New Order Item (`new-order-item`) | poll | `order-item-list` — `sort=-created_at` | each new order line item |
+| New Purchase (`new-purchase`) | poll | `purchase-list` — `sort=-created_at` | each new purchase |
+| New or Updated Purchase (`new-or-updated-purchase`) | poll | `purchase-list` — `sort=-updated_at` | each purchase that is new or edited (e.g. deactivated) |
+| New Form Submission (`new-form-submission`) | poll | `form-submission-list` — `sort=-created_at`, optional form | each new submission |
+| New Contact Note (`new-contact-note`) | poll | `contact-note-list` — `sort=-created_at`, optional contact | each new note |
+| New or Updated Contact Note (`new-or-updated-contact-note`) | poll | `contact-note-list` — `sort=-updated_at`, optional contact | each note that is new or edited |
+| New Transaction (`new-transaction`) | poll | `transaction-list` — `filter[start_date]` | each new payment |
+| New Payout (`new-payout`) | poll | `payout-list` — `filter[start_date]`, site required | each new Kajabi Payments payout |
+| New Offer (`new-offer`) | poll | `offer-list` — snapshot, <= 500 | each offer added to the site |
+| New Product (`new-product`) | poll | `product-list` — snapshot, <= 500 | each product added to the site |
+| New Course (`new-course`) | poll | `course-list` — snapshot, <= 500 | each course added to the site |
+| New Form (`new-form`) | poll | `form-list` — snapshot, <= 500 | each form added to the site |
+| New Contact Tag (`new-contact-tag`) | poll | `contact-tag-list` — snapshot of one contact | each tag newly attached to the chosen contact |
+| New Contact Offer (`new-contact-offer`) | poll | `contact-offer-list` — snapshot of one contact | each offer newly granted to the chosen contact |
+| New Offer Product (`new-offer-product`) | poll | `offer-product-list` — snapshot of one offer | each product newly added to the chosen offer |
 
-The trigger polls every 5 minutes, read one page of 100 from the app's existing `contact-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+Every trigger polls every 5 minutes through the app's existing list action (same client, endpoint and credential); the first check seeds the feed and emits nothing. The newest-first triggers read one page of 100 and dedupe by id. `new-transaction` and `new-payout` are the since-filter triggers: Kajabi sorts nothing on `/v1/transactions` or `/v1/kajabi_payments_payouts` but filters by date (payouts document no page size, so that one drains until an empty page, keyed on `initiated_date`), so each check asks for the day before the last check, drains the window over as many checks as it takes (3 pages of 100 per check, resuming where it stopped), drops anything created before the seed, and only then moves the cursor. The snapshot triggers compare the whole list (up to 5 pages of 100, then they fail loudly rather than truncate) with the previous check and emit additions only.
+
+Site-scoped triggers take an optional `siteId` (Kajabi needs it when the account has several sites); the per-parent snapshots (`new-contact-tag`, `new-contact-offer`, `new-offer-product`) require the contact or offer id.
+
+Not covered (list actions with no trigger): `site-list`, `tag-list`, `custom-field-list` (reference data: sites, tag names and field definitions rather than records a workflow reacts to). Payouts are covered by `new-payout`.
 
 Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
 
-Vendor documentation: https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml (verified 2026-11-09). Its `GET /v1/contacts` description states "The default Sorting is by created_at in descending order (newest first)" and shows `sort=created_at` / `sort=-email` forms; the trigger sends `sort=-created_at` explicitly. The documented sort fields are `name`, `email` and `created_at` — no update-time sort, so no new-or-updated trigger ships.
+Vendor documentation: <https://github.com/Kajabi/public_api_docs/blob/main/openapi.yaml> (verified 2026-11-10). It states "The default Sorting is by created_at in descending order (newest first)" for `GET /v1/customers`, lists `created_at` as a sort field on orders, order items, purchases, form submissions and contact notes (`updated_at` on purchases and contact notes), documents `filter[start_date]`/`filter[end_date]` on `GET /v1/transactions`, shows `created_at` in each transaction's attributes, and documents `initiated_date` ("Payout creation timestamp in UTC") with `filter[start_date]` on `GET /v1/kajabi_payments_payouts`. The triggers send the sort explicitly. Contacts have no update-time sort, so no new-or-updated contact trigger ships.

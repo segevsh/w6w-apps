@@ -22,10 +22,10 @@ import { AsanaClient } from "./client.ts";
  *     unsigned delivery is never accepted.
  *   - `onUnsubscribe` deletes the webhook; one Asana no longer has counts as deleted.
  *
- * Docs (verified 2026-11-09): https://developers.asana.com/docs/webhooks-guide
+ * Docs (verified 2026-11-10): https://developers.asana.com/docs/webhooks-guide
  */
 
-export type TaskAction = "added" | "changed";
+export type TaskAction = "added" | "changed" | "deleted";
 
 export interface TriggerParams {
   projectId?: string;
@@ -117,6 +117,42 @@ function secretOf(created: unknown): string | null {
   return null;
 }
 
+/** What a verified delivery holds: the registration handshake to echo, or the events array. */
+type Received = { handshake: string } | { entries: unknown[] };
+
+type RawDelivery = Parameters<typeof requireRawBody>[0] & Parameters<typeof header>[0];
+
+/**
+ * The one place a delivery is trusted: handshake (only while the subscription has no stored
+ * secret), then `X-Hook-Signature` over the raw body, THEN the JSON is parsed. Both builders below
+ * go through it, so no trigger can accept an unsigned delivery.
+ */
+async function receive(raw: RawDelivery, stored: string | undefined): Promise<Received> {
+  const handshake = header(raw, "x-hook-secret");
+  if (stored === undefined || stored === "") {
+    // Registration in progress: the one request Asana sends before the secret is stored.
+    if (handshake !== undefined && HANDSHAKE_SECRET.test(handshake)) return { handshake };
+    throw new Error("Asana delivery refused: this subscription has no signing secret yet.");
+  }
+  const secret = requireSecret(stored);
+  const body = requireRawBody(raw);
+  const signature = header(raw, "x-hook-signature");
+  if (!signature) throw new Error("Asana delivery refused: the X-Hook-Signature is missing.");
+  const expected = await hmac("SHA-256", secret, body, "hex");
+  if (!timingSafeEqual(expected, signature.toLowerCase())) {
+    throw new Error("Asana delivery refused: the signature does not match.");
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Asana delivery is not valid JSON.");
+  }
+  const events = asObject(parsed)?.events;
+  if (!Array.isArray(events)) throw new Error("Asana delivery has no events array.");
+  return { entries: events };
+}
+
 /** One entry of a delivery's `events` → the run's event, or `null` for an entry with no task. */
 export function normalizeEvent(entry: unknown): TaskEvent | null {
   const e = asObject(entry);
@@ -184,36 +220,254 @@ export function webhookTrigger(
     },
 
     async handleIngest({ raw, state }) {
-      const stored = state?.secret;
-      const handshake = header(raw, "x-hook-secret");
-      if (stored === undefined || stored === "") {
-        // Registration in progress: the one request Asana sends before the secret is stored.
-        if (handshake !== undefined && HANDSHAKE_SECRET.test(handshake)) {
-          return { events: [], response: { headers: { "x-hook-secret": handshake } } };
-        }
-        throw new Error("Asana delivery refused: this subscription has no signing secret yet.");
+      const got = await receive(raw, state?.secret);
+      if ("handshake" in got) {
+        return { events: [], response: { headers: { "x-hook-secret": got.handshake } } };
       }
-      const secret = requireSecret(stored);
-      const body = requireRawBody(raw);
-      const signature = header(raw, "x-hook-signature");
-      if (!signature) throw new Error("Asana delivery refused: the X-Hook-Signature is missing.");
-      const expected = await hmac("SHA-256", secret, body, "hex");
-      if (!timingSafeEqual(expected, signature.toLowerCase())) {
-        throw new Error("Asana delivery refused: the signature does not match.");
-      }
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new Error("Asana delivery is not valid JSON.");
-      }
-      const events = asObject(parsed)?.events;
-      if (!Array.isArray(events)) throw new Error("Asana delivery has no events array.");
       // An empty `events` is Asana's heartbeat: acknowledged, nothing to run.
       const out: TaskEvent[] = [];
-      for (const entry of events) {
+      for (const entry of got.entries) {
         const e = normalizeEvent(entry);
         if (e && (!state?.action || e.action === state.action)) out.push(e);
+      }
+      return out;
+    },
+  };
+}
+
+// ---- Other resource types: stories (comments), projects, and the Any-event trigger -----------------
+
+/** One Asana webhook filter: https://developers.asana.com/reference/createwebhook (WebhookFilter). */
+export interface ResourceFilter {
+  resource_type: string;
+  resource_subtype?: string;
+  action: "added" | "changed" | "deleted" | "removed" | "undeleted";
+}
+
+export interface ResourceTriggerParams {
+  /** Project trigger: the project to watch. */
+  projectId?: string;
+  /** Workspace trigger: the workspace or organization to watch. */
+  workspaceId?: string;
+  /** Any-event trigger: the project, team, portfolio, goal or workspace gid. */
+  resourceId?: string;
+  /** Any-event trigger: comma-separated `resource_type.action` names; empty means every event. */
+  events?: string;
+}
+
+export interface ResourceTriggerState {
+  webhookId: string;
+  secret: string;
+  resourceId: string;
+  /** The `resource_type.action` names registered; empty means no filter (every event). */
+  events: string[];
+}
+
+/** The run's `trigger.event` for every non-task trigger: one entry of a delivery's `events`. */
+export interface ResourceEvent {
+  /** `resource_type.action`, e.g. `story.added`. */
+  event: string;
+  resourceId: string;
+  resourceType: string;
+  resourceSubtype: string | null;
+  action: string;
+  createdAt: string | null;
+  userId: string | null;
+  parentId: string | null;
+  parentType: string | null;
+  field: string | null;
+  change: Record<string, unknown> | null;
+}
+
+export const RESOURCE_OUTPUT: OutputField[] = [
+  { key: "event", type: "string", label: "Event (resource type and action)" },
+  { key: "resourceId", type: "string", label: "Resource ID" },
+  { key: "resourceType", type: "string", label: "Resource type" },
+  { key: "resourceSubtype", type: "string", label: "Resource subtype" },
+  { key: "action", type: "string", label: "Action" },
+  { key: "createdAt", type: "string", label: "Event time" },
+  { key: "userId", type: "string", label: "Changed by (user ID)" },
+  { key: "parentId", type: "string", label: "Parent ID" },
+  { key: "parentType", type: "string", label: "Parent type" },
+  { key: "field", type: "string", label: "Changed field" },
+  { key: "change", type: "object", label: "Change" },
+];
+
+export const RESOURCE_SAMPLE: ResourceEvent = {
+  event: "story.added",
+  resourceId: "1200000000000004",
+  resourceType: "story",
+  resourceSubtype: "comment_added",
+  action: "added",
+  createdAt: "2026-11-10T10:00:00.000Z",
+  userId: "1200000000000002",
+  parentId: "1200000000000001",
+  parentType: "task",
+  field: null,
+  change: null,
+};
+
+const WORKSPACE_PARAM: Param = {
+  key: "workspaceId",
+  label: "Workspace ID",
+  type: "string",
+  required: true,
+  hint: "The workspace or organization to watch. GET /workspaces lists the ids you can use.",
+};
+
+const RESOURCE_PARAM: Param = {
+  key: "resourceId",
+  label: "Resource ID",
+  type: "string",
+  required: true,
+  hint:
+    "The project, team, portfolio, goal or workspace to watch. A team, portfolio, goal or workspace needs the Events list below.",
+};
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated <resource type>.<action> names, for example task.added,story.added,section.changed. Actions: added, changed, deleted, removed, undeleted. Blank delivers every event the resource produces (projects only). See https://developers.asana.com/docs/webhooks-guide",
+};
+
+const EVENT_NAME = /^[a-z][a-z_]{0,63}\.(added|changed|deleted|removed|undeleted)$/;
+
+/** The Any-event list → names and the filters Asana is asked for. Blank → no filter. */
+function parseEvents(v: string | undefined): { names: string[]; filters: ResourceFilter[] } {
+  const names = [...new Set((v ?? "").split(",").map((e) => e.trim()).filter(Boolean))];
+  const bad = names.filter((n) => !EVENT_NAME.test(n));
+  if (bad.length > 0) {
+    throw new Error(
+      `Events must look like task.added or story.changed (resource type, dot, action); got: ${
+        bad.join(", ")
+      }.`,
+    );
+  }
+  return {
+    names,
+    filters: names.map((n) => {
+      const [resource_type, action] = n.split(".");
+      return { resource_type, action: action as ResourceFilter["action"] };
+    }),
+  };
+}
+
+/** One entry of a delivery's `events` → the run's event, or `null` for an entry with no resource. */
+export function normalizeResourceEvent(entry: unknown): ResourceEvent | null {
+  const e = asObject(entry);
+  const resource = asObject(e?.resource);
+  const resourceId = str(resource?.gid);
+  const resourceType = str(resource?.resource_type);
+  const action = str(e?.action);
+  if (!e || !resource || !resourceId || !resourceType || !action) return null;
+  const change = asObject(e.change);
+  const parent = asObject(e.parent);
+  return {
+    event: `${resourceType}.${action}`,
+    resourceId,
+    resourceType,
+    resourceSubtype: str(resource.resource_subtype),
+    action,
+    createdAt: str(e.created_at),
+    userId: str(asObject(e.user)?.gid),
+    parentId: str(parent?.gid),
+    parentType: str(parent?.resource_type),
+    field: str(change?.field),
+    change,
+  };
+}
+
+export interface ResourceTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  /** Where the webhook is registered: a project, a workspace, or any resource (Any event). */
+  scope: "project" | "workspace" | "any";
+  /** The filters this trigger registers and accepts; empty when `scope` is `any`. */
+  filters: ResourceFilter[];
+  sample?: Partial<ResourceEvent>;
+}
+
+/** Build one Asana webhook trigger for stories, projects or any resource type. */
+export function resourceTrigger(
+  spec: ResourceTriggerSpec,
+): TriggerDefinition<ResourceTriggerParams, ResourceEvent, Partial<ResourceTriggerState>> {
+  const params = spec.scope === "project"
+    ? [PROJECT_PARAM]
+    : spec.scope === "workspace"
+    ? [WORKSPACE_PARAM]
+    : [RESOURCE_PARAM, EVENTS_PARAM];
+  const fixedNames = spec.filters.map((f) => `${f.resource_type}.${f.action}`);
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params,
+    output: RESOURCE_OUTPUT,
+    sample: { ...RESOURCE_SAMPLE, ...spec.sample },
+
+    async onSubscribe({ params, callbackUrl }, ctx) {
+      const raw = spec.scope === "project"
+        ? params.projectId
+        : spec.scope === "workspace"
+        ? params.workspaceId
+        : params.resourceId;
+      const resourceId = raw?.trim();
+      if (!resourceId) {
+        throw new Error(
+          spec.scope === "workspace"
+            ? "Set Workspace ID to the Asana workspace to watch."
+            : spec.scope === "project"
+            ? "Set Project ID to the Asana project to watch."
+            : "Set Resource ID to the Asana resource to watch.",
+        );
+      }
+      const chosen = spec.scope === "any"
+        ? parseEvents(params.events)
+        : { names: fixedNames, filters: spec.filters };
+      const client = new AsanaClient(ctx);
+      const created = await client.request<{ gid?: unknown }>("/webhooks", {
+        method: "POST",
+        body: {
+          resource: resourceId,
+          target: callbackUrl,
+          ...(chosen.filters.length > 0 ? { filters: chosen.filters } : {}),
+        },
+      });
+      const webhookId = str(created?.data?.gid);
+      const secret = secretOf(created);
+      if (!secret) {
+        // Without the secret no delivery could be verified: undo the registration and say so.
+        if (webhookId) await deleteWebhook(client, webhookId).catch(() => {});
+        throw new Error("Asana created the webhook but returned no X-Hook-Secret to verify with.");
+      }
+      if (!webhookId) throw new Error("Asana created the webhook but returned no gid.");
+      return { webhookId, secret, resourceId, events: chosen.names };
+    },
+
+    async onUnsubscribe({ state }, ctx) {
+      const webhookId = str(state?.webhookId);
+      if (webhookId) await deleteWebhook(new AsanaClient(ctx), webhookId);
+    },
+
+    async handleIngest({ raw, state }) {
+      const got = await receive(raw, state?.secret);
+      if ("handshake" in got) {
+        return { events: [], response: { headers: { "x-hook-secret": got.handshake } } };
+      }
+      const out: ResourceEvent[] = [];
+      for (const entry of got.entries) {
+        const e = normalizeResourceEvent(entry);
+        if (!e) continue;
+        const accepted = spec.scope === "any"
+          ? (state?.events ?? []).length === 0 || state!.events!.includes(e.event)
+          : spec.filters.some((f) =>
+            f.resource_type === e.resourceType && f.action === e.action &&
+            (f.resource_subtype === undefined || f.resource_subtype === e.resourceSubtype)
+          );
+        if (accepted) out.push(e);
       }
       return out;
     },

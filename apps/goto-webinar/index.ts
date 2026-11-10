@@ -67,6 +67,9 @@ import registrantJoined from "./triggers/registrant-joined.ts";
 import webinarCreated from "./triggers/webinar-created.ts";
 import webinarChanged from "./triggers/webinar-changed.ts";
 import surveySubmitted from "./triggers/survey-submitted.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newSession from "./triggers/new-session.ts";
+import newPanelist from "./triggers/new-panelist.ts";
 
 export default {
   actions: [
@@ -88,7 +91,16 @@ export default {
     panelistCreate,
     panelistList,
   ],
-  triggers: [registrantAdded, registrantJoined, webinarCreated, webinarChanged, surveySubmitted],
+  triggers: [
+    registrantAdded,
+    registrantJoined,
+    webinarCreated,
+    webinarChanged,
+    surveySubmitted,
+    anyEvent,
+    newSession,
+    newPanelist,
+  ],
   auth: [oauth2],
   healthChecks: [service],
 } satisfies AppDefinition;

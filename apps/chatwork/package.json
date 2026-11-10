@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/chatwork",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Chats, messages, tasks, files, invite links and contacts on Chatwork, Japan's business team chat platform. Triggers: new records.",
   "license": "MIT",
   "author": {

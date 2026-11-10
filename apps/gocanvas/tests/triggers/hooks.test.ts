@@ -31,8 +31,30 @@ const call = (body: unknown, method = "POST", formId: string | null = "346127") 
   subscriptionId: "sub_1",
 });
 
-test("app declares the five webhook triggers with output and sample, no poll", () => {
-  assertEquals(app.triggers.map((t) => t.key), cases.map((c) => c.key));
+test("app declares exactly these 17 trigger keys, in this order, none twice", () => {
+  assertEquals(app.triggers.map((t) => t.key), [
+    "submission-created",
+    "submission-edited",
+    "dispatch-created",
+    "workflow-handoff-created",
+    "submission-status-changed",
+    "any-event",
+    "new-form",
+    "new-user",
+    "new-customer",
+    "new-site",
+    "new-project",
+    "new-group",
+    "new-department",
+    "new-department-user",
+    "new-form-assigned-user",
+    "new-submission",
+    "new-dispatch",
+  ]);
+});
+
+test("app declares the five named webhook triggers (first in the list) with output and sample, no poll", () => {
+  assertEquals(app.triggers.slice(0, cases.length).map((t) => t.key), cases.map((c) => c.key));
   for (const { t } of cases) {
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);

@@ -90,6 +90,11 @@ import accountGet from "./actions/account-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDeployment from "./triggers/new-deployment.ts";
+import newModel from "./triggers/new-model.ts";
+import newModelVersion from "./triggers/new-model-version.ts";
+import newOrUpdatedModel from "./triggers/new-or-updated-model.ts";
+import newTraining from "./triggers/new-training.ts";
 import newPrediction from "./triggers/new-prediction.ts";
 
 export default {
@@ -122,5 +127,12 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newPrediction],
+  triggers: [
+    newPrediction,
+    newTraining,
+    newDeployment,
+    newModel,
+    newOrUpdatedModel,
+    newModelVersion,
+  ],
 } satisfies AppDefinition;

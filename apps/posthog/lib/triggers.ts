@@ -42,6 +42,8 @@ import {
 
 export interface TriggerParams {
   signingSecret?: string;
+  /** Comma-separated PostHog event names (`$pageview`, `signed_up`); empty = every event. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -175,10 +177,30 @@ export function normalizeDelivery(body: string, headers: Record<string, string>)
   };
 }
 
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated PostHog event names to run on, e.g. $pageview,signed_up. Leave empty for every event the destination forwards. Set the same filter on the PostHog destination so it only sends these.",
+};
+
+/** The event names a trigger accepts: its fixed list, or the user's `events` param (empty = all). */
+function acceptedEvents(spec: WebhookTriggerSpec, params?: TriggerParams): string[] {
+  if (spec.events) return spec.events;
+  return (params?.events ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
+  /** Fixed event names this trigger runs on (a named trigger); other events are acknowledged, no run. */
+  events?: string[];
+  /** Offer the `events` filter param (the Any-event trigger). Ignored when `events` is fixed. */
+  eventsParam?: boolean;
+  /** Replaces the default sample (fields merged over it). */
+  sample?: Partial<PostHogEvent>;
 }
 
 /** Build the PostHog event webhook trigger. */
@@ -189,9 +211,11 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [SIGNING_SECRET_PARAM],
+    params: spec.eventsParam && !spec.events
+      ? [SIGNING_SECRET_PARAM, EVENTS_PARAM]
+      : [SIGNING_SECRET_PARAM],
     output: OUTPUT,
-    sample: SAMPLE,
+    sample: { ...SAMPLE, ...spec.sample },
 
     // Manual webhook: nothing to register at PostHog. The user pastes this URL into the
     // destination; it is kept in state so the README/UI can show it.
@@ -206,7 +230,14 @@ export function webhookTrigger(
         throw new Error(`PostHog delivers webhooks with POST, not ${raw.method}.`);
       }
       const body = await verifySignature(raw, params?.signingSecret);
-      return [normalizeDelivery(body, raw.headers)];
+      const event = normalizeDelivery(body, raw.headers);
+      const accepted = acceptedEvents(spec, params);
+      if (
+        accepted.length > 0 && !(event.eventName !== null && accepted.includes(event.eventName))
+      ) {
+        return [];
+      }
+      return [event];
     },
   };
 }

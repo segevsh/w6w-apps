@@ -8,7 +8,7 @@ Better's own events instead of polling for them.
 - **Categories** — crm, calendar, finance
 - **Auth methods** — client credentials (`custom`)
 - **Actions** — 26
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:client-credentials`
 - **Egress allowlist** — `api.practicebetter.io` (the token endpoint and every action) and
   `status.practicebetter.io` (the `service` check). The documentation host
@@ -245,5 +245,18 @@ deno task validate  # the pack's conformance auditor
 | --- | --- | --- | --- |
 | `new-client-record` | poll | `list-client-records` | Each newly created client record (list is newest first) |
 | `new-or-updated-client-record` | poll | `list-client-records` | Each client record when created or modified (`modified_gte`) |
+| `new-invoice` | poll (newest first) | `list-invoices` | Each new invoice |
+| `new-session` | poll (newest first) | `list-sessions` | Each new session |
+| `new-tag` | poll (newest first) | `list-tags` | Each new tag |
+| `new-reminder` | poll (newest first) | `list-reminders` | Each new reminder (task) |
+| `new-package-instance` | poll (newest first) | `list-package-instances` | Each new package a client purchased |
+| `new-service` | poll (snapshot diff) | `list-services` | Each new bookable service |
+| `new-package` | poll (snapshot diff) | `list-packages` | Each new package definition |
 
 `new-client-record` relies on Practice Better's documented order for `GET /consultant/records`: records "are returned in descending order, with the most recent records appearing first based on date created"; the first check records what exists without firing. `new-or-updated-client-record` passes `modified_gte` (last check minus two minutes) and de-duplicates on `id:dateModified`, so an edit is a new event. A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own modification (`dateModified`, for `new-or-updated-client-record`) stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://api-docs.practicebetter.io/swagger.json) (verified 2026-11-09).
+
+The new record triggers read the existing list actions (same client, endpoint and credential), `limit=100`, and dedupe by id; the first check seeds and emits nothing. `new-invoice`, `new-session`, `new-tag`, `new-reminder` and `new-package-instance` rely on the documented descending order by date created. `new-service` and `new-package` list in rank order, so each check reads the whole collection (up to 5 pages of 100, failing loudly beyond that) and diffs the ids. The invoice, session, reminder and package-instance lists have no modified-since filter, so no `new-or-updated-*` trigger ships for them.
+
+Not covered: `list-timezones` and `list-webhook-event-types` (static reference data), `list-webhook-subscriptions` (the account's own webhook registrations: integration-management configuration).
+
+Vendor documentation (verified 2026-11-10): https://api-docs.practicebetter.io/swagger.json (`info.title` "Practice Better API"; the `description` of each `GET` list operation states its order).

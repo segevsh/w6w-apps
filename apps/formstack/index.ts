@@ -48,6 +48,8 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newSubmission from "./triggers/new-submission.ts";
 import newSubmissionPoll from "./triggers/new-submission-poll.ts";
+import newForm from "./triggers/new-form.ts";
+import newFolder from "./triggers/new-folder.ts";
 
 export default {
   actions: [
@@ -63,7 +65,7 @@ export default {
     submissionCreate,
     submissionDelete,
   ],
-  triggers: [newSubmission, newSubmissionPoll],
+  triggers: [newSubmission, newSubmissionPoll, newForm, newFolder],
   auth: [accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -11,7 +11,7 @@ whole workspace, on the **Quo Public API v1**.
 - **Categories** — communication, crm
 - **Auth methods** — api-key
 - **Actions** — 43
-- **Triggers** — 2 (poll)
+- **Triggers** — 6 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.quo.com` (the `service` check adds `status.quo.com` to its own hook
   allowlist, never to the app's)
@@ -234,5 +234,13 @@ OpenPhone one.
 | --- | --- | --- | --- |
 | `new-conversation` | poll | `conversation-list` | Each newly created shared-inbox conversation (`createdAfter`) |
 | `new-or-updated-conversation` | poll | `conversation-list` | Each conversation when created or updated (`updatedAfter`) |
+| `new-call` | poll | `call-list` | Each new call for one Quo number and one participant (`createdAfter`) |
+| `new-message` | poll | `message-list` | Each new text for one Quo number and 1-10 participants (`createdAfter`) |
+| `new-user` | poll | `user-list` | Each user newly added to the workspace (id snapshot) |
+| `new-phone-number` | poll | `phone-number-list` | Each phone number newly added to the workspace (id snapshot) |
 
-Both triggers run `conversation-list` with the documented `createdAfter` / `updatedAfter` filter set to the last check minus two minutes, `maxResults` 100, following `nextPageToken` for up to three pages and de-duplicating by id (`id:updatedAt` for the updated trigger). A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation (`updatedAt` for the updated trigger) stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://www.quo.com/docs/mdx/api-reference/introduction) (verified 2026-11-09).
+The conversation triggers run `conversation-list` with the documented `createdAfter` / `updatedAfter` filter set to the last check minus two minutes, `maxResults` 100, following `nextPageToken` for up to three pages and de-duplicating by id (`id:updatedAt` for the updated trigger). A check reads up to three pages; a window with more pages is not cut off: the next page's request is kept in the trigger state and the following check continues from it, and the cursor moves to the end of the window only once it is drained (each record fires once). The first check stores a floor (the moment it ran) and fires nothing; a later check never fires a record whose own creation (`updatedAt` for the updated trigger) stamp is before that floor, however many pages the window holds, and keeps a record with no readable stamp. Source: [API reference](https://www.quo.com/docs/mdx/api-reference/introduction) (verified 2026-11-09).
+
+`new-call` and `new-message` use the same since-filter window, resume and floor mechanics; Quo scopes both endpoints to a number plus participant(s), so those are required trigger params. `new-user` and `new-phone-number` read the whole (small) list through the list action and emit ids not seen before; the first check fires nothing. Sources: [List calls](https://www.quo.com/docs/mdx/api-reference/calls/list-calls), [List messages](https://www.quo.com/docs/mdx/api-reference/messages/list-messages), [List users](https://www.quo.com/docs/mdx/api-reference/users/list-users), [List phone numbers](https://www.quo.com/docs/mdx/api-reference/phone-numbers/list-phone-numbers) (verified 2026-11-10).
+
+Not covered: `contact-list` and `task-list` take no date filter or sort order and are unbounded (the OpenAPI document lists only `externalIds`/`sources` and `maxResults`/`pageToken`); `contact-custom-field-list` is field-definition reference data; `webhook-list` is webhook configuration.

@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { DrataClient, toList } from "../lib/client.ts";
-import { expandParam, pageParams } from "../lib/params.ts";
+import { expandParam, pageParams, sortParams } from "../lib/params.ts";
 
 /**
  * `GET /risk-registers` — List the risk registers (each holds a set of risks) — the id every risk action needs.
@@ -12,6 +12,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -26,6 +28,7 @@ const action: ActionDefinition<Input> = {
     { key: "name", label: "Name", type: "string", hint: "Substring match." },
     expandParam(["workspaces"]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Risk registers" },
@@ -47,6 +50,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

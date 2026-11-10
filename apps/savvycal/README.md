@@ -6,17 +6,34 @@ book and cancel events; manage webhooks; read SavvyCal workflows. App id `io.w6w
 
 ## Triggers
 
+- **Triggers** — 16 (13 webhook, 3 poll)
+
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `event-created` — Event Created | webhook (API-registered, signed) | `event.created` | event id, summary, start/end, duration, scheduling link, organizer, attendees, full event |
 | `event-canceled` — Event Canceled | webhook (API-registered, signed) | `event.canceled` | the same, with the cancel reason |
 | `event-rescheduled` — Event Rescheduled | webhook (API-registered, signed) | `event.rescheduled` | the same, with the new times and the reschedule reason |
+| `event-requested` — Event Requested | webhook (API-registered, signed) | `event.requested` | the event, awaiting the organizer's approval |
+| `event-approved` — Event Approved | webhook (API-registered, signed) | `event.approved` | the approved event |
+| `event-declined` — Event Declined | webhook (API-registered, signed) | `event.declined` | the declined event |
+| `event-changed` — Event Changed | webhook (API-registered, signed) | `event.changed` | the updated event; `data.previous_attributes` holds the old values |
+| `event-checkout-completed` — Event Checkout Completed | webhook (API-registered, signed) | `event.checkout.completed` | the paid event |
+| `event-attendee-added` — Event Attendee Added | webhook (API-registered, signed) | `event.attendee.added` | the event; `data.attendee` is the new attendee |
+| `event-attendee-canceled` — Event Attendee Canceled | webhook (API-registered, signed) | `event.attendee.canceled` | the event; `data.attendee` is who cancelled |
+| `poll-response-created` — Poll Response Created | webhook (API-registered, signed) | `poll.response.created` | the poll response in `data` |
+| `poll-response-updated` — Poll Response Updated | webhook (API-registered, signed) | `poll.response.updated` | the poll response in `data` |
+| `any-event` — Any Event | webhook (API-registered, signed) | any of the 16 documented types you list in `events` (empty = all) | the normalized delivery, full payload in `data` (reaches `event.checkout.pending`, `event.checkout.expired`, `event.attendee.rescheduled`, `workflow.action.triggered`) |
+| `new-link` — New Scheduling Link | poll (5 min) | `GET /v1/links` (`link-list`), snapshot of ids | the link |
+| `new-workflow` — New Workflow | poll (5 min) | `GET /v1/workflows` (`workflow-list`), snapshot of ids | the workflow |
+| `new-workflow-rule` — New Workflow Rule | poll (5 min), needs `workflowId` | `GET /v1/workflows/{id}/rules` (`workflow-rules-list`), snapshot of ids | the rule |
 
 **Setup.** Nothing to paste. Subscribing registers the callback URL with `POST /v1/webhooks` and keeps the webhook `id` and the signing `secret` SavvyCal returns in the subscription's state; unsubscribing deletes it with `DELETE /v1/webhooks/{id}` (a webhook SavvyCal no longer has counts as deleted). Each trigger registers its own SavvyCal webhook (SavvyCal webhooks are per URL, not per event type), so a delivery of another type arriving at a trigger is acknowledged and dropped. The connected token needs permission to manage webhooks.
 
-**Trust model.** Every delivery carries `x-savvycal-signature: sha256=<hex HMAC-SHA256 of the raw request body>` under the webhook's own secret. The trigger recomputes it over the exact bytes received and compares in constant time before it parses anything; an unset secret, a missing header or a body the host did not keep is refused. SavvyCal puts **no timestamp** in the signature, so a captured delivery can be replayed unchanged; the delivery `id` (`payload_...`) is exposed as `deliveryId` for de-duplication. Other SavvyCal event types (`event.approved`, `event.checkout.*`, `event.attendee.*`, `poll.response.*`, ...) are not wired.
+**Trust model.** Every delivery carries `x-savvycal-signature: sha256=<hex HMAC-SHA256 of the raw request body>` under the webhook's own secret. The trigger recomputes it over the exact bytes received and compares in constant time before it parses anything; an unset secret, a missing header or a body the host did not keep is refused. SavvyCal puts **no timestamp** in the signature, so a captured delivery can be replayed unchanged; the delivery `id` (`payload_...`) is exposed as `deliveryId` for de-duplication. The other documented types reach a workflow through `any-event`.
 
-Docs (verified 2026-11-10): https://docs.savvycal.com/developers/webhooks, https://docs.savvycal.com/developers/v1/api/schemas/webhook.md and https://docs.savvycal.com/developers/v1/api/schemas/createwebhookrequest.md
+Docs (verified 2026-11-10): https://docs.savvycal.com/developers/webhooks, https://api.savvycal.com/v1/spec (list endpoints, `limit` max 100, cursor `metadata.after`), https://docs.savvycal.com/developers/v1/api/schemas/webhook.md and https://docs.savvycal.com/developers/v1/api/schemas/createwebhookrequest.md
+
+Not covered as their own triggers: `event-list` (its records arrive through `event-created`), `time-zone-list` (reference data: the IANA zone list) and `webhook-list` (webhook configuration, not data).
 
 ## Source of truth
 

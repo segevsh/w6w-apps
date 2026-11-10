@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/connecteam",
-  "version": "0.2.0",
-  "description": "Manage Connecteam's deskless workforce, including scheduling, and poll for new shifts.",
+  "version": "0.3.0",
+  "description": "Manage Connecteam's deskless workforce, including scheduling, and poll for new shifts, employees, forms, form submissions, jobs, tasks, schedules, task boards and time clocks.",
   "license": "MIT",
   "author": {
     "name": "w6w"

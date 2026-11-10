@@ -8,7 +8,7 @@ OpenAPI 3.0.2 documents embedded in each page, `servers: https://api.clearout.io
 unauthenticated probes of `api.clearout.io`. No `deprecat`/`sunset`/`end of life` wording appears
 anywhere in the API reference; `v2` is the only version documented.
 
-- **Triggers** — 3 (webhook)
+- **Triggers** — 8 (webhook)
 
 ## Auth
 
@@ -29,14 +29,21 @@ a rejected token.
 | `email-verifier-bulk-completed` — Bulk Verification Completed | webhook (manual, signed) | `email_verifier.bulk.completed` | list id and name, event id and mode, the full payload |
 | `email-finder-bulk-completed` — Bulk Finder Completed | webhook (manual, signed) | `email_finder.bulk.completed` | list id and name, event id and mode, the full payload |
 | `form-guard-email-validated` — Form Guard Email Validated | webhook (manual, signed) | `form_guard.email_validation.completed` | the verification result, page URL, event id and mode, the full payload |
+| `email-verifier-instant-completed` — Instant Verification Completed | webhook (manual, signed) | `email_verifier.instant.completed` | the verification result, event id and mode, the full payload |
+| `email-finder-instant-completed` — Instant Finder Completed | webhook (manual, signed) | `email_finder.instant.completed` | the addresses found, event id and mode, the full payload |
+| `form-guard-phone-validated` — Form Guard Phone Validated | webhook (manual, signed) | `form_guard.phone_validation.completed` | the phone validation result, page URL, event id and mode, the full payload |
+| `form-guard-name-validated` — Form Guard Name Validated | webhook (manual, signed) | `form_guard.name_validation.completed` | the name validation result, page URL, event id and mode, the full payload |
+| `any-event` — Any Event | webhook (manual, signed) | every event above; the optional `events` param (comma-separated event types, empty = all) narrows it | the event type, id, mode, status, data and the full payload |
 
 **Setup (manual webhook).** Clearout webhooks are created in the Clearout app, not through the API this app calls, so:
 
 1. Create the trigger and copy its callback URL.
-2. In the Clearout app open **Developers, Webhook**, choose **Create Webhook**, paste the URL and select the trigger's event (a trigger ignores, and acknowledges without a run, any other event sent to its URL).
+2. In the Clearout app open **Developers, Webhook**, choose **Create Webhook**, paste the URL and select the trigger's event (for Any Event select every event you want, and optionally list them in its `events` param; a trigger ignores, and acknowledges without a run, any other event sent to its URL).
 3. Under **Secret Token** click **Generate Token**, copy it immediately (Clearout shows it only when it is generated or rotated) and paste it into the trigger's `signingSecret` param. The token is account-wide, so every Clearout trigger takes the same one; rotating it means updating each trigger.
 
 **Trust model.** Clearout sends `x-co-webhook-signature: t=<unix seconds>,v1=<hex>`, where `v1` is the HMAC-SHA256 of `<t>.<raw body>` under the secret token. The trigger recomputes it over the exact bytes received, in constant time, and refuses a `t` more than five minutes from now (Clearout recommends 2 minutes and allows 2 to 5) before it parses anything; a missing secret, header or raw body, a malformed header, a stale timestamp or a mismatch refuses the delivery. A captured delivery can still be replayed inside that window. Clearout's own JavaScript and PHP samples hash a re-serialised body; its prose and Python sample hash the raw body, which is what this trigger checks.
+
+Clearout's webhook catalog has seven events, and every one has a trigger above (the three Form Guard events and the instant and bulk verifier and finder events); `find-email` and `find-company-domains` have no trigger because they are billed per call or a free-text autocomplete (see Not covered).
 
 No poll trigger ships with the webhooks: a poll over `list-verify-lists` or `list-finder-lists` would announce a list when it is created, not when its verification or search completes, which only the webhook reports.
 
@@ -72,6 +79,7 @@ Credits are spent by verify, find and lookup calls. The vendor's `*@example.com`
 
 ## Not covered (and why)
 
+- **List actions without a trigger:** `find-email` spends a credit on every call, so polling it would bill the account; `find-company-domains` is a free-text autocomplete keyed by a required query string (its response body is undocumented), not a record feed.
 - **Webhooks** (`developers/webhooks/*`): a trigger surface, not an action — see Triggers above.
 - **Form Guard, Data Pulse, Prospecting, Chrome extension, integrations**: dashboard products with no
   documented REST endpoints in the API reference.

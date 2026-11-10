@@ -6,7 +6,7 @@ and advocacy groups.
 - **Categories** — crm, marketing, commerce
 - **Auth methods** — oauth2, api-token
 - **Actions** — 23
-- **Triggers** — 2 (poll)
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `*.nationbuilder.com`
 - **Website** — https://nationbuilder.com
 - **API docs** — https://nationbuilder.com/api/v2/reference (OpenAPI spec), plus
@@ -149,11 +149,20 @@ starts failing for everyone at once, or if a nation reports it cannot register a
 | --- | --- | --- | --- |
 | `new-person` — New Person | poll | `person-list` | each newly created person (`sort=-created_at`) |
 | `new-or-updated-person` — New or Updated Person | poll | `person-list` | each person created or edited since the last check (`sort=-updated_at`; the dedupe id includes `updated_at`) |
+| `new-donation` — New Donation | poll | `donation-list` | each donation created since the last check (`filter[created_at][gte]`) |
+| `new-or-updated-donation` — New or Updated Donation | poll | `donation-list` | each donation created or edited since the last check (`filter[updated_at][gte]`; the dedupe id includes `updated_at`) |
+| `new-event` — New Event | poll | `event-list` | each event newly created (whole list diffed) |
+| `new-list` — New List | poll | `list-list` | each custom list newly created (whole list diffed) |
+| `new-tag` — New Tag | poll | `tag-list` | each tag newly defined (whole list diffed) |
+| `new-custom-field` — New Custom Field | poll | `custom-field-list` | each custom field newly defined (whole list diffed) |
+| `new-person-on-list` — New Person on List | poll | `list-people-list` | each person newly added to the chosen list (`listId` param; whole membership diffed) |
 
 Each check lists the 100 most recently created (or updated) people. NationBuilder's v2 reference documents JSON:API `sort` (an unknown sort field is a `bad_request`) and the `created_at`/`updated_at` signup attributes; it does not spell out a default order, so the trigger always sorts explicitly.
+
+Donations: the v2 reference documents no sort for `/donations` but does document date-attribute filters (`gt`/`gte`/`lt`/`lte`), so those two triggers read one window `since = cursor - 2 min`, resume by page number when it holds more than five pages of 100, and ignore anything created (or edited) before the trigger was first enabled. The event, list, tag, custom-field and list-membership triggers diff the whole listing (events, tags and custom fields carry no usable created stamp and no documented sort); a listing of 5000 rows or more fails the check rather than guess.
 
 Trust model: Poll only: nothing is registered with NationBuilder. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
 
 Vendor documentation:
 
-- https://nationbuilder.com/api/v2/docs/v2/released.yaml (verified 2026-11-09)
+- https://nationbuilder.com/api/v2/docs/v2/released.yaml (verified 2026-11-10)

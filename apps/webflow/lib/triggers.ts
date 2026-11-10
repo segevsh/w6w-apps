@@ -29,7 +29,43 @@ export type TriggerType =
   | "form_submission"
   | "collection_item_created"
   | "collection_item_changed"
-  | "ecomm_new_order";
+  | "collection_item_deleted"
+  | "collection_item_published"
+  | "collection_item_unpublished"
+  | "ecomm_new_order"
+  | "ecomm_order_changed"
+  | "ecomm_inventory_changed"
+  | "site_publish"
+  | "page_created"
+  | "page_metadata_updated"
+  | "page_deleted"
+  | "comment_created";
+
+/**
+ * Every `triggerType` the Create Webhook endpoint accepts
+ * (https://developers.webflow.com/data/reference/webhooks/create, verified 2026-11-10). The
+ * any-event trigger registers the first 14 by default; the three `branch_*` ones only when asked.
+ */
+export const ALL_TRIGGER_TYPES = [
+  "form_submission",
+  "site_publish",
+  "page_created",
+  "page_metadata_updated",
+  "page_deleted",
+  "ecomm_new_order",
+  "ecomm_order_changed",
+  "ecomm_inventory_changed",
+  "collection_item_created",
+  "collection_item_changed",
+  "collection_item_deleted",
+  "collection_item_published",
+  "collection_item_unpublished",
+  "comment_created",
+  "branch_created",
+  "branch_merged",
+  "branch_deleted",
+] as const;
+const DEFAULT_TRIGGER_TYPES = ALL_TRIGGER_TYPES.slice(0, 14);
 
 export interface TriggerParams {
   siteId?: string;
@@ -45,6 +81,12 @@ export interface TriggerState {
   triggerType: string;
   /** The webhook's own signing key, when Webflow returned one. */
   secretKey?: string;
+}
+
+/** The any-event trigger registers one webhook per event type; each keeps its own signing key. */
+export interface AnyEventState {
+  siteId: string;
+  webhooks: Array<{ webhookId: string; triggerType: string; secretKey?: string }>;
 }
 
 /** The run's `trigger.event`: one Webflow delivery. */
@@ -72,6 +114,41 @@ export function sampleFor(triggerType: string): WebflowEvent {
       siteId: "562ac0395358780a1f5e6fbd",
       data: { Email: "ada@example.com", Message: "Hello" },
       submittedAt: "2026-11-09T10:00:00.000Z",
+    }
+    : triggerType === "site_publish"
+    ? {
+      domains: ["example.webflow.io"],
+      publishedBy: { displayName: "Ada Lovelace" },
+      publishScope: "site",
+      site: "562ac0395358780a1f5e6fbd",
+      publishTime: "2026-11-09T10:00:00.000Z",
+    }
+    : triggerType.startsWith("page_")
+    ? {
+      siteId: "562ac0395358780a1f5e6fbd",
+      pageId: "66a3cfb276641574f5d58311",
+      pageTitle: "Heart of Gold Specs",
+      pageName: "Heart of Gold Specs",
+      archived: false,
+      draft: false,
+      isBranch: false,
+      publishedPath: "/specs",
+    }
+    : triggerType === "comment_created"
+    ? {
+      content: "Looks good to me",
+      isResolved: false,
+      author: { userId: "6287ec36a841b25637c663df", email: "ada@example.com", name: "Ada" },
+      mentionedUsers: [],
+    }
+    : triggerType === "ecomm_inventory_changed"
+    ? { quantity: 100, inventoryType: "finite" }
+    : triggerType === "ecomm_order_changed"
+    ? {
+      orderId: "SO-1001",
+      status: "fulfilled",
+      comment: "",
+      customerInfo: { email: "ada@example.com" },
     }
     : triggerType === "ecomm_new_order"
     ? {
@@ -148,6 +225,41 @@ async function deleteWebhook(client: WebflowClient, webhookId: string): Promise<
   }
 }
 
+/**
+ * The Webflow signature check, shared by every trigger: `x-webflow-signature` is the hex
+ * HMAC-SHA256 of `<x-webflow-timestamp>:<raw body>`, and the timestamp (milliseconds) must be
+ * within five minutes. `secrets` holds the candidate signing keys (one per webhook); the
+ * delivery passes when any one matches. Returns the raw body once verified.
+ */
+async function verifyDelivery(
+  raw: { rawBody?: unknown; headers: Record<string, string> },
+  secrets: unknown[],
+): Promise<string> {
+  const keys = secrets.map((s) => requireSecret(s));
+  const body = requireRawBody(raw);
+  const signature = header(raw, "x-webflow-signature");
+  if (!signature) {
+    throw new Error("Webflow delivery refused: the x-webflow-signature is missing.");
+  }
+  const timestamp = header(raw, "x-webflow-timestamp");
+  if (!timestamp || !/^\d{10,16}$/.test(timestamp)) {
+    throw new Error("Webflow delivery refused: the x-webflow-timestamp is missing or malformed.");
+  }
+  let matched = false;
+  for (const key of keys) {
+    const expected = await hmac("SHA-256", key, `${timestamp}:${body}`, "hex");
+    if (timingSafeEqual(expected, signature.toLowerCase())) matched = true;
+  }
+  if (!matched) {
+    throw new Error("Webflow delivery refused: the signature does not match.");
+  }
+  // The timestamp is in milliseconds; the kit's window is in seconds.
+  if (!withinTolerance(Number(timestamp) / 1000, Date.now())) {
+    throw new Error("Webflow delivery refused: the timestamp is outside the five-minute window.");
+  }
+  return body;
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
@@ -212,28 +324,7 @@ export function webhookTrigger(
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Webflow delivers webhooks with POST, not ${raw.method}.`);
       }
-      const secret = requireSecret(state?.secretKey ?? params?.signingSecret);
-      const body = requireRawBody(raw);
-      const signature = header(raw, "x-webflow-signature");
-      if (!signature) {
-        throw new Error("Webflow delivery refused: the x-webflow-signature is missing.");
-      }
-      const timestamp = header(raw, "x-webflow-timestamp");
-      if (!timestamp || !/^\d{10,16}$/.test(timestamp)) {
-        throw new Error(
-          "Webflow delivery refused: the x-webflow-timestamp is missing or malformed.",
-        );
-      }
-      const expected = await hmac("SHA-256", secret, `${timestamp}:${body}`, "hex");
-      if (!timingSafeEqual(expected, signature.toLowerCase())) {
-        throw new Error("Webflow delivery refused: the signature does not match.");
-      }
-      // The timestamp is in milliseconds; the kit's window is in seconds.
-      if (!withinTolerance(Number(timestamp) / 1000, Date.now())) {
-        throw new Error(
-          "Webflow delivery refused: the timestamp is outside the five-minute window.",
-        );
-      }
+      const body = await verifyDelivery(raw, [state?.secretKey ?? params?.signingSecret]);
       let parsed: unknown;
       try {
         parsed = JSON.parse(body);
@@ -254,7 +345,116 @@ export function webhookTrigger(
         triggerType,
         siteId: str(payload.siteId) ?? str(state?.siteId),
         collectionId,
-        itemId: str(payload.id) ?? str(payload.orderId),
+        itemId: str(payload.id) ?? str(payload.orderId) ?? str(payload.pageId) ??
+          str(payload.commentId),
+        payload,
+      }];
+    },
+  };
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Webflow event types (form_submission, site_publish, page_created, page_metadata_updated, page_deleted, ecomm_new_order, ecomm_order_changed, ecomm_inventory_changed, collection_item_created, collection_item_changed, collection_item_deleted, collection_item_published, collection_item_unpublished, comment_created, branch_created, branch_merged, branch_deleted). Leave blank for every event except the branch ones.",
+};
+
+/** The comma-separated `events` param → the event types to register (deduped, validated). */
+export function chooseEvents(events: string | undefined): string[] {
+  const asked = (events ?? "").split(",").map((e) => e.trim()).filter((e) => e !== "");
+  if (asked.length === 0) return [...DEFAULT_TRIGGER_TYPES];
+  const known = new Set<string>(ALL_TRIGGER_TYPES);
+  const bad = asked.filter((e) => !known.has(e));
+  if (bad.length > 0) throw new Error(`Unknown Webflow event type(s): ${bad.join(", ")}.`);
+  return [...new Set(asked)];
+}
+
+/**
+ * The Any Event trigger. Webflow has no "all events" subscription, so one site webhook is created
+ * per chosen event type (empty `events` = the 14 documented ones); each keeps its own signing key.
+ * A delivery is verified against those keys and kept only when its `triggerType` is one registered.
+ */
+export function anyEventTrigger(
+  spec: { key: string; title: string; description: string },
+): TriggerDefinition<TriggerParams & { events?: string }, WebflowEvent, Partial<AnyEventState>> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [SITE_PARAM, EVENTS_PARAM, SECRET_PARAM],
+    output: EVENT_OUTPUT,
+    sample: sampleFor("site_publish"),
+
+    async onSubscribe({ params, callbackUrl }, ctx) {
+      const siteId = params.siteId?.trim();
+      if (!siteId) throw new Error("Set Site ID to the Webflow site to watch.");
+      const types = chooseEvents(params.events);
+      const client = new WebflowClient(ctx);
+      const webhooks: NonNullable<AnyEventState["webhooks"]> = [];
+      try {
+        for (const triggerType of types) {
+          const created = await client.request<{ id?: unknown; secretKey?: unknown }>(
+            `/sites/${encodeURIComponent(siteId)}/webhooks`,
+            { method: "POST", body: { triggerType, url: callbackUrl } },
+          );
+          const webhookId = str(created?.id);
+          if (!webhookId) throw new Error("Webflow created the webhook but returned no id.");
+          const secretKey = str(created?.secretKey);
+          webhooks.push({ webhookId, triggerType, ...(secretKey ? { secretKey } : {}) });
+          if (!secretKey && !params.signingSecret) {
+            throw new Error(
+              "Webflow returned no signing secret for this webhook: set the OAuth app client secret.",
+            );
+          }
+        }
+      } catch (err) {
+        // Undo the registrations made so far: nothing could verify or use them.
+        for (const w of webhooks) await deleteWebhook(client, w.webhookId).catch(() => {});
+        throw err;
+      }
+      return { siteId, webhooks };
+    },
+
+    async onUnsubscribe({ state }, ctx) {
+      const client = new WebflowClient(ctx);
+      for (const w of state?.webhooks ?? []) {
+        const webhookId = str(w?.webhookId);
+        if (webhookId) await deleteWebhook(client, webhookId);
+      }
+    },
+
+    async handleIngest({ raw, params, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Webflow delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const hooks = state?.webhooks ?? [];
+      const body = await verifyDelivery(
+        raw,
+        hooks.length > 0
+          ? hooks.map((w) => w.secretKey ?? params?.signingSecret)
+          : [params?.signingSecret],
+      );
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(body);
+      } catch {
+        throw new Error("Webflow delivery is not valid JSON.");
+      }
+      const d = asObject(parsed);
+      const payload = asObject(d?.payload);
+      const triggerType = str(d?.triggerType);
+      if (!d || !payload || !triggerType) {
+        throw new Error("Webflow delivery has no triggerType or payload.");
+      }
+      if (!hooks.some((w) => w.triggerType === triggerType)) return [];
+      return [{
+        triggerType,
+        siteId: str(payload.siteId) ?? str(state?.siteId),
+        collectionId: str(payload.collectionId),
+        itemId: str(payload.id) ?? str(payload.orderId) ?? str(payload.pageId) ??
+          str(payload.commentId),
         payload,
       }];
     },

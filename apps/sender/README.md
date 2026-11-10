@@ -1,6 +1,6 @@
 # Sender
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 10 (poll)
 
 ## Triggers
 
@@ -8,8 +8,26 @@
 | --- | --- | --- | --- |
 | `new-subscriber` — New Subscriber | poll | `subscriber-list` | Each newly created subscriber. |
 | `new-or-updated-subscriber` — New or Updated Subscriber | poll | `subscriber-list` | Each newly created or updated subscriber. |
+| `new-campaign` — New Campaign | poll | `campaign-list` | Each newly created campaign. |
+| `new-or-updated-campaign` — New or Updated Campaign | poll | `campaign-list` | Each campaign when created or modified. |
+| `new-group` — New Group | poll | `group-list` | Each newly created group. |
+| `new-or-updated-group` — New or Updated Group | poll | `group-list` | Each group when created or modified. |
+| `new-segment` — New Segment | poll | `segment-list` | Each newly created segment. |
+| `new-or-updated-segment` — New or Updated Segment | poll | `segment-list` | Each segment when created or modified. |
+| `new-group-subscriber` — New Subscriber in Group | poll | `group-subscribers-list` | Each newly created subscriber in one group (`groupId` param). |
+| `new-segment-subscriber` — New Subscriber in Segment | poll | `segment-subscribers-list` | Each newly created subscriber matching one segment (`segmentId` param). |
 
-Sender documents `order` and `direction` on [its pagination endpoint](https://api.sender.net/pagination/); `order` accepts "the key values from the resource data". The triggers send `order=created` / `order=modified`, and the subscriber key names `created` / `modified` could not be confirmed on the vendor's page (it is a JavaScript shell); treat them as unproven until a live response is seen. Verified 2026-11-09.
+Sender documents `order` and `direction` on [its pagination endpoint](https://api.sender.net/pagination/); `order` accepts "the key values from the resource data". The triggers send `order=created` / `order=modified`, and the subscriber key names `created` / `modified` could not be confirmed on the vendor's page (it is a JavaScript shell); treat them as unproven until a live response is seen. The campaign, group and segment pages
+([campaigns](https://api.sender.net/campaigns/get-all/), [groups](https://api.sender.net/groups/list-all/),
+[segments](https://api.sender.net/segments/list-segments/), [group subscribers](https://api.sender.net/groups/subscribers/),
+[segment subscribers](https://api.sender.net/segments/subscribers/)) do show `created` (and `modified`
+for campaigns, groups and segments) in their example responses, so those triggers send
+`order=created` / `order=modified` with `direction=desc`. The two subscriber-in-group/segment
+triggers order by the subscriber's own `created` date, so they report new subscribers, not
+existing ones who join the group or start matching the segment later. Verified 2026-11-10.
+
+Not covered: `field-list` (custom-field definitions), `webhook-list` (account webhook
+configuration, paid plans only).
 
 Send campaigns, manage subscribers/groups/segments, custom fields and custom events, and manage
 account webhooks on **Sender (sender.net)**, an email (and SMS) marketing platform.

@@ -1,4 +1,4 @@
-import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
+import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import {
   header,
   hmac,
@@ -190,37 +190,79 @@ export async function verifySignature(
   return body;
 }
 
+type NotificationFlag =
+  | "NotificationForSent"
+  | "NotificationForOpened"
+  | "NotificationForClicked"
+  | "NotificationForUnsubscribed"
+  | "NotificationForAbuseReport"
+  | "NotificationForError";
+
+/** The six notification types of `POST /v4/webhook`: `status` value (lower case) → its flag. */
+export const NOTIFICATIONS: Record<string, NotificationFlag> = {
+  sent: "NotificationForSent",
+  opened: "NotificationForOpened",
+  clicked: "NotificationForClicked",
+  unsubscribed: "NotificationForUnsubscribed",
+  abusereport: "NotificationForAbuseReport",
+  error: "NotificationForError",
+};
+
+export const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated notification types to react to: Sent, Opened, Clicked, Unsubscribed, AbuseReport, Error. Leave empty for all six. Elastic Email is asked to send only these.",
+};
+
+/** `Sent, opened` → `["sent","opened"]`; throws on a name that is not a notification type. */
+export function parseEvents(v: unknown): string[] {
+  const names = typeof v === "string"
+    ? v.split(",").map((e) => e.trim().toLowerCase()).filter((e) => e !== "")
+    : [];
+  for (const n of names) {
+    if (!Object.hasOwn(NOTIFICATIONS, n)) {
+      throw new Error(
+        `Unknown Elastic Email notification "${n}": use Sent, Opened, Clicked, Unsubscribed, AbuseReport or Error.`,
+      );
+    }
+  }
+  return [...new Set(names)];
+}
+
 export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
   /** The `NotificationFor…` flag of `POST /v4/webhook` this trigger switches on. */
-  flag:
-    | "NotificationForSent"
-    | "NotificationForOpened"
-    | "NotificationForClicked"
-    | "NotificationForUnsubscribed"
-    | "NotificationForAbuseReport"
-    | "NotificationForError";
+  flag?: NotificationFlag;
   /** The `status` value those notifications carry (matched case-insensitively). */
-  status: string;
+  status?: string;
+  /** Any-event trigger: the `events` param picks the notification types (empty = all six). */
+  anyEvent?: boolean;
   sample: EmailEvent;
 }
 
 /** Build one Elastic Email notification webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
-): TriggerDefinition<Record<string, never>, EmailEvent, TriggerState> {
+): TriggerDefinition<{ events?: string }, EmailEvent, TriggerState> {
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [],
+    params: spec.anyEvent ? [EVENTS_PARAM] : [],
     output: OUTPUT,
     sample: spec.sample,
 
-    async onSubscribe({ subscriptionId, callbackUrl }, ctx: HookContext) {
+    async onSubscribe({ params, subscriptionId, callbackUrl }, ctx: HookContext) {
       requestTarget(callbackUrl);
+      // Any-event: the registered subscription is the listed notification types (empty = all six).
+      const picked = spec.anyEvent ? parseEvents(params?.events) : [];
+      const flags = spec.anyEvent
+        ? (picked.length > 0 ? picked : Object.keys(NOTIFICATIONS)).map((n) => NOTIFICATIONS[n])
+        : [spec.flag!];
       const client = new ElasticClient(ctx);
       const created = await client.json<{ WebhookID?: unknown; SigningSecret?: unknown }>(
         "/webhook",
@@ -229,7 +271,7 @@ export function webhookTrigger(
           body: {
             Name: nameFor(subscriptionId),
             URL: callbackUrl,
-            [spec.flag]: true,
+            ...Object.fromEntries(flags.map((f) => [f, true])),
             EnableSigning: true,
             DeliveryMethod: "PostJson",
           },
@@ -264,7 +306,7 @@ export function webhookTrigger(
       }
     },
 
-    async handleIngest({ raw, state }) {
+    async handleIngest({ raw, state, params }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Elastic Email delivers signed webhooks with POST, not ${raw.method}.`);
       }
@@ -280,7 +322,12 @@ export function webhookTrigger(
         header(raw, "x-elasticemail-webhook-id") ?? state?.webhookId ?? null,
       );
       // Other statuses (and the test notification sent when a webhook is created) get no run.
-      if (event.status.toLowerCase() !== spec.status.toLowerCase()) return [];
+      const status = event.status.toLowerCase();
+      if (spec.status !== undefined && status !== spec.status.toLowerCase()) return [];
+      if (spec.anyEvent) {
+        const wanted = parseEvents(params?.events);
+        if (wanted.length > 0 && !wanted.includes(status)) return [];
+      }
       return [event];
     },
   };

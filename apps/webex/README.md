@@ -5,7 +5,7 @@ Manage Webex spaces, messages, memberships, teams and webhooks — the Webex Mes
 - **Category** — communication
 - **Auth methods** — oauth2
 - **Actions** — 34
-- **Triggers** — 2 (webhook)
+- **Triggers** — 11 (8 webhook, 3 poll)
 - **Egress allowlist** — `webexapis.com`
 - **Website** — https://www.webex.com
 - **API docs** — https://developer.webex.com/docs/api/v1/people
@@ -18,16 +18,29 @@ and a read-only slice of People.
 
 ## Triggers
 
-| Trigger | Mechanism | Vendor event | The run gets |
+| Trigger | Mechanism | Vendor event / list call | The run gets |
 |---|---|---|---|
 | `new-message` — New Message | webhook (API-registered) | `messages` / `created` | space, sender, message id and text |
+| `message-deleted` — Message Deleted | webhook (API-registered) | `messages` / `deleted` | space, who deleted it, message id (no text) |
 | `new-membership` — New Space Member | webhook (API-registered) | `memberships` / `created` | space, the person who joined |
+| `membership-updated` — Space Member Updated | webhook (API-registered) | `memberships` / `updated` | space, the person (moderator changes) |
+| `membership-deleted` — Space Member Removed | webhook (API-registered) | `memberships` / `deleted` | space, the person who left or was removed (group spaces only) |
+| `room-created` — Space Created | webhook (API-registered) | `rooms` / `created` | space id, title, type (spaces made by this account or its integrations) |
+| `room-updated` — Space Updated | webhook (API-registered) | `rooms` / `updated` | space id, title, type, lock state |
+| `any-event` — Any Event | webhook (API-registered, `all`/`all`) | every messaging event, or the ones named in `events` | resource, event, actor, record ids |
+| `new-room` — New Space | poll (5 min) | `GET /rooms` (`list-rooms`) | each space the account newly joined or created |
+| `new-team` — New Team | poll (5 min) | `GET /teams` (`list-teams`) | each team the account newly belongs to |
+| `new-team-member` — New Team Member | poll (5 min) | `GET /team/memberships?teamId=` (`list-team-memberships`) | each person newly added to the team you pick |
 
-**Setup.** Nothing to do by hand: subscribing creates a Webex webhook (`POST /v1/webhooks`) pointed at the trigger's callback URL with a random `secret`, after removing any leftover webhook already pointed at that URL; unsubscribing deletes it. A message trigger also reads `GET /v1/people/me` so it can skip the connection's own messages (turn on `includeOwnMessages` to keep them).
+**Setup.** Nothing to do by hand for the webhook triggers: subscribing creates a Webex webhook (`POST /v1/webhooks`) pointed at the trigger's callback URL with a random `secret`, after removing any leftover webhook already pointed at that URL; unsubscribing deletes it. A message trigger also reads `GET /v1/people/me` so it can skip the connection's own messages (turn on `includeOwnMessages` to keep them). **Any Event** registers Webex's "all resource" firehose (`resource: all`, `event: all`, which Webex documents as covering `memberships`, `messages` and `rooms`) and then keeps only the events you list in `events` (comma-separated `resource.event`, e.g. `messages.created,rooms.updated`; empty = all seven: `memberships.created|updated|deleted`, `messages.created|deleted`, `rooms.created|updated`). A misspelt name is refused when you subscribe. The firehose needs read scope on all three resources, which this app's OAuth scopes already carry.
+
+**Polls.** `new-room`, `new-team` and `new-team-member` diff the whole list each time (Webex documents no usable order for them) and emit rows that were not there at the previous check. Webex silently cuts a list to a per-endpoint ceiling, so a check that comes back with a full page (1000 spaces, 100 teams, 100 team members) fails with an error saying so instead of guessing; narrow it or use the webhook triggers.
 
 **Trust model.** Webex sends `X-Spark-Signature`, the hex HMAC-SHA1 of the unmodified raw body under the webhook's `secret`. The secret is generated per subscription and kept in subscription state; a missing signature, a mismatch or a subscription with no stored secret refuses the delivery. Webex puts no timestamp in a delivery, so there is no replay window. The notification holds ids only; the run's message text is fetched at dispatch time and is empty when the connection cannot read the message (a bot sees only messages that mention it).
 
-Sources (verified 2026-11-09): https://developer.webex.com/docs/webhooks , https://developer.webex.com/messaging/docs/api/v1/webhooks/create-a-webhook
+**Not covered.** `list-messages` and `list-direct-messages` (new messages are `new-message`), `list-memberships` (`new-membership`). Skipped: `list-people` (an org directory search: non-admins must pass `email` or `displayName`, there is no created-since filter or order, and presence polling is rate-limited per the Webex docs) and `list-webhooks` (the app's own webhook registrations, not a record feed). Not offered: card interactions (`attachmentActions`), `rooms.migrated`, and Meetings/Recordings/Calling events, which are outside the Messaging API this app covers.
+
+Sources (verified 2026-11-10): https://developer.webex.com/messaging/docs/api/v1/webhooks/create-a-webhook (event catalog, filters, signing), https://developer.webex.com/docs/basics#pagination , https://developer.webex.com/messaging/docs/api/v1/rooms/list-rooms , https://developer.webex.com/messaging/docs/api/v1/messages/list-messages ("sorts the messages in descending order by creation date").
 
 ## Why People is read-only
 

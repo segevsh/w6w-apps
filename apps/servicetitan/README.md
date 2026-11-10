@@ -58,15 +58,28 @@ raster `.ico`.
 
 ## Triggers
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 13 (poll)
 
 | Trigger | Mechanism | Wraps | The run gets |
 |---|---|---|---|
 | `new-customer` — New Customer | poll | `customer-list` | the new customer |
 | `new-or-updated-customer` — New or Updated Customer | poll | `customer-list` | a customer created or modified (each new `modifiedOn` is a new event) |
+| `new-job` — New Job | poll | `job-list` | a job created |
+| `new-or-updated-job` — New or Updated Job | poll | `job-list` | a job created or modified (each new `modifiedOn` is a new event) |
+| `new-lead` — New Lead | poll | `lead-list` | a lead created |
+| `new-or-updated-lead` — New or Updated Lead | poll | `lead-list` | a lead created or modified (each new `modifiedOn` is a new event) |
+| `new-location` — New Location | poll | `location-list` | a location created |
+| `new-or-updated-location` — New or Updated Location | poll | `location-list` | a location created or modified (each new `modifiedOn` is a new event) |
+| `new-appointment` — New Appointment | poll | `appointment-list` | an appointment created |
+| `new-or-updated-appointment` — New or Updated Appointment | poll | `appointment-list` | an appointment created or modified (each new `modifiedOn` is a new event) |
+| `new-employee` — New Employee | poll (snapshot) | `employee-list` | a employee newly added to the tenant |
+| `new-technician` — New Technician | poll (snapshot) | `technician-list` | a technician newly added to the tenant |
+| `new-business-unit` — New Business Unit | poll (snapshot) | `business-unit-list` | a business unit newly added to the tenant |
 
 The first check only records the time (`floor`) and emits nothing, and anything created (`createdOn`) / modified (`modifiedOn`) before that time is never emitted. Each later check re-reads `createdOnOrAfter` / `modifiedOnOrAfter` from the last drained cursor minus 2 minutes, remembers up to 500 emitted ids and skips them. A window larger than 200 customers is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained. ServiceTitan documents no list order here, so none is relied on: a window is read page by page with a fixed `since`, the page number is kept until `hasMore` is false, and the id dedupe absorbs a row that moves between pages.
 
+The job, lead, location and appointment triggers use the same since-window as the customer ones (floor on the first check, resumable page position, id dedupe), reading the action's own `createdOnOrAfter` / `modifiedOnOrAfter`. `appointment-list` has no created filter, so `new-appointment` reads `modifiedOnOrAfter` and keeps an appointment by its own `createdOn`. Employees, technicians and business units are a tenant's small settings lists: they are read whole (up to 10 pages of 200 through the action's `page`/`pageSize`; a larger tenant is refused with an error, not truncated) and only added rows are events.
+
 Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `customer-list` with the connection's credentials.
 
-Vendor docs: https://developer.servicetitan.io/docs/apis/tenant-crm-v2 (URL fetched 2026-11-09; it is a JavaScript shell that returned no readable text, so the filters are **unverified** here — they are the `customer-list` action's own `createdOnOrAfter` / `modifiedOnOrAfter` params, taken from the OpenAPI the action was built from on 2026-10-06)
+Vendor docs: https://developer.servicetitan.io/docs/apis/tenant-crm-v2, https://developer.servicetitan.io/docs/apis/jpm-v2 and https://developer.servicetitan.io/docs/apis/settings-v2 (verified 2026-11-10; the site is a JavaScript shell that returned no readable text, so the filters are **unverified** here — they are the `customer-list` action's own `createdOnOrAfter` / `modifiedOnOrAfter` params, taken from the OpenAPI the action was built from on 2026-10-06)

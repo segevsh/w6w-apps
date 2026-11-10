@@ -1,6 +1,6 @@
 import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
 import action from "../actions/contact-list.ts";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
@@ -186,3 +186,47 @@ export const newOrUpdatedContactTrigger: TriggerDefinition = {
     });
   },
 };
+
+/** Pages read for a snapshot of a bounded list (500 rows each; the kit caps a snapshot at 5000). */
+const SNAPSHOT_PAGES = 10;
+
+/** Reads a whole small list through the app's OWN list action, 0-based `page`, `size` 500. */
+export async function readAllPages(
+  list: { execute?: (input: never, ctx: HookContext) => unknown },
+  ctx: HookContext,
+): Promise<unknown[]> {
+  const all: unknown[] = [];
+  for (let page = 0; page < SNAPSHOT_PAGES; page++) {
+    const res = await list.execute!({ page, size: 500 } as never, ctx) as {
+      content?: unknown[];
+      totalPages?: number;
+    };
+    all.push(...(res.content ?? []));
+    if (page + 1 >= (res.totalPages ?? 0)) return all;
+  }
+  throw new Error(
+    `SimpleTexting list is longer than ${SNAPSHOT_PAGES} pages; refusing to snapshot it`,
+  );
+}
+
+/** "New <record>" over a small bounded collection: diff the ids against the previous check. */
+export async function newRecords(o: {
+  state: unknown;
+  items: unknown[];
+  idOf(item: unknown): unknown;
+}): Promise<{ events: unknown[]; nextState: unknown }> {
+  const byId = new Map<string, unknown>();
+  for (const item of o.items) {
+    const id = o.idOf(item);
+    if (typeof id !== "string" || id === "") {
+      throw new Error("SimpleTexting list returned a record without an id");
+    }
+    byId.set(id, item);
+  }
+  const { events, nextState } = await pollSnapshot({
+    state: o.state,
+    rows: [...byId.keys()].map((key) => ({ key, values: { key } })),
+    emit: { added: true, updated: false },
+  });
+  return { events: events.map((e) => byId.get(e.key)), nextState };
+}

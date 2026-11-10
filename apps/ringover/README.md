@@ -3,7 +3,7 @@
 Query calls, contacts, users, groups, numbers, SMS conversations and tags, place callbacks and send
 SMS in **Ringover**, the cloud telephony platform, over the **Ringover public API (v2)**.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Categories** — communication, crm
 - **Auth methods** — api-key (`Authorization: <key>`, bare, plus a Europe/US region field)
 - **Actions** — 30
@@ -88,6 +88,11 @@ the MCP endpoint and SCIM 2.0 provisioning.
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
 | `new-call` — New Call | poll (every 5 minutes at most) | `call-list`, ordered newest first (the call log default) | each newly terminated call |
+| `new-contact` — New Contact | poll (snapshot diff, every 5 minutes at most) | `contact-list` | each new contact |
+| `new-conversation` — New Conversation | poll (snapshot diff, every 5 minutes at most) | `conversation-list` | each new SMS or chat conversation |
+| `new-group` — New Group | poll (snapshot diff, every 5 minutes at most) | `group-list` | each new call group |
+| `new-user` — New User | poll (snapshot diff, every 5 minutes at most) | `user-list` | each new team user |
+| `new-tag` — New Tag | poll (snapshot diff, every 5 minutes at most) | `tag-list` | each new call tag |
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `call-list` through the connection's own
@@ -98,3 +103,9 @@ verify: the trigger only pulls, over the same authenticated API call as the acti
 the connection.
 
 Vendor docs: <https://developer.ringover.com> (verified 2026-11-09).
+
+The new record triggers re-use the existing list actions through the connection's own client and credential. Ringover documents no created-at order or filter on these lists, so each check reads the whole collection and diffs the ids (contacts in pages of 500, conversations and groups in pages of 1000, up to 5000 records, failing loudly beyond that); the first check records what exists and emits nothing. `call-search` returns the same terminated calls as `call-list`, so `new-call` already delivers them.
+
+Not covered: `blacklist-list` (the team's own number blacklist: admin configuration), `number-list` (team phone-number inventory, defaults to unassigned numbers only: provisioning data), `call-live-list` (a snapshot of calls in progress, gone within minutes: a 5-minute poll would miss most, and finished calls arrive through `new-call`), `message-list` (the documented list has no stated order and its `last_id_returned` cursor has no stated direction, so a reliable "new message" window cannot be built).
+
+Vendor docs: <https://developer.ringover.com/web/openapi_public.yml> (verified 2026-11-10).

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/superchat",
-  "version": "0.2.0",
-  "description": "Send WhatsApp, SMS, email and social messages, and manage contacts, conversations, notes, templates and webhooks in Superchat. Trigger for new contacts.",
+  "version": "0.3.0",
+  "description": "Send WhatsApp, SMS, email and social messages, and manage contacts, conversations, notes, templates and webhooks in Superchat. Poll triggers cover newly created workspace records.",
   "license": "MIT",
   "author": {
     "name": "w6w"

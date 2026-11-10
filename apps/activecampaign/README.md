@@ -1,16 +1,55 @@
 # ActiveCampaign
 
-- **Triggers** — 1 webhook
+- **Triggers** — 16 (11 webhook, 1 any-event webhook, 4 poll)
 
 ## Triggers
 
-| Key | Title | Mechanism | Vendor event | What the run gets |
+| Key | Title | Mechanism | Vendor event / wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-contact` | New Contact | Webhook | `subscribe` | The subscribing contact |
+| `contact-updated` | Contact Updated | Webhook | `update` | The updated contact |
+| `contact-unsubscribed` | Contact Unsubscribed | Webhook | `unsubscribe` | The contact that unsubscribed (and the campaign it came from) |
+| `contact-tag-added` | Contact Tag Added | Webhook | `contact_tag_added` | The contact and the tag |
+| `contact-tag-removed` | Contact Tag Removed | Webhook | `contact_tag_removed` | The contact and the tag |
+| `deal-added` | Deal Added | Webhook | `deal_add` | The new deal |
+| `deal-updated` | Deal Updated | Webhook | `deal_update` | The updated deal and the fields that changed |
+| `campaign-sent` | Campaign Sent | Webhook | `sent` | The campaign that was sent |
+| `campaign-opened` | Campaign Opened | Webhook | `open` | The campaign and the contact that opened it |
+| `campaign-link-clicked` | Campaign Link Clicked | Webhook | `click` | The campaign, the link and the contact |
+| `email-bounced` | Email Bounced | Webhook | `bounce` | The campaign, the bounce and the contact |
+| `any-event` | Any Event | Webhook | the `events` you list (default: all 30) | The event name, contact/deal/campaign and the full payload |
+| `new-or-updated-contact` | New or Updated Contact | Poll | `list-contacts` (`GET /contacts?orders[udate]=DESC`) | Each contact created, imported or changed |
+| `new-sent-campaign` | New Sent Campaign | Poll | `list-campaigns` (`GET /campaigns?orders[sdate]=DESC`) | Each campaign newly sent, automation campaigns included |
+| `new-automation` | New Automation | Poll | `list-automations` (`GET /automations?orders[cdate]=DESC`) | Each automation newly created |
+| `new-or-updated-automation` | New or Updated Automation | Poll | `list-automations` (`GET /automations?orders[mdate]=DESC`) | Each automation created or modified |
 
-ActiveCampaign sends these webhook fields in an unsigned POST. The callback URL is the shared secret; stale registrations for it are removed before a replacement is created.
+Every webhook trigger registers itself (`POST /webhooks`) with the callback URL w6w minted, for the
+sources admin, api, public and system, and removes it (`DELETE /webhooks/{id}`) when unsubscribed;
+stale registrations for the same URL are removed before a replacement is created. Nothing to set up
+by hand. `any-event` registers one webhook for the events in its `events` parameter
+(comma-separated; empty = all 30 ActiveCampaign documents), and only those are delivered.
 
-Vendor documentation: [Webhooks](https://developers.activecampaign.com/page/webhooks) and [Webhook API](https://developers.activecampaign.com/reference/get-webhook) (verified 2026-11-09).
+`list-deals` is covered by `deal-added` (a webhook fires for every deal created, whatever the source).
+`list-contacts` also feeds `new-or-updated-contact`, which sees contacts added by an import (the
+`subscribe` webhook does not run for imports).
+
+**Trust model.** ActiveCampaign does not HMAC-sign a delivery. Its webhook API does accept custom
+headers, one of which can be marked `is_signature: true` (the value is hidden in later reads), so
+every trigger above except `new-contact` registers a fresh random per-subscription secret as the
+header `X-W6W-Webhook-Secret` and refuses (constant-time comparison, before it reads the body) any
+delivery whose header is missing or wrong. That is a shared secret, not a body signature: it does not
+prove the body is unmodified and a captured delivery can be replayed; keep the callback URL private.
+`new-contact` (shipped earlier) registers no header: for it the callback URL is the secret. A
+delivery of an event other than the one a trigger registered for is dropped. ActiveCampaign never
+retries a webhook and deactivates one that answers HTTP 410.
+
+Vendor documentation, verified 2026-11-10: [Webhooks](https://developers.activecampaign.com/page/webhooks)
+(events and payload fields), [Create a webhook](https://developers.activecampaign.com/reference/create-webhook)
+(`events`, `sources`, `headers` with `is_signature`),
+[List all webhook events](https://developers.activecampaign.com/reference/get-a-list-of-webhook-events),
+and the list endpoints [contacts](https://developers.activecampaign.com/reference/list-all-contacts),
+[campaigns](https://developers.activecampaign.com/reference/list-all-campaigns) and
+[automations](https://developers.activecampaign.com/reference/list-all-automations) (`orders[...]`).
 
 Manage ActiveCampaign contacts, deals, campaigns and automations.
 

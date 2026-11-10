@@ -3,7 +3,7 @@
 Manage **Better Stack Uptime** from a workflow: monitors, heartbeats, incidents, on-call calendars,
 escalation policies and status pages, over the Uptime API at `uptime.betterstack.com`.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 - **Categories** — monitoring, developer-tools
 - **Auth methods** — api-token (bearer)
 - **Actions** — 30
@@ -119,6 +119,16 @@ betterstack/
 | Key | Title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- | --- |
 | `new-incident` | New Incident | poll (since-filter) | `incident-list` | Each incident started since the last check |
+| `new-monitor` | New Monitor | poll (snapshot) | `monitor-list` | Each newly created monitor |
+| `new-heartbeat` | New Heartbeat | poll (snapshot) | `heartbeat-list` | Each newly created heartbeat |
+| `new-monitor-group` | New Monitor Group | poll (snapshot) | `monitor-group-list` | Each newly created monitor group |
+| `new-escalation-policy` | New Escalation Policy | poll (snapshot) | `escalation-policy-list` | Each newly created escalation policy |
+| `new-severity` | New Severity | poll (snapshot) | `severity-list` | Each newly created severity (urgency) |
+| `new-status-page` | New Status Page | poll (snapshot) | `status-page-list` | Each newly created status page |
+| `new-on-call-calendar` | New On-call Calendar | poll (snapshot) | `on-call-list` | Each newly created on-call calendar |
+| `new-status-report` | New Status Report | poll (snapshot) | `status-report-list` | Each newly published report on the chosen status page (`status_page_id`) |
+| `new-status-page-resource` | New Status Page Resource | poll (snapshot) | `status-page-resource-list` | Each resource newly added to the chosen status page (`status_page_id`) |
+| `new-incident-comment` | New Incident Comment | poll (snapshot) | `incident-comment-list` | Each new comment on the chosen incident (`incident_id`) |
 
 The poll calls the same `GET /api/v3/incidents` request as `incident-list` with `from` set to the UTC
 day of the previous check minus two minutes (`per_page=50`, up to 10 pages per check) and
@@ -126,3 +136,14 @@ de-duplicates on the incident id. Better Stack documents `from` as "Return only 
 certain date (format YYYY-MM-DD)" at <https://betterstack.com/docs/uptime/api/list-all-incidents/>
 (verified 2026-11-09), so the window is a whole day and the id dedupe drops what was already seen.
 The first check records the current window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.
+
+The ten snapshot triggers read the whole collection with the same list request as their action
+(`per_page=250`, the documented maximum, at most 20 pages = the 5000-row kit cap; a larger collection
+fails the check with an error rather than being cut), diff ids with the poll kit and emit the added
+ones. The first check records the ids and emits nothing. The app's list actions take no sort or since
+argument, so a full read is the only way to see new records reliably.
+
+Not covered: `on-call-events-list` — it returns a calendar's computed shifts inside a `starts_at`/`ends_at`
+window (a schedule projection, not a feed of created records).
+
+Vendor docs: <https://betterstack.com/docs/uptime/api/getting-started-with-uptime-api/> (verified 2026-11-10).

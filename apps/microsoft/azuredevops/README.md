@@ -7,6 +7,14 @@
 | `new-build` — New Pipeline Run | poll | `build-list` | Each pipeline run since the previous check |
 | `new-work-item` — New Work Item | poll | `work-item-query` | Each work item created in the project since the previous check |
 | `new-or-updated-work-item` — New or Updated Work Item | poll | `work-item-query` | Each work item created or changed since the previous check |
+| `new-commit` — New Commit | poll | `commit-list` | Each commit in a repository (optionally one branch) since the previous check |
+| `new-pull-request` — New Pull Request | poll | `pull-request-list` | Each pull request (any status) created in a repository since the previous check |
+| `new-repository` — New Repository | poll | `repository-list` | Each git repository newly created in a project |
+| `new-branch` — New Branch | poll | `branch-list` | Each branch newly created in a repository |
+| `new-pipeline` — New Pipeline | poll | `build-definition-list` | Each build pipeline newly created in a project |
+| `new-project` — New Project | poll | `project-list` | Each project newly created in the organization |
+
+`new-commit` and `new-pull-request` ask for a `fromDate`/`toDate` (commits) or `minTime`/`maxTime` (pull requests) window and page it with `$skip`/`$top`, resuming a multi-page window on the next check; the repository, branch, pipeline and project triggers diff a bounded listing (at most 1000 rows per request; a listing that fills the cap raises an error rather than guess). `pull-request-list` gained optional `minTime`/`maxTime` params for this. Not covered: `build-artifact-list` (the artifacts of one run, not something a workflow picks). Vendor docs: [commits](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/commits/get-commits), [pull requests](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-requests), [refs](https://learn.microsoft.com/en-us/rest/api/azure/devops/git/refs/list) verified 2026-11-10.
 
 `new-build` filters the build list with `minTime` and de-duplicates on the build id; it does not rely
 on any default result order. [Azure DevOps builds list API](https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/list)

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/workos",
-  "version": "0.2.0",
-  "description": "Manage WorkOS and trigger workflows on new events.",
+  "version": "0.3.0",
+  "description": "Manage WorkOS and trigger workflows on new events, organizations, connections, directories, users and memberships.",
   "license": "MIT",
   "author": {
     "name": "w6w"

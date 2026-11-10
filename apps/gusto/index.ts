@@ -100,7 +100,21 @@ import eventList from "./actions/event-list.ts";
 
 import service from "./health/service.ts";
 import apiVersion from "./health/api-version.ts";
+import newContractor from "./triggers/new-contractor.ts";
+import newContractorPayment from "./triggers/new-contractor-payment.ts";
+import newDepartment from "./triggers/new-department.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newEmployeeHomeAddress from "./triggers/new-employee-home-address.ts";
 import newEvent from "./triggers/new-event.ts";
+import newGarnishment from "./triggers/new-garnishment.ts";
+import newJobCompensation from "./triggers/new-job-compensation.ts";
+import newOrUpdatedContractor from "./triggers/new-or-updated-contractor.ts";
+import newOrUpdatedContractorPayment from "./triggers/new-or-updated-contractor-payment.ts";
+import newOrUpdatedEmployee from "./triggers/new-or-updated-employee.ts";
+import newOrUpdatedPayroll from "./triggers/new-or-updated-payroll.ts";
+import newOrUpdatedTimeOffRequest from "./triggers/new-or-updated-time-off-request.ts";
+import newPayroll from "./triggers/new-payroll.ts";
+import newTimeOffRequest from "./triggers/new-time-off-request.ts";
 
 export default {
   actions: [
@@ -136,5 +150,21 @@ export default {
   ],
   auth: [oauth2, oauth2Demo],
   healthChecks: [service, apiVersion],
-  triggers: [newEvent],
+  triggers: [
+    newContractor,
+    newContractorPayment,
+    newDepartment,
+    newEmployee,
+    newEmployeeHomeAddress,
+    newEvent,
+    newGarnishment,
+    newJobCompensation,
+    newOrUpdatedContractor,
+    newOrUpdatedContractorPayment,
+    newOrUpdatedEmployee,
+    newOrUpdatedPayroll,
+    newOrUpdatedTimeOffRequest,
+    newPayroll,
+    newTimeOffRequest,
+  ],
 } satisfies AppDefinition;

@@ -21,6 +21,18 @@
  * cadences, cadence enrollment, calls, notes, tasks and users.
  */
 import type { AppDefinition } from "@w6w/types";
+import newAccount from "./triggers/new-account.ts";
+import newOrUpdatedAccount from "./triggers/new-or-updated-account.ts";
+import newCadence from "./triggers/new-cadence.ts";
+import newOrUpdatedCadence from "./triggers/new-or-updated-cadence.ts";
+import newCadenceMembership from "./triggers/new-cadence-membership.ts";
+import newOrUpdatedCadenceMembership from "./triggers/new-or-updated-cadence-membership.ts";
+import newCall from "./triggers/new-call.ts";
+import newOrUpdatedCall from "./triggers/new-or-updated-call.ts";
+import newNote from "./triggers/new-note.ts";
+import newOrUpdatedNote from "./triggers/new-or-updated-note.ts";
+import newOrUpdatedTask from "./triggers/new-or-updated-task.ts";
+import newUser from "./triggers/new-user.ts";
 import newPerson from "./triggers/new-person.ts";
 import apiKey from "./auth/api-key.ts";
 import oauth2 from "./auth/oauth2.ts";
@@ -99,7 +111,21 @@ export default {
     userList,
     userGet,
   ],
-  triggers: [newPerson],
+  triggers: [
+    newPerson,
+    newAccount,
+    newOrUpdatedAccount,
+    newCadence,
+    newOrUpdatedCadence,
+    newCadenceMembership,
+    newOrUpdatedCadenceMembership,
+    newCall,
+    newOrUpdatedCall,
+    newNote,
+    newOrUpdatedNote,
+    newOrUpdatedTask,
+    newUser,
+  ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

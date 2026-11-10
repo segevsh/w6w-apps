@@ -79,6 +79,13 @@ import companyGet from "./actions/company-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import event from "./triggers/event.ts";
+import newUser from "./triggers/new-user.ts";
+import newCard from "./triggers/new-card.ts";
+import newDepartment from "./triggers/new-department.ts";
+import newLocation from "./triggers/new-location.ts";
+import newTitle from "./triggers/new-title.ts";
+import newLegalEntity from "./triggers/new-legal-entity.ts";
+import userUpdated from "./triggers/user-updated.ts";
 
 export default {
   actions: [
@@ -117,6 +124,15 @@ export default {
   // it needs a registered OAuth application and a live consent screen, so this
   // app declares the static user token only (see auth/api-token.ts and README).
   auth: [apiToken],
-  triggers: [event],
+  triggers: [
+    event,
+    userUpdated,
+    newUser,
+    newCard,
+    newDepartment,
+    newLocation,
+    newTitle,
+    newLegalEntity,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

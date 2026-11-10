@@ -66,6 +66,10 @@ import askfredContinue from "./actions/askfred-continue.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newActiveMeeting from "./triggers/new-active-meeting.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newContact from "./triggers/new-contact.ts";
+import newTeamUser from "./triggers/new-team-user.ts";
 import newTranscript from "./triggers/new-transcript.ts";
 
 export default {
@@ -104,5 +108,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newTranscript],
+  triggers: [newTranscript, newChannel, newContact, newTeamUser, newActiveMeeting],
 } satisfies AppDefinition;

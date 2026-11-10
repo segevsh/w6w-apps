@@ -26,6 +26,16 @@ import listEvents from "./actions/list-events.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newEvent from "./triggers/new-event.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newSubscription from "./triggers/new-subscription.ts";
+import newOrUpdatedSubscription from "./triggers/new-or-updated-subscription.ts";
+import newInvoice from "./triggers/new-invoice.ts";
+import newOrUpdatedInvoice from "./triggers/new-or-updated-invoice.ts";
+import newPaymentSource from "./triggers/new-payment-source.ts";
+import newOrUpdatedPaymentSource from "./triggers/new-or-updated-payment-source.ts";
+import newOrUpdatedItem from "./triggers/new-or-updated-item.ts";
+import newOrUpdatedItemPrice from "./triggers/new-or-updated-item-price.ts";
 
 export default {
   actions: [
@@ -54,5 +64,17 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newEvent],
+  triggers: [
+    newEvent,
+    newCustomer,
+    newOrUpdatedCustomer,
+    newSubscription,
+    newOrUpdatedSubscription,
+    newInvoice,
+    newOrUpdatedInvoice,
+    newPaymentSource,
+    newOrUpdatedPaymentSource,
+    newOrUpdatedItem,
+    newOrUpdatedItemPrice,
+  ],
 } satisfies AppDefinition;

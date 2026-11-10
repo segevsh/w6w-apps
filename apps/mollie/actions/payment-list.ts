@@ -1,10 +1,11 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, MollieClient, type MollieList, unwrapList } from "../lib/client.ts";
-import { paginationParams, profileIdParam, testmodeParam } from "../lib/params.ts";
+import { paginationParams, profileIdParam, sortParam, testmodeParam } from "../lib/params.ts";
 
 interface Input {
   from?: string;
   limit?: number;
+  sort?: "asc" | "desc";
   profileId?: string;
   testmode?: boolean;
 }
@@ -15,7 +16,7 @@ const paymentList: ActionDefinition<Input> = {
   resource: "payment",
   title: "List Payments",
   description: "Retrieve a cursor-paginated list of payments. Maximum 250 per page.",
-  params: [...paginationParams(), profileIdParam, testmodeParam],
+  params: [...paginationParams(), sortParam, profileIdParam, testmodeParam],
   output: [
     { key: "count", type: "number", label: "Number of items in this page" },
     { key: "items", type: "array", label: "Payments" },
@@ -27,6 +28,7 @@ const paymentList: ActionDefinition<Input> = {
       compact({
         from: input.from,
         limit: input.limit,
+        sort: input.sort,
         profileId: input.profileId,
         testmode: input.testmode,
       }),

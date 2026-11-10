@@ -27,6 +27,13 @@ import listPermissions from "./actions/list-permissions.ts";
 import deletePermission from "./actions/delete-permission.ts";
 import sendSharingInvite from "./actions/send-sharing-invite.ts";
 import fileChanged from "./triggers/file-changed.ts";
+import newFile from "./triggers/new-file.ts";
+import newFolder from "./triggers/new-folder.ts";
+import fileUpdated from "./triggers/file-updated.ts";
+import folderUpdated from "./triggers/folder-updated.ts";
+import itemDeleted from "./triggers/item-deleted.ts";
+import newPermission from "./triggers/new-permission.ts";
+import newDrive from "./triggers/new-drive.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -53,7 +60,16 @@ export default {
     deletePermission,
     sendSharingInvite,
   ],
-  triggers: [fileChanged],
+  triggers: [
+    fileChanged,
+    newFile,
+    newFolder,
+    fileUpdated,
+    folderUpdated,
+    itemDeleted,
+    newPermission,
+    newDrive,
+  ],
   auth: [oauth2],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

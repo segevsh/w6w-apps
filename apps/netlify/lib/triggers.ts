@@ -147,7 +147,7 @@ async function sha256Hex(text: string): Promise<string> {
 }
 
 /** Verify a delivery and return its parsed deploy object; throws, echoing nothing, on any shortfall. */
-async function verifiedDeploy(
+export async function verifiedDeploy(
   raw: { rawBody?: unknown; headers: Record<string, string> },
   signingSecret: unknown,
 ): Promise<Record<string, unknown>> {
@@ -251,6 +251,121 @@ export function webhookTrigger(
         errorMessage: str(deploy.error_message),
         createdAt: str(deploy.created_at),
         deploy,
+      }];
+    },
+  };
+}
+
+/** The run's `trigger.event` for a form submission. */
+export interface NetlifySubmissionEvent {
+  submissionId: string | null;
+  formId: string | null;
+  formName: string | null;
+  siteUrl: string | null;
+  name: string | null;
+  email: string | null;
+  summary: string | null;
+  data: Record<string, unknown> | null;
+  createdAt: string | null;
+  /** Netlify's submission object, verbatim. */
+  submission: Record<string, unknown>;
+}
+
+const OPTIONAL_SECRET_PARAM: Param = {
+  key: "signingSecret",
+  label: "JWS secret token (optional)",
+  type: "secret",
+  hint:
+    "Netlify's documentation describes a JWS secret token for deploy notifications only. If your form notification lets you set one, enter it here and every delivery must carry a valid signature; leave blank and the callback URL itself is the secret.",
+};
+
+const SUBMISSION_OUTPUT: OutputField[] = [
+  { key: "submissionId", type: "string", label: "Submission ID" },
+  { key: "formId", type: "string", label: "Form ID" },
+  { key: "formName", type: "string", label: "Form name" },
+  { key: "siteUrl", type: "string", label: "Site URL" },
+  { key: "name", type: "string", label: "Submitter name" },
+  { key: "email", type: "string", label: "Submitter email" },
+  { key: "summary", type: "string", label: "Summary" },
+  { key: "data", type: "object", label: "Form fields" },
+  { key: "createdAt", type: "string", label: "Submitted at" },
+  { key: "submission", type: "object", label: "Submission" },
+];
+
+/** The Netlify form-submission notification (Forms > Submission notifications > Outgoing webhook). */
+export function submissionTrigger(
+  spec: { key: string; title: string; description: string },
+): TriggerDefinition<
+  { signingSecret?: string; formName?: string },
+  NetlifySubmissionEvent,
+  TriggerState
+> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [
+      OPTIONAL_SECRET_PARAM,
+      {
+        key: "formName",
+        label: "Form name",
+        type: "string",
+        hint: "Only fire for this form. Leave blank for every form the notification covers.",
+      },
+    ],
+    output: SUBMISSION_OUTPUT,
+    sample: {
+      submissionId: "5d6e7f8a9b0c1d2e3f4a5b6c",
+      formId: "5d6e7f8a9b0c1d2e3f4a5b6d",
+      formName: "contact",
+      siteUrl: `https://my-site.${APP_DOMAIN}`,
+      name: "Ada Lovelace",
+      email: "ada@example.test",
+      summary: "Hello from the contact form",
+      data: { name: "Ada Lovelace", email: "ada@example.test", message: "Hello" },
+      createdAt: "2026-11-09T10:00:00.000Z",
+      submission: { id: "5d6e7f8a9b0c1d2e3f4a5b6c", form_name: "contact" },
+    },
+
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Netlify delivers webhooks with POST, not ${raw.method}.`);
+      }
+      let sub: Record<string, unknown>;
+      if (params?.signingSecret !== undefined && params.signingSecret !== "") {
+        // A secret is configured: the delivery must prove it (fail closed, secret checked first).
+        sub = await verifiedDeploy(raw, params.signingSecret);
+      } else {
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(requireRawBody(raw));
+        } catch (err) {
+          if (err instanceof Error && err.message.includes("raw body")) throw err;
+          throw new Error("Netlify delivery refused: the body is not JSON.");
+        }
+        const obj = asObject(parsed);
+        if (!obj) throw new Error("Netlify delivery refused: the body is not a JSON object.");
+        sub = obj;
+      }
+      const formName = params?.formName?.trim();
+      if (formName && str(sub.form_name) !== formName) return [];
+      return [{
+        submissionId: str(sub.id),
+        formId: str(sub.form_id),
+        formName: str(sub.form_name),
+        siteUrl: str(sub.site_url),
+        name: str(sub.name),
+        email: str(sub.email),
+        summary: str(sub.summary),
+        data: asObject(sub.data),
+        createdAt: str(sub.created_at),
+        submission: sub,
       }];
     },
   };

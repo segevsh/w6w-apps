@@ -315,3 +315,141 @@ export function webhookTrigger(
     },
   };
 }
+
+/**
+ * Notification triggers that are not run events (HCP Terraform "Workspace notifications", read
+ * 2026-11-10): health assessments / drift detection and auto-destroy / deletion. Their generic
+ * payload is `payload_version: 2` with `trigger_scope`, `trigger`, `message` and `details`.
+ */
+export const WORKSPACE_TRIGGERS = [
+  "assessment:drifted",
+  "assessment:check_failure",
+  "assessment:failed",
+  "workspace:auto_destroy_reminder",
+  "workspace:auto_destroy_run_results",
+  "workspace:deleted",
+];
+
+/** The event a workspace-scope (non-run) notification becomes. */
+export interface TerraformWorkspaceEvent {
+  trigger: string;
+  triggerScope: string | null;
+  message: string | null;
+  workspaceName: string | null;
+  organizationName: string | null;
+  notificationConfigurationId: string | null;
+  details: Record<string, unknown> | null;
+}
+
+/** The verified body → the workspace-scope event (one per payload). */
+export function normalizeWorkspaceDelivery(body: string): TerraformWorkspaceEvent[] {
+  let parsed: Record<string, unknown> | null;
+  try {
+    parsed = asObject(JSON.parse(body));
+  } catch {
+    parsed = null;
+  }
+  const trigger = str(parsed?.trigger);
+  if (!parsed || !trigger) {
+    throw new Error("Not an HCP Terraform workspace notification: expected a trigger.");
+  }
+  const details = asObject(parsed.details);
+  return [{
+    trigger,
+    triggerScope: str(parsed.trigger_scope),
+    message: str(parsed.message),
+    workspaceName: str(details?.workspace_name) ?? str(parsed.workspace_name),
+    organizationName: str(details?.organization_name) ?? str(parsed.organization_name),
+    notificationConfigurationId: str(parsed.notification_configuration_id),
+    details,
+  }];
+}
+
+function chooseFrom(raw: string | undefined, catalog: string[]): string[] {
+  const wanted = (raw ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  if (wanted.length === 0) return catalog;
+  const bad = wanted.filter((e) => !catalog.includes(e));
+  if (bad.length > 0) {
+    throw new Error(
+      `Unknown HCP Terraform notification trigger(s): ${bad.join(", ")}. Use ${
+        catalog.join(", ")
+      }.`,
+    );
+  }
+  return [...new Set(wanted)];
+}
+
+export interface EventTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  /** The notification triggers the user may choose from (empty selection = all of them). */
+  catalog: string[];
+  /** Fixed trigger list: no `triggers` param. */
+  fixed?: string[];
+  /** Normalise a verified body: run payloads, workspace payloads, or whichever arrives. */
+  kind: "run" | "workspace" | "any";
+  output: OutputField[];
+  sample: Record<string, unknown>;
+}
+
+/**
+ * A notification trigger that is not one of the original run triggers: workspace-scope events and
+ * the all-events trigger. It reuses `webhookTrigger`'s API registration (generic destination, fresh
+ * `randomSecret()` token) and `verifyDelivery`'s SHA-512 HMAC check, and picks the payload shape by
+ * `trigger_scope`.
+ */
+export function eventTrigger(
+  spec: EventTriggerSpec,
+): TriggerDefinition<TriggerParams, Record<string, unknown>, TriggerState> {
+  const wanted = (params?: TriggerParams) =>
+    spec.fixed ?? chooseFrom(params?.triggers, spec.catalog);
+  const hint = `Comma-separated notification triggers: ${
+    spec.catalog.join(", ")
+  }. Leave empty for all of them.`;
+  const registration = (params?: TriggerParams) =>
+    webhookTrigger({
+      key: spec.key,
+      title: spec.title,
+      description: spec.description,
+      triggers: wanted(params),
+    });
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.fixed ? [...WORKSPACE_PARAMS] : [...WORKSPACE_PARAMS, { ...TRIGGERS_PARAM, hint }],
+    output: spec.output,
+    sample: spec.sample,
+
+    onSubscribe(args, ctx: HookContext) {
+      // Validate before any request, then register exactly the chosen triggers.
+      return registration(args.params).onSubscribe!(args, ctx);
+    },
+
+    onUnsubscribe(args, ctx: HookContext) {
+      return registration().onUnsubscribe!(args, ctx);
+    },
+
+    async handleIngest({ raw, params, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`HCP Terraform delivers notifications with POST, not ${raw.method}.`);
+      }
+      const body = await verifyDelivery(raw, (state as Partial<TriggerState> | undefined)?.token);
+      const want = wanted(params);
+      let scoped = spec.kind === "workspace";
+      if (spec.kind === "any") {
+        let parsed: Record<string, unknown> | null = null;
+        try {
+          parsed = asObject(JSON.parse(body));
+        } catch { /* normalised below */ }
+        scoped = parsed !== null && !Array.isArray(parsed.notifications) &&
+          str(parsed.trigger) !== null;
+      }
+      const events: Array<Record<string, unknown> & { trigger: string }> = scoped
+        ? normalizeWorkspaceDelivery(body) as never
+        : normalizeDelivery(body) as never;
+      return events.filter((e) => want.includes(e.trigger));
+    },
+  };
+}

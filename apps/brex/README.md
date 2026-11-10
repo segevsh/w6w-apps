@@ -8,7 +8,7 @@ company behind the credential, and the cards themselves — listed, read,
 re-limited, locked, unlocked and terminated.
 
 - **23 actions**, all against `https://api.brex.com/v2`.
-- **1 trigger**: a signed webhook for Brex events (see Triggers), registered through the API.
+- **8 triggers**: two signed webhooks for Brex events (the Any-event `event` and `user-updated`, registered through the API) and six polls for new users, cards, departments, locations, titles and legal entities (see Triggers).
 - **One auth method**: a Brex **user token**, sent as `Authorization: Bearer <token>`.
 - **Health checks**: Brex's own status page, anchored on its `Partner API`
   component; quota headroom declared absent, because Brex publishes no readable
@@ -66,13 +66,22 @@ method on the same actions, not a rewrite of them.
 
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
-| `event` — Brex Event | webhook (API-registered, signed) | the `eventTypes` you choose: `REFERRAL_CREATED`, `REFERRAL_ACTIVATED`, `REFERRAL_APPLICATION_STATUS_CHANGED`, `TRANSFER_PROCESSED`, `TRANSFER_FAILED`, `USER_UPDATED`, `EXPENSE_PAYMENT_UPDATED`, `ACCOUNTING_RECORD_READY_FOR_EXPORT` (all when empty) | event type, the delivery's `Webhook-Id` and timestamp, the company id and the full event data |
+| `user-updated` — User Updated | webhook (API-registered, signed) | `USER_UPDATED` | event type, the delivery's `Webhook-Id` and timestamp, the company id and the full event data |
+| `new-user` — New User | poll (5 min) | `GET /v2/users` (`user-list`) | the user |
+| `new-card` — New Card | poll (5 min) | `GET /v2/cards` (`card-list`) | the card |
+| `new-department` — New Department | poll (5 min) | `GET /v2/departments` (`department-list`) | the department |
+| `new-location` — New Location | poll (5 min) | `GET /v2/locations` (`location-list`) | the location |
+| `new-title` — New Title | poll (5 min) | `GET /v2/titles` (`title-list`) | the title |
+| `new-legal-entity` — New Legal Entity | poll (5 min) | `GET /v2/legal_entities` (`legal-entity-list`) | the legal entity |
+| `event` — Brex Event (API-registered, signed) | the `eventTypes` you choose: `REFERRAL_CREATED`, `REFERRAL_ACTIVATED`, `REFERRAL_APPLICATION_STATUS_CHANGED`, `TRANSFER_PROCESSED`, `TRANSFER_FAILED`, `USER_UPDATED`, `EXPENSE_PAYMENT_UPDATED`, `ACCOUNTING_RECORD_READY_FOR_EXPORT` (all when empty) | event type, the delivery's `Webhook-Id` and timestamp, the company id and the full event data |
 
-**Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks` with the callback URL and the chosen event types (the endpoint is under `/v1`, unlike the `/v2` actions; the `Idempotency-Key` header is derived from the subscription id), then `GET /v1/webhooks/secrets`, and keeps the signing secrets Brex returns in the subscription's state. Unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone, 404, counts as deleted). The connection's token must be allowed to call the Webhooks API; if Brex refuses, its error is shown as is. Brex allows **one webhook endpoint per client**, so a second Brex trigger (or a webhook already registered for the same client) is refused by Brex at subscribe time: use one trigger and branch on `eventType` in the workflow.
+**Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks` with the callback URL and the chosen event types (the endpoint is under `/v1`, unlike the `/v2` actions; the `Idempotency-Key` header is derived from the subscription id), then `GET /v1/webhooks/secrets`, and keeps the signing secrets Brex returns in the subscription's state. Unsubscribing runs `DELETE /v1/webhooks/{id}` (a webhook already gone, 404, counts as deleted). The connection's token must be allowed to call the Webhooks API; if Brex refuses, its error is shown as is. Brex allows **one webhook endpoint per client**, so a second Brex trigger (or a webhook already registered for the same client) is refused by Brex at subscribe time: use one trigger and branch on `eventType` in the workflow. `user-updated` is the same webhook fixed to `USER_UPDATED`; it counts as the one endpoint too, so use it OR `event`.
 
 **Trust model.** Brex sends `Webhook-Id`, `Webhook-Timestamp` and `Webhook-Signature` (space-delimited `v1,<base64>` entries). The trigger recomputes the base64 HMAC-SHA256 of `<id>.<timestamp>.<raw body>` under the base64-decoded secret, in constant time, against every `v1` entry and every stored secret (Brex returns two during a rotation), and refuses a timestamp more than five minutes from now (Brex's own sample uses 60 seconds), before it parses anything. A missing secret, header or raw body, a stale timestamp or a mismatch refuses the delivery. A captured delivery can be replayed inside the window, and Brex resends a failed delivery with the same `Webhook-Id`, which the event carries for dedupe. The secrets are read once, at subscribe time: after Brex rotates them, recreate the trigger. Brex's OpenAPI shows a secret with a `whsec_` prefix while its guide decodes the secret string whole, so a stored secret with that prefix is tried both ways (both key the same secret).
 
-No poll trigger: the list actions are directory and card lookups, not event feeds.
+**Polls.** None of Brex's list endpoints takes a sort order or a created/updated-since filter (the query parameters on [users](https://developer.brex.com/openapi/team_api/users/listusers.md) and [cards](https://developer.brex.com/openapi/team_api/cards/listcardsbyuserid.md) are filters and `cursor`/`limit`), so each poll reads the whole collection through the list action (`limit` 1000, the documented maximum, following `next_cursor`) and diffs the ids; the first check only records them. A collection over 5000 rows is refused with an error rather than half-read. Edits to users arrive through the `user-updated` webhook, not a poll (no update stamp on the list rows).
+
+Event catalog read (https://developer.brex.com/guides/webhooks): `REFERRAL_CREATED`, `REFERRAL_ACTIVATED`, `REFERRAL_APPLICATION_STATUS_CHANGED`, `TRANSFER_PROCESSED`, `TRANSFER_FAILED`, `EXPENSE_PAYMENT_UPDATED`, `ACCOUNTING_RECORD_READY_FOR_EXPORT` are reachable through `event`; only `USER_UPDATED` is a record type this app has actions for, hence the one named webhook trigger (Brex allows a single endpoint per client, so more named triggers could not run side by side).
 
 Docs (verified 2026-11-10): https://developer.brex.com/guides/webhooks and https://developer.brex.com/openapi/webhooks_api
 

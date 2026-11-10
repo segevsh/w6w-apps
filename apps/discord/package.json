@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/discord",
-  "version": "0.4.0",
-  "description": "Send messages, manage channels, members, and roles on Discord servers, and trigger workflows on new channel messages.",
+  "version": "0.5.0",
+  "description": "Send messages, manage channels, members, and roles on Discord servers, and trigger workflows on new channel messages, servers, channels, roles and members.",
   "license": "MIT",
   "author": {
     "name": "w6w"

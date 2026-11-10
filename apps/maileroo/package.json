@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/maileroo",
-  "version": "0.2.0",
-  "description": "Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions and templates, run OTP verifications, and use a poll trigger for new domains with Maileroo.",
+  "version": "0.3.0",
+  "description": "Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions and templates, run OTP verifications. Poll triggers fire on new domains, logs and templates.",
   "license": "MIT",
   "author": {
     "name": "w6w"

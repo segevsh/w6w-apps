@@ -10,15 +10,26 @@ Manage contacts, companies, deals, next actions, notes and calls on
   `/api/partial-updates`) and live probes the same day. Nothing is inferred from another app.
 - Network: `app.onepagecrm.com` only (API `/api/v3` and the status probe share the host).
 - Icon: the vendor's `apple-touch-icon.png`, byte-for-byte (180x180 PNG).
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | poll | `list-contacts` | Newly listed contacts |
+| `new-or-updated-contact` — New or Updated Contact | poll | `list-contacts` | A contact created or edited (`modified_at` desc; one event per modification) |
+| `new-company` — New Company | poll | `list-companies` | Newly created companies (`created_at` desc) |
+| `new-or-updated-company` — New or Updated Company | poll | `list-companies` | A company created or edited |
+| `new-deal` — New Deal | poll | `list-deals` | Newly created deals |
+| `new-or-updated-deal` — New or Updated Deal | poll | `list-deals` | A deal created or edited (won, lost and stage moves included) |
+| `new-note` — New Note | poll | `list-notes` | Newly logged notes |
+| `new-action` — New Next Action | poll | `list-actions` | Newly created next actions |
 
-Source: https://app.onepagecrm.com/app/api (verified 2026-11-09).
+Every trigger asks the list endpoint for `sort_by=<created_at|modified_at>&order=desc&per_page=100`
+and emits what it has not seen. Not covered (account configuration reference data, not records):
+`list-pipelines`, `list-statuses`, `list-lead-sources`, `list-users`.
+
+Source: https://developer.onepagecrm.com/api/ and https://app.onepagecrm.com/app/api (verified 2026-11-10).
 
 ## Authentication
 

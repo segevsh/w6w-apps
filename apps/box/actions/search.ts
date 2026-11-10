@@ -9,6 +9,8 @@ interface Input {
   ancestorFolderIds?: string;
   limit?: number;
   offset?: number;
+  sort?: "modified_at" | "relevance";
+  direction?: "ASC" | "DESC";
 }
 
 /**
@@ -66,6 +68,26 @@ const search: ActionDefinition<Input> = {
     },
     { key: "limit", label: "Page size", type: "number", default: 30, hint: "Maximum 200." },
     { key: "offset", label: "Offset", type: "number", default: 0, hint: "Maximum 10000." },
+    {
+      key: "sort",
+      label: "Sort by",
+      type: "select",
+      options: [
+        { value: "relevance", label: "Relevance" },
+        { value: "modified_at", label: "Last modified" },
+      ],
+      hint: "Leave empty for Box's default (relevance).",
+    },
+    {
+      key: "direction",
+      label: "Direction",
+      type: "select",
+      options: [
+        { value: "DESC", label: "Descending" },
+        { value: "ASC", label: "Ascending" },
+      ],
+      hint: "Ignored when sorting by relevance.",
+    },
   ],
   output: [
     { key: "entries", type: "array", label: "Entries" },
@@ -83,6 +105,8 @@ const search: ActionDefinition<Input> = {
         ancestor_folder_ids: input.ancestorFolderIds,
         limit: input.limit ?? 30,
         offset: input.offset ?? 0,
+        sort: input.sort,
+        direction: input.direction,
       },
     });
   },

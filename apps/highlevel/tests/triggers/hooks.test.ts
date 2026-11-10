@@ -104,7 +104,9 @@ test("fixtures have non-canonical whitespace", () => {
 });
 
 test("app declares the four webhook triggers with output and sample, no poll, no secret param", () => {
-  assertEquals(app.triggers.map((t) => t.key), shipped.map((s) => s.key));
+  // The app has since gained more triggers (webhook-events.test.ts, polls.test.ts); the four
+  // original ones stay first and in order.
+  assertEquals(app.triggers.slice(0, shipped.length).map((t) => t.key), shipped.map((s) => s.key));
   for (const { t } of shipped) {
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);

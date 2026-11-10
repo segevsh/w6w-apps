@@ -45,6 +45,13 @@ const action: ActionDefinition = {
       hint: "Comma-separated Atlassian account IDs.",
     },
     {
+      key: "createdAtFrom",
+      label: "Created At or After (epoch ms)",
+      type: "string",
+      default: "",
+      hint: "Only tasks created at or after this time, in epoch milliseconds (inclusive).",
+    },
+    {
       key: "bodyFormat",
       label: "Body Format",
       type: "select",
@@ -73,6 +80,7 @@ const action: ActionDefinition = {
           "space-id": csv(p.spaceId),
           "page-id": csv(p.pageId),
           "assigned-to": csv(p.assignedTo),
+          "created-at-from": (p.createdAtFrom as string) || undefined,
           "body-format": (p.bodyFormat as string) || undefined,
         },
       },

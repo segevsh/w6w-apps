@@ -1,6 +1,6 @@
-import type { HookContext, TriggerDefinition } from "@w6w/types";
+import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
 import action from "../actions/record-list.ts";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
@@ -171,3 +171,50 @@ export const newOrUpdatedRecordTrigger: TriggerDefinition = {
     });
   },
 };
+
+/** The most rows the time-tracker list actions return in one request (`limit` max, see people.ts). */
+export const SNAPSHOT_LIMIT = 200;
+
+/**
+ * Bounded-collection poll (brief 9.1 c) over one list action request: the whole collection is read
+ * in a single request of `SNAPSHOT_LIMIT` rows, the ids are diffed with `pollSnapshot` and only the
+ * added ones are emitted. A full page means there may be more rows than one request can read, so
+ * it throws a clear error rather than silently watching a truncated list. The first check seeds
+ * and emits nothing.
+ */
+export function snapshotTrigger<P>(spec: {
+  key: string;
+  title: string;
+  description: string;
+  params?: Param[];
+  output: OutputField[];
+  sample: unknown;
+  read(params: P, ctx: HookContext): Promise<Array<Record<string, unknown>>>;
+  idOf(item: Record<string, unknown>): string;
+}): TriggerDefinition<P> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state, params }, ctx) {
+      const rows = await spec.read(params, ctx);
+      if (rows.length >= SNAPSHOT_LIMIT) {
+        throw new Error(
+          `${spec.key}: ${SNAPSHOT_LIMIT} or more rows came back; too many to watch with one request`,
+        );
+      }
+      const byId = new Map<string, Record<string, unknown>>();
+      for (const r of rows) byId.set(spec.idOf(r), r);
+      const { events, nextState } = await pollSnapshot({
+        state,
+        rows: [...byId.keys()].map((key) => ({ key, values: { id: key } })),
+        emit: { added: true, updated: false },
+      });
+      return { events: events.map((e) => byId.get(e.key) as Record<string, unknown>), nextState };
+    },
+  };
+}

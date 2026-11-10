@@ -5,7 +5,7 @@ templates, campaigns, suppressions and statistics. Verified 2026-10-06 against t
 OpenAPI 3.0.3 document (`https://elasticemail.com/api/redoc-spec/api-v4`, 74 paths). This is
 **API v4**, host `api.elasticemail.com`, prefix `/v4` — not the legacy v2 API.
 
-- **Triggers** — 7 (1 poll, 6 webhook)
+- **Triggers** — 10 (3 poll, 7 webhook)
 
 ## Auth
 
@@ -84,19 +84,33 @@ decoding it back and comparing md5 `b64a23a96eb09e7823dea2481513781b`). `/favico
 | `email-unsubscribed` — Email Unsubscribed | webhook (API-registered) | notification `Unsubscribed` | the transaction id, recipient, subject, channel and time |
 | `email-error` — Email Bounced or Failed | webhook (API-registered) | notification `Error` (bounces included) | the same, plus the bounce category |
 | `abuse-report` — Abuse Report | webhook (API-registered) | notification `AbuseReport` (complaints included) | the transaction id, recipient, subject, channel and time |
+| `any-event` — Any Event | webhook (API-registered) | every notification above; the optional `events` param (comma-separated: Sent, Opened, Clicked, Unsubscribed, AbuseReport, Error; empty = all six) is the list the webhook is registered for | the same fields as the named triggers |
+| `new-template` — New Template | poll | `template-list` | each template newly created in the chosen scope (Personal by default) |
+| `new-contact-in-list` — New Contact in List | poll | `list-contacts` | each contact newly added to the chosen list |
 
-### New List (poll)
+### Polls
 
-The v4 `GET /lists` "returns all your existing lists". Each check asks for up to 5000, diffs the
+`new-list` — the v4 `GET /lists` "returns all your existing lists". Each check asks for up to 5000, diffs the
 answer against the previous check and emits only additions (an answer that fills the request fails
-the check with an error naming the cap). The first check only records what exists. Contacts,
-campaigns, templates and suppressions page by `limit`/`offset` with no documented created-since filter
-or newest-first order, so they have no poll trigger.
+the check with an error naming the cap). The first check only records what exists.
+
+`new-template` — `GET /templates` takes `scopeType` (required), `limit` (default 500) and `offset`, with no
+created-since filter or order, and a template has no id (its `Name` is the key `GET /templates/{name}`
+takes). Each check reads the first 500 of the chosen scope and emits only names not seen before; an answer
+of 500 fails the check with an error naming the cap. Renames and edits are not announced.
+
+`new-contact-in-list` — `GET /lists/{listname}/contacts` takes `limit` (default 20) and `offset` only, with no
+created-since filter or order, so the chosen list is read 500 contacts at a time until an empty page and
+diffed by email (a list of 5000 or more contacts fails the check with an error naming the cap). A contact
+removed and added back is announced again. The first check only records who is on the list.
+
+No poll trigger for the account-wide contact, campaign or suppression lists, which page by
+`limit`/`offset` with no documented created-since filter or newest-first order.
 
 ### Webhook triggers
 
 **Setup.** Nothing to paste. Subscribing runs `POST /v4/webhook` with the host's callback URL, the one
-`NotificationFor…` flag the trigger is for, `EnableSigning: true` and `DeliveryMethod: "PostJson"`;
+`NotificationFor…` flag the trigger is for (`any-event`: the flags for the types in its `events` param, all six when empty), `EnableSigning: true` and `DeliveryMethod: "PostJson"`;
 Elastic Email answers with the webhook's `WebhookID` and its `SigningSecret` once, and both are kept in
 the subscription's state. Unsubscribing runs `DELETE /v4/webhook/{id}` (a webhook already gone counts as
 deleted). The API key needs the `ModifyWebNotifications` access level, and Elastic Email offers

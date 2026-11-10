@@ -8,8 +8,8 @@ interface Input {
 }
 
 /**
- * GET /contacts/{id}/notes — list the notes attached to a contact, newest
- * first, with page-number pagination.
+ * GET /contacts/{id}/notes — list the notes attached to a contact, with page-number
+ * pagination (`page`, `per_page`; no sort order is documented for the pinned API version).
  */
 const noteGetMany: ActionDefinition<Input> = {
   key: "note-get-many",

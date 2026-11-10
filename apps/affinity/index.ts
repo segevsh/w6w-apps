@@ -106,6 +106,29 @@ import webhooksDelete from "./actions/webhooks-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newListEntry from "./triggers/new-list-entry.ts";
+import listCreated from "./triggers/list-created.ts";
+import listUpdated from "./triggers/list-updated.ts";
+import listDeleted from "./triggers/list-deleted.ts";
+import noteCreated from "./triggers/note-created.ts";
+import noteUpdated from "./triggers/note-updated.ts";
+import noteDeleted from "./triggers/note-deleted.ts";
+import fieldCreated from "./triggers/field-created.ts";
+import fieldUpdated from "./triggers/field-updated.ts";
+import fieldDeleted from "./triggers/field-deleted.ts";
+import fieldValueCreated from "./triggers/field-value-created.ts";
+import fieldValueUpdated from "./triggers/field-value-updated.ts";
+import fieldValueDeleted from "./triggers/field-value-deleted.ts";
+import personCreated from "./triggers/person-created.ts";
+import personUpdated from "./triggers/person-updated.ts";
+import personDeleted from "./triggers/person-deleted.ts";
+import organizationCreated from "./triggers/organization-created.ts";
+import organizationUpdated from "./triggers/organization-updated.ts";
+import organizationDeleted from "./triggers/organization-deleted.ts";
+import opportunityCreated from "./triggers/opportunity-created.ts";
+import opportunityUpdated from "./triggers/opportunity-updated.ts";
+import opportunityDeleted from "./triggers/opportunity-deleted.ts";
+import listEntryDeleted from "./triggers/list-entry-deleted.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -160,6 +183,31 @@ export default {
   ],
   // API key only. Affinity publishes no OAuth surface for third-party apps.
   auth: [bearerToken],
-  triggers: [newListEntry],
+  triggers: [
+    newListEntry,
+    listCreated,
+    listUpdated,
+    listDeleted,
+    noteCreated,
+    noteUpdated,
+    noteDeleted,
+    fieldCreated,
+    fieldUpdated,
+    fieldDeleted,
+    fieldValueCreated,
+    fieldValueUpdated,
+    fieldValueDeleted,
+    personCreated,
+    personUpdated,
+    personDeleted,
+    organizationCreated,
+    organizationUpdated,
+    organizationDeleted,
+    opportunityCreated,
+    opportunityUpdated,
+    opportunityDeleted,
+    listEntryDeleted,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

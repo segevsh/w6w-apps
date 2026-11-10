@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/maintainx",
-  "version": "0.2.0",
-  "description": "Work orders, assets, locations, parts, users, vendors and meters in MaintainX. Trigger workflows on new records.",
+  "version": "0.3.0",
+  "description": "Work orders, assets, locations, parts, users, vendors and meters in MaintainX. Triggers for new or updated work orders, assets and parts, and new locations, meters, teams, users, vendors, comments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

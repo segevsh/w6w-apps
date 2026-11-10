@@ -3,7 +3,7 @@
 Read and post to Tumblr blogs, manage likes and follows, and check a connected user's dashboard,
 on the **Tumblr API v2**.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Categories** — social-media, cms
 - **Auth methods** — oauth2
 - **Actions** — 23
@@ -124,6 +124,11 @@ metadata and usage counters, nothing else. So [`lib/client.ts`](lib/client.ts) h
 | Trigger | Mechanism | Wrapped list action | The run gets |
 | --- | --- | --- | --- |
 | `new-post` — New Post | poll (every 5 minutes at most) | `blog-posts-list`, ordered newest first (`sort=desc`); the trigger takes the blog identifier as a parameter | each newly published post of the chosen blog |
+| `new-draft-post` — New Draft Post | poll (every 5 minutes at most) | `blog-posts-draft-list` (first page, newest first by id) | each draft newly saved on the chosen blog |
+| `new-blog-following` — New Followed Blog | poll (every 5 minutes at most) | `blog-following-list` (documented most-recently-followed first) | each blog the chosen blog newly follows |
+| `new-post-note` — New Post Note | poll (every 5 minutes at most) | `post-notes-list` (documented reverse chronological) | each new like, reblog or reply on the chosen post (blog identifier and post id are parameters) |
+| `new-queued-post` — New Queued Post | poll (every 15 minutes at most) | `blog-posts-queue-list` | each post newly added to the chosen blog's queue |
+| `new-submission` — New Submission | poll (every 15 minutes at most) | `blog-posts-submission-list` | each post newly submitted to the chosen blog for review |
 
 The first check only records what already exists (no flood); later checks emit items not seen
 before, oldest first, up to 100 per check. Polling re-uses `blog-posts-list` through the connection's own
@@ -133,4 +138,7 @@ No webhook is registered and nothing is delivered to a callback URL, so there is
 verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
 the connection.
 
-Vendor docs: <https://www.tumblr.com/docs/en/api/v2> (verified 2026-11-09).
+`new-queued-post` and `new-submission` are bounded snapshots: a blog holds at most 1,000 queued posts (read 20 per page by `offset`), and submissions are an inbox awaiting review (read by `offset` until an empty page; the vendor documents no `limit` there). Each check reads the whole list and emits ids not seen before. `new-post-note` identifies a note by kind, blog and timestamp because Tumblr gives notes no id of their own.
+Not covered: `blog-followers-list` and `user-following-list` (the docs state only "offset: result to start at 0 (first follower / first followee)", no sort order, and the lists are unbounded, so a newest-first read cannot be assumed), `blog-likes-list` and `user-likes-list` (the docs allow only one of `offset`, `before`, `after` per call and state no order, so a since-filter window cannot be paged or resumed safely).
+
+Vendor docs: <https://www.tumblr.com/docs/en/api/v2> (verified 2026-11-10: `/following` "in order from most recently-followed to first"; `/notes` "all return notes in reverse chronological order"; `/posts/draft` `before_id` pages from newer to older ids; `/likes` and `/user/likes` accept only one of offset, before, after).

@@ -31,6 +31,8 @@ import { encodeId, LokaliseClient } from "./client.ts";
 export interface TriggerParams {
   projectId: string;
   branch?: string;
+  /** Any-event trigger only: comma-separated Lokalise event names; empty = all of them. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -71,6 +73,75 @@ const BRANCH_PARAM: Param = {
   advanced: true,
   hint: "Limit deliveries to one branch. Leave empty for every branch.",
 };
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Lokalise event names (e.g. project.key.added, project.task.closed). Leave empty for every event the webhook API can subscribe to. A bulk name such as project.keys.added is delivered when you list its singular event.",
+  placeholder: "project.key.added, project.task.closed",
+};
+
+/**
+ * Every event `POST /projects/{id}/webhooks` accepts (the `events` enum of the create-a-webhook
+ * reference, verified 2026-11-10). Lokalise has no "all events" wildcard, so the Any-event trigger
+ * with an empty `events` param subscribes to this list.
+ */
+export const ALL_EVENTS: string[] = [
+  "project.branch.added",
+  "project.branch.deleted",
+  "project.branch.merged",
+  "project.contributor.added",
+  "project.contributor.deleted",
+  "project.deleted",
+  "project.exported",
+  "project.imported",
+  "project.key.added",
+  "project.key.comment.added",
+  "project.key.modified",
+  "project.keys.deleted",
+  "project.language.settings_changed",
+  "project.languages.added",
+  "project.snapshot",
+  "project.task.closed",
+  "project.task.created",
+  "project.task.deleted",
+  "project.task.language.closed",
+  "project.translation.proofread",
+  "project.translation.updated",
+  "team.order.completed",
+  "team.order.created",
+  "team.order.deleted",
+];
+
+/**
+ * Bulk variants Lokalise sends for a subscribed singular event (webhook-events reference): the
+ * subscription names the singular event, the delivery may carry the bulk name.
+ */
+export const BULK_OF: Record<string, string> = {
+  "project.key.added": "project.keys.added",
+  "project.key.modified": "project.keys.modified",
+  "project.translation.updated": "project.translations.updated",
+  "project.translation.proofread": "project.translations.proofread",
+};
+const SINGULAR_OF: Record<string, string> = Object.fromEntries(
+  Object.entries(BULK_OF).map(([one, many]) => [many, one]),
+);
+
+const EVENT_NAME = /^(project|team)\.[a-z_]+(\.[a-z_]+)*$/;
+
+/** Parse the Any-event `events` param: trimmed, de-duplicated names; throws on a malformed name. */
+export function parseEvents(raw: unknown): string[] {
+  if (typeof raw !== "string") return [];
+  const names = raw.split(",").map((n) => n.trim()).filter((n) => n !== "");
+  for (const n of names) {
+    if (!EVENT_NAME.test(n)) {
+      throw new Error(`"${n}" is not a Lokalise event name (expected e.g. project.key.added).`);
+    }
+  }
+  return [...new Set(names)];
+}
 
 const OUTPUT: OutputField[] = [
   { key: "event", type: "string", label: "Event (e.g. project.key.added)" },
@@ -129,8 +200,25 @@ export function verifyDelivery(
   return parsed;
 }
 
+/** The body fields that carry an event's own object(s), in the order they are looked for. */
+const RECORD_FIELDS = [
+  "key",
+  "keys",
+  "translation",
+  "translations",
+  "task",
+  "comment",
+  "contributor",
+  "languages",
+  "language",
+  "import",
+];
+
 /** The verified delivery → its event, or null for the setup ping (no `event`). */
-export function normalizeDelivery(parsed: Record<string, unknown>): LokaliseEvent | null {
+export function normalizeDelivery(
+  parsed: Record<string, unknown>,
+  recordFrom: string[] = RECORD_FIELDS,
+): LokaliseEvent | null {
   const event = str(parsed.event);
   if (!event) return null;
   const project = asObject(parsed.project);
@@ -145,8 +233,7 @@ export function normalizeDelivery(parsed: Record<string, unknown>): LokaliseEven
     userName: str(user?.full_name),
     createdAt: str(parsed.created_at),
     createdAtTimestamp: Number.isFinite(ts) && parsed.created_at_timestamp != null ? ts : null,
-    record: parsed.key ?? parsed.keys ?? parsed.translation ?? parsed.translations ??
-      parsed.task ?? null,
+    record: recordFrom.map((f) => parsed[f]).find((v) => v !== undefined && v !== null) ?? null,
     data: parsed,
   };
 }
@@ -160,6 +247,13 @@ export interface WebhookTriggerSpec {
   /** What `handleIngest` lets through: the subscribed names plus their bulk variants. */
   accept: string[];
   sample: LokaliseEvent;
+  /** Body fields holding the event's object, first present wins (default: all of them in order). */
+  recordFrom?: string[];
+  /**
+   * The Any-event trigger: adds an `events` param. Empty subscribes to every event the API accepts
+   * and lets every delivery through; a list subscribes to (and keeps) just those events.
+   */
+  any?: boolean;
 }
 
 /** Build one Lokalise webhook trigger. */
@@ -170,7 +264,9 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [PROJECT_ID_PARAM, BRANCH_PARAM],
+    params: spec.any
+      ? [PROJECT_ID_PARAM, EVENTS_PARAM, BRANCH_PARAM]
+      : [PROJECT_ID_PARAM, BRANCH_PARAM],
     output: OUTPUT,
     sample: spec.sample,
 
@@ -178,13 +274,20 @@ export function webhookTrigger(
       const projectId = params.projectId?.trim();
       if (!projectId) throw new Error("Choose the Lokalise project to watch.");
       const branch = params.branch?.trim();
+      let events = spec.subscribeTo;
+      if (spec.any) {
+        const wanted = parseEvents(params.events);
+        events = wanted.length > 0
+          ? [...new Set(wanted.map((n) => SINGULAR_OF[n] ?? n))]
+          : ALL_EVENTS;
+      }
       const res = await new LokaliseClient(ctx).json<
         { webhook?: { webhook_id?: unknown; secret?: unknown } } | undefined
       >(hooksPath(projectId), {
         method: "POST",
         body: {
           url: callbackUrl,
-          events: spec.subscribeTo,
+          events,
           ...(branch ? { branch } : {}),
         },
       });
@@ -215,14 +318,18 @@ export function webhookTrigger(
       }
     },
 
-    handleIngest({ raw, state }) {
+    handleIngest({ raw, state, params }) {
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`Lokalise delivers webhooks with POST, not ${raw.method}.`);
       }
       const parsed = verifyDelivery(raw, (state as Partial<TriggerState> | undefined)?.secret);
-      const event = normalizeDelivery(parsed);
+      const event = normalizeDelivery(parsed, spec.recordFrom);
       if (!event) return []; // the ping Lokalise sends when a webhook is created
-      return spec.accept.includes(event.event) ? [event] : [];
+      if (!spec.any) return spec.accept.includes(event.event) ? [event] : [];
+      const wanted = parseEvents((params as TriggerParams | undefined)?.events);
+      if (wanted.length === 0) return [event];
+      const keep = new Set(wanted.flatMap((n) => [n, BULK_OF[n] ?? n, SINGULAR_OF[n] ?? n]));
+      return keep.has(event.event) ? [event] : [];
     },
   };
 }

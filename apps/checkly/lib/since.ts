@@ -26,6 +26,12 @@ export interface SinceSpec<T, P = Record<string, unknown>> {
     params: P,
   ): Promise<{ items: T[]; more: boolean }>;
   idOf(item: T): string;
+  /**
+   * Creation time of a record (epoch ms), when it has one. The first check then stores
+   * `floor = now` and every later check drops records created before it (brief 9.9), so nothing
+   * that existed before the seed is ever emitted, however the window is paged. Omit for none.
+   */
+  createdAtOf?(item: T): number | undefined;
 }
 
 /**
@@ -49,6 +55,9 @@ export function sinceTrigger<T, P = Record<string, unknown>>(
       const checkedAt = clock.now();
       const prior = state as { cursor?: unknown } | null;
       const cursor = typeof prior?.cursor === "number" ? prior.cursor : checkedAt;
+      const floor = typeof (prior as { floor?: unknown } | null)?.floor === "number"
+        ? (prior as { floor: number }).floor
+        : checkedAt;
       let truncated = false;
       const { events, nextState } = await pollNewItems<T>({
         state,
@@ -60,7 +69,10 @@ export function sinceTrigger<T, P = Record<string, unknown>>(
           const items: T[] = [];
           for (let page = 1; page <= MAX_PAGES; page++) {
             const res = await spec.fetchPage(cursor - OVERLAP_MS, page, ctx, params);
-            items.push(...res.items);
+            items.push(...res.items.filter((item) => {
+              const at = spec.createdAtOf?.(item);
+              return at === undefined || Number.isNaN(at) || at >= floor;
+            }));
             if (!res.more) return { items };
           }
           truncated = true;
@@ -74,7 +86,12 @@ export function sinceTrigger<T, P = Record<string, unknown>>(
           `${spec.key}: more than ${MAX_ITEMS} records in the window; the rest are skipped`,
         );
       }
-      return { events, nextState: { ...nextState, cursor: checkedAt } };
+      return {
+        events,
+        nextState: spec.createdAtOf
+          ? { ...nextState, cursor: checkedAt, floor }
+          : { ...nextState, cursor: checkedAt },
+      };
     },
   };
 }

@@ -6,7 +6,7 @@ connections, applications and the tenant log — through the Management API v2.
 - **Categories** — security, developer-tools
 - **Auth methods** — client-credentials
 - **Actions** — 18
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 - **Egress allowlist** — `*.auth0.com`
 - **Website** — https://auth0.com
 - **API docs** — https://auth0.com/docs/api/management/v2
@@ -189,8 +189,30 @@ archive.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-log` — New Tenant Log | Poll | `log-list` | Each new tenant log entry |
+| `new-user` — New User | Poll | `user-list` | Each user newly created in the tenant |
+| `new-client` — New Application | Poll | `client-list` | Each application newly created |
+| `new-connection` — New Connection | Poll | `connection-list` | Each connection newly created |
+| `new-organization` — New Organization | Poll | `organization-list` | Each organization newly created |
+| `new-role` — New Role | Poll | `role-list` | Each role newly created |
+| `new-organization-member` — New Organization Member | Poll | `organization-member-list` | Each user who joins the organization you pick (`organizationId`) |
+| `new-user-role` — Role Assigned to User | Poll | `user-role-list` | Each tenant-level role newly assigned to the user you pick (`userId`) |
 
-Polled newest-first through the `log-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://auth0.com/docs/api/management/v2/logs/get-logs) (verified 2026-11-09).
+`new-log` and `new-user` poll newest-first (`sort=date:-1` and `sort=created_at:-1`); the first check records
+what exists without firing and later checks emit only unseen ids. The user index is eventually consistent,
+so a user can show up a little after it was created. The other Management API lists document no order, so
+each trigger reads the whole list (pages of 100, one row past 5000) and fires on ids not seen before; a list
+longer than 5000 rows fails the check with an error naming the cap.
+
+Not covered: none of the listed actions is skipped.
+
+Sources (verified 2026-11-10): [Get logs](https://auth0.com/docs/api/management/v2/logs/get-logs),
+[List or search users](https://auth0.com/docs/api/management/v2/users/get-users) (`sort=created_at:1|-1`),
+[Get clients](https://auth0.com/docs/api/management/v2/clients/get-clients),
+[Get connections](https://auth0.com/docs/api/management/v2/connections/get-connections),
+[Get organizations](https://auth0.com/docs/api/management/v2/organizations/get-organizations),
+[Get roles](https://auth0.com/docs/api/management/v2/roles/get-roles),
+[Get organization members](https://auth0.com/docs/api/management/v2/organizations/get-members),
+[Get user roles](https://auth0.com/docs/api/management/v2/users/get-user-roles).
 
 ## Health checks
 

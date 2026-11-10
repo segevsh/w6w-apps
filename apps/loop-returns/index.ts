@@ -20,6 +20,11 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newOrder from "./triggers/new-order.ts";
+import newReturn from "./triggers/new-return.ts";
+import newOrUpdatedReturn from "./triggers/new-or-updated-return.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newBulkOperation from "./triggers/new-bulk-operation.ts";
+import newLabelRequest from "./triggers/new-label-request.ts";
 import apiKey from "./auth/api-key.ts";
 
 import returnList from "./actions/return-list.ts";
@@ -90,7 +95,14 @@ export default {
     labelRequestList,
     bulkOperationList,
   ],
-  triggers: [newOrder],
+  triggers: [
+    newOrder,
+    newReturn,
+    newOrUpdatedReturn,
+    newCustomer,
+    newBulkOperation,
+    newLabelRequest,
+  ],
   // API key only. Loop also defines an OAuth2 flow, but only for the programmatic-webhooks API
   // (scope `developer_tools`); every other endpoint takes the key.
   auth: [apiKey],

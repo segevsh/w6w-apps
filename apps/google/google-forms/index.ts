@@ -17,6 +17,7 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newForm from "./triggers/new-form.ts";
 import newOrUpdatedForm from "./triggers/new-or-updated-form.ts";
+import newResponse from "./triggers/new-response.ts";
 
 export default {
   actions: [
@@ -35,5 +36,5 @@ export default {
   ],
   auth: [oauth2, serviceAccount],
   healthChecks: [service, quota],
-  triggers: [newForm, newOrUpdatedForm],
+  triggers: [newForm, newOrUpdatedForm, newResponse],
 } satisfies AppDefinition;

@@ -1,14 +1,28 @@
 # Booqable
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-customer` — New Customer | poll | `customer-list` sorted by `-created_at` | Each newly created customer |
+| `new-or-updated-customer` — New or Updated Customer | poll | `customer-list` sorted by `-updated_at` | Each customer created or edited |
+| `new-order` — New Order | poll | `order-list` sorted by `-created_at` | Each newly created order |
+| `new-or-updated-order` — New or Updated Order | poll | `order-list` sorted by `-updated_at` | Each order created or edited (status changes included) |
+| `new-product` — New Product | poll | `product-list` sorted by `-created_at` | Each newly created product |
+| `new-or-updated-product` — New or Updated Product | poll | `product-list` sorted by `-updated_at` | Each product created or edited |
+| `new-product-group` — New Product Group | poll | `product-group-list` sorted by `-created_at` | Each newly created product group |
+| `new-or-updated-product-group` — New or Updated Product Group | poll | `product-group-list` sorted by `-updated_at` | Each product group created or edited |
+| `new-stock-item` — New Stock Item | poll | `stock-item-list` sorted by `-created_at` | Each newly created stock item |
+| `new-or-updated-stock-item` — New or Updated Stock Item | poll | `stock-item-list` sorted by `-updated_at` | Each stock item created or edited |
+| `new-planning` — New Planning | poll | `planning-list` sorted by `-created_at` | Each newly created planning (a reservation of stock for an order) |
 
-Vendor reference: https://developers.booqable.com/ (verified 2026-11-09).
+The first check records what exists without firing; later checks emit only unseen items (an edit changes the `id:updated_at` identity of the `new-or-updated-…` triggers, so it fires again).
+
+Not covered: `customer-search`, `order-search` and `product-search` return only ids for an arbitrary filter and are the same records as the triggers above (`covers`).
+
+Vendor reference: https://developers.booqable.com/ — every "List <resource>" page documents `sort=attribute1,-attribute2` and `created_at` / `updated_at` attributes (verified 2026-11-10).
 
 Manage Booqable rental orders, customers, products and stock.
 

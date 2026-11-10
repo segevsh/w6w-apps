@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/box",
-  "version": "0.2.0",
-  "description": "Upload, download, and manage files and folders in Box. Triggers fire on file uploads and any chosen file or folder activity, verified with the Box webhook signature keys.",
+  "version": "0.3.0",
+  "description": "Upload, download, and manage files and folders in Box. Signed webhook triggers for file, folder and shared-link events, plus polls for new folder items and search matches.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developer.box.com/reference",
       "https://developer.box.com"
     ],
-    "longDescription": "Box handles file and folder management inside a workflow — uploading, downloading, browsing folder contents, creating shared links, and searching across a Box account. It authenticates via OAuth2 scoped to the account's fixed application scopes, and the download action follows Box's own redirect to whichever regional content host serves the file, so a workflow doesn't need to special-case that URL itself.\n\nUploads are sent as Box's documented multipart layout, with the file's metadata written before its content, matching what Box's own API requires and avoiding the ordering error Box's docs warn about.\n\nHealth reporting keeps three separate questions apart: is Box's service up, via its public status page; is the current connection's credential still valid; and whether request quota remains — the last of which Box does not expose, so it is declared absent rather than guessed. A live credential check is never treated as proof there's no outage, and vice versa.\n\nTriggers fire on file uploads and any chosen file or folder activity, verified with the Box webhook signature keys.",
+    "longDescription": "Box handles file and folder management inside a workflow — uploading, downloading, browsing folder contents, creating shared links, and searching across a Box account. It authenticates via OAuth2 scoped to the account's fixed application scopes, and the download action follows Box's own redirect to whichever regional content host serves the file, so a workflow doesn't need to special-case that URL itself.\n\nUploads are sent as Box's documented multipart layout, with the file's metadata written before its content, matching what Box's own API requires and avoiding the ordering error Box's docs warn about.\n\nHealth reporting keeps three separate questions apart: is Box's service up, via its public status page; is the current connection's credential still valid; and whether request quota remains — the last of which Box does not expose, so it is declared absent rather than guessed. A live credential check is never treated as proof there's no outage, and vice versa.\n\nTriggers fire on file, folder and shared-link events and any chosen file or folder activity (webhooks verified with the Box signature keys), and poll a folder or a search for new items.",
     "categories": [
       "storage"
     ],

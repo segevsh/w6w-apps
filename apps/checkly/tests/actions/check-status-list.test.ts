@@ -1,5 +1,5 @@
 import { test } from "node:test";
-import { assert, assertEquals } from "../_assert.ts";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-status-list.ts";
 

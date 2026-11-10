@@ -68,16 +68,16 @@ function asObject(v: unknown): Record<string, unknown> | null {
     : null;
 }
 
-function str(v: unknown): string | null {
+export function str(v: unknown): string | null {
   return typeof v === "string" && v !== "" ? v : typeof v === "number" ? String(v) : null;
 }
 
 /** True for the "no such endpoint" answer `HeyGenClient` throws. */
-function isGone(err: unknown): boolean {
+export function isGone(err: unknown): boolean {
   return err instanceof Error && /^HeyGen 404\b/.test(err.message);
 }
 
-const ENDPOINTS = "/v3/webhooks/endpoints";
+export const ENDPOINTS = "/v3/webhooks/endpoints";
 
 /**
  * Check the `signature` header against the exact bytes received. Throws (never echoing the secret,

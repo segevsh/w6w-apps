@@ -51,7 +51,7 @@ test("fixture really has non-canonical whitespace", () => {
 test("app declares the triggers with output and sample", () => {
   const ts =
     (app as { triggers: Array<{ key: string; output: unknown[]; sample: unknown }> }).triggers;
-  assertEquals(ts.map((t) => t.key), ["new-lead"]);
+  assertEquals(ts.map((t) => t.key), ["new-lead", "new-lead-poll", "new-lead-form"]);
   for (const t of ts) {
     assert(t.output.length > 0 && t.sample !== undefined);
   }
@@ -250,4 +250,14 @@ test("a digest differing only in its last hex digit is refused", async () => {
   const last = good.slice(-1);
   const bad = good.slice(0, -1) + (last === "0" ? "1" : "0");
   await assertRejects(() => ingest(T, post(BODY, bad)), Error, "signature");
+});
+
+test("flipping one byte of the SIGNATURE itself (start, middle, end) is refused", async () => {
+  const good = sign(BODY);
+  const hex = good.slice(7);
+  for (const i of [0, Math.floor(hex.length / 2), hex.length - 1]) {
+    const flipped = hex.slice(0, i) + (hex[i] === "0" ? "1" : "0") + hex.slice(i + 1);
+    assert(flipped !== hex);
+    await assertRejects(() => ingest(T, post(BODY, "sha256=" + flipped)), Error, "signature");
+  }
 });

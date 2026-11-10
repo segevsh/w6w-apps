@@ -31,6 +31,13 @@ import listChats from "./actions/list-chats.ts";
 import listChatMessages from "./actions/list-chat-messages.ts";
 import sendChatMessage from "./actions/send-chat-message.ts";
 import newChannelMessage from "./triggers/new-channel-message.ts";
+import newTeam from "./triggers/new-team.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newTeamMember from "./triggers/new-team-member.ts";
+import newChannelMember from "./triggers/new-channel-member.ts";
+import newChat from "./triggers/new-chat.ts";
+import newChatMessage from "./triggers/new-chat-message.ts";
+import newOrUpdatedChatMessage from "./triggers/new-or-updated-chat-message.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -54,7 +61,16 @@ export default {
     listChatMessages,
     sendChatMessage,
   ],
-  triggers: [newChannelMessage],
+  triggers: [
+    newChannelMessage,
+    newTeam,
+    newChannel,
+    newTeamMember,
+    newChannelMember,
+    newChat,
+    newChatMessage,
+    newOrUpdatedChatMessage,
+  ],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

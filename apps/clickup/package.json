@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/clickup",
-  "version": "0.2.0",
-  "description": "Tasks, lists, folders, comments, and time tracking via the ClickUp API, and start workflows from new, updated, deleted or commented tasks.",
+  "version": "0.3.0",
+  "description": "Tasks, lists, folders, comments and time tracking via the ClickUp API, and start workflows from task, list or folder events or any ClickUp webhook event.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://clickup.com/api",
       "https://developer.clickup.com/reference"
     ],
-    "longDescription": "ClickUp organizes work as tasks nested under lists, which sit under folders or spaces, and this app follows that same shape: create, read, update and delete tasks; list and create the lists and folders around them; add and read comments; and log or list time entries.\n\nBecause a ClickUp resource is always addressed through its parent — a task through its list, a time entry through its team — every action here takes the relevant parent id and builds the right nested request rather than pretending ClickUp's resources are flat. Dates and durations are handled in ClickUp's own encoding automatically, so a workflow can pass ordinary datetimes and minutes.\n\nThis app is aimed at the everyday task-management loop: creating and updating work, tracking time against it, and keeping comments and structure in sync with whatever triggered the workflow — not at ClickUp's broader space or workspace administration.\n\nTriggers start a workflow from ClickUp itself: a task created, updated, deleted or commented on in a Workspace, Space, Folder or List. Each delivery is signed by ClickUp and verified before it starts a run.",
+    "longDescription": "ClickUp organizes work as tasks nested under lists, which sit under folders or spaces, and this app follows that same shape: create, read, update and delete tasks; list and create the lists and folders around them; add and read comments; and log or list time entries.\n\nBecause a ClickUp resource is always addressed through its parent — a task through its list, a time entry through its team — every action here takes the relevant parent id and builds the right nested request rather than pretending ClickUp's resources are flat. Dates and durations are handled in ClickUp's own encoding automatically, so a workflow can pass ordinary datetimes and minutes.\n\nThis app is aimed at the everyday task-management loop: creating and updating work, tracking time against it, and keeping comments and structure in sync with whatever triggered the workflow — not at ClickUp's broader space or workspace administration.\n\nTriggers start a workflow from ClickUp itself: a task created, updated, deleted, moved or commented on, a status, assignee, due date, tag, priority or time change, a list or folder created, updated or deleted, or any other ClickUp event (Spaces, Goals, Targets) through Any Event, in a Workspace, Space, Folder or List. Each delivery is signed by ClickUp and verified before it starts a run.",
     "categories": [
       "project-management",
       "productivity"

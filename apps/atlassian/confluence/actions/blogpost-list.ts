@@ -35,6 +35,20 @@ const action: ActionDefinition = {
         { value: "deleted", label: "Deleted" },
       ],
     },
+    {
+      key: "sort",
+      label: "Sort By",
+      type: "select",
+      default: "",
+      options: [
+        { value: "id", label: "ID" },
+        { value: "-id", label: "ID (descending)" },
+        { value: "created-date", label: "Created" },
+        { value: "-created-date", label: "Created (newest first)" },
+        { value: "modified-date", label: "Modified" },
+        { value: "-modified-date", label: "Modified (newest first)" },
+      ],
+    },
     BODY_FORMAT_PARAM,
   ],
 
@@ -53,6 +67,7 @@ const action: ActionDefinition = {
           "space-id": csv(p.spaceId),
           title: (p.title as string) || undefined,
           status: Array.isArray(p.status) && p.status.length ? p.status : undefined,
+          sort: (p.sort as string) || undefined,
           "body-format": (p.bodyFormat as string) || undefined,
         },
       },

@@ -5,7 +5,7 @@ Read Facebook Lead Ads forms and their recent leads via the Facebook Graph API.
 - **Categories** — marketing, social-media
 - **Auth methods** — oauth2, page-token
 - **Actions** — 2
-- **Triggers** — 1 (webhook)
+- **Triggers** — 3 (1 webhook, 2 poll)
 - **Egress allowlist** — `graph.facebook.com`
 - **Website** — https://www.facebook.com/business/ads/lead-ads
 - **API docs** — https://developers.facebook.com/documentation/ads-commerce/marketing-api/guides/lead-ads
@@ -75,6 +75,23 @@ Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 | Trigger | Mechanism | Vendor event | The run gets |
 |---|---|---|---|
 | `new-lead` — New Lead | webhook (manual, signed) | Page `leadgen` field: a Lead Ads form submission | lead ID, form, ad, ad set and Page IDs, created time |
+| `new-lead-poll` — New Lead (poll) | poll | `list-recent-leads` (`GET /{form_id}/leads`, `filtering` on `time_created`, `limit=100`) | each new lead of the chosen form, with its answers (`field_data`) |
+| `new-lead-form` — New Lead Ads Form | poll | `list-forms` (`GET /{page_id}/leadgen_forms`) | each lead form newly created on the chosen Page |
+
+Meta's Page webhook field this app reacts to is `leadgen` (a lead was created); `new-lead` is therefore also the app's
+only event trigger, so there is no separate Any Event trigger. Other Page fields (feed, mentions, ...) belong to
+the Facebook Pages surface, not to Lead Ads.
+
+`new-lead-poll` is the no-dashboard route to the same leads and carries what the webhook leaves out, the lead's
+answers. Each check asks for the leads whose `time_created` is greater than the last check minus a two-minute
+overlap (the documented `filtering=[{"field":"time_created","operator":"GREATER_THAN","value":<unix seconds>}]`
+argument, exposed on `list-recent-leads` as `createdAfter`), three pages of 100 at most, following Graph's own `after`
+cursor and resuming from it on the next check when the window holds more, and drops leads created before the
+trigger's first check. The first check reads nothing and only records the time.
+
+`new-lead-form` reads every page of `GET /{page_id}/leadgen_forms` (Graph documents no order or created-since
+filter for it) and emits forms not seen before; a Page with more than 20 pages of forms fails the check with an
+error naming the cap. The first check only records what exists.
 
 The event carries the lead's ID, not its answers (that is what Meta sends); read the answers with the
 **List Recent Leads** action for the same form.
@@ -97,7 +114,7 @@ a missing raw body, or an App Secret / Verify Token that was never configured re
 host records one failed call and starts no run. The signed body carries only a send time (`entry[].time`), and Meta retries for
 hours to days, so no replay window can be enforced; Meta retries unacknowledged deliveries, so a workflow may see an event twice.
 
-Docs (verified 2026-11-09): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
+Docs (verified 2026-11-10): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
 https://developers.facebook.com/docs/graph-api/webhooks/getting-started/webhooks-for-pages
 
-Lead Ads docs (verified 2026-11-09): https://developers.facebook.com/docs/marketing-api/guides/lead-ads/retrieving
+Lead Ads docs (verified 2026-11-10): https://developers.facebook.com/docs/marketing-api/guides/lead-ads/retrieving (Retrieving Leads, Filtering Leads), https://developers.facebook.com/docs/graph-api/results (paging), https://developers.facebook.com/docs/graph-api/reference/page/leadgen_forms/

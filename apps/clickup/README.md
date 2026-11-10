@@ -5,7 +5,7 @@ Tasks, lists, folders, comments, and time tracking via the ClickUp API (v2).
 - **Categories** — project-management, productivity
 - **Auth methods** — api-token, oauth2
 - **Actions** — 12
-- **Triggers** — 4 (webhook)
+- **Triggers** — 20 (webhook)
 - **Egress allowlist** — `api.clickup.com`
 - **Website** — https://clickup.com
 - **API docs** — https://clickup.com/api (reference: https://developer.clickup.com/reference)
@@ -43,12 +43,28 @@ verbatim. A `Bearer ` prefix earns a 401.
 
 ## Triggers
 
-| Trigger               | Mechanism | Vendor event                                                                                          | What the run gets                              |
-| --------------------- | --------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `task-created`        | webhook   | `taskCreated`                                                                                         | task ID, list, and the creation history        |
-| `task-updated`        | webhook   | `taskUpdated`                                                                                       | task ID, event name, before/after history      |
-| `task-deleted`        | webhook   | `taskDeleted`                                                                                         | task ID and list                               |
-| `task-comment-posted` | webhook   | `taskCommentPosted`                                                                                   | task ID and the comment in the history items   |
+| Trigger | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `task-created` | webhook | `taskCreated` | task ID, list, and the creation history |
+| `task-updated` | webhook | `taskUpdated` | task ID, event name, before/after history |
+| `task-deleted` | webhook | `taskDeleted` | task ID and list |
+| `task-comment-posted` | webhook | `taskCommentPosted` | task ID and the comment in the history items |
+| `task-status-updated` | webhook | `taskStatusUpdated` | task ID, list and the before/after status |
+| `task-priority-updated` | webhook | `taskPriorityUpdated` | task ID, list and the before/after priority |
+| `task-assignee-updated` | webhook | `taskAssigneeUpdated` | task ID, list and the assignee change |
+| `task-due-date-updated` | webhook | `taskDueDateUpdated` | task ID, list and the before/after due date |
+| `task-tag-updated` | webhook | `taskTagUpdated` | task ID, list and the tag change |
+| `task-moved` | webhook | `taskMoved` | task ID, the new list and the move history |
+| `task-comment-updated` | webhook | `taskCommentUpdated` | task ID and the edited comment |
+| `task-time-estimate-updated` | webhook | `taskTimeEstimateUpdated` | task ID, list and the before/after estimate |
+| `task-time-tracked-updated` | webhook | `taskTimeTrackedUpdated` | task ID, list and the time-entry history |
+| `list-created` | webhook | `listCreated` | the new list's ID and the creation history |
+| `list-updated` | webhook | `listUpdated` | the list ID and the before/after history |
+| `list-deleted` | webhook | `listDeleted` | the deleted list's ID |
+| `folder-created` | webhook | `folderCreated` | the new folder's ID and the creation history |
+| `folder-updated` | webhook | `folderUpdated` | the folder ID and the before/after history |
+| `folder-deleted` | webhook | `folderDeleted` | the deleted folder's ID |
+| `any-event` | webhook | `*` or your `events` list | event name, task/list/folder/space/goal/target ids, history items |
 
 `task-updated` registers for `taskUpdated` only. ClickUp's webhook docs define it as "triggered when a
 task is updated" (developer.clickup.com/docs/webhooks, checked 2026-11-09), and a single change also
@@ -70,7 +86,16 @@ of the raw request body under that secret; anything else is refused and starts n
 delivery for a different webhook ID is refused too. `idempotencyKey` is ClickUp's documented
 `webhook_id:history_item_id` key.
 
-Docs, verified 2026-11-09: <https://developer.clickup.com/docs/webhooks>,
+**Any event.** `any-event` takes an optional *Events* list (comma-separated ClickUp event names,
+for example `spaceCreated,goalUpdated`; blank registers ClickUp's `*` wildcard for every event) and
+reaches the events that have no named trigger: Space (`spaceCreated`, `spaceUpdated`,
+`spaceDeleted`) and Goal and Target (`goalCreated`, `goalUpdated`, `goalDeleted`,
+`keyResultCreated`, `keyResultUpdated`, `keyResultDeleted`). An unknown event name is refused when
+the trigger is switched on. Goal and Target deliveries carry `goalId` and `keyResultId`.
+
+**Not covered.** `list-get-many` has no poll of its own: `list-created` delivers a List the moment ClickUp creates it, so a poll would add nothing.
+
+Docs, verified 2026-11-10: <https://developer.clickup.com/docs/webhooks> (event catalog),
 <https://developer.clickup.com/docs/webhooksignature>,
 <https://developer.clickup.com/reference/createwebhook>.
 

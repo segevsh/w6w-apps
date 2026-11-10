@@ -1,6 +1,12 @@
-import type { HookContext, OutputField, TriggerDefinition } from "@w6w/types";
+import type {
+  ActionDefinition,
+  HookContext,
+  OutputField,
+  Param,
+  TriggerDefinition,
+} from "@w6w/types";
 import action from "../actions/issue-list.ts";
-import { pollNewItems } from "../../_shared/poll/mod.ts";
+import { pollNewItems, pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Look-back before the previous check, so a record that lands late is still seen. */
 export const OVERLAP_MS = 120_000;
@@ -191,3 +197,92 @@ export const newOrUpdatedIssueTrigger: TriggerDefinition<Params> = {
     });
   },
 };
+
+// ---- depth triggers: one per remaining listable record type ----------------------------------
+
+type Json = Record<string, unknown>;
+type Execute = (input: unknown, ctx: HookContext) => Promise<unknown>;
+
+export interface WindowSpec {
+  key: string;
+  title: string;
+  description: string;
+  action: ActionDefinition;
+  params?: Param[];
+  /** The wrapped action's since argument: `createdAfter`, `updatedAfter` or `createdGte`. */
+  filter: "createdAfter" | "updatedAfter" | "createdGte";
+  /** Which attribute the record's own stamp (seed floor) and dedupe come from. */
+  stamp: "created_at" | "updated_at";
+  output: OutputField[];
+  sample: unknown;
+}
+
+/**
+ * Since-filter trigger over a Snyk list action that takes a created/updated stamp. `returnAll`
+ * makes the action page the whole window itself (`starting_after`), so a window is drained in one
+ * check; `pollWindow` supplies the cursor, the 9.8 resume position and the 9.9 seed floor.
+ */
+export function snykWindow(spec: WindowSpec): TriggerDefinition<Json> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    poll({ params, state }, ctx) {
+      return pollWindow<Issue>({
+        state,
+        ctx,
+        read: async (since, _pos, c) => {
+          const items = await (spec.action.execute as Execute)(
+            { ...params, returnAll: true, [spec.filter]: since },
+            c,
+          );
+          return { items: Array.isArray(items) ? items as Issue[] : [] };
+        },
+        stampOf: (i) => i.attributes?.[spec.stamp],
+        idOf: (i) =>
+          spec.stamp === "updated_at" ? `${i.id}:${i.attributes?.updated_at ?? ""}` : String(i.id),
+      });
+    },
+  };
+}
+
+export interface SnapshotSpec {
+  key: string;
+  title: string;
+  description: string;
+  action: ActionDefinition;
+  params?: Param[];
+  output: OutputField[];
+  sample: unknown;
+}
+
+/**
+ * Bounded collection (groups, organizations, an org's collections, one collection's projects): the
+ * action is read with `returnAll` and `pollSnapshot` emits the ids not there last time. The seed
+ * stores hashes and emits nothing; more than 5000 rows fails loudly in the kit.
+ */
+export function snykSnapshot(spec: SnapshotSpec): TriggerDefinition<Json> {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: spec.params,
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ params, state }, ctx) {
+      const items = await (spec.action.execute as Execute)({ ...params, returnAll: true }, ctx);
+      const rows = (Array.isArray(items) ? items : []) as Issue[];
+      const { events, nextState } = await pollSnapshot({
+        state,
+        rows: rows.filter((r) => r?.id).map((r) => ({ key: String(r.id), values: r })),
+        emit: { added: true, updated: false },
+      });
+      return { events: events.map((e) => e.values), nextState };
+    },
+  };
+}

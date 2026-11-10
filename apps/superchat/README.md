@@ -7,7 +7,7 @@ subscriptions around them, on Superchat's public REST API.
 - **Categories** — communication, crm
 - **Auth methods** — api-key (`X-API-KEY`, workspace-wide read + write)
 - **Actions** — 53
-- **Triggers** — 1 (poll)
+- **Triggers** — 11 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.superchat.com` (the `service` check adds `status.superchat.de` to its own
   hook allowlist, never to the app's)
@@ -101,5 +101,15 @@ wordmark paths dropped, only the `viewBox`/size changed).
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll (newest first) | `contact-list` | Each newly created contact in the workspace |
+| `new-channel` — New Channel | Poll (newest first) | `channel-list` | Each newly created workspace channel |
+| `new-contact-list` — New Contact List | Poll (snapshot) | `contact-lists-list` | Each newly created contact list |
+| `new-contact-list-membership` — New Contact List Membership | Poll (snapshot) | `contact-contact-lists-list` | Each list the selected contact is newly added to |
+| `new-conversation` — New Conversation | Poll (snapshot) | `conversation-list` | Each conversation newly added to the workspace |
+| `new-conversation-message` — New Conversation Message | Poll (since `created_after`) | `conversation-messages-list` | Each new message in the selected conversation (optionally one direction) |
+| `new-file` — New File | Poll (newest first) | `file-list` | Each newly uploaded file |
+| `new-inbox` — New Inbox | Poll (snapshot) | `inbox-list` | Each newly created inbox |
+| `new-template-folder` — New Template Folder | Poll (snapshot) | `template-folder-list` | Each newly created template folder (optionally below one parent folder) |
+| `new-template` — New Template | Poll (snapshot) | `template-list` | Each newly created message template |
+| `new-workspace-user` — New Workspace User | Poll (snapshot) | `user-list` | Each newly added workspace user |
 
-Polled newest-first through the `contact-list` action; the first check records what exists without firing. Source: "Lists all contacts in workspace … Objects are sorted descendingly by their created_at value." ([List all contacts](https://developers.superchat.com/reference/get_contacts), verified 2026-11-09). Conversations and messages were not used: the conversation list documents no sort order.
+Contacts, channels and files are polled newest-first: Superchat documents "sorted descendingly by created_at" for them ([List all contacts](https://developers.superchat.com/reference/get_contacts), verified 2026-11-10). The other lists document no sort order, so those triggers read every page (up to 5000 rows, cursor-paged) and diff for additions, which does not depend on order; the first check records what exists without firing. Conversation messages are polled with the documented `created_after` filter ([Get conversation messages](https://developers.superchat.com/reference/get_conversations-id-messages), verified 2026-11-10): each check reads the last 2 minutes plus anything since the previous check, up to 5 pages of 100, and resumes a longer window on the next check. Not covered: notes (per-conversation, no documented order or since filter, unbounded); custom attributes and labels are workspace definitions, and webhook subscriptions are administrative configuration.

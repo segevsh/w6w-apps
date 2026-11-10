@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/rootly",
-  "version": "0.2.0",
-  "description": "Declare, update, mitigate and resolve incidents, manage alerts, services, teams and on-call, through Rootly's incident-management API. Polling trigger: New Incident.",
+  "version": "0.3.0",
+  "description": "Declare, update, mitigate and resolve incidents, manage alerts, services, teams and on-call via Rootly's incident API. Polling triggers for new incidents, alerts, services, teams, users and more.",
   "license": "MIT",
   "author": {
     "name": "w6w"

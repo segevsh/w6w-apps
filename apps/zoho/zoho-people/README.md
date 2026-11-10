@@ -1,12 +1,26 @@
 # Zoho People
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 
 ## Triggers
 
-| Key                     | Mechanism | Source                                            | What the run gets             |
-| ----------------------- | --------- | ------------------------------------------------- | ----------------------------- |
-| `new-or-updated-record` | poll      | `record-list` filtered by `modifiedtime` (a form) | Each record added or modified |
+| Key                     | Mechanism | Source                                            | What the run gets                       |
+| ----------------------- | --------- | ------------------------------------------------- | --------------------------------------- |
+| `new-or-updated-record` | poll      | `record-list` filtered by `modifiedtime` (a form) | Each record added or modified           |
+| `new-project`           | poll      | `projects-list` (snapshot of all projects)        | Each newly created Time Tracker project |
+| `new-job`               | poll      | `jobs-list` (snapshot, jobs of `assignedTo`)      | Each newly created Time Tracker job     |
+
+`new-project` and `new-job` read the whole Time Tracker project or job list in one request (`sIndex`
+0, `limit` 200, the action's maximum) and diff the ids; neither list has a sort or created filter. A
+list that fills the 200-row request stops the trigger with an error rather than watching a truncated
+list. The per-endpoint API pages are not publicly served, so the paging facts come from the wrapped
+actions; the overview is at https://www.zoho.com/people/api/overview.html (checked 2026-11-10).
+`view-records-list` returns records of the same forms as `record-list`, so `new-or-updated-record`
+covers it.
+
+Not covered: `form-list` and `form-views-list` (form and view definitions, reference data),
+`timelogs-list` and `timesheets-list` (listed by a work-date range of at most one month, with no
+created-since filter or order).
 
 Pick the form with the `formLinkName` trigger param. Zoho People documents `modifiedtime` ("To fetch
 records added & modified after the given time. value should be timestamp in milliseconds"), `sIndex`

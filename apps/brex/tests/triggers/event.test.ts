@@ -64,7 +64,16 @@ test("fixture body has non-canonical whitespace", () => {
 });
 
 test("app declares the webhook trigger with output, sample and an event-type param", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["event"]);
+  assertEquals(app.triggers.map((t) => t.key), [
+    "event",
+    "user-updated",
+    "new-user",
+    "new-card",
+    "new-department",
+    "new-location",
+    "new-title",
+    "new-legal-entity",
+  ]);
   const t = app.triggers[0];
   assert(t.output!.length > 0);
   assert(t.sample !== undefined);
@@ -132,6 +141,14 @@ test("a stored secret written with a whsec_ prefix verifies either reading", asy
     .update(`${ID}.${ts}.${PROCESSED}`).digest("base64");
   const headers = { ...headersFor(PROCESSED, ts), "webhook-signature": `v1,${whole}` };
   assertEquals(evs(await ingest(call(PROCESSED, { headers }, [prefixed]))).length, 1);
+});
+
+test("one flipped byte of the SIGNATURE itself → refused", async () => {
+  const ts = nowSec();
+  const good = sig(PROCESSED, ts);
+  const flipped = (good[0] === "A" ? "B" : "A") + good.slice(1);
+  const headers = { ...headersFor(PROCESSED, ts), "webhook-signature": `v1,${flipped}` };
+  await assertRejects(() => ingest(call(PROCESSED, { headers })), Error, "signature");
 });
 
 test("one flipped byte in the body → refused", async () => {

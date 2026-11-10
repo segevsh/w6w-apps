@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/terraform",
-  "version": "0.2.0",
-  "description": "Drive HCP Terraform and Terraform Enterprise: list workspaces, queue and apply runs, read state outputs, manage workspace variables, and start workflows from run notifications.",
+  "version": "0.3.0",
+  "description": "Drive HCP Terraform and Terraform Enterprise: workspaces, runs, state and variables. Triggers on run, drift and workspace notifications and on new organizations, workspaces and variables.",
   "license": "MIT",
   "author": {
     "name": "w6w"

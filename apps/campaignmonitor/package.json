@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/campaignmonitor",
-  "version": "0.2.0",
-  "description": "Manage Campaign Monitor clients, subscriber lists, subscribers, campaigns and transactional email over the createsend.com API v3.3. Triggers: new records.",
+  "version": "0.3.0",
+  "description": "Manage Campaign Monitor clients, subscriber lists, subscribers, campaigns and transactional email over the createsend.com API v3.3. Triggers: new subscribers, clients and smart transactional emails.",
   "license": "MIT",
   "author": {
     "name": "w6w"

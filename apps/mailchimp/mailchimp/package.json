@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mailchimp",
-  "version": "0.3.0",
-  "description": "Manage Mailchimp audiences and poll for new audience members.",
+  "version": "0.4.0",
+  "description": "Manage Mailchimp audiences and campaigns. Triggers fire on audience webhooks (signed) and on new members, campaigns and group interests.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://mailchimp.com/developer/marketing/api/root/"
     ],
-    "longDescription": "Mailchimp manages an audience and its campaigns from a workflow — creating and updating members, tagging them (and untagging them) to drive segmentation, and reading a member's or a campaign's current state without opening Mailchimp's dashboard.\n\nSending is covered from more than one angle: a campaign can be sent outright, resent to non-openers, or replicated into a new draft first — the pattern for reusing a campaign's design without editing the original. Group interests can be listed to see how an audience is segmented before targeting a send at part of it. The New Audience Member trigger polls the existing member list safely because Mailchimp's registered webhooks are HMAC-signed.\n\nA fit for growing and tagging an audience as people sign up elsewhere, triggering a campaign send from an external event, or keeping member data in sync between Mailchimp and another system.",
+    "longDescription": "Mailchimp manages an audience and its campaigns from a workflow — creating and updating members, tagging them (and untagging them) to drive segmentation, and reading a member's or a campaign's current state without opening Mailchimp's dashboard.\n\nSending is covered from more than one angle: a campaign can be sent outright, resent to non-openers, or replicated into a new draft first — the pattern for reusing a campaign's design without editing the original. Group interests can be listed to see how an audience is segmented before targeting a send at part of it. Triggers react to audience events (subscribes, unsubscribes, profile changes, cleaned addresses, email changes, campaign sends) through webhooks the app registers and verifies by HMAC signature, and poll for new members, campaigns and group interests.\n\nA fit for growing and tagging an audience as people sign up elsewhere, triggering a campaign send from an external event, or keeping member data in sync between Mailchimp and another system.",
     "categories": [
       "marketing",
       "communication"

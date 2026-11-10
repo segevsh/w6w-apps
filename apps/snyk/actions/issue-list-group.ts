@@ -52,6 +52,13 @@ const action: ActionDefinition = {
     },
     { key: "type", label: "Type", type: "string", default: "" },
     { key: "updatedAfter", label: "Updated After", type: "datetime", default: "" },
+    {
+      key: "createdAfter",
+      label: "Created After",
+      type: "datetime",
+      default: "",
+      hint: "Only issues created after this time (`created_after`).",
+    },
   ],
 
   async execute(input, ctx) {
@@ -66,6 +73,7 @@ const action: ActionDefinition = {
       status: csv(p.status),
       type: (p.type as string) || undefined,
       updated_after: (p.updatedAfter as string) || undefined,
+      created_after: (p.createdAfter as string) || undefined,
     };
 
     ctx.log("info", "listing Snyk group issues", { groupId, returnAll, limit });

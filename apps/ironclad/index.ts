@@ -60,6 +60,9 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newRecord from "./triggers/new-record.ts";
 import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
+import newWorkflow from "./triggers/new-workflow.ts";
+import newOrUpdatedWorkflow from "./triggers/new-or-updated-workflow.ts";
+import newOrUpdatedEntity from "./triggers/new-or-updated-entity.ts";
 
 export default {
   actions: [
@@ -94,5 +97,11 @@ export default {
   ],
   auth: [oauth2, oauth2Eu1, oauth2Demo, clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newRecord, newOrUpdatedRecord],
+  triggers: [
+    newRecord,
+    newOrUpdatedRecord,
+    newWorkflow,
+    newOrUpdatedWorkflow,
+    newOrUpdatedEntity,
+  ],
 } satisfies AppDefinition;

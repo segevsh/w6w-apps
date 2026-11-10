@@ -7,6 +7,7 @@ import {
   expandParam,
   opts,
   pageParams,
+  sortParams,
 } from "../lib/params.ts";
 
 /**
@@ -22,6 +23,8 @@ interface Input {
   expand?: string[] | string;
   cursor?: string;
   size?: number;
+  sort?: "createdAt" | "updatedAt";
+  sortDir?: "ASC" | "DESC";
   includeTotalCount?: boolean;
 }
 
@@ -50,6 +53,7 @@ const action: ActionDefinition<Input> = {
       "owner",
     ]),
     ...pageParams,
+    ...sortParams,
   ],
   output: [
     { key: "items", type: "array", label: "Assets" },
@@ -74,6 +78,8 @@ const action: ActionDefinition<Input> = {
       "expand[]": toList(input.expand),
       cursor: input.cursor,
       size: input.size,
+      sort: input.sort,
+      sortDir: input.sortDir,
       includeTotalCount: input.includeTotalCount || undefined,
     });
   },

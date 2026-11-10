@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ahrefs",
-  "version": "0.2.0",
-  "description": "Query Ahrefs SEO data, including backlinks, keywords, Site Audit and project collection changes, and check API unit usage.",
+  "version": "0.3.0",
+  "description": "Query Ahrefs SEO data, including backlinks, keywords, Site Audit crawls and project collection changes, and check API unit usage.",
   "license": "MIT",
   "author": {
     "name": "w6w"

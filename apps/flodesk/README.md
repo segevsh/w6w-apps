@@ -5,7 +5,7 @@ Manage Flodesk subscribers, segments, workflows, custom fields and webhooks via 
 - **Categories** — marketing, email
 - **Auth methods** — api-key (HTTP Basic), oauth2
 - **Actions** — 22
-- **Triggers** — 4 (1 poll, 3 webhook)
+- **Triggers** — 6 (2 poll, 4 webhook)
 - **Health checks** — quota (implemented), service (declared `unavailable`)
 - **Egress allowlist** — `api.flodesk.com`
 
@@ -313,6 +313,8 @@ deno task fmt
 | `new-subscriber` — New Subscriber | webhook (API-registered, unsigned) | `subscriber.created` | the event time, the subscriber's id and email and the full subscriber record |
 | `subscriber-unsubscribed` — Subscriber Unsubscribed | webhook (API-registered, unsigned) | `subscriber.unsubscribed` | the same |
 | `subscriber-added-to-segment` — Subscriber Added to Segment | webhook (API-registered, unsigned) | `subscriber.added_to_segment` | the same, plus the segment |
+| `any-event` — Any Event | webhook (API-registered, unsigned) | the `events` you choose out of the three above (all when empty) | the same, plus the segment on segment events |
+| `new-workflow` — New Workflow | poll | `list-workflows` | each workflow newly created in the account |
 
 ### New Segment (poll)
 
@@ -322,10 +324,25 @@ diffs them against the previous check and emits only additions. The first check 
 exists. Subscribers have no created-since filter or documented order, so New Subscriber is a webhook,
 not a poll.
 
+### New Workflow (poll)
+
+Workflows are an account-configuration collection. Each check reads them through `list-workflows`
+(`page` + `perPage`, 100 a page, following `meta.total_pages`; more than 5000 fails the check with an
+error naming the cap), diffs the ids against the previous check and emits only additions. The first
+check only records what exists.
+
+### Not covered by a trigger
+
+- `list-subscribers` is delivered by the `new-subscriber` webhook (`subscriber.created`); the list has
+  no created-since filter or documented order, so a poll would add nothing.
+- Skipped, with the reason: `list-custom-fields` and `list-all-custom-fields` (field definitions are
+  reference data), `list-segment-colors` (a static colour palette), `list-webhooks` (the registry of
+  this app's own webhook subscriptions, admin output).
+
 ### Webhook triggers
 
 Flodesk publishes exactly three webhook events (`subscriber.created`, `subscriber.added_to_segment`,
-`subscriber.unsubscribed`); there is no subscriber-updated or complaint event.
+`subscriber.unsubscribed`); there is no subscriber-updated or complaint event. The `any-event` trigger registers one webhook for the events you list in `events` (comma-separated; empty = all three) and delivers only those.
 
 **Setup.** Nothing to paste. Subscribing runs `POST /v1/webhooks` with a name, the host's callback URL
 (`post_url`) and the one event; the webhook id is kept in the subscription's state. Unsubscribing runs

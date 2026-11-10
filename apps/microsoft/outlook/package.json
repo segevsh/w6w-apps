@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/outlook",
-  "version": "0.1.3",
-  "description": "Read, send, and organize Microsoft Outlook mail and calendar events via the Microsoft Graph API.",
+  "version": "0.2.0",
+  "description": "Read, send, and organize Microsoft Outlook mail and calendar events via the Microsoft Graph API, and trigger a workflow on new email, calendar events, calendars and mail folders.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://learn.microsoft.com/en-us/graph/api/resources/mail-api-overview?view=graph-rest-1.0",
       "https://learn.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0"
     ],
-    "longDescription": "This app manages Microsoft Outlook mail and calendar through the Microsoft Graph API: sending, drafting, replying to, forwarding, and organizing messages, and creating, updating, and reading calendar events, including the expanded occurrences of a recurring meeting rather than just its series definition. It covers the two surfaces a user actually means by \"Outlook\", deliberately leaving out the much larger Microsoft 365 surface Graph also exposes — contacts, Teams, OneDrive, and directory administration are each their own product with their own consent scopes.\n\nA few details matter for reliability: only event creation is safe to retry automatically, since Graph offers no dedupe key for sending or drafting a message, so those are treated as one-shot actions. Deleting a meeting you organize notifies every attendee, with no way to suppress it, and paging through a large mailbox or calendar follows Graph's own continuation links rather than reconstructing them, bounded so an unbounded inbox cannot turn into an unbounded run.",
+    "longDescription": "This app manages Microsoft Outlook mail and calendar through the Microsoft Graph API: sending, drafting, replying to, forwarding, and organizing messages, and creating, updating, and reading calendar events, including the expanded occurrences of a recurring meeting rather than just its series definition. It covers the two surfaces a user actually means by \"Outlook\", deliberately leaving out the much larger Microsoft 365 surface Graph also exposes — contacts, Teams, OneDrive, and directory administration are each their own product with their own consent scopes.\n\nA few details matter for reliability: only event creation is safe to retry automatically, since Graph offers no dedupe key for sending or drafting a message, so those are treated as one-shot actions. Deleting a meeting you organize notifies every attendee, with no way to suppress it, and paging through a large mailbox or calendar follows Graph's own continuation links rather than reconstructing them, bounded so an unbounded inbox cannot turn into an unbounded run.\n\nTriggers start a workflow on a new email, a new calendar event, a new calendar or a new mail folder.",
     "categories": [
       "communication",
       "email",

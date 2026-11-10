@@ -20,8 +20,9 @@
  * allowance only covers endpoints declared in an `oauth2` block, and
  * `server-to-server` mints its token by hand.
  *
- * Deliberately absent: the webhook trigger (a Trigger, not an Action), and
- * Zoom Phone / Contact Center, which are separate products.
+ * Triggers: event-subscription webhooks (signed by Zoom's Secret Token), polls for new
+ * recordings, meetings, webinars and users. Zoom Phone / Contact Center are separate products
+ * and are deliberately absent.
  */
 import type { AppDefinition } from "@w6w/types";
 import serverToServer from "./auth/server-to-server.ts";
@@ -47,6 +48,27 @@ import recordingDelete from "./actions/recording-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newRecording from "./triggers/new-recording.ts";
+import meetingCreated from "./triggers/meeting-created.ts";
+import meetingUpdated from "./triggers/meeting-updated.ts";
+import meetingDeleted from "./triggers/meeting-deleted.ts";
+import meetingStarted from "./triggers/meeting-started.ts";
+import meetingEnded from "./triggers/meeting-ended.ts";
+import meetingRegistrationCreated from "./triggers/meeting-registration-created.ts";
+import webinarCreated from "./triggers/webinar-created.ts";
+import webinarUpdated from "./triggers/webinar-updated.ts";
+import webinarDeleted from "./triggers/webinar-deleted.ts";
+import webinarStarted from "./triggers/webinar-started.ts";
+import webinarEnded from "./triggers/webinar-ended.ts";
+import userCreated from "./triggers/user-created.ts";
+import userUpdated from "./triggers/user-updated.ts";
+import userDeleted from "./triggers/user-deleted.ts";
+import recordingCompleted from "./triggers/recording-completed.ts";
+import recordingDeleted from "./triggers/recording-deleted.ts";
+import recordingTrashed from "./triggers/recording-trashed.ts";
+import anyEvent from "./triggers/any-event.ts";
+import newMeeting from "./triggers/new-meeting.ts";
+import newWebinar from "./triggers/new-webinar.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -72,5 +94,28 @@ export default {
   ],
   auth: [serverToServer, oauth2],
   healthChecks: [service, quota],
-  triggers: [newRecording],
+  triggers: [
+    newRecording,
+    meetingCreated,
+    meetingUpdated,
+    meetingDeleted,
+    meetingStarted,
+    meetingEnded,
+    meetingRegistrationCreated,
+    webinarCreated,
+    webinarUpdated,
+    webinarDeleted,
+    webinarStarted,
+    webinarEnded,
+    userCreated,
+    userUpdated,
+    userDeleted,
+    recordingCompleted,
+    recordingDeleted,
+    recordingTrashed,
+    anyEvent,
+    newMeeting,
+    newWebinar,
+    newUser,
+  ],
 } satisfies AppDefinition;

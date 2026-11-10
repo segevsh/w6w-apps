@@ -224,6 +224,8 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
+  /** Fixed message events this trigger subscribes to; absent: the user picks with `events`. */
+  events?: string[];
 }
 
 /** Build the Mandrill email-event webhook trigger. */
@@ -234,12 +236,12 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [EVENTS_PARAM],
+    params: spec.events ? [] : [EVENTS_PARAM],
     output: OUTPUT,
-    sample: SAMPLE,
+    sample: spec.events ? { ...SAMPLE, event: spec.events[0] } : SAMPLE,
 
     async onSubscribe({ params, callbackUrl, subscriptionId }, ctx: HookContext) {
-      const events = chooseEvents(params.events);
+      const events = spec.events ?? chooseEvents(params?.events);
       const res = await new MandrillClient(ctx).request<{ id?: unknown; auth_key?: unknown }>(
         "/webhooks/add.json",
         { url: callbackUrl, description: `w6w trigger ${subscriptionId}`, events },
@@ -274,11 +276,126 @@ export function webhookTrigger(
         throw new Error(`Mandrill delivers webhooks with POST, not ${raw.method}.`);
       }
       const batch = await verifyDelivery(raw, state as Partial<TriggerState> | undefined);
-      const wanted = chooseEvents(params?.events);
+      const wanted = spec.events ?? chooseEvents(params?.events);
       const out: MandrillEvent[] = [];
       for (const item of batch) {
         const e = normalizeEvent(item);
         if (e && wanted.includes(e.event)) out.push(e);
+      }
+      return out;
+    },
+  };
+}
+
+/** The run's `trigger.event` for a denylist / allowlist sync event. */
+export interface MandrillSyncEvent {
+  list: "denylist" | "allowlist";
+  action: string;
+  email: string | null;
+  reason: string | null;
+  timestamp: number | null;
+  data: Record<string, unknown>;
+}
+
+export interface SyncTriggerSpec {
+  key: string;
+  title: string;
+  description: string;
+  /** `blacklist` / `whitelist`: the subscription event name Mandrill's `webhooks/add` takes. */
+  list: "blacklist" | "whitelist";
+}
+
+const SYNC_ACTIONS_PARAM: Param = {
+  key: "actions",
+  label: "Actions",
+  type: "string",
+  advanced: true,
+  hint: "Comma-separated sync actions to fire on: add, change, remove. Leave empty for all.",
+};
+
+/** Build a sync webhook trigger: entries added to, changed in or removed from a rejection list. */
+export function syncTrigger(
+  spec: SyncTriggerSpec,
+): TriggerDefinition<{ actions?: string }, MandrillSyncEvent, TriggerState> {
+  const list = spec.list === "blacklist" ? "denylist" : "allowlist";
+  const aliases = spec.list === "blacklist"
+    ? ["blacklist", "denylist"]
+    : ["whitelist", "allowlist"];
+  const base = webhookTrigger({ key: spec.key, title: spec.title, description: spec.description });
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: [SYNC_ACTIONS_PARAM],
+    output: [
+      { key: "list", type: "string", label: "List (denylist or allowlist)" },
+      { key: "action", type: "string", label: "Action (add, change, remove)" },
+      { key: "email", type: "string", label: "Email address" },
+      { key: "reason", type: "string", label: "Reason" },
+      { key: "timestamp", type: "number", label: "Event time (epoch seconds)" },
+      { key: "data", type: "object", label: "Full sync event" },
+    ],
+    sample: {
+      list,
+      action: "add",
+      email: "ada@example.com",
+      reason: "hard-bounce",
+      timestamp: 1762770600,
+      data: {
+        type: spec.list,
+        action: "add",
+        ts: 1762770600,
+        reject: { email: "ada@example.com", reason: "hard-bounce" },
+      },
+    },
+
+    async onSubscribe({ callbackUrl, subscriptionId }, ctx: HookContext) {
+      const res = await new MandrillClient(ctx).request<{ id?: unknown; auth_key?: unknown }>(
+        "/webhooks/add.json",
+        { url: callbackUrl, description: `w6w trigger ${subscriptionId}`, events: [spec.list] },
+      );
+      const webhookId = Number(res?.id);
+      const authKey = str(res?.auth_key);
+      if (!Number.isInteger(webhookId)) {
+        throw new Error("Mandrill did not return the new webhook's id.");
+      }
+      if (!authKey) {
+        try {
+          await new MandrillClient(ctx).request("/webhooks/delete.json", { id: webhookId });
+        } catch { /* best-effort rollback */ }
+        throw new Error("Mandrill did not return the new webhook's signing key.");
+      }
+      return { webhookId, authKey, url: callbackUrl };
+    },
+
+    // Same removal as the message-event triggers: delete the webhook by its stored id.
+    onUnsubscribe: base.onUnsubscribe as never,
+
+    async handleIngest({ raw, params, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Mandrill delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const batch = await verifyDelivery(raw, state as Partial<TriggerState> | undefined);
+      const wanted = (params?.actions ?? "").split(",").map((a) => a.trim().toLowerCase()).filter(
+        Boolean,
+      );
+      const out: MandrillSyncEvent[] = [];
+      for (const item of batch) {
+        const d = asObject(item);
+        const type = str(d?.type)?.toLowerCase();
+        const action = str(d?.action)?.toLowerCase();
+        if (!d || !type || !action || !aliases.includes(type)) continue;
+        if (wanted.length > 0 && !wanted.includes(action)) continue;
+        const entry = asObject(d.reject) ?? {};
+        const ts = Number(d.ts);
+        out.push({
+          list,
+          action,
+          email: str(entry.email) ?? str(d.email),
+          reason: str(entry.reason),
+          timestamp: Number.isFinite(ts) && d.ts != null ? ts : null,
+          data: d,
+        });
       }
       return out;
     },

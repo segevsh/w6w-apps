@@ -1,4 +1,4 @@
-import type { HookContext, TriggerDefinition } from "@w6w/types";
+import type { ActionDefinition, HookContext, Param, TriggerDefinition } from "@w6w/types";
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
 import workspaceArticleList from "../actions/workspace-article-list.ts";
 import { projectIdParam, workspaceIdParam } from "./params.ts";
@@ -78,3 +78,83 @@ export const articleSample = {
   status: "published",
   category_id: "c1b2c3d4-0000-4000-8000-000000000002",
 };
+
+const PAGING_KEYS = ["page", "pageSize", "cursor", "includeTotalCount"];
+
+/** The action's params without its paging block: a snapshot pages by itself, so those are dead UI. */
+export function withoutPaging(params: Param[] | undefined): Param[] {
+  return (params ?? []).filter((p) => !PAGING_KEYS.includes(p.key));
+}
+
+/** Every node of a tree list, depth first, with the nested children key removed from each row. */
+function flattenTree(
+  rows: Array<Record<string, unknown>>,
+  childrenKey: string | undefined,
+): Array<Record<string, unknown>> {
+  if (!childrenKey) return rows;
+  const out: Array<Record<string, unknown>> = [];
+  const walk = (nodes: Array<Record<string, unknown>>) => {
+    for (const node of nodes) {
+      const { [childrenKey]: children, ...row } = node;
+      out.push(row);
+      if (Array.isArray(children)) walk(children as Array<Record<string, unknown>>);
+    }
+  };
+  walk(rows);
+  return out;
+}
+
+/**
+ * Snapshot a small, complete collection through its existing list action. `childrenKey` names the
+ * nested array of a tree list (Drive folders, categories): every node at every depth is one row.
+ */
+export function boundedListSnapshot(
+  spec: Pick<TriggerDefinition, "key" | "title" | "description" | "output" | "sample"> & {
+    action: ActionDefinition;
+    params?: Param[];
+    input: (params: Record<string, unknown>) => Record<string, unknown>;
+    maxPages?: number;
+    childrenKey?: string;
+  },
+): TriggerDefinition {
+  return {
+    key: spec.key,
+    title: spec.title,
+    description: spec.description,
+    params: withoutPaging(spec.params),
+    output: spec.output,
+    sample: spec.sample,
+    minIntervalMs: 300_000,
+    async poll({ state, params }, ctx) {
+      const items: Array<Record<string, unknown>> = [];
+      const maxPages = spec.maxPages ?? MAX_PAGES;
+      const {
+        page: _page,
+        pageSize: _pageSize,
+        cursor: _cursor,
+        includeTotalCount: _total,
+        ...input
+      } = spec.input(params as Record<string, unknown>);
+      for (let page = 1; page <= maxPages; page++) {
+        const result = await spec.action.execute(
+          { ...input, page, pageSize: PAGE_SIZE },
+          ctx,
+        ) as { items?: Array<Record<string, unknown>>; pagination?: { has_more?: boolean } | null };
+        items.push(...(result.items ?? []));
+        if (!result.pagination?.has_more) break;
+        if (page === maxPages) {
+          throw new Error(`${spec.key} has more than ${maxPages * PAGE_SIZE} records`);
+        }
+      }
+      const { events, nextState } = await pollSnapshot({
+        state,
+        emit: { added: true, updated: false },
+        rows: flattenTree(items, spec.childrenKey).map((item) => ({
+          key: String(item.id ?? ""),
+          values: item,
+        })),
+      });
+      return { events: events.map((event) => event.values), nextState };
+    },
+  };
+}

@@ -19,7 +19,7 @@ import { ClickUpClient } from "./client.ts";
  *     unsigned.
  *   - `onUnsubscribe` deletes the webhook; one ClickUp no longer has counts as deleted.
  *
- * Docs (verified 2026-11-09): https://developer.clickup.com/docs/webhooks ,
+ * Docs (verified 2026-11-10): https://developer.clickup.com/docs/webhooks ,
  * https://developer.clickup.com/docs/webhooksignature ,
  * https://developer.clickup.com/reference/createwebhook
  */
@@ -29,6 +29,8 @@ export interface TriggerParams {
   spaceId?: string;
   folderId?: string;
   listId?: string;
+  /** Any-event trigger only: comma-separated ClickUp event names; empty means every event. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -50,7 +52,49 @@ export interface TaskEvent {
   /** `webhook_id:history_item_id` of the first history item, ClickUp's documented idempotency key. */
   idempotencyKey: string | null;
   historyItems: unknown[];
+  /** Goal and Target (key result) events only. */
+  goalId?: string;
+  keyResultId?: string;
 }
+
+/**
+ * Every event in ClickUp's webhook catalog (https://developer.clickup.com/docs/webhooks, verified
+ * 2026-11-10). The Any-event trigger validates its `events` list against it so a typo fails at
+ * subscribe time instead of silently never firing.
+ */
+export const EVENT_CATALOG: readonly string[] = [
+  "taskCreated",
+  "taskUpdated",
+  "taskDeleted",
+  "taskPriorityUpdated",
+  "taskStatusUpdated",
+  "taskAssigneeUpdated",
+  "taskDueDateUpdated",
+  "taskTagUpdated",
+  "taskMoved",
+  "taskCommentPosted",
+  "taskCommentUpdated",
+  "taskTimeEstimateUpdated",
+  "taskTimeTrackedUpdated",
+  "listCreated",
+  "listUpdated",
+  "listDeleted",
+  "folderCreated",
+  "folderUpdated",
+  "folderDeleted",
+  "spaceCreated",
+  "spaceUpdated",
+  "spaceDeleted",
+  "goalCreated",
+  "goalUpdated",
+  "goalDeleted",
+  "keyResultCreated",
+  "keyResultUpdated",
+  "keyResultDeleted",
+];
+
+/** The wildcard ClickUp accepts as "subscribe to all events". */
+export const ALL_EVENTS = "*";
 
 export const EVENT_OUTPUT: OutputField[] = [
   { key: "event", type: "string", label: "Event" },
@@ -61,6 +105,8 @@ export const EVENT_OUTPUT: OutputField[] = [
   { key: "webhookId", type: "string", label: "Webhook ID" },
   { key: "idempotencyKey", type: "string", label: "Idempotency key" },
   { key: "historyItems", type: "array", label: "History items" },
+  { key: "goalId", type: "string", label: "Goal ID (goal and target events)" },
+  { key: "keyResultId", type: "string", label: "Target ID (target events)" },
 ];
 
 export const EVENT_SAMPLE: TaskEvent = {
@@ -103,6 +149,25 @@ const PARAMS: Param[] = [
   },
 ];
 
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated ClickUp event names, for example taskCreated,spaceUpdated,goalCreated. Leave blank for every event. Names: https://developer.clickup.com/docs/webhooks",
+};
+
+/** The Any-event list: blank means every event; an unknown name is refused before any request. */
+function eventList(v: string | undefined): string[] {
+  const names = [...new Set((v ?? "").split(",").map((e) => e.trim()).filter(Boolean))];
+  if (names.length === 0 || names.includes(ALL_EVENTS)) return [ALL_EVENTS];
+  const unknown = names.filter((e) => !EVENT_CATALOG.includes(e));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown ClickUp event name(s): ${unknown.join(", ")}.`);
+  }
+  return names;
+}
+
 function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
     ? v as Record<string, unknown>
@@ -130,8 +195,12 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  /** The ClickUp events this trigger registers for and accepts. */
+  /** The ClickUp events this trigger registers for and accepts (empty when `any`). */
   events: string[];
+  /** Any-event trigger: the events come from the `events` param and are kept in the state. */
+  any?: boolean;
+  /** Fields of the sample event that differ from the task sample (a list or folder event). */
+  sample?: Partial<TaskEvent>;
 }
 
 /** Build one ClickUp webhook trigger. */
@@ -142,18 +211,19 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: PARAMS,
+    params: spec.any ? [...PARAMS, EVENTS_PARAM] : PARAMS,
     output: EVENT_OUTPUT,
-    sample: { ...EVENT_SAMPLE, event: spec.events[0] },
+    sample: { ...EVENT_SAMPLE, event: spec.events[0] ?? EVENT_SAMPLE.event, ...spec.sample },
 
     async onSubscribe({ params, callbackUrl }, ctx) {
       const teamId = params.teamId?.trim();
       if (!teamId || !/^\d+$/.test(teamId)) {
         throw new Error("Set Workspace ID to a ClickUp team ID.");
       }
+      const events = spec.any ? eventList(params.events) : spec.events;
       const body: Record<string, unknown> = {
         endpoint: callbackUrl,
-        events: spec.events,
+        events,
         space_id: locationId("Space ID", params.spaceId),
         folder_id: locationId("Folder ID", params.folderId),
         list_id: locationId("List ID", params.listId),
@@ -171,7 +241,7 @@ export function webhookTrigger(
         }).catch(() => {});
         throw new Error("ClickUp created the webhook but returned no secret to verify with.");
       }
-      return { webhookId, secret, teamId, events: spec.events };
+      return { webhookId, secret, teamId, events };
     },
 
     async onUnsubscribe({ state }, ctx) {
@@ -211,7 +281,8 @@ export function webhookTrigger(
       if (state?.webhookId && webhookId && webhookId !== state.webhookId) {
         throw new Error("ClickUp delivery is for another webhook, not this subscription's.");
       }
-      if (!spec.events.includes(event)) return [];
+      const accepted = spec.any ? state?.events ?? [] : spec.events;
+      if (!accepted.includes(ALL_EVENTS) && !accepted.includes(event)) return [];
       const historyItems = Array.isArray(d.history_items) ? d.history_items : [];
       const firstId = str(asObject(historyItems[0])?.id);
       return [{
@@ -223,6 +294,8 @@ export function webhookTrigger(
         webhookId,
         idempotencyKey: webhookId && firstId ? `${webhookId}:${firstId}` : null,
         historyItems,
+        ...(str(d.goal_id) ? { goalId: str(d.goal_id)! } : {}),
+        ...(str(d.key_result_id) ? { keyResultId: str(d.key_result_id)! } : {}),
       }];
     },
   };

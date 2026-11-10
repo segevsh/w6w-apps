@@ -92,6 +92,13 @@ import textMessageList from "./actions/text-message-list.ts";
 import textMessageGet from "./actions/text-message-get.ts";
 import textMessageSend from "./actions/text-message-send.ts";
 import newCall from "./triggers/new-call.ts";
+import newCompany from "./triggers/new-company.ts";
+import newTracker from "./triggers/new-tracker.ts";
+import newTag from "./triggers/new-tag.ts";
+import newUser from "./triggers/new-user.ts";
+import newFormSubmission from "./triggers/new-form-submission.ts";
+import newTextConversation from "./triggers/new-text-conversation.ts";
+import newOrUpdatedTextConversation from "./triggers/new-or-updated-text-conversation.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -136,6 +143,15 @@ export default {
   // API key only. CallRail publishes no OAuth surface for third-party apps —
   // the reference's whole "Authorization" section is the API key header.
   auth: [apiToken],
-  triggers: [newCall],
+  triggers: [
+    newCall,
+    newCompany,
+    newTracker,
+    newTag,
+    newUser,
+    newFormSubmission,
+    newTextConversation,
+    newOrUpdatedTextConversation,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

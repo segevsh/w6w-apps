@@ -70,6 +70,14 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newContact from "./triggers/new-contact.ts";
+import newCampaign from "./triggers/new-campaign.ts";
+import newCommunity from "./triggers/new-community.ts";
+import newCourse from "./triggers/new-course.ts";
+import newEnrollment from "./triggers/new-enrollment.ts";
+import newFunnel from "./triggers/new-funnel.ts";
+import newMembership from "./triggers/new-membership.ts";
+import newNewsletter from "./triggers/new-newsletter.ts";
+import newTag from "./triggers/new-tag.ts";
 import apiKey from "./auth/api-key.ts";
 
 import contactList from "./actions/contact-list.ts";
@@ -180,5 +188,15 @@ export default {
   // API key only. systeme.io publishes no OAuth2 surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newCampaign,
+    newCommunity,
+    newCourse,
+    newEnrollment,
+    newFunnel,
+    newMembership,
+    newNewsletter,
+    newTag,
+  ],
 } satisfies AppDefinition;

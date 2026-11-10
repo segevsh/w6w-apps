@@ -6,7 +6,7 @@ calendar events.
 - **Categories** — calendar, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 8
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Egress allowlist** — `www.googleapis.com`
 - **Website** — https://calendar.google.com
 - **API docs** — https://developers.google.com/workspace/calendar
@@ -77,6 +77,12 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
 | `event-changed` — Event Changed | poll | `list-events` with `syncToken` | One event that was created, updated or cancelled since the last check, plus `changeType` (`created`, `updated` or `cancelled`) |
+| `new-event` — New Event | poll | `list-events` with `syncToken` | One event newly created since the last check |
+| `event-updated` — Event Updated | poll | `list-events` with `syncToken` | One existing event edited since the last check |
+| `event-cancelled` — Event Cancelled | poll | `list-events` with `syncToken` | One event cancelled (deleted) since the last check |
+| `event-started` — Event Started | poll | `list-events` with `timeMin`/`timeMax`, `orderBy=startTime` | One event whose start time passed since the last check |
+| `event-ended` — Event Ended | poll | `list-events` with `timeMin`/`timeMax`, `orderBy=startTime` | One event whose end time passed since the last check |
+| `new-calendar` — New Calendar | poll | `list-calendars` (bounded snapshot) | One calendar newly added to the account's calendar list |
 
 The first check does a full `events.list` walk on the chosen calendar (page size 250, no time or
 query filters, `singleEvents=true`) and stores the final `nextSyncToken`; it emits nothing. Each later
@@ -84,13 +90,30 @@ check sends one `events.list` page with `syncToken=<stored token>` and `maxResul
 Google forbids alongside a sync token (`timeMin`, `timeMax`, `updatedMin`, `q`, `iCalUID`, `orderBy`).
 Cancelled events are emitted with `changeType: "cancelled"` (Google always returns deleted entries on
 an incremental sync). `changeType` is `created` when the event's `updated` is within two seconds of
-its `created`, otherwise `updated`. If Google answers `410 GONE` the token is invalid and the
+its `created`, otherwise `updated`. So an event created and edited again before the next check is `updated`: `new-event`
+misses it and `event-updated` emits it (the feed shows the latest state only). If Google answers `410 GONE` the token is invalid and the
 trigger re-syncs from scratch and emits nothing for that check, so changes made in between are not
 reported. If a changes page has a following page, the next check continues from it.
+`new-event`, `event-updated` and `event-cancelled` share that sync feed and each keeps its own sync
+token, so each emits only its own kind of change. `event-started` and `event-ended` read a time window
+`[last check, now)` (`timeMin`/`timeMax` are whole-second RFC 3339; Google treats `timeMin` as an
+exclusive bound on an event's end and `timeMax` as an exclusive bound on its start), emit the events
+whose start (or end) falls inside it, and move the window forward only after every page of it was
+read (at most 3 pages of 100 per check; a bigger window continues on the next check). The first check
+emits nothing, and events whose start/end passed before it are never emitted. All-day events start and end at midnight in the calendar's time zone (the
+`timeZone` Google returns with the listing; UTC if it returns none). `new-calendar` reads the whole calendar list (up to 2,500 calendars, else an error)
+and emits ids not in the seeded snapshot.
+
+Not covered: Google's push channels (`events.watch`) — a notification carries no event data, only
+headers, the channel expires and nothing in the trigger lifecycle renews it, so a w6w user cannot run it
+safely; polling the sync feed delivers the same changes.
+
 Trust model: the trigger only reads the calendar through the connection's own credential; nothing is
 received from outside.
 
-Verified 2026-11-09: sync guide https://developers.google.com/calendar/api/guides/sync (initial
+Verified 2026-11-10: push-notification limits https://developers.google.com/workspace/calendar/api/guides/push,
+`timeMin`/`timeMax`/`orderBy` in https://developers.google.com/workspace/calendar/api/v3/reference/events/list,
+calendar list https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list. Verified 2026-11-09: sync guide https://developers.google.com/calendar/api/guides/sync (initial
 full sync, `nextSyncToken` only on the last page, 410 means full re-sync) and the `syncToken`
 parameter of https://developers.google.com/workspace/calendar/api/v3/reference/events/list.
 

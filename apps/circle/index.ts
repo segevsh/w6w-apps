@@ -46,6 +46,14 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 import newEvent from "./triggers/new-event.ts";
+import newPost from "./triggers/new-post.ts";
+import newOrUpdatedPost from "./triggers/new-or-updated-post.ts";
+import newComment from "./triggers/new-comment.ts";
+import newMemberTag from "./triggers/new-member-tag.ts";
+import newSpace from "./triggers/new-space.ts";
+import newSpaceGroup from "./triggers/new-space-group.ts";
+import newEventAttendee from "./triggers/new-event-attendee.ts";
+import newSpaceMember from "./triggers/new-space-member.ts";
 export default {
   actions: [
     memberList,
@@ -84,5 +92,15 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newEvent],
+  triggers: [
+    newEvent,
+    newPost,
+    newOrUpdatedPost,
+    newComment,
+    newMemberTag,
+    newSpace,
+    newSpaceGroup,
+    newEventAttendee,
+    newSpaceMember,
+  ],
 } satisfies AppDefinition;

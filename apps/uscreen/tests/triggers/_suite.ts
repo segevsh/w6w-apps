@@ -18,8 +18,19 @@ export function sinceSuite(
   base: string,
   /** The `date_field` the trigger filters on, and the stamp its seed floor compares. */
   field: "created_at" | "updated_at" = "created_at",
+  opts: {
+    /** Trigger params (a parent id). */
+    params?: Record<string, unknown>;
+    /** False when the list action sends no `date_field` (content, accesses). */
+    dateField?: boolean;
+  } = {},
 ) {
-  const item = (id: number, sec = T0 / 1000 + 30) => ({ id, created_at: sec, updated_at: sec });
+  const item = (id: number, sec = T0 / 1000 + 30) => ({
+    id,
+    created_at: sec,
+    updated_at: sec,
+    joined_on: sec,
+  });
   const page = (items: unknown[], next?: number) => ({
     body: items,
     headers: {
@@ -29,11 +40,13 @@ export function sinceSuite(
   });
   const poll = async (state: unknown, responses: ReturnType<typeof page>[]) => {
     const m = mockCtx(responses);
-    const r = await trigger.poll!({ params: {}, state, subscriptionId: "s" }, m.ctx);
+    const r = await trigger.poll!({ params: opts.params ?? {}, state, subscriptionId: "s" }, m.ctx);
     return { r, calls: m.calls };
   };
   const cur = (s: unknown) => (s as { cursor?: string }).cursor;
-  const win = `from=2026-11-08T23%3A58%3A00.000Z&date_field=${field}`;
+  const win = `from=2026-11-08T23%3A58%3A00.000Z${
+    opts.dateField === false ? "" : `&date_field=${field}`
+  }`;
 
   test(`${name}: seeds, emits only new items, retries idempotently, literal request`, async () => {
     clock.now = () => T0;

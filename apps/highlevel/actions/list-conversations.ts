@@ -5,6 +5,8 @@ interface Input {
   contactId?: string;
   status?: "all" | "read" | "unread" | "starred" | "recents";
   query?: string;
+  sort?: "asc" | "desc";
+  sortBy?: "last_message_date" | "last_manual_message_date";
   limit?: number;
 }
 
@@ -30,6 +32,25 @@ const listConversations: ActionDefinition<Input> = {
       ],
     },
     { key: "query", label: "Search", type: "string" },
+    {
+      key: "sort",
+      label: "Sort direction",
+      type: "select",
+      hint: "Leave empty for HighLevel's own order. `desc` lists the most recently active first.",
+      options: [
+        { value: "desc", label: "Newest activity first" },
+        { value: "asc", label: "Oldest activity first" },
+      ],
+    },
+    {
+      key: "sortBy",
+      label: "Sort by",
+      type: "select",
+      options: [
+        { value: "last_message_date", label: "Last message (any)" },
+        { value: "last_manual_message_date", label: "Last manual message" },
+      ],
+    },
     { key: "limit", label: "Limit", type: "number", default: 20 },
   ],
   output: [{ key: "conversations", type: "array", label: "Conversations" }],
@@ -43,6 +64,8 @@ const listConversations: ActionDefinition<Input> = {
         contactId: input.contactId,
         status: input.status ?? "all",
         query: input.query,
+        sort: input.sort,
+        sortBy: input.sortBy,
         limit: input.limit ?? 20,
       },
     });

@@ -247,9 +247,24 @@ deno task fmt        # NEVER bare `deno fmt` — it rewrites assets/*.svg
 | Trigger | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
 | New Order (`new-order`) | poll | `order-list` — in the vendor's documented default order (`created_at` descending) | each newly created order |
+| New Checkout (`new-checkout`) | poll (newest first) | `checkout-list` — ordered by `created_at` descending | each new checkout |
+| New Customer (`new-customer`) | poll (newest first) | `customer-list` — ordered by `created_at` descending | each new customer |
+| New Discount (`new-discount`) | poll (newest first) | `discount-list` — ordered by `created_at` descending | each new discount |
+| New License Key (`new-license-key`) | poll (newest first) | `license-key-list` — ordered by `id` descending | each new license key |
+| New Price (`new-price`) | poll (newest first) | `price-list` — ordered by `created_at` descending | each new price |
+| New Subscription (`new-subscription`) | poll (newest first) | `subscription-list` — ordered by `created_at` descending | each new subscription |
+| New Product (`new-product`) | poll (snapshot diff) | `product-list` — ordered by `name` | each new product |
+| New Variant (`new-variant`) | poll (snapshot diff) | `variant-list` — ordered by `sort` | each new variant |
+| New Store (`new-store`) | poll (snapshot diff) | `store-list` — ordered by `name` | each new store |
 
 The trigger polls every 5 minutes, read one page of 100 from the app's existing `order-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
 
 Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
 
 Vendor documentation: https://docs.lemonsqueezy.com/api/orders/list-all-orders (verified 2026-11-09). It states the list returns "order objects ordered by created_at in descending" and its example links carry `sort=-createdAt`. The trigger relies on that documented default because the existing action exposes no sort parameter. Lemon Squeezy documents no update-time sort or filter for orders, so no new-or-updated trigger ships.
+
+Not covered: `webhook-list` (the account's own webhook subscriptions: integration-management configuration, not business records).
+
+New record triggers read the existing list actions (same client, endpoint and credential), one page of 100 per check, dedupe by id; the first check seeds and emits nothing. `new-checkout`, `new-customer`, `new-discount`, `new-price`, `new-subscription` and `new-license-key` rely on the vendor's documented default order (`created_at` descending; `id` descending for license keys) because the actions expose no sort parameter. `new-product`, `new-variant` and `new-store` list in `name`/`sort` order, so each check reads the whole collection (up to 10 pages of 100, failing loudly beyond that) and diffs the ids. Lemon Squeezy documents no update-time sort or filter on any of these lists, so no `new-or-updated-*` trigger ships.
+
+Vendor documentation (verified 2026-11-10): https://docs.lemonsqueezy.com/api/checkouts/list-all-checkouts, https://docs.lemonsqueezy.com/api/customers/list-all-customers, https://docs.lemonsqueezy.com/api/discounts/list-all-discounts, https://docs.lemonsqueezy.com/api/license-keys/list-all-license-keys, https://docs.lemonsqueezy.com/api/prices/list-all-prices, https://docs.lemonsqueezy.com/api/subscriptions/list-all-subscriptions, https://docs.lemonsqueezy.com/api/products/list-all-products, https://docs.lemonsqueezy.com/api/variants/list-all-variants, https://docs.lemonsqueezy.com/api/stores/list-all-stores.

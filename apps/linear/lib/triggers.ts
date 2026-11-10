@@ -23,7 +23,7 @@ import { LinearClient } from "./client.ts";
  *
  * Registering and reading webhooks needs a workspace admin (or an OAuth app with the `admin` scope).
  *
- * Docs (verified 2026-11-09): https://linear.app/developers/webhooks ("Create webhook using API",
+ * Docs (verified 2026-11-10): https://linear.app/developers/webhooks ("Create webhook using API",
  * "Securing Webhooks") and Linear's GraphQL schema (`WebhookCreateInput.secret`).
  */
 
@@ -35,6 +35,8 @@ export interface TriggerParams {
   teamId?: string;
   /** Comma-separated actions to keep (`create,update,remove`); blank keeps every action. */
   actions?: string;
+  /** Any Event only: comma-separated resource types; blank means the documented set. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -58,6 +60,8 @@ export interface LinearEvent {
   data: Record<string, unknown>;
   /** On an update, the previous values of the changed fields. */
   updatedFrom: Record<string, unknown> | null;
+  /** Any Event only: the whole verified delivery body (reaches types whose record is not in `data`, e.g. IssueSLA, OAuthApp). */
+  payload?: Record<string, unknown>;
 }
 
 const TEAM_PARAM: Param = {
@@ -250,6 +254,122 @@ export function webhookTrigger(
         createdAt: str(body.createdAt),
         data,
         updatedFrom: asObject(body.updatedFrom),
+      }];
+    },
+  };
+}
+
+/**
+ * Resource types Linear's webhook docs list for `webhookCreate`
+ * (https://linear.app/developers/webhooks, verified 2026-11-10). A blank Any Event subscribes to
+ * these; name others in the `events` param.
+ */
+export const DOCUMENTED_RESOURCE_TYPES = [
+  "Comment",
+  "Issue",
+  "IssueLabel",
+  "Project",
+  "Cycle",
+  "Reaction",
+];
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Resource types",
+  type: "string",
+  hint:
+    "Comma-separated Linear resource types to react to, e.g. `Issue,Comment,Reaction`. Blank for Comment, Issue, IssueLabel, Project, Cycle and Reaction.",
+};
+
+function csv(v: unknown): string[] {
+  return typeof v === "string" ? v.split(",").map((s) => s.trim()).filter(Boolean) : [];
+}
+
+/** The one Any Event trigger: a single Linear webhook for several resource types. */
+export function anyEventTrigger(
+  spec: { key: string; title: string },
+): TriggerDefinition<TriggerParams, LinearEvent, TriggerState> {
+  const sample: LinearEvent = {
+    resourceType: "Reaction",
+    action: "create",
+    deliveryId: "234d1a4e-b617-4388-90fe-adc3633d6b72",
+    id: "5c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f",
+    url: null,
+    actor: "Linear Orbit",
+    createdAt: "2026-11-10T10:00:00.000Z",
+    data: { id: "5c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f", emoji: "tada" },
+    updatedFrom: null,
+    payload: {
+      type: "Reaction",
+      action: "create",
+      data: { id: "5c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f", emoji: "tada" },
+    },
+  };
+  return {
+    key: spec.key,
+    title: spec.title,
+    description:
+      "Fires on any Linear data change for the resource types you pick (issues, comments, labels, projects, cycles, reactions by default). The run gets the resource type, the action, the record and, on an update, the values that changed.",
+    params: [TEAM_PARAM, ACTIONS_PARAM, EVENTS_PARAM],
+    output: [...BASE_OUTPUT, { key: "payload", type: "object", label: "Full delivery body" }],
+    sample,
+
+    async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
+      const client = new LinearClient(ctx);
+      for (const id of await webhooksPointingAt(client, callbackUrl)) {
+        await deleteWebhook(client, id);
+      }
+      const secret = randomSecret();
+      const teamId = params.teamId?.trim();
+      const types = csv(params.events);
+      const resourceTypes = types.length > 0 ? types : DOCUMENTED_RESOURCE_TYPES;
+      const res = await client.query<
+        { webhookCreate?: { success?: boolean; webhook?: { id?: unknown } } }
+      >(CREATE, {
+        input: {
+          url: callbackUrl,
+          label: "w6w trigger",
+          resourceTypes,
+          secret,
+          enabled: true,
+          ...(teamId ? { teamId } : { allPublicTeams: true }),
+        },
+      });
+      const webhookId = str(res.webhookCreate?.webhook?.id);
+      if (!res.webhookCreate?.success || !webhookId) {
+        throw new Error("Linear did not create the webhook.");
+      }
+      return { webhookId, resourceType: resourceTypes.join(","), secret };
+    },
+
+    async onUnsubscribe({ state }, ctx: HookContext) {
+      const id = str((state as Partial<TriggerState> | undefined)?.webhookId);
+      if (id) await deleteWebhook(new LinearClient(ctx), id);
+    },
+
+    async handleIngest({ raw, params, state }) {
+      if (raw.method.toUpperCase() !== "POST") {
+        throw new Error(`Linear delivers webhooks with POST, not ${raw.method}.`);
+      }
+      const body = await verifiedBody(raw, state?.secret, Date.now());
+      const type = str(body.type);
+      const wantedTypes = csv(params?.events);
+      if (wantedTypes.length > 0 && (type === null || !wantedTypes.includes(type))) return [];
+      const action = str(body.action);
+      const wanted = csv(params?.actions);
+      if (wanted.length > 0 && (action === null || !wanted.includes(action))) return [];
+      const data = asObject(body.data) ?? {};
+      return [{
+        resourceType: type ?? "",
+        action,
+        deliveryId: header(raw, "linear-delivery") ?? null,
+        id: str(data.id),
+        url: str(body.url),
+        actor: str(asObject(body.actor)?.name),
+        createdAt: str(body.createdAt),
+        data,
+        updatedFrom: asObject(body.updatedFrom),
+        payload: body,
       }];
     },
   };

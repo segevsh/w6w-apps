@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/salesloft",
-  "version": "0.2.0",
-  "description": "Manage Salesloft people, accounts, cadences, cadence enrollment, calls, notes, tasks and users. Polling trigger: New Person.",
+  "version": "0.3.0",
+  "description": "Manage Salesloft people, accounts, cadences, cadence enrollment, calls, notes, tasks and users. Polling triggers: new people, accounts, cadences, cadence memberships, calls, notes, tasks and users.",
   "license": "MIT",
   "author": {
     "name": "w6w"

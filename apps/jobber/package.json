@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jobber",
-  "version": "0.2.0",
-  "description": "Jobber field-service management — clients, properties, requests, quotes, jobs, visits and invoices — over Jobber's GraphQL API. Includes a new invoice poll trigger.",
+  "version": "0.3.0",
+  "description": "Jobber field-service management over GraphQL: clients, properties, requests, quotes, jobs, visits, invoices. Poll triggers for new invoices, quotes, requests, visits, jobs and clients.",
   "license": "MIT",
   "author": {
     "name": "w6w"

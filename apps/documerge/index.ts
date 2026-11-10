@@ -62,6 +62,10 @@ import toolPdfConvert from "./actions/tool-pdf-convert.ts";
 import toolPdfEncrypt from "./actions/tool-pdf-encrypt.ts";
 import toolPdfSplit from "./actions/tool-pdf-split.ts";
 import newDocument from "./triggers/new-document.ts";
+import newDocumentDeliveryMethod from "./triggers/new-document-delivery-method.ts";
+import newRoute from "./triggers/new-route.ts";
+import newRouteDeliveryMethod from "./triggers/new-route-delivery-method.ts";
+import newRouteRule from "./triggers/new-route-rule.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -102,7 +106,13 @@ const app: AppDefinition = {
     toolPdfEncrypt,
     toolPdfSplit,
   ],
-  triggers: [newDocument],
+  triggers: [
+    newDocument,
+    newRoute,
+    newDocumentDeliveryMethod,
+    newRouteDeliveryMethod,
+    newRouteRule,
+  ],
   auth: [apiToken],
   healthChecks: [api, service],
 };

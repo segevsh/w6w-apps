@@ -34,7 +34,10 @@ import searchHashtag from "./actions/search-hashtag.ts";
 import setCommentsEnabled from "./actions/set-comments-enabled.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newComment from "./triggers/new-comment.ts";
+import newInstagramAccount from "./triggers/new-instagram-account.ts";
 import newMedia from "./triggers/new-media.ts";
+import newStory from "./triggers/new-story.ts";
 
 export default {
   actions: [
@@ -65,7 +68,7 @@ export default {
     searchHashtag,
     setCommentsEnabled,
   ],
-  triggers: [newMedia],
+  triggers: [newMedia, newComment, newStory, newInstagramAccount],
   auth: [oauth2, accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

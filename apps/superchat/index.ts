@@ -1,5 +1,15 @@
 import type { AppDefinition } from "@w6w/types";
 import newContact from "./triggers/new-contact.ts";
+import newChannel from "./triggers/new-channel.ts";
+import newContactList from "./triggers/new-contact-list.ts";
+import newContactListMembership from "./triggers/new-contact-list-membership.ts";
+import newConversationMessage from "./triggers/new-conversation-message.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newFile from "./triggers/new-file.ts";
+import newInbox from "./triggers/new-inbox.ts";
+import newTemplateFolder from "./triggers/new-template-folder.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newWorkspaceUser from "./triggers/new-workspace-user.ts";
 import apiKey from "./auth/api-key.ts";
 import meGet from "./actions/me-get.ts";
 import userList from "./actions/user-list.ts";
@@ -116,5 +126,17 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newContact],
+  triggers: [
+    newContact,
+    newChannel,
+    newContactList,
+    newContactListMembership,
+    newConversation,
+    newConversationMessage,
+    newFile,
+    newInbox,
+    newTemplateFolder,
+    newTemplate,
+    newWorkspaceUser,
+  ],
 } satisfies AppDefinition;

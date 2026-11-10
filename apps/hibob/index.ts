@@ -31,7 +31,13 @@ import attendanceEntriesSearch from "./actions/attendance-entries-search.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAttendanceEntry from "./triggers/new-attendance-entry.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newEmploymentHistoryEntry from "./triggers/new-employment-history-entry.ts";
+import newLifecycleHistoryEntry from "./triggers/new-lifecycle-history-entry.ts";
+import newOrUpdatedEmployee from "./triggers/new-or-updated-employee.ts";
 import newTask from "./triggers/new-task.ts";
+import newWorkHistoryEntry from "./triggers/new-work-history-entry.ts";
 
 export default {
   actions: [
@@ -67,5 +73,13 @@ export default {
   // marketplace partners and needs a partner registration, so it is not offered.
   auth: [serviceUser],
   healthChecks: [service, quota],
-  triggers: [newTask],
+  triggers: [
+    newAttendanceEntry,
+    newEmployee,
+    newEmploymentHistoryEntry,
+    newLifecycleHistoryEntry,
+    newOrUpdatedEmployee,
+    newTask,
+    newWorkHistoryEntry,
+  ],
 } satisfies AppDefinition;

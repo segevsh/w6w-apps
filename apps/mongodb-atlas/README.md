@@ -6,6 +6,7 @@ IP access lists, alerts, events, and the processes behind a cluster.
 - **Categories** — databases, devops
 - **Auth methods** — service-account
 - **Actions** — 19
+- **Triggers** — 7 (poll)
 - **Egress allowlist** — `cloud.mongodb.com`, `status.mongodb.com`
 - **Website** — https://www.mongodb.com/products/platform/atlas-database
 - **API docs** — https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/
@@ -249,3 +250,20 @@ set**, checked on the log call's values rather than its keys.
 ## Triggers
 
 - **New Event** (poll) calls `event-list` with `minDate` set to the previous check minus a 2-minute overlap and dedupes by event `id`; the endpoint documents no sort order, so none is assumed. The first check only records the cursor. [MongoDB Atlas listGroupEvents](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-listgroupevents), verified 2026-11-09.
+
+### More triggers (depth, verified 2026-11-10)
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Alert (`new-alert`) | poll | `alert-list` with `status=OPEN`, whole open set diffed by alert id | each alert newly open in the chosen project |
+| New Cluster (`new-cluster`) | poll | `cluster-list` for the chosen project, whole list diffed by cluster id | each dedicated cluster newly created |
+| New Flex Cluster (`new-flex-cluster`) | poll | `flex-cluster-list` for the chosen project, whole list diffed by id | each flex cluster newly created |
+| New Database User (`new-database-user`) | poll | `database-user-list` for the chosen project, diffed by database and username | each database user newly created |
+| New Organization (`new-organization`) | poll | `organization-list`, whole list diffed by id | each organization newly visible to the service account |
+| New Project (`new-project`) | poll | `project-list`, whole list diffed by id | each project newly visible to the service account |
+
+The Atlas Admin API documents `itemsPerPage` (1..500, default 100) and `pageNum` (1-based) on these lists but no sort order or creation filter, so each is a bounded-collection snapshot: a check pages (500 per page) through the whole list with the existing action and emits only ids not seen before (capped at 5000 rows). The alert trigger watches the OPEN set, so it fires when an alert opens.
+
+Not covered: `process-list` (the host:port nodes behind existing clusters, infrastructure inventory that churns on maintenance and failover rather than new records; new clusters are delivered by `new-cluster` and `new-flex-cluster`).
+
+Vendor documentation: https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/ (verified 2026-11-10).

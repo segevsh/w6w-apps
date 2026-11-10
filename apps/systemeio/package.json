@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/systemeio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage contacts, tags, funnels, email campaigns and newsletters, courses and communities, and webhooks on systeme.io. Trigger for new contacts.",
   "license": "MIT",
   "author": {
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developer.systeme.io/reference/api"
     ],
-    "longDescription": "systeme.io manages contacts, tags, funnels, email campaigns and newsletters, courses and enrollments, communities and memberships, and outbound webhooks — the full breadth of systeme.io's all-in-one marketing platform, at the granularity its public API actually exposes. Contacts can be created, tagged and updated; funnels, campaigns and newsletters can be created, read and updated; course enrollments and community memberships can be managed; and webhooks can be registered so a workflow reacts to systeme.io's own events rather than polling for them.\n\nPartial updates use systeme.io's own merge-patch format so an update only touches the fields actually sent, and pagination follows systeme.io's own cursor convention, always keyed off the last item returned rather than a page number. Because systeme.io publishes no account or profile endpoint, connection health is checked against a harmless list of custom field definitions rather than a page of real contact data.\n\nAuthoring the actual content inside a funnel or campaign — individual pages and emails — is left to systeme.io's own visual editor, and billing surfaces like coupons, price plans and subscriptions sit outside this app's marketing-automation focus.",
+    "longDescription": "systeme.io manages contacts, tags, funnels, email campaigns and newsletters, courses and enrollments, communities and memberships, and outbound webhooks — the full breadth of systeme.io's all-in-one marketing platform, at the granularity its public API actually exposes. Contacts can be created, tagged and updated; funnels, campaigns and newsletters can be created, read and updated; course enrollments and community memberships can be managed; and webhooks can be registered so a workflow reacts to systeme.io's own events rather than polling for them.\n\nPartial updates use systeme.io's own merge-patch format so an update only touches the fields actually sent, and pagination follows systeme.io's own cursor convention, always keyed off the last item returned rather than a page number. Because systeme.io publishes no account or profile endpoint, connection health is checked against a harmless list of custom field definitions rather than a page of real contact data.\n\nAuthoring the actual content inside a funnel or campaign — individual pages and emails — is left to systeme.io's own visual editor, and billing surfaces like coupons, price plans and subscriptions sit outside this app's marketing-automation focus. Poll triggers also cover campaigns, communities, courses, enrollments, funnels, memberships, newsletters and tags.",
     "categories": [
       "marketing"
     ],

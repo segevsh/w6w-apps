@@ -6,7 +6,7 @@ formerly known as Clubhouse — on the **Shortcut REST API v3**.
 - **Categories** — project-management, developer-tools
 - **Auth methods** — api-token
 - **Actions** — 36
-- **Triggers** — 2 (poll)
+- **Triggers** — 12 (poll)
 - **Health checks** — 2 (`service`, ~~`request-rate`~~) + the derived `auth:api-token`
 - **Egress allowlist** — `api.app.shortcut.com` (the `service` check adds `status.shortcut.com` to
   its own hook allowlist, never to the app's)
@@ -309,9 +309,23 @@ deno task test
 |---|---|---|---|
 | `new-story` — New Story | poll | `story-search` (`created_at_start`) | the new story |
 | `new-or-updated-story` — New or Updated Story | poll | `story-search` (`updated_at_start`) | a story created or updated (each new `updated_at` is a new event) |
+| `new-epic` — New Epic | poll | `epic-list` (every page) | the new epic |
+| `new-iteration` — New Iteration | poll | `iteration-list` | the new iteration |
+| `new-label` — New Label | poll | `label-list` | the new label |
+| `new-member` — New Member | poll | `member-list` | the new member |
+| `new-project` — New Project | poll | `project-list` | the new project |
+| `new-epic-comment` — New Epic Comment | poll | `epic-comment-list` (epic you pick) | the new comment |
+| `new-story-comment` — New Story Comment | poll | `story-comment-list` (story you pick) | the new comment |
+| `new-epic-story` — New Story in Epic | poll | `epic-stories-list` (epic you pick) | a story created in or added to the epic |
+| `new-iteration-story` — New Story in Iteration | poll | `iteration-stories-list` (iteration you pick) | a story created in or added to the iteration |
+| `new-label-story` — New Story with Label | poll | `label-stories-list` (label you pick) | a story created with or tagged with the label |
 
 The first check only records the time (`floor`) and emits nothing, and anything created (`created_at`) / updated (`updated_at`) before that time is never emitted. Each later check re-reads `created_at_start` / `updated_at_start` from the last drained cursor minus 2 minutes, remembers up to 500 emitted ids and skips them. A window larger than 100 stories is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained. `POST /stories/search` answers one unpaged array, so a window is one request: the array is sorted oldest-first by the trigger (the vendor's order is not relied on), the oldest 100 unseen stories are emitted per check, and the window resumes from the last emitted timestamp until it is drained.
 
+The ten triggers after the two story triggers keep the ids seen at the previous check and fire the ones that are new (the first check stores them and fires nothing). Shortcut documents no order or time filter for these lists, so each check reads the whole list: `epic-list` 100 epics a page for up to 50 pages (a larger workspace fails the check with an error naming the 5000-row cap), the others in the single array Shortcut returns.
+
+Not covered: `workflow-list` (reference data: workflows and their states), `search` (free-text search across stories, epics, iterations and objectives; stories, epics and iterations already have their own triggers).
+
 Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `story-search` with the connection's credentials.
 
-Vendor docs: https://developer.shortcut.com/api/rest/v3 (verified 2026-11-09: Query Stories documents `created_at_start` — "created on or after this date" — and `updated_at_start`)
+Vendor docs: https://developer.shortcut.com/api/rest/v3 (verified 2026-11-10: Query Stories documents `created_at_start` — "created on or after this date" — and `updated_at_start`)

@@ -54,12 +54,15 @@ const ORDER_DELIVERY = {
 
 // ── declaration ─────────────────────────────────────────────────────────────
 
+// The poll triggers (round 3) have their own tests; these assertions are about the webhook form.
+const webhookTriggers = app.triggers.filter((t) => t.poll === undefined);
+
 test("app: one trigger per Eventbrite webhook action, plus activity", () => {
   const keys = app.triggers.map((t) => t.key);
   assertEquals(new Set(keys).size, keys.length);
-  assertEquals(keys.length, WEBHOOK_ACTIONS.length + 1);
+  assertEquals(webhookTriggers.length, WEBHOOK_ACTIONS.length + 1);
   assertEquals(keys.includes("activity"), true);
-  for (const t of app.triggers) {
+  for (const t of webhookTriggers) {
     // The webhook form: whatever is registered must be destroyable.
     assertEquals(typeof t.onSubscribe, "function", t.key);
     assertEquals(typeof t.onUnsubscribe, "function", t.key);
@@ -69,7 +72,7 @@ test("app: one trigger per Eventbrite webhook action, plus activity", () => {
 });
 
 test("app: only activity asks which actions to watch", () => {
-  for (const t of app.triggers) {
+  for (const t of webhookTriggers) {
     const keys = (t.params ?? []).map((p) => p.key);
     assertEquals(keys.includes("actions"), t.key === "activity", t.key);
     assertEquals(keys.includes("organizationId"), true, t.key);

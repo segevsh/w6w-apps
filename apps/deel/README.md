@@ -2,13 +2,37 @@
 
 ## Triggers
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contract` | poll | `contract-list` | Each newly created contract (`order_direction=desc`) |
+| `new-person` | poll (snapshot) | `person-list` | Each worker newly added to the organization |
+| `new-legal-entity` | poll (snapshot) | `legal-entity-list` | Each newly added legal entity |
+| `new-webhook` | poll (snapshot) | `webhook-list` | Each newly registered webhook |
+| `new-contract-milestone` | poll (snapshot) | `contract-milestone-list` | Each new milestone on the chosen contract (`contractId`) |
+| `new-time-off-request` | poll (snapshot) | `GET /time_offs/profile/{id}` (same endpoint as `time-off-list`) | Each new time-off request of the chosen worker (`hrisProfileId`) |
+| `new-timesheet` | poll (snapshot) | `timesheet-list` | Each timesheet newly appearing with a watched status (`statuses`, default `pending`) |
+| `new-invoice-adjustment` | poll (snapshot) | `invoice-adjustment-list` | Each invoice adjustment newly appearing with a watched status (`statuses`, default `pending`) |
 
 `contract-list` passes Deel's `order_direction` through; the trigger asks for `desc` and reads the first 100 contracts. Deel's reference lists `order_direction` but does not state the sort key, so the creation order is assumed from the descending default sort.
+
+The seven snapshot triggers read the whole collection 100 rows a page (the list action with
+`returnAll`, except `new-timesheet` and `new-invoice-adjustment`, which page with `limit` + `offset`
+and `page.total_rows`, `new-time-off-request`, which pages with `page_size` + the `next` token while `has_next_page` is true (a repeated token throws), and `new-webhook` and `new-legal-entity`, which page with the `cursor` query
+parameter and the next cursor from the response's `cursor` / `page.cursor`, as Deel's OpenAPI
+documents; a repeated cursor throws), diff ids with the poll kit and emit the added ones; the first check records
+the ids and emits nothing, and a collection of more than 5000 rows fails the check with an error naming
+the cap. `new-timesheet` and `new-invoice-adjustment` watch a status set (default `pending`, which
+holds only the items awaiting review) so the collection stays small; a blank `statuses` watches every
+status and can exceed the cap on a large account. The list actions expose no sort or created-since
+argument, so a full read is the way to see new records.
+
+Not covered: `adjustment-category-list`, `lookup-list` and `webhook-event-list` (reference data:
+categories, countries/currencies/job titles, and the catalogue of event types) and
+`time-off-entitlement-list` (a worker's accrued/used leave balances, not a feed of created records).
+
+Vendor docs: <https://developer.deel.com/reference> (verified 2026-11-10).
 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 

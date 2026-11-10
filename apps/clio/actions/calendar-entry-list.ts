@@ -1,6 +1,13 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClioClient } from "../lib/client.ts";
-import { fieldsParam, matterIdFilterParam, paginationParams, refParam } from "../lib/params.ts";
+import {
+  createdSinceParam,
+  fieldsParam,
+  matterIdFilterParam,
+  paginationParams,
+  refParam,
+  updatedSinceParam,
+} from "../lib/params.ts";
 
 /** `GET /calendar_entries.json` */
 interface Input {
@@ -8,6 +15,8 @@ interface Input {
   matterId?: number;
   from?: string;
   to?: string;
+  createdSince?: string;
+  updatedSince?: string;
   fields?: string;
   limit?: number;
   pageToken?: string;
@@ -34,6 +43,8 @@ const calendarEntryList: ActionDefinition<Input> = {
       type: "datetime",
       hint: "Only entries that BEGIN on or before this time.",
     },
+    createdSinceParam,
+    updatedSinceParam,
     fieldsParam(
       "id,etag,summary,description,start_at,end_at,all_day,location,matter{id,display_number}",
     ),
@@ -51,6 +62,8 @@ const calendarEntryList: ActionDefinition<Input> = {
         matter_id: input.matterId,
         from: input.from,
         to: input.to,
+        created_since: input.createdSince,
+        updated_since: input.updatedSince,
         fields: input.fields,
         limit: input.limit,
         page_token: input.pageToken,

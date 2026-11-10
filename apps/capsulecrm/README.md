@@ -6,7 +6,7 @@ Parties (people and organisations), opportunities (the sales pipeline), tasks, a
 - **Categories** — crm
 - **Auth methods** — personal-access-token
 - **Actions** — 19
-- **Triggers** — 2 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:personal-access-token`
 - **Egress allowlist** — `api.capsulecrm.com`
 - **Website** — https://capsulecrm.com/
@@ -127,14 +127,23 @@ artwork onto the pack's shared 100×100 canvas, and a wrapped raster already fil
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-opportunity` — New Opportunity | Poll | `opportunity-list` | Each opportunity created since the last check |
-| `new-or-updated-opportunity` — New or Updated Opportunity | Poll | `opportunity-list` | Each opportunity created or edited (id + updatedAt) |
+| `new-opportunity` — New Opportunity | poll | `opportunity-list` | Each newly created opportunity |
+| `new-or-updated-opportunity` — New or Updated Opportunity | poll | `opportunity-list` | Each opportunity created or edited |
+| `new-party` — New Contact (Party) | poll | `party-list` | Each newly created person or organisation |
+| `new-or-updated-party` — New or Updated Contact (Party) | poll | `party-list` | Each contact created or edited |
+| `new-pipeline` — New Pipeline | poll | `pipeline-list` | Each newly created pipeline |
+| `new-milestone` — New Milestone | poll | `milestone-list` | Each new milestone of the chosen pipeline |
+| `new-user` — New User | poll | `user-list` | Each user newly added to the account |
+
+Parties use the documented `since` (changed-after) filter with a resumable window; pipelines, milestones and users are small collections read whole and diffed by id. `party-search` is a text search over the same records `new-party` delivers. Source: [Capsule API v2](https://developer.capsulecrm.com/v2/) (verified 2026-11-10).
+
+Not covered: `task-list` (no order or `since` filter, unbounded: the docs list only `status`, `page`, `perPage`, `embed` — https://developer.capsulecrm.com/v2/operations/Task).
 
 `opportunity-list` has a `since` (changed-since) filter but no documented order, so each check lists up to 5 pages of 100 with `since` = last check − 120 s and de-duplicates by id; `new-opportunity` additionally keeps only records whose `createdAt` falls inside the window (an edit to an old record is not new). Up to 500 events per check. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://developer.capsulecrm.com/v2/operations/Opportunity) (verified 2026-11-09).
+Source: [vendor docs](https://developer.capsulecrm.com/v2/operations/Opportunity) (verified 2026-11-10).
 
 ## Layout
 

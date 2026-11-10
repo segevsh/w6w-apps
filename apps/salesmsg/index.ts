@@ -19,6 +19,8 @@
  *  4. **OAuth2 is left out** on purpose — the README says why.
  */
 import type { AppDefinition } from "@w6w/types";
+import newMember from "./triggers/new-member.ts";
+import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
 import newContact from "./triggers/new-contact.ts";
 import accessToken from "./auth/access-token.ts";
 import userGet from "./actions/user-get.ts";
@@ -81,7 +83,7 @@ export default {
     messageSendToConversation,
     messageList,
   ],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedConversation, newMember],
   auth: [accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

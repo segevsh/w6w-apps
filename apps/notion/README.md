@@ -1,18 +1,113 @@
 # Notion
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 42 (24 webhook, 18 poll)
 
 ## Triggers
 
-| Key — title | Mechanism | Wraps | The run gets |
-| --- | --- | --- | --- |
-| `new-database-page` — New Database Page | poll (5 min) | `get-many-database-pages`, `POST /v1/data_sources/{id}/query` with `sorts: [{timestamp: "created_time", direction: "descending"}]`, `page_size` 25 | each page created since the previous check |
+### Webhook triggers (manual subscription, signed)
 
-The first check only records the newest page ids (nothing fires); later checks emit unseen ids
-oldest-first. One page of 25 is read per check. Trust model: polling over the connection's own
-credentials; no inbound callback. Notion webhooks were not used because their verification token
-cannot be obtained on this host. Source: https://developers.notion.com/reference/post-database-query
-(verified 2026-11-09).
+Notion has no API to register a webhook: you create the subscription yourself in the integration's
+**Webhooks** tab (https://www.notion.so/profile/integrations). Each trigger below is one w6w URL;
+point the subscription at it and choose the matching event types.
+
+| Key — title | Notion event | The run gets |
+| --- | --- | --- |
+| `page-created` — Page Created | `page.created` | the event, page id and parent |
+| `page-properties-updated` — Page Properties Updated | `page.properties_updated` | the event, page id, updated property ids |
+| `page-content-updated` — Page Content Updated | `page.content_updated` | the event, page id, updated block ids (batched by Notion) |
+| `page-moved` — Page Moved | `page.moved` | the event, page id, new parent |
+| `page-deleted` — Page Deleted | `page.deleted` | the event, page id |
+| `page-undeleted` — Page Restored | `page.undeleted` | the event, page id |
+| `database-created` — Database Created | `database.created` | the event, database id, parent |
+| `database-deleted` — Database Deleted | `database.deleted` | the event, database id |
+| `data-source-created` — Data Source Created | `data_source.created` | the event, data source id |
+| `data-source-content-updated` — Data Source Content Updated | `data_source.content_updated` | the event, data source id |
+| `data-source-schema-updated` — Data Source Schema Updated | `data_source.schema_updated` | the event, data source id, updated property ids |
+| `data-source-deleted` — Data Source Deleted | `data_source.deleted` | the event, data source id |
+| `comment-created` — Comment Created | `comment.created` | the event, comment id, page id |
+| `comment-updated` — Comment Edited | `comment.updated` | the event, comment id |
+| `comment-deleted` — Comment Deleted | `comment.deleted` | the event, comment id |
+| `view-created` — View Created | `view.created` | the event, view id, parent, view type |
+| `view-updated` — View Updated | `view.updated` | the event, view id, parent, which parts changed (name, filter, sorts, configuration) |
+| `view-deleted` — View Deleted | `view.deleted` | the event, view id, parent |
+| `file-upload-created` — File Upload Created | `file_upload.created` | the event, file upload id |
+| `file-upload-completed` — File Upload Completed | `file_upload.completed` | the event, file upload id |
+| `file-upload-expired` — File Upload Expired | `file_upload.expired` | the event, file upload id |
+| `file-upload-upload-failed` — File Upload Failed | `file_upload.upload_failed` | the event, file upload id, import result with the error |
+| `page-transcript-deleted` — Page Transcript Deleted | `page.transcription_block.transcript_deleted` | the event, page id, transcription block, transcript id |
+| `any-event` — Any Event | any type, optionally narrowed by the **Events** param (comma-separated, blank = all) | the event; reaches `page.locked`, `page.unlocked`, `database.moved`, `database.undeleted`, `database.content_updated`, `database.schema_updated`, `data_source.moved`, `data_source.undeleted` |
+
+Setup, once per trigger:
+
+1. Add the trigger to a workflow and copy its callback URL. Leave **Verification Token** empty.
+2. In Notion, open the integration > **Webhooks** > **Create a subscription**, paste the URL and pick
+   the event types.
+3. Notion immediately POSTs a one-time `verification_token` (signed with that same token). The
+   trigger delivers it as a run whose event has `type: "verification"` and `verificationToken` set.
+   Copy it. Treat run history as sensitive from here on: the token sits in that run's event, and
+   anyone who can read it can forge deliveries.
+4. Paste it into Notion's **Verify** dialog, and into the trigger's **Verification Token** param.
+   Only trust a token that Notion's Verify dialog accepts: while the param is empty the callback
+   URL is the only gate, so any second `verification` run you did not trigger from Notion is an
+   injection. Do not paste its token anywhere.
+5. From then on every delivery must carry a valid signature. If you need Notion to send a token again
+   (**Resend token**), clear the param first; while it is empty, only that handshake is accepted
+   (a handshake whose signature header does not match its own token is refused).
+
+Trust model: Notion signs each event with `X-Notion-Signature: sha256=<hex>`, an HMAC-SHA256 of the
+exact request body keyed by the verification token. The trigger verifies it (constant-time compare)
+before parsing anything and refuses the delivery otherwise; an empty token never verifies anything
+except the setup handshake above. The signature carries no timestamp, so there is no replay window
+(Notion retries for up to 24 hours). Events are signals, not payloads: fetch the page, comment or
+data source with the matching action. The `database.*` schema/content events are deprecated by
+Notion in API version 2025-09-03 in favour of `data_source.*`. Sources:
+https://developers.notion.com/reference/webhooks and
+https://developers.notion.com/reference/webhooks-events-delivery; the per-event pages (for example
+https://developers.notion.com/reference/webhooks/view-created and
+https://developers.notion.com/reference/webhooks/file-upload-completed) list all 31 events: 23 on
+the delivery page plus `view.*`, `file_upload.*` and `page.transcription_block.transcript_deleted`
+(verified 2026-11-10).
+
+### Poll triggers
+
+Every poll reads over the connection's own credentials (5 minute interval, no inbound callback). The
+first check only records what exists; nothing fires until something new appears.
+
+| Key — title | Wraps | The run gets |
+| --- | --- | --- |
+| `new-database-page` — New Database Page | `get-many-database-pages`, `POST /v1/data_sources/{id}/query` sorted by `created_time` descending (also covers `query-data-source`) | each page created since the previous check |
+| `new-or-updated-database-page` — New or Updated Database Page | `get-many-database-pages`, sorted by `last_edited_time` descending | each page created or edited |
+| `new-or-updated-page` — New or Updated Page | `search-pages`, `POST /v1/search` filtered to pages, sorted by `last_edited_time` descending (also covers `search`) | each page created or edited anywhere in the workspace |
+| `new-or-updated-data-source` — New or Updated Data Source | `search-data-sources`, same sort | each data source created or edited |
+| `new-or-updated-database` — New or Updated Database | `search-databases`, same sort (also covers `list-databases`, `get-many-databases`) | each database container created or edited |
+| `new-workspace-user` — New Workspace User | `get-many-users`, `GET /v1/users` (no order guaranteed, bounded list diffed by id) | each person or bot added |
+| `new-block` — New Block in Page | `get-many-blocks`, `GET /v1/blocks/{id}/children` for the page you give, diffed by id | each block added at the top level of that page |
+| `new-comment` — New Comment | `list-comments`, `GET /v1/comments?block_id=` for the page or block you give, diffed by id | each new unresolved comment |
+| `new-data-source-template` — New Data Source Template | `list-data-source-templates` for the data source you give | each template added |
+| `new-view` — New View | `list-views`, `GET /v1/views?database_id=` for the database you give | each view added |
+| `new-file-upload` — New File Upload | `list-file-uploads`, `GET /v1/file_uploads` (Notion returns most recent first) | each file upload created |
+| `new-agent` — New Agent | `query-agents`, sorted by `created_time` descending | each Custom Agent newly visible |
+| `new-session` — New Agent Session | `query-sessions`, sorted by `created_at` descending | each agent session created |
+| `new-or-updated-session` — New or Updated Agent Session | `query-sessions`, sorted by `updated_at` descending | each session created or changed |
+| `new-session-event` — New Agent Session Event | `query-session-events` for the session you give, sorted by `sequence` descending | each new session event |
+| `new-meeting-note` — New Meeting Note | `query-meeting-notes`, sorted by `created_time` descending, limit 25 | each meeting notes block created |
+| `new-or-updated-meeting-note` — New or Updated Meeting Note | `query-meeting-notes`, sorted by `last_edited_time` descending | each meeting notes block created or edited |
+| `new-or-updated-plugin` — New or Updated Plugin | `list-plugins`, `GET /v1/ai/plugins` (small list; a changed `version_id` fires again) | each Agent Skills plugin added or changed |
+
+The list-diff triggers read up to 20 pages of 100 rows per check and fail with a clear error beyond
+that. Notion search (`new-or-updated-page`, `-data-source`, `-database`) is indexed and may show a
+change a little after it is made. Sources: https://developers.notion.com/reference/post-search,
+https://developers.notion.com/reference/query-a-data-source,
+https://developers.notion.com/reference/list-file-uploads,
+https://developers.notion.com/reference/query-meeting-notes,
+https://developers.notion.com/reference/notion-agent-apis/query-agents,
+https://developers.notion.com/reference/notion-agent-apis/query-sessions,
+https://developers.notion.com/reference/notion-agent-apis/query-session-events,
+https://developers.notion.com/reference/get-users (verified 2026-11-10).
+
+Not covered (no trigger): the 10 Enterprise Admin list actions (`admin-list-*`: legal holds, permission
+groups, personal access tokens, MCP client connections, space users, analytics reports) are
+admin/audit output, and `list-custom-emojis` is reference data.
 
 119 workflow actions covering all 107 operations in Notion's public and Admin OpenAPI schemas,
 plus compatibility and convenience actions. Public requests use `Notion-Version: 2026-03-11`;
@@ -71,8 +166,8 @@ explains the parent and content rules.
 [endpoint-coverage.json](docs/endpoint-coverage.json) maps every public/Admin HTTP operation to an
 exported action. Private/internal operations in `openapi-undocumented.json` are excluded from the
 supported action surface. Old reference pages that describe the same operation map to its current
-endpoint. Webhook event documentation is included in the download; these events are not REST
-endpoints or newly implemented subscription triggers.
+endpoint. Webhook event documentation is included in the download; those events are not REST
+endpoints, and are delivered by the webhook triggers above.
 
 List/query actions return Notion's response and pagination fields. Pass `next_cursor` into
 **Start Cursor** to continue. **Get Many Databases** walks pages and deduplicates containers.

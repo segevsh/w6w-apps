@@ -3,11 +3,13 @@ import { ClioClient } from "../lib/client.ts";
 import {
   activityStatusOptions,
   activityTypeOptions,
+  createdSinceParam,
   fieldsParam,
   matterIdFilterParam,
   paginationParams,
   queryParam,
   refParam,
+  updatedSinceParam,
 } from "../lib/params.ts";
 
 /** `GET /activities.json` — time entries, expense entries, and hard/soft cost entries. */
@@ -20,6 +22,8 @@ interface Input {
   startDate?: string;
   endDate?: string;
   query?: string;
+  createdSince?: string;
+  updatedSince?: string;
   fields?: string;
   limit?: number;
   pageToken?: string;
@@ -46,6 +50,8 @@ const activityList: ActionDefinition<Input> = {
     },
     { key: "endDate", label: "End date", type: "date", hint: "Activities on or before this date." },
     { ...queryParam, hint: "Wildcard search across the note field." },
+    createdSinceParam,
+    updatedSinceParam,
     fieldsParam(
       "id,etag,type,date,quantity,price,total,note,non_billable,matter{id,display_number}," +
         "user{id,name}",
@@ -69,6 +75,8 @@ const activityList: ActionDefinition<Input> = {
         start_date: input.startDate,
         end_date: input.endDate,
         query: input.query,
+        created_since: input.createdSince,
+        updated_since: input.updatedSince,
         fields: input.fields,
         limit: input.limit,
         order: "id(asc)",

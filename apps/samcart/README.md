@@ -1,14 +1,21 @@
 # SamCart
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 8 (poll)
 
 ## Triggers
 
 | key — title | mechanism | wrapped action | what the run gets |
 | --- | --- | --- | --- |
 | `new-order` — New Order | poll | `order-list` | Each newly created order. |
+| `new-charge` — New Charge | poll | `charge-list` | Each newly created successful charge. |
+| `new-failed-charge` — New Failed Charge | poll | `failed-charge-list` | Each charge the processor newly declined. |
+| `new-customer` — New Customer | poll | `customer-list` | Each newly created customer, with their addresses. |
+| `new-product` — New Product | poll | `product-list` | Each newly created product. |
+| `new-subscription` — New Subscription | poll | `subscription-list` | Each newly created subscription. |
+| `subscription-status-changed` — Subscription Status Changed | poll | `subscription-history-list` | Each new status change on the subscription you choose (required `Subscription ID`). |
+| `new-refund` — New Refund | poll | `refund-list` | Each newly issued refund, on any charge. |
 
-SamCart documents the `created_at_min` filter and the offset/limit pagination on `GET /v1/orders` in its [OpenAPI document](https://developer.samcart.com/specs/openapi.yaml); the orders endpoint has no sort argument, so the trigger asks for orders created since the saved cursor minus a 2-minute overlap, de-duplicates by `id`, and walks a window larger than one page across checks (saved `offset`) before moving the cursor. Verified 2026-11-09.
+SamCart documents the `created_at_min` filter and the offset/limit pagination on the list endpoints in its [OpenAPI document](https://developer.samcart.com/specs/openapi.yaml). None of them has a sort argument, so each created-since trigger asks for records created since the saved cursor minus a 2-minute overlap, de-duplicates by `id`, walks a window larger than one page across checks (saved `offset`) before moving the cursor, and never emits a record created before the first check. `GET /v1/refunds` has no date filter; the document says its results are sorted by refund ID and that `offset` is a record id, so `new-refund` remembers the highest refund id it has handled and asks for the page after it (its first check reads the newest refund id with `dir=prev`). The per-customer, per-order, per-charge, per-funnel, per-product and per-upsell lists return records these triggers already deliver (orders, charges, subscriptions, refunds, customers and their addresses). Verified 2026-11-10.
 
 Read SamCart orders, charges, failed charges, customers, products, refunds and subscriptions, and
 add a product to an order, refund a charge, cancel or reschedule a subscription, on the

@@ -54,8 +54,8 @@ test("fixture: the body is not canonical JSON", () => {
   assert.notEqual(JSON.stringify(JSON.parse(BODY)), BODY);
 });
 
-test("app: declares both triggers with output and sample", () => {
-  assert.deepEqual(app.triggers.map((t) => t.key), ["new-message", "new-membership"]);
+test("app: declares both original triggers (first) with output and sample", () => {
+  assert.deepEqual(app.triggers.map((t) => t.key).slice(0, 2), ["new-message", "new-membership"]);
   for (const t of app.triggers) {
     assert.ok(t.output.length > 0);
     assert.notEqual(t.sample, undefined);

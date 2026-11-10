@@ -113,6 +113,12 @@ import companyGet from "./actions/company-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCall from "./triggers/new-call.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newUser from "./triggers/new-user.ts";
+import newNumber from "./triggers/new-number.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUserNumber from "./triggers/new-user-number.ts";
 
 export default {
   actions: [
@@ -171,5 +177,13 @@ export default {
   // `actions/`. See `auth/basic.ts` and the README.
   auth: [basic],
   healthChecks: [service, quota],
-  triggers: [newCall],
+  triggers: [
+    newCall,
+    newContact,
+    newOrUpdatedContact,
+    newUser,
+    newNumber,
+    newTeam,
+    newUserNumber,
+  ],
 } satisfies AppDefinition;

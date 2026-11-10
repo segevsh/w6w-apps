@@ -1,11 +1,13 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ClioClient } from "../lib/client.ts";
 import {
+  createdSinceParam,
   fieldsParam,
   matterIdFilterParam,
   paginationParams,
   queryParam,
   refParam,
+  updatedSinceParam,
 } from "../lib/params.ts";
 
 /** `GET /documents.json` */
@@ -14,6 +16,8 @@ interface Input {
   contactId?: number;
   parentId?: number;
   query?: string;
+  createdSince?: string;
+  updatedSince?: string;
   fields?: string;
   limit?: number;
   pageToken?: string;
@@ -30,6 +34,8 @@ const documentList: ActionDefinition<Input> = {
     refParam("contactId", "Contact ID"),
     refParam("parentId", "Parent folder ID", "Leave empty to search across all folders."),
     { ...queryParam, hint: "Wildcard search across the document name." },
+    createdSinceParam,
+    updatedSinceParam,
     fieldsParam("id,etag,name,content_type,created_at,updated_at,matter{id,display_number}"),
     ...paginationParams(),
   ],
@@ -45,6 +51,8 @@ const documentList: ActionDefinition<Input> = {
         contact_id: input.contactId,
         parent_id: input.parentId,
         query: input.query,
+        created_since: input.createdSince,
+        updated_since: input.updatedSince,
         fields: input.fields,
         limit: input.limit,
         order: "id(asc)",

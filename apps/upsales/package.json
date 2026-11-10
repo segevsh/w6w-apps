@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/upsales",
-  "version": "0.2.0",
-  "description": "Manage Upsales CRM data and trigger workflows on new contacts.",
+  "version": "0.3.0",
+  "description": "Manage Upsales CRM data and trigger workflows on newly created records.",
   "license": "MIT",
   "author": {
     "name": "w6w"

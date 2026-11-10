@@ -7,6 +7,7 @@ over the Uscreen **Publisher API**.
 - App id: `io.w6w.uscreen`
 - Auth: Publisher API key, sent as `Authorization: <key>` (no prefix)
 - API host: `https://uscreen.io/publisher_api/v1` — `network.allow` is `uscreen.io`
+- **Triggers** — 10 (poll)
 - Icon: the vendor's own mark, `https://www.uscreen.tv/favicon.svg`, saved byte-for-byte (880 B).
 
 Every path, verb, parameter and body field was checked on 2026-10-06 against the vendor's Swagger
@@ -20,6 +21,13 @@ Every path, verb, parameter and body field was checked on 2026-10-06 against the
 | `new-customer` | poll (5 min) | `customer-list` | each newly created customer |
 | `new-invoice` | poll (5 min) | `invoice-list` | each newly created invoice |
 | `new-or-updated-invoice` | poll (5 min) | `invoice-list` | each invoice that is created or edited (event identity `id:updated_at`) |
+| `new-group` | poll (5 min) | `group-list` | each newly created group (team) subscription |
+| `new-or-updated-group` | poll (5 min) | `group-list` | each group that is created or edited (event identity `id:updated_at`) |
+| `new-group-member` | poll (5 min) | `group-member-list` | each member newly added to the chosen group (`groupId` parameter) |
+| `new-content` | poll (5 min) | `content-list` | each new video, collection or live event |
+| `new-customer-access` | poll (5 min) | `access-list` | each product access newly granted to the chosen customer (`customerId` parameter) |
+| `new-offer` | poll (5 min) | `offer-list` | each offer newly added to the store (snapshot of the whole catalogue) |
+| `new-playlist-item` | poll (5 min) | `playlist-item-list` | each playlist item newly added to the chosen content (`contentId` parameter) |
 
 Both read `GET /customers` / `GET /invoices` with the vendor's documented `from=<RFC 3339>` and
 `date_field=created_at` filter — the spec documents no sort order, so the trigger never relies on
@@ -32,8 +40,10 @@ predates the seed, and treats each new `id:updated_at` as a new event. The `Cust
 no update stamp, so there is no `new-or-updated-customer`. No webhook offering is
 documented in the Publisher API, so there is nothing to subscribe to.
 
-Source: https://uscreen.io/api/publisher.yml (`/customers`, `/invoices` `from`, `date_field`
-parameters, `Invoice.updated_at`; verified 2026-11-09).
+`new-group`, `new-or-updated-group` (`GET /groups`, `from` + `date_field` created_at | updated_at) and `new-group-member` (`GET /groups/{group_id}/members`, same filters; the member record has no `created_at`, so its `joined_on` is the stamp the first-check floor compares) use the same since-filter, paging and floor as the customer and invoice triggers. `new-content` (`GET /contents`) and `new-customer-access` (`GET /customers/{customer_id}/accesses`) send only `from` because the spec documents a `from`/`to` range there without naming the field or offering `date_field`; they stamp records by `created_at` and never emit one created before the first check. `new-offer` and `new-playlist-item` are bounded snapshots (the store's offer catalogue, read page by page; one content item's playlist, which takes no filter or page): each check reads the whole list and emits ids not seen before.
+Not covered: `email-topic-list` (store configuration: at most 10 topics, the spec says), `views-list` and `views-summary-list` (analytics output, not records).
+
+Vendor docs: https://uscreen.io/api/publisher.yml (`/customers`, `/invoices`, `/groups`, `/groups/{group_id}/members`, `/contents`, `/customers/{customer_id}/accesses`, `/offers`, `/contents/{content_id}/playlist_items` parameters, `Invoice.updated_at`, `Group.updated_at`; verified 2026-11-10).
 
 ## Actions (33)
 

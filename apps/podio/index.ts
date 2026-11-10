@@ -102,6 +102,13 @@
  */
 import type { AppDefinition } from "@w6w/types";
 import newTask from "./triggers/new-task.ts";
+import newItem from "./triggers/new-item.ts";
+import newOrUpdatedItem from "./triggers/new-or-updated-item.ts";
+import newComment from "./triggers/new-comment.ts";
+import newApp from "./triggers/new-app.ts";
+import newSpace from "./triggers/new-space.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import newSearchHit from "./triggers/new-search-hit.ts";
 
 import appAuth from "./auth/app-auth.ts";
 import oauth2 from "./auth/oauth2.ts";
@@ -191,5 +198,14 @@ export default {
   ],
   auth: [appAuth, oauth2],
   healthChecks: [service, api, quota],
-  triggers: [newTask],
+  triggers: [
+    newTask,
+    newItem,
+    newOrUpdatedItem,
+    newComment,
+    newApp,
+    newSpace,
+    newOrganization,
+    newSearchHit,
+  ],
 } satisfies AppDefinition;

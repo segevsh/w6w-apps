@@ -6,7 +6,7 @@ manage address books, HTML templates and bank accounts, on the **Lob API**.
 - **Categories** — marketing, developer-tools
 - **Auth methods** — api-key (HTTP Basic: key as username, empty password)
 - **Actions** — 37
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 - **Health checks** — 2 (`service`, ~~`rate-limit`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.lob.com` (the `service` check adds `lob.statuspage.io` to its own hook
   allowlist, never to the app's)
@@ -164,5 +164,11 @@ Use `deno task fmt`, never bare `deno fmt` (the bare form rewrites `assets/icon.
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-address` | poll | `address-list` | Each newly saved address |
+| `new-postcard` | poll | `postcard-list` | Each newly created postcard |
+| `new-letter` | poll | `letter-list` | Each newly created letter |
+| `new-self-mailer` | poll | `self-mailer-list` | Each newly created self-mailer |
+| `new-check` | poll | `check-list` | Each newly created check |
+| `new-template` | poll | `template-list` | Each newly saved template |
+| `new-bank-account` | poll | `bank-account-list` | Each newly added bank account (account number removed) |
 
-Lob documents that the address list is "sorted by creation date, with the most recently created addresses appearing first", and it is polled every five minutes. Vendor API documentation: https://docs.lob.com/#tag/Addresses/operation/addresses_list (verified 2026-11-09).
+Lob documents every one of these lists as "sorted by creation date, with the most recently created appearing first", and each is polled every five minutes; the mailpiece lists also send `sort_by[date_created]=desc` explicitly. Not covered: `template-version-list` (the versions of one template, not something a workflow picks). Vendor API documentation: https://docs.lob.com/ and https://github.com/lob/lob-openapi (verified 2026-11-10).

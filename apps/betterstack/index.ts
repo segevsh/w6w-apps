@@ -58,6 +58,16 @@ import statusPageResourceList from "./actions/status-page-resource-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newIncident from "./triggers/new-incident.ts";
+import newMonitor from "./triggers/new-monitor.ts";
+import newHeartbeat from "./triggers/new-heartbeat.ts";
+import newMonitorGroup from "./triggers/new-monitor-group.ts";
+import newEscalationPolicy from "./triggers/new-escalation-policy.ts";
+import newSeverity from "./triggers/new-severity.ts";
+import newStatusPage from "./triggers/new-status-page.ts";
+import newOnCallCalendar from "./triggers/new-on-call-calendar.ts";
+import newStatusReport from "./triggers/new-status-report.ts";
+import newStatusPageResource from "./triggers/new-status-page-resource.ts";
+import newIncidentComment from "./triggers/new-incident-comment.ts";
 
 export default {
   actions: [
@@ -97,5 +107,17 @@ export default {
   // API tokens are the only method declared.
   auth: [apiToken],
   healthChecks: [service, quota],
-  triggers: [newIncident],
+  triggers: [
+    newIncident,
+    newMonitor,
+    newHeartbeat,
+    newMonitorGroup,
+    newEscalationPolicy,
+    newSeverity,
+    newStatusPage,
+    newOnCallCalendar,
+    newStatusReport,
+    newStatusPageResource,
+    newIncidentComment,
+  ],
 } satisfies AppDefinition;

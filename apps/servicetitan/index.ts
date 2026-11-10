@@ -49,6 +49,17 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
 import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
+import newJob from "./triggers/new-job.ts";
+import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newLead from "./triggers/new-lead.ts";
+import newOrUpdatedLead from "./triggers/new-or-updated-lead.ts";
+import newLocation from "./triggers/new-location.ts";
+import newOrUpdatedLocation from "./triggers/new-or-updated-location.ts";
+import newAppointment from "./triggers/new-appointment.ts";
+import newOrUpdatedAppointment from "./triggers/new-or-updated-appointment.ts";
+import newEmployee from "./triggers/new-employee.ts";
+import newTechnician from "./triggers/new-technician.ts";
+import newBusinessUnit from "./triggers/new-business-unit.ts";
 
 export default {
   actions: [
@@ -72,5 +83,19 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, api, quota],
-  triggers: [newCustomer, newOrUpdatedCustomer],
+  triggers: [
+    newCustomer,
+    newOrUpdatedCustomer,
+    newJob,
+    newOrUpdatedJob,
+    newLead,
+    newOrUpdatedLead,
+    newLocation,
+    newOrUpdatedLocation,
+    newAppointment,
+    newOrUpdatedAppointment,
+    newEmployee,
+    newTechnician,
+    newBusinessUnit,
+  ],
 } satisfies AppDefinition;

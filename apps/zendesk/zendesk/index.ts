@@ -16,6 +16,7 @@
  *
  * Triggers are signed event-subscription webhooks (`lib/triggers.ts`): `onSubscribe` registers
  * the webhook through the Webhooks API and keeps its signing secret in the subscription state.
+ * Named triggers cover tickets, users and organizations; `any-event` takes a list of event types.
  *
  * Deliberately absent: Zendesk's automation/trigger/view admin objects.
  */
@@ -47,6 +48,15 @@ import ticketFieldGetMany from "./actions/ticket-field-get-many.ts";
 import newTicket from "./triggers/new-ticket.ts";
 import ticketStatusChanged from "./triggers/ticket-status-changed.ts";
 import ticketCommentAdded from "./triggers/ticket-comment-added.ts";
+import ticketDeleted from "./triggers/ticket-deleted.ts";
+import ticketPriorityChanged from "./triggers/ticket-priority-changed.ts";
+import ticketAssigneeChanged from "./triggers/ticket-assignee-changed.ts";
+import newUser from "./triggers/new-user.ts";
+import userDeleted from "./triggers/user-deleted.ts";
+import userDetailsChanged from "./triggers/user-details-changed.ts";
+import newOrganization from "./triggers/new-organization.ts";
+import organizationDeleted from "./triggers/organization-deleted.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import account from "./health/account.ts";
@@ -75,7 +85,20 @@ export default {
     // ticket field
     ticketFieldGetMany,
   ],
-  triggers: [newTicket, ticketStatusChanged, ticketCommentAdded],
+  triggers: [
+    newTicket,
+    ticketStatusChanged,
+    ticketCommentAdded,
+    ticketDeleted,
+    ticketPriorityChanged,
+    ticketAssigneeChanged,
+    newUser,
+    userDeleted,
+    userDetailsChanged,
+    newOrganization,
+    organizationDeleted,
+    anyEvent,
+  ],
   auth: [apiToken, oauth2],
   healthChecks: [service, quota, account],
 } satisfies AppDefinition;

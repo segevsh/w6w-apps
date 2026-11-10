@@ -68,6 +68,15 @@ import trackedTimeReportGet from "./actions/tracked-time-report-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newActivity from "./triggers/new-activity.ts";
+import newProject from "./triggers/new-project.ts";
+import newClient from "./triggers/new-client.ts";
+import newLocation from "./triggers/new-location.ts";
+import newGroup from "./triggers/new-group.ts";
+import newMember from "./triggers/new-member.ts";
+import newOrUpdatedMember from "./triggers/new-or-updated-member.ts";
+import newTimeEntry from "./triggers/new-time-entry.ts";
+import newOrUpdatedTimeEntry from "./triggers/new-or-updated-time-entry.ts";
+import newTimeOffRequest from "./triggers/new-time-off-request.ts";
 
 export default {
   actions: [
@@ -108,5 +117,16 @@ export default {
   // API surface — a client_credentials grant is the whole authentication story.
   auth: [clientCredentials],
   healthChecks: [service, quota],
-  triggers: [newActivity],
+  triggers: [
+    newActivity,
+    newProject,
+    newClient,
+    newLocation,
+    newGroup,
+    newMember,
+    newOrUpdatedMember,
+    newTimeEntry,
+    newOrUpdatedTimeEntry,
+    newTimeOffRequest,
+  ],
 } satisfies AppDefinition;

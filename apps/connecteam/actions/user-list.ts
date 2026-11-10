@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { ConnecteamClient, toIdList, toList } from "../lib/client.ts";
-import { paginationParams, userStatusOptions } from "../lib/params.ts";
+import { paginationParams, sortOrderOptions, userStatusOptions } from "../lib/params.ts";
 
 /**
  * `GET /users/v1/users` — list employees, with the filters Connecteam
@@ -20,6 +20,8 @@ interface Input {
   createdAt?: number;
   modifiedAt?: number;
   lastLogin?: number;
+  sort?: string;
+  order?: string;
   limit?: number;
   offset?: number;
 }
@@ -70,6 +72,13 @@ const userList: ActionDefinition<Input> = {
       type: "number",
       hint: "Unix timestamp (seconds).",
     },
+    {
+      key: "sort",
+      label: "Sort key",
+      type: "select",
+      options: [{ value: "created_at", label: "Created at" }],
+    },
+    { key: "order", label: "Sort order", type: "select", options: sortOrderOptions },
     ...paginationParams(500),
   ],
   output: [
@@ -91,6 +100,8 @@ const userList: ActionDefinition<Input> = {
           createdAt: input.createdAt,
           modifiedAt: input.modifiedAt,
           lastLogin: input.lastLogin,
+          sort: input.sort,
+          order: input.order,
           limit: input.limit,
           offset: input.offset,
         },

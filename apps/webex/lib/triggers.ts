@@ -86,23 +86,23 @@ export const MESSAGE_SAMPLE: WebexEvent = {
   data: { id: "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTA", personEmail: "matt@example.com" },
 };
 
-function asObject(v: unknown): Record<string, unknown> | null {
+export function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
     ? v as Record<string, unknown>
     : null;
 }
 
-function str(v: unknown): string | null {
+export function str(v: unknown): string | null {
   return typeof v === "string" && v !== "" ? v : null;
 }
 
 /** The HTTP status in a `WebexClient` error message ("Webex 404 for GET /v1/…"), if any. */
-function statusOf(err: unknown): number | null {
+export function statusOf(err: unknown): number | null {
   const m = /^Webex (\d{3}) /.exec(err instanceof Error ? err.message : "");
   return m ? Number(m[1]) : null;
 }
 
-async function deleteWebhook(client: WebexClient, id: string): Promise<void> {
+export async function deleteWebhook(client: WebexClient, id: string): Promise<void> {
   try {
     await client.request(`/webhooks/${encodeURIComponent(id)}`, { method: "DELETE" });
   } catch (err) {
@@ -112,7 +112,10 @@ async function deleteWebhook(client: WebexClient, id: string): Promise<void> {
   }
 }
 
-async function webhooksPointingAt(client: WebexClient, targetUrl: string): Promise<string[]> {
+export async function webhooksPointingAt(
+  client: WebexClient,
+  targetUrl: string,
+): Promise<string[]> {
   const res = await client.request<{ items?: Array<{ id?: unknown; targetUrl?: unknown }> }>(
     "/webhooks",
     { query: { max: 100 } },
@@ -125,7 +128,10 @@ async function webhooksPointingAt(client: WebexClient, targetUrl: string): Promi
   return ids;
 }
 
-async function fetchMessage(ctx: HookContext, id: string): Promise<Record<string, unknown> | null> {
+export async function fetchMessage(
+  ctx: HookContext,
+  id: string,
+): Promise<Record<string, unknown> | null> {
   try {
     return asObject(
       await new WebexClient(ctx).request(`/messages/${encodeURIComponent(id)}`),
@@ -142,15 +148,16 @@ export interface WebexTriggerSpec {
   key: string;
   title: string;
   description: string;
-  resource: "messages" | "memberships";
-  event: "created";
+  resource: "messages" | "memberships" | "rooms";
+  event: "created" | "updated" | "deleted";
   sample: WebexEvent;
 }
 
 export function webexTrigger(
   spec: WebexTriggerSpec,
 ): TriggerDefinition<TriggerParams, WebexEvent, TriggerState> {
-  const params: Param[] = [{
+  // A rooms delivery has no room filter (Webex documents only `type` / `isLocked` for it).
+  const params: Param[] = spec.resource === "rooms" ? [] : [{
     key: "roomId",
     label: "Room ID",
     type: "string",
@@ -188,7 +195,7 @@ export function webexTrigger(
         personId = str(me?.id);
       }
       const secret = randomSecret();
-      const roomId = params?.roomId?.trim();
+      const roomId = spec.resource === "rooms" ? undefined : params?.roomId?.trim();
       const body: Record<string, unknown> = {
         name: `w6w ${subscriptionId}`,
         targetUrl: callbackUrl,
@@ -232,8 +239,9 @@ export function webexTrigger(
         spec.resource === "messages" && params?.includeOwnMessages !== true &&
         st?.personId && actorId === st.personId
       ) return [];
-      const roomId = str(data.roomId);
-      const wantedRoom = params?.roomId?.trim();
+      // A rooms delivery names the room by `data.id`; the other resources carry `data.roomId`.
+      const roomId = spec.resource === "rooms" ? str(data.id) : str(data.roomId);
+      const wantedRoom = spec.resource === "rooms" ? undefined : params?.roomId?.trim();
       if (wantedRoom && roomId !== wantedRoom) return [];
       return [{
         webhookId: str(payload.id),
@@ -254,7 +262,8 @@ export function webexTrigger(
 
     async parseOutput({ normalized }, ctx): Promise<WebexEvent> {
       const event = normalized as WebexEvent;
-      if (spec.resource !== "messages" || !event.id) return event;
+      // Only a created message can still be read; a deleted one is gone.
+      if (spec.resource !== "messages" || spec.event !== "created" || !event.id) return event;
       const message = await fetchMessage(ctx, event.id);
       return { ...event, message, text: str(message?.text) };
     },

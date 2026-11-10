@@ -5,19 +5,36 @@ Manage Trello boards, lists, cards, checklists, labels and members.
 - **Categories** — project-management, productivity
 - **Auth methods** — api-key
 - **Actions** — 27
-- **Triggers** — 4 (webhook)
+- **Triggers** — 21 (20 webhook, 1 poll)
 - **Egress allowlist** — `api.trello.com`
 - **Website** — https://trello.com
 - **API docs** — https://developer.atlassian.com/cloud/trello/rest/
 
 ## Triggers
 
-| Trigger         | Mechanism | Vendor event                                          | What the run gets                                    |
-| --------------- | --------- | ----------------------------------------------------- | ---------------------------------------------------- |
-| `card-created`  | webhook   | action `createCard`                                   | card, list and board, and who created it             |
-| `card-moved`    | webhook   | action `updateCard` that changes the list             | card, the list it left and the list it entered       |
-| `card-updated`  | webhook   | action `updateCard` that does not change the list     | card and who changed it                              |
-| `comment-added` | webhook   | action `commentCard`                                  | the comment text, the card and the commenter         |
+| Trigger | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `card-created` | webhook | action `createCard` | card, list and board, and who created it |
+| `card-moved` | webhook | action `updateCard` that changes the list | card, the list it left and the list it entered |
+| `card-updated` | webhook | action `updateCard` that does not change the list | card and who changed it |
+| `comment-added` | webhook | action `commentCard` | the comment text, the card and the commenter |
+| `comment-updated` | webhook | action `updateComment` | card, editor and the old and new text (action data) |
+| `card-deleted` | webhook | action `deleteCard` | the deleted card, its list and board, and who deleted it |
+| `card-member-added` | webhook | action `addMemberToCard` | card, who added them and the new member |
+| `list-created` | webhook | action `createList` | list, board and who created it |
+| `list-updated` | webhook | action `updateList` | list, what it was before (action data) and who changed it |
+| `board-updated` | webhook | action `updateBoard` | board, what it was before (action data) and who changed it |
+| `board-member-added` | webhook | action `addMemberToBoard` | board, who added them and the new member |
+| `checklist-added` | webhook | action `addChecklistToCard` | card and the checklist (action data) |
+| `check-item-created` | webhook | action `createCheckItem` | card, checklist and item (action data) |
+| `check-item-state-updated` | webhook | action `updateCheckItemStateOnCard` | card, item and its new state (action data) |
+| `label-added-to-card` | webhook | action `addLabelToCard` | card and the label (action data) |
+| `label-removed-from-card` | webhook | action `removeLabelFromCard` | card and the label (action data) |
+| `label-created` | webhook | action `createLabel` | board and the label (action data) |
+| `label-updated` | webhook | action `updateLabel` | board and the label (action data) |
+| `label-deleted` | webhook | action `deleteLabel` | board and the label (action data) |
+| `any-event` | webhook | the action types you list, or every action | action type, board, list, card, who, and the action data |
+| `new-card-in-list` | poll | `GET /lists/{id}/cards`, compared check to check | each card that newly appears in the chosen list |
 
 **Setup.** Set *Board, list or card ID* (a board ID watches every card on it) and paste *Power-Up
 secret*: the secret of the Trello Power-Up (API key) that owns the connection's token, shown on its
@@ -33,7 +50,30 @@ subscription with no secret. Trello's scheme carries no timestamp, so a captured
 cannot be told from a replay; the callback URL itself is also unguessable. A signed delivery for a
 different webhook ID is refused too.
 
-Docs: <https://developer.atlassian.com/cloud/trello/guides/rest-api/webhooks/>, verified 2026-11-09.
+**Any event.** `any-event` takes an optional *Action types* list (comma-separated Trello action
+types such as `createList,updateBoard,addMemberToBoard`; blank delivers every action on the
+watched model). Trello cannot filter at registration, so the list is applied to each verified
+delivery. A board-level webhook sees the board's lists, cards, labels, checklists and members; a
+board is only announced as created to a webhook on the member or organization that owns it
+(`createBoard`), so use *Any event* with that member's ID for that. Lists are archived, not
+deleted, so `list-updated` carries an archive. The action types Trello documents:
+<https://developer.atlassian.com/cloud/trello/guides/rest-api/action-types/>.
+
+Events other than the card ones carry the action's own `data` (the label, checklist, check item,
+list or board Trello sent, and `old` values for edits) and, for member additions, the member the
+action is about.
+
+**New Card In List** is a poll that needs no Power-Up secret: it compares the open cards of one
+list from check to check. Trello allows at most 5000 open cards per board
+(<https://developer.atlassian.com/cloud/trello/guides/rest-api/limits/>), so a list always fits
+one response. A card moved into the list counts as new in it.
+
+**Not covered.** `list-get` returns one list by ID; changes to lists are delivered by
+`list-created` and `list-updated`.
+
+Docs, verified 2026-11-10: <https://developer.atlassian.com/cloud/trello/guides/rest-api/webhooks/>
+(signature, HEAD probe), <https://developer.atlassian.com/cloud/trello/guides/rest-api/action-types/>,
+<https://developer.atlassian.com/cloud/trello/guides/rest-api/limits/>.
 
 ## Health check
 

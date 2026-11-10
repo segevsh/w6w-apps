@@ -40,6 +40,16 @@ import groupList from "./actions/group-list.ts";
 import serviceTokenList from "./actions/service-token-list.ts";
 import auditLogList from "./actions/audit-log-list.ts";
 import newRun from "./triggers/new-run.ts";
+import newProject from "./triggers/new-project.ts";
+import newOrUpdatedProject from "./triggers/new-or-updated-project.ts";
+import newJob from "./triggers/new-job.ts";
+import newOrUpdatedJob from "./triggers/new-or-updated-job.ts";
+import newEnvironment from "./triggers/new-environment.ts";
+import newEnvironmentVariable from "./triggers/new-environment-variable.ts";
+import newConnection from "./triggers/new-connection.ts";
+import newGroup from "./triggers/new-group.ts";
+import newServiceToken from "./triggers/new-service-token.ts";
+import newUser from "./triggers/new-user.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -68,7 +78,19 @@ const app: AppDefinition = {
     auditLogList,
   ],
   auth: [token],
-  triggers: [newRun],
+  triggers: [
+    newRun,
+    newProject,
+    newOrUpdatedProject,
+    newJob,
+    newOrUpdatedJob,
+    newEnvironment,
+    newEnvironmentVariable,
+    newConnection,
+    newGroup,
+    newServiceToken,
+    newUser,
+  ],
   healthChecks: [service, account, quota],
 };
 

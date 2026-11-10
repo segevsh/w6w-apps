@@ -11,6 +11,7 @@ through Bob's public API. Verified against the reference at https://apidocs.hibo
   approved marketplace partners only and is not offered.
 - **Liveness:** no deprecation or sunset notice applies to any endpoint used here. The reference
   marks only the legacy `GET /payroll/history` as planned for deprecation; it is not used.
+- **Triggers** — 7 (poll)
 
 ## Permissions are part of the contract
 
@@ -78,4 +79,16 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 
 ## Triggers
 
-`new-task` snapshots Bob's documented 5,000-open-task response every five minutes and emits added tasks after its baseline poll. Source: https://apidocs.hibob.com/reference (verified 2026-11-09). The 5,000-row bound is this trigger's own snapshot cap (not a figure Bob documents); a response above it makes the check fail with a cap error instead of emitting partial results.
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-task` — New Task | poll | `tasks-list` | Each open task added (bounded 5,000-task response) |
+| `new-employee` — New Employee | poll | `people-search` | Each employee added to Bob |
+| `new-or-updated-employee` — New or Updated Employee | poll | `people-search` | Each employee that is new or whose returned fields changed |
+| `new-work-history-entry` — New Work History Entry | poll | `work-history-list` | Each work-table entry added for the chosen employee |
+| `new-employment-history-entry` — New Employment History Entry | poll | `employment-history-list` | Each employment-table entry added for the chosen employee |
+| `new-lifecycle-history-entry` — New Lifecycle History Entry | poll | `lifecycle-history-list` | Each lifecycle-table entry added for the chosen employee |
+| `new-attendance-entry` — New Attendance Entry | poll | `attendance-entries-search` | Each clock-in/out entry in the last `lookbackDays` (max 33) for the chosen employee |
+
+`new-task` snapshots Bob's open-task response every five minutes and emits added tasks after its baseline poll; the 5,000-row bound is this trigger's own snapshot cap (not a figure Bob documents), and a response above it fails the check with a cap error. The other triggers diff the same way (shared `lib/triggers.ts` over the `pollSnapshot` kit): `POST /people/search` returns every matching employee in one response (https://apidocs.hibob.com/reference/post_people-search), the employee tables `GET /people/{id}/work|employment|lifecycle` return a `values` array whose entries each carry an `id` (https://apidocs.hibob.com/reference/get_people-id-work), and `POST /attendance/entries/search` is limited to a 33-day `clockInDate` window, follows `response_metadata.next_cursor`, and identifies an entry by `fields["/attendanceEntry/id"].value` (https://apidocs.hibob.com/reference/post_attendance-entries-search). None of these documents a created/updated cursor, so the first check records the collection and emits nothing; `new-or-updated-employee` also fires when a returned field changes. Per-employee triggers need the Bob employee id. `profiles-list` (same employees, public section) is covered by `new-employee`; `tasks-person-list` by `new-task`. Verified 2026-11-10.
+
+Not covered: `fields-list`, `named-lists-list`, `onboarding-wizards-list`, `reports-list` and `timeoff-policy-types-list` are reference/admin definitions, not records.

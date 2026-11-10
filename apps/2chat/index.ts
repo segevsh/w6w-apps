@@ -33,6 +33,13 @@ import wabaConversationWindowGet from "./actions/waba-conversation-window-get.ts
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newMessage from "./triggers/new-message.ts";
+import newConversation from "./triggers/new-conversation.ts";
+import newOrUpdatedConversation from "./triggers/new-or-updated-conversation.ts";
+import newGroupMessage from "./triggers/new-group-message.ts";
+import newGroup from "./triggers/new-group.ts";
+import newNumber from "./triggers/new-number.ts";
+import newUser from "./triggers/new-user.ts";
+import newWabaTemplate from "./triggers/new-waba-template.ts";
 
 export default {
   actions: [
@@ -67,5 +74,14 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newMessage],
+  triggers: [
+    newMessage,
+    newConversation,
+    newOrUpdatedConversation,
+    newGroupMessage,
+    newGroup,
+    newNumber,
+    newUser,
+    newWabaTemplate,
+  ],
 } satisfies AppDefinition;

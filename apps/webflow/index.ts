@@ -19,6 +19,20 @@ import formSubmission from "./triggers/form-submission.ts";
 import collectionItemCreated from "./triggers/collection-item-created.ts";
 import collectionItemChanged from "./triggers/collection-item-changed.ts";
 import newOrder from "./triggers/new-order.ts";
+import anyEvent from "./triggers/any-event.ts";
+import collectionItemDeleted from "./triggers/collection-item-deleted.ts";
+import collectionItemPublished from "./triggers/collection-item-published.ts";
+import collectionItemUnpublished from "./triggers/collection-item-unpublished.ts";
+import commentCreated from "./triggers/comment-created.ts";
+import inventoryChanged from "./triggers/inventory-changed.ts";
+import newCollection from "./triggers/new-collection.ts";
+import newProduct from "./triggers/new-product.ts";
+import newSite from "./triggers/new-site.ts";
+import orderChanged from "./triggers/order-changed.ts";
+import pageCreated from "./triggers/page-created.ts";
+import pageDeleted from "./triggers/page-deleted.ts";
+import pageMetadataUpdated from "./triggers/page-metadata-updated.ts";
+import sitePublish from "./triggers/site-publish.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -40,6 +54,25 @@ export default {
     updateOrder,
   ],
   auth: [apiToken, oauth2],
-  triggers: [formSubmission, collectionItemCreated, collectionItemChanged, newOrder],
+  triggers: [
+    formSubmission,
+    collectionItemCreated,
+    collectionItemChanged,
+    newOrder,
+    collectionItemDeleted,
+    collectionItemPublished,
+    collectionItemUnpublished,
+    orderChanged,
+    inventoryChanged,
+    sitePublish,
+    pageCreated,
+    pageMetadataUpdated,
+    pageDeleted,
+    commentCreated,
+    anyEvent,
+    newCollection,
+    newSite,
+    newProduct,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

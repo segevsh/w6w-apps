@@ -6,7 +6,7 @@ Transactions on the **Teachable Public API v1**.
 - **Categories** — commerce, crm
 - **Auth methods** — api-key
 - **Actions** — 21
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `developers.teachable.com` (the `service` check adds
   `www.teachablestatus.com` to its own hook allowlist, never to the app's)
@@ -111,5 +111,13 @@ deno task validate       # manifest + behavior audit
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-transaction` — New Transaction | Poll (since filter) | `transaction-list` | Each new sales transaction in the school |
+| `new-course` — New Course | Poll (snapshot) | `course-list` | Each course newly added to the school |
+| `new-pricing-plan` — New Pricing Plan | Poll (snapshot) | `pricing-plan-list` | Each pricing plan newly added to the school |
+| `new-enrollment` — New Enrollment | Poll (newest first) | `course-enrollments-list` | Each student newly enrolled in the chosen course |
+| `new-quiz` — New Quiz | Poll (snapshot) | `quiz-list` | Each quiz newly added to the chosen lecture |
 
 Polled through the `transaction-list` action with `start` set to the last check minus a two-minute overlap, paging with `page`/`per` (a window longer than three pages resumes on the next check), deduped by transaction id. The first check reads nothing and emits nothing; transactions from before it are never emitted. New transactions can take up to two minutes to appear after the sale. Source: `start` — "The beginning of the time period to return results for (exclusive), in ISO8601 format" ([List transactions](https://docs.teachable.com/reference/listtransactions), verified 2026-11-09). The users list was not used: it has no sort and no created-since filter.
+
+`new-course` and `new-pricing-plan` read every page of the collection (`page`/`per`, `meta.number_of_pages`; a school's catalogue is small) and diff the ids; `new-enrollment` asks `course-enrollments-list` for `sort_direction=desc` ("Enrollments are sorted by the 'enrolled_at' datetime") on the course you choose; `new-quiz` diffs the quiz ids of the course and lecture you choose. The first check of each snapshot trigger reads and seeds, emitting nothing. Sources: [List courses](https://docs.teachable.com/reference/listcourses), [List pricing plans](https://docs.teachable.com/reference/listpricingplans), [List course enrollments](https://docs.teachable.com/reference/showcourseenrollments), [List quizzes](https://docs.teachable.com/reference/listquizzes), verified 2026-11-10.
+
+Not covered: `user-list` (no sort and no created-since filter, `search_after` is documented only past 10,000 users), `webhook-list` and `webhook-events-list` (webhook configuration and delivery logs are admin output; webhooks are edited in the school admin).

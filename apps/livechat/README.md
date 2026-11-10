@@ -5,7 +5,7 @@ transfer or close it, tag its threads, search chat history, look up and update c
 the license's agents, groups, tags and channels. Built on the Agent Chat Web API and the
 Configuration API, both v3.6 (`https://api.livechatinc.com/v3.6`).
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 4 (poll)
 
 App id `io.w6w.livechat` · categories `support`, `communication` · egress `api.livechatinc.com`
 (every action) and `status.livechat.com` (the `service` health check only).
@@ -106,7 +106,12 @@ Left out because the app is deliberately a focused slice, not because the API la
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-chat-thread` | poll | `list-archives` | Each chat thread newly started (new chat, or a new thread of a returning customer) |
+| `new-agent` | poll | `list-agents` | Each agent newly added to the license (the whole list is one unpaginated response; ids are diffed) |
+| `new-group` | poll | `list-groups` | Each group newly created (one unpaginated response; ids are diffed) |
+| `new-tag` | poll | `list-tags` | Each tag newly created in the chosen groups (`groupIds`, required; names are diffed) |
 
 `list_archives` takes `filters.from` (RFC 3339 with microseconds) and `sort_order` (`desc` = newest first, documented). The trigger asks from the previous check minus a 2-minute overlap, newest first, and dedupes by `chat id:thread id`; the vendor does not state whether `from` filters by thread start or last activity, so a thread with fresh activity may surface once as a new thread. Up to 5 pages of 100 are read per check by following `next_page_id`; a longer window is resumed from the saved `next_page_id` on the next check and the cursor advances only after the last page.
 
-Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://platform.text.com/docs/messaging/agent-chat-api (verified 2026-11-09).
+Not covered: `list-chats` and `list-threads` return the chats and threads that `new-chat-thread` already delivers (`list_archives` carries both); `list-channels` (the fixed channel kinds) and `list-routing-statuses` (each agent's current routing state, not a record) are reference/state data.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://platform.text.com/docs/messaging/agent-chat-api and https://platform.text.com/docs/management/configuration-api (verified 2026-11-10).

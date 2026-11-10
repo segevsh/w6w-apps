@@ -25,6 +25,10 @@ import driveUpdate from "./actions/drive-update.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newFile from "./triggers/new-file.ts";
+import newOrUpdatedFile from "./triggers/new-or-updated-file.ts";
+import newFolder from "./triggers/new-folder.ts";
+import newOrUpdatedFolder from "./triggers/new-or-updated-folder.ts";
+import newSharedDrive from "./triggers/new-shared-drive.ts";
 
 export default {
   actions: [
@@ -51,5 +55,5 @@ export default {
   ],
   auth: [oauth2, serviceAccount],
   healthChecks: [service, quota],
-  triggers: [newFile],
+  triggers: [newFile, newOrUpdatedFile, newFolder, newOrUpdatedFolder, newSharedDrive],
 } satisfies AppDefinition;

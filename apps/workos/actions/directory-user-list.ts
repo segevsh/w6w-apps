@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /directory_users` — who the customer's directory says works there.
@@ -46,6 +46,7 @@ const action: ActionDefinition = {
       default: "",
       hint: "Only members of one directory group.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -70,6 +71,7 @@ const action: ActionDefinition = {
         query: compact({
           directory: directoryId,
           organization_id: organizationId,
+          order: p.order,
           group: p.groupId,
         }) as Record<string, string>,
       },

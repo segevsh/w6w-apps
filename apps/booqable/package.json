@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/booqable",
-  "version": "0.2.0",
-  "description": "Manage Booqable rental orders, customers, products and stock, including polling new customers.",
+  "version": "0.3.0",
+  "description": "Manage Booqable rental orders, customers, products and stock, including polling for new and updated customers, orders, products, product groups, stock items and plannings.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -34,17 +34,22 @@ function bodyOf(r: SignableRequest): unknown {
   return JSON.parse(typeof b === "string" ? b : new TextDecoder().decode(b as Uint8Array));
 }
 
-test("runtime: every trigger loads as a webhook with the full hook set", async () => {
+test("runtime: every trigger loads as a webhook with the full hook set, or as a poll", async () => {
   const app = await loadApp(APP_DIR);
-  assertEquals(app.triggers.size, WEBHOOK_ACTIONS.length + 1);
-  for (const [key, t] of app.triggers) {
-    assertEquals(t.trigger.type, "webhook", key);
+  const all = [...app.triggers];
+  const webhooks = all.filter(([, t]) => t.trigger.type === "webhook");
+  const polls = all.filter(([, t]) => t.trigger.type === "poll");
+  assertEquals(webhooks.length, WEBHOOK_ACTIONS.length + 1);
+  assertEquals(polls.length, 11);
+  assertEquals(all.length, webhooks.length + polls.length);
+  for (const [key, t] of webhooks) {
     assertEquals(
       [...t.hooks].sort(),
       ["handleIngest", "onSubscribe", "onUnsubscribe", "parseOutput"],
       key,
     );
   }
+  for (const [key, t] of polls) assertEquals([...t.hooks], ["poll"], key);
 });
 
 test("runtime: register, receive, enrich and destroy through the sandbox", async () => {

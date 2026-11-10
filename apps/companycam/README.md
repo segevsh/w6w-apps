@@ -2,18 +2,44 @@
 
 ## Triggers
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 20 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-checklist` | poll | `checklist-list` | Each newly created checklist |
+| `new-checklist` | poll | `checklist-list` | Each newly created checklist (`project-checklist-list` returns the same records per project) |
 | `new-or-updated-checklist` | poll | `checklist-list` | Each checklist created or edited since the last check (id + `updated_at`) |
+| `new-project` | poll | `project-list` | Each project created since the last check (`modified_since` window) |
+| `new-or-updated-project` | poll | `project-list` | Each project created or modified since the last check (id + `updated_at`) |
+| `new-photo` | poll | `photo-list` | Each photo uploaded since the last check (`project-photo-list` returns the same records per project) |
+| `new-video` | poll | `video-list` | Each video uploaded since the last check (`project-video-list` returns the same records per project) |
+| `new-user` | poll | `user-list` | Each user newly added to the company |
+| `new-or-updated-user` | poll | `user-list` | Each user added or changed |
+| `new-tag` | poll | `tag-list` | Each newly created tag |
+| `new-or-updated-tag` | poll | `tag-list` | Each tag created or renamed |
+| `new-group` | poll | `group-list` | Each newly created group |
+| `new-or-updated-group` | poll | `group-list` | Each group created or changed |
+| `new-project-comment` | poll | `project-comment-list` | Each comment newly added to the project you pick |
+| `new-project-document` | poll | `project-document-list` | Each document newly added to the project you pick |
+| `new-project-label` | poll | `project-label-list` | Each label newly applied to the project you pick |
+| `new-project-assigned-user` | poll | `project-assigned-user-list` | Each user newly assigned to the project you pick |
+| `new-project-collaborator` | poll | `project-collaborator-list` | Each collaborator newly added to the project you pick |
+| `new-project-invitation` | poll | `project-invitation-list` | Each invitation newly sent for the project you pick |
+| `new-photo-comment` | poll | `photo-comment-list` | Each comment newly added to the photo you pick |
+| `new-photo-tag` | poll | `photo-tag-list` | Each tag newly applied to the photo you pick |
 
-`checklist-list` returns the company's checklists newest-updated first, so page 1 (50 rows) holds anything created or edited since the last check.
+How each one polls:
+
+- `new-checklist` / `new-or-updated-checklist` read page 1 of `checklist-list`, which returns the company's checklists newest-updated first.
+- `new-project` / `new-or-updated-project` call `project-list` with `modified_since` set to the previous check minus 10 minutes (the vendor documents it as "modified on or after") and de-duplicate by id. `new-project` keeps only projects created after the trigger's first check.
+- `new-photo` / `new-video` call `photo-list` / `video-list` with `start_date` (a CAPTURE-time filter: "captured on or after") set to the previous check minus 2 hours, and keep only records uploaded (`created_at`) after the first check. A photo or video uploaded more than 2 hours after it was captured (a long offline spell) is missed. `photo-list` pages by the `X-Next-Cursor` header, `video-list` by page number.
+- The user, tag, group and per-project / per-photo triggers read the whole (small, bounded) list on every check, 100 rows per page, and emit ids that were not there before; the `new-or-updated-*` ones also emit a row whose content changed. A list past 50 pages (5,000 rows) fails the check with a clear error instead of looping.
+- Every window drains across checks when it holds more than 5 pages, so no record is skipped or emitted twice.
+
+Not covered (no trigger, by design): `checklist-template-list` (checklist templates are reference data), `webhook-list` (webhook configuration; its rows are the webhooks of the account, not a record feed).
 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Vendor reference: <https://docs.companycam.com/reference/listchecklists> (verified 2026-11-09).
+Vendor reference: <https://docs.companycam.com/reference/listchecklists>, <https://docs.companycam.com/reference/listprojects>, <https://docs.companycam.com/reference/listphotos>, <https://docs.companycam.com/reference/listvideos>, and the OpenAPI document <https://github.com/CompanyCam/openapi-spec/blob/main/openapi.yaml> (verified 2026-11-10).
 
 ## Read this first: the API this app targets has an announced end date
 
@@ -316,10 +342,10 @@ a photo went away.
 - **Cursor pagination on the video endpoints.** Claimed in prose, absent from the parameter list and
   from the declared response headers. Sending an undeclared cursor is exactly how a workflow ends up
   re-reading page one forever.
-- **Triggers.** CompanyCam's webhooks would make a good `TriggerDefinition` (subscribe on
-  `onSubscribe`, verify `X-CompanyCam-Signature` on ingest), but triggers are out of scope for this
-  pack's apps and are not added speculatively. All five webhook management actions are here, so a
-  workflow can still register and maintain a subscription against an endpoint of its own.
+- **Webhook triggers.** CompanyCam's webhooks would make a good `TriggerDefinition` (subscribe on
+  `onSubscribe`, verify `X-CompanyCam-Signature` on ingest), but only poll triggers ship here (see
+  Triggers). All five webhook management actions are here, so a workflow can still register and
+  maintain a subscription against an endpoint of its own.
 - **Anything from the successor API.** See the top of this file: its reference is behind a login, so
   no path, field or base URL could be confirmed.
 - **Downloading documents or photos.** `Document.url` and photo `uris` point at

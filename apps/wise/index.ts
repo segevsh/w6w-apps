@@ -80,6 +80,15 @@ import transferStateChangedTrigger from "./triggers/transfer-state-changed.ts";
 import transferPayoutFailedTrigger from "./triggers/transfer-payout-failed.ts";
 import balanceUpdatedTrigger from "./triggers/balance-updated.ts";
 import profileStateChangedTrigger from "./triggers/profile-state-changed.ts";
+import transferActiveCasesTrigger from "./triggers/transfer-active-cases.ts";
+import transferRefundedTrigger from "./triggers/transfer-refunded.ts";
+import balanceCreditedTrigger from "./triggers/balance-credited.ts";
+import recipientChangedTrigger from "./triggers/recipient-changed.ts";
+import anyEventTrigger from "./triggers/any-event.ts";
+import newTransferTrigger from "./triggers/new-transfer.ts";
+import newBalanceTrigger from "./triggers/new-balance.ts";
+import newProfileTrigger from "./triggers/new-profile.ts";
+import newRecipientTrigger from "./triggers/new-recipient.ts";
 
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
@@ -118,6 +127,15 @@ export default {
     transferPayoutFailedTrigger,
     balanceUpdatedTrigger,
     profileStateChangedTrigger,
+    transferActiveCasesTrigger,
+    transferRefundedTrigger,
+    balanceCreditedTrigger,
+    recipientChangedTrigger,
+    anyEventTrigger,
+    newTransferTrigger,
+    newBalanceTrigger,
+    newProfileTrigger,
+    newRecipientTrigger,
   ],
   auth: [apiToken],
   healthChecks: [service, requestRate],

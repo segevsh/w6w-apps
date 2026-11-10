@@ -63,9 +63,17 @@ function ingest(
 
 const good = (body = BODY) => ({ "x-webhook-signature": jws(body) });
 
-test("app: three webhook triggers, each with output and sample", () => {
-  assertEquals(app.triggers.map((t) => t.key), ["deploy", "deploy-succeeded", "deploy-failed"]);
-  for (const t of app.triggers) {
+test("app: the signed deploy webhook triggers each carry output and sample", () => {
+  assertEquals(app.triggers.map((t) => t.key), [
+    "deploy",
+    "deploy-succeeded",
+    "deploy-failed",
+    "deploy-started",
+    "submission-created",
+    "new-site",
+    "new-form",
+  ]);
+  for (const t of app.triggers.filter((t) => t.key.startsWith("deploy"))) {
     assert(t.output!.length > 0, `${t.key} output`);
     assert(t.sample !== undefined, `${t.key} sample`);
     assert(typeof t.onSubscribe === "function" && typeof t.onUnsubscribe === "function");

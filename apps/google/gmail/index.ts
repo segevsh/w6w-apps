@@ -35,6 +35,9 @@ import trashThread from "./actions/trash-thread.ts";
 import untrashThread from "./actions/untrash-thread.ts";
 import replyThread from "./actions/reply-thread.ts";
 import newEmail from "./triggers/new-email.ts";
+import newLabel from "./triggers/new-label.ts";
+import newDraft from "./triggers/new-draft.ts";
+import newOrUpdatedThread from "./triggers/new-or-updated-thread.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -67,6 +70,6 @@ export default {
     replyThread,
   ],
   auth: [oauth2, serviceAccount],
-  triggers: [newEmail],
+  triggers: [newEmail, newLabel, newDraft, newOrUpdatedThread],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

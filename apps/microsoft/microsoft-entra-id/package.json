@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/microsoft-entra-id",
-  "version": "0.2.0",
-  "description": "Manage Microsoft Entra ID directory objects and trigger workflows on newly deleted items.",
+  "version": "0.3.0",
+  "description": "Manage Microsoft Entra ID directory objects and trigger workflows on new users, groups, applications, memberships, role changes and deleted items.",
   "license": "MIT",
   "author": {
     "name": "w6w"

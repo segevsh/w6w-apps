@@ -33,6 +33,11 @@ import quota from "./health/quota.ts";
 import emailVerifierBulkCompleted from "./triggers/email-verifier-bulk-completed.ts";
 import emailFinderBulkCompleted from "./triggers/email-finder-bulk-completed.ts";
 import formGuardEmailValidated from "./triggers/form-guard-email-validated.ts";
+import emailVerifierInstantCompleted from "./triggers/email-verifier-instant-completed.ts";
+import emailFinderInstantCompleted from "./triggers/email-finder-instant-completed.ts";
+import formGuardPhoneValidated from "./triggers/form-guard-phone-validated.ts";
+import formGuardNameValidated from "./triggers/form-guard-name-validated.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 /**
  * Clearout — email verification, email finder, reverse lookup and domain utilities.
@@ -77,7 +82,16 @@ const app: AppDefinition = {
     verifyEmail,
   ],
   auth: [apiKey],
-  triggers: [emailVerifierBulkCompleted, emailFinderBulkCompleted, formGuardEmailValidated],
+  triggers: [
+    emailVerifierBulkCompleted,
+    emailFinderBulkCompleted,
+    formGuardEmailValidated,
+    emailVerifierInstantCompleted,
+    emailFinderInstantCompleted,
+    formGuardPhoneValidated,
+    formGuardNameValidated,
+    anyEvent,
+  ],
   healthChecks: [service, api, quota],
 };
 

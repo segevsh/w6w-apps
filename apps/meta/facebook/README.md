@@ -6,7 +6,7 @@ insights, and read-only ad-account campaign listing.
 - **Categories** — social-media, marketing
 - **Auth methods** — oauth2, page-token
 - **Actions** — 14
-- **Triggers** — 2 (webhook)
+- **Triggers** — 12 (10 webhook, 2 poll)
 - **Egress allowlist** — `graph.facebook.com`
 - **Website** — https://developers.facebook.com/docs/pages/
 - **API docs** — https://developers.facebook.com/docs/graph-api/
@@ -137,6 +137,16 @@ failing for everyone at once.
 |---|---|---|---|
 | `page-feed` — Page Feed Activity | webhook (manual, signed) | Page `feed` field: post, photo, video, comment or reaction added, edited, removed | item, verb, post / comment / parent IDs, sender, message, raw change |
 | `new-comment` — New Comment | webhook (manual, signed) | Page `feed` field, `item=comment` and `verb=add` | the comment ID and text, its post and author |
+| `new-post` — New Post | webhook (manual, signed) | Page `feed` field, `item` status/post/share/link, `verb=add` | the post ID, text and sender |
+| `post-edited` — Post Edited | webhook (manual, signed) | Page `feed` field, post items, `verb` edit/edited | the post ID and new text |
+| `post-removed` — Post Removed | webhook (manual, signed) | Page `feed` field, post items, `verb` remove/delete | the post ID |
+| `comment-edited` — Comment Edited | webhook (manual, signed) | Page `feed` field, `item=comment`, `verb` edit/edited | the comment ID, its post and new text |
+| `comment-removed` — Comment Removed | webhook (manual, signed) | Page `feed` field, `item=comment`, `verb` remove/delete | the comment ID and its post |
+| `new-photo` — New Photo | webhook (manual, signed) | Page `feed` field, `item` photo/picture, `verb=add` | the photo's post ID and sender |
+| `new-video` — New Video | webhook (manual, signed) | Page `feed` field, `item=video`, `verb=add` | the video's post ID and sender |
+| `any-event` — Any Event | webhook (manual, signed) | the Page webhook fields you list in Fields (`feed`, `mention`, `ratings`, `live_videos`, `videos`, `group_feed`; empty = all) | field, item, verb, IDs, sender, message, raw change |
+| `new-page` — New Page | poll (5 min) | `GET /me/accounts` (`list-pages`), snapshot of ids | id, name, category, your tasks (the Page's access token is never passed on) |
+| `new-ad-campaign` — New Ad Campaign | poll (5 min), needs `adAccountId` | `GET /{ad-account-id}/campaigns` (`list-ad-campaigns`), snapshot of ids | the campaign |
 
 The subscription is made by hand in the Meta app dashboard (a manual webhook), chosen as the default
 receiver. Meta does offer `/{app-id}/subscriptions` (needs an app token, not this connection's token) and
@@ -156,5 +166,15 @@ a missing raw body, or an App Secret / Verify Token that was never configured re
 host records one failed call and starts no run. The signed body carries only a send time (`entry[].time`), and Meta retries for
 hours to days, so no replay window can be enforced; Meta retries unacknowledged deliveries, so a workflow may see an event twice.
 
-Docs (verified 2026-11-09): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
+Docs (verified 2026-11-10): https://developers.facebook.com/docs/graph-api/webhooks/getting-started ·
+https://developers.facebook.com/docs/graph-api/webhooks/reference/page/ (Page fields, `item` and `verb` values) ·
+https://developers.facebook.com/docs/graph-api/results (paging) ·
+https://developers.facebook.com/docs/graph-api/reference/user/accounts/ ·
+https://developers.facebook.com/docs/marketing-api/reference/ad-account/campaigns/ ·
 https://developers.facebook.com/docs/graph-api/webhooks/getting-started/webhooks-for-pages
+
+Subscribe the Page fields a trigger needs (`feed` for the named triggers; add `mention`, `ratings`,
+`live_videos` or `videos` for Any Event). Not covered as their own triggers: `list-posts`,
+`list-photos`, `list-videos` and `list-comments` (their records arrive through `new-post`, `new-photo`,
+`new-video` and `new-comment`; the Graph API documents no created-after filter or sort for the photo and
+video edges, so they cannot be polled safely).

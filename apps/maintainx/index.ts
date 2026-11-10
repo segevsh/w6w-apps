@@ -32,6 +32,16 @@ import workorderUpdate from "./actions/workorder-update.ts";
 
 import newWorkOrder from "./triggers/new-work-order.ts";
 import newOrUpdatedWorkOrder from "./triggers/new-or-updated-work-order.ts";
+import newAsset from "./triggers/new-asset.ts";
+import newOrUpdatedAsset from "./triggers/new-or-updated-asset.ts";
+import newPart from "./triggers/new-part.ts";
+import newOrUpdatedPart from "./triggers/new-or-updated-part.ts";
+import newLocation from "./triggers/new-location.ts";
+import newMeter from "./triggers/new-meter.ts";
+import newTeam from "./triggers/new-team.ts";
+import newUser from "./triggers/new-user.ts";
+import newVendor from "./triggers/new-vendor.ts";
+import newWorkOrderComment from "./triggers/new-work-order-comment.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -62,5 +72,18 @@ export default {
   // API key only: MaintainX publishes no OAuth surface for third parties.
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newWorkOrder, newOrUpdatedWorkOrder],
+  triggers: [
+    newWorkOrder,
+    newOrUpdatedWorkOrder,
+    newAsset,
+    newOrUpdatedAsset,
+    newPart,
+    newOrUpdatedPart,
+    newLocation,
+    newMeter,
+    newTeam,
+    newUser,
+    newVendor,
+    newWorkOrderComment,
+  ],
 } satisfies AppDefinition;

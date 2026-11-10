@@ -7,7 +7,7 @@ agent platform.
 - **Categories** — ai, communication
 - **Auth methods** — api-key (Bearer, plus a region field)
 - **Actions** — 26
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 - **Health checks** — `service`, ~~`quota`~~ + the derived `auth:api-key`
 - **Egress allowlist** — `api.synthflow.ai`, `api.us.synthflow.ai`, `api.eu.synthflow.ai` (the
   `service` check adds `status.synthflow.ai` to its own hook allowlist only)
@@ -82,5 +82,14 @@ surface and can be added in a follow-up.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-call` — New Call | Poll (since filter) | `call-list` | Each new call handled by the chosen agent |
+| `new-agent` — New Agent | Poll (snapshot) | `assistant-list` | Each agent newly created in the workspace |
+| `new-batch-call` — New Batch Call | Poll (snapshot) | `batch-call-list` | Each batch call newly created |
+| `new-batch-call-recipient` — New Batch Call Recipient | Poll (snapshot) | `batch-call-list-recipients` | Each recipient newly added to the selected batch (`batch_call_id` param) |
+| `new-knowledge-base` — New Knowledge Base | Poll (snapshot) | `knowledge-base-list` | Each knowledge base newly created |
+| `new-phone-number` — New Phone Number | Poll (snapshot) | `phone-number-list` | Each phone number newly added to the selected workspace (`workspace` param) |
+
+The five snapshot triggers read the whole list and emit added rows only. Synthflow's OpenAPI documents `limit`/`offset` on `GET /assistants/`, `/calls/batch`, `/calls/batch/{id}/tasks`, `/knowledge_base` and `/numbers` and no sort or filter on any of them ([OpenAPI](https://docs.synthflow.ai/openapi.json), verified 2026-11-10), so each check reads up to 10 pages of 100 and follows the vendor's `total_records`; a list larger than 1000 rows is refused with an error rather than truncated. An edited row (a batch changing status, a recipient being dispatched) is not an event.
+
+Not triggers: `contact-list` -- `GET /contacts` documents only a `search` (phone number) query parameter, so the response's `page_number` / `page_size` cannot be advanced and a full contact feed cannot be read; `voice-list` -- the catalogue of voices available to every agent (reference data).
 
 Polled through the `call-list` action with `from_date` set to the last check minus a two-minute overlap, paging with `limit`/`offset` (a window longer than three pages resumes on the next check), deduped by `call_id`. The first check reads nothing and emits nothing; calls that started before it are never emitted. Source: `GET /calls` takes `from_date` ("Begin timestamp (milliseconds since epoch) of the call") and `offset` ([List calls](https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls), verified 2026-11-09).

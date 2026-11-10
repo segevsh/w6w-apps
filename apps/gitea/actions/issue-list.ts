@@ -52,6 +52,13 @@ const action: ActionDefinition = {
       hint: "Comma-separated label NAMES — unlike issue creation, which takes ids.",
     },
     { key: "q", label: "Search", type: "string", default: "", hint: "Matches title and body." },
+    {
+      key: "since",
+      label: "Updated since",
+      type: "string",
+      default: "",
+      hint: "RFC 3339 timestamp; only issues updated after it.",
+    },
     ...LIST_PARAMS,
   ],
 
@@ -73,6 +80,7 @@ const action: ActionDefinition = {
           state: String(p.state ?? "open"),
           labels: csv(p.labels)?.join(","),
           q: (p.q as string) || undefined,
+          since: (p.since as string) || undefined,
         },
       },
       returnAll ? Infinity : limit,

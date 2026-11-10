@@ -1,0 +1,38 @@
+import { webhookTrigger } from "../lib/triggers.ts";
+
+export default webhookTrigger({
+  key: "sms-recipient-opt-out",
+  title: "SMS Recipient Opt-Out",
+  description: "The run gets each recipient who replied STOP to opt out of SMS.",
+  trigger: 17,
+  triggerName: "SMSRecipientOptOut",
+  extended: true,
+  sample: {
+    "triggerId": 17,
+    "triggerName": "SMSRecipientOptOut",
+    "time": 1763467200000,
+    "taskId": null,
+    "workerId": null,
+    "adminId": null,
+    "task": null,
+    "worker": null,
+    "data": null,
+    "status": null,
+    "etaSeconds": null,
+    "distance": null,
+    "delay": null,
+    "from": null,
+    "to": null,
+    "body": null,
+    "recipient": { "id": "A~pBTrc5~dTMBBImswg7U4YT", "phone": "+15555550100" },
+    "routePlanId": null,
+    "dispatchId": null,
+    "actionContext": null,
+    "delivery": {
+      "triggerId": 17,
+      "triggerName": "SMSRecipientOptOut",
+      "time": 1763467200000,
+      "recipient": { "id": "A~pBTrc5~dTMBBImswg7U4YT", "phone": "+15555550100" },
+    },
+  },
+});

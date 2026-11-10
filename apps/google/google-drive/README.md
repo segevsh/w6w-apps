@@ -5,7 +5,7 @@ Manage files, folders and shared drives on Google Drive.
 - **Categories** — storage, productivity
 - **Auth methods** — oauth2, service-account
 - **Actions** — 18
-- **Triggers** — 1 (poll)
+- **Triggers** — 5 (poll)
 - **Egress allowlist** — `www.googleapis.com`
 - **Website** — https://drive.google.com
 - **API docs** — https://developers.google.com/workspace/drive
@@ -14,12 +14,29 @@ Manage files, folders and shared drives on Google Drive.
 
 | Key — title | Mechanism | Wrapped list action | What the run gets |
 |---|---|---|---|
-| `new-file` — New File | poll | `file-list`, ordered `createdTime desc` | The new Google Drive file |
+| `new-file` — New File | poll | `file-list`, ordered `createdTime desc` | The new Google Drive file or folder |
+| `new-or-updated-file` — New or Updated File | poll | `file-list`, ordered `modifiedTime desc`; optional folder or single file | The file or folder with its modified time; an edit is a new event |
+| `new-folder` — New Folder | poll | `file-list` restricted to folders, ordered `createdTime desc` (`folder-list` is the same query) | The new folder |
+| `new-or-updated-folder` — New or Updated Folder | poll | `file-list` restricted to folders, ordered `modifiedTime desc` | The folder with its modified time |
+| `new-shared-drive` — New Shared Drive | poll | `drive-list`, whole collection compared with the last check (up to 500 shared drives) | The new shared drive |
 
-The trigger polls the existing `files.list` request rather than registering a callback; its first
-check records the current page and emits no historical files. The Drive API supports the
-`createdTime desc` sort used by this trigger. Verified 2026-11-09:
-https://developers.google.com/workspace/drive/api/reference/rest/v3/files/list
+The triggers poll the existing `files.list` / `drives.list` requests rather than registering a
+callback; the first check records the current page and emits no historical files. The Drive API
+supports the `createdTime desc` and `modifiedTime desc` sorts used here. `new-or-updated-file`
+also fires for a newly created file (its modified time starts at creation); its optional `folderId`
+keeps the files directly inside one folder and `fileId` keeps one file's changes.
+
+No webhook trigger: Drive's push notifications arrive with an empty body (no file data), and
+"there's no automatic way to renew a notification channel", so a registered channel would go
+silent when it expires. Polling is the dependable path.
+
+Not covered: none of the list actions is skipped; `file-list` backs the file and folder triggers,
+`folder-list` is covered by `new-folder`, and `drive-list` backs `new-shared-drive`.
+
+Verified 2026-11-10:
+https://developers.google.com/workspace/drive/api/reference/rest/v3/files/list ,
+https://developers.google.com/workspace/drive/api/guides/push ,
+https://developers.google.com/workspace/drive/api/reference/rest/v3/drives/list
 
 ## Health check
 

@@ -52,6 +52,17 @@ const OUTPUT: OutputField[] = [
   { key: "item", type: "object", label: "Item (conversation or contact)" },
 ];
 
+/**
+ * The `*.deleted` topics send "a minimal identification payload containing only identifying fields
+ * — not the full resource object" (https://developers.intercom.com/docs/references/webhooks/webhook-models,
+ * verified 2026-11-10), so `item` is the type and id only.
+ */
+export const DELETED_OUTPUT: OutputField[] = OUTPUT.map((f) =>
+  f.key === "item"
+    ? { key: "item", type: "object", label: "Deleted item (identifying fields only: type and id)" }
+    : f
+);
+
 function asObject(v: unknown): Record<string, unknown> | null {
   return v !== null && typeof v === "object" && !Array.isArray(v)
     ? v as Record<string, unknown>
@@ -103,19 +114,82 @@ export interface WebhookTriggerSpec {
   key: string;
   title: string;
   description: string;
-  topic: string;
+  /** One topic, or several that mean the same thing to the user (e.g. a user or a lead is created). */
+  topic: string | string[];
   sample: IntercomEvent;
+  /** Output fields when they differ from the default (the `*.deleted` topics). */
+  output?: OutputField[];
+}
+
+/** POST check, signature check, then parse: one verified Intercom notification. */
+async function verifiedEvent(
+  raw: { method: string; rawBody?: unknown; headers: Record<string, string> },
+  secret: unknown,
+): Promise<IntercomEvent> {
+  if (raw.method.toUpperCase() !== "POST") {
+    throw new Error(`Intercom delivers webhooks with POST, not ${raw.method}.`);
+  }
+  const body = await verifySignature(raw, secret);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Intercom delivery refused: the body is not JSON.");
+  }
+  return normalizeDelivery(parsed);
 }
 
 /** Build one Intercom topic webhook trigger. */
 export function webhookTrigger(
   spec: WebhookTriggerSpec,
 ): TriggerDefinition<TriggerParams, IntercomEvent, { callbackUrl: string }> {
+  const topics = Array.isArray(spec.topic) ? spec.topic : [spec.topic];
   return {
     key: spec.key,
     title: spec.title,
     description: spec.description,
     params: [SIGNING_SECRET_PARAM],
+    output: spec.output ?? OUTPUT,
+    sample: spec.sample,
+
+    onSubscribe({ callbackUrl }) {
+      return { callbackUrl };
+    },
+
+    onUnsubscribe() {},
+
+    async handleIngest({ raw, params }) {
+      const event = await verifiedEvent(raw, params?.signingSecret);
+      // Other topics (and Intercom's `ping`) are acknowledged without a run.
+      if (!topics.includes(event.topic)) return [];
+      return [event];
+    },
+  };
+}
+
+export interface AnyEventParams extends TriggerParams {
+  events?: string;
+}
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  placeholder: "conversation.admin.closed, ticket.created",
+  hint:
+    "Comma-separated Intercom topics to run on. Empty runs on every topic the webhook is subscribed to (except Intercom's ping). Subscribe the topics in the Developer Hub first.",
+};
+
+/** The Any event trigger: every verified topic, optionally narrowed by the `events` list. */
+export function anyEventTrigger(
+  spec: { key: "any-event"; sample: IntercomEvent },
+): TriggerDefinition<AnyEventParams, IntercomEvent, { callbackUrl: string }> {
+  return {
+    key: spec.key,
+    title: "Any Event",
+    description:
+      "Fires on any Intercom webhook topic you subscribed (or the ones you list). The run gets the notification id and topic and the item (for a deletion topic only its type and id).",
+    params: [SIGNING_SECRET_PARAM, EVENTS_PARAM],
     output: OUTPUT,
     sample: spec.sample,
 
@@ -126,19 +200,9 @@ export function webhookTrigger(
     onUnsubscribe() {},
 
     async handleIngest({ raw, params }) {
-      if (raw.method.toUpperCase() !== "POST") {
-        throw new Error(`Intercom delivers webhooks with POST, not ${raw.method}.`);
-      }
-      const body = await verifySignature(raw, params?.signingSecret);
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new Error("Intercom delivery refused: the body is not JSON.");
-      }
-      const event = normalizeDelivery(parsed);
-      // Other topics (and Intercom's `ping`) are acknowledged without a run.
-      if (event.topic !== spec.topic) return [];
+      const event = await verifiedEvent(raw, params?.signingSecret);
+      const wanted = (params?.events ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+      if (wanted.length === 0 ? event.topic === "ping" : !wanted.includes(event.topic)) return [];
       return [event];
     },
   };

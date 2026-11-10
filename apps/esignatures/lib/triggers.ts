@@ -24,6 +24,8 @@ import {
 
 export interface TriggerParams {
   signingSecret?: string;
+  /** Contract Event (Any Event) only: comma-separated notification statuses; empty = all. */
+  events?: string;
 }
 
 /** The run's `trigger.event`: one contract or signer notification. */
@@ -49,6 +51,19 @@ const SIGNING_SECRET_PARAM: Param = {
   hint:
     "The Secret Token on the API page of your eSignatures.com account (the same token the connection uses). eSignatures.com signs every webhook with it; a delivery that does not verify is refused.",
 };
+
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated notification statuses to react to, e.g. `contract-signed, signer-declined`. The statuses are contract-sent-to-signer, contract-reminder-sent-to-signer, contract-signed, contract-withdrawn, signer-viewed-the-contract, signer-signed, signer-declined, signer-mobile-update-request, sms-incoming and error. Leave empty for every notification.",
+};
+
+/** `a, b ,c` → `["a","b","c"]` (empty entries dropped). */
+export function parseEvents(v: unknown): string[] {
+  return typeof v === "string" ? v.split(",").map((e) => e.trim()).filter((e) => e !== "") : [];
+}
 
 const OUTPUT: OutputField[] = [
   { key: "status", type: "string", label: "Notification Status" },
@@ -129,6 +144,8 @@ export interface WebhookTriggerSpec {
   description: string;
   /** The notification `status` this trigger keeps; omitted = every notification. */
   status?: string;
+  /** Any-event trigger: adds the `events` param and keeps only the statuses it lists. */
+  anyEvent?: boolean;
   sample: ContractEvent;
 }
 
@@ -140,7 +157,7 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: [SIGNING_SECRET_PARAM],
+    params: spec.anyEvent ? [SIGNING_SECRET_PARAM, EVENTS_PARAM] : [SIGNING_SECRET_PARAM],
     output: OUTPUT,
     sample: spec.sample,
 
@@ -164,6 +181,10 @@ export function webhookTrigger(
       const event = normalizeDelivery(parsed);
       // Other notifications are acknowledged without a run.
       if (spec.status !== undefined && event.status !== spec.status) return [];
+      if (spec.anyEvent) {
+        const wanted = parseEvents(params?.events);
+        if (wanted.length > 0 && !wanted.includes(event.status)) return [];
+      }
       return [event];
     },
   };

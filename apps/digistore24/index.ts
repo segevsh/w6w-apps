@@ -42,6 +42,10 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newPurchase from "./triggers/new-purchase.ts";
+import newTransaction from "./triggers/new-transaction.ts";
+import newProduct from "./triggers/new-product.ts";
+import newVoucher from "./triggers/new-voucher.ts";
+import newDelivery from "./triggers/new-delivery.ts";
 
 export default {
   actions: [
@@ -83,6 +87,6 @@ export default {
     statsSalesSummary,
   ],
   auth: [apiKey],
-  triggers: [newPurchase],
+  triggers: [newPurchase, newTransaction, newProduct, newVoucher, newDelivery],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

@@ -4,6 +4,7 @@ import { compact, SendPulseClient } from "../lib/client.ts";
 interface Input {
   limit?: number;
   offset?: number;
+  order?: string;
 }
 
 /** `GET /campaigns` — campaign history: id, name and status for each. */
@@ -16,13 +17,24 @@ const action: ActionDefinition<Input> = {
   params: [
     { key: "limit", label: "Limit", type: "number", default: 100 },
     { key: "offset", label: "Offset", type: "number", default: 0 },
+    {
+      key: "order",
+      label: "Order",
+      type: "select",
+      options: [{ value: "asc", label: "Ascending" }, { value: "desc", label: "Descending" }],
+      advanced: true,
+    },
   ],
   output: [
     { key: "data", type: "array", label: "Campaigns" },
   ],
 
   async execute(input, ctx) {
-    const query = compact({ limit: input.limit ?? 100, offset: input.offset ?? 0 });
+    const query = compact({
+      limit: input.limit ?? 100,
+      offset: input.offset ?? 0,
+      order: input.order,
+    });
     return await new SendPulseClient(ctx).bulkEmail("/campaigns", { query });
   },
 };

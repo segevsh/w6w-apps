@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/livechat",
-  "version": "0.2.0",
-  "description": "Read and manage LiveChat chats, threads, customers, agents, groups and tags, and send messages into a chat, and trigger workflows on new chat threads.",
+  "version": "0.3.0",
+  "description": "Read and manage LiveChat chats, threads, customers, agents, groups and tags, and send messages into a chat, and trigger workflows on new chat threads, agents, groups and tags.",
   "license": "MIT",
   "author": {
     "name": "w6w"

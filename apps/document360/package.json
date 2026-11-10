@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/document360",
-  "version": "0.2.0",
-  "description": "Document360 knowledge base: projects, workspaces, categories, articles, drive, team accounts and readers; with New Article and New or Updated Article triggers.",
+  "version": "0.3.0",
+  "description": "Document360 knowledge base: projects, workspaces, categories, articles, drive, team accounts and readers; with poll triggers for new records in each bounded collection.",
   "license": "MIT",
   "author": {
     "name": "w6w"

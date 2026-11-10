@@ -41,6 +41,18 @@ import newCompany from "./triggers/new-company.ts";
 import newOpportunity from "./triggers/new-opportunity.ts";
 import updatedOpportunity from "./triggers/updated-opportunity.ts";
 import newTask from "./triggers/new-task.ts";
+import deletedPerson from "./triggers/deleted-person.ts";
+import updatedCompany from "./triggers/updated-company.ts";
+import deletedCompany from "./triggers/deleted-company.ts";
+import updatedLead from "./triggers/updated-lead.ts";
+import deletedLead from "./triggers/deleted-lead.ts";
+import deletedOpportunity from "./triggers/deleted-opportunity.ts";
+import updatedTask from "./triggers/updated-task.ts";
+import deletedTask from "./triggers/deleted-task.ts";
+import newActivity from "./triggers/new-activity.ts";
+import newUser from "./triggers/new-user.ts";
+import newRelatedItem from "./triggers/new-related-item.ts";
+import anyEvent from "./triggers/any-event.ts";
 
 export default {
   actions: [
@@ -84,6 +96,18 @@ export default {
     newOpportunity,
     updatedOpportunity,
     newTask,
+    deletedPerson,
+    updatedCompany,
+    deletedCompany,
+    updatedLead,
+    deletedLead,
+    deletedOpportunity,
+    updatedTask,
+    deletedTask,
+    newActivity,
+    newUser,
+    newRelatedItem,
+    anyEvent,
   ],
   auth: [apiKey],
   healthChecks: [service, quota],

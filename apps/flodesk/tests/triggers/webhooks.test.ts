@@ -41,8 +41,10 @@ test("app declares the poll trigger plus three unsigned webhook triggers with ou
     "new-subscriber",
     "subscriber-unsubscribed",
     "subscriber-added-to-segment",
+    "any-event",
+    "new-workflow",
   ]);
-  for (const t of app.triggers.slice(1)) {
+  for (const t of app.triggers.slice(1, 5)) {
     assert(t.output!.length > 0);
     assert(t.sample !== undefined);
     assertEquals(t.poll, undefined);

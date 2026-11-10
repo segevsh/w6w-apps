@@ -1,6 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { compact, WorkOSClient } from "../lib/client.ts";
-import { LIST_PARAMS } from "../lib/params.ts";
+import { LIST_PARAMS, ORDER_PARAM } from "../lib/params.ts";
 
 /**
  * `GET /user_management/users` — the people who can sign in.
@@ -47,6 +47,7 @@ const action: ActionDefinition = {
       default: "",
       hint: "Only users with a membership in this organization.",
     },
+    ORDER_PARAM,
     ...LIST_PARAMS,
   ],
   output: [
@@ -64,6 +65,7 @@ const action: ActionDefinition = {
         query: compact({
           email: p.email,
           organization_id: p.organizationId,
+          order: p.order,
         }) as Record<string, string>,
       },
       want,
