@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2178 triggers, 2066 unaccounted list actions in 483 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -21,8 +21,6 @@ depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-p
 | apps/chatbase | 0 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
-| apps/affinity | 1 | 11 | 11 |
-| apps/gumroad | 2 | 12 | 11 |
 | apps/lokalise | 5 | 11 | 11 |
 | apps/woodpecker | 0 | 11 | 11 |
 | apps/mighty-networks | 3 | 10 | 10 |
@@ -506,6 +504,7 @@ depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-p
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/acumbamail | 1 | 7 | 0 |
+| apps/affinity | 24 | 11 | 0 |
 | apps/agencyzoom | 6 | 10 | 0 |
 | apps/ahrefs | 2 | 12 | 0 |
 | apps/aidbase | 12 | 12 | 0 |
@@ -571,6 +570,7 @@ depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-p
 | apps/google/google-forms | 3 | 2 | 0 |
 | apps/google/google-sheets | 4 | 1 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
+| apps/gumroad | 17 | 12 | 0 |
 | apps/gusto | 15 | 14 | 0 |
 | apps/heartbeat | 19 | 16 | 0 |
 | apps/hibob | 7 | 13 | 0 |
@@ -690,7 +690,7 @@ depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-p
 |---|---|---|---|---|---|
 | apps/activecampaign | 1 | new-contact | apps/activecampaign/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/acuityscheduling | 3 | appointment-canceled, appointment-rescheduled, appointment-scheduled | apps/acuityscheduling/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/affinity | 1 | new-list-entry | apps/affinity/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/affinity | 24 | any-event, field-created, field-deleted, field-updated, field-value-created, field-value-deleted, field-value-updated, list-created, list-deleted, list-entry-deleted, list-updated, new-list-entry, note-created, note-deleted, note-updated, opportunity-created, opportunity-deleted, opportunity-updated, organization-created, organization-deleted, organization-updated, person-created, person-deleted, person-updated | apps/affinity/README.md Triggers section (verified 2026-11-10) | hand | shipped: 23 named webhook triggers registered through the vendor API plus Any Event (events list); list/search actions are covered by the matching created webhooks (no documented order or created-since filter) or skipped as reference data |
 | apps/asana | 9 | any-event, new-comment, new-project, new-task, new-user, project-deleted, project-updated, task-deleted, task-updated | apps/asana/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/bitbucket | 7 | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/atlassian/trello | 21 | any-event, board-member-added, board-updated, card-created, card-deleted, card-member-added, card-moved, card-updated, check-item-created, check-item-state-updated, checklist-added, comment-added, comment-updated, label-added-to-card, label-created, label-deleted, label-removed-from-card, label-updated, list-created, list-updated, new-card-in-list | apps/atlassian/trello/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
@@ -714,7 +714,7 @@ depth: 682 apps, 2140 triggers, 2088 unaccounted list actions in 485 apps, n8n-p
 | apps/gitlab | 13 | any-event, comment, deployment, issue, job, merge-request, milestone, new-project, pipeline, push, release, tag-push, wiki-page | apps/gitlab/README.md Triggers section (verified 2026-11-10) | hand | API-registered project webhook (POST /projects/:id/hooks); 11 named event triggers, the `new-project` poll trigger and Any Event; onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
 | apps/gocanvas | 17 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed, any-event, new-form, new-user, new-customer, new-site, new-project, new-group, new-department, new-department-user, new-form-assigned-user, new-submission, new-dispatch | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | shipped: API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks) for the five documented event types plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; 9 snapshot polls for the collections without a webhook event; 2 created_at since-filter polls (new-submission, new-dispatch) for users who cannot register webhooks (Company Admin/Designer only, one webhook per form and event) |
 | apps/goto-webinar | 5 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation |
-| apps/gumroad | 2 | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
+| apps/gumroad | 17 | any-event, dispute-raised, dispute-won, new-offer-code, new-payout, new-product, new-review, new-sale, new-subscriber, new-variant, new-variant-category, sale-refunded, sale-webhook, subscription-cancelled, subscription-ended, subscription-restarted, subscription-updated | apps/gumroad/README.md Triggers section (verified 2026-11-10) | hand | shipped: 7 named webhook triggers plus Any Event registered through resource subscriptions, and 8 polls (sales, products, offer codes, variant categories, variants, reviews, payouts, subscribers) |
 | apps/heartbeat | 19 | user-joined, user-updated, thread-created, group-joined, event-created, event-rsvp, course-completed, document-created, mention, direct-message, abandoned-invitation, any-event, new-channel, new-channel-category, new-group, new-course, new-invitation, new-video, new-direct-message | apps/heartbeat/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (PUT /webhooks, DELETE /webhooks/{id}) for all 11 vendor events plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; snapshot polls for the unpaged collections (channels, categories, groups, courses, invitations, videos) and a newest-first poll for one direct chat |
 | apps/helpscout | 4 | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/heygen | 2 | video-completed, video-failed | apps/heygen/README.md Triggers section (verified 2026-11-10) | hand | API-registered endpoint (POST /v3/webhooks/endpoints, one-time whsec secret kept in state); signature header hex HMAC-SHA256 of the raw body; no poll: GET /v3/videos documents no order or since filter |
