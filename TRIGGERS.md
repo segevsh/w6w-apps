@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 74, manual-webhook: 25, poll: 482, none: 102
+**Totals:** 683 apps — webhook-api: 74, manual-webhook: 25, poll: 481, none: 103
 
 ## webhook-api (74)
 
@@ -119,7 +119,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wiza | list-finished, reveal-finished | apps/wiza/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: list and individual-reveal completion callbacks; the OpenAPI document has no list index to poll (/api/lists is POST only) (https://docs.wiza.co/swagger/v1/openapi.yaml) |
 
-## poll (482)
+## poll (481)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -587,26 +587,25 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/wrike | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
 | apps/wufoo | entry-list | new-entry | apps/wufoo/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
 | apps/xai | list-files | new-files | no | scan | list action list-files has pagination and order/since params |
-| apps/xero | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/xero | contact-list | new-or-updated-contact | apps/xero/README.md Triggers section (verified 2026-11-09) | hand | contact-list accepts order=UpdatedDateUTC DESC (Contact has no created stamp); new-or-updated-contact covers new contacts |
 | apps/yelp-leads | get-lead-ids-for-business | new-lead | apps/yelp-leads/README.md Triggers section (verified 2026-11-09) | hand | lead_ids documents created_after (inclusive) with after_lead_id paging inside the window: since-filter clamped to the seed time, resumable, deduped by id; Ed25519-signed Leads webhook upgrade queued (https://docs.developer.yelp.com/reference/get-lead-ids-for-business) |
 | apps/youcanbookme | list-profiles | new-booking-page | apps/youcanbookme/README.md Triggers section (verified 2026-11-09) | hand | GET /{accountId}/profiles returns every booking page unpaginated: snapshot-diffed; list-bookings is cursor-paged by start time with no created order or filter (https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api) |
 | apps/youform | submission-list | new-submission | apps/youform/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action submission-list |
-| apps/zendesk/zendesk-sell | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/zendesk/zendesk-sell | contact-list | new-contact, new-or-updated-contact | apps/zendesk/zendesk-sell/README.md Triggers section (verified 2026-11-09) | hand | sort_by=created_at:desc / updated_at:desc documented on the contacts list |
 | apps/zeplin | list-screens | new-screen | apps/zeplin/README.md Triggers section (verified 2026-11-09) | hand | screens documents limit/offset and sort=created without a direction, so no order is assumed: project screens read in full and snapshot-diffed; webhook upgrade queued (https://docs.zeplin.dev/reference/getprojectscreens.md) |
-| apps/zoho/bigin | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/zoho/zoho | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/zoho/zoho-campaigns | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/zoho/zoho-cliq | chat-list | new-chat-list | no | scan | list action chat-list has pagination and order/since params |
-| apps/zoho/zoho-inventory | salesorder-list | new-salesorder-list | no | scan | list action salesorder-list has pagination and order/since params |
-| apps/zoho/zoho-projects | issue-list | new-issue-list | no | scan | list action issue-list has pagination and order/since params |
-| apps/zoho/zoho-recruit | candidate-list | new-candidate-list | no | scan | list action candidate-list has pagination and order/since params |
-| apps/zoho/zoho-sheet | workbook-list | new-workbook-list | no | scan | list action workbook-list has pagination and order/since params |
-| apps/zoho/zoho-sign | request-list | new-request-list | no | scan | list action request-list has pagination and order/since params |
-| apps/zoho/zohodesk | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
-| apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
+| apps/zoho/bigin | contact-list | new-contact, new-or-updated-contact | apps/zoho/bigin/README.md Triggers section (verified 2026-11-09) | hand | sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records |
+| apps/zoho/zoho | contact-list | new-contact, new-or-updated-contact | apps/zoho/zoho/README.md Triggers section (verified 2026-11-09) | hand | sort_by id/Created_Time/Modified_Time with sort_order=desc documented on get-records |
+| apps/zoho/zoho-campaigns | campaign-list-recent | new-campaign | apps/zoho/zoho-campaigns/README.md Triggers section (verified 2026-11-09) | hand | recentcampaigns lists the most recently created campaigns (bounded page of 20, id-deduped by campaign_key) |
+| apps/zoho/zoho-cliq | chat-list | new-chat | apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-09) | hand | chat-list has modified_after/modified_before filters: since-filter poll with seed floor and resumable drain |
+| apps/zoho/zoho-inventory | item-list | new-item, new-or-updated-item | apps/zoho/zoho-inventory/README.md Triggers section (verified 2026-11-09) | hand | item-list gained optional sort_column/sort_order; items doc documents sort_column created_time/last_modified_time and sort_order D (https://www.zoho.com/inventory/api/v1/items/); contact-list documents no sort direction and salesorder-list only page/per_page, so they stay without triggers |
+| apps/zoho/zoho-recruit | candidate-list | new-candidate, new-or-updated-candidate | apps/zoho/zoho-recruit/README.md Triggers section (verified 2026-11-09) | hand | sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records |
+| apps/zoho/zoho-sheet | workbook-list | new-workbook, new-or-updated-workbook | apps/zoho/zoho-sheet/README.md Triggers section (verified 2026-11-09) | hand | workbook.list sort_option recently_created/recently_modified documented |
+| apps/zoho/zoho-sign | request-list | new-request | apps/zoho/zoho-sign/README.md Triggers section (verified 2026-11-09) | hand | page_context sort_column=created_time, sort_order=DESC documented; no modified sort column |
+| apps/zoho/zohodesk | contact-list | new-contact | apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-09) | hand | contacts sortBy=-createdTime documented; list items carry no modified stamp |
+| apps/zoho/zohomail | message-list | new-message | apps/zoho/zohomail/README.md Triggers section (verified 2026-11-09) | hand | messages/view sortBy=date, sortorder=false (newest first) documented |
+| apps/zuora | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
-## none (102)
+## none (103)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -708,6 +707,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zoho-creator |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoho/zoho-invoice |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoho/zoho-people |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/zoho/zoho-projects |  | no | hand | issue-list needs a caller-selected portal and project and its sortBy option has no direction; the V3 reference (https://projects.zoho.com/api-docs) is script-rendered and does not expose the issues sort/criteria syntax to verify; project-list/task-list (sortBy DESC(created_time) in lib/params.ts) re-checked, not verifiable against the script-rendered docs |
 | apps/zoho/zoho-workdrive |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoho/zohobooks |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/zoom |  | no | scan | no newest-first list action found by scan; vendor events not researched |

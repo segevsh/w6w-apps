@@ -7389,12 +7389,12 @@
     "path": "apps/xero",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list accepts order=UpdatedDateUTC DESC (Contact has no created stamp); new-or-updated-contact covers new contacts",
+    "verified": "apps/xero/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/yelp-leads",
@@ -7446,12 +7446,13 @@
     "path": "apps/zendesk/zendesk-sell",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort_by=created_at:desc / updated_at:desc documented on the contacts list",
+    "verified": "apps/zendesk/zendesk-sell/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zeplin",
@@ -7477,23 +7478,25 @@
     "path": "apps/zoho/bigin",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records",
+    "verified": "apps/zoho/bigin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort_by id/Created_Time/Modified_Time with sort_order=desc documented on get-records",
+    "verified": "apps/zoho/zoho/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-analytics",
@@ -7526,23 +7529,23 @@
     "path": "apps/zoho/zoho-campaigns",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-campaign"
     ],
-    "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "campaign-list-recent",
+    "reason": "recentcampaigns lists the most recently created campaigns (bounded page of 20, id-deduped by campaign_key)",
+    "verified": "apps/zoho/zoho-campaigns/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-cliq",
     "mechanism": "poll",
     "candidates": [
-      "new-chat-list"
+      "new-chat"
     ],
     "pollAction": "chat-list",
-    "reason": "list action chat-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "chat-list has modified_after/modified_before filters: since-filter poll with seed floor and resumable drain",
+    "verified": "apps/zoho/zoho-cliq/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-creator",
@@ -7557,12 +7560,13 @@
     "path": "apps/zoho/zoho-inventory",
     "mechanism": "poll",
     "candidates": [
-      "new-salesorder-list"
+      "new-item",
+      "new-or-updated-item"
     ],
-    "pollAction": "salesorder-list",
-    "reason": "list action salesorder-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "item-list",
+    "reason": "item-list gained optional sort_column/sort_order; items doc documents sort_column created_time/last_modified_time and sort_order D (https://www.zoho.com/inventory/api/v1/items/); contact-list documents no sort direction and salesorder-list only page/per_page, so they stay without triggers",
+    "verified": "apps/zoho/zoho-inventory/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-invoice",
@@ -7584,47 +7588,47 @@
   },
   {
     "path": "apps/zoho/zoho-projects",
-    "mechanism": "poll",
-    "candidates": [
-      "new-issue-list"
-    ],
-    "pollAction": "issue-list",
-    "reason": "list action issue-list has pagination and order/since params",
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "issue-list needs a caller-selected portal and project and its sortBy option has no direction; the V3 reference (https://projects.zoho.com/api-docs) is script-rendered and does not expose the issues sort/criteria syntax to verify; project-list/task-list (sortBy DESC(created_time) in lib/params.ts) re-checked, not verifiable against the script-rendered docs",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-recruit",
     "mechanism": "poll",
     "candidates": [
-      "new-candidate-list"
+      "new-candidate",
+      "new-or-updated-candidate"
     ],
     "pollAction": "candidate-list",
-    "reason": "list action candidate-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records",
+    "verified": "apps/zoho/zoho-recruit/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-sheet",
     "mechanism": "poll",
     "candidates": [
-      "new-workbook-list"
+      "new-workbook",
+      "new-or-updated-workbook"
     ],
     "pollAction": "workbook-list",
-    "reason": "list action workbook-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "workbook.list sort_option recently_created/recently_modified documented",
+    "verified": "apps/zoho/zoho-sheet/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-sign",
     "mechanism": "poll",
     "candidates": [
-      "new-request-list"
+      "new-request"
     ],
     "pollAction": "request-list",
-    "reason": "list action request-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "page_context sort_column=created_time, sort_order=DESC documented; no modified sort column",
+    "verified": "apps/zoho/zoho-sign/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zoho-workdrive",
@@ -7648,23 +7652,23 @@
     "path": "apps/zoho/zohodesk",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contacts sortBy=-createdTime documented; list items carry no modified stamp",
+    "verified": "apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoho/zohomail",
     "mechanism": "poll",
     "candidates": [
-      "new-message-list"
+      "new-message"
     ],
     "pollAction": "message-list",
-    "reason": "list action message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "messages/view sortBy=date, sortorder=false (newest first) documented",
+    "verified": "apps/zoho/zohomail/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/zoom",
@@ -7688,11 +7692,11 @@
     "path": "apps/zuora",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice-list"
+      "new-or-updated-invoice"
     ],
     "pollAction": "invoice-list",
-    "reason": "list action invoice-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices",
+    "verified": "apps/zuora/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   }
 ]
