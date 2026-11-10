@@ -6,6 +6,7 @@ import newQuestion from "../../triggers/new-question.ts";
 import newOrUpdatedQuestion from "../../triggers/new-or-updated-question.ts";
 import newUser from "../../triggers/new-user.ts";
 import newOrUpdatedUser from "../../triggers/new-or-updated-user.ts";
+import newTagSynonym from "../../triggers/new-tag-synonym.ts";
 
 type Poll = NonNullable<typeof newQuestion.poll>;
 
@@ -56,6 +57,13 @@ const cases: Array<{
       "https://api.stackexchange.com/2.3/users?site=stackoverflow&page=1&pagesize=100&order=desc&sort=modified",
     updated: true,
   },
+  {
+    key: "new-tag-synonym",
+    trigger: newTagSynonym,
+    item: (id) => ({ from_tag: id, to_tag: 1, creation_date: 1762646400 + id }) as never,
+    url:
+      "https://api.stackexchange.com/2.3/tags/synonyms?site=stackoverflow&page=1&pagesize=100&order=desc&sort=creation",
+  },
 ];
 
 for (const entry of cases) {
@@ -98,3 +106,12 @@ for (const entry of cases) {
     assertEquals(m.calls[0].url, entry.url);
   });
 }
+
+test("new-question: defaults the site to stackoverflow and reads a single page", async () => {
+  const m = mockCtx([{ body: { items: [{ question_id: 1 }], has_more: true } }, {
+    body: { items: [] },
+  }]);
+  await newQuestion.poll!({ params: {}, subscriptionId: "s", state: {} }, m.ctx);
+  assertEquals(m.calls.length, 1);
+  assertEquals(new URL(m.calls[0].url).searchParams.get("site"), "stackoverflow");
+});

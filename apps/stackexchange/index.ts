@@ -5,6 +5,9 @@ import newComment from "./triggers/new-comment.ts";
 import newOrUpdatedAssociatedAccount from "./triggers/new-or-updated-associated-account.ts";
 import newQuestion from "./triggers/new-question.ts";
 import newOrUpdatedQuestion from "./triggers/new-or-updated-question.ts";
+import newTagSynonym from "./triggers/new-tag-synonym.ts";
+import newOrUpdatedUserBadge from "./triggers/new-or-updated-user-badge.ts";
+import newUserReputationChange from "./triggers/new-user-reputation-change.ts";
 import newUser from "./triggers/new-user.ts";
 import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
 import questionList from "./actions/question-list.ts";
@@ -104,5 +107,8 @@ export default {
     newOrUpdatedQuestion,
     newUser,
     newOrUpdatedUser,
+    newTagSynonym,
+    newOrUpdatedUserBadge,
+    newUserReputationChange,
   ],
 } satisfies AppDefinition;

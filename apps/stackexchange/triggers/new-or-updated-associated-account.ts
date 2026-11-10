@@ -38,8 +38,24 @@ const trigger: TriggerDefinition<Params> = {
     return await pollSnapshot({
       state: input.state,
       rows: rows.map((item) => {
-        const account = item as { site_url?: unknown; user_id?: unknown };
-        return { key: `${account.site_url ?? ""}:${account.user_id ?? ""}`, values: item };
+        const account = item as {
+          site_url?: unknown;
+          site_name?: unknown;
+          user_id?: unknown;
+          account_id?: unknown;
+          user_type?: unknown;
+        };
+        return {
+          key: `${account.site_url ?? ""}:${account.user_id ?? ""}`,
+          // Stable fields only: reputation and answer counts change constantly and would re-fire every check.
+          values: {
+            site_url: account.site_url,
+            site_name: account.site_name,
+            user_id: account.user_id,
+            account_id: account.account_id,
+            user_type: account.user_type,
+          },
+        };
       }),
       maxRows: 500,
     });
