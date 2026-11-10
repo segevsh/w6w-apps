@@ -2495,12 +2495,22 @@
     "path": "apps/cloudinary",
     "mechanism": "poll",
     "candidates": [
-      "new-asset"
+      "new-asset",
+      "new-folder",
+      "new-tag",
+      "new-transformation",
+      "new-upload-preset"
     ],
     "pollAction": "asset-search",
-    "reason": "shipped poll trigger(s) over list action asset-search",
-    "verified": "apps/cloudinary/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers over asset search (newest-first) and bounded snapshots of folders, tags, transformations and upload presets",
+    "verified": "apps/cloudinary/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "asset-list": "new-asset"
+    },
+    "skipped": {
+      "metadata-field-list": "structured-metadata field definitions (schema/reference data, not records) (https://cloudinary.com/documentation/admin_api#get_metadata_fields)"
+    }
   },
   {
     "path": "apps/cloze",
@@ -2770,12 +2780,20 @@
     "path": "apps/cursor",
     "mechanism": "poll",
     "candidates": [
-      "new-member"
+      "new-member",
+      "new-group",
+      "new-repo-blocklist"
     ],
     "pollAction": "members-list",
-    "reason": "members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api)",
-    "verified": "apps/cursor/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "bounded snapshots of the team roster, billing groups and repo blocklists (each answered in one response)",
+    "verified": "apps/cursor/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "audit-logs-list": "admin/audit log output; action sends startDate/endDate but docs say startTime/endTime and return oldest first (https://cursor.com/docs/account/teams/admin-api)",
+      "usage-events-list": "usage/billing analytics output, aggregated hourly by the vendor (https://cursor.com/docs/account/teams/admin-api)",
+      "model-access-providers-list": "model catalog / access-policy reference data, 409 without a custom policy (https://cursor.com/docs/account/teams/admin-api)",
+      "model-access-provider-models-list": "model catalog / access-policy reference data per provider (https://cursor.com/docs/account/teams/admin-api)"
+    }
   },
   {
     "path": "apps/customerio",
@@ -2937,12 +2955,23 @@
     "mechanism": "poll",
     "candidates": [
       "new-employee",
-      "new-or-updated-employee"
+      "new-or-updated-employee",
+      "new-timesheet",
+      "new-or-updated-timesheet",
+      "new-leave-request",
+      "new-or-updated-leave-request",
+      "new-location",
+      "new-area"
     ],
     "pollAction": "employee-search",
-    "reason": "QUERY sort Id desc / Modified desc",
-    "verified": "apps/deputy/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "QUERY sort Id desc / Modified desc for employees, timesheets, leave; bounded snapshots of locations and areas",
+    "verified": "apps/deputy/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "employee-list": "new-employee",
+      "timesheet-list": "new-timesheet",
+      "leave-list": "new-leave-request"
+    }
   },
   {
     "path": "apps/devin",
@@ -3136,12 +3165,20 @@
     "path": "apps/documerge",
     "mechanism": "poll",
     "candidates": [
-      "new-document"
+      "new-document",
+      "new-route",
+      "new-document-delivery-method",
+      "new-route-delivery-method",
+      "new-route-rule"
     ],
     "pollAction": "document-list",
-    "reason": "the OpenAPI lists no pagination or filter parameters for GET /api/documents (parameters: []), so one response is treated as the whole collection: bounded snapshot (https://app.documerge.ai/api-docs/openapi.yaml)",
-    "verified": "apps/documerge/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "the OpenAPI lists no pagination or filter parameters for the list endpoints, so one response is treated as the whole collection: bounded snapshots (https://app.documerge.ai/api-docs/openapi.yaml)",
+    "verified": "apps/documerge/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "document-field-list": "merge-field definitions of a document (field/property definitions, schema data) (https://app.documerge.ai/api-docs/openapi.yaml)",
+      "route-field-list": "merge-field definitions of a route (field/property definitions, schema data) (https://app.documerge.ai/api-docs/openapi.yaml)"
+    }
   },
   {
     "path": "apps/docuseal",
@@ -3665,12 +3702,20 @@
     "path": "apps/feedly",
     "mechanism": "poll",
     "candidates": [
-      "new-article"
+      "new-article",
+      "new-search-article",
+      "new-board",
+      "new-folder",
+      "new-ai-feed",
+      "new-enterprise-user"
     ],
     "pollAction": "articles-collect",
-    "reason": "New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade.",
-    "verified": "apps/feedly/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter polls over articles-collect and articles-search (newerThan, continuation resume, creation floor); bounded snapshots of boards, folders, AI feeds and team users; enterprise trigger webhooks are queued as an upgrade.",
+    "verified": "apps/feedly/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "webhooks-list": "webhook subscription configuration (admin config; entries carry the configured webhook URLs and are not records) (https://developers.feedly.com/reference/get-the-list-of-webhooks.md)"
+    }
   },
   {
     "path": "apps/fellow",
@@ -3761,12 +3806,20 @@
     "path": "apps/fireflies",
     "mechanism": "poll",
     "candidates": [
-      "new-transcript"
+      "new-transcript",
+      "new-channel",
+      "new-contact",
+      "new-team-user",
+      "new-active-meeting"
     ],
     "pollAction": "transcript-search",
-    "reason": "New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade.",
-    "verified": "apps/fireflies/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; bounded snapshots of channels, contacts, team users and active meetings; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade.",
+    "verified": "apps/fireflies/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "bite-search": "no documented order or date filter, only limit (max 50) and skip, so neither newest-first nor since-filter is possible (https://docs.fireflies.ai/graphql-api/query/bites)",
+      "app-output-list": "no documented order or date filter, only limit (max 10 per request) and skip (https://docs.fireflies.ai/graphql-api/query/apps)"
+    }
   },
   {
     "path": "apps/firestore",
@@ -3926,12 +3979,20 @@
     "path": "apps/formbricks",
     "mechanism": "poll",
     "candidates": [
-      "new-survey"
+      "new-survey",
+      "new-response",
+      "new-contact"
     ],
     "pollAction": "survey-list",
-    "reason": "workspace survey collection is snapshotted for additions",
-    "verified": "apps/formbricks/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "workspace survey and contact collections are snapshotted for additions; responses are polled newest-first (createdAt desc, limit=100)",
+    "verified": "apps/formbricks/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "action-class-list": "in-app action class definitions (configuration data, not records) (https://formbricks.com/docs/api-reference/management-api--action-class/get-all-action-classes.md)",
+      "contact-attribute-key-list": "contact attribute key definitions (field/property definitions) (https://formbricks.com/docs/api-reference/management-api--contact-attribute-keys/get-all-contact-attribute-keys.md)",
+      "contact-attribute-list": "per-contact attribute values: edited on a contact, not created as records, one row per contact and key (https://formbricks.com/docs/api-reference/management-api--contact-attributes/get-all-contact-attributes.md)",
+      "webhook-list": "webhook subscription configuration, can carry the signing secret (credential-bearing) (https://formbricks.com/docs/api-reference/management-api--webhook/get-all-webhooks.md)"
+    }
   },
   {
     "path": "apps/formidableforms",
