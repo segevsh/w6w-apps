@@ -21,3 +21,15 @@ test("task-list: filters inline tasks by status, space and assignee", async () =
   assertEquals(q.getAll("assigned-to"), ["acc1"]);
   assertEquals(result, [{ id: "t1" }]);
 });
+
+test("task-list: createdAtFrom is sent as created-at-from, and omitted when empty", async () => {
+  const withFilter = mockCtx([{ body: { results: [], _links: {} } }], { display });
+  await action.execute!({ createdAtFrom: "1762776000000", limit: 5 }, withFilter.ctx);
+  assertEquals(
+    new URL(withFilter.calls[0].url).searchParams.get("created-at-from"),
+    "1762776000000",
+  );
+  const without = mockCtx([{ body: { results: [], _links: {} } }], { display });
+  await action.execute!({ createdAtFrom: "" }, without.ctx);
+  assertEquals(new URL(without.calls[0].url).searchParams.has("created-at-from"), false);
+});

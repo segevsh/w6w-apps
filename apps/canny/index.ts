@@ -88,6 +88,14 @@ import statusChangeList from "./actions/status-change-list.ts";
 import service from "./health/service.ts";
 
 import newPost from "./triggers/new-post.ts";
+import newComment from "./triggers/new-comment.ts";
+import newVote from "./triggers/new-vote.ts";
+import newStatusChange from "./triggers/new-status-change.ts";
+import newTag from "./triggers/new-tag.ts";
+import newCategory from "./triggers/new-category.ts";
+import newBoard from "./triggers/new-board.ts";
+import newChangelogEntry from "./triggers/new-changelog-entry.ts";
+import newOrUpdatedChangelogEntry from "./triggers/new-or-updated-changelog-entry.ts";
 export default {
   actions: [
     // Boards
@@ -143,5 +151,15 @@ export default {
   // API key only. Canny publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service],
-  triggers: [newPost],
+  triggers: [
+    newPost,
+    newComment,
+    newVote,
+    newStatusChange,
+    newTag,
+    newCategory,
+    newBoard,
+    newChangelogEntry,
+    newOrUpdatedChangelogEntry,
+  ],
 } satisfies AppDefinition;

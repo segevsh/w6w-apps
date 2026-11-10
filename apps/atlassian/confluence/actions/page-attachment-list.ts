@@ -24,6 +24,18 @@ const action: ActionDefinition = {
       hint: "Confluence accepts only one.",
     },
     { key: "filename", label: "Filename", type: "string", default: "" },
+    {
+      key: "sort",
+      label: "Sort By",
+      type: "select",
+      default: "",
+      options: [
+        { value: "created-date", label: "Created" },
+        { value: "-created-date", label: "Created (newest first)" },
+        { value: "modified-date", label: "Modified" },
+        { value: "-modified-date", label: "Modified (newest first)" },
+      ],
+    },
   ],
 
   async execute(input, ctx) {
@@ -43,6 +55,7 @@ const action: ActionDefinition = {
         query: {
           mediaType: (p.mediaType as string) || undefined,
           filename: (p.filename as string) || undefined,
+          sort: (p.sort as string) || undefined,
         },
       },
       returnAll ? Infinity : limit,

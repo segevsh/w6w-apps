@@ -71,6 +71,13 @@ import site from "./health/site.ts";
 import quota from "./health/quota.ts";
 import newPage from "./triggers/new-page.ts";
 import newOrUpdatedPage from "./triggers/new-or-updated-page.ts";
+import newBlogpost from "./triggers/new-blogpost.ts";
+import newOrUpdatedBlogpost from "./triggers/new-or-updated-blogpost.ts";
+import newPageAttachment from "./triggers/new-page-attachment.ts";
+import newPageComment from "./triggers/new-page-comment.ts";
+import newPageLabel from "./triggers/new-page-label.ts";
+import newSpace from "./triggers/new-space.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -107,5 +114,15 @@ export default {
   ],
   auth: [apiToken, oauth2],
   healthChecks: [service, site, quota],
-  triggers: [newPage, newOrUpdatedPage],
+  triggers: [
+    newPage,
+    newOrUpdatedPage,
+    newBlogpost,
+    newOrUpdatedBlogpost,
+    newPageAttachment,
+    newPageComment,
+    newPageLabel,
+    newSpace,
+    newTask,
+  ],
 } satisfies AppDefinition;

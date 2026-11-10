@@ -6,7 +6,7 @@ changelog and the status-change feed.
 - **Categories** — project-management, support
 - **Auth methods** — api-key
 - **Actions** — 39
-- **Triggers** — 1 (poll)
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `canny.io`
 - **Website** — https://canny.io
 - **API docs** — https://developers.canny.io/api-reference
@@ -140,9 +140,19 @@ client-rendered SPA — see `lib/client.ts` for how its content was recovered.
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-post` — New Post | Poll | `post-list` | Each newly created feedback post across the workspace |
+| `new-comment` — New Comment | Poll | `comment-list` | Each newly created portal comment |
+| `new-vote` — New Vote | Poll | `vote-list` | Each newly cast vote |
+| `new-status-change` — New Status Change | Poll | `status-change-list` | Each post status change |
+| `new-tag` — New Tag | Poll | `tag-list` | Each newly created tag |
+| `new-category` — New Category | Poll | `category-list` | Each newly created category |
+| `new-board` — New Board | Poll (snapshot) | `board-list` | Each newly created board |
+| `new-changelog-entry` — New Changelog Entry | Poll | `entry-list` (`sort: created`) | Each newly created changelog entry |
+| `new-or-updated-changelog-entry` — New or Updated Changelog Entry | Poll | `entry-list` (`sort: lastSaved`) | Each new entry, and each entry saved again |
 
-Polled through `post-list` with `sort: newest` (a documented sort value). Canny offers no updated-time sort, so there is no `new-or-updated-post` trigger. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+Ordering, from Canny's reference: `posts/list` is polled with `sort: newest`; `comments/list`, `votes/list`, `status_changes/list`, `tags/list` and `categories/list` are documented "Sorted by newest"; `entries/list` documents that `created` and `lastSaved` return the most recent first; `boards/list` returns every board in no particular order and is bounded, so it is polled as a snapshot. Canny offers no updated-time sort for posts, so there is no `new-or-updated-post` trigger. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Not covered: `company-list` and `user-list` — the reference says companies are "ordered by created date" without a direction and gives `users/list` no order or filter at all, so a newest-first poll cannot be proven (the cursor-paginated v2 lists would need a full scan).
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 
-Source: [vendor docs](https://developers.canny.io/api-reference) (verified 2026-11-09).
+Source: [vendor docs](https://developers.canny.io/api-reference) (verified 2026-11-10).
