@@ -1,5 +1,4 @@
 # Diffbot
-
 Web data for a workflow: turn any page into structured data (articles, products, images, videos,
 discussions, events, lists, job posts), crawl whole sites, search and enrich the Diffbot Knowledge
 Graph, run Natural Language analysis on text, and search the web. Vendor docs:
@@ -90,3 +89,13 @@ Plus the derived `auth:api-token` check from the connection test. `unavailable` 
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-crawl-job` — New Crawl or Bulk Job | Poll | `crawl-get` | Each crawl or bulk job newly created on the token |
+
+Each check lists the token's crawl and bulk jobs (`GET /v3/crawl` with no name) and emits job names that were not there at the previous check. The first check only records.
+
+Source: [Diffbot API reference](https://docs.diffbot.com/reference/) (verified 2026-11-09).

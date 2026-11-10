@@ -1,5 +1,4 @@
 # Drata
-
 Read compliance state from Drata (workspaces, users, personnel, controls, monitoring tests,
 evidence, vendors, risks, policies, devices, assets, events) and write vendors, risks and evidence,
 on the **Drata public API v2**.
@@ -7,6 +6,7 @@ on the **Drata public API v2**.
 - **Categories** — legal, security
 - **Auth methods** — api-key (bearer)
 - **Actions** — 27 (14 lists, 8 reads, 5 writes)
+- **Triggers** — 1 (poll)
 - **Health checks** — `service`, `quota` (declared unavailable, `informational`) + the derived
   `auth:api-key`
 - **Egress allowlist** — `public-api.drata.com`, `public-api.eu.drata.com`,
@@ -103,3 +103,13 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 Layout: `actions/`, `auth/api-key.ts`, `health/`, `lib/client.ts` (region hosts, `DrataClient`,
 error formatting), `lib/params.ts` (shared inputs and enums), `tests/` (mocked `HookContext` in
 `tests/_helpers.ts`).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | Poll | `event-list` | Each new audit event |
+
+Each check calls `event-list` with `createdAtStartDate` set two minutes before the previous check and de-duplicates by event id; the first check reads nothing and stores the instant it ran; later checks drop any record created before that instant, so existing records are never emitted. A window of more than three pages of 100 is read across successive checks from a saved page position, and the checkpoint moves forward only once the whole window has been read.
+
+Source: [Drata API v2](https://developers.drata.com/openapi/reference/v2/overview/) (verified 2026-11-09).

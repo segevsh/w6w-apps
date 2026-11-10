@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cursor",
-  "version": "0.1.0",
-  "description": "Manage Cursor team members, usage, spend, repo blocklists, billing groups and model access via the Admin API.",
+  "version": "0.2.0",
+  "description": "Manage Cursor team members, usage, spend, repo blocklists, billing groups and model access via the Admin API, and trigger workflows on new team member.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://cursor.com/docs/account/teams/admin-api"
     ],
-    "longDescription": "Cursor is an AI code editor. This app covers its Admin/Teams API — the team-management surface for Business and Enterprise plans, not the editor itself (which has no public API).\n\nList and remove team members, and pull audit logs of team activity. Read daily usage metrics and granular per-event usage (model, tokens, cost) for reporting and dashboards, read per-member spend for the current billing cycle, and set individual or bulk spend limits to cap overage. Manage repository context blocklists so sensitive files never reach the AI's context, and — on Enterprise — manage billing groups for chargeback and budgeting, and configure which model providers and models the team may use.\n\nThe surface is deliberately small: it is exactly what Cursor's Admin API documents, nothing padded in. Model access and bulk spend-limit updates are themselves marked preview by the vendor.",
+    "longDescription": "Cursor is an AI code editor. This app covers its Admin/Teams API — the team-management surface for Business and Enterprise plans, not the editor itself (which has no public API).\n\nList and remove team members, and pull audit logs of team activity. Read daily usage metrics and granular per-event usage (model, tokens, cost) for reporting and dashboards, read per-member spend for the current billing cycle, and set individual or bulk spend limits to cap overage. Manage repository context blocklists so sensitive files never reach the AI's context, and — on Enterprise — manage billing groups for chargeback and budgeting, and configure which model providers and models the team may use.\n\nThe surface is deliberately small: it is exactly what Cursor's Admin API documents, nothing padded in. Model access and bulk spend-limit updates are themselves marked preview by the vendor. Poll triggers start workflows on: new team member.",
     "categories": [
       "developer-tools",
       "ai",
@@ -34,7 +34,12 @@
         "api.cursor.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

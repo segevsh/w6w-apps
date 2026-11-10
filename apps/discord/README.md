@@ -5,6 +5,7 @@ Send messages, manage channels, members, and roles on Discord servers.
 - **Categories** — communication
 - **Auth methods** — bot-token, oauth2
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `discord.com`
 - **Website** — https://discord.com
 - **API docs** — https://docs.discord.com/developers/intro
@@ -73,3 +74,12 @@ reach a status host.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `list-messages` | Each newly posted message in the selected channel |
+
+Discord returns channel messages newest-first; the first check records current messages without
+firing, and later checks emit only unseen messages. Each check reads one page (100 messages), so a burst of more than 100 new messages between two checks emits only the newest 100; the older ones are skipped. Source: [Get Channel Messages](https://discord.com/developers/docs/resources/message#get-channel-messages) (verified 2026-11-09).

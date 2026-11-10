@@ -23,6 +23,7 @@ import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCrawlJob from "./triggers/new-crawl-job.ts";
 
 /**
  * Diffbot — web extraction, Knowledge Graph and NLP. Findings that shaped this app
@@ -59,6 +60,7 @@ const app: AppDefinition = {
     crawlDelete,
     crawlDataGet,
   ],
+  triggers: [newCrawlJob],
   auth: [apiToken],
   healthChecks: [service, api, quota],
 };

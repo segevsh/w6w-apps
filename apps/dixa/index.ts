@@ -31,6 +31,7 @@ import tagCreate from "./actions/tag-create.ts";
 import tagList from "./actions/tag-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAgent from "./triggers/new-agent.ts";
 
 /**
  * Dixa — customer-service conversations, end users, agents, tags and queues, over the v1 REST API
@@ -70,6 +71,7 @@ export default {
     tagCreate,
     tagList,
   ],
+  triggers: [newAgent],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

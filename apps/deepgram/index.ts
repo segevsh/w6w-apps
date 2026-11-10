@@ -34,6 +34,7 @@ import keyDelete from "./actions/key-delete.ts";
 import memberList from "./actions/member-list.ts";
 import memberScopeList from "./actions/member-scope-list.ts";
 import inviteList from "./actions/invite-list.ts";
+import newRequest from "./triggers/new-request.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -59,6 +60,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, quota, concurrency],
+  triggers: [newRequest],
 };
 
 export default app;

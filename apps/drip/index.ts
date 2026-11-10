@@ -41,6 +41,7 @@ import listCustomFieldIdentifiers from "./actions/list-custom-field-identifiers.
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSubscriber from "./triggers/new-subscriber.ts";
 
 export default {
   actions: [
@@ -65,6 +66,7 @@ export default {
     // custom field
     listCustomFieldIdentifiers,
   ],
+  triggers: [newSubscriber],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/dixa",
-  "version": "0.1.0",
-  "description": "Work Dixa customer-support conversations, end users, agents, tags and queues.",
+  "version": "0.2.0",
+  "description": "Work Dixa customer-support conversations, end users, agents, tags and queues, and trigger workflows on new agent.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.dixa.io/"
     ],
-    "longDescription": "Dixa is a customer-service platform that routes email, chat, phone, SMS and messaging conversations to agents through queues. This app lets a workflow open an email conversation for an end user, read a conversation and its messages and internal notes, add a reply or a private note, assign it to an agent, move it to another queue, tag it, set its custom attributes, and close or reopen it.\n\nIt also manages the people on the other side: create, look up, list and update end users, list the conversations a given end user has had, and search conversations by text. Agents, tags, queues and custom-attribute definitions can be listed so a workflow can resolve names to the ids the other actions take.\n\nBuilt on Dixa's v1 REST API at dev.dixa.io with one API token.",
+    "longDescription": "Dixa is a customer-service platform that routes email, chat, phone, SMS and messaging conversations to agents through queues. This app lets a workflow open an email conversation for an end user, read a conversation and its messages and internal notes, add a reply or a private note, assign it to an agent, move it to another queue, tag it, set its custom attributes, and close or reopen it.\n\nIt also manages the people on the other side: create, look up, list and update end users, list the conversations a given end user has had, and search conversations by text. Agents, tags, queues and custom-attribute definitions can be listed so a workflow can resolve names to the ids the other actions take.\n\nBuilt on Dixa's v1 REST API at dev.dixa.io with one API token. Poll triggers start workflows on: new agent.",
     "categories": [
       "support",
       "communication"
@@ -33,7 +33,12 @@
         "dev.dixa.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

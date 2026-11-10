@@ -1,4 +1,5 @@
 # Crunchbase
+Triggers: not shipped — the search actions accept a caller query and an optional `order`, but a newest-first created_at/updated_at feed could not be verified: data.crunchbase.com's field and search reference is JS-rendered and its OpenAPI was not retrievable on 2026-11-09, so none was guessed (https://data.crunchbase.com/docs/using-the-api)
 
 Look up companies, people and funding rounds from Crunchbase's licensed
 private-market dataset.
