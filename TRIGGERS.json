@@ -2354,12 +2354,12 @@
     "path": "apps/gocardless",
     "mechanism": "poll",
     "candidates": [
-      "new-customers"
+      "new-customer"
     ],
     "pollAction": "list-customers",
-    "reason": "list action list-customers has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Newest-created customer page is polled.",
+    "verified": "apps/gocardless/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/bigquery",
@@ -2368,9 +2368,9 @@
       "new-job-list"
     ],
     "pollAction": "job-list",
-    "reason": "list action job-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Existing jobs list is polled.",
+    "verified": "apps/google/bigquery/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/gemini",
@@ -2394,25 +2394,21 @@
   },
   {
     "path": "apps/google/google-admin",
-    "mechanism": "poll",
-    "candidates": [
-      "new-user-list"
-    ],
-    "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "users.list can only be ordered by EMAIL, FAMILY_NAME or GIVEN_NAME and its query has no creation-time filter, so no existing list sees new users (https://developers.google.com/workspace/admin/directory/reference/rest/v1/users/list)",
+    "verified": "apps/google/google-admin/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-ads",
-    "mechanism": "poll",
-    "candidates": [
-      "new-customer-clients"
-    ],
-    "pollAction": "list-customer-clients",
-    "reason": "list action list-customer-clients has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "customer_client rows carry no creation time and the list is ordered by hierarchy level, so a new sub-account in a large manager cannot be told apart from a bounded page (https://developers.google.com/google-ads/api/reference/rpc/latest/CustomerClient)",
+    "verified": "apps/google/google-ads/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-analytics",
@@ -2449,12 +2445,12 @@
     "path": "apps/google/google-contacts",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-groups"
+      "new-contact-group"
     ],
     "pollAction": "list-contact-groups",
-    "reason": "list action list-contact-groups has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Contact groups page of 200 (fits the kit's seen window) is polled; order undocumented.",
+    "verified": "apps/google/google-contacts/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-docs",
@@ -2480,12 +2476,13 @@
     "path": "apps/google/google-forms",
     "mechanism": "poll",
     "candidates": [
-      "new-forms"
+      "new-form",
+      "new-or-updated-form"
     ],
     "pollAction": "list-forms",
-    "reason": "list action list-forms has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Drive forms are ordered by created or modified time.",
+    "verified": "apps/google/google-forms/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/google-maps",
@@ -2553,12 +2550,12 @@
     "path": "apps/google/googlechat",
     "mechanism": "poll",
     "candidates": [
-      "new-messages"
+      "new-message"
     ],
     "pollAction": "list-messages",
-    "reason": "list action list-messages has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Messages are requested in descending create-time order.",
+    "verified": "apps/google/googlechat/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/googlesearchconsole",
@@ -2582,34 +2579,35 @@
     "path": "apps/google/youtube",
     "mechanism": "poll",
     "candidates": [
-      "new-comment-threads"
+      "new-comment-thread"
     ],
     "pollAction": "list-comment-threads",
-    "reason": "list action list-comment-threads has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Comment threads are requested in time order.",
+    "verified": "apps/google/youtube/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gorgias",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-get-many"
+      "new-customer",
+      "new-or-updated-customer"
     ],
     "pollAction": "customer-get-many",
-    "reason": "list action customer-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customers support created and updated descending ordering.",
+    "verified": "apps/gorgias/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gotify",
     "mechanism": "poll",
     "candidates": [
-      "new-message-list"
+      "new-message"
     ],
     "pollAction": "message-list",
-    "reason": "list action message-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Existing bounded messages page is polled.",
+    "verified": "apps/gotify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/goto-webinar",
@@ -2633,45 +2631,46 @@
     "path": "apps/grain",
     "mechanism": "poll",
     "candidates": [
-      "new-recording-list"
+      "new-recording"
     ],
     "pollAction": "recording-list",
-    "reason": "list action recording-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Recording list documents no order; polled with filter.after_datetime since-filter plus id dedupe (shape b); filter direction unverifiable live.",
+    "verified": "apps/grain/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/granola",
     "mechanism": "poll",
     "candidates": [
-      "new-audit-event-list"
+      "new-audit-event"
     ],
     "pollAction": "audit-event-list",
-    "reason": "list action audit-event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Audit log is oldest-first with page_size max 30; polled with occurred_after since-filter plus id dedupe (shape b).",
+    "verified": "apps/granola/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gravityforms",
     "mechanism": "poll",
     "candidates": [
-      "new-entry-get-many"
+      "new-entry",
+      "new-or-updated-entry"
     ],
     "pollAction": "entry-get-many",
-    "reason": "list action entry-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Entries support created and updated descending ordering.",
+    "verified": "apps/gravityforms/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/greenhouse",
     "mechanism": "poll",
     "candidates": [
-      "new-interviews"
+      "new-interview"
     ],
     "pollAction": "list-interviews",
-    "reason": "list action list-interviews has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Harvest v3 interviews documents no order; polled with created_at gte since-filter, cursor paging and id dedupe (shape b).",
+    "verified": "apps/greenhouse/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/grist",

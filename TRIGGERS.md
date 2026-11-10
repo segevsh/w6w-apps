@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 393, none: 232
+**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 391, none: 234
 
 ## webhook-api (44)
 
@@ -78,7 +78,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (393)
+## poll (391)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -210,27 +210,25 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/givebutter | contact-list | new-contact, new-or-updated-contact | apps/givebutter/README.md Triggers section (verified 2026-11-09) | hand | contact-list sortByDesc=created_at for new; updatedAfter filter (since-filter poll) for updated |
 | apps/gladia | transcription-list | new-transcription | apps/gladia/README.md Triggers section (verified 2026-11-09) | hand | transcription-list has no documented order, so a since-filter poll on after_date |
 | apps/glide | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
-| apps/gocardless | list-customers | new-customers | no | scan | list action list-customers has pagination and order/since params |
-| apps/google/bigquery | job-list | new-job-list | no | scan | list action job-list has pagination and order/since params |
+| apps/gocardless | list-customers | new-customer | apps/gocardless/README.md Triggers section (verified 2026-11-09) | hand | Newest-created customer page is polled. |
+| apps/google/bigquery | job-list | new-job-list | apps/google/bigquery/README.md Triggers section (verified 2026-11-09) | hand | Existing jobs list is polled. |
 | apps/google/gmail | get-many-messages | new-email | apps/google/gmail/README.md Triggers section (verified 2026-11-09) | hand | gmail users.messages.list with q=after:<epoch>; H-1 |
-| apps/google/google-admin | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/google/google-ads | list-customer-clients | new-customer-clients | no | scan | list action list-customer-clients has pagination and order/since params |
 | apps/google/google-business-profile | list-questions | new-question | apps/google/google-business-profile/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-questions |
 | apps/google/google-calendar | list-events | event-changed | apps/google/google-calendar/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
-| apps/google/google-contacts | list-contact-groups | new-contact-groups | no | scan | list action list-contact-groups has pagination and order/since params |
+| apps/google/google-contacts | list-contact-groups | new-contact-group | apps/google/google-contacts/README.md Triggers section (verified 2026-11-09) | hand | Contact groups page of 200 (fits the kit's seen window) is polled; order undocumented. |
 | apps/google/google-drive | file-list | new-file | apps/google/google-drive/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action file-list |
-| apps/google/google-forms | list-forms | new-forms | no | scan | list action list-forms has pagination and order/since params |
+| apps/google/google-forms | list-forms | new-form, new-or-updated-form | apps/google/google-forms/README.md Triggers section (verified 2026-11-09) | hand | Drive forms are ordered by created or modified time. |
 | apps/google/google-meet | list-conference-records | new-conference-record | apps/google/google-meet/README.md Triggers section (verified 2026-11-09) | hand | conference records are documented newest-started-first |
 | apps/google/google-sheets | sheet-read | row-added, row-added-or-updated, row-updated | apps/google/google-sheets/README.md Triggers section (verified 2026-11-09) | hand | poll sheet-read, diff rows against seeded snapshot |
 | apps/google/google-tasks | list-tasks | new-or-updated-task | apps/google/google-tasks/README.md Triggers section (verified 2026-11-09) | hand | tasks.list supports updatedMin and the trigger deduplicates a bounded overlap |
-| apps/google/googlechat | list-messages | new-messages | no | scan | list action list-messages has pagination and order/since params |
-| apps/google/youtube | list-comment-threads | new-comment-threads | no | scan | list action list-comment-threads has pagination and order/since params |
-| apps/gorgias | customer-get-many | new-customer-get-many | no | scan | list action customer-get-many has pagination and order/since params |
-| apps/gotify | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
-| apps/grain | recording-list | new-recording-list | no | scan | list action recording-list has pagination and order/since params |
-| apps/granola | audit-event-list | new-audit-event-list | no | scan | list action audit-event-list has pagination and order/since params |
-| apps/gravityforms | entry-get-many | new-entry-get-many | no | scan | list action entry-get-many has pagination and order/since params |
-| apps/greenhouse | list-interviews | new-interviews | no | scan | list action list-interviews has pagination and order/since params |
+| apps/google/googlechat | list-messages | new-message | apps/google/googlechat/README.md Triggers section (verified 2026-11-09) | hand | Messages are requested in descending create-time order. |
+| apps/google/youtube | list-comment-threads | new-comment-thread | apps/google/youtube/README.md Triggers section (verified 2026-11-09) | hand | Comment threads are requested in time order. |
+| apps/gorgias | customer-get-many | new-customer, new-or-updated-customer | apps/gorgias/README.md Triggers section (verified 2026-11-09) | hand | Customers support created and updated descending ordering. |
+| apps/gotify | message-list | new-message | apps/gotify/README.md Triggers section (verified 2026-11-09) | hand | Existing bounded messages page is polled. |
+| apps/grain | recording-list | new-recording | apps/grain/README.md Triggers section (verified 2026-11-09) | hand | Recording list documents no order; polled with filter.after_datetime since-filter plus id dedupe (shape b); filter direction unverifiable live. |
+| apps/granola | audit-event-list | new-audit-event | apps/granola/README.md Triggers section (verified 2026-11-09) | hand | Audit log is oldest-first with page_size max 30; polled with occurred_after since-filter plus id dedupe (shape b). |
+| apps/gravityforms | entry-get-many | new-entry, new-or-updated-entry | apps/gravityforms/README.md Triggers section (verified 2026-11-09) | hand | Entries support created and updated descending ordering. |
+| apps/greenhouse | list-interviews | new-interview | apps/greenhouse/README.md Triggers section (verified 2026-11-09) | hand | Harvest v3 interviews documents no order; polled with created_at gte since-filter, cursor paging and id dedupe (shape b). |
 | apps/grist | list-records | new-records | no | scan | list action list-records has pagination and order/since params |
 | apps/guru | card-search | new-card | apps/guru/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action card-search |
 | apps/gusto | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
@@ -476,7 +474,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (232)
+## none (234)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -543,6 +541,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/gcs |  | apps/gcs/README.md Triggers section (verified 2026-11-09) | hand | object listings are lexicographic by object name and object-change notifications publish to Pub/Sub rather than an HTTP event subscription |
 | apps/giphy |  | apps/giphy/README.md Triggers section (verified 2026-11-09) | hand | search, trending, random, and translate endpoints return catalog results rather than account records that change |
 | apps/google/gemini |  | apps/google/gemini/README.md Triggers section (verified 2026-11-09) | hand | model-list and generation APIs are stateless inference resources, not user records with change events |
+| apps/google/google-admin |  | apps/google/google-admin/README.md Triggers section (verified 2026-11-09) | hand | users.list can only be ordered by EMAIL, FAMILY_NAME or GIVEN_NAME and its query has no creation-time filter, so no existing list sees new users (https://developers.google.com/workspace/admin/directory/reference/rest/v1/users/list) |
+| apps/google/google-ads |  | apps/google/google-ads/README.md Triggers section (verified 2026-11-09) | hand | customer_client rows carry no creation time and the list is ordered by hierarchy level, so a new sub-account in a large manager cannot be told apart from a bounded page (https://developers.google.com/google-ads/api/reference/rpc/latest/CustomerClient) |
 | apps/google/google-analytics |  | apps/google/google-analytics/README.md Triggers section (verified 2026-11-09) | hand | account and property lists are paginated configuration reads with no documented newest-first order or changed-since filter |
 | apps/google/google-docs |  | apps/google/google-docs/README.md Triggers section (verified 2026-11-09) | hand | the Docs API exposes get and mutation methods for a known document ID, but no document collection list endpoint |
 | apps/google/google-maps |  | apps/google/google-maps/README.md Triggers section (verified 2026-11-09) | hand | geocoding, routing, places, and elevation APIs are stateless request/response services with no user-record collection |
