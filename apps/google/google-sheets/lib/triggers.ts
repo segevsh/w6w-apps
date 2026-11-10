@@ -1,6 +1,7 @@
-import type { HookContext, OutputField, Param, TriggerDefinition } from "@w6w/types";
+import type { HookContext, OutputField, ParamDefinition, TriggerDefinition } from "@w6w/types";
 import sheetRead from "../actions/sheet-read.ts";
 import { pollSnapshot } from "../../_shared/poll/mod.ts";
+import { SPREADSHEET_ID } from "./params.ts";
 
 /**
  * Google Sheets row triggers (rfcs/trigger.md, poll form).
@@ -28,8 +29,8 @@ interface Params {
   keyColumn?: string;
 }
 
-const PARAMS: Param[] = [
-  { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+const PARAMS: ParamDefinition[] = [
+  SPREADSHEET_ID,
   {
     key: "sheetName",
     label: "Sheet name",

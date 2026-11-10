@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -25,7 +26,7 @@ const sheetAppend: ActionDefinition<Input> = {
   description: "Append rows of values to a sheet.",
   idempotent: false,
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     {
       key: "range",
       label: "Range (A1)",

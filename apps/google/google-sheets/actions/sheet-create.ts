@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -37,7 +38,7 @@ const sheetCreate: ActionDefinition<Input> = {
   title: "Create Sheet",
   description: "Add a new sheet tab to an existing spreadsheet.",
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     { key: "title", label: "Sheet Title", type: "string", required: true },
     { key: "index", label: "Sheet Index", type: "number" },
     { key: "hidden", label: "Hidden", type: "boolean", default: false },

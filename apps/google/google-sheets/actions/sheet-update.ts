@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { GoogleSheetsClient } from "../lib/client.ts";
+import { SPREADSHEET_ID } from "../lib/params.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -22,7 +23,7 @@ const sheetUpdate: ActionDefinition<Input> = {
   description: "Overwrite the values in a range.",
   idempotent: true,
   params: [
-    { key: "spreadsheetId", label: "Spreadsheet ID", type: "string", required: true },
+    SPREADSHEET_ID,
     {
       key: "range",
       label: "Range (A1)",
