@@ -11948,12 +11948,21 @@
     "path": "apps/teachable",
     "mechanism": "poll",
     "candidates": [
+      "new-course",
+      "new-enrollment",
+      "new-pricing-plan",
+      "new-quiz",
       "new-transaction"
     ],
     "pollAction": "transaction-list",
-    "reason": "since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions)",
-    "verified": "apps/teachable/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-transaction (since-filter, floor + resume) plus course, pricing-plan, enrollment and quiz triggers; user-list has no sort and search_after is documented only past 10,000 users (https://docs.teachable.com/reference/listusers)",
+    "verified": "apps/teachable/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "user-list": "no documented sort or created filter and unbounded; search_after is documented only for schools past 10,000 users (https://docs.teachable.com/reference/listusers)",
+      "webhook-list": "admin output: webhook configuration, webhooks are edited in the school admin UI",
+      "webhook-events-list": "admin/audit output: delivery log of one webhook"
+    }
   },
   {
     "path": "apps/teamleader",
@@ -12729,12 +12738,23 @@
     "path": "apps/videoask",
     "mechanism": "poll",
     "candidates": [
-      "new-conversation"
+      "new-brand",
+      "new-conversation",
+      "new-form",
+      "new-tag"
     ],
     "pollAction": "conversation-list",
-    "reason": "shipped poll trigger(s) over list action conversation-list",
-    "verified": "apps/videoask/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-conversation plus form (newest-first), brand (newest-first) and tag (snapshot) triggers",
+    "verified": "apps/videoask/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "form-search": "new-form"
+    },
+    "skipped": {
+      "question-answers-list": "vendor rate limit of 10 requests per hour on this endpoint, docs say use webhooks (https://developers.videoask.com/, Responses); new-conversation delivers responses",
+      "webhook-list": "admin output: webhook configuration of one form; vendor documents no response shape",
+      "organization-list": "the signed-in account's own organizations: account structure; vendor documents no response shape or id"
+    }
   },
   {
     "path": "apps/vimeo",
@@ -12977,12 +12997,27 @@
     "path": "apps/wix",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-collection",
+      "new-contact",
+      "new-data-item",
+      "new-or-updated-data-item",
+      "new-or-updated-order",
+      "new-or-updated-product",
+      "new-or-updated-site",
+      "new-order",
+      "new-product",
+      "new-site"
     ],
     "pollAction": "list-contacts",
-    "reason": "CreatedDate descending contact list.",
-    "verified": "apps/wix/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-contact plus product, order, site, CMS data item and collection triggers (new-or-updated siblings where updatedDate is sortable)",
+    "verified": "apps/wix/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "query-contacts": "new-contact"
+    },
+    "skipped": {
+      "list-labels": "contact-label definitions: reference data used to look up label keys"
+    }
   },
   {
     "path": "apps/wiza",
@@ -13112,11 +13147,18 @@
     "path": "apps/workos",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-connection",
+      "new-directory",
+      "new-directory-group",
+      "new-directory-user",
+      "new-event",
+      "new-organization",
+      "new-organization-membership",
+      "new-user"
     ],
     "pollAction": "event-list",
-    "reason": "Oldest-first event feed read with after/range_start: persisted last-event-id resume position + seed floor.",
-    "verified": "apps/workos/README.md Triggers section (verified 2026-11-09)",
+    "reason": "new-event plus newest-first (order=desc) triggers for organizations, connections, directories, directory users and groups, users and memberships",
+    "verified": "apps/workos/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -13457,12 +13499,23 @@
     "path": "apps/zoho/zoho-people",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-record"
+      "new-job",
+      "new-or-updated-record",
+      "new-project"
     ],
     "pollAction": "record-list",
-    "reason": "record-list documents modifiedtime (ms) since-filter with sIndex/limit<=200 paging; since-window poll with resume position and seed floor, formLinkName is a trigger param; no new-record trigger because AddedTime has no time zone (https://www.zoho.com/people/api/bulk-records.html)",
-    "verified": "apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-or-updated-record plus Time Tracker project and job snapshots; time logs and timesheets are date-range listings with no created-since filter",
+    "verified": "apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "view-records-list": "new-or-updated-record"
+    },
+    "skipped": {
+      "form-list": "form definitions: reference/schema data",
+      "form-views-list": "view definitions of one form: reference/schema data",
+      "timelogs-list": "listed by a work-date range of at most one month per call, keyed by work date with no created-since filter or order",
+      "timesheets-list": "listed per user by a date range and approval status; periodic timesheets with no created-since filter or order"
+    }
   },
   {
     "path": "apps/zoho/zoho-projects",
@@ -13512,12 +13565,25 @@
     "path": "apps/zoho/zoho-workdrive",
     "mechanism": "poll",
     "candidates": [
+      "new-file",
+      "new-team-folder",
+      "new-team-folder-file",
       "new-team-member"
     ],
     "pollAction": "team-member-list",
-    "reason": "Get Team Members has no paging parameters, so the roster is one bounded request; additions are snapshotted; team folders not watched because their list pages without a documented cap (https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html)",
-    "verified": "apps/zoho/zoho-workdrive/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "new-team-member, new-team-folder, new-file and new-team-folder-file (snapshots, page[limit] 50, 1000-row cap); folder listings document no sort or created filter, so they are capped snapshots (https://www.zoho.com/workdrive/developer/docs/api/v1/getting-started-pagination.html)",
+    "verified": "apps/zoho/zoho-workdrive/README.md Triggers section (checked 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "file-list": "new-file",
+      "team-folder-file-list": "new-team-folder-file"
+    },
+    "skipped": {
+      "team-list": "the teams one user belongs to: account structure",
+      "record-search": "search over files by a required free-text query: no documented order or created filter",
+      "file-version-list": "the stored versions of one file: per-parent list whose parent is not something a user would pick",
+      "share-link-list": "external share links of one file: the link URLs are share secrets"
+    }
   },
   {
     "path": "apps/zoho/zohobooks",

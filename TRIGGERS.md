@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2768 triggers, 1486 unaccounted list actions in 397 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -41,12 +41,6 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/metabase | 0 | 7 | 7 |
 | apps/newrelic | 0 | 7 | 7 |
 | apps/square | 1 | 8 | 7 |
-| apps/teachable | 1 | 8 | 7 |
-| apps/videoask | 1 | 8 | 7 |
-| apps/wix | 1 | 8 | 7 |
-| apps/workos | 1 | 8 | 7 |
-| apps/zoho/zoho-people | 1 | 8 | 7 |
-| apps/zoho/zoho-workdrive | 1 | 8 | 7 |
 | apps/atlassian/jira-service-management | 2 | 8 | 6 |
 | apps/clockodo | 0 | 6 | 6 |
 | apps/cloudinary | 1 | 7 | 6 |
@@ -652,6 +646,7 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/synthflow | 6 | 8 | 0 |
 | apps/systemeio | 9 | 11 | 0 |
 | apps/tapfiliate | 9 | 14 | 0 |
+| apps/teachable | 5 | 8 | 0 |
 | apps/teamup | 7 | 13 | 0 |
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
@@ -672,14 +667,19 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/vbout | 7 | 8 | 0 |
 | apps/vercel | 8 | 10 | 0 |
 | apps/vero | 1 | 0 | 0 |
+| apps/videoask | 4 | 8 | 0 |
 | apps/vimeo | 11 | 10 | 0 |
 | apps/wakatime | 7 | 11 | 0 |
 | apps/webex | 11 | 8 | 0 |
+| apps/wix | 10 | 8 | 0 |
 | apps/woocommerce | 10 | 3 | 0 |
+| apps/workos | 8 | 8 | 0 |
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zendesk/zendesk | 12 | 5 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
 | apps/zoho/zoho-cliq | 9 | 9 | 0 |
+| apps/zoho/zoho-people | 3 | 8 | 0 |
+| apps/zoho/zoho-workdrive | 4 | 8 | 0 |
 | apps/zoho/zohodesk | 8 | 10 | 0 |
 | apps/zoom | 22 | 4 | 0 |
 | apps/zulip | 1 | 0 | 0 |
@@ -1208,7 +1208,7 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/tailscale | 1 | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |
 | apps/tally | 1 | submission-get-many | new-submission | apps/tally/README.md Triggers section (verified 2026-11-09) | hand | since-filter startDate + page/limit, no documented sort: window resumed across pages, floor at seed (https://developers.tally.so/api-reference/endpoint/forms/submissions/list) |
 | apps/tapfiliate | 9 | conversion-list | new-conversion, new-customer, new-click, new-program, new-affiliate-group, new-affiliate-payment, new-affiliate-program, new-program-affiliate, new-affiliate | apps/tapfiliate/README.md Triggers section (verified 2026-11-10) | hand | conversion-list, customer-list and click-list take day-granular date_from/date_to with no sort (since-filter polls filtered by created_at); programs, affiliates, affiliate groups, one program's affiliates and one affiliate's payments/programs have no usable order or date filter and are read in full and diffed (snapshot); webhook triggers (dashboard-set, unsigned) are queued (https://developers.tapfiliate.com/automation/webhooks) |
-| apps/teachable | 1 | transaction-list | new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-09) | hand | since-filter start (exclusive) + page/per, no documented sort: window resumed across pages, floor at seed; user-list has no sort/filter (https://docs.teachable.com/reference/listtransactions) |
+| apps/teachable | 5 | transaction-list | new-course, new-enrollment, new-pricing-plan, new-quiz, new-transaction | apps/teachable/README.md Triggers section (verified 2026-11-10) | hand | new-transaction (since-filter, floor + resume) plus course, pricing-plan, enrollment and quiz triggers; user-list has no sort and search_after is documented only past 10,000 users (https://docs.teachable.com/reference/listusers) |
 | apps/teamleader | 2 | contacts-list | new-contact, new-or-updated-contact | apps/teamleader/README.md Triggers section (verified 2026-11-09) | hand | since-filter (b): contacts-list updatedSince; floor/resume per brief 9.8/9.9 |
 | apps/teamup | 7 | invoices-list | new-course, new-instructor, new-invoice, new-membership-plan, new-offering-type, new-staff-member, new-venue | apps/teamup/README.md Triggers section (verified 2026-11-10) | hand | newest-first invoices-list sort=-id plus bounded snapshots of venues, instructors, staff, courses, membership plans and offering types (https://docs.goteamup.com/llms.txt) |
 | apps/teamwork | 1 | project-list | new-project | apps/teamwork/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): project-list orderBy=datecreated&orderMode=desc |
@@ -1234,7 +1234,7 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/vapi | 1 | phone-number-list | new-phone-number | apps/vapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action phone-number-list |
 | apps/vbout | 7 | list-list | new-audience, new-campaign, new-contact, new-email-template, new-goal, new-list, new-social-channel | apps/vbout/README.md Triggers section (verified 2026-11-10) | hand | Vbout list endpoints document no order/since filter: whole-collection snapshot diffs for lists, contacts, audiences, campaigns, templates, goals, social channels (https://developers.vbout.com/scripts/openapi.json) |
 | apps/vercel | 8 | deployment-list | new-deployment, new-alias, new-project, new-or-updated-project, new-domain, new-project-domain, new-env-var, new-or-updated-env-var | apps/vercel/README.md Triggers section (verified 2026-11-10) | hand | since-filter deployment and alias polls plus bounded snapshots of projects, domains and env vars; no webhook polling needed for these records (https://vercel.com/docs/rest-api). |
-| apps/videoask | 1 | conversation-list | new-conversation | apps/videoask/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action conversation-list |
+| apps/videoask | 4 | conversation-list | new-brand, new-conversation, new-form, new-tag | apps/videoask/README.md Triggers section (verified 2026-11-10) | hand | new-conversation plus form (newest-first), brand (newest-first) and tag (snapshot) triggers |
 | apps/vimeo | 11 | video-list | new-video, new-folder, new-or-updated-folder, new-showcase, new-or-updated-showcase, new-folder-video, new-folder-item, new-showcase-video, new-comment, new-search-video, new-comment-reply | apps/vimeo/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (sort=date/modified, direction=desc) on videos, folders, showcases, their contents, comments and search (https://developer.vimeo.com/api/reference). new-comment-reply is a bounded pollSnapshot (replies endpoint documents only page/per_page, no sort or direction) with required videoId and commentId. |
 | apps/wakatime | 7 | project-list | new-project, new-goal, new-or-updated-goal, new-leaderboard, new-organization, new-dashboard, new-data-dump | apps/wakatime/README.md Triggers section (verified 2026-11-10) | hand | Bounded snapshot polls of projects, goals, private leaderboards, orgs, org dashboards and data exports; WakaTime documents no webhooks (https://wakatime.com/developers). |
 | apps/wappalyzer | 1 | lists-list | new-lead-list | apps/wappalyzer/README.md Triggers section (verified 2026-11-09) | hand | GET /v2/lists/ returns the account's lead lists unpaginated: snapshot-diffed (https://www.wappalyzer.com/openapi/v2-public.yaml) |
@@ -1246,11 +1246,11 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/whatconverts | 1 | leads-list | new-lead | apps/whatconverts/README.md Triggers section (verified 2026-11-09) | hand | Descending leads list poll trigger. |
 | apps/whop | 1 | membership-list | new-membership | apps/whop/README.md Triggers section (verified 2026-11-09) | hand | Created-at descending membership list. |
 | apps/wistia | 1 | media-list | new-media | apps/wistia/README.md Triggers section (verified 2026-11-09) | hand | Created descending media list. |
-| apps/wix | 1 | list-contacts | new-contact | apps/wix/README.md Triggers section (verified 2026-11-09) | hand | CreatedDate descending contact list. |
+| apps/wix | 10 | list-contacts | new-collection, new-contact, new-data-item, new-or-updated-data-item, new-or-updated-order, new-or-updated-product, new-or-updated-site, new-order, new-product, new-site | apps/wix/README.md Triggers section (verified 2026-11-10) | hand | new-contact plus product, order, site, CMS data item and collection triggers (new-or-updated siblings where updatedDate is sortable) |
 | apps/wordpress | 1 | post-get-all | new-post | apps/wordpress/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-get-all |
 | apps/workable | 1 | candidate-list | new-candidate | apps/workable/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-list |
 | apps/workflowy | 1 | node-list | new-node | apps/workflowy/README.md Triggers section (verified 2026-11-09) | hand | GET /nodes?parent_id= is unpaginated and returns every child of a parent unordered: snapshot-diffed; no webhooks (https://workflowy.com/api-reference/) |
-| apps/workos | 1 | event-list | new-event | apps/workos/README.md Triggers section (verified 2026-11-09) | hand | Oldest-first event feed read with after/range_start: persisted last-event-id resume position + seed floor. |
+| apps/workos | 8 | event-list | new-connection, new-directory, new-directory-group, new-directory-user, new-event, new-organization, new-organization-membership, new-user | apps/workos/README.md Triggers section (verified 2026-11-10) | hand | new-event plus newest-first (order=desc) triggers for organizations, connections, directories, directory users and groups, users and memberships |
 | apps/wrike | 1 | task-list | new-task | apps/wrike/README.md Triggers section (verified 2026-11-09) | hand | Created-date descending task search (sortOrder Desc, the documented casing). |
 | apps/wufoo | 1 | entry-list | new-entry | apps/wufoo/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
 | apps/xai | 1 | list-files | new-file | apps/xai/README.md Triggers section (verified 2026-11-09) | hand | Created-at descending file list. |
@@ -1270,11 +1270,11 @@ depth: 682 apps, 2740 triggers, 1528 unaccounted list actions in 403 apps, n8n-p
 | apps/zoho/zoho-creator | 1 | application-list | new-application | apps/zoho/zoho-creator/README.md Triggers section (verified 2026-11-09) | hand | applications metadata is an unpaginated bounded collection; additions are snapshotted (https://www.zoho.com/creator/help/api/v2/get-applications.html) |
 | apps/zoho/zoho-inventory | 2 | item-list | new-item, new-or-updated-item | apps/zoho/zoho-inventory/README.md Triggers section (verified 2026-11-09) | hand | item-list gained optional sort_column/sort_order; items doc documents sort_column created_time/last_modified_time and sort_order D (https://www.zoho.com/inventory/api/v1/items/); contact-list documents no sort direction and salesorder-list only page/per_page, so they stay without triggers |
 | apps/zoho/zoho-invoice | 2 | contact-list | new-contact, new-or-updated-contact | apps/zoho/zoho-invoice/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/invoice/api/v3/contacts/) |
-| apps/zoho/zoho-people | 1 | record-list | new-or-updated-record | apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-09) | hand | record-list documents modifiedtime (ms) since-filter with sIndex/limit<=200 paging; since-window poll with resume position and seed floor, formLinkName is a trigger param; no new-record trigger because AddedTime has no time zone (https://www.zoho.com/people/api/bulk-records.html) |
+| apps/zoho/zoho-people | 3 | record-list | new-job, new-or-updated-record, new-project | apps/zoho/zoho-people/README.md Triggers section (verified 2026-11-10) | hand | new-or-updated-record plus Time Tracker project and job snapshots; time logs and timesheets are date-range listings with no created-since filter |
 | apps/zoho/zoho-recruit | 2 | candidate-list | new-candidate, new-or-updated-candidate | apps/zoho/zoho-recruit/README.md Triggers section (verified 2026-11-09) | hand | sort_by Created_Time/Modified_Time with sort_order=desc documented on get-records |
 | apps/zoho/zoho-sheet | 2 | workbook-list | new-workbook, new-or-updated-workbook | apps/zoho/zoho-sheet/README.md Triggers section (verified 2026-11-09) | hand | workbook.list sort_option recently_created/recently_modified documented |
 | apps/zoho/zoho-sign | 1 | request-list | new-request | apps/zoho/zoho-sign/README.md Triggers section (verified 2026-11-09) | hand | page_context sort_column=created_time, sort_order=DESC documented; no modified sort column |
-| apps/zoho/zoho-workdrive | 1 | team-member-list | new-team-member | apps/zoho/zoho-workdrive/README.md Triggers section (verified 2026-11-09) | hand | Get Team Members has no paging parameters, so the roster is one bounded request; additions are snapshotted; team folders not watched because their list pages without a documented cap (https://www.zoho.com/workdrive/developer/docs/api/v1/get-team-members.html) |
+| apps/zoho/zoho-workdrive | 4 | team-member-list | new-file, new-team-folder, new-team-folder-file, new-team-member | apps/zoho/zoho-workdrive/README.md Triggers section (checked 2026-11-10) | hand | new-team-member, new-team-folder, new-file and new-team-folder-file (snapshots, page[limit] 50, 1000-row cap); folder listings document no sort or created filter, so they are capped snapshots (https://www.zoho.com/workdrive/developer/docs/api/v1/getting-started-pagination.html) |
 | apps/zoho/zohobooks | 2 | contact-list | new-contact, new-or-updated-contact | apps/zoho/zohobooks/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/books/api/v3/contacts/) |
 | apps/zoho/zohodesk | 8 | contact-list | new-contact, new-ticket, new-account, new-agent, new-department, new-ticket-thread, new-ticket-comment, new-ticket-attachment | apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-10) | hand | Newest-first (sortBy=-createdTime) polls of contacts, tickets and accounts plus bounded snapshots of agents and departments; contact, ticket and account lists document no modified-time sort (https://desk.zoho.com/DeskAPIDocument). Per-ticket child triggers (thread, comment, attachment) take a required ticketId; comments and attachments request sortBy=-commentedTime / -createdTime, threads default to newest first. |
 | apps/zoho/zohomail | 1 | message-list | new-message | apps/zoho/zohomail/README.md Triggers section (verified 2026-11-09) | hand | messages/view sortBy=date, sortorder=false (newest first) documented |
