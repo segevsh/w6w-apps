@@ -5,7 +5,7 @@ Manage products, orders and customers on a self-hosted WooCommerce store.
 - **Categories** — commerce
 - **Auth methods** — api-key
 - **Actions** — 13
-- **Triggers** — 7 (webhook)
+- **Triggers** — 10 (webhook)
 - **Egress allowlist** — `*`
 - **Website** — https://woocommerce.com
 - **API docs** — https://woocommerce.github.io/woocommerce-rest-api-docs/
@@ -52,8 +52,11 @@ Read/Write permission, and the store must be able to reach the w6w callback URL 
 | `order-updated` | webhook | `order.updated` | the order as it is now |
 | `order-deleted` | webhook | `order.deleted` | the id of the deleted order |
 | `customer-created` | webhook | `customer.created` | the customer |
+| `customer-updated` | webhook | `customer.updated` | the customer as it is now |
+| `customer-deleted` | webhook | `customer.deleted` | the id of the deleted customer |
 | `product-created` | webhook | `product.created` | the product |
 | `product-updated` | webhook | `product.updated` | the product |
+| `product-deleted` | webhook | `product.deleted` | the id of the deleted product |
 | `event` | webhook | any topics you list (coupon, customer, order, product, or `action.<hook>`) | the topic and the payload |
 
 Every event has `topic`, `resource`, `event`, `webhookId`, `deliveryId` (`X-WC-Webhook-Delivery-ID`),
@@ -71,7 +74,13 @@ request with only a `webhook_id=<id>` form body): exactly that body is acknowled
 event**, so nothing unsigned can start a run. WooCommerce defines no signed timestamp, so there is
 no replay window to enforce; use `deliveryId` to skip a duplicate.
 
-Sources, verified 2026-11-09:
+**List actions.** `product-get-many`, `order-get-many` and `customer-get-many` have no poll of their
+own: WooCommerce itself pushes every new or changed order, customer and product through the webhooks
+above, registered by API with no dashboard step, so `product-created`, `order-created` and
+`customer-created` already deliver those records. Coupons have no actions here, so the coupon topics
+(`coupon.created`, `coupon.updated`, `coupon.deleted`) are reachable only through `event`.
+
+Sources, verified 2026-11-10:
 [webhooks](https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) (topics, headers,
 signature, create, list, delete); the ping body is from WooCommerce's `WC_Webhook::deliver_ping()`
 in [class-wc-webhook.php](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/class-wc-webhook.php).
