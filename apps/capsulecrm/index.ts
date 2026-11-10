@@ -41,6 +41,11 @@ import quota from "./health/quota.ts";
 
 import newOpportunity from "./triggers/new-opportunity.ts";
 import newOrUpdatedOpportunity from "./triggers/new-or-updated-opportunity.ts";
+import newParty from "./triggers/new-party.ts";
+import newOrUpdatedParty from "./triggers/new-or-updated-party.ts";
+import newPipeline from "./triggers/new-pipeline.ts";
+import newMilestone from "./triggers/new-milestone.ts";
+import newUser from "./triggers/new-user.ts";
 export default {
   actions: [
     // party
@@ -70,5 +75,13 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, quota],
-  triggers: [newOpportunity, newOrUpdatedOpportunity],
+  triggers: [
+    newOpportunity,
+    newOrUpdatedOpportunity,
+    newParty,
+    newOrUpdatedParty,
+    newPipeline,
+    newMilestone,
+    newUser,
+  ],
 } satisfies AppDefinition;
