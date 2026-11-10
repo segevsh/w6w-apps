@@ -5,6 +5,7 @@ Manage events, guest registration and ticket types on a **Luma calendar**, on th
 - **Categories** — calendar, commerce
 - **Auth methods** — api-key
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`quota`, ~~`service`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `public-api.luma.com`
 - **Website** — https://lu.ma/
@@ -133,3 +134,13 @@ deno task lint        # deno lint
 deno task test         # unit tests, mocked HookContext
 deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-calendar-event` — New Calendar Event | Poll | `calendar-events-list` | Each calendar event at the top of the start-time order |
+
+Calls `calendar-events-list` with `sortDirection=desc`, `paginationLimit=100`. **Limit:** the vendor's only sort column is `start_at`, so the feed is ordered by event START time, not creation time. A new event that starts earlier than the 100 latest-starting events (for example a past-dated event added later) is not seen. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list calendar events](https://docs.luma.com/reference/get_v1-calendars-events-list) (verified 2026-11-10).

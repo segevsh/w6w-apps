@@ -5,6 +5,7 @@ Create and manage Livestorm events, sessions, registrants and webhooks.
 - **Categories** — video, communication
 - **Auth methods** — apiKey (private API token)
 - **Actions** — 40
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.livestorm.co`
 - **Website** — https://livestorm.co
 - **API docs** — https://developers.livestorm.co/reference/get_ping
@@ -195,4 +196,13 @@ Researched and endpoint-verified 2026-09-06 against the OpenAPI document embedde
 `status.livestorm.co`. Status surfaces move; re-check if a probe starts failing for everyone
 at once.
 
-Triggers: not shipped — `people-attribute-list` lists schema attributes, not a primary new-record feed (https://developers.livestorm.co/reference/list-people-attributes).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event` — New Event | Poll | `event-list` | Each newly created event |
+| `new-or-updated-event` — New or Updated Event | Poll | `event-list` | Each event that was created or edited |
+
+`GET /events` has no sort parameter, so both triggers are hand-written since-filter polls over the same `event-list` action: each check sends `filter[created_since]` (new) or `filter[updated_since]` (edited) set to the stored cursor minus a 120 s overlap (Unix seconds), pages through the result 0-indexed (`page[number]`, 100 per page, at most 5 pages), and dedupes by id (`id:updated_at` for the edited-record trigger). The first check records the cursor and emits nothing. More than 500 changes between two checks are not all seen. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list events](https://developers.livestorm.co/reference/get_events) (verified 2026-11-10).

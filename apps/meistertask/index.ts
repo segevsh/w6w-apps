@@ -90,6 +90,8 @@ import personGet from "./actions/person-get.ts";
 import personMe from "./actions/person-me.ts";
 import projectPersonList from "./actions/project-person-list.ts";
 
+import newChecklistItem from "./triggers/new-checklist-item.ts";
+
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
 
@@ -144,4 +146,5 @@ export default {
   ],
   auth: [personalAccessToken, oauth2],
   healthChecks: [service, rateLimit],
+  triggers: [newChecklistItem],
 } satisfies AppDefinition;

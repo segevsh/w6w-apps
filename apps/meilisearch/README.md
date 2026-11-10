@@ -5,6 +5,7 @@ Search, index documents, and manage Meilisearch indexes and their settings.
 - **Categories** — search, databases, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 24
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*` (self-hostable — see below)
 - **Website** — https://www.meilisearch.com
 - **API docs** — https://www.meilisearch.com/docs/reference/api/overview ·
@@ -214,4 +215,12 @@ machine-readable half — `index_not_found`, `invalid_search_filter`,
 `invalid_api_key` — and `link` points at the documentation for it, so the whole
 body is surfaced rather than a summary.
 
-Triggers: not shipped — `search` can sort only a user-configured sortable field, so no universal newest-first document feed exists (https://www.meilisearch.com/docs/reference/api/search).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | Poll | `task-list` | Each new asynchronous task (indexing, settings change, …) |
+
+Calls `task-list` (`limit=100`): the vendor returns tasks "in descending order of uid by default, so the most recently created or updated tasks appear first" and `uid` is the stable id. `index-list` (small, but with no documented order or timestamp) and `search`/`document-list` (order only by a user-configured sortable field) are not used as feeds. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list tasks](https://www.meilisearch.com/docs/reference/api/tasks/list-tasks) (verified 2026-11-10).

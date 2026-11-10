@@ -32,6 +32,8 @@ import ticketTypeDelete from "./actions/ticket-type-delete.ts";
 
 import apiKey from "./auth/api-key.ts";
 
+import newCalendarEvent from "./triggers/new-calendar-event.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -69,4 +71,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newCalendarEvent],
 } satisfies AppDefinition;

@@ -6,6 +6,7 @@ Loops.
 - **Categories** — email, marketing, communication
 - **Auth methods** — api-key
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.loops.so`
 - **Website** — https://loops.so
 - **API docs** — https://loops.so/docs/api ·
@@ -179,3 +180,13 @@ sending* allowance has no API at all.
 Loops' envelope is `{"success": false, "message": "...", "error": ...}`. The
 message is the useful half — *"Invalid API key"*, *"Contact not found."* — and
 the whole body is surfaced because `error` sometimes carries per-field detail.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transactional` — New Transactional Email | Poll | `transactional-list` | Each newly created transactional email |
+
+`transactional-list` is documented as returning transactional emails "most recently created first", so the first page (`limit=100`) is the newest feed. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: list transactional emails](https://loops.so/docs/api-reference/list-transactional-emails) (verified 2026-11-10).

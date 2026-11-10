@@ -29,6 +29,9 @@ import shiftList from "./actions/shift-list.ts";
 import storeGet from "./actions/store-get.ts";
 import storeList from "./actions/store-list.ts";
 import taxList from "./actions/tax-list.ts";
+import newReceipt from "./triggers/new-receipt.ts";
+import newOrUpdatedReceipt from "./triggers/new-or-updated-receipt.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -58,4 +61,5 @@ export default {
   ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newReceipt, newOrUpdatedReceipt],
 } satisfies AppDefinition;

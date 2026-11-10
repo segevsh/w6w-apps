@@ -6,6 +6,7 @@ Manage MeisterTask projects, sections, tasks, subtasks, checklists, labels and c
 - **Categories** — project-management, productivity
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 38
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 live (`service`) + 1 declared absence (~~`rate-limit`~~) + 2 derived
   (`auth:personal-access-token`, `auth:oauth2`)
 - **Egress allowlist** — `www.meistertask.com` (the `service` check adds `status.meistertask.com`
@@ -299,3 +300,13 @@ deno task test
 `deno task validate` passes `--config ./deno.json` explicitly — without it, `_tools/audit.ts` picks
 up `_tools/deno.json` as its configuration and cannot resolve the `@w6w/types` value imports this
 app's health check needs (`worstHealthState`).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-checklist-item` — New Checklist Item | Poll | `checklist-item-list` | Each newly created checklist item |
+
+Calls `checklist-item-list` for the configured checklist with `sort=-id` (a `-` prefix is descending; without `sort` the vendor lists ascending by id), `items=100`, `page=1`. Item ids grow with creation. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: checklist items](https://developers.meistertask.com/reference/get-checklist-items), [vendor docs: sorting](https://developers.meistertask.com/reference/sorting) (verified 2026-11-10).
