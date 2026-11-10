@@ -284,7 +284,9 @@ function csv(v: unknown): string[] {
 }
 
 /** The one Any Event trigger: a single Linear webhook for several resource types. */
-export function anyEventTrigger(): TriggerDefinition<TriggerParams, LinearEvent, TriggerState> {
+export function anyEventTrigger(
+  spec: { key: string; title: string },
+): TriggerDefinition<TriggerParams, LinearEvent, TriggerState> {
   const sample: LinearEvent = {
     resourceType: "Reaction",
     action: "create",
@@ -297,8 +299,8 @@ export function anyEventTrigger(): TriggerDefinition<TriggerParams, LinearEvent,
     updatedFrom: null,
   };
   return {
-    key: "any-event",
-    title: "Any Event",
+    key: spec.key,
+    title: spec.title,
     description:
       "Fires on any Linear data change for the resource types you pick (issues, comments, labels, projects, cycles, reactions by default). The run gets the resource type, the action, the record and, on an update, the values that changed.",
     params: [TEAM_PARAM, ACTIONS_PARAM, EVENTS_PARAM],
