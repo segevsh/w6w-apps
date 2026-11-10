@@ -12,7 +12,7 @@ and outreach machinery (sequences, tasks, lists) built on top of them, on the **
 - **Website** — https://www.apollo.io/
 - **API docs** — https://docs.apollo.io/reference/apollo-api
 - **Status page** — https://status.apollo.io/
-- **Triggers** — 2 (poll)
+- **Triggers** — 6 (poll)
 
 > **Everything below was verified against Apollo's own sources on 2026-08-29** — its OpenAPI 3.1
 > document (embedded inline in every `docs.apollo.io/reference/*` page as `document.api.schema`, 74
@@ -340,5 +340,30 @@ audit the way that actually resolves both import maps —
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll | `contact-search` | Each newly created contact |
 | `new-or-updated-contact` — New or Updated Contact | Poll | `contact-search` | Each newly created or modified contact |
+| `new-account` — New Account | Poll | `account-search` | Each account newly saved to your team's Apollo instance |
+| `new-list` — New List | Poll | `list-list` | Each list (label) newly created in your team's account |
+| `new-sequence` — New Sequence | Poll | `sequence-search` | Each sequence newly created in your team's account |
+| `new-sequence-activity` — New Contact Sequence Activity | Poll | `sequence-activity-list` | Each new sequence event (enrolled, paused, replied, ...) of the chosen contact (`contact_id`, optional `sequence_id`) |
 
-`contact-search` uses `contact_created_at` and `contact_updated_at`; Apollo documents each as most-recent-first. Source: [Apollo Search Contacts](https://docs.apollo.io/reference/search-for-contacts) (verified 2026-11-09).
+`contact-search` uses `contact_created_at` and `contact_updated_at`; Apollo documents each as most-recent-first.
+`account-search` with `account_created_at` descending is "the most recently created first"; the account
+object carries no update stamp, so there is no new-or-updated account trigger. A contact's activity feed is
+documented "ordered newest-first" (at most 50 events, no event id, so the id is built from sequence, type,
+time and message). Lists and sequences are small bounded collections: each check reads all of them and diffs
+the ids against the previous check (the first check records them and emits nothing).
+
+Not covered (no trigger), by reason:
+
+- reference data — `account-stage-list`, `contact-stage-list`, `deal-stage-list`
+- credit-consuming — `organization-search` and `organization-job-postings-list` (1 credit per page)
+- vendor-wide database search, not records of your account — `people-search`, `organization-search`
+- no creation or update order and no date filter, up to 50,000 records — `deal-list` (sorts: amount,
+  is_closed, is_won) and `task-search` (sorts: task_due_at, task_priority)
+
+Sources: [Apollo Search Contacts](https://docs.apollo.io/reference/search-for-contacts),
+[Search for Accounts](https://docs.apollo.io/reference/search-for-accounts),
+[Get a List of All Lists](https://docs.apollo.io/reference/get-a-list-of-all-lists),
+[Search for Sequences](https://docs.apollo.io/reference/search-for-sequences),
+[Get Contact Sequence Activity](https://docs.apollo.io/reference/get-contact-sequence-activity),
+[List All Deals](https://docs.apollo.io/reference/list-all-deals),
+[Search for Tasks](https://docs.apollo.io/reference/search-tasks) (verified 2026-11-10).
