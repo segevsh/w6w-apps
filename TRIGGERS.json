@@ -1658,21 +1658,25 @@
   },
   {
     "path": "apps/dropbox/dropbox-sign",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-signature-request"
+    ],
+    "pollAction": "signature-request-list",
+    "reason": "New Signature Request polls signature-request-list with the documented search filter created:[yesterday TO today] (UTC days) and dedupes by signature_request_id; sent/viewed/signed/declined callback events also exist (queued as an upgrade).",
+    "verified": "apps/dropbox/dropbox-sign/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dropcontact",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "enrichment completed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: asynchronous enrichment completion; the API has no list of account records to poll.",
+    "verified": "apps/dropcontact/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/dub",
@@ -1698,12 +1702,15 @@
   },
   {
     "path": "apps/dust",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-agent",
+      "new-space"
+    ],
+    "pollAction": "agent-list",
+    "reason": "New Agent and New Space diff the unpaginated agent_configurations and spaces collections (pollSnapshot, added only); Dust webhooks are inbound triggers into agents, not outbound events.",
+    "verified": "apps/dust/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/easypost",
@@ -1754,9 +1761,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "async-job and file lists hold only the caller's own submitted jobs/uploads with no documented order or since filter; completion callbacks are a per-request webhook_receiver (signed, recorded in webhooks file), not an account subscription.",
+    "verified": "apps/edenai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/egnyte",
@@ -1782,12 +1789,14 @@
   },
   {
     "path": "apps/elastic-email",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-list"
+    ],
+    "pollAction": "list-list",
+    "reason": "New List diffs GET /v4/lists (returns all lists, limit 5000, cap error); contacts/campaigns/templates have only limit/offset with no created filter; v4 notification webhooks (/webhook, signing secret) exist and are queued as an upgrade.",
+    "verified": "apps/elastic-email/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/elevenlabs",
@@ -1802,12 +1811,16 @@
   },
   {
     "path": "apps/emailoctopus",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact",
+      "new-list"
+    ],
+    "pollAction": "list-contacts",
+    "reason": "new-contact/new-or-updated-contact poll created_at.gte / last_updated_at.gte following paging.next up to 5 pages (idOf id:last_updated_at); new-list diffs the paginated lists collection; the v2 API publishes no webhooks.",
+    "verified": "apps/emailoctopus/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/encharge",
@@ -1845,12 +1858,14 @@
   },
   {
     "path": "apps/esignatures",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "contract events"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: contract lifecycle events signed with X-Signature-SHA256; the vendor docs tell integrators not to poll (blocked requests) and templates/collaborators have no created filter.",
+    "verified": "apps/esignatures/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/eventbrite",
@@ -1880,30 +1895,37 @@
   },
   {
     "path": "apps/everhour",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-client",
+      "new-invoice"
+    ],
+    "pollAction": "client-list",
+    "reason": "GET /clients and GET /invoices return the full collection unpaginated (https://developers.everhour.com/pagination.md); shipped as pollSnapshot; webhook (POST /hooks, https://developers.everhour.com/webhooks.md) queued separately",
+    "verified": "apps/everhour/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/exa",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "monitor events"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: monitor delivery; list-websets documents only cursor paging and a search filter (no order or created filter) and Websets are created only by the caller's own calls.",
+    "verified": "apps/exa/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/expensify",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-policy"
+    ],
+    "pollAction": "list-policies",
+    "reason": "New Policy diffs the unpaginated get/policyList job (pollSnapshot, added only); export-reports is an export job with no created-since cursor and the Integration Server documents no webhooks.",
+    "verified": "apps/expensify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/eztexting",
@@ -1918,12 +1940,14 @@
   },
   {
     "path": "apps/fareharbor",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-booking"
+    ],
+    "pollAction": "booking-list-by-create-date",
+    "reason": "New Booking polls bookings-by-create-date for today and yesterday (UTC) and dedupes by pk; support-configured booking notifications are queued as an upgrade.",
+    "verified": "apps/fareharbor/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fathom",
@@ -1938,12 +1962,14 @@
   },
   {
     "path": "apps/feedly",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-article"
+    ],
+    "pollAction": "articles-collect",
+    "reason": "New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade.",
+    "verified": "apps/feedly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fellow",
@@ -1995,30 +2021,36 @@
   },
   {
     "path": "apps/fireberry",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-record"
+    ],
+    "pollAction": "query-records",
+    "reason": "New Record runs the v3 query for a chosen object ordered by createdon desc (documented orderBy) and dedupes by _id; the developer docs describe no webhooks.",
+    "verified": "apps/fireberry/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/firecrawl",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "crawl and batch completion"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: caller-configured crawl, batch-scrape and extract completion callbacks; status reads are caller-started jobs with no account record feed.",
+    "verified": "apps/firecrawl/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fireflies",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-transcript"
+    ],
+    "pollAction": "transcript-search",
+    "reason": "New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade.",
+    "verified": "apps/fireflies/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/firestore",
@@ -2033,12 +2065,14 @@
   },
   {
     "path": "apps/fivetran",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-connection"
+    ],
+    "pollAction": "connection-list",
+    "reason": "New Connection diffs the cursor-paginated /v1/connections (limit 1000, up to 6 pages, cap error); Fivetran Webhook API (sync_start, sync_end, ...) exists and is queued as an upgrade.",
+    "verified": "apps/fivetran/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/float",
@@ -2054,12 +2088,14 @@
   },
   {
     "path": "apps/flodesk",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-segment"
+    ],
+    "pollAction": "list-segments",
+    "reason": "New Segment diffs the paginated segments collection (per_page 100, max 5 pages, cap error); subscribers have no created filter or documented order; subscriber.created webhooks are queued as an upgrade.",
+    "verified": "apps/flodesk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/folk",

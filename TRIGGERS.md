@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 63, manual-webhook: 19, poll: 428, none: 173
+**Totals:** 683 apps — webhook-api: 67, manual-webhook: 19, poll: 440, none: 157
 
-## webhook-api (63)
+## webhook-api (67)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -31,8 +31,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/clockify | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/cloudconvert | job.created, job.finished, job.failed | no | hand | webhook candidate queued for a webhook node: job.created, job.finished, job.failed |
 | apps/copper | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/dropcontact | enrichment completed | apps/dropcontact/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: asynchronous enrichment completion; the API has no list of account records to poll. |
+| apps/esignatures | contract events | apps/esignatures/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: contract lifecycle events signed with X-Signature-SHA256; the vendor docs tell integrators not to poll (blocked requests) and templates/collaborators have no created filter. |
 | apps/eventbrite | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated | no | hand | shipped: webhook registered through the vendor API |
+| apps/exa | monitor events | apps/exa/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: monitor delivery; list-websets documents only cursor paging and a search filter (no order or created filter) and Websets are created only by the caller's own calls. |
 | apps/figma | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/firecrawl | crawl and batch completion | apps/firecrawl/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: caller-configured crawl, batch-scrape and extract completion callbacks; status reads are caller-started jobs with no account record feed. |
 | apps/formstack | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/fullenrich | enrichment completion | apps/fullenrich/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: enrichment completion |
 | apps/github | issue, issue-comment, pull-request, push, release, workflow-run | apps/github/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -102,7 +106,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (428)
+## poll (440)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -209,24 +213,36 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/document360 | workspace-article-list | new-article, new-or-updated-article | apps/document360/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash |
 | apps/docusign | envelope-list | new-envelope, new-or-updated-envelope | apps/docusign/README.md Triggers section (verified 2026-11-09) | hand | order_by=created\|status_changed with order=desc and a 30-day from_date |
 | apps/donorbox | event-list | new-event | apps/donorbox/README.md Triggers section (verified 2026-11-09) | hand | event-list takes the documented order=desc (default desc); first page holds the newest events |
+| apps/dropbox/dropbox-sign | signature-request-list | new-signature-request | apps/dropbox/dropbox-sign/README.md Triggers section (verified 2026-11-09) | hand | New Signature Request polls signature-request-list with the documented search filter created:[yesterday TO today] (UTC days) and dedupes by signature_request_id; sent/viewed/signed/declined callback events also exist (queued as an upgrade). |
 | apps/dub | customer-list | new-customer | apps/dub/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/duda | list-sites | new-site | apps/duda/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-sites |
+| apps/dust | agent-list | new-agent, new-space | apps/dust/README.md Triggers section (verified 2026-11-09) | hand | New Agent and New Space diff the unpaginated agent_configurations and spaces collections (pollSnapshot, added only); Dust webhooks are inbound triggers into agents, not outbound events. |
 | apps/easypost | event-list | new-event | apps/easypost/README.md Triggers section (verified 2026-11-09) | hand | events feed pages from the newest with before_id; start_datetime defaults to one month back |
 | apps/ebay | item-search | new-listing | apps/ebay/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action item-search |
 | apps/economic | invoice-booked-list | new-booked-invoice | apps/economic/README.md Triggers section (verified 2026-11-09) | hand | invoice-booked-list sorts -bookedInvoiceNumber (newest first) |
 | apps/ecwid | customer-search | new-customer | apps/ecwid/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-search |
 | apps/egnyte | link-list | new-link | apps/egnyte/README.md Triggers section (verified 2026-11-09) | hand | link-list has a created_after filter: since-filter shape with id dedupe (replaces round-1 search-based rejection) |
 | apps/elastic | search | new-record | apps/elastic/README.md Triggers section (verified 2026-11-09) | hand | search sorted by a user-named creation timestamp field descending |
+| apps/elastic-email | list-list | new-list | apps/elastic-email/README.md Triggers section (verified 2026-11-09) | hand | New List diffs GET /v4/lists (returns all lists, limit 5000, cap error); contacts/campaigns/templates have only limit/offset with no created filter; v4 notification webhooks (/webhook, signing secret) exist and are queued as an upgrade. |
 | apps/elevenlabs | voice-list | new-voice | apps/elevenlabs/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action voice-list |
+| apps/emailoctopus | list-contacts | new-contact, new-or-updated-contact, new-list | apps/emailoctopus/README.md Triggers section (verified 2026-11-09) | hand | new-contact/new-or-updated-contact poll created_at.gte / last_updated_at.gte following paging.next up to 5 pages (idOf id:last_updated_at); new-list diffs the paginated lists collection; the v2 API publishes no webhooks. |
 | apps/encharge | segment-people-list | new-segment-person | apps/encharge/README.md Triggers section (verified 2026-11-09) | hand | segment-people-list sort+order=desc on a user-named creation-time person field (sort field name is user-supplied, not documented by the vendor) |
 | apps/erpnext | list-documents | new-document, new-or-updated-document | apps/erpnext/README.md Triggers section (verified 2026-11-09) | hand | list-documents order_by creation desc / modified desc over a user-chosen DocType |
+| apps/everhour | client-list | new-client, new-invoice | apps/everhour/README.md Triggers section (verified 2026-11-09) | hand | GET /clients and GET /invoices return the full collection unpaginated (https://developers.everhour.com/pagination.md); shipped as pollSnapshot; webhook (POST /hooks, https://developers.everhour.com/webhooks.md) queued separately |
+| apps/expensify | list-policies | new-policy | apps/expensify/README.md Triggers section (verified 2026-11-09) | hand | New Policy diffs the unpaginated get/policyList job (pollSnapshot, added only); export-reports is an export job with no created-since cursor and the Integration Server documents no webhooks. |
 | apps/eztexting | contact-list | new-contact | apps/eztexting/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1) |
+| apps/fareharbor | booking-list-by-create-date | new-booking | apps/fareharbor/README.md Triggers section (verified 2026-11-09) | hand | New Booking polls bookings-by-create-date for today and yesterday (UTC) and dedupes by pk; support-configured booking notifications are queued as an upgrade. |
 | apps/fathom | meeting-get-many | new-meeting | apps/fathom/README.md Triggers section (verified 2026-11-09) | hand | meeting-get-many lists meetings newest first, no sort arg |
+| apps/feedly | articles-collect | new-article | apps/feedly/README.md Triggers section (verified 2026-11-09) | hand | New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade. |
 | apps/fellow | action-item-list | new-action-item | apps/fellow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action action-item-list |
 | apps/fillout | submission-list | new-submission | apps/fillout/README.md Triggers section (verified 2026-11-09) | hand | submission-list sort=desc (default is asc) over a user-chosen form |
 | apps/findymail | list-lists | new-list | apps/findymail/README.md Triggers section (verified 2026-11-09) | hand | list-lists is one unpaginated bounded response (contact lists): snapshot, additions only |
+| apps/fireberry | query-records | new-record | apps/fireberry/README.md Triggers section (verified 2026-11-09) | hand | New Record runs the v3 query for a chosen object ordered by createdon desc (documented orderBy) and dedupes by _id; the developer docs describe no webhooks. |
+| apps/fireflies | transcript-search | new-transcript | apps/fireflies/README.md Triggers section (verified 2026-11-09) | hand | New Transcript polls transcripts(fromDate = now - 2 days) by meeting date and dedupes by id; Webhooks V2 (meeting.transcribed, meeting.summarized, meeting.bot_joined, HMAC-SHA256 X-Hub-Signature) is queued as an upgrade. |
 | apps/firestore | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
+| apps/fivetran | connection-list | new-connection | apps/fivetran/README.md Triggers section (verified 2026-11-09) | hand | New Connection diffs the cursor-paginated /v1/connections (limit 1000, up to 6 pages, cap error); Fivetran Webhook API (sync_start, sync_end, ...) exists and is queued as an upgrade. |
 | apps/float | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
+| apps/flodesk | list-segments | new-segment | apps/flodesk/README.md Triggers section (verified 2026-11-09) | hand | New Segment diffs the paginated segments collection (per_page 100, max 5 pages, cap error); subscribers have no created filter or documented order; subscriber.created webhooks are queued as an upgrade. |
 | apps/folk | list-groups | new-group | apps/folk/README.md Triggers section (verified 2026-11-09) | hand | unpaginated group collection is snapshotted for additions |
 | apps/followupboss | search-people | new-person, new-or-updated-person | apps/followupboss/README.md Triggers section (verified 2026-11-09) | hand | search-people sorted -created / -updated (documented sort values, '-' = descending) |
 | apps/formbricks | survey-list | new-survey | apps/formbricks/README.md Triggers section (verified 2026-11-09) | hand | workspace survey collection is snapshotted for additions |
@@ -535,7 +551,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (173)
+## none (157)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -565,24 +581,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/drata |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/drip |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/dropbox/dropbox |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dropbox/dropbox-sign |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dropcontact |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/dust |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/edenai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/elastic-email |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/emailoctopus |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/edenai |  | apps/edenai/README.md Triggers section (verified 2026-11-09) | hand | async-job and file lists hold only the caller's own submitted jobs/uploads with no documented order or since filter; completion callbacks are a per-request webhook_receiver (signed, recorded in webhooks file), not an account subscription. |
 | apps/enrichlayer | company-employees | apps/enrichlayer/README.md Triggers section (verified 2026-11-09) | hand | each poll needs a per-company or per-school URL and spends enrichment credits; no account-wide record feed (https://enrichlayer.com/docs) |
-| apps/esignatures |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/everhour |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/exa |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/expensify |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/fareharbor |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/feedly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/fireberry |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/firecrawl |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/fireflies |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/fivetran |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/flodesk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/formidableforms |  | apps/formidableforms/README.md Triggers section (verified 2026-11-09) | hand | entries list documents no sort token, created-since semantics or page size (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/) |
 | apps/fortnox |  | apps/fortnox/README.md Triggers section (verified 2026-11-09) | hand | customer-list orders only by customer number or name and its lastmodified filter cannot separate new from edited customers (https://developer.fortnox.se/documentation/resources/customers/) |
 | apps/gcs |  | apps/gcs/README.md Triggers section (verified 2026-11-09) | hand | object listings are lexicographic by object name and object-change notifications publish to Pub/Sub rather than an HTTP event subscription |
