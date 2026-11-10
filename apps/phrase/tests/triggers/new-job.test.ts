@@ -16,14 +16,17 @@ const job = (id: string, created: string) => ({
   updated_at: created,
 });
 
-test("new-job: seeds without emitting and requests the since-filtered feed", async () => {
+test("new-job: seeds without reading or emitting, then requests the since-filtered feed", async () => {
   clock.now = () => NOW;
   const seed = mockCtx([{ body: [job("job-1", "2026-11-10T11:55:00Z")] }]);
   const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
-  assertEquals(seed.calls[0].method, "GET");
-  assertEquals(seed.calls[0].url, URL_AT_NOW);
+  assertEquals(seed.calls.length, 0);
+  const next = mockCtx([{ body: [] }]);
+  await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(next.calls[0].method, "GET");
+  assertEquals(next.calls[0].url, URL_AT_NOW);
 });
 
 test("new-job: emits only the unseen job, and a retry is idempotent", async () => {

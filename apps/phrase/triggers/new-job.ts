@@ -10,6 +10,10 @@ export default sinceFilterTrigger<Job, { projectId: string }>({
   description: "The run gets each newly created job in the chosen project.",
   params: jobTriggerParams,
   load: jobsSince(jobList as unknown as ActionDefinition),
+  tsOf: (job) => {
+    const ms = Date.parse(String(job.created_at ?? ""));
+    return Number.isNaN(ms) ? undefined : ms;
+  },
   idOf: (job) => String(job.id ?? ""),
   keep: (job, from) =>
     typeof job.created_at === "string" && Date.parse(job.created_at) >= Date.parse(from),

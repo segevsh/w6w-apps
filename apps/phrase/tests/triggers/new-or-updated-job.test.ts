@@ -10,14 +10,17 @@ const URL_AT_NOW =
   "https://api.phrase.com/v2/projects/proj-9/jobs?updated_since=2026-11-10T11%3A50%3A00.000Z&page=1&per_page=100";
 const job = (id: string, updated: string) => ({ id, updated_at: updated });
 
-test("new-or-updated-job: seeds without emitting and requests the since-filtered feed", async () => {
+test("new-or-updated-job: seeds without reading or emitting, then requests the since-filtered feed", async () => {
   clock.now = () => NOW;
   const seed = mockCtx([{ body: [job("job-1", "2026-11-10T11:55:00Z")] }]);
   const seeded = await trigger.poll!({ ...input, state: {} }, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
-  assertEquals(seed.calls[0].method, "GET");
-  assertEquals(seed.calls[0].url, URL_AT_NOW);
+  assertEquals(seed.calls.length, 0);
+  const next = mockCtx([{ body: [] }]);
+  await trigger.poll!({ ...input, state: seeded.nextState }, next.ctx);
+  assertEquals(next.calls[0].method, "GET");
+  assertEquals(next.calls[0].url, URL_AT_NOW);
 });
 
 test("new-or-updated-job: emits a new job and an edited job; retry is idempotent", async () => {
