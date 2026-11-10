@@ -10,6 +10,10 @@ export default sinceFilterTrigger<Employee, Record<string, never>>({
   description: "The run gets each newly created employee.",
   load: employeesSince(listEmployees as unknown as ActionDefinition),
   idOf: (e) => String(e.id ?? ""),
+  tsOf: (e) => {
+    const ms = Date.parse(String(e.created_at ?? ""));
+    return Number.isNaN(ms) ? undefined : ms;
+  },
   keep: (e, from) =>
     typeof e.created_at === "string" && Date.parse(e.created_at) >= Date.parse(from),
   output: [

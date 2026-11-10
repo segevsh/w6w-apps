@@ -10,6 +10,10 @@ export default sinceFilterTrigger<Employee, Record<string, never>>({
   description: "The run gets each employee that was created or updated.",
   load: employeesSince(listEmployees as unknown as ActionDefinition),
   idOf: (e) => `${e.id ?? ""}:${e.last_modified_at ?? ""}`,
+  tsOf: (e) => {
+    const ms = Date.parse(String(e.last_modified_at ?? ""));
+    return Number.isNaN(ms) ? undefined : ms;
+  },
   output: [
     { key: "id", type: "number", label: "Employee ID" },
     { key: "first_name", type: "string", label: "First name" },
