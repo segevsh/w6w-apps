@@ -216,9 +216,10 @@ export class VantaClient {
     options: RequestOptions = {},
     wantTotal = Infinity,
     maxPages = 50,
+    startCursor?: string,
   ): Promise<Page<T>> {
     const items: T[] = [];
-    let cursor: string | undefined;
+    let cursor: string | undefined = startCursor;
     let hasNextPage = false;
     let pages = 0;
 
