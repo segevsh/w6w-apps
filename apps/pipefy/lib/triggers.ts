@@ -30,6 +30,8 @@ const SECRET_HEADER = "X-W6W-Webhook-Secret";
 export interface TriggerParams {
   pipeId?: string;
   tableId?: string;
+  /** Any-event trigger only: comma-separated Pipefy webhook actions; empty = every card event. */
+  events?: string;
 }
 
 /** What `onSubscribe` returns and the host persists on the subscription. */
@@ -37,6 +39,8 @@ export interface TriggerState {
   webhookId: string;
   /** The shared secret registered as the `X-W6W-Webhook-Secret` delivery header. */
   secret: string;
+  /** Any-event trigger only: the actions this webhook was registered for. */
+  actions?: string[];
 }
 
 /** The run's `trigger.event`: one card event. */
@@ -49,7 +53,48 @@ export interface PipefyCardEvent {
   fromPhase: Record<string, unknown> | null;
   toPhase: Record<string, unknown> | null;
   user: Record<string, unknown> | null;
+  /** `card.field_update` only. */
+  field?: Record<string, unknown> | null;
+  newValue?: unknown;
+  /** `card.comment_create` only. */
+  comment?: string;
+  mentionedUsers?: unknown[];
   data: Record<string, unknown>;
+}
+
+/** Every webhook action Pipefy documents (https://developers.pipefy.com/reference/pipe-table-webhooks). */
+export const PIPEFY_ACTIONS = [
+  "card.create",
+  "card.field_update",
+  "card.move",
+  "card.done",
+  "card.delete",
+  "card.comment_create",
+  "card.email_received",
+  "card.late",
+  "card.overdue",
+  "card.expired",
+  "audit_log.export_finished",
+  "automation.execution",
+] as const;
+
+/** What an empty `events` registers: the card/record events (not the one-per-pipe or export ones). */
+const DEFAULT_CARD_ACTIONS = PIPEFY_ACTIONS.slice(0, 10);
+/** Pipefy: "Lateness and Expiration type webhooks will not trigger for tables". */
+const NOT_FOR_TABLES = new Set(["card.late", "card.expired"]);
+
+/** The comma-separated `events` param → the actions to register. */
+export function chooseActions(events: string | undefined, isTable: boolean): string[] {
+  const asked = (events ?? "").split(",").map((e) => e.trim()).filter((e) => e !== "");
+  if (asked.length === 0) {
+    return DEFAULT_CARD_ACTIONS.filter((a) => !(isTable && NOT_FOR_TABLES.has(a)));
+  }
+  const known = new Set<string>(PIPEFY_ACTIONS);
+  const bad = asked.filter((a) => !known.has(a));
+  if (bad.length > 0) {
+    throw new Error(`Unknown Pipefy webhook action(s): ${bad.join(", ")}.`);
+  }
+  return [...new Set(asked)];
 }
 
 const PARAMS: Param[] = [
@@ -67,6 +112,14 @@ const PARAMS: Param[] = [
   },
 ];
 
+const EVENTS_PARAM: Param = {
+  key: "events",
+  label: "Events",
+  type: "string",
+  hint:
+    "Comma-separated Pipefy webhook actions (card.create, card.field_update, card.move, card.done, card.delete, card.comment_create, card.email_received, card.late, card.overdue, card.expired, audit_log.export_finished, automation.execution). Leave empty for every card event.",
+};
+
 const OUTPUT: OutputField[] = [
   { key: "action", type: "string", label: "Action" },
   { key: "cardId", type: "string", label: "Card ID" },
@@ -76,6 +129,10 @@ const OUTPUT: OutputField[] = [
   { key: "fromPhase", type: "object", label: "From Phase (moves)" },
   { key: "toPhase", type: "object", label: "To Phase (moves)" },
   { key: "user", type: "object", label: "User" },
+  { key: "field", type: "object", label: "Field (field updates)" },
+  { key: "newValue", type: "string", label: "New Value (field updates)" },
+  { key: "comment", type: "string", label: "Comment (comments)" },
+  { key: "mentionedUsers", type: "array", label: "Mentioned Users (comments)" },
   { key: "data", type: "object", label: "Full Payload Data" },
 ];
 
@@ -110,13 +167,21 @@ export function chooseRepo(params: TriggerParams | undefined): Record<string, st
 }
 
 /** The parsed delivery → its event, or null when it is another action's delivery. */
-export function normalizeDelivery(body: unknown, action: string): PipefyCardEvent | null {
+export function normalizeDelivery(
+  body: unknown,
+  action: string | readonly string[],
+): PipefyCardEvent | null {
   const data = asObject(asObject(body)?.data);
   if (!data) throw new Error("Not a Pipefy webhook delivery: expected a data object.");
   const got = typeof data.action === "string" ? data.action : null;
   if (!got) throw new Error("Not a Pipefy webhook delivery: expected an action.");
-  if (got !== action) return null;
+  if (!(typeof action === "string" ? [action] : action).includes(got)) return null;
   const card = asObject(data.card);
+  const extras: Partial<PipefyCardEvent> = {};
+  if ("field" in data) extras.field = asObject(data.field);
+  if ("new_value" in data) extras.newValue = data.new_value;
+  if (typeof data.comment === "string") extras.comment = data.comment;
+  if (Array.isArray(data.mentioned_users)) extras.mentionedUsers = data.mentioned_users;
   return {
     action: got,
     cardId: idStr(card?.id),
@@ -125,7 +190,9 @@ export function normalizeDelivery(body: unknown, action: string): PipefyCardEven
     phase: asObject(data.on_phase),
     fromPhase: asObject(data.from),
     toPhase: asObject(data.to),
-    user: asObject(data.created_by) ?? asObject(data.done_by) ?? asObject(data.moved_by),
+    user: asObject(data.created_by) ?? asObject(data.done_by) ?? asObject(data.moved_by) ??
+      asObject(data.deleted_by) ?? asObject(data.updated_by) ?? asObject(data.made_by),
+    ...extras,
     data,
   };
 }
@@ -136,6 +203,8 @@ export interface WebhookTriggerSpec {
   description: string;
   /** The Pipefy webhook action this trigger registers for. */
   action: string;
+  /** Any-event trigger: add the `events` param and register the chosen list instead of `action`. */
+  anyEvent?: boolean;
   sample: PipefyCardEvent;
 }
 
@@ -147,15 +216,18 @@ export function webhookTrigger(
     key: spec.key,
     title: spec.title,
     description: spec.description,
-    params: PARAMS,
+    params: spec.anyEvent ? [...PARAMS, EVENTS_PARAM] : PARAMS,
     output: OUTPUT,
     sample: spec.sample,
 
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const repo = chooseRepo(params);
       const secret = randomSecret();
+      const actions = spec.anyEvent
+        ? chooseActions(params?.events, "table_id" in repo)
+        : [spec.action];
       const input = gqlInput({
-        actions: [spec.action],
+        actions,
         headers: JSON.stringify({ [SECRET_HEADER]: secret }),
         name: `w6w ${spec.title}`,
         ...repo,
@@ -167,7 +239,7 @@ export function webhookTrigger(
       const webhook = asObject(asObject(data.createWebhook)?.webhook);
       const id = idStr(webhook?.id);
       if (!id) throw new Error("Pipefy created the webhook but returned no id.");
-      return { webhookId: id, secret };
+      return spec.anyEvent ? { webhookId: id, secret, actions } : { webhookId: id, secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
@@ -194,7 +266,10 @@ export function webhookTrigger(
       if (got === undefined || !timingSafeEqual(got, secret)) {
         throw new Error("Pipefy delivery refused: the secret header is missing or wrong.");
       }
-      const event = normalizeDelivery(raw.body, spec.action);
+      const accepted = spec.anyEvent
+        ? (state as Partial<TriggerState>).actions ?? PIPEFY_ACTIONS
+        : spec.action;
+      const event = normalizeDelivery(raw.body, accepted);
       return event ? [event] : [];
     },
   };
