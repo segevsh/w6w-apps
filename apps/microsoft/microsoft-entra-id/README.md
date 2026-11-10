@@ -7,6 +7,7 @@ principals, the organization profile, and deleted items.
 - **Categories** — security, productivity
 - **Auth methods** — oauth2 (authorization code + PKCE, `login.microsoftonline.com`)
 - **Actions** — 28
+- **Triggers** — 9 (poll)
 - **Egress allowlist** — `graph.microsoft.com` (the OAuth endpoints are allowed implicitly)
 - **API** — `https://graph.microsoft.com/v1.0`. `beta` is not used. The old Azure AD Graph
   (`graph.windows.net`) is retired and is not used or referenced by any call.
@@ -183,3 +184,34 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 ## Triggers
 
 - **New Deleted Item** wraps `list-deleted-items` with `deletedDateTime desc`. [Microsoft Graph deleted items](https://learn.microsoft.com/en-us/graph/api/directory-deleteditems-list), verified 2026-11-09.
+
+| Key | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-user` | poll, newest-first (`createdDateTime desc`) | `list-users` | each new user |
+| `new-group` | poll, newest-first (`createdDateTime desc`) | `list-groups` | each new group |
+| `new-application` | poll, newest-first (`createdDateTime desc`) | `list-applications` | each new app registration |
+| `new-group-member` | poll, snapshot (`groupId`) | `list-group-members` | each object newly added to the group |
+| `new-group-owner` | poll, snapshot (`groupId`) | `list-group-owners` | each object newly made an owner |
+| `new-user-membership` | poll, snapshot (`userId`) | `list-user-memberships` | each group/role/unit the user newly joins |
+| `new-directory-role` | poll, snapshot | `list-directory-roles` | each newly activated directory role |
+| `new-directory-role-member` | poll, snapshot (`roleId`) | `list-directory-role-members` | each user/service principal newly assigned the role |
+| `new-deleted-item` | poll, newest-first | `list-deleted-items` | each recently deleted item |
+
+Snapshot triggers read the whole collection each check (up to 5 pages) and diff the ids; a
+collection larger than that fails with a clear error. Sorted lists send Graph's advanced-query
+header (`ConsistencyLevel: eventual`), so a brand-new object can appear a moment late; the seen-id
+window absorbs that.
+
+Not covered: `list-service-principals` (the service principal list documents no creation timestamp
+to sort or filter by, and a tenant holds thousands of principals including Microsoft's own, so it
+is neither newest-first nor a bounded snapshot).
+
+Vendor docs (verified 2026-11-10): [user list](https://learn.microsoft.com/en-us/graph/api/user-list),
+[group list](https://learn.microsoft.com/en-us/graph/api/group-list),
+[application list](https://learn.microsoft.com/en-us/graph/api/application-list),
+[group members](https://learn.microsoft.com/en-us/graph/api/group-list-members),
+[group owners](https://learn.microsoft.com/en-us/graph/api/group-list-owners),
+[user memberOf](https://learn.microsoft.com/en-us/graph/api/user-list-memberof),
+[directoryRole list](https://learn.microsoft.com/en-us/graph/api/directoryrole-list),
+[directoryRole members](https://learn.microsoft.com/en-us/graph/api/directoryrole-list-members),
+[deleted items](https://learn.microsoft.com/en-us/graph/api/directory-deleteditems-list).

@@ -34,6 +34,14 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newDeletedItem from "./triggers/new-deleted-item.ts";
+import newUser from "./triggers/new-user.ts";
+import newGroup from "./triggers/new-group.ts";
+import newApplication from "./triggers/new-application.ts";
+import newGroupMember from "./triggers/new-group-member.ts";
+import newGroupOwner from "./triggers/new-group-owner.ts";
+import newUserMembership from "./triggers/new-user-membership.ts";
+import newDirectoryRole from "./triggers/new-directory-role.ts";
+import newDirectoryRoleMember from "./triggers/new-directory-role-member.ts";
 
 export default {
   actions: [
@@ -66,7 +74,17 @@ export default {
     listDeletedItems,
     restoreDeletedItem,
   ],
-  triggers: [newDeletedItem],
+  triggers: [
+    newDeletedItem,
+    newUser,
+    newGroup,
+    newApplication,
+    newGroupMember,
+    newGroupOwner,
+    newUserMembership,
+    newDirectoryRole,
+    newDirectoryRoleMember,
+  ],
   auth: [oauth2],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

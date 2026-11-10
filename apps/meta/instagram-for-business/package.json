@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/instagram-for-business",
-  "version": "0.2.0",
-  "description": "Manage an Instagram professional account via the Instagram Graph API and trigger workflows on new media.",
+  "version": "0.3.0",
+  "description": "Manage an Instagram professional account via the Instagram Graph API and trigger workflows on new media, new comments, new stories and newly managed Pages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
