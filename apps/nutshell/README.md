@@ -1,5 +1,18 @@
 # Nutshell
 
+- **Triggers** — 1 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | poll | `find-leads`, sorted by `id` descending | Each newly created Lead |
+
+The trigger uses the same JSON-RPC `findLeads` action with a bounded 100-record, newest-first page;
+the first check seeds its ID window and emits no historical Leads. Nutshell's JSON-RPC `findLeads`
+documentation and webhook offering were verified 2026-11-09 at
+https://developers.nutshell.com/docs/core-findleads and https://developers.nutshell.com/docs/webhooks.
+
 Read and write [Nutshell](https://www.nutshell.com) CRM Leads, Accounts (companies) and Contacts
 (people), and log notes, over Nutshell's legacy **JSON-RPC** API.
 

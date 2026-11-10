@@ -1,5 +1,7 @@
 # monday.com
 
+Triggers: not shipped — webhook candidate queued for a webhook node: board and item events; existing board/item list actions paginate without a documented newest-first order or creation-since filter (https://developer.monday.com/api-reference/docs/webhooks)
+
 Boards, groups, items and columns on monday.com via its GraphQL API.
 
 - **Categories** — project-management, productivity

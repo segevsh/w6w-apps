@@ -1,5 +1,7 @@
 # Okta
 
+Triggers: not shipped — webhook candidate queued for a webhook node: Okta Event Hooks; Users and Groups lists page by opaque cursor without a documented creation-order or created-since filter (https://developer.okta.com/docs/concepts/event-hooks/)
+
 Manage Okta users and groups — identity lifecycle for an org.
 
 - **Categories** — security

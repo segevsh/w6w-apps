@@ -1,5 +1,7 @@
 # MSG91
 
+Triggers: not shipped — webhook candidate queued for a webhook node: delivery status callbacks; existing lists are templates, numbers, analytics, and delivery logs rather than a stable new-record collection (https://docs.msg91.com)
+
 Send SMS, one-time passwords, email and WhatsApp messages through [MSG91](https://msg91.com), the
 Indian CPaaS, and read delivery reports, from a workflow.
 

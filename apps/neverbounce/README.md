@@ -1,5 +1,7 @@
 # NeverBounce
 
+Triggers: not shipped — webhook candidate queued for a webhook node: bulk-job completion callback; job search has no documented newest-first order (https://developers.neverbounce.com/reference)
+
 Verify email addresses one at a time or in bulk jobs, and check credit balance, via the
 [NeverBounce](https://neverbounce.com) v4.2 API.
 

@@ -1,5 +1,7 @@
 # OneSignal
 
+Triggers: not shipped — webhook candidate queued for a webhook node: web-push delivery, click, and dismiss events; existing reads lack a documented newest-first order or creation-since filter (https://documentation.onesignal.com/docs/webhooks)
+
 Send push, email, and SMS messages, manage Users, Subscriptions, and Segments, and record custom
 events, on OneSignal's current REST API.
 

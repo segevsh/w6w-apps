@@ -1,5 +1,7 @@
 # MoonClerk
 
+Triggers: not shipped — payment and customer lists have date filters but no documented ordering, so offset pagination cannot safely find only new records (https://app.moonclerk.com/settings/api-key)
+
 Read payment forms, customers and payments in **MoonClerk**, the Stripe-backed payment-form
 builder, over its **read-only v1 API**.
 

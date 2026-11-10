@@ -1,5 +1,7 @@
 # Moneybird
 
+Triggers: not shipped — webhook candidate queued for a webhook node: contact and sales-invoice events; existing lists expose no documented newest-first order or created-since filter (https://developer.moneybird.com/api/webhooks/)
+
 Manage contacts and sales invoices in [Moneybird](https://www.moneybird.com/), the Dutch online
 accounting and invoicing service.
 
