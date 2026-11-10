@@ -46,6 +46,8 @@ import tableRecordDelete from "./actions/table-record-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import instance from "./health/instance.ts";
+import newTableRecord from "./triggers/new-table-record.ts";
+import newOrUpdatedTableRecord from "./triggers/new-or-updated-table-record.ts";
 
 export default {
   actions: [
@@ -63,4 +65,5 @@ export default {
   ],
   auth: [basic, oauth2],
   healthChecks: [service, quota, instance],
+  triggers: [newTableRecord, newOrUpdatedTableRecord],
 } satisfies AppDefinition;

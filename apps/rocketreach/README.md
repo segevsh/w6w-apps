@@ -1,5 +1,7 @@
 # RocketReach
 
+Triggers: not shipped — search endpoints return RocketReach's enrichment corpus rather than account-owned records, and the lookup-status read is a per-id check, not a list; a lookup-completion webhook exists and is queued for a webhook node (https://docs.rocketreach.co/, checked 2026-11-09)
+
 Search and look up people and companies, reveal professional and personal emails and phone numbers,
 run bulk lookups, and verify email addresses, over the **RocketReach API v2**.
 

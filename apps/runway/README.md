@@ -1,5 +1,7 @@
 # Runway
 
+Triggers: not shipped — list-avatars is cursor-paged (`limit` max 100, no documented order, since filter or total cap), so it is neither newest-first, since-filtered nor one bounded request; routers, voices and workflows have no such documented cursor/filter either (https://docs.dev.runwayml.com/api, checked 2026-11-09)
+
 Generate video, images, speech and sound effects, poll the tasks to completion, run saved
 workflows and Model Routers, and read credits and usage, over the **Runway developer API**
 (`api.dev.runwayml.com`).

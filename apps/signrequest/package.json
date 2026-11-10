@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/signrequest",
-  "version": "0.1.0",
-  "description": "Create documents and send them out for signature via SignRequest, track and cancel SignRequests, download signed PDFs, work from templates, and subscribe webhooks to document/signer events.",
+  "version": "0.2.0",
+  "description": "Create and sign SignRequest documents, and poll for newly created documents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.signrequest",
+    "build": { "include": ["../_shared"] },
     "displayName": "SignRequest",
     "apiDocs": [
       "https://signrequest.com/api/v1/docs/"

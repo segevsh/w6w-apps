@@ -1,5 +1,7 @@
 # SavvyCal
 
+Triggers: not shipped — event-list orders by scheduled time rather than creation or modification, and link-list is cursor-paged (`after` / `before`) with no stated cap, so it is not one bounded request; event lifecycle webhooks (event.created, event.rescheduled, event.canceled and more) are queued for a webhook node (https://docs.savvycal.com/developers/webhooks, checked 2026-11-09)
+
 Scheduling links: list, create, update, duplicate, toggle and delete links; read open time slots;
 book and cancel events; manage webhooks; read SavvyCal workflows. App id `io.w6w.savvycal`, API
 `https://api.savvycal.com/v1` (the "SavvyCal Meetings" API).
