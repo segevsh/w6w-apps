@@ -8,11 +8,11 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 65, manual-webhook: 34, poll: 483, none: 100
+**Totals:** 682 apps — webhook-api: 66, manual-webhook: 35, poll: 481, none: 100
 
 ## Depth
 
-depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -452,7 +452,6 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/zoho/zoho-analytics | 1 | 4 | 3 |
 | apps/zoho/zoho-bookings | 1 | 4 | 3 |
 | apps/zoho/zoho-creator | 1 | 5 | 3 |
-| apps/zoom | 1 | 4 | 3 |
 | apps/adyen | 4 | 2 | 2 |
 | apps/anthropic | 1 | 3 | 2 |
 | apps/baserow | 1 | 3 | 2 |
@@ -489,7 +488,6 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/hunter | 1 | 3 | 2 |
 | apps/instapaper | 1 | 3 | 2 |
 | apps/kommo | 1 | 3 | 2 |
-| apps/mailchimp/mailchimp | 1 | 3 | 2 |
 | apps/matrix | 1 | 2 | 2 |
 | apps/mattermost | 1 | 2 | 2 |
 | apps/meta/facebook-custom-audiences | 0 | 2 | 2 |
@@ -640,6 +638,7 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
 | apps/linkupapi | 7 | 20 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
+| apps/mailchimp/mailchimp | 10 | 3 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
 | apps/missive | 10 | 15 | 0 |
 | apps/mollie | 9 | 15 | 0 |
@@ -670,7 +669,7 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/telnyx | 1 | 1 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
 | apps/twilio/sendgrid | 1 | 0 | 0 |
-| apps/twilio/twilio | 2 | 0 | 0 |
+| apps/twilio/twilio | 5 | 0 | 0 |
 | apps/twist | 11 | 16 | 0 |
 | apps/twitter | 1 | 1 | 0 |
 | apps/typeform | 8 | 5 | 0 |
@@ -682,9 +681,10 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/yelp-leads | 1 | 0 | 0 |
 | apps/zendesk/zendesk | 12 | 5 | 0 |
 | apps/zeplin | 1 | 0 | 0 |
+| apps/zoom | 22 | 4 | 0 |
 | apps/zulip | 1 | 0 | 0 |
 
-## webhook-api (65)
+## webhook-api (66)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -725,6 +725,7 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/linear | 7 | issue, comment, project, cycle, issue-label, user, any-event | apps/linear/README.md Triggers section (verified 2026-11-10) | hand | webhook-api: signed webhookCreate-registered triggers for Issue, Comment, Project, Cycle, IssueLabel and User plus any-event; list actions are covered by those webhook triggers or skipped as reference data |
 | apps/lokalise | 5 | key-added, key-modified, translation-updated, task-created, task-closed | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound) |
 | apps/lusha | 1 | signal-received | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned |
+| apps/mailchimp/mailchimp | 10 | new-member, new-campaign, new-group-interest, member-subscribed, member-unsubscribed, member-updated, member-cleaned, email-changed, campaign-status, any-event | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook-api triggers (the app registers the audience webhook and keeps its signing secret) plus polls over list-members, list-campaigns and list-group-interests |
 | apps/mailchimp/mandrill | 1 | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
 | apps/mailerlite | 4 | campaign-sent, new-subscriber, subscriber-unsubscribed, subscriber-updated | apps/mailerlite/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/mailgun | 1 | email-event | apps/mailgun/README.md Triggers section (verified 2026-11-09) | hand | API-registered per-domain webhooks (POST /v3/domains/{domain}/webhooks), HMAC-SHA256 over timestamp+token, 300 s window; body not bound by the signature |
@@ -754,7 +755,7 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
 | apps/zendesk/zendesk | 12 | new-ticket, ticket-status-changed, ticket-comment-added, ticket-deleted, ticket-priority-changed, ticket-assignee-changed, new-user, user-deleted, user-details-changed, new-organization, organization-deleted, any-event | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed event-subscription webhooks registered through the Webhooks API (X-Zendesk-Webhook-Signature, HMAC-SHA256 over timestamp+body, signing secret read from the API); list actions are covered by the created-event webhooks |
 
-## manual-webhook (34)
+## manual-webhook (35)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -789,11 +790,12 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/strava | 3 | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/tldv | 2 | meeting-ready, transcript-ready | apps/tldv/README.md Triggers section (verified 2026-11-10) | hand | webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret |
 | apps/todoist | 3 | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
-| apps/twilio/twilio | 2 | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/twilio/twilio | 5 | incoming-message, message-status, call-status, call-summary-complete, any-event | apps/twilio/twilio/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user registers the callback URL at the vendor): SMS and call callbacks plus Event Streams; no list actions to poll |
 | apps/vero | 1 | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
 | apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/zoom | 22 | new-recording, new-meeting, new-webinar, new-user, meeting-created, meeting-updated, meeting-deleted, meeting-started, meeting-ended, meeting-registration-created, webinar-created, webinar-updated, webinar-deleted, webinar-started, webinar-ended, user-created, user-updated, user-deleted, recording-completed, recording-deleted, recording-trashed, any-event | apps/zoom/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook triggers (Marketplace event subscription, Secret Token) plus polls over recording-get-many (date window), meeting-get-many, webinar-get-many and user-get-many (bounded snapshots); recording.deleted and recording.trashed have named triggers; group.* events are reachable through any-event |
 
-## poll (483)
+## poll (481)
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
@@ -1042,7 +1044,6 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/loops | 1 | transactional-list | new-transactional | apps/loops/README.md Triggers section (verified 2026-11-09) | hand | vendor: list transactional emails 'most recently created first' (https://loops.so/docs/api-reference/list-transactional-emails) |
 | apps/loyverse | 2 | receipt-list | new-receipt, new-or-updated-receipt | apps/loyverse/README.md Triggers section (verified 2026-11-09) | hand | new-receipt: receipt-list newest first per the action; updated: updated_at_min=cursor-120s following the vendor cursor, ids id:updated_at |
 | apps/luma | 1 | calendar-events-list | new-calendar-event | apps/luma/README.md Triggers section (verified 2026-11-09) | hand | sortDirection=desc on the only vendor sort column start_at; ordered by START time, documented limit (https://docs.luma.com/reference/get_v1-calendars-events-list) |
-| apps/mailchimp/mailchimp | 1 | list-members | new-member | apps/mailchimp/mailchimp/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-members |
 | apps/maileroo | 1 | list-domains | new-domain | no | hand | shipped poll trigger(s) over list action list-domains |
 | apps/mailersend | 1 | list-sender-identities | new-sender-identity | apps/mailersend/README.md Triggers section (verified 2026-11-09) | hand | order_by=created_at&order=desc (vendor default asc) per developers.mailersend.com sender-identity page |
 | apps/mailjet | 1 | list-messages | new-message | apps/mailjet/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-messages |
@@ -1277,7 +1278,6 @@ depth: 682 apps, 1474 triggers, 2951 unaccounted list actions in 580 apps, n8n-p
 | apps/zoho/zohobooks | 2 | contact-list | new-contact, new-or-updated-contact | apps/zoho/zohobooks/README.md Triggers section (verified 2026-11-09) | hand | contact-list documents sort_column created_time and last_modified_time but no default direction, so the trigger reads page 1, infers the direction from the items' own timestamps and, unless newest-first, also reads the last two pages (found via has_more_page); ids de-duplicated, new-or-updated idOf contact_id:last_modified_time (https://www.zoho.com/books/api/v3/contacts/) |
 | apps/zoho/zohodesk | 1 | contact-list | new-contact | apps/zoho/zohodesk/README.md Triggers section (verified 2026-11-09) | hand | contacts sortBy=-createdTime documented; list items carry no modified stamp |
 | apps/zoho/zohomail | 1 | message-list | new-message | apps/zoho/zohomail/README.md Triggers section (verified 2026-11-09) | hand | messages/view sortBy=date, sortorder=false (newest first) documented |
-| apps/zoom | 1 | recording-get-many | new-recording | apps/zoom/README.md Triggers section (verified 2026-11-09) | hand | recording-get-many takes a documented yyyy-mm-dd from/to UTC window (max one month) with next_page_token paging (docs do not say whether `to` is inclusive; their default window is today to tomorrow, so `to` is tomorrow's UTC date); since-window poll with resume position and seed floor (https://developers.zoom.us/docs/api/meetings/); webhook offering recorded in the webhooks file |
 | apps/zulip | 1 | get-messages | new-message | apps/zulip/README.md Triggers section (verified 2026-11-09) | hand | get-messages anchors at newest and returns messages ascending by message ID, reversed to newest-first for the kit (https://zulip.com/api/get-messages) |
 | apps/zuora | 1 | invoice-list | new-or-updated-invoice | apps/zuora/README.md Triggers section (verified 2026-11-09) | hand | object-query invoices sort[]=updateddate.DESC documented (createddate is not sortable); new-or-updated covers new invoices |
 
