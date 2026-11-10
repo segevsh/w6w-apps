@@ -12,7 +12,7 @@ export default pollFromListAction({
     endDate: "9999-12-31T23:59:59Z",
     sortColumn: "CreatedDate",
     sortDirection: "Descending",
-    pageSize: 100,
+    pageSize: 25,
   }),
   items: (result) => (result as { items?: unknown[] }).items ?? [],
   idOf: (item) => String((item as { id?: unknown }).id ?? ""),

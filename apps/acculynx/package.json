@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/acculynx",
   "version": "0.3.0",
-  "description": "Read and write jobs, contacts, appointments, estimates and invoices in AccuLynx, the roofing contractor CRM and job-management platform; includes poll triggers for jobs, contacts and invoices.",
+  "description": "Read and write jobs, contacts, appointments, estimates and invoices in AccuLynx, the roofing contractor CRM; poll triggers for jobs, contacts, invoices, estimates, users and appointments.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -9,7 +9,7 @@ const cases = [
     key: "new-contact",
     trigger: newContact,
     params: {},
-    url: "https://api.acculynx.com/api/v2/contacts/search?pageSize=100",
+    url: "https://api.acculynx.com/api/v2/contacts/search?pageSize=25",
     body:
       '{"startDate":"1970-01-01T00:00:00Z","endDate":"9999-12-31T23:59:59Z","sort":{"sortDirection":"Descending","sortColumn":"CreatedDate"}}',
   },
