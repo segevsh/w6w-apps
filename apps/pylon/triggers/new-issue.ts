@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import issueList from "../actions/issue-list.ts";
 import { sinceTrigger } from "../lib/triggers.ts";
 
@@ -6,7 +7,7 @@ export default sinceTrigger({
   key: "new-issue",
   title: "New Issue",
   description: "The run gets each newly created support issue.",
-  action: issueList,
+  action: issueList as unknown as ActionDefinition,
   pageSize: 200,
   input: ({ since, until }) => ({ startTime: since, endTime: until, limit: 200 }),
   items: (result) => (result as { issues?: unknown[] }).issues ?? [],
