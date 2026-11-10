@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1336 triggers, 3100 unaccounted list actions in 594 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -31,8 +31,6 @@ depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-p
 | apps/mollie | 1 | 15 | 14 |
 | apps/copper | 7 | 13 | 13 |
 | apps/drata | 1 | 14 | 13 |
-| apps/fareharbor | 1 | 14 | 13 |
-| apps/gusto | 1 | 14 | 13 |
 | apps/tapfiliate | 1 | 14 | 13 |
 | apps/apollo | 2 | 13 | 12 |
 | apps/attio | 1 | 13 | 12 |
@@ -40,7 +38,6 @@ depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-p
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/front | 1 | 13 | 12 |
-| apps/hibob | 1 | 13 | 12 |
 | apps/iclosed | 1 | 13 | 12 |
 | apps/livestorm | 2 | 13 | 12 |
 | apps/pylon | 1 | 13 | 12 |
@@ -630,9 +627,12 @@ depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-p
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
+| apps/fareharbor | 6 | 14 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
+| apps/gusto | 15 | 14 | 0 |
+| apps/hibob | 7 | 13 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
@@ -929,7 +929,7 @@ depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-p
 | apps/everhour | 10 | project-list | new-client, new-invoice, new-project, new-task, new-section, new-expense, new-user, new-assignment, new-time-record, new-timecard | apps/everhour/README.md Triggers section (verified 2026-11-10) | hand | Bounded snapshot polls over every record list Everhour offers (lists are bare arrays with no order or since filter, https://developers.everhour.com/pagination.md); time records and timecards diff a look-back window of work dates. Webhooks are queued separately. |
 | apps/expensify | 1 | list-policies | new-policy | apps/expensify/README.md Triggers section (verified 2026-11-09) | hand | New Policy diffs the unpaginated get/policyList job (pollSnapshot, added only); export-reports is an export job with no created-since cursor and the Integration Server documents no webhooks. |
 | apps/eztexting | 1 | contact-list | new-contact | apps/eztexting/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=created,desc is the documented example (https://developers.eztexting.com/reference/list-1) |
-| apps/fareharbor | 1 | booking-list-by-create-date | new-booking | apps/fareharbor/README.md Triggers section (verified 2026-11-09) | hand | New Booking polls bookings-by-create-date for today and yesterday (UTC) and dedupes by pk; support-configured booking notifications are queued as an upgrade. |
+| apps/fareharbor | 6 | booking-list-by-create-date | new-agent, new-booking, new-company, new-item, new-or-updated-item, new-user | apps/fareharbor/README.md Triggers section (verified 2026-11-10) | hand | New Booking polls the create-date booking feed; items, users, agents and companies are snapshot-diffed through their list actions. |
 | apps/fathom | 1 | meeting-get-many | new-meeting | apps/fathom/README.md Triggers section (verified 2026-11-09) | hand | meeting-get-many lists meetings newest first, no sort arg |
 | apps/feedly | 1 | articles-collect | new-article | apps/feedly/README.md Triggers section (verified 2026-11-09) | hand | New Article polls GET /v3/streams/contents with newerThan = previous check minus 2 min and dedupes by article id; enterprise trigger webhooks are queued as an upgrade. |
 | apps/fellow | 1 | action-item-list | new-action-item | apps/fellow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action action-item-list |
@@ -979,12 +979,12 @@ depth: 682 apps, 1311 triggers, 3138 unaccounted list actions in 597 apps, n8n-p
 | apps/gravityforms | 2 | entry-get-many | new-entry, new-or-updated-entry | apps/gravityforms/README.md Triggers section (verified 2026-11-09) | hand | Entries support created and updated descending ordering. |
 | apps/greenhouse | 2 | list-applications | new-interview, new-application-stage, new-application, new-attachment, new-candidate, new-department, new-job-interview-stage, new-job-post, new-job, new-note, new-offer, new-office, new-opening, new-rejection-reason, new-scorecard, new-source, new-user, new-or-updated-application-stage, new-or-updated-application, new-or-updated-attachment, new-or-updated-candidate, new-or-updated-department, new-or-updated-interview, new-or-updated-job-interview-stage, new-or-updated-job-post, new-or-updated-job, new-or-updated-note, new-or-updated-offer, new-or-updated-office, new-or-updated-opening, new-or-updated-rejection-reason, new-or-updated-scorecard, new-or-updated-source, new-or-updated-user | apps/greenhouse/README.md Triggers section (verified 2026-11-10) | hand | Each Harvest v3 list action is covered by a created_at or updated_at since-filter poll with cursor continuation and id dedupe. |
 | apps/guru | 1 | card-search | new-card | apps/guru/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action card-search |
-| apps/gusto | 1 | event-list | new-event | apps/gusto/README.md Triggers section (verified 2026-11-09) | hand | shape a: event-list now takes sort_order and the trigger sends sort_order=desc (https://docs.gusto.com/app-integrations/docs/events: asc default, desc supported, 30-day window) |
+| apps/gusto | 15 | event-list | new-contractor, new-contractor-payment, new-department, new-employee, new-employee-home-address, new-event, new-garnishment, new-job-compensation, new-or-updated-contractor, new-or-updated-contractor-payment, new-or-updated-employee, new-or-updated-payroll, new-or-updated-time-off-request, new-payroll, new-time-off-request | apps/gusto/README.md Triggers section (verified 2026-11-10) | hand | New Event uses Gusto's descending event feed; employees, contractors, payrolls, time off, contractor payments, departments and per-parent histories are snapshot-diffed through their list actions. |
 | apps/hackernews | 1 | list-new-stories | new-story | apps/hackernews/README.md Triggers section (verified 2026-11-09) | hand | the official API documents /v0/newstories.json as the newest stories, capped at 500 ids; event is {id} (https://github.com/HackerNews/API) |
 | apps/harvest | 1 | task-get-many | new-task | apps/harvest/README.md Triggers section (verified 2026-11-09) | hand | Task page exposes stable task IDs. |
 | apps/hex | 1 | user-list | new-user | apps/hex/README.md Triggers section (verified 2026-11-09) | hand | shape c: /v1/users has only NAME/EMAIL sorts, so the trigger walks every page (limit 500, after cursor) and snapshots user ids; walk past the 5000-row cap throws (https://static.hex.site/openapi.json) |
 | apps/heyreach | 1 | list-get-leads | new-lead | apps/heyreach/README.md Triggers section (verified 2026-11-09) | hand | shape b: createdFrom since-filter (cursor minus 2 min) on list-get-leads, every page of the window read, deduped by lead id (https://docs.heyreach.io/openapi.json) |
-| apps/hibob | 1 | tasks-list | new-task | apps/hibob/README.md Triggers section (verified 2026-11-09) | hand | the task endpoint caps one response at 5,000 open tasks and is snapshotted for additions (https://apidocs.hibob.com/reference); the 5,000 bound is the trigger's own snapshot cap, above it the check fails with a cap error |
+| apps/hibob | 7 | tasks-list | new-attendance-entry, new-employee, new-employment-history-entry, new-lifecycle-history-entry, new-or-updated-employee, new-task, new-work-history-entry | apps/hibob/README.md Triggers section (verified 2026-11-10) | hand | New Task snapshots the open-task endpoint; employees, employee tables and attendance are snapshot-diffed through their existing read/search actions. |
 | apps/honeybook | 1 | project-list | new-project | no | hand | shipped poll trigger(s) over list action project-list |
 | apps/hospitable | 1 | reservation-list | new-reservation | apps/hospitable/README.md Triggers section (verified 2026-11-09) | hand | Reservations can be requested newest booked first with stable IDs. |
 | apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |

@@ -2463,12 +2463,30 @@
     "path": "apps/fareharbor",
     "mechanism": "poll",
     "candidates": [
-      "new-booking"
+      "new-agent",
+      "new-booking",
+      "new-company",
+      "new-item",
+      "new-or-updated-item",
+      "new-user"
     ],
     "pollAction": "booking-list-by-create-date",
-    "reason": "New Booking polls bookings-by-create-date for today and yesterday (UTC) and dedupes by pk; support-configured booking notifications are queued as an upgrade.",
-    "verified": "apps/fareharbor/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "New Booking polls the create-date booking feed; items, users, agents and companies are snapshot-diffed through their list actions.",
+    "verified": "apps/fareharbor/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "booking-list-by-availability": "new-booking"
+    },
+    "skipped": {
+      "availability-list-by-date-range": "schedule slots are generated in advance, so any rolling date window reports slots entering the window as new every day (no created/updated stamp or filter)",
+      "availability-list-by-date": "schedule slots are generated in advance, so any rolling date window reports slots entering the window as new every day (no created/updated stamp or filter)",
+      "availability-lodging-list": "per-availability relation (lodgings of one departure slot), not an independent record",
+      "crew-member-list": "per-availability relation (crew of one departure slot), not an independent record",
+      "checkin-status-list": "check-in status definitions (reference data)",
+      "role-list": "crew role definitions (reference data)",
+      "desk-list": "affiliate desk configuration (reference data)",
+      "lodging-list": "company pickup-location configuration (reference data)"
+    }
   },
   {
     "path": "apps/fathom",
@@ -3557,12 +3575,32 @@
     "path": "apps/gusto",
     "mechanism": "poll",
     "candidates": [
-      "new-event"
+      "new-contractor",
+      "new-contractor-payment",
+      "new-department",
+      "new-employee",
+      "new-employee-home-address",
+      "new-event",
+      "new-garnishment",
+      "new-job-compensation",
+      "new-or-updated-contractor",
+      "new-or-updated-contractor-payment",
+      "new-or-updated-employee",
+      "new-or-updated-payroll",
+      "new-or-updated-time-off-request",
+      "new-payroll",
+      "new-time-off-request"
     ],
     "pollAction": "event-list",
-    "reason": "shape a: event-list now takes sort_order and the trigger sends sort_order=desc (https://docs.gusto.com/app-integrations/docs/events: asc default, desc supported, 30-day window)",
-    "verified": "apps/gusto/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "New Event uses Gusto's descending event feed; employees, contractors, payrolls, time off, contractor payments, departments and per-parent histories are snapshot-diffed through their list actions.",
+    "verified": "apps/gusto/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "company-admin-list": "company admin/access configuration (admin output)",
+      "company-location-list": "company tax-location configuration (reference data)",
+      "pay-period-list": "pay calendar of the pay schedule (reference data)",
+      "pay-schedule-list": "pay schedule definitions (reference data)"
+    }
   },
   {
     "path": "apps/hackernews",
@@ -3665,12 +3703,29 @@
     "path": "apps/hibob",
     "mechanism": "poll",
     "candidates": [
-      "new-task"
+      "new-attendance-entry",
+      "new-employee",
+      "new-employment-history-entry",
+      "new-lifecycle-history-entry",
+      "new-or-updated-employee",
+      "new-task",
+      "new-work-history-entry"
     ],
     "pollAction": "tasks-list",
-    "reason": "the task endpoint caps one response at 5,000 open tasks and is snapshotted for additions (https://apidocs.hibob.com/reference); the 5,000 bound is the trigger's own snapshot cap, above it the check fails with a cap error",
-    "verified": "apps/hibob/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "New Task snapshots the open-task endpoint; employees, employee tables and attendance are snapshot-diffed through their existing read/search actions.",
+    "verified": "apps/hibob/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "profiles-list": "new-employee",
+      "tasks-person-list": "new-task"
+    },
+    "skipped": {
+      "fields-list": "employee field definitions (reference data)",
+      "named-lists-list": "company list definitions (reference data)",
+      "onboarding-wizards-list": "onboarding wizard definitions (reference data)",
+      "reports-list": "admin report definitions (admin/report output)",
+      "timeoff-policy-types-list": "time off policy type definitions (reference data)"
+    }
   },
   {
     "path": "apps/highlevel",
