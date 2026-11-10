@@ -8,11 +8,11 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 65, manual-webhook: 31, poll: 486, none: 100
+**Totals:** 682 apps — webhook-api: 65, manual-webhook: 32, poll: 485, none: 100
 
 ## Depth
 
-depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -79,7 +79,6 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/circle | 1 | 11 | 10 |
 | apps/followupboss | 2 | 11 | 10 |
 | apps/givebutter | 2 | 11 | 10 |
-| apps/hubspot | 1 | 11 | 10 |
 | apps/lemonsqueezy | 1 | 11 | 10 |
 | apps/mighty-networks | 3 | 10 | 10 |
 | apps/practicebetter | 2 | 11 | 10 |
@@ -196,7 +195,6 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/sendpulse | 2 | 9 | 7 |
 | apps/servicetitan | 2 | 8 | 7 |
 | apps/simpletexting | 2 | 8 | 7 |
-| apps/slack | 2 | 7 | 7 |
 | apps/smartsheet | 2 | 8 | 7 |
 | apps/solapi | 2 | 8 | 7 |
 | apps/square | 1 | 8 | 7 |
@@ -404,7 +402,6 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/rocketreach | 0 | 4 | 4 |
 | apps/seven | 1 | 5 | 4 |
 | apps/sharetribe | 1 | 5 | 4 |
-| apps/shopify | 10 | 4 | 4 |
 | apps/skyvern | 1 | 5 | 4 |
 | apps/smartsuite | 2 | 5 | 4 |
 | apps/softr | 1 | 5 | 4 |
@@ -648,6 +645,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
+| apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
 | apps/insightly | 8 | 4 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
@@ -669,7 +667,9 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/paystack | 3 | 0 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
+| apps/shopify | 18 | 4 | 0 |
 | apps/simplero | 2 | 0 | 0 |
+| apps/slack | 25 | 7 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/telegram | 2 | 0 | 0 |
@@ -738,7 +738,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/rendex | 1 | watch-event | apps/rendex/README.md Triggers section (verified 2026-11-10) | hand | Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks) |
 | apps/sanity | 3 | document-created, document-updated, document-deleted | apps/sanity/README.md Triggers section (verified 2026-11-10) | hand | GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks) |
 | apps/savvycal | 3 | event-created, event-canceled, event-rescheduled | apps/savvycal/README.md Triggers section (verified 2026-11-10) | hand | webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks) |
-| apps/shopify | 10 | customer-created, event, order-cancelled, order-created, order-fulfilled, order-paid, order-updated, product-created, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/shopify | 18 | customer-created, customer-deleted, customer-updated, event, inventory-level-updated, location-created, location-deleted, location-updated, order-cancelled, order-created, order-deleted, order-fulfilled, order-paid, order-updated, product-created, product-deleted, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/signnow | 3 | document-created, document-completed, invite-signed | apps/signnow/README.md Triggers section (verified 2026-11-10) | hand | user-level event subscription via POST /v2/event-subscriptions with a host-chosen secret_key, signed X-SignNow-Signature base64 HMAC-SHA256 of the body (https://docs.signnow.com/docs/signnow/webhooks) |
 | apps/signwell | 3 | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
 | apps/stripe | 10 | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -754,7 +754,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/woocommerce | 7 | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | 3 | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (31)
+## manual-webhook (32)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -767,6 +767,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/formspark | 1 | new-submission | apps/formspark/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook set per form in the dashboard (no webhook API); signing is optional at Formspark so the trigger requires it: Formspark-Signature v1= hex HMAC-SHA256 of '<Formspark-Timestamp>.<raw body>' under the pasted secret, 5-minute window. |
 | apps/highlevel | 4 | contact-created, opportunity-created, appointment-created, inbound-message | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); no poll: contact search has no order or since filter |
 | apps/homeassistant | 1 | automation-event | apps/homeassistant/README.md Triggers section (verified 2026-11-10) | hand | manual webhook receiving rest_command calls from the user's automations (Home Assistant has no outbound event feed); unsigned, callback URL is the secret; no poll: state list is an uncapped snapshot with no change filter |
+| apps/hubspot | 23 | any-event, company-created, company-deleted, company-updated, contact-created, contact-deleted, contact-updated, deal-created, deal-deleted, deal-updated, new-company, new-contact, new-deal, new-form, new-or-updated-company, new-or-updated-contact, new-or-updated-deal, new-or-updated-ticket, new-owner, new-ticket, ticket-created, ticket-deleted, ticket-updated | apps/hubspot/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user sets the Target URL in a HubSpot app) plus search and list polls |
 | apps/intercom | 2 | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
 | apps/line | 1 | event-received | apps/line/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set in the LINE Developers Console; x-line-signature base64 HMAC-SHA256 of the raw body under the channel secret; one trigger carries message, follow, unfollow and postback (one URL per channel) |
 | apps/marketo | 1 | lead-webhook | apps/marketo/README.md Triggers section (verified 2026-11-10) | hand | unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret |
@@ -782,7 +783,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/peopledatalabs | 1 | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |
 | apps/phantombuster | 2 | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
 | apps/posthog | 1 | event-captured | apps/posthog/README.md Triggers section (verified 2026-11-10) | hand | HTTP Webhook destination added by hand in PostHog; PostHog's POST /api/projects/:project_id/hog_functions/ (https://posthog.com/docs/api/hog-functions) could register it, queued as a webhook-api follow-up, not built; deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook) |
-| apps/slack | 2 | event, new-message | apps/slack/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/slack | 25 | app-mention, channel-archived, channel-created, channel-deleted, channel-renamed, channel-unarchived, event, file-created, file-deleted, file-shared, member-joined-channel, member-left-channel, message-deleted, message-edited, new-message, new-search-match, reaction-added, reaction-removed, star-added, star-removed, team-join, user-updated, usergroup-created, usergroup-members-changed, usergroup-updated | apps/slack/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user registers the callback URL at the vendor) plus a newest-first search.messages poll |
 | apps/strava | 3 | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/tldv | 2 | meeting-ready, transcript-ready | apps/tldv/README.md Triggers section (verified 2026-11-10) | hand | webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret |
 | apps/todoist | 3 | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
@@ -790,7 +791,7 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/vero | 1 | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
 | apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (486)
+## poll (485)
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
@@ -988,7 +989,6 @@ depth: 682 apps, 1076 triggers, 3350 unaccounted list actions in 618 apps, n8n-p
 | apps/hostaway | 1 | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
 | apps/hotmart | 1 | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
 | apps/housecallpro | 14 | customer-list | new-customer, new-employee, new-estimate, new-or-updated-estimate, new-estimate-option-line-item, new-event, new-or-updated-event, new-invoice, new-job-appointment, new-job-invoice, new-job-line-item, new-job, new-or-updated-job, new-lead | apps/housecallpro/README.md Triggers section (verified 2026-11-10) | hand | Poll triggers cover operational records; the listed static or derived lists are intentionally skipped. |
-| apps/hubspot | 1 | search-contacts | new-contact | apps/hubspot/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-contacts |
 | apps/hubstaff | 1 | project-list | new-project | apps/hubstaff/README.md Triggers section (verified 2026-11-09) | hand | shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs) |
 | apps/huggingface | 1 | inference-model-list | new-inference-model | apps/huggingface/README.md Triggers section (verified 2026-11-09) | hand | shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api) |
 | apps/hunter | 1 | lead-list | new-lead | apps/hunter/README.md Triggers section (verified 2026-11-09) | hand | Lead list is most recent first and exposes stable IDs. |
