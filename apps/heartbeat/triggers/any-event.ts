@@ -62,7 +62,26 @@ const anyEvent = anyEventTrigger({
     { key: "invitationLinkID", type: "string", label: "Invitation link ID (ABANDONED_CART)" },
     { key: "groupIDs", type: "array", label: "Group IDs (ABANDONED_CART)" },
   ],
-  sample: { action: "USER_JOIN", id: "e6ccb009-ad46-4b09-a6e9-1412d9ff0601" },
+  // One USER_JOIN delivery. Each event carries only its own fields, so the fields this event does
+  // not carry are shown as null (the output list is the union over all events).
+  sample: {
+    action: "USER_JOIN",
+    id: "e6ccb009-ad46-4b09-a6e9-1412d9ff0601",
+    name: "Sample Member",
+    email: "member@example.com",
+    channelID: null,
+    eventID: null,
+    userID: null,
+    groupID: null,
+    courseID: null,
+    courseName: null,
+    senderUserID: null,
+    receiverUserID: null,
+    chatID: null,
+    chatMessageID: null,
+    invitationLinkID: null,
+    groupIDs: null,
+  },
 });
 
 export default anyEvent;

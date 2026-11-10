@@ -77,12 +77,64 @@ for (const { t, key, path } of snapshots) {
     assertEquals(out.events, []);
   });
 
-  test(`${key}: a non-array answer is no rows`, async () => {
+  test(`${key}: an answer without a list throws and leaves the baseline alone`, async () => {
     const seeded = await t.poll!(input({}), mockCtx([{ body: rows("a") }]).ctx);
-    const out = await t.poll!(input(seeded.nextState), mockCtx([{ body: {} }]).ctx);
-    assertEquals(out.events, []);
+    for (const body of [{}, null, 5]) {
+      await nodeAssert.rejects(
+        () => t.poll!(input(seeded.nextState), mockCtx([{ body }]).ctx),
+        (e: unknown) => e instanceof Error && e.message.includes("without a list"),
+      );
+    }
+    // The state the failed checks started from still has "a" in it: no re-emit afterwards.
+    const after = await t.poll!(
+      input(seeded.nextState),
+      mockCtx([{ body: rows("a") }]).ctx,
+    );
+    assertEquals(after.events, []);
   });
 }
+
+/** Every declared output key resolves in the sample, and its sample value has the declared type. */
+function assertSampleMatchesOutput(t: typeof newInvitation) {
+  const sample = t.sample as Record<string, unknown>;
+  const typeOf = (v: unknown) => Array.isArray(v) ? "array" : v === null ? "null" : typeof v;
+  const check = (fields: NonNullable<typeof t.output>, value: unknown, at: string) => {
+    for (const f of fields) {
+      let v: unknown = value;
+      for (const part of f.key.split(".")) v = (v as Record<string, unknown> | undefined)?.[part];
+      assertEquals(typeOf(v), f.type, `${at}${f.key}`);
+      if (f.type === "array" && f.items) {
+        assert((v as unknown[]).length > 0, `${at}${f.key} sample has an element`);
+        check(f.items, (v as unknown[])[0], `${at}${f.key}[0].`);
+      }
+    }
+  };
+  check(t.output!, sample, "");
+}
+
+test("new-invitation: the sample has the vendor's object shapes (role {id,name}, groups [{id,name}])", () => {
+  assertSampleMatchesOutput(newInvitation);
+  const sample = newInvitation.sample as {
+    role: Record<string, unknown>;
+    groups: Record<string, unknown>[];
+  };
+  assertEquals(Object.keys(sample.role).sort(), ["id", "name"]);
+  assertEquals(Object.keys(sample.groups[0]).sort(), ["id", "name"]);
+  assertEquals(
+    newInvitation.output!.filter((f) => f.key.startsWith("role")).map((f) => [f.key, f.type]),
+    [["role", "object"], ["role.id", "string"], ["role.name", "string"]],
+  );
+});
+
+test("new-course: the sample has the vendor's category object {id,name}", () => {
+  assertSampleMatchesOutput(newCourse);
+  const sample = newCourse.sample as { category: Record<string, unknown> };
+  assertEquals(Object.keys(sample.category).sort(), ["id", "name"]);
+  assertEquals(
+    newCourse.output!.filter((f) => f.key.startsWith("category")).map((f) => [f.key, f.type]),
+    [["category", "object"], ["category.id", "string"], ["category.name", "string"]],
+  );
+});
 
 test("new-video: more than 5000 videos is refused with the kit cap named, not silently truncated", async () => {
   const many = Array.from({ length: 5001 }, (_, i) => ({ id: `v${i}` }));

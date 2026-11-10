@@ -227,6 +227,42 @@ test("Any Event with no events adds a filtered action when its id field is fille
   );
 });
 
+test("Any Event registers DIRECT_MESSAGE and COURSE_COMPLETED with their literal filter keys", async () => {
+  const { ctx, calls } = mockCtx([{ body: { id: "wh-a" } }, { body: { id: "wh-b" } }]);
+  await anyEvent.onSubscribe!(
+    sub({ events: "DIRECT_MESSAGE,COURSE_COMPLETED", userId: "admin-1", courseId: "c-1" }),
+    ctx,
+  );
+  assertEquals(calls.map((c) => JSON.parse(c.body!)), [
+    {
+      action: { name: "DIRECT_MESSAGE", filter: { userID: "admin-1" } },
+      url: `${CALLBACK}?hbEvent=DIRECT_MESSAGE`,
+    },
+    {
+      action: { name: "COURSE_COMPLETED", filter: { courseID: "c-1" } },
+      url: `${CALLBACK}?hbEvent=COURSE_COMPLETED`,
+    },
+  ]);
+});
+
+test("Any Event: a registration answer without a webhook id is refused", async () => {
+  const { ctx } = mockCtx([{ body: {} }]);
+  await assertRejects(
+    async () => await anyEvent.onSubscribe!(sub({ events: "USER_JOIN" }), ctx),
+    "did not return a webhook id",
+  );
+});
+
+test("Any Event: every declared output key is present in the sample (null where the sample event lacks it)", () => {
+  const sample = anyEvent.sample as Record<string, unknown>;
+  assertEquals(
+    anyEvent.output!.map((f) => f.key).filter((k) => !(k in sample)),
+    [],
+  );
+  assertEquals(sample.action, "USER_JOIN");
+  assertEquals(typeof sample.id, "string");
+});
+
 test("Any Event refuses an unknown event, MENTION, and a filtered event without its id - before any request", async () => {
   for (
     const [params, includes] of [

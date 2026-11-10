@@ -18,14 +18,16 @@ export default snapshotTrigger({
     { key: "id", type: "string", label: "Course ID" },
     { key: "name", type: "string", label: "Name" },
     { key: "description", type: "string", label: "Description" },
-    { key: "category", type: "string", label: "Category" },
+    { key: "category", type: "object", label: "Category" },
+    { key: "category.id", type: "string", label: "Category ID" },
+    { key: "category.name", type: "string", label: "Category name" },
     { key: "cohorts", type: "array", label: "Cohorts, modules and lessons" },
   ],
   sample: {
     id: "7c1d3e52-6d2a-4c58-8f0e-2a9b6f1d3c44",
     name: "Getting started",
     description: "A tour of the community",
-    category: "Onboarding",
+    category: { id: "b2f4d6a8-1c3e-4a5b-8d7f-9e0a1b2c3d4e", name: "Getting started" },
     cohorts: [],
   },
 });

@@ -367,7 +367,13 @@ export function snapshotTrigger<I>(spec: {
     sample: spec.sample,
     async poll({ state }, ctx) {
       const result = await spec.action.execute({} as I, ctx);
-      const rows = listOf(result, spec.field)
+      const list = asObject(result)?.[spec.field];
+      // A 200 with an empty or odd body must not read as "no rows": that would reset the
+      // snapshot baseline and the next good answer would re-emit every row.
+      if (!Array.isArray(list)) {
+        throw new Error(`Heartbeat answered without a list in "${spec.field}"; try again later.`);
+      }
+      const rows = list
         .filter((item) => idOf(item) !== "")
         .map((item) => ({ key: idOf(item), values: item }));
       const { events, nextState } = await pollSnapshot({
