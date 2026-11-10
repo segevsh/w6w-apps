@@ -573,12 +573,14 @@
   },
   {
     "path": "apps/betterstack",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-incident"
+    ],
+    "pollAction": "incident-list",
+    "reason": "Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe",
+    "verified": "apps/betterstack/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bexio",
@@ -604,12 +606,14 @@
   },
   {
     "path": "apps/bitly",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-bitlink"
+    ],
+    "pollAction": "list-bitlinks",
+    "reason": "Since-filter poll: list-bitlinks gained an additive createdAfter input for the documented created_after filter (https://dev.bitly.com/api-reference/)",
+    "verified": "apps/bitly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bitrix24",
@@ -624,30 +628,36 @@
   },
   {
     "path": "apps/bitwarden",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-event"
+    ],
+    "pollAction": "event-list",
+    "reason": "Since-filter poll windowed by the documented start filter of event-list with continuation tokens; order-independent, id dedupe",
+    "verified": "apps/bitwarden/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/blandai",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-call"
+    ],
+    "pollAction": "call-list",
+    "reason": "The existing call-list action explicitly requests newest-first calls with ascending=false",
+    "verified": "apps/blandai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bloomerang",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-transaction"
+    ],
+    "pollAction": "list-transactions",
+    "reason": "Since-filter poll: list-transactions takes lastModified (documented in Bloomerang's OpenAPI document); ids dedupe on Id + AuditTrail.LastModifiedDate",
+    "verified": "apps/bloomerang/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bluesky",
@@ -710,9 +720,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "Brand search is a stateless lookup catalog, not an account record collection that can change",
+    "verified": "apps/brandfetch/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/braze",
@@ -749,12 +759,15 @@
   },
   {
     "path": "apps/brex",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "card.created",
+      "user.created"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: card.created, user.created",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/browseai",
@@ -769,12 +782,14 @@
   },
   {
     "path": "apps/browserless",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-crawl"
+    ],
+    "pollAction": "crawl-list",
+    "reason": "Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls",
+    "verified": "apps/browserless/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bubble",
@@ -925,12 +940,14 @@
   },
   {
     "path": "apps/checkly",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-check-result"
+    ],
+    "pollAction": "check-result-list",
+    "reason": "Since-filter poll: check-result-list takes documented from/to Unix timestamps; one check per subscription, FINAL results, optional failures only",
+    "verified": "apps/checkly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/circle",
@@ -945,30 +962,34 @@
   },
   {
     "path": "apps/circleci",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-pipeline"
+    ],
+    "pollAction": "pipeline-list",
+    "reason": "Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id",
+    "verified": "apps/circleci/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clearbit",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "Enrichment/prospector/reveal lookups only, no account records that change; the 202 lookup callback is per-request, not an event subscription, and no fetchable vendor page documents it (dashboard.clearbit.com/docs is a JS app; legacy keys only since HubSpot's acquisition)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/clearout",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "bulk verification completed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: email_verifier.bulk.completed, email_finder.bulk.completed (also instant and form_guard events); signed with x-co-webhook-signature (https://docs.clearout.io/developers/webhooks)",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/clerk",
@@ -1031,12 +1052,17 @@
   },
   {
     "path": "apps/clientify",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-or-updated-contact",
+      "new-deal",
+      "new-or-updated-deal"
+    ],
+    "pollAction": "contact-list",
+    "reason": "Since-filter polls on the documented created[gte]/modified[gte] date filters of the contact and deal lists (https://developer.clientify.com)",
+    "verified": "apps/clientify/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/clio",
@@ -1100,21 +1126,27 @@
   },
   {
     "path": "apps/cloudconvert",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "job.created",
+      "job.finished",
+      "job.failed"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: job.created, job.finished, job.failed",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/cloudflare",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-dns-record"
+    ],
+    "pollAction": "dns-record-list",
+    "reason": "Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000)",
+    "verified": "apps/cloudflare/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/cloudinary",
@@ -1129,12 +1161,16 @@
   },
   {
     "path": "apps/cloze",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-or-updated-person",
+      "new-or-updated-company",
+      "new-or-updated-project"
+    ],
+    "pollAction": "person-feed",
+    "reason": "Change-feed polls on the cursored people/companies/projects feeds (pollToken); webhooks also exist, queued separately",
+    "verified": "apps/cloze/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/coda",
@@ -1147,12 +1183,14 @@
   },
   {
     "path": "apps/cognitoforms",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "entry submitted"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
+    "reason": "webhook candidate queued for a webhook node: entry submitted",
     "verified": false,
-    "source": "scan"
+    "source": "hand"
   },
   {
     "path": "apps/coingecko",

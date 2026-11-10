@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 44, manual-webhook: 10, poll: 384, none: 245
+**Totals:** 683 apps — webhook-api: 46, manual-webhook: 12, poll: 395, none: 230
 
-## webhook-api (44)
+## webhook-api (46)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -22,10 +22,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/atlassian/trello | card-created, card-moved, card-updated, comment-added | apps/atlassian/trello/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/box | activity, file-uploaded | apps/box/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/brevo | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/brex | card.created, user.created | no | hand | webhook candidate queued for a webhook node: card.created, user.created |
 | apps/cal | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/calendly | invitee-canceled, invitee-created | apps/calendly/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/clickup | task-comment-posted, task-created, task-deleted, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/cloudconvert | job.created, job.finished, job.failed | no | hand | webhook candidate queued for a webhook node: job.created, job.finished, job.failed |
 | apps/copper | new-company, new-lead, new-opportunity, new-person, new-task, updated-opportunity, updated-person | apps/copper/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/eventbrite | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated | no | hand | shipped: webhook registered through the vendor API |
 | apps/figma | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -59,10 +61,12 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (10)
+## manual-webhook (12)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
+| apps/clearout | bulk verification completed | no | hand | webhook candidate queued for a webhook node: email_verifier.bulk.completed, email_finder.bulk.completed (also instant and form_guard events); signed with x-co-webhook-signature (https://docs.clearout.io/developers/webhooks) |
+| apps/cognitoforms | entry submitted | no | hand | webhook candidate queued for a webhook node: entry submitted |
 | apps/customerio | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/formspark | submission.created | apps/formspark/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission.created |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
@@ -74,7 +78,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (384)
+## poll (395)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -109,9 +113,14 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/baserow | row-list | new-row | apps/baserow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
 | apps/beehiiv | post-list | new-post-list | no | scan | list action post-list has pagination and order/since params |
 | apps/beeminder | list-datapoints | new-datapoint | apps/beeminder/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-datapoints |
+| apps/betterstack | incident-list | new-incident | apps/betterstack/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe |
 | apps/bexio | contact-list | new-contact | apps/bexio/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/bigcommerce | order-list | new-order | apps/bigcommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action order-list |
+| apps/bitly | list-bitlinks | new-bitlink | apps/bitly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-bitlinks gained an additive createdAfter input for the documented created_after filter (https://dev.bitly.com/api-reference/) |
 | apps/bitrix24 | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/bitwarden | event-list | new-event | apps/bitwarden/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll windowed by the documented start filter of event-list with continuation tokens; order-independent, id dedupe |
+| apps/blandai | call-list | new-call | apps/blandai/README.md Triggers section (verified 2026-11-09) | hand | The existing call-list action explicitly requests newest-first calls with ascending=false |
+| apps/bloomerang | list-transactions | new-or-updated-transaction | apps/bloomerang/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-transactions takes lastModified (documented in Bloomerang's OpenAPI document); ids dedupe on Id + AuditTrail.LastModifiedDate |
 | apps/bluesky | post-search | new-post | apps/bluesky/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-search |
 | apps/boldsign | document-list | new-document-list | no | scan | list action document-list has pagination and order/since params |
 | apps/booqable | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
@@ -119,6 +128,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/braze | campaign-list | new-campaign-list | no | scan | list action campaign-list has pagination and order/since params |
 | apps/breezyhr | candidate-search | new-candidate | apps/breezyhr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-search |
 | apps/browseai | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
+| apps/browserless | crawl-list | new-crawl | apps/browserless/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls |
 | apps/bubble | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
 | apps/buffer | post-list | new-post | apps/buffer/README.md Triggers section (verified 2026-11-09) | hand | post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed |
 | apps/callrail | call-list | new-call | apps/callrail/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action call-list |
@@ -129,15 +139,20 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/certifier | credential-search | new-credential, new-or-updated-credential | apps/certifier/README.md Triggers section (verified 2026-11-09) | hand | credential-search sorted createdAt/updatedAt desc |
 | apps/chargebee | list-events | new-event | apps/chargebee/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-events |
 | apps/chatwork | room-message-list | new-message | apps/chatwork/README.md Triggers section (verified 2026-11-09) | hand | force=1 returns the latest 100 messages, re-sorted by send_time desc |
+| apps/checkly | check-result-list | new-check-result | apps/checkly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: check-result-list takes documented from/to Unix timestamps; one check per subscription, FINAL results, optional failures only |
 | apps/circle | event-list | new-event | apps/circle/README.md Triggers section (verified 2026-11-09) | hand | Admin API v2 documents default order newest by created_at; records array |
+| apps/circleci | pipeline-list | new-pipeline | apps/circleci/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: pipeline-list states no order, so the trigger walks next_page_token (10 pages), sorts by created_at and dedupes on id |
 | apps/clerk | user-list | new-user, new-or-updated-user | apps/clerk/README.md Triggers section (verified 2026-11-09) | hand | order_by=-created_at / -updated_at via new optional orderBy input |
 | apps/cleverreach | group-list | new-group | apps/cleverreach/README.md Triggers section (verified 2026-11-09) | hand | order=created DESC; changed-field name not verified so no updated trigger |
 | apps/clickhouse | activity-list | new-activity | apps/clickhouse/README.md Triggers section (verified 2026-11-09) | hand | from_date filter, unpaged, id dedupe with cursor window |
 | apps/clicksend | sms-history-list | new-sms | apps/clicksend/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action sms-history-list |
+| apps/clientify | contact-list | new-contact, new-or-updated-contact, new-deal, new-or-updated-deal | apps/clientify/README.md Triggers section (verified 2026-11-09) | hand | Since-filter polls on the documented created[gte]/modified[gte] date filters of the contact and deal lists (https://developer.clientify.com) |
 | apps/clio | contact-list | new-contact, new-or-updated-contact | apps/clio/README.md Triggers section (verified 2026-11-09) | hand | created_since / updated_since filters, id(asc) order: cursor window + id dedupe |
 | apps/close | list-opportunities | new-opportunity | apps/close/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-opportunities |
 | apps/cloudbeds | reservation-list | new-reservation, new-or-updated-reservation | apps/cloudbeds/README.md Triggers section (verified 2026-11-09) | hand | since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated) |
+| apps/cloudflare | dns-record-list | new-dns-record | apps/cloudflare/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000) |
 | apps/cloudinary | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |
+| apps/cloze | person-feed | new-or-updated-person, new-or-updated-company, new-or-updated-project | apps/cloze/README.md Triggers section (verified 2026-11-09) | hand | Change-feed polls on the cursored people/companies/projects feeds (pollToken); webhooks also exist, queued separately |
 | apps/companycam | checklist-list | new-checklist, new-or-updated-checklist | apps/companycam/README.md Triggers section (verified 2026-11-09) | hand | checklist-list returns company checklists newest-updated first (page 1 of 50) |
 | apps/connecteam | shift-list | new-shift | apps/connecteam/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action shift-list |
 | apps/constantcontact | list-contact-lists | new-contact-list | apps/constantcontact/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=500 lists, no sort or date filter exists); added-only |
@@ -463,7 +478,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (245)
+## none (230)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -484,26 +499,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/aws/ses |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/bannerbear |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/basecamp |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/betterstack |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/bitly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/bitwarden |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/blandai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/bloomerang |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/brandfetch |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/brex |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/browserless |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/brandfetch |  | apps/brandfetch/README.md Triggers section (verified 2026-11-09) | hand | Brand search is a stateless lookup catalog, not an account record collection that can change |
 | apps/chatbase |  | apps/chatbase/README.md Triggers section (verified 2026-11-09) | hand | conversation-list is ordered by createdAt with no documented direction and the action exposes no sort or since filter (https://chatbase.co/docs/api-reference/v2/conversations/list-conversations.md) |
-| apps/checkly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/circleci |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/clearbit |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/clearout |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/clientify |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/clearbit |  | no | hand | Enrichment/prospector/reveal lookups only, no account records that change; the 202 lookup callback is per-request, not an event subscription, and no fetchable vendor page documents it (dashboard.clearbit.com/docs is a JS app; legacy keys only since HubSpot's acquisition) |
 | apps/clockodo |  | apps/clockodo/README.md Triggers section (verified 2026-11-09) | hand | list-entries requires a time_since/time_until window over the entry's own time with no created/updated filter or sort, so back-dated entries never look new (https://www.clockodo.com/en/api/) |
-| apps/cloudconvert |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/cloudflare |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/cloze |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/coda |  | apps/coda/README.md Triggers section (verified 2026-11-09) | hand | list-rows returns rows by creation time ascending unless sorted, with no descending order or created-since filter (https://coda.io/developers/apis/v1#operation/listRows) |
-| apps/cognitoforms |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/coingecko |  | apps/coingecko/README.md Triggers section (verified 2026-11-09) | hand | list-coin-markets is a market-cap ranking, not a chronological record feed (https://docs.coingecko.com/reference/coins-markets) |
 | apps/creditrepaircloud |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/crunchbase |  | no | scan | no newest-first list action found by scan; vendor events not researched |
