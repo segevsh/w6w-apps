@@ -1,5 +1,5 @@
 import type { ActionDefinition, OutputField, TriggerDefinition } from "@w6w/types";
-import { pollFromListAction, pollSnapshot } from "../../_shared/poll/mod.ts";
+import { pollSnapshot } from "../../_shared/poll/mod.ts";
 
 /** Printavo connection page size used by the poll triggers (the existing `new-task` uses it too). */
 export const PAGE_SIZE = 100;
@@ -13,32 +13,6 @@ interface Connection {
 }
 
 const idOf = (item: unknown): string => String((item as { id?: unknown }).id ?? "");
-
-/**
- * Order-like lists (quotes, invoices, orders) sorted by Printavo's visual ID, its sequential
- * order number, descending: page 1 is the newest-first feed.
- */
-export function visualIdTrigger(spec: {
-  key: string;
-  title: string;
-  description: string;
-  action: ActionDefinition<never, never>;
-  output: OutputField[];
-  sample: unknown;
-}): TriggerDefinition {
-  return pollFromListAction({
-    key: spec.key,
-    title: spec.title,
-    description: spec.description,
-    action: spec.action as unknown as ActionDefinition,
-    input: () => ({ first: PAGE_SIZE, sortOn: "VISUAL_ID", sortDescending: true }),
-    items: (r) => (r as Connection).nodes ?? [],
-    idOf,
-    output: spec.output,
-    sample: spec.sample,
-    maxPages: 1,
-  });
-}
 
 /** "New <record>" over a small filtered list: read it whole and diff the ids (added only). */
 export function snapshotTrigger(spec: {

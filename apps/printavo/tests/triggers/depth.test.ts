@@ -1,9 +1,6 @@
 import { test } from "node:test";
 import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
-import newQuote from "../../triggers/new-quote.ts";
-import newInvoice from "../../triggers/new-invoice.ts";
-import newOrder from "../../triggers/new-order.ts";
 import newPaymentRequest from "../../triggers/new-payment-request.ts";
 
 type Trig = {
@@ -24,33 +21,6 @@ const conn = (root: string, ids: string[], next: string | null = null) => ({
 });
 const sent = (call: { body: string | null }) =>
   JSON.parse(call.body ?? "{}") as { query: string; variables: Record<string, unknown> };
-
-for (
-  const c of [
-    { name: "new-quote", t: newQuote, root: "quotes" },
-    { name: "new-invoice", t: newInvoice, root: "invoices" },
-    { name: "new-order", t: newOrder, root: "orders" },
-  ]
-) {
-  test(`${c.name}: seeds, emits the new record, retries idempotently, requests VISUAL_ID descending`, async () => {
-    const seed = mockCtx([conn(c.root, ["a"])]);
-    const seeded = await poll(c.t, {}, seed.ctx);
-    assertEquals(seeded.events, []);
-    assertEquals(seededOf(seeded), true);
-    assertEquals(seed.calls[0].method, "POST");
-    assertEquals(seed.calls[0].url, "https://www.printavo.com/api/v2");
-    assertEquals(sent(seed.calls[0]).variables, {
-      first: 100,
-      sortOn: "VISUAL_ID",
-      sortDescending: true,
-    });
-    assertEquals(sent(seed.calls[0]).query.includes(`${c.root}(first: $first`), true);
-    const run = () => poll(c.t, seeded.nextState, mockCtx([conn(c.root, ["b", "a"])]).ctx);
-    const first = await run();
-    assertEquals(first.events, [{ id: "b" }]);
-    assertEquals(await run(), first);
-  });
-}
 
 test("new-payment-request: seeds, emits only a newly open request, retries, asks for OPEN", async () => {
   const seed = mockCtx([conn("paymentRequests", ["a"])]);

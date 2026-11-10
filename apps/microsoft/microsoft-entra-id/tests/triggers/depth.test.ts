@@ -3,6 +3,7 @@ import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import newUser from "../../triggers/new-user.ts";
 import newGroup from "../../triggers/new-group.ts";
+import newServicePrincipal from "../../triggers/new-service-principal.ts";
 import newApplication from "../../triggers/new-application.ts";
 import newGroupMember from "../../triggers/new-group-member.ts";
 import newGroupOwner from "../../triggers/new-group-owner.ts";
@@ -36,6 +37,12 @@ const newestFirst = [
     t: newApplication,
     url:
       `${G}/applications?%24top=100&%24orderby=createdDateTime+desc&%24select=id%2CappId%2CdisplayName%2CsignInAudience%2CcreatedDateTime&%24count=true`,
+  },
+  {
+    name: "new-service-principal",
+    t: newServicePrincipal,
+    url:
+      `${G}/servicePrincipals?%24top=100&%24orderby=createdDateTime+desc&%24select=id%2CappId%2CdisplayName%2CservicePrincipalType%2CcreatedDateTime&%24count=true`,
   },
 ];
 

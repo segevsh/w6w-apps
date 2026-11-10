@@ -48,9 +48,11 @@ test("new-story: seeds, emits only a story that appeared, retries, requests the 
   assertEquals(await run(), first);
 });
 
+const pg = (id: string) => ({ id, instagram_business_account: { id: `ig-${id}` } });
+
 test("new-instagram-account: seeds, emits a newly managed Page, retries, requests /me/accounts", async () => {
   const input = { params: {}, state: {}, subscriptionId: "sub" };
-  const seed = mockCtx([{ body: { data: [{ id: "p1" }] } }]);
+  const seed = mockCtx([{ body: { data: [pg("p1")] } }]);
   const seeded = await newAccount.poll!(input, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals(seededOf(seeded), true);
@@ -58,25 +60,31 @@ test("new-instagram-account: seeds, emits a newly managed Page, retries, request
     seed.calls[0].url,
     `${BASE}/me/accounts?fields=id%2Cname%2Cinstagram_business_account%7Bid%2Cusername%2Cname%2Cprofile_picture_url%7D&limit=100`,
   );
-  const page = { data: [{ id: "p1" }, { id: "p2" }] };
+  const page = { data: [pg("p1"), pg("p2")] };
   const run = () =>
     newAccount.poll!({ ...input, state: seeded.nextState }, mockCtx([{ body: page }]).ctx);
   const first = await run();
-  assertEquals(first.events, [{ id: "p2" }]);
+  assertEquals(first.events, [pg("p2")]);
+  const unlinked = { data: [pg("p1"), pg("p2"), { id: "p3" }] };
+  const skipped = await newAccount.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{ body: unlinked }]).ctx,
+  );
+  assertEquals(skipped.events, [pg("p2")]);
   assertEquals(await run(), first);
 });
 
 test("new-instagram-account: follows the after cursor across pages and refuses a huge set", async () => {
   const input = { params: {}, state: {}, subscriptionId: "sub" };
   const two = mockCtx([
-    { body: { data: [{ id: "p1" }], paging: { cursors: { after: "CUR" }, next: "https://x" } } },
-    { body: { data: [{ id: "p2" }] } },
+    { body: { data: [pg("p1")], paging: { cursors: { after: "CUR" }, next: "https://x" } } },
+    { body: { data: [pg("p2")] } },
   ]);
   const seeded = await newAccount.poll!(input, two.ctx);
   assertEquals(two.calls.length, 2);
   assertEquals(two.calls[1].url.includes("&after=CUR"), true);
   const more = (n: number) => ({
-    body: { data: [{ id: `p${n}` }], paging: { cursors: { after: `C${n}` }, next: "https://x" } },
+    body: { data: [pg(`p${n}`)], paging: { cursors: { after: `C${n}` }, next: "https://x" } },
   });
   let err = "";
   try {

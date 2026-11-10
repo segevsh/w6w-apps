@@ -7,6 +7,7 @@ interface Input {
   isInline?: boolean;
   sort?: string;
   sortAscending?: boolean;
+  limit?: number;
 }
 
 const templateList: ActionDefinition<Input> = {
@@ -32,6 +33,7 @@ const templateList: ActionDefinition<Input> = {
     },
     { key: "sort", label: "Sort field", type: "string", hint: "Field to sort by." },
     { key: "sortAscending", label: "Sort ascending", type: "boolean", hint: "Sort ascending." },
+    { key: "limit", label: "Limit", type: "number", hint: "Templates per page." },
   ],
   output: [{ key: "results", type: "array", label: "Templates" }],
 
@@ -43,6 +45,7 @@ const templateList: ActionDefinition<Input> = {
         isInline: input.isInline,
         sort: input.sort,
         sortAscending: input.sortAscending,
+        limit: input.limit,
       },
     });
     return { results: resultsOf(r) };

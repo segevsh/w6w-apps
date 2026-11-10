@@ -11,3 +11,9 @@ test("template-list: GET /snippets?search=intro&isInline=false", async () => {
   assertEquals(calls[0].body, null);
   assertEquals(out, { results: [{ _id: "t1" }] });
 });
+
+test("template-list: limit is sent", async () => {
+  const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
+  await action.execute!({ limit: 50 } as never, ctx);
+  assertEquals(calls[0].url, "https://api.mixmax.com/v1/snippets?limit=50");
+});

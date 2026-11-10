@@ -2,7 +2,7 @@ import sequenceFolderList from "../actions/sequence-folder-list.ts";
 import { snapshotTrigger } from "../lib/triggers.ts";
 
 // GET /sequencefolders answers with every folder in one response (no paging or sort;
-// https://developer.mixmax.com/reference/sequencefolders-get, verified 2026-11-10); diffed by id.
+// https://developer.mixmax.com/reference/sequencefolders); diffed by id.
 export default snapshotTrigger<Record<string, unknown>>({
   key: "new-sequence-folder",
   title: "New Sequence Folder",

@@ -7,7 +7,7 @@ principals, the organization profile, and deleted items.
 - **Categories** — security, productivity
 - **Auth methods** — oauth2 (authorization code + PKCE, `login.microsoftonline.com`)
 - **Actions** — 28
-- **Triggers** — 9 (poll)
+- **Triggers** — 10 (poll)
 - **Egress allowlist** — `graph.microsoft.com` (the OAuth endpoints are allowed implicitly)
 - **API** — `https://graph.microsoft.com/v1.0`. `beta` is not used. The old Azure AD Graph
   (`graph.windows.net`) is retired and is not used or referenced by any call.
@@ -190,6 +190,7 @@ deno task validate && deno task check && deno task lint && deno task fmt && deno
 | `new-user` | poll, newest-first (`createdDateTime desc`) | `list-users` | each new user |
 | `new-group` | poll, newest-first (`createdDateTime desc`) | `list-groups` | each new group |
 | `new-application` | poll, newest-first (`createdDateTime desc`) | `list-applications` | each new app registration |
+| `new-service-principal` | poll, newest-first (`createdDateTime desc`) | `list-service-principals` | each new enterprise application |
 | `new-group-member` | poll, snapshot (`groupId`) | `list-group-members` | each object newly added to the group |
 | `new-group-owner` | poll, snapshot (`groupId`) | `list-group-owners` | each object newly made an owner |
 | `new-user-membership` | poll, snapshot (`userId`) | `list-user-memberships` | each group/role/unit the user newly joins |
@@ -202,11 +203,9 @@ collection larger than that fails with a clear error. Sorted lists send Graph's 
 header (`ConsistencyLevel: eventual`), so a brand-new object can appear a moment late; the seen-id
 window absorbs that.
 
-Not covered: `list-service-principals` (the service principal list documents no creation timestamp
-to sort or filter by, and a tenant holds thousands of principals including Microsoft's own, so it
-is neither newest-first nor a bounded snapshot).
-
-Vendor docs (verified 2026-11-10): [user list](https://learn.microsoft.com/en-us/graph/api/user-list),
+Vendor docs (read 2026-11-10): [advanced queries](https://learn.microsoft.com/en-us/graph/aad-advanced-queries),
+[service principal list](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list),
+[user list](https://learn.microsoft.com/en-us/graph/api/user-list),
 [group list](https://learn.microsoft.com/en-us/graph/api/group-list),
 [application list](https://learn.microsoft.com/en-us/graph/api/application-list),
 [group members](https://learn.microsoft.com/en-us/graph/api/group-list-members),

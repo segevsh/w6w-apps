@@ -1,8 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
 import newTask from "./triggers/new-task.ts";
-import newQuote from "./triggers/new-quote.ts";
-import newInvoice from "./triggers/new-invoice.ts";
-import newOrder from "./triggers/new-order.ts";
 import newPaymentRequest from "./triggers/new-payment-request.ts";
 import credentials from "./auth/credentials.ts";
 import userGet from "./actions/user-get.ts";
@@ -89,5 +86,5 @@ export default {
   ],
   auth: [credentials],
   healthChecks: [service, quota],
-  triggers: [newTask, newQuote, newInvoice, newOrder, newPaymentRequest],
+  triggers: [newTask, newPaymentRequest],
 } satisfies AppDefinition;

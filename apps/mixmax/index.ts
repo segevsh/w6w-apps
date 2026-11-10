@@ -2,6 +2,7 @@ import type { AppDefinition } from "@w6w/types";
 import newUnsubscribe from "./triggers/new-unsubscribe.ts";
 import newMessage from "./triggers/new-message.ts";
 import newSequence from "./triggers/new-sequence.ts";
+import newSequenceRecipient from "./triggers/new-sequence-recipient.ts";
 import newSequenceFolder from "./triggers/new-sequence-folder.ts";
 import newTeam from "./triggers/new-team.ts";
 import newTeamMember from "./triggers/new-team-member.ts";
@@ -59,6 +60,7 @@ export default {
     newMessage,
     newSequence,
     newSequenceFolder,
+    newSequenceRecipient,
     newTeam,
     newTeamMember,
     newTemplate,

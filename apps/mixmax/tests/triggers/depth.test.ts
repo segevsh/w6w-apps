@@ -7,6 +7,7 @@ import newSequenceFolder from "../../triggers/new-sequence-folder.ts";
 import newTeam from "../../triggers/new-team.ts";
 import newTeamMember from "../../triggers/new-team-member.ts";
 import newTemplate from "../../triggers/new-template.ts";
+import newSequenceRecipient from "../../triggers/new-sequence-recipient.ts";
 
 const V1 = "https://api.mixmax.com/v1";
 type Trig = {
@@ -30,7 +31,7 @@ const cases = [
     name: "new-sequence",
     t: newSequence,
     params: {},
-    url: `${V1}/sequences`,
+    url: `${V1}/sequences?limit=100`,
     fresh: ["a", "b"],
     expect: ["b"],
   },
@@ -38,7 +39,7 @@ const cases = [
     name: "new-sequence (folder)",
     t: newSequence,
     params: { folder: "f1" },
-    url: `${V1}/sequences?folder=f1`,
+    url: `${V1}/sequences?folder=f1&limit=100`,
     fresh: ["a", "b"],
     expect: ["b"],
   },
@@ -54,8 +55,8 @@ const cases = [
     name: "new-team",
     t: newTeam,
     params: {},
-    url: `${V1}/teams`,
-    fresh: ["a", "b"],
+    url: `${V1}/teams?limit=100`,
+    fresh: ["b", "a"],
     expect: ["b"],
   },
   {
@@ -70,11 +71,74 @@ const cases = [
     name: "new-template",
     t: newTemplate,
     params: {},
-    url: `${V1}/snippets`,
-    fresh: ["a", "b"],
+    url: `${V1}/snippets?sort=createdAt&sortAscending=false&limit=50`,
+    fresh: ["b", "a"],
     expect: ["b"],
   },
 ];
+
+const recipients = (...ids: string[]) => ({
+  body: {
+    sequences: { total: 0, results: [] },
+    recipients: { total: ids.length, results: ids.map((_id) => ({ _id })) },
+  },
+});
+
+for (
+  const [name, params, url] of [
+    ["all sequences", {}, `${V1}/sequences/search?limit=50&sortBy=createdAt&sortDesc=true`],
+    [
+      "one sequence",
+      { sequenceId: "s1" },
+      `${V1}/sequences/search?sequenceId=s1&limit=50&sortBy=createdAt&sortDesc=true`,
+    ],
+  ] as const
+) {
+  test(`new-sequence-recipient (${name}): seeds, emits the new recipient, requests the literal URL`, async () => {
+    const seed = mockCtx([recipients("a")]);
+    const seeded = await poll(newSequenceRecipient, params, {}, seed.ctx);
+    assertEquals(seeded.events, []);
+    assertEquals(seed.calls[0].url, url);
+    const next = await poll(
+      newSequenceRecipient,
+      params,
+      seeded.nextState,
+      mockCtx([recipients("b", "a")]).ctx,
+    );
+    assertEquals(next.events, [{ _id: "b" }]);
+  });
+}
+
+test("new-sequence follows the next cursor to the last page", async () => {
+  const ctx = mockCtx([
+    { body: { results: [{ _id: "a" }], next: "c1", hasNext: true } },
+    { body: { results: [{ _id: "b" }], next: "c2", hasNext: false } },
+  ]);
+  const r = await poll(newSequence, {}, {}, ctx.ctx);
+  assertEquals(ctx.calls.map((c) => c.url), [
+    `${V1}/sequences?limit=100`,
+    `${V1}/sequences?limit=100&next=c1`,
+  ]);
+  assertEquals(r.events, []);
+  const again = mockCtx([
+    { body: { results: [{ _id: "a" }], next: "c1", hasNext: true } },
+    { body: { results: [{ _id: "b" }, { _id: "z" }], hasNext: false } },
+  ]);
+  assertEquals((await poll(newSequence, {}, r.nextState, again.ctx)).events, [{ _id: "z" }]);
+});
+
+test("new-sequence throws rather than snapshot a truncated list", async () => {
+  const pages = Array.from({ length: 20 }, (_, i) => ({
+    body: { results: [{ _id: `p${i}` }], next: `c${i}`, hasNext: true },
+  }));
+  let err = "";
+  try {
+    await poll(newSequence, {}, {}, mockCtx(pages).ctx);
+  } catch (e) {
+    err = (e as Error).message;
+  }
+  assertEquals(err.includes("more than 2000 records"), true);
+});
 
 for (const c of cases) {
   test(`${c.name}: seeds, emits only the new record, retries idempotently, requests the literal URL`, async () => {
@@ -94,7 +158,7 @@ for (const c of cases) {
 test("snapshot triggers refuse a record without an _id", async () => {
   let err = "";
   try {
-    await poll(newTeam, {}, {}, mockCtx([{ body: { results: [{ name: "x" }] } }]).ctx);
+    await poll(newSequenceFolder, {}, {}, mockCtx([{ body: { results: [{ name: "x" }] } }]).ctx);
   } catch (e) {
     err = (e as Error).message;
   }

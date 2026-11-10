@@ -2,7 +2,7 @@ import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import messageList from "../actions/message-list.ts";
 
 // GET /messages returns the user's drafts, scheduled and sent messages newest first
-// (https://developer.mixmax.com/reference/messages-get, verified 2026-11-10), so page 1 is the feed.
+// (https://developer.mixmax.com/reference/messages-1), so page 1 is the feed.
 export default pollFromListAction({
   key: "new-message",
   title: "New Message",

@@ -9,14 +9,16 @@ const MAX_PAGES = 5;
  * `GET /me/accounts` lists the Facebook Pages the connected user manages, each with its linked
  * Instagram account; it has no order or filter, but the set is small
  * (https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/user/accounts,
- * verified 2026-11-10). Every check reads up to MAX_PAGES pages through `list-instagram-accounts`
- * and diffs the Page ids (`pollSnapshot`, added only); more than that fails loudly.
+ * read 2026-11-10). Every check reads up to MAX_PAGES pages through `list-instagram-accounts`, keeps
+ * the Pages that have a linked Instagram account (a Page without one has no
+ * `instagram_business_account` field) and diffs their ids (`pollSnapshot`, added only); more than
+ * MAX_PAGES pages fails loudly. A Page that gets an Instagram account linked later is new then.
  */
 const trigger: TriggerDefinition = {
   key: "new-instagram-account",
   title: "New Instagram Account",
   description:
-    "The run gets each Facebook Page that newly appears in the connected user's managed Pages, with its linked Instagram professional account.",
+    "The run gets each Facebook Page with a linked Instagram professional account that newly appears in the connected user's managed Pages.",
   output: [
     { key: "id", type: "string", label: "Facebook Page ID" },
     { key: "name", type: "string", label: "Page name" },
@@ -44,7 +46,10 @@ const trigger: TriggerDefinition = {
         } Pages; New Instagram Account cannot snapshot that many`,
       );
     }
-    return newRecords({ state, items, idOf: idField, what: "a Page" });
+    const linked = items.filter((p) =>
+      Boolean((p as { instagram_business_account?: unknown }).instagram_business_account)
+    );
+    return newRecords({ state, items: linked, idOf: idField, what: "a Page" });
   },
 };
 

@@ -2,7 +2,7 @@ import teamMemberList from "../actions/team-member-list.ts";
 import { snapshotTrigger } from "../lib/triggers.ts";
 
 // GET /teams/{id}/members answers with the whole roster in one response (no paging or sort;
-// https://developer.mixmax.com/reference/teams-members-get, verified 2026-11-10); diffed by id.
+// https://developer.mixmax.com/reference/teams-members-get); diffed by id.
 export default snapshotTrigger<{ teamId: string }>({
   key: "new-team-member",
   title: "New Team Member",

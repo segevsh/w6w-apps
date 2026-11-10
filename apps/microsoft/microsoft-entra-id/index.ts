@@ -36,6 +36,7 @@ import quota from "./health/quota.ts";
 import newDeletedItem from "./triggers/new-deleted-item.ts";
 import newUser from "./triggers/new-user.ts";
 import newGroup from "./triggers/new-group.ts";
+import newServicePrincipal from "./triggers/new-service-principal.ts";
 import newApplication from "./triggers/new-application.ts";
 import newGroupMember from "./triggers/new-group-member.ts";
 import newGroupOwner from "./triggers/new-group-owner.ts";
@@ -79,6 +80,7 @@ export default {
     newUser,
     newGroup,
     newApplication,
+    newServicePrincipal,
     newGroupMember,
     newGroupOwner,
     newUserMembership,

@@ -67,7 +67,7 @@ Instagram Login.
 | `new-media` | poll, newest-first | `list-media` | each new post or reel |
 | `new-comment` | poll, newest-first | `list-comments` | each new top-level comment on the chosen post (`mediaId`) |
 | `new-story` | poll, bounded snapshot | `list-stories` | each new live story (stories expire after 24 h, so the set is small) |
-| `new-instagram-account` | poll, bounded snapshot | `list-instagram-accounts` | each Facebook Page that newly appears with its linked Instagram account |
+| `new-instagram-account` | poll, bounded snapshot | `list-instagram-accounts` | each managed Facebook Page that newly appears with a linked Instagram account (Pages without one are left out) |
 
 - **New Media** wraps `list-media`, whose media edge returns the most recent media. [Instagram IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media), verified 2026-11-09.
 

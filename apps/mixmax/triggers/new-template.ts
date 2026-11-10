@@ -1,17 +1,20 @@
+import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import templateList from "../actions/template-list.ts";
-import { snapshotTrigger } from "../lib/triggers.ts";
 
-// GET /snippets answers with every template and snippet the user can access in one response (no
-// paging; https://developer.mixmax.com/reference/snippets-get, verified 2026-11-10); diffed by id.
-export default snapshotTrigger<Record<string, unknown>>({
+// GET /snippets sorts by `name` unless told otherwise; `sort=createdAt&sortAscending=false` puts
+// the newest first (https://developer.mixmax.com/reference/snippets), so page 1 of 50 is the feed.
+export default pollFromListAction({
   key: "new-template",
   title: "New Template",
   description: "The run gets each template or snippet that newly becomes accessible to the user.",
-  action: templateList as never,
-  input: () => ({}),
+  action: templateList,
+  input: () => ({ sort: "createdAt", sortAscending: false, limit: 50 }),
+  items: (result) => (result as { results?: unknown[] }).results ?? [],
+  idOf: (item) => String((item as { _id?: unknown })._id ?? ""),
   output: [
     { key: "_id", type: "string", label: "Template ID" },
     { key: "title", type: "string", label: "Title" },
   ],
   sample: { _id: "template-sample-1", title: "Follow-up" },
+  maxPages: 1,
 });
