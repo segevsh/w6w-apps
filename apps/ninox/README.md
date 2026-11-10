@@ -1,6 +1,6 @@
 # Ninox
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 
 Read and write records in a [Ninox 4](https://ninox.com) workspace, inspect its modules, tables,
 fields, views and reports, poll change feeds for incremental sync, run scripts, and render reports
@@ -27,14 +27,6 @@ without ever seeing the key.
 
 ## Actions (22)
 
-## Triggers
-
-- **New or Updated Record** (`new-or-updated-record`) polls `record-list` with `sort=-_md` (last
-  modified, the only documented sort) and fires when a record is created or modified. Dedupe key
-  is `<id>:<_md>`, so each modification fires once and a repeat check never re-emits it. The
-  first check only seeds. Source: https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api
-  (verified 2026-11-09).
-
 | Area       | Actions                                                                                         |
 | ---------- | ----------------------------------------------------------------------------------------------- |
 | Workspace  | `workspace-get`, `schema-changes-list`                                                          |
@@ -47,6 +39,23 @@ without ever seeing the key.
 Lists use `limit`/`offset` (records and change feeds accept 1-100) and return `hasMore` from the
 vendor's `page_info.has_more`. `record-list` sends the current `filter` parameter; the document's
 only deprecation is the Ninox 3 alias `filters`, which is never sent.
+
+## Triggers
+
+- **Triggers** — 3 (poll). Verified 2026-11-10 against
+  <https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api> and the vendor
+  OpenAPI document (<https://go.ninox.com/api/docs-json>).
+
+| Key                     | Mechanism | Wraps                  | The run gets                                                                                             |
+| ----------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| `new-or-updated-record` | poll      | `record-list`          | Each record created or modified (`sort=-_md`, last modified; dedupe key `<id>:<_md>`)                    |
+| `record-changes`        | poll      | `record-changes-list`  | Each record created, updated or deleted in one table (id, change type, time). Needs history tracking on  |
+| `schema-changes`        | poll      | `schema-changes-list`  | Each module, table or field created, updated, deleted or restored; also delivers `module-list`, `table-list`, `field-list` changes |
+
+The two change feeds take `since` and answer with `meta.asOf`, which becomes the next `since`. The
+first check only records "now" (no flood); a window longer than one page of 100 resumes at its
+offset on the next check. Not covered (static definitions): `function-list`, `view-list`,
+`report-list`.
 
 ## Things that cost a day
 
