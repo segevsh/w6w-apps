@@ -21,6 +21,7 @@
  *     meaningful status, and a missing key is a 403 `INVALID_API_KEY`, not a 401.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCandidate from "./triggers/new-candidate.ts";
 import apiKey from "./auth/api-key.ts";
 
 import creditsGet from "./actions/credits-get.ts";
@@ -152,5 +153,6 @@ export default {
   // dashboard (or its /v2/login), never to w6w: this app only ever holds the API key and the
   // account_id the vendor hands back.
   auth: [apiKey],
+  triggers: [newCandidate],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

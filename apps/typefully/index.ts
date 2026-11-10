@@ -79,6 +79,7 @@ import analyticsFollowersGet from "./actions/analytics-followers-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDraft from "./triggers/new-draft.ts";
 
 export default {
   actions: [
@@ -119,6 +120,7 @@ export default {
   ],
   // API key only. Typefully publishes no OAuth surface for third-party apps —
   // a bearer key generated from Settings is the whole authentication story.
+  triggers: [newDraft],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

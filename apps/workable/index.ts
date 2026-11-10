@@ -55,8 +55,8 @@
  * public unauthenticated `/api/accounts/:subdomain` job-board surface, and
  * the Job Board / Assessment / Video-Interview / Background-Check partner
  * integration surfaces — each is its own API area a recruiting-focused first
- * version does not touch. Receiving a webhook event (a Trigger) is also out
- * of scope for this version; `webhook-subscribe`/`webhook-unsubscribe`/
+ * version does not touch. The `new-candidate` poll trigger wraps `candidate-list`; receiving signed
+ * webhook events is out of scope; `webhook-subscribe`/`webhook-unsubscribe`/
  * `webhook-subscription-list` manage the subscription only.
  */
 import type { AppDefinition } from "@w6w/types";
@@ -78,6 +78,7 @@ import webhookSubscriptionList from "./actions/webhook-subscription-list.ts";
 import webhookSubscribe from "./actions/webhook-subscribe.ts";
 import webhookUnsubscribe from "./actions/webhook-unsubscribe.ts";
 
+import newCandidate from "./triggers/new-candidate.ts";
 import account from "./health/account.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
@@ -106,4 +107,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [account, quota, service],
+  triggers: [newCandidate],
 } satisfies AppDefinition;

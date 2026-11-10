@@ -1,5 +1,7 @@
 # Twist
 
+Triggers: not shipped — the message feed requires a conversation ID, so it is not a global new-record feed (https://developer.twist.com/api/).
+
 Read and write **Twist** (Doist's async team messaging): workspaces, channels, threads, comments,
 conversations, messages, groups, the inbox, search and webhooks, on the **Twist API v3** (v4 for
 workspace users only).

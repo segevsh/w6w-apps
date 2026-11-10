@@ -26,6 +26,7 @@ import documentReparse from "./actions/document-reparse.ts";
 import documentReintegrate from "./actions/document-reintegrate.ts";
 
 import service from "./health/service.ts";
+import newResult from "./triggers/new-result.ts";
 
 export default {
   actions: [
@@ -41,5 +42,6 @@ export default {
     documentReintegrate,
   ],
   auth: [apiKey],
+  triggers: [newResult],
   healthChecks: [service],
 } satisfies AppDefinition;

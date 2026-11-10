@@ -35,6 +35,7 @@ import accessToken from "./auth/access-token.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import service from "./health/service.ts";
+import newCandidate from "./triggers/new-candidate.ts";
 
 /**
  * Breezy HR — applicant tracking: companies, positions, candidates, pipelines, webhooks.
@@ -83,6 +84,7 @@ const app: AppDefinition = {
   ],
   auth: [accessToken],
   healthChecks: [service, api, quota],
+  triggers: [newCandidate],
 };
 
 export default app;

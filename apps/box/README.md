@@ -5,9 +5,23 @@ Upload, download, and manage files and folders in Box.
 - **Categories** — storage
 - **Auth methods** — oauth2
 - **Actions** — 10
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.box.com`, `upload.box.com`
 - **Website** — https://www.box.com
 - **API docs** — https://developer.box.com
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `file-uploaded` — File Uploaded | webhook (API-registered) | `FILE.UPLOADED` in a folder | file id, name, uploader, time |
+| `activity` — Item Activity | webhook (API-registered) | any Box webhook triggers you list, on one file or folder | trigger name, item id/type/name, actor |
+
+**Setup.** Subscribing creates a Box webhook (`POST /2.0/webhooks`) on the item you name, pointed at the trigger's callback URL, after removing any leftover webhook already pointed at that URL; unsubscribing deletes it. The Box app needs the **Manage webhooks** application scope, and the connected user needs access to the item. Then copy the app's **Primary Key** (and optionally **Secondary Key**) from Developer Console, your app, Configuration, Webhooks, into the trigger's `primaryKey` / `secondaryKey` params; Box signs every delivery with them and they cannot be read through the API.
+
+**Trust model.** `BOX-SIGNATURE-PRIMARY` / `BOX-SIGNATURE-SECONDARY` must equal the base64 HMAC-SHA256 of the raw body followed by the `BOX-DELIVERY-TIMESTAMP` value under the matching key; either configured key is enough (so a key can be rotated), and the timestamp must be within ten minutes. A missing or empty primary key, a missing signature, a stale timestamp or a mismatch refuses the delivery.
+
+Sources (verified 2026-11-09): https://developer.box.com/guides/webhooks/v2/signatures-v2 , https://developer.box.com/reference/post-webhooks/
 
 ## A note on the download redirect
 

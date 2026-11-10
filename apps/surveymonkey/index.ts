@@ -30,6 +30,7 @@ import contactCreate from "./actions/contact-create.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import responseCompleted from "./triggers/response-completed.ts";
 
 export default {
   actions: [
@@ -53,5 +54,6 @@ export default {
     contactCreate,
   ],
   auth: [oauth2],
+  triggers: [responseCompleted],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

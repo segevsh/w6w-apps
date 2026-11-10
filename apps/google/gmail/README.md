@@ -5,9 +5,29 @@ Send, read, and manage Gmail messages, drafts, labels, and threads.
 - **Categories** — communication, email
 - **Auth methods** — oauth2, service-account
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `gmail.googleapis.com`, `www.googleapis.com`
 - **Website** — https://mail.google.com
 - **API docs** — https://developers.google.com/workspace/gmail
+
+## Triggers
+
+One poll trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)), built on the
+`get-many-messages` and `get-message` requests (same client, endpoint and auth):
+
+| Trigger | Mechanism | Wrapped actions | The run gets |
+|---|---|---|---|
+| `new-email` — New Email | poll, at most once a minute | `get-many-messages`, `get-message` | `id`, `threadId`, `from`, `to`, `cc`, `subject`, `snippet`, `date`, `labelIds` (+ `body` with **Include body**) |
+
+Each check fetches at most 500 new messages; if more arrive within one check window (the interval plus 120 s), the oldest beyond 500 are not emitted.
+
+Each check lists `users/me/messages` with `q = "<your query> after:<last check epoch seconds − 120>"`
+(just `after:…` when no query is given) and your `labelIds`, then fetches every message it has not
+emitted before (`format=metadata`, or `format=full` with **Include body**). The `after:` window follows
+the poll interval; the 120 s overlap catches mail that lands late, and message ids kept in the trigger's
+state stop the overlap from emitting twice. **The first check emits nothing**: it seeds the cursor and
+the seen ids, so only mail arriving afterwards starts runs. A failed check changes no state and is
+retried whole. Verified against <https://developers.google.com/gmail/api/reference/rest/v1/users.messages/list> 2026-11-09 (not yet run against a live mailbox).
 
 ## Health check
 

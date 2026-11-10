@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/helpscout",
-  "version": "0.1.1",
-  "description": "Manage Help Scout conversations, customers and mailboxes.",
+  "version": "0.2.0",
+  "description": "Manage Help Scout conversations, customers and mailboxes, and start workflows on new conversations, customer replies, status changes and new customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,12 +12,17 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    },
     "id": "io.w6w.helpscout",
     "displayName": "Help Scout",
     "apiDocs": [
       "https://developer.helpscout.com/mailbox-api/"
     ],
-    "longDescription": "Help Scout is a shared-inbox help desk, and this app manages the conversations, customers, and mailboxes behind it: listing and reading conversations, replying to a customer or leaving an internal note, and updating a conversation's status, assignee, or mailbox. It is built for workflows that need to act on support tickets — routing, triaging, or replying — rather than just observing them.\n\nCustomer records can be created, read, updated, and searched, so a workflow can keep customer details in sync with another system or look someone up before replying on their behalf. Conversations and customers both support partial updates — changing just a status or a handful of fields — without having to resend the whole record, and the mailbox and tag lists round out the reference data other actions depend on, such as knowing which mailbox to file a new conversation into.",
+    "longDescription": "Help Scout is a shared-inbox help desk, and this app manages the conversations, customers, and mailboxes behind it: listing and reading conversations, replying to a customer or leaving an internal note, and updating a conversation's status, assignee, or mailbox. It is built for workflows that need to act on support tickets — routing, triaging, or replying — rather than just observing them.\n\nCustomer records can be created, read, updated, and searched, so a workflow can keep customer details in sync with another system or look someone up before replying on their behalf. Conversations and customers both support partial updates — changing just a status or a handful of fields — without having to resend the whole record, and the mailbox and tag lists round out the reference data other actions depend on, such as knowing which mailbox to file a new conversation into.\n\nTriggers start a workflow from Help Scout itself: a new conversation, a customer reply, a conversation's status changing, or a new customer. Each trigger registers a Help Scout webhook for you and checks Help Scout's signature on every delivery, so only real Help Scout events start a run.",
     "categories": [
       "support"
     ],

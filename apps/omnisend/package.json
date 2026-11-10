@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/omnisend",
-  "version": "0.1.0",
-  "description": "Omnisend contacts, tagging, and customer events for ecommerce email/SMS marketing automation.",
+  "version": "0.2.0",
+  "description": "Omnisend contacts, tagging, customer events, and polling for new contacts for ecommerce email/SMS marketing automation.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.omnisend",
     "displayName": "Omnisend",
     "apiDocs": [

@@ -397,3 +397,44 @@ Deno.test("param/unread: the real pack's strongest wholesale-forward cases yield
     );
   }
 });
+
+Deno.test("Triggers: line — one line, counted from the fixture's poll trigger, printed before the totals line (m3)", async () => {
+  const { code, stdout } = await new Deno.Command(Deno.execPath(), {
+    args: [
+      "run",
+      "--no-check",
+      "-A",
+      AUDIT_URL.pathname,
+      "../_tools/_fixtures/trigger-poll",
+    ],
+    cwd: TOOLS_DIR.pathname,
+    stdout: "piped",
+    stderr: "piped",
+  }).output();
+  const lines = new TextDecoder().decode(stdout).replace(/\x1b\[[0-9;]*m/g, "")
+    .split("\n").filter((l) => l.length);
+  const trig = lines.map((l, i) => [l, i] as const).filter(([l]) =>
+    l.startsWith("Triggers:")
+  );
+  assertEquals(trig.length, 1, lines.join("\n"));
+  assertEquals(trig[0][0], "Triggers: 1 apps (0 webhook, 1 poll)");
+  assertEquals(
+    trig[0][1],
+    lines.length - 2,
+    "Triggers: precedes the totals line",
+  );
+  assert(/^\d+ apps · \d+ errors/.test(lines[lines.length - 1]));
+  assertEquals(code, 0, lines.join("\n"));
+});
+
+Deno.test("--json keeps per-app keys and adds `_triggers` separately", async () => {
+  const { report } = await runAudit("../_tools/_fixtures/trigger-poll");
+  const r = report as unknown as Record<string, unknown>;
+  assertEquals(r._triggers, {
+    apps: 1,
+    webhookApps: 0,
+    pollApps: 1,
+    bothApps: 0,
+  });
+  assert(Array.isArray(r["../_tools/_fixtures/trigger-poll"]));
+});

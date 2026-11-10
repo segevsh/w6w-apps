@@ -80,6 +80,7 @@ import hostTotalsGet from "./actions/host-totals-get.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newLog from "./triggers/new-log.ts";
 
 export default {
   actions: [
@@ -121,5 +122,6 @@ export default {
   // *client*, which is a published-integration programme rather than something a
   // user can configure — so keys are the whole authentication story here.
   auth: [apiKey],
+  triggers: [newLog],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

@@ -35,6 +35,9 @@ const oauth2: AuthDefinition = {
       "collectors_write",
       "contacts_read",
       "contacts_write",
+      // Webhook triggers create/delete (write) and list (read) /webhooks.
+      "webhooks_read",
+      "webhooks_write",
     ],
     scopeSeparator: ",",
     pkce: false,

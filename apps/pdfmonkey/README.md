@@ -1,5 +1,7 @@
 # PDFMonkey
 
+Triggers: not shipped — list-templates is a configuration catalogue, not a new runtime-record feed (https://docs.pdfmonkey.io/).
+
 Generate PDFs and images from PDFMonkey templates.
 
 - **Categories** — documents, developer-tools

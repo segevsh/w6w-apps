@@ -5,9 +5,35 @@ Manage Trello boards, lists, cards, checklists, labels and members.
 - **Categories** — project-management, productivity
 - **Auth methods** — api-key
 - **Actions** — 27
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `api.trello.com`
 - **Website** — https://trello.com
 - **API docs** — https://developer.atlassian.com/cloud/trello/rest/
+
+## Triggers
+
+| Trigger         | Mechanism | Vendor event                                          | What the run gets                                    |
+| --------------- | --------- | ----------------------------------------------------- | ---------------------------------------------------- |
+| `card-created`  | webhook   | action `createCard`                                   | card, list and board, and who created it             |
+| `card-moved`    | webhook   | action `updateCard` that changes the list             | card, the list it left and the list it entered       |
+| `card-updated`  | webhook   | action `updateCard` that does not change the list     | card and who changed it                              |
+| `comment-added` | webhook   | action `commentCard`                                  | the comment text, the card and the commenter         |
+
+**Setup.** Set *Board, list or card ID* (a board ID watches every card on it) and paste *Power-Up
+secret*: the secret of the Trello Power-Up (API key) that owns the connection's token, shown on its
+Trello Auth tab at <https://trello.com/power-ups/admin>. The trigger registers the webhook itself
+(`POST /webhooks`) and removes it (`DELETE /webhooks/{id}`) when the subscription is deleted. Trello
+probes the callback URL with a HEAD request while creating the webhook; that is answered with no
+events.
+
+**Trust model.** Trello signs every delivery: `X-Trello-Webhook` is the base64 HMAC-SHA1 of the raw
+request body followed by the callback URL exactly as registered, keyed by the Power-Up secret. A
+delivery whose signature does not match is refused and starts no run, and so is a delivery on a
+subscription with no secret. Trello's scheme carries no timestamp, so a captured signed delivery
+cannot be told from a replay; the callback URL itself is also unguessable. A signed delivery for a
+different webhook ID is refused too.
+
+Docs: <https://developer.atlassian.com/cloud/trello/guides/rest-api/webhooks/>, verified 2026-11-09.
 
 ## Health check
 

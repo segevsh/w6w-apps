@@ -34,6 +34,13 @@ import listRelatedItems from "./actions/list-related-items.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newPerson from "./triggers/new-person.ts";
+import updatedPerson from "./triggers/updated-person.ts";
+import newLead from "./triggers/new-lead.ts";
+import newCompany from "./triggers/new-company.ts";
+import newOpportunity from "./triggers/new-opportunity.ts";
+import updatedOpportunity from "./triggers/updated-opportunity.ts";
+import newTask from "./triggers/new-task.ts";
 
 export default {
   actions: [
@@ -68,6 +75,15 @@ export default {
     listCustomFieldDefinitions,
     listUsers,
     listRelatedItems,
+  ],
+  triggers: [
+    newPerson,
+    updatedPerson,
+    newLead,
+    newCompany,
+    newOpportunity,
+    updatedOpportunity,
+    newTask,
   ],
   auth: [apiKey],
   healthChecks: [service, quota],

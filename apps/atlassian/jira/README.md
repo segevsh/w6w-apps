@@ -5,6 +5,7 @@ Create, search and transition Jira issues, and manage comments, users and projec
 - **Categories** — project-management, developer-tools
 - **Auth methods** — api-token, oauth2
 - **Actions** — 15
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.atlassian.net`, `api.atlassian.com`
 - **Website** — https://www.atlassian.com/software/jira
 - **API docs** — https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/
@@ -86,3 +87,15 @@ otherwise it would pin every verdict for this app at `unknown` forever.
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger     | Event                                        | Poll source                                            |
+| ----------- | -------------------------------------------- | ------------------------------------------------------ |
+| `new-issue` | A newly created issue matching the JQL query | `POST /rest/api/3/search` with `ORDER BY created DESC` |
+
+The first poll records the current page without emitting it; later polls deduplicate by issue id.
+The trigger appends its newest-first ordering, so enter a JQL filter without an `ORDER BY` clause.
+The Jira search endpoint and JQL ordering were checked against Atlassian's
+[Jira Cloud REST API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/)
+on 2026-11-09.

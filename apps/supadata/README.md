@@ -66,3 +66,5 @@ conveniences.
 ## Icon
 
 `assets/icon.svg` is the vendor's favicon (`docs.supadata.ai/favicon.svg`), verbatim.
+
+Triggers: not shipped — `youtube-search` is a third-party search result set, not a stable account record feed to poll as new data (https://docs.supadata.ai/).

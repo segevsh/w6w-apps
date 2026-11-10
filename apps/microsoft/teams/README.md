@@ -374,15 +374,18 @@ permanently.
 No status host appears in `w6w.network.allow`, and neither check widens egress via `network.allow` —
 because neither check makes a request at all.
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| New Channel Message | `GET /teams/{team-id}/channels/{channel-id}/messages?$top=50` | Seeds the current page on its first check, then emits unseen root messages. The endpoint has no `$orderby`; Graph returns the latest modified conversation first. |
+
+This trigger uses the Graph [List channel messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-1.0) endpoint (checked 2026-11-09). Microsoft permits this polling endpoint no more than once daily, so the trigger declares that vendor interval floor.
+
 ## Not implemented
 
 Stated plainly rather than left as a silent gap. Beyond the scope table above:
 
-- **Triggers.** Graph's change-notification model (`POST /subscriptions` plus a validated webhook
-  endpoint and periodic renewal) is a `TriggerDefinition`, not an Action, and was out of scope here.
-  This is a more pointed gap for Teams than for most Apps, because Microsoft's polling policy caps
-  polling at once per day and names change notifications as *the* supported alternative. Until a
-  trigger exists, a low-frequency List Channel Messages poll is the interim — inside that policy.
 - **Sending mentions, attachments and Adaptive Cards.** Requires emitting `<at id="n">` markup and a
   matching `mentions` array (or `attachment` markup and a matching `attachments` array) that must
   agree with each other — a two-place invariant a flat form cannot express safely.

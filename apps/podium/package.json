@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/podium",
-  "version": "0.1.0",
-  "description": "Send messages, manage contacts and conversations, read reviews, calls and appointments, and subscribe to events in Podium, the customer-messaging platform for local businesses.",
+  "version": "0.2.0",
+  "description": "Manage Podium contacts and conversations, poll for new conversations, send messages, and read reviews, calls and appointments.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.podium",
     "displayName": "Podium",
     "apiDocs": [

@@ -18,6 +18,7 @@ import apiToken from "./auth/api-token.ts";
 import api from "./health/api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSubmission from "./triggers/new-submission.ts";
 
 export default {
   actions: [
@@ -29,6 +30,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [newSubmission],
   auth: [apiToken],
   healthChecks: [api, service, quota],
 } satisfies AppDefinition;

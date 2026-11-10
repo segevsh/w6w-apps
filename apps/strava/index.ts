@@ -13,8 +13,9 @@
  *     a GPX/TCX/FIT file is a multipart flow this pack does not model yet.
  *   - **Segments, routes, clubs, gear.** Real resources with their own
  *     endpoints, left for a follow-up rather than a partial/rushed port.
- *   - **Webhook push subscriptions.** That is a Trigger, not an Action; port
- *     it against `rfcs/trigger.md` when this pack takes on triggers.
+ *   - **Creating the push subscription.** Strava's `POST /push_subscriptions` needs the API
+ *     application's own `client_id`/`client_secret`, which a connection does not hold. The
+ *     triggers (see `lib/triggers.ts`) are manual-webhook receivers instead.
  */
 import type { AppDefinition } from "@w6w/types";
 import oauth2 from "./auth/oauth2.ts";
@@ -31,6 +32,9 @@ import activityZonesGet from "./actions/activity-zones-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import activityCreated from "./triggers/activity-created.ts";
+import activityUpdated from "./triggers/activity-updated.ts";
+import activityDeleted from "./triggers/activity-deleted.ts";
 
 export default {
   actions: [
@@ -46,6 +50,7 @@ export default {
     activityKudosList,
     activityZonesGet,
   ],
+  triggers: [activityCreated, activityUpdated, activityDeleted],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

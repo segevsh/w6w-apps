@@ -10,6 +10,7 @@ interface Input {
   expandFields?: boolean;
   columns?: string[];
   filter?: string;
+  orderby?: string;
   top?: number;
   nextLink?: string;
   all?: boolean;
@@ -76,6 +77,14 @@ const listItems: ActionDefinition<Input, PagedResult<ListItem>> = {
       hint:
         "OData `$filter` — `eq`, `ne`, `lt`, `gt`, `le`, `ge`, `startswith`, on listItem properties or `fields/{ColumnName}`. Works best on indexed columns.",
     },
+    {
+      key: "orderby",
+      label: "Order by",
+      type: "string",
+      advanced: true,
+      placeholder: "createdDateTime desc",
+      hint: "OData `$orderby`, e.g. `createdDateTime desc`.",
+    },
     ...pagingParams(),
   ],
   output: listItemOutput,
@@ -88,7 +97,14 @@ const listItems: ActionDefinition<Input, PagedResult<ListItem>> = {
       : columns
       ? `fields(select=${columns})`
       : "fields";
-    const options = { query: { $expand: expand, $filter: input.filter, $top: input.top } };
+    const options = {
+      query: {
+        $expand: expand,
+        $filter: input.filter,
+        $orderby: input.orderby,
+        $top: input.top,
+      },
+    };
     const target = input.nextLink ?? `${listPath(input)}/items`;
     const opts = input.nextLink ? {} : options;
 

@@ -26,6 +26,8 @@ function delivery(body: unknown, method = "POST"): TriggerCall {
   return { method, path: "/triggers/webhooks/sub_abc", query: {}, headers: {}, body };
 }
 
+const evs = (r: unknown) => (Array.isArray(r) ? r : (r as { events: unknown[] }).events);
+
 function ingest(trigger: typeof orderPlaced, call: TriggerCall, state: Partial<TriggerState>) {
   return trigger.handleIngest!(
     { raw: call, params: {}, state: state as TriggerState, subscriptionId: "sub_abc" },
@@ -240,7 +242,7 @@ test("handleIngest: a delivery becomes one normalized event", async () => {
 
 test("handleIngest: a JSON body kept as text is parsed", async () => {
   const events = await ingest(orderPlaced, delivery(JSON.stringify(ORDER_DELIVERY)), STATE);
-  assertEquals(events.length, 1);
+  assertEquals(evs(events).length, 1);
 });
 
 test("handleIngest: a nested record's id is the last numeric segment", async () => {
@@ -252,8 +254,9 @@ test("handleIngest: a nested record's id is the last numeric segment", async () 
     }),
     { ...STATE, actions: ["attendee.checked_in"] },
   );
-  assertEquals(events[0].resourceType, "attendee");
-  assertEquals(events[0].resourceId, "2345678901");
+  const first = evs(events)[0] as { resourceType: string; resourceId: string };
+  assertEquals(first.resourceType, "attendee");
+  assertEquals(first.resourceId, "2345678901");
 });
 
 test("handleIngest: the dashboard's test ping is acknowledged with no event", async () => {

@@ -19,6 +19,7 @@ import userDelete from "./actions/user-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newPost from "./triggers/new-post.ts";
 
 export default {
   actions: [
@@ -38,6 +39,7 @@ export default {
     userUpdate,
     userDelete,
   ],
+  triggers: [newPost],
   auth: [basic, oauth2],
   healthChecks: [service, quota, site],
 } satisfies AppDefinition;

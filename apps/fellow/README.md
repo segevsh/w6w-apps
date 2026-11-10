@@ -9,6 +9,7 @@ transcripts, action items, recording upload and webhooks, over the Fellow Develo
   `*.fellow.app`
 - Icon: the vendor's own 180x180 PNG mark (from fellow.ai's favicon link, framerusercontent.com),
   embedded verbatim as base64 in `assets/icon.svg` (no SVG exists).
+- **Triggers** — 1 (poll)
 
 Every path, verb, body field, enum and response key here was checked on 2026-10-05 against the
 OpenAPI 3.1 document that `developers.fellow.ai/reference/*` embeds in each page
@@ -93,3 +94,11 @@ name — not the key. `afterConnect` labels the connection with the workspace na
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-action-item` — New Action Item | poll | `action-item-list` | Each newly created action item |
+
+The poll requests `created_at_desc`. Source: https://developers.fellow.ai/reference (verified 2026-11-09).

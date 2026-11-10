@@ -2,6 +2,7 @@
 
 Read, create, update and delete entries on any Strapi content type, and browse the media library.
 
+- **Triggers** — 1 (poll)
 - **Categories** — cms
 - **Auth methods** — api-token
 - **Actions** — 6
@@ -187,3 +188,19 @@ against the community-tested `n8n-nodes-base` Strapi node and its `StrapiTokenAp
 docs. Strapi's REST surface has changed across major versions (notably the v4→v5 response
 envelope and `documentId`/`status` rename) — re-check if a probe or an action starts failing
 for everyone at once, and especially before assuming v4-era behavior on a v5 instance.
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | The run gets |
+| --- | --- | --- | --- |
+| `new-entry` — New Entry | poll (every 5 minutes at most) | `entry-list`, ordered `createdAt:desc`; the trigger takes the collection as a parameter | each newly created entry of the chosen collection |
+
+The first check only records what already exists (no flood); later checks emit items not seen
+before, oldest first, up to 100 per check. Polling re-uses `entry-list` through the connection's own
+client and credential, so it reads exactly what that action reads.
+
+No webhook is registered and nothing is delivered to a callback URL, so there is no delivery to
+verify: the trigger only pulls, over the same authenticated API call as the action. Setup is just
+the connection.
+
+Vendor docs: <https://docs.strapi.io/cms/api/rest> (verified 2026-11-09).

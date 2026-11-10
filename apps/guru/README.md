@@ -16,6 +16,10 @@ Search, read and manage **Cards** (individual pieces of verified knowledge), **C
   OpenAPI URL of its own)
 - **Status page** — https://status.getguru.com/
 
+## Triggers
+
+- **New Card** (`new-card`) polls the newest-first `card-search` action every five minutes.
+
 > **Everything below was verified against Guru's own sources on 2026-09-05** — its machine-readable
 > OpenAPI 3 document (411,583 bytes, `info.title` "Guru API", `info.version` "v1"), the
 > `developer.getguru.com` reference pages it is generated from, and live probes against

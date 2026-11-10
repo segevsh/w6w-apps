@@ -1,4 +1,5 @@
 import type { AppDefinition } from "@w6w/types";
+import newDomain from "./triggers/new-domain.ts";
 import cancelVerification from "./actions/cancel-verification.ts";
 import checkVerification from "./actions/check-verification.ts";
 import createSuppression from "./actions/create-suppression.ts";
@@ -75,6 +76,7 @@ const app: AppDefinition = {
     sendTemplatedEmail,
     sendVerification,
   ],
+  triggers: [newDomain],
   auth: [apiKeys],
   healthChecks: [service, api, quota],
 };

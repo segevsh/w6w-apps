@@ -58,6 +58,8 @@ import userGroupGetUsers from "./actions/usergroup-get-users.ts";
 import service from "./health/service.ts";
 import incidents from "./health/incidents.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
+import event from "./triggers/event.ts";
 
 export default {
   actions: [
@@ -117,5 +119,6 @@ export default {
     userGroupGetUsers,
   ],
   auth: [accessToken, oauth2],
+  triggers: [newMessage, event],
   healthChecks: [service, incidents, quota],
 } satisfies AppDefinition;

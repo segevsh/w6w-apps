@@ -1,5 +1,7 @@
 # Ninox
 
+- **Triggers** — 1 (poll)
+
 Read and write records in a [Ninox 4](https://ninox.com) workspace, inspect its modules, tables,
 fields, views and reports, poll change feeds for incremental sync, run scripts, and render reports
 to PDF — over the Ninox 4 public API v1 (`https://go.ninox.com/api/v1`).
@@ -24,6 +26,14 @@ Keys carry scopes (the document names `records:write`, `schema:write`,
 without ever seeing the key.
 
 ## Actions (22)
+
+## Triggers
+
+- **New or Updated Record** (`new-or-updated-record`) polls `record-list` with `sort=-_md` (last
+  modified, the only documented sort) and fires when a record is created or modified. Dedupe key
+  is `<id>:<_md>`, so each modification fires once and a repeat check never re-emits it. The
+  first check only seeds. Source: https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api
+  (verified 2026-11-09).
 
 | Area       | Actions                                                                                         |
 | ---------- | ----------------------------------------------------------------------------------------------- |

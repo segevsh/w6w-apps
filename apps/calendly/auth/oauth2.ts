@@ -13,8 +13,11 @@ import { API_URL } from "../lib/client.ts";
  *     The OAuth hosts are added to this method's allowlist implicitly, exactly as
  *     the runtime does for any `oauth2` config, so `api.calendly.com` is the only
  *     entry in `network.allow`.
- *   - **No granular scopes.** Calendly's OAuth grants access to the authorizing
- *     user's resources as a whole, so no `scopes` are declared.
+ *   - **Granular scopes** (developer.calendly.com/scopes, checked 2026-11-09). Legacy OAuth
+ *     apps keep full access, but a newly created OAuth app is granted nothing until scopes are
+ *     requested, so the ones this app's endpoints use are declared: `users:read`,
+ *     `event_types:read`, `scheduled_events:read`, `scheduling_links:write`, and
+ *     `webhooks:read` / `webhooks:write` (the invitee triggers' subscription create/delete).
  *   - **PKCE is supported** and used here for public clients.
  *   - Access tokens expire after 2 hours; a rotating refresh token is issued, so
  *     `refreshUrl` is declared for silent renewal.
@@ -30,6 +33,14 @@ const oauth2: AuthDefinition = {
     authorizationUrl: "https://auth.calendly.com/oauth/authorize",
     tokenUrl: "https://auth.calendly.com/oauth/token",
     refreshUrl: "https://auth.calendly.com/oauth/token",
+    scopes: [
+      "users:read",
+      "event_types:read",
+      "scheduled_events:read",
+      "scheduling_links:write",
+      "webhooks:read",
+      "webhooks:write",
+    ],
     pkce: true,
   },
 

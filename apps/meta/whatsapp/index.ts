@@ -10,8 +10,7 @@
  *     bytes out of the action sandbox is not something `ctx.fetch` is meant
  *     to do (same limitation as this pack's Telegram app).
  *   - **Webhooks / the WhatsApp trigger.** Receiving inbound messages and
- *     status callbacks is a Trigger, not an Action; port it against
- *     `rfcs/trigger.md` when this pack takes on triggers.
+ *     status callbacks is a Trigger, not an Action: see `triggers/`.
  */
 import type { AppDefinition } from "@w6w/types";
 import accessToken from "./auth/access-token.ts";
@@ -28,6 +27,8 @@ import templateGetMany from "./actions/template-get-many.ts";
 import businessProfileGet from "./actions/business-profile-get.ts";
 import businessProfileUpdate from "./actions/business-profile-update.ts";
 
+import messageReceived from "./triggers/message-received.ts";
+import messageStatus from "./triggers/message-status.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -46,6 +47,7 @@ export default {
     businessProfileGet,
     businessProfileUpdate,
   ],
+  triggers: [messageReceived, messageStatus],
   auth: [accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

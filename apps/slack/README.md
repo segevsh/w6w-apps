@@ -5,9 +5,28 @@ Post messages, manage channels, files, reactions, stars, users and user groups o
 - **Categories** — communication
 - **Auth methods** — access-token, oauth2
 - **Actions** — 47
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `slack.com`
 - **Website** — https://slack.com
 - **API docs** — https://api.slack.com
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `new-message` — New Message | webhook (manual Events API receiver) | `message.*` events | channel, user, text, message `ts`, thread `ts`, bot flag, the raw event |
+| `event` — Slack Event | webhook (manual Events API receiver) | any subscribed Events API event, optionally narrowed by type | event type, subtype, channel, user, the raw event |
+
+**Setup (manual webhook).** Slack does not let an app register an Events API URL through the API, so:
+
+1. Create the trigger and copy its callback URL.
+2. In the Slack app's settings, open **Event Subscriptions**, switch it on and paste the URL into **Request URL**. Slack sends a signed `url_verification` request; the trigger answers it with the `challenge` once the signature checks out.
+3. Under **Subscribe to bot events** add the events you want (for example `message.channels`), and reinstall the app.
+4. Paste the app's **Signing Secret** (Basic Information, App Credentials) into the trigger's `signingSecret` param.
+
+**Trust model.** Every delivery is verified before it is read: `X-Slack-Signature` must equal `v0=` + the hex HMAC-SHA256 of `v0:<X-Slack-Request-Timestamp>:<raw body>` under the Signing Secret, and the timestamp must be within five minutes. A missing or empty Signing Secret refuses every delivery; nothing is accepted unsigned. Slack retries a delivery it did not see a 200 for; each event carries its `eventId` so a workflow can drop a repeat.
+
+Sources (verified 2026-11-09): https://docs.slack.dev/authentication/verifying-requests-from-slack/ , https://docs.slack.dev/reference/events/url_verification/ , https://docs.slack.dev/apis/events-api/
 
 ## Health check
 

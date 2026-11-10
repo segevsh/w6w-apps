@@ -5,6 +5,7 @@ Search and read live eBay listings through the Buy Browse API.
 - **Categories** — commerce
 - **Auth methods** — client-credentials
 - **Actions** — 4
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.ebay.com`
 - **Website** — https://www.ebay.com
 - **API docs** — https://developer.ebay.com/api-docs/buy/browse/overview.html
@@ -143,3 +144,11 @@ Developer Analytics API v1_beta), read through Wayback Machine archives of
 developer.ebay.com, and confirmed live against the production `api.ebay.com` host directly
 (the OAuth2 token endpoint and both API surfaces used here). Re-check if a probe starts
 failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-listing` — New Listing | poll | `item-search` | Each newly listed item matching the search |
+
+The poll requests eBay's `newlyListed` sort. Source: https://developer.ebay.com/api-docs/buy/browse/overview.html (verified 2026-11-09).

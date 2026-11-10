@@ -123,6 +123,14 @@ export function errorMessage(text: string): string {
   return text;
 }
 
+/** A non-2xx Mautic answer; `status` lets a caller treat 404/410 as "already gone". */
+export class MauticError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "MauticError";
+  }
+}
+
 /**
  * Thin wrapper over `ctx.fetch`. It never sets Authorization — the runtime
  * routes every request through the auth `sign` hook.
@@ -153,9 +161,10 @@ export class MauticClient {
     const text = await res.text();
     if (!res.ok) {
       const detail = errorMessage(text);
-      throw new Error(
+      throw new MauticError(
         `Mautic ${res.status} ${res.statusText} for ${init.method} ${url.pathname}` +
           (detail ? `: ${detail}` : ""),
+        res.status,
       );
     }
     if (!text) return undefined as T;

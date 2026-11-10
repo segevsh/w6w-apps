@@ -47,6 +47,7 @@ import sendEvent from "./actions/send-event.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -64,4 +65,5 @@ export default {
   // key path needs no redirect flow and covers every action here.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

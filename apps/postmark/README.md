@@ -6,6 +6,7 @@ Postmark's REST API.
 - **Categories** — email, communication
 - **Auth methods** — api-key (Server Token)
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.postmarkapp.com`
 - **Website** — https://postmarkapp.com
 - **API docs** — https://postmarkapp.com/developer/api/overview
@@ -61,6 +62,15 @@ Notes:
   is part of the real path, easy to miss since the docs often shorten it in prose.
 - `create-template` requires `subject` for a Standard template but not for a Layout (a Layout
   wraps other templates' content instead of being addressed directly).
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+| ------- | --------- | ------------------- | ----------------- |
+| `new-outbound-message` — New Outbound Message | Poll every five minutes | `list-outbound-messages`: newest-first `GET /messages/outbound?count=100&offset=0` | Newly observed outbound message records |
+
+Trust model: this poll trigger accepts no inbound delivery; the existing Postmark connection signs
+the outbound search request. [Postmark Messages API announcement](https://postmarkapp.com/blog/announcing-the-postmark-messages-api), verified 2026-11-09.
 
 ## Health check
 

@@ -129,3 +129,5 @@ response headers to read against them. A declared absence always reports `unknow
 Researched and endpoint-verified 2026-09-01, including the MessageBird→Bird rebrand's effect on the
 host, icon, and status page. Status surfaces move; re-check with `_tools/audit.ts` conventions in
 mind if a probe starts failing for everyone at once.
+
+Triggers: not shipped — `message-list` exposes pagination but no documented server-side newest-first ordering parameter (https://developers.messagebird.com/api/sms-messaging/#list-messages).

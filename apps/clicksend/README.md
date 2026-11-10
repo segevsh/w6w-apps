@@ -6,6 +6,7 @@ Send SMS, MMS, voice calls and transactional email, and manage contact lists, on
 - **Categories** — communication
 - **Auth methods** — basic-auth
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:basic-auth`
 - **Egress allowlist** — `rest.clicksend.com` (the `service` check adds `status.clicksend.com` to
   its own hook allowlist, never to the app's)
@@ -276,6 +277,17 @@ clicksend/
 ```
 
 ## Development
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-sms` — New SMS | poll | `sms-history-list`, newest-first by message date | Each newly observed SMS history row |
+
+Trust model: this poll trigger makes authenticated outbound API requests with the app connection;
+it accepts no inbound webhook delivery.
+
+Vendor reference: <https://clicksend.docs.apiary.io/> (verified 2026-11-09).
 
 From this directory, inside the `api` container:
 

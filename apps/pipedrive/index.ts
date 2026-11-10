@@ -30,6 +30,7 @@ import organizationGetMany from "./actions/organization-get-many.ts";
 import activityCreate from "./actions/activity-create.ts";
 import noteCreate from "./actions/note-create.ts";
 import leadCreate from "./actions/lead-create.ts";
+import newDeal from "./triggers/new-deal.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -58,5 +59,6 @@ export default {
     leadCreate,
   ],
   auth: [apiToken, oauth2],
+  triggers: [newDeal],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

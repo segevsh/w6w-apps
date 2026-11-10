@@ -6,6 +6,7 @@ analytics and events, and record lead and sale conversions, over the **Dub API**
 - **Categories** — marketing, analytics
 - **Auth methods** — api-key (`Authorization: Bearer dub_xxx`)
 - **Actions** — 29
+- **Triggers** — 1 (poll)
 - **Health checks** — `service` (status.dub.co, API component), `api` (unsigned reachability),
   `quota` (rate-limit headroom) + the derived `auth:api-key`
 - **Egress allowlist** — `api.dub.co`
@@ -46,6 +47,15 @@ probes of `api.dub.co`.
 | Analytics | `analytics-get`, `event-list`                                                                                            |
 | Customers | `customer-list`, `customer-get`, `customer-update`, `customer-delete`                                                    |
 | Tracking  | `track-lead`, `track-sale`                                                                                               |
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-list` | Each newly created customer |
+
+The poll requests `customer-list` with `sortBy=createdAt`, `sortOrder=desc`, and `pageSize=100`.
+Source: https://dub.co/docs/api-reference/customers/list-customers (verified 2026-11-09).
 
 ## Health
 

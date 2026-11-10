@@ -76,6 +76,11 @@ import rateGet from "./actions/rate-get.ts";
 import currencyList from "./actions/currency-list.ts";
 import accountGet from "./actions/account-get.ts";
 
+import transferStateChangedTrigger from "./triggers/transfer-state-changed.ts";
+import transferPayoutFailedTrigger from "./triggers/transfer-payout-failed.ts";
+import balanceUpdatedTrigger from "./triggers/balance-updated.ts";
+import profileStateChangedTrigger from "./triggers/profile-state-changed.ts";
+
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
 
@@ -107,6 +112,12 @@ export default {
     currencyList,
     // Account
     accountGet,
+  ],
+  triggers: [
+    transferStateChangedTrigger,
+    transferPayoutFailedTrigger,
+    balanceUpdatedTrigger,
+    profileStateChangedTrigger,
   ],
   auth: [apiToken],
   healthChecks: [service, requestRate],

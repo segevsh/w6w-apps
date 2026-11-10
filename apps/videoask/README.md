@@ -1,5 +1,15 @@
 # VideoAsk
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-conversation` — New Conversation | Poll | `conversation-list` | New conversations for a form |
+
+VideoAsk API docs: https://developer.videoask.com/ (verified 2026-11-09).
+
 Create and manage **VideoAsk** (by Typeform) forms — asynchronous video, audio and text
 conversations — and read the contacts, answers and transcripts they produce, over the REST API at
 `api.videoask.com`.

@@ -5,9 +5,48 @@ Manage Stripe customers, payments, refunds, invoices, subscriptions, catalogue a
 - **Categories** — commerce, finance
 - **Auth methods** — api-key
 - **Actions** — 25
+- **Triggers** — 10 (webhook)
 - **Egress allowlist** — `api.stripe.com`
 - **Website** — https://stripe.com
 - **API docs** — https://docs.stripe.com/api
+
+## Triggers
+
+Subscribing registers a Stripe **webhook endpoint** (`POST /v1/webhook_endpoints`) that points at
+the w6w callback URL and lists the trigger's event types. Unsubscribing deletes it (an endpoint
+Stripe no longer has counts as deleted). Nothing to configure by hand.
+
+| Trigger | Mechanism | Stripe event | The run gets |
+| --- | --- | --- | --- |
+| `payment-succeeded` | webhook | `payment_intent.succeeded` | the event and its PaymentIntent |
+| `payment-failed` | webhook | `payment_intent.payment_failed` | the event and the PaymentIntent with its last error |
+| `charge-refunded` | webhook | `charge.refunded` | the event and the Charge |
+| `invoice-paid` | webhook | `invoice.paid` | the event and the Invoice |
+| `invoice-payment-failed` | webhook | `invoice.payment_failed` | the event and the Invoice |
+| `subscription-created` | webhook | `customer.subscription.created` | the event and the Subscription |
+| `subscription-canceled` | webhook | `customer.subscription.deleted` | the event and the final Subscription |
+| `checkout-completed` | webhook | `checkout.session.completed` | the event and the Checkout Session |
+| `customer-created` | webhook | `customer.created` | the event and the Customer |
+| `event` | webhook | any event types you list (or `*`) | the event and its `data.object` |
+
+Every trigger's event has `id`, `type`, `created`, `livemode`, `account`, `apiVersion`,
+`requestId`, `object` (Stripe's `data.object`) and `previousAttributes` (`data.previous_attributes`
+on `*.updated` events). Stripe retries a delivery with the same event `id`, so use `id` to skip a
+duplicate.
+
+**Trust model.** Stripe returns the endpoint's `whsec_` signing secret only once, in the create
+response; the app keeps it in the subscription's state (stored unencrypted by the host — it can
+only verify deliveries to that one endpoint). Every delivery is checked before anything runs: the
+`Stripe-Signature` header's `v1` signature must equal HMAC-SHA256 of `<t>.<raw body>` under that
+secret, compared in constant time over the exact bytes Stripe sent, and `t` must be within five
+minutes of now (Stripe's documented tolerance). A delivery with no signature, a bad signature, a
+stale or future timestamp, or a subscription with no stored secret is refused and no run starts;
+no unsigned path exists. Stripe's fake `v0` test scheme is ignored.
+
+Sources, verified 2026-11-09:
+[webhook signatures](https://docs.stripe.com/webhooks#verify-manually),
+[create a webhook endpoint](https://docs.stripe.com/api/webhook_endpoints/create),
+[delete a webhook endpoint](https://docs.stripe.com/api/webhook_endpoints/delete).
 
 ## Health check
 

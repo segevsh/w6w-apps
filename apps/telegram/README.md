@@ -5,9 +5,27 @@ Send messages, media and chat actions through a Telegram bot, and manage chats.
 - **Categories** — communication
 - **Auth methods** — bot-token
 - **Actions** — 21
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `api.telegram.org`
 - **Website** — https://telegram.org
 - **API docs** — https://core.telegram.org/bots/api
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `new-message` — New Message | webhook (API-registered, `setWebhook`) | `message` update | chat id, sender id, text, message id, the raw update |
+| `update` — Bot Update | webhook (API-registered, `setWebhook`) | any update, optionally narrowed by type | update type, chat/sender ids, text or button data, the raw update |
+
+**Setup.** Nothing to do by hand: subscribing calls `setWebhook` with the trigger's callback URL and a random `secret_token`, and unsubscribing calls `deleteWebhook`.
+
+**One webhook per bot.** Telegram allows a single webhook per bot (and `getUpdates` stops working while a webhook is set). Subscribing first calls `getWebhookInfo` and **refuses** if the bot already has a webhook pointed anywhere else, rather than replace it; so two subscriptions on the same bot cannot coexist. Unsubscribing deletes the webhook only while it still points at this subscription's URL.
+
+**Update types.** With no types chosen, `setWebhook` is sent `allowed_updates: []`, which is Telegram's default set: every update type except `chat_member`, `message_reaction` and `message_reaction_count`. The setting is bot-level, so it is always sent rather than inherited from a previous subscription.
+
+**Trust model.** Telegram echoes the `secret_token` in the `X-Telegram-Bot-Api-Secret-Token` header of every delivery. The trigger keeps the token in subscription state and compares the header to it in constant time; a missing, empty or wrong header, or a subscription with no stored token, refuses the delivery. The token travels in a header, not the body, so the check does not cover the body itself.
+
+Sources (verified 2026-11-09): https://core.telegram.org/bots/api#setwebhook , https://core.telegram.org/bots/api#getwebhookinfo , https://core.telegram.org/bots/api#deletewebhook
 
 ## Health check
 

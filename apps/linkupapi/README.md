@@ -1,5 +1,7 @@
 # LinkupAPI
 
+- **Triggers** — 1 (poll)
+
 Run LinkedIn, WhatsApp and email outreach, lead sourcing, messaging, posting, recruiter and
 email-enrichment calls through [LinkupAPI](https://linkupapi.com)'s V2 API
 (`https://api.linkupapi.com/v2`). **54 actions.**
@@ -23,6 +25,10 @@ ever read by `sign`. The check on connect is `GET /v2/credits`, which needs no a
 only a count.
 
 ## Actions
+
+## Triggers
+
+- **New Candidate** (`new-candidate`) polls `job-candidates-list` by descending application date.
 
 **account**
 

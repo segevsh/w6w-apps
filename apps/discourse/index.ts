@@ -36,6 +36,7 @@ import siteInfoGet from "./actions/site-info-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import site from "./health/site.ts";
+import newTopic from "./triggers/new-topic.ts";
 
 export default {
   actions: [
@@ -67,5 +68,6 @@ export default {
     siteInfoGet,
   ],
   auth: [apiKey],
+  triggers: [newTopic],
   healthChecks: [service, quota, site],
 } satisfies AppDefinition;

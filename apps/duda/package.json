@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/duda",
-  "version": "0.1.0",
-  "description": "Manage Duda sites, pages, form submissions, collections and accounts through the Partner API.",
+  "version": "0.2.0",
+  "description": "Manage Duda sites, pages, form submissions, collections and accounts through the Partner API. Poll for newly created sites.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.duda",
     "displayName": "Duda",
     "apiDocs": [

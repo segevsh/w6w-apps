@@ -25,6 +25,7 @@ import listEvents from "./actions/list-events.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEvent from "./triggers/new-event.ts";
 
 export default {
   actions: [
@@ -53,4 +54,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEvent],
 } satisfies AppDefinition;

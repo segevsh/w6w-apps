@@ -28,6 +28,9 @@ const oauth2: AuthDefinition = {
       "workspaces:read",
       "themes:read",
       "images:read",
+      // Webhook triggers register (PUT/DELETE) and read back (GET) /forms/{id}/webhooks/{tag}.
+      "webhooks:read",
+      "webhooks:write",
     ],
     pkce: false,
   },

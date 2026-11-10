@@ -12,8 +12,9 @@
  *     *identifier*; `teamId`, `stateId`, `labelIds` and `assigneeId` all want
  *     UUIDs. The `*-get-many` actions exist to look those up.
  *
- * Deliberately absent: the webhook trigger (a Trigger, not an Action — which is
- * also why n8n's `signingSecret` credential field is not collected).
+ * Webhooks are Triggers, not Actions (`triggers/`, `lib/triggers.ts`): activating one registers a
+ * Linear webhook with a per-subscription secret and every delivery is signature-verified, which
+ * is why n8n's `signingSecret` credential field is not collected.
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
@@ -30,6 +31,10 @@ import teamGetMany from "./actions/team-get-many.ts";
 import stateGetMany from "./actions/state-get-many.ts";
 import userGetMany from "./actions/user-get-many.ts";
 import labelGetMany from "./actions/label-get-many.ts";
+import issueEvent from "./triggers/issue.ts";
+import commentEvent from "./triggers/comment.ts";
+import projectEvent from "./triggers/project.ts";
+import cycleEvent from "./triggers/cycle.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -51,6 +56,7 @@ export default {
     userGetMany,
     labelGetMany,
   ],
+  triggers: [issueEvent, commentEvent, projectEvent, cycleEvent],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

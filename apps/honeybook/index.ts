@@ -44,6 +44,7 @@ import projectSpaceRemove from "./actions/project-space-remove.ts";
 import projectConflictsGet from "./actions/project-conflicts-get.ts";
 import projectWorkspaceCreate from "./actions/project-workspace-create.ts";
 import service from "./health/service.ts";
+import newProject from "./triggers/new-project.ts";
 
 export default {
   actions: [
@@ -91,5 +92,6 @@ export default {
     projectWorkspaceCreate,
   ],
   auth: [oauth2],
+  triggers: [newProject],
   healthChecks: [service],
 } satisfies AppDefinition;

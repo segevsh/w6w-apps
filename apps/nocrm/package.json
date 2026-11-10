@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/nocrm",
-  "version": "0.1.0",
-  "description": "Manage noCRM.io leads, comments, client folders, users, teams, pipelines, steps, categories, predefined tags and webhooks.",
+  "version": "0.2.0",
+  "description": "Manage noCRM.io leads, comments, client folders, users, teams, pipelines, steps, categories, predefined tags and webhooks, and poll for new leads.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.nocrm",
     "displayName": "noCRM.io",
     "apiDocs": [

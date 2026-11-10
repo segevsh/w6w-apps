@@ -6,6 +6,7 @@ account's own **SPI v3 API**.
 - **Categories** — hr
 - **Auth methods** — `access-token`
 - **Actions** — 15 (9 reads, 6 performs)
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 live (`account`, `quota`, `service`) + the derived `auth:access-token`
   check
 - **Egress allowlist** — `*.workable.com`
@@ -159,12 +160,30 @@ subscription.
   — vendor-side APIs for approved partners, not customer-side recruiting actions.
 - **Talent pool candidates** (`POST /talent_pool/candidates`) — a distinct create path from
   job-scoped candidate creation; may be added alongside a talent-pool read surface later.
-- **Receiving webhook events** (a Trigger) — see above.
+- **Receiving signed webhook events** — see Triggers; only the poll trigger ships.
 
 Nothing was left out because it could not be understood. One genuine gap: the response **shape**
 of `GET /disqualification_reasons` could not be confirmed (the vendor's own OpenAPI schema and
 example for it are both an empty `{}`), so `disqualification-reason-list` forwards the raw body
 rather than declaring a guessed `output`.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-candidate` — New Candidate | poll (5 min) | `candidate-list`, `GET /candidates?shortcode=…&created_after=<now − look-back>&limit=50`, following `paging.next` up to 3 pages | each candidate created since the previous check |
+
+Workable documents no sort order for `GET /candidates`. Each check asks only for candidates created
+inside a look-back window (`created_after`, default 24 h, param `lookbackHours`), follows `paging.next`
+up to 3 pages of 50, and de-duplicates by candidate id. It stops at the first page that holds an
+already-seen candidate, so if Workable lists oldest-first and more than one page of candidates is
+created within the look-back, some new candidates can be missed. The first check records ids and
+fires nothing. Keep the look-back longer than any outage of the poller; candidates created before the
+window and never seen are missed. Trust model: polling over the connection's own access token; no
+inbound callback. Signed webhooks stay unshipped (the signing key is the account token, and the
+digest encoding is undocumented). Sources:
+https://workable.readme.io/reference/job-candidates-index and
+https://workable.readme.io/reference/webhook-subscriptions-candidates-employees (verified 2026-11-09).
 
 ## Health checks
 

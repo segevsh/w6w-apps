@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/apify",
-  "version": "0.1.1",
-  "description": "Run Apify Actors and tasks, poll runs, and read or write the datasets and key-value stores they produce.",
+  "version": "0.2.0",
+  "description": "Run Apify Actors and tasks, poll runs, read or write their datasets and key-value stores, and trigger workflows for new Actors.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,10 @@
         "api.apify.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": ["../_shared"]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -12,6 +12,7 @@ import deleteEntry from "./actions/delete-entry.ts";
 import listLocales from "./actions/list-locales.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newEntry from "./triggers/new-entry.ts";
 
 export default {
   actions: [
@@ -27,5 +28,6 @@ export default {
     listLocales,
   ],
   auth: [accessToken],
+  triggers: [newEntry],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

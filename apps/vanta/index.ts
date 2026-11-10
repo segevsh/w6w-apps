@@ -41,6 +41,7 @@ import vendorGet from "./actions/vendor-get.ts";
 import integrationList from "./actions/integration-list.ts";
 import monitoredComputerList from "./actions/monitored-computer-list.ts";
 import eventLogList from "./actions/event-log-list.ts";
+import newIssue from "./triggers/new-issue.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -70,6 +71,7 @@ const app: AppDefinition = {
     monitoredComputerList,
     eventLogList,
   ],
+  triggers: [newIssue],
   auth: [clientCredentials],
   healthChecks: [service, tenant, quota],
 };

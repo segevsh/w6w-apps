@@ -5,6 +5,7 @@ Track time entries, projects, workspaces, and clients via the Toggl Track API v9
 - **Categories** — productivity
 - **Auth method** — api-token (`basic`)
 - **Actions** — 10
+- **Triggers** — 3 (webhook)
 - **Egress allowlist** — `api.track.toggl.com`
 - **Website** — https://toggl.com/track/
 - **API docs** — https://engineering.toggl.com/docs/track/ (OpenAPI spec linked from
@@ -53,6 +54,34 @@ Fields: `apiToken` (secret, required) — generate one at `track.toggl.com/profi
 deliberately does not collect email/password: Toggl's legacy password-based Basic auth still
 works but the token is the vendor-recommended path and is what every current integration
 guide uses.
+
+## Triggers
+
+| Trigger              | Mechanism | Vendor event                           | What the run gets                                  |
+| -------------------- | --------- | -------------------------------------- | -------------------------------------------------- |
+| `time-entry-created` | webhook   | entity `time_entry`, action `created`  | the time entry and who created it                  |
+| `time-entry-updated` | webhook   | entity `time_entry`, action `updated`  | the updated time entry (a timer stop is an update) |
+| `project-created`    | webhook   | entity `project`, action `created`     | the project and who created it                     |
+
+**Setup.** Set *Workspace ID* and choose a *Signing secret*: any random string of 16 or more
+characters. It is registered as the subscription's secret, and Toggl signs every delivery with it.
+(Toggl would generate one if omitted; it is a parameter here because Toggl's validation PING arrives
+while the subscription is still being registered, before any generated secret could be stored.) The
+trigger registers the subscription itself (`POST /webhooks/api/v1/subscriptions/{workspace_id}`),
+asks Toggl to PING it, and deletes it when the subscription is deleted. Toggl only delivers events
+once the callback URL is validated: the signed PING carries a `validation_code`, and the trigger
+answers it with `{"validation_code": "<code>"}` as Toggl's synchronous validation requires.
+
+**Trust model.** Every delivery, the PING included, must carry `X-Webhook-Signature-256` equal to
+`sha256=` plus the hex HMAC-SHA256 of the raw request body under the signing secret, and a
+`timestamp` within five minutes of now (Toggl stamps each retry afresh). The validation code is
+echoed only for a delivery that passed both checks. A signed delivery for another callback URL or
+subscription is refused too.
+
+Docs, verified 2026-11-09: <https://engineering.toggl.com/docs/track/webhooks_start/>,
+<https://engineering.toggl.com/docs/track/webhooks_start/validating_received_events/>,
+<https://engineering.toggl.com/docs/track/webhooks_start/url_endpoint_validation/>,
+<https://engineering.toggl.com/docs/track/webhooks_start/request_examples/>.
 
 ## Health check
 

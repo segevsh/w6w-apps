@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/airtable",
-  "version": "0.2.1",
-  "description": "Read, create, update, upsert and delete Airtable records; list bases and get base schema.",
+  "version": "0.3.0",
+  "description": "Read, create, update, upsert and delete Airtable records; list bases and get base schema. Poll for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "api.airtable.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

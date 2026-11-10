@@ -30,6 +30,7 @@ import customerUpdate from "./actions/customer-update.ts";
 import customerDelete from "./actions/customer-delete.ts";
 import trackLead from "./actions/track-lead.ts";
 import trackSale from "./actions/track-sale.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
@@ -81,6 +82,7 @@ export default {
     trackLead,
     trackSale,
   ],
+  triggers: [newCustomer],
   auth: [apiKey],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

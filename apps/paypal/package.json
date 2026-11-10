@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/paypal",
-  "version": "0.2.0",
-  "description": "Create and manage PayPal orders, payments, invoices and payouts.",
+  "version": "0.3.0",
+  "description": "Create and manage PayPal orders, payments, invoices and payouts, plus triggers on captures, refunds, orders, invoices and payouts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developer.paypal.com/docs/api/overview/",
       "https://developer.paypal.com/dashboard/applications"
     ],
-    "longDescription": "PayPal creates and manages orders, payments, invoices and payouts through PayPal's own REST API, working against either a live or sandbox app depending on the credentials connected. Orders can be created and captured, a completed capture can be looked up and refunded, and invoices can be created, listed, read and sent to a customer.\n\nPayouts to one or many recipients can be created, checked and cancelled, accepting PayPal's own payout-item shape directly so a multi-recipient batch doesn't need to be flattened into a simplified form first. Capture and refund actions carry PayPal's own idempotency key so a retried step can't double-charge or double-refund a customer, and a retried payout batch is deduplicated the same way through its own batch id.\n\nAuthentication is app-level rather than tied to any individual buyer, using PayPal's client-credentials grant — the same shape suited to scheduled and unattended workflow runs, with no browser sign-in step involved.",
+    "longDescription": "PayPal creates and manages orders, payments, invoices and payouts through PayPal's own REST API, working against either a live or sandbox app depending on the credentials connected. Orders can be created and captured, a completed capture can be looked up and refunded, and invoices can be created, listed, read and sent to a customer.\n\nPayouts to one or many recipients can be created, checked and cancelled, accepting PayPal's own payout-item shape directly so a multi-recipient batch doesn't need to be flattened into a simplified form first. Capture and refund actions carry PayPal's own idempotency key so a retried step can't double-charge or double-refund a customer, and a retried payout batch is deduplicated the same way through its own batch id.\n\nAuthentication is app-level rather than tied to any individual buyer, using PayPal's client-credentials grant — the same shape suited to scheduled and unattended workflow runs, with no browser sign-in step involved.\n\nSix triggers start a workflow when something happens in PayPal: a payment captured or refunded, a checkout order approved, an invoice paid, a payout item paid out, or any event types you list. Subscribing registers a webhook with PayPal and unsubscribing removes it; every delivery is verified with PayPal itself before a run starts.",
     "categories": [
       "commerce",
       "finance"
@@ -35,7 +35,12 @@
         "api-m.sandbox.paypal.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,5 +1,7 @@
 # Vercel
 
+Triggers: not shipped — deployment events are build-log sub-resources and require a deployment ID, not a primary new-record feed (https://vercel.com/docs/rest-api/endpoints/deployments/get-deployment-events).
+
 Ship and inspect Vercel deployments — projects, aliases, env vars, domains and
 logs.
 

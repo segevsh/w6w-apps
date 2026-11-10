@@ -6,11 +6,26 @@ Q&A, and place action links (booking/ordering/reservation links).
 - **Categories** — marketing, productivity
 - **Auth methods** — oauth2
 - **Actions** — 15
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `mybusinessaccountmanagement.googleapis.com`,
   `mybusinessbusinessinformation.googleapis.com`, `mybusinessqanda.googleapis.com`,
   `mybusinessplaceactions.googleapis.com`
 - **Website** — https://business.google.com
 - **API docs** — https://developers.google.com/my-business
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-question` — New Question | poll | `list-questions`, ordered `updateTime desc` | A Business Profile question created since the last check |
+
+The trigger polls the existing `locations.questions.list` request rather than registering a
+callback; its first check records the current page and emits no historical questions. The list is
+ordered by `updateTime`, so an old question that gains an answer or upvote rises to the top; the
+trigger therefore reports a question only when its `createTime` is no earlier than 120 s before the
+newest `createTime` seen at the previous check (and it has not been reported before). Google
+documents `updateTime desc` as a descending order for this list. Verified 2026-11-09:
+https://developers.google.com/my-business/reference/qanda/rest/v1/locations.questions/list
 
 ## One product, four hostnames
 

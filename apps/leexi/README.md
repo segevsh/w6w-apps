@@ -1,5 +1,7 @@
 # Leexi
 
+- **Triggers** — 1 (poll)
+
 Read Leexi calls, transcripts and AI summaries, import recordings, manage meeting events and the
 Leexi meeting assistant, and administer users and teams (plus the reseller endpoints), over the
 **Leexi public API** (v1).
@@ -20,6 +22,10 @@ Everything here was verified on 2026-10-06 against the OpenAPI block on each ref
 live probes of `public-api.leexi.ai` and `status.leexi.ai`.
 
 ## Things most likely to go wrong
+
+## Triggers
+
+- **New Meeting Event** (`new-meeting-event`) polls `meeting-event-list` with `created_at desc`.
 
 1. **Errors are mostly empty.** An unauthenticated `GET /v1/users` and one with a bogus Basic pair
    both answer `401` with an **empty `text/html` body**, and an unknown path answers `404` the same

@@ -121,6 +121,7 @@ import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import store from "./health/store.ts";
 import planLimits from "./health/plan-limits.ts";
+import newOrder from "./triggers/new-order.ts";
 
 export default {
   actions: [
@@ -178,4 +179,5 @@ export default {
   // second `oauth2` method here would authenticate differently.
   auth: [accessToken],
   healthChecks: [service, api, quota, store, planLimits],
+  triggers: [newOrder],
 } satisfies AppDefinition;

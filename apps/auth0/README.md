@@ -6,6 +6,7 @@ connections, applications and the tenant log — through the Management API v2.
 - **Categories** — security, developer-tools
 - **Auth methods** — client-credentials
 - **Actions** — 18
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*.auth0.com`
 - **Website** — https://auth0.com
 - **API docs** — https://auth0.com/docs/api/management/v2
@@ -182,6 +183,14 @@ The `type` codes are short and opaque, and are how a security workflow filters:
 `sapi` successful Management API operation, `limit_wc` blocked account. Retention
 is by plan and short on lower tiers — a log workflow reads a window, not an
 archive.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-log` — New Tenant Log | Poll | `log-list` | Each new tenant log entry |
+
+Polled newest-first through the `log-list` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://auth0.com/docs/api/management/v2/logs/get-logs) (verified 2026-11-09).
 
 ## Health checks
 

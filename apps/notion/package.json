@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/notion",
-  "version": "0.3.1",
-  "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, and Enterprise administration.",
+  "version": "0.4.0",
+  "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, Enterprise administration, and poll for new database pages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -41,7 +41,8 @@
         "api.notion.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

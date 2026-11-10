@@ -1,5 +1,17 @@
 # Mailchimp
 
+- **Triggers** — 1 poll
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-member` | New Audience Member | Poll | `list-members` ordered by `last_changed DESC` | The new audience member |
+
+Mailchimp's list-webhook API returns a signing secret and can HMAC-sign deliveries. This app therefore polls the existing audience-member list rather than accepting a signed delivery without verification.
+
+Vendor documentation: [Webhooks](https://mailchimp.com/developer/marketing/api-concepts/webhooks/) and [List Members](https://mailchimp.com/developer/marketing/api/list-members/list-members-info/) (verified 2026-11-09).
+
 Manage Mailchimp audiences: create/update members, tag them, and send campaigns.
 
 - **Categories** — marketing, communication

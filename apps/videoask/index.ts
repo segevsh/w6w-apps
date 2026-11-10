@@ -91,6 +91,7 @@ import brandingGet from "./actions/branding-get.ts";
 
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
+import newConversation from "./triggers/new-conversation.ts";
 
 export default {
   actions: [
@@ -143,6 +144,7 @@ export default {
     brandingGet,
   ],
   // OAuth2 only. VideoAsk publishes no API-key auth for third-party apps.
+  triggers: [newConversation],
   auth: [oauth2],
   healthChecks: [service, requestRate],
 } satisfies AppDefinition;

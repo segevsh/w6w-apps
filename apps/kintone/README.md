@@ -1,5 +1,9 @@
 # Kintone
 
+## Triggers
+
+- **New Comment** (`new-comment`) polls the newest-first `comments-list` action every five minutes.
+
 Read, write and search records in a Kintone (Cybozu) App, plus comments, file
 attachments and form/App metadata, against each customer's own Kintone REST
 API.

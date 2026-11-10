@@ -12,6 +12,8 @@ import search from "./actions/search.ts";
 import createSharedLink from "./actions/create-shared-link.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import fileUploaded from "./triggers/file-uploaded.ts";
+import activity from "./triggers/activity.ts";
 
 export default {
   actions: [
@@ -27,5 +29,6 @@ export default {
     createSharedLink,
   ],
   auth: [oauth2],
+  triggers: [fileUploaded, activity],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -5,6 +5,7 @@ Manage Webflow sites, CMS collections and items, products, and orders via the We
 - **Categories** — cms
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `api.webflow.com`
 - **Website** — https://webflow.com
 - **API docs** — https://developers.webflow.com/
@@ -44,6 +45,31 @@ Two credential types, both signing with `Authorization: Bearer <token>`:
 - **oauth2** — a Webflow App OAuth flow (client credentials live on the w6w server), able
   to span every site the user grants. Webflow separates scopes with a **space** and does
   not use PKCE.
+
+## Triggers
+
+| Trigger                   | Mechanism | Vendor event               | What the run gets                                      |
+| ------------------------- | --------- | -------------------------- | ------------------------------------------------------ |
+| `form-submission`         | webhook   | `form_submission`          | the form name, submitted fields and submission time    |
+| `collection-item-created` | webhook   | `collection_item_created`  | the new CMS item, its collection and field data        |
+| `collection-item-changed` | webhook   | `collection_item_changed`  | the updated CMS item and its field data                |
+| `new-order`               | webhook   | `ecomm_new_order`          | the order, its status and the customer details         |
+
+**Setup.** Set *Site ID*; optionally a *Collection ID* (CMS triggers) or *Form name* (form trigger)
+to narrow it. The trigger registers the webhook itself (`POST /sites/{site_id}/webhooks`) and
+removes it (`DELETE /webhooks/{id}`) when the subscription is deleted. With a **Site API token**
+connection Webflow returns the webhook's own `secretKey`, which is kept in the subscription state.
+With an **OAuth app** connection Webflow returns none and signs with the app's client secret, so
+paste it as *OAuth app client secret*; registration fails (and the webhook is deleted again) if
+neither is available. Webhooks made in the Webflow dashboard do not carry the signature headers
+and cannot be used here.
+
+**Trust model.** Every delivery must carry `x-webflow-signature`, the hex HMAC-SHA256 of
+`<x-webflow-timestamp>:<raw request body>` under that secret, and a timestamp within five minutes
+of now. Anything else is refused and starts no run. Webflow disables a webhook after repeated
+failed deliveries; delete and re-add the trigger to register a new one.
+
+Docs: <https://developers.webflow.com/data/docs/working-with-webhooks>, verified 2026-11-09.
 
 ## Health check
 

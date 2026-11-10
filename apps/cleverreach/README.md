@@ -1,5 +1,9 @@
 # CleverReach
 
+Triggers: not shipped — `receiver-list` exposes a free-form `orderBy`, but CleverReach's receiver
+reference does not document a creation timestamp or a newest-first value, so it cannot safely define
+a new-receiver feed (<https://rest.cleverreach.com/explorer/v3/#!/groups-v3/get_v3_groups__group_id__receivers>).
+
 Manage CleverReach email marketing from a workflow: add, update, upsert, activate, deactivate and
 delete receivers (subscribers); manage groups (receiver lists); create attributes; tag receivers;
 read mailings and their reports; and manage the blacklist. Built on the REST API v3

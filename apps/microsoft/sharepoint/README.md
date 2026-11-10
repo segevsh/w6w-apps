@@ -303,6 +303,14 @@ signed posture never binds.
 
 ---
 
+## Triggers
+
+| Trigger | Poll source | Behaviour |
+| ------- | ----------- | --------- |
+| New List Item | `GET /sites/{site}/lists/{list}/items?$orderby=createdDateTime desc` | Seeds the current page on its first check, then emits unseen list items oldest first. |
+
+This trigger uses the same Graph [List items](https://learn.microsoft.com/en-us/graph/api/listitem-list?view=graph-rest-1.0) request as **List Items** (checked 2026-11-09), with an explicit newest-first order and a 100-item page.
+
 ## Not implemented
 
 Left out deliberately, each with a reason:

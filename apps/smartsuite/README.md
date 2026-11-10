@@ -156,3 +156,5 @@ Endpoints, headers and error bodies verified against
 and its `API US` component id were confirmed live on the same date; status
 surfaces move, so re-run `deno task validate` if a probe starts failing for
 everyone at once.
+
+Triggers: not shipped — `list-records` takes a raw `sort` array, but the system created-at field slug is not confirmed from SmartSuite's docs (https://developer.smartsuite.com/, unreadable 2026-11-09) and a poll needs newest-first guaranteed.

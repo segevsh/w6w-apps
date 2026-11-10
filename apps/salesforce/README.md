@@ -81,5 +81,18 @@ reach a status host.
 
 ---
 
+## Triggers
+
+| Key | Type | Source action | Ordering |
+|---|---|---|---|
+| `new-record` | poll | `query` | `CreatedDate DESC` |
+
+`new-record` uses the existing SOQL query endpoint with `ORDER BY CreatedDate DESC LIMIT 100`.
+Enter object and field API names (not labels); both are restricted to letters, digits, and
+underscores before they are interpolated. Salesforce documents the REST query endpoint and SOQL
+field-list syntax at https://developer.salesforce.com/docs/platform/api-rest/guide/resources-query
+and https://developer.salesforce.com/docs/platform/salesforce-soql-sosl/guide/sforce-api-calls-soql-select-fields.html
+(checked 2026-11-09).
+
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
 `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.

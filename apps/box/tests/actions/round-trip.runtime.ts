@@ -20,12 +20,16 @@
 import { test } from "node:test";
 import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { FileRef, SignableRequest } from "@w6w/types";
-import { loadApp, runHook } from "../../../../../core/packages/runtime/mod.ts";
+import { hookSource, loadApp, runHook } from "../../../../../core/packages/runtime/mod.ts";
 import type { WireResponse } from "../../../../../core/packages/runtime/src/sandbox/protocol.ts";
 
 // Avoids adding `@std/path` as a new dependency just for one conversion —
 // this app's deno.lock stays untouched by this test file.
 const BOX_DIR = decodeURIComponent(new URL("../..", import.meta.url).pathname);
+
+/** The app imports `../_shared` (triggers), so the Worker's read scope is the loader's own, shared dirs included. */
+const readScopeOf = (app: Awaited<ReturnType<typeof loadApp>>) =>
+  (hookSource(app) as { readScope: string | string[] }).readScope;
 
 /** Bytes no UTF-8 decoder round-trips: NUL, 0xFF, 0xFE, and a lone 0x80
  * continuation byte, mixed with printable bytes so a naive "it's basically
@@ -140,7 +144,7 @@ test("round trip: download-file mints a FileRef from real bytes, upload-file sen
       entryPath: app.entryPath,
       selector: { kind: "action", key: "download-file" },
       input: { fileId: "src-1" },
-      readScope: app.dir,
+      readScope: readScopeOf(app),
       onFetch,
       onFileRead,
       onFileCreate,
@@ -160,7 +164,7 @@ test("round trip: download-file mints a FileRef from real bytes, upload-file sen
       entryPath: app.entryPath,
       selector: { kind: "action", key: "upload-file" },
       input: { fileName: "roundtrip.bin", content: downloaded.file, parentId: "0" },
-      readScope: app.dir,
+      readScope: readScopeOf(app),
       onFetch,
       onFileRead,
       onFileCreate,
@@ -207,7 +211,7 @@ test("upload-file also accepts a bare FileRef id string, and still reads real by
       entryPath: app.entryPath,
       selector: { kind: "action", key: "upload-file" },
       input: { fileName: "a.bin", content: ref.id, parentId: "0" },
-      readScope: app.dir,
+      readScope: readScopeOf(app),
       onFetch,
       onFileRead,
       onFileCreate,
@@ -259,7 +263,7 @@ test("upload-file escapes a CRLF-bearing contentType instead of splicing it into
       entryPath: app.entryPath,
       selector: { kind: "action", key: "upload-file" },
       input: { fileName: "evil.bin", content: ref.id, parentId: "0" },
-      readScope: app.dir,
+      readScope: readScopeOf(app),
       onFetch,
       onFileRead,
       onFileCreate,
@@ -313,7 +317,7 @@ test("A5: ctx.file disabled fails both actions with a clear message, not a TypeE
           entryPath: app.entryPath,
           selector: { kind: "action", key: "download-file" },
           input: { fileId: "src-1" },
-          readScope: app.dir,
+          readScope: readScopeOf(app),
           onFetch,
           // onFileRead / onFileCreate deliberately omitted — a host that
           // simply does not implement the capability (DC-3: whole or none).
@@ -331,7 +335,7 @@ test("A5: ctx.file disabled fails both actions with a clear message, not a TypeE
           entryPath: app.entryPath,
           selector: { kind: "action", key: "upload-file" },
           input: { fileName: "a.bin", content: "whatever", parentId: "0" },
-          readScope: app.dir,
+          readScope: readScopeOf(app),
           onFetch,
         }),
       Error,

@@ -1,5 +1,7 @@
 # Typesense
 
+Triggers: not shipped — document search has schema-defined sort fields, so no universally newest-first document feed exists (https://typesense.org/docs/28.0/api/search.html).
+
 Search collections, index documents, and manage the collections, aliases and
 API keys around them.
 

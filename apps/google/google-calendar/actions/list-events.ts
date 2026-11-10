@@ -12,6 +12,7 @@ interface Input {
   maxResults?: number;
   orderBy?: "startTime" | "updated";
   pageToken?: string;
+  syncToken?: string;
   showDeleted?: boolean;
   showHiddenInvitations?: boolean;
   singleEvents?: boolean;
@@ -51,6 +52,13 @@ const listEvents: ActionDefinition<Input> = {
       ],
     },
     { key: "pageToken", label: "Page token", type: "string" },
+    {
+      key: "syncToken",
+      label: "Sync token",
+      type: "string",
+      hint:
+        "A `nextSyncToken` from an earlier full listing. Returns only what changed since (cancelled events included). Google refuses it together with timeMin, timeMax, updatedMin, q, iCalUID, orderBy and extended-property filters.",
+    },
     { key: "showDeleted", label: "Show deleted", type: "boolean" },
     { key: "showHiddenInvitations", label: "Show hidden invitations", type: "boolean" },
     { key: "singleEvents", label: "Expand recurring events", type: "boolean", default: true },
@@ -76,6 +84,7 @@ const listEvents: ActionDefinition<Input> = {
         maxResults: input.maxResults ?? 100,
         orderBy: input.orderBy,
         pageToken: input.pageToken,
+        syncToken: input.syncToken,
         showDeleted: input.showDeleted,
         showHiddenInvitations: input.showHiddenInvitations,
         singleEvents: input.singleEvents ?? true,

@@ -74,6 +74,7 @@ import userGetSelf from "./actions/user-get-self.ts";
 import userGet from "./actions/user-get.ts";
 
 import service from "./health/service.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -111,6 +112,7 @@ export default {
   ],
   // API Key for a single account (works everywhere except the two OAuth-only
   // lead-deletion endpoints); OAuth for a public integration, or to reach those.
+  triggers: [newLead],
   auth: [apiKey, oauth2],
   healthChecks: [service],
 } satisfies AppDefinition;

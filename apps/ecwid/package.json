@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/ecwid",
-  "version": "0.1.0",
-  "description": "Manage an Ecwid store: products and stock, categories, orders, customers, discount coupons and the store profile.",
+  "version": "0.2.0",
+  "description": "Manage an Ecwid store: products and stock, categories, orders, customers, discount coupons and the store profile. Poll for newly registered customers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.ecwid",
     "displayName": "Ecwid",
     "apiDocs": [

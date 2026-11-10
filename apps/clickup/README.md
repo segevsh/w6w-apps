@@ -5,6 +5,7 @@ Tasks, lists, folders, comments, and time tracking via the ClickUp API (v2).
 - **Categories** — project-management, productivity
 - **Auth methods** — api-token, oauth2
 - **Actions** — 12
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `api.clickup.com`
 - **Website** — https://clickup.com
 - **API docs** — https://clickup.com/api (reference: https://developer.clickup.com/reference)
@@ -39,6 +40,39 @@ Both auth methods sign with a **raw** `Authorization: <token>` header — ClickU
 does not use the `Bearer` scheme for either a personal token or an OAuth access
 token, so this is a `custom`/`oauth2` pair whose `sign` writes the token
 verbatim. A `Bearer ` prefix earns a 401.
+
+## Triggers
+
+| Trigger               | Mechanism | Vendor event                                                                                          | What the run gets                              |
+| --------------------- | --------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `task-created`        | webhook   | `taskCreated`                                                                                         | task ID, list, and the creation history        |
+| `task-updated`        | webhook   | `taskUpdated`                                                                                       | task ID, event name, before/after history      |
+| `task-deleted`        | webhook   | `taskDeleted`                                                                                         | task ID and list                               |
+| `task-comment-posted` | webhook   | `taskCommentPosted`                                                                                   | task ID and the comment in the history items   |
+
+`task-updated` registers for `taskUpdated` only. ClickUp's webhook docs define it as "triggered when a
+task is updated" (developer.clickup.com/docs/webhooks, checked 2026-11-09), and a single change also
+delivers a specific event (`taskStatusUpdated`, `taskAssigneeUpdated`, …) with the same history item;
+accepting both ran the flow twice per change. Narrowing the registration was chosen over deduping on
+the history-item id because deduping needs state across two separate HTTP deliveries, which a trigger
+ingest does not have. The before/after `historyItems` still say which field changed. ClickUp also
+sends `taskStatusUpdated` when a task is created; `task-updated` no longer reacts to that.
+
+**Setup.** Set *Workspace ID* (ClickUp's team ID) and, optionally, one of *Space ID*, *Folder ID* or
+*List ID* to narrow the scope (the most specific one wins). The trigger registers the webhook itself
+(`POST /team/{team_id}/webhook`) and removes it (`DELETE /webhook/{id}`) when the subscription is
+deleted. Webhooks belong to the user whose token created them: they stop firing if that user is
+disabled.
+
+**Trust model.** ClickUp returns a per-webhook `secret` in the create response; it is kept in the
+subscription state. Every delivery must carry an `X-Signature` header equal to the hex HMAC-SHA256
+of the raw request body under that secret; anything else is refused and starts no run. A signed
+delivery for a different webhook ID is refused too. `idempotencyKey` is ClickUp's documented
+`webhook_id:history_item_id` key.
+
+Docs, verified 2026-11-09: <https://developer.clickup.com/docs/webhooks>,
+<https://developer.clickup.com/docs/webhooksignature>,
+<https://developer.clickup.com/reference/createwebhook>.
 
 ## Health check
 

@@ -32,6 +32,8 @@ const oauth2: AuthDefinition = {
       "file_versions:read",
       "projects:read",
       "current_user:read",
+      "webhooks:read",
+      "webhooks:write",
     ],
     scopeSeparator: " ",
     pkce: true,

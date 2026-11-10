@@ -41,6 +41,7 @@
  * exists where every other resource here has a `*-get-many`.
  */
 import type { AppDefinition } from "@w6w/types";
+import newCustomer from "./triggers/new-customer.ts";
 import accessToken from "./auth/access-token.ts";
 
 import locationGetMany from "./actions/location-get-many.ts";
@@ -91,6 +92,7 @@ export default {
     // invoice
     invoiceGetMany,
   ],
+  triggers: [newCustomer],
   auth: [accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

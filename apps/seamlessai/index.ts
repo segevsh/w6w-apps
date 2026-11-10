@@ -26,6 +26,7 @@
  *     unavailable (`health/service.ts`).
  */
 import type { AppDefinition } from "@w6w/types";
+import newTask from "./triggers/new-task.ts";
 import apiKey from "./auth/api-key.ts";
 
 import contactsSearch from "./actions/contacts-search.ts";
@@ -125,6 +126,7 @@ export default {
     userGet,
     featuresGet,
   ],
+  triggers: [newTask],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

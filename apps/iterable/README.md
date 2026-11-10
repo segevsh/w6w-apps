@@ -1,5 +1,9 @@
 # Iterable
 
+## Triggers
+
+- **New Campaign** (`new-campaign`) polls the newest-first `list-campaigns` action every five minutes.
+
 Iterable is a cross-channel marketing platform. This app exposes its server-side REST API: users,
 events, lists, campaigns and journeys, templates, catalogs, channels and message types,
 email/SMS/push sends, and subscriptions. **54 actions.** Everything was verified on 2026-10-06

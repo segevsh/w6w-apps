@@ -54,6 +54,7 @@ import columnDelete from "./actions/column-delete.ts";
 import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
+import newRow from "./triggers/new-row.ts";
 
 export default {
   actions: [
@@ -82,5 +83,6 @@ export default {
     columnDelete,
   ],
   auth: [apiToken],
+  triggers: [newRow],
   healthChecks: [service, requestRate],
 } satisfies AppDefinition;

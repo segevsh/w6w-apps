@@ -6,6 +6,7 @@ Copper CRM people, companies, opportunities, leads, tasks, activities and accoun
 - **Categories** — crm
 - **Auth methods** — api-key
 - **Actions** — 24
+- **Triggers** — 7 (webhook)
 - **Egress allowlist** — `api.copper.com`
 - **Website** — https://www.copper.com/
 - **API docs** — https://developer.copper.com/
@@ -401,3 +402,36 @@ checking for a 200.
 - **Embedded App SDK** — https://github.com/ProsperWorks/copper-sdk (TypeScript; docs at
   https://docs.copper.com/copper-sdk/). This is for building UI panels *inside* Copper, not for
   calling the REST API — unrelated to this app, listed so nobody mistakes one for the other.
+
+## Triggers
+
+Webhook triggers on Copper's subscriptions API. Each registers itself with
+`POST /developer_api/v1/webhooks` (entity `type`, `event`, the callback URL and a generated
+`secret` object) and deletes the subscription again on unsubscribe.
+
+| Trigger | Mechanism | Vendor event | What the run gets |
+|---|---|---|---|
+| `new-person` — New Person | webhook (API) | person · `new` | One event per person id |
+| `updated-person` — Person Updated | webhook (API) | person · `update` | …plus `updatedAttributes` (`[old, new]` per field) |
+| `new-lead` — New Lead | webhook (API) | lead · `new` | One event per lead id |
+| `new-company` — New Company | webhook (API) | company · `new` | One event per company id |
+| `new-opportunity` — New Opportunity | webhook (API) | opportunity · `new` | One event per opportunity id |
+| `updated-opportunity` — Opportunity Updated | webhook (API) | opportunity · `update` | …plus `updatedAttributes` |
+| `new-task` — New Task | webhook (API) | task · `new` | One event per task id |
+
+A Copper notification carries only the record ids (up to 30 per notification) and the event, not the
+record; the run gets one event per id and can fetch the record with the matching action (for example
+`get-person`). Copper fires each notification at most once and never retries, and allows 100
+subscriptions per account.
+
+Trust model: Copper does not sign requests; instead it copies every key of the subscription's
+`secret` object into the top level of each delivery body. The trigger registers a random 256-bit
+value as `secret.w6w_secret` (a caller-chosen secret, kept in the subscription state). `handleIngest`
+reads the raw body, requires that stored secret to exist, and refuses any delivery whose
+`w6w_secret` differs (constant-time compare); the secret is not part of the emitted event. A shared
+secret proves the sender knows it; it does not protect the body from tampering.
+
+Vendor docs: <https://developer.copper.com/webhooks/overview.html>,
+<https://developer.copper.com/webhooks/create-new-subscription.html>,
+<https://developer.copper.com/webhooks/notification-example.html> and
+<https://developer.copper.com/webhooks/delete-subscription-unsubscribe.html>, verified 2026-11-09.

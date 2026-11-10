@@ -13,6 +13,9 @@ import sheetAppendOrUpdate from "./actions/sheet-append-or-update.ts";
 import sheetClear from "./actions/sheet-clear.ts";
 import sheetDeleteRows from "./actions/sheet-delete-rows.ts";
 import sheetDeleteColumns from "./actions/sheet-delete-columns.ts";
+import rowAdded from "./triggers/row-added.ts";
+import rowUpdated from "./triggers/row-updated.ts";
+import rowAddedOrUpdated from "./triggers/row-added-or-updated.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -32,5 +35,6 @@ export default {
     sheetDeleteColumns,
   ],
   auth: [oauth2, serviceAccount],
+  triggers: [rowAdded, rowUpdated, rowAddedOrUpdated],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

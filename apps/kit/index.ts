@@ -25,6 +25,7 @@ import createBroadcast from "./actions/create-broadcast.ts";
 
 import listCustomFields from "./actions/list-custom-fields.ts";
 import createCustomField from "./actions/create-custom-field.ts";
+import newSubscriber from "./triggers/new-subscriber.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -59,4 +60,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newSubscriber],
 } satisfies AppDefinition;

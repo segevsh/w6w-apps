@@ -6,9 +6,45 @@ workflows.
 - **Categories** — version-control, developer-tools
 - **Auth methods** — access-token, oauth2
 - **Actions** — 24
+- **Triggers** — 6 (webhook)
 - **Egress allowlist** — `api.github.com`
 - **Website** — https://github.com
 - **API docs** — https://docs.github.com/en/rest
+
+## Triggers
+
+Every trigger is a signed webhook trigger ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)).
+Activating one registers a repository webhook on GitHub for you (`POST /repos/{owner}/{repository}/hooks`)
+and removes it when the trigger is deactivated. The token needs permission to administer
+repository webhooks (classic `admin:repo_hook`, or the fine-grained "Webhooks" repository
+permission, read and write).
+
+| Trigger | Mechanism | GitHub event | The run gets |
+|---|---|---|---|
+| `push` — New Push | webhook | `push` | ref, before/after commit, commits |
+| `pull-request` — Pull Request Event | webhook | `pull_request` | action, pull request |
+| `issue` — Issue Event | webhook | `issues` | action, issue |
+| `issue-comment` — Issue Comment Event | webhook | `issue_comment` | action, comment, issue |
+| `release` — Release Event | webhook | `release` | action, release |
+| `workflow-run` — Workflow Run Event | webhook | `workflow_run` | action, workflow run |
+
+Every run also gets `event`, `action`, `deliveryId` (`X-GitHub-Delivery`), `repository`
+(`owner/name`), `sender` and the full GitHub `payload`. Triggers with an action (pull request,
+issue, comment, release, workflow run) take an optional **Only these actions** list such as
+`opened,closed`.
+
+**Trust model.** On activation a random 256-bit secret is generated per subscription and given to
+GitHub as the webhook's secret; it is kept in the subscription's state next to the webhook id. Each
+delivery's `X-Hub-Signature-256` (`sha256=` + the hex HMAC-SHA256 of the exact request body) is
+checked, in constant time, before the body is read; a delivery with no signature, a wrong one, or
+no secret on record is refused and starts no run. GitHub's `ping` is acknowledged without a run.
+Only `X-Hub-Signature-256` is accepted (never the legacy SHA-1 header). GitHub sends no signed
+timestamp, so a captured delivery is replayable; the per-subscription secret and callback URL limit
+who could capture one.
+
+Vendor docs (verified 2026-11-09):
+[validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries),
+[repository webhooks API](https://docs.github.com/en/rest/repos/webhooks).
 
 ## Health check
 

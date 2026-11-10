@@ -7,6 +7,8 @@ Every path, verb, parameter and enum was verified on 2026-10-06 against the Open
 embedded in `https://axonaut.com/api/v2/doc` (`<script id="swagger-data">`, 78 paths). The catalog's
 old `/manager/ecommerceApi` documentation URL is a 404.
 
+Triggers: not shipped — company-list sorts only by id, name or city with no direction argument, so newest-first cannot be requested (https://axonaut.com/api/v2/doc)
+
 ## Auth
 
 One method, **API Key**: the user's Axonaut API key, sent as the `userApiKey` request header (the

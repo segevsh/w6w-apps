@@ -30,6 +30,7 @@ import listChats from "./actions/list-chats.ts";
 // chat message
 import listChatMessages from "./actions/list-chat-messages.ts";
 import sendChatMessage from "./actions/send-chat-message.ts";
+import newChannelMessage from "./triggers/new-channel-message.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -53,6 +54,7 @@ export default {
     listChatMessages,
     sendChatMessage,
   ],
+  triggers: [newChannelMessage],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

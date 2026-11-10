@@ -19,8 +19,9 @@
  * Connection's `display` by `afterConnect` — `lib/client.ts` reads it from
  * there, the same pattern Zendesk uses for its per-account subdomain.
  *
- * Deliberately absent: PayPal Subscriptions, Disputes, and the webhook
- * trigger (a Trigger, not an Action).
+ * Triggers (`lib/triggers.ts`) register PayPal webhooks and verify every delivery by posting it
+ * back to PayPal's `verify-webhook-signature` endpoint. Deliberately absent: PayPal
+ * Subscriptions and Disputes.
  */
 import type { AppDefinition } from "@w6w/types";
 import clientCredentials from "./auth/client-credentials.ts";
@@ -42,6 +43,13 @@ import transactionList from "./actions/transaction-list.ts";
 import payoutCreate from "./actions/payout-create.ts";
 import payoutGet from "./actions/payout-get.ts";
 import payoutItemCancel from "./actions/payout-item-cancel.ts";
+
+import paymentCapturedTrigger from "./triggers/payment-captured.ts";
+import paymentRefundedTrigger from "./triggers/payment-refunded.ts";
+import orderApprovedTrigger from "./triggers/order-approved.ts";
+import invoicePaidTrigger from "./triggers/invoice-paid.ts";
+import payoutItemSucceededTrigger from "./triggers/payout-item-succeeded.ts";
+import eventTrigger from "./triggers/event.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -66,6 +74,14 @@ export default {
     payoutCreate,
     payoutGet,
     payoutItemCancel,
+  ],
+  triggers: [
+    paymentCapturedTrigger,
+    paymentRefundedTrigger,
+    orderApprovedTrigger,
+    invoicePaidTrigger,
+    payoutItemSucceededTrigger,
+    eventTrigger,
   ],
   auth: [clientCredentials],
   healthChecks: [service, quota],

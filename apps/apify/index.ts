@@ -81,6 +81,7 @@ import accountUsageGet from "./actions/account-usage-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import newActor from "./triggers/new-actor.ts";
 
 export default {
   actions: [
@@ -128,4 +129,5 @@ export default {
   // third-party integration is to hand it a *scoped* token.
   auth: [apiToken],
   healthChecks: [service, quota, requestRate],
+  triggers: [newActor],
 } satisfies AppDefinition;

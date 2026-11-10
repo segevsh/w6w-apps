@@ -13,6 +13,7 @@ import listAuditLogs from "./actions/list-audit-logs.ts";
 import getSecurityScanFindings from "./actions/get-security-scan-findings.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
+import newAuditLog from "./triggers/new-audit-log.ts";
 
 export default {
   actions: [
@@ -35,4 +36,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api],
+  triggers: [newAuditLog],
 } satisfies AppDefinition;

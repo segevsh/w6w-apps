@@ -20,6 +20,7 @@ import sendCampaign from "./actions/send-campaign.ts";
 import replicateCampaign from "./actions/replicate-campaign.ts";
 import resendCampaign from "./actions/resend-campaign.ts";
 import ping from "./actions/ping.ts";
+import newMember from "./triggers/new-member.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -42,5 +43,6 @@ export default {
     ping,
   ],
   auth: [apiKey, oauth2],
+  triggers: [newMember],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

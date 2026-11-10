@@ -18,6 +18,8 @@ export const SHARED = [
   /^w6w-pack\.json$/,
   /^package(-lock)?\.json$/,
   /^_tools\//,
+  // shared kits (apps/_shared, apps/<group>/_shared) are used by many apps
+  /^apps\/(?:[^/]+\/)?_shared\//,
   /^scripts\/verify\.sh$/,
   /^\.github\/scripts\/changed-apps\.mjs$/,
   /^\.github\/scripts\/run-app-tests\.mjs$/,

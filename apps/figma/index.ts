@@ -15,6 +15,11 @@ import getCurrentUser from "./actions/get-current-user.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import fileUpdated from "./triggers/file-updated.ts";
+import fileDeleted from "./triggers/file-deleted.ts";
+import fileVersionCreated from "./triggers/file-version-created.ts";
+import commentAdded from "./triggers/comment-added.ts";
+import libraryPublished from "./triggers/library-published.ts";
 
 export default {
   actions: [
@@ -34,6 +39,7 @@ export default {
     // user
     getCurrentUser,
   ],
+  triggers: [fileUpdated, fileDeleted, fileVersionCreated, commentAdded, libraryPublished],
   auth: [personalAccessToken, oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

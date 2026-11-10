@@ -106,3 +106,13 @@ working after three days until it is reconnected.
 - **Not verified against a live base.** No SeaTable account was available in the build environment:
   request and response shapes come from the vendor's OpenAPI document, and only the unauthenticated
   surface (`/ping`, the 403 bodies for a bad token, the status page) was probed live.
+
+## Triggers
+
+| Key | Type | Source action | Ordering |
+|---|---|---|---|
+| `new-row` | poll | `row-list` | selected view's `_ctime` descending sort |
+
+`new-row` reuses `row-list` and requires a view configured with the SeaTable `_ctime` system column
+in descending order. The action sends that view name with the same row-list endpoint; SeaTable's
+official reference documents rows and views at https://api.seatable.io/ (checked 2026-11-09).

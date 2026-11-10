@@ -109,6 +109,7 @@ import uploadPresetList from "./actions/upload-preset-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newAsset from "./triggers/new-asset.ts";
 
 export default {
   actions: [
@@ -142,5 +143,6 @@ export default {
     uploadPresetList,
   ],
   auth: [basic],
+  triggers: [newAsset],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

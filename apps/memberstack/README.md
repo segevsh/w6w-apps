@@ -1,5 +1,7 @@
 # Memberstack
 
+- **Triggers** — 1 (poll)
+
 Manage members and their free plans, verify member tokens, and read and write Data Table records on
 **Memberstack's Admin REST API** (`admin.memberstack.com`).
 
@@ -20,6 +22,10 @@ Manage members and their free plans, verify member tokens, and read and write Da
 > not observed.
 
 ## Actions
+
+## Triggers
+
+- **New Member** (`new-member`) polls `member-list` with `order=DESC`.
 
 | Action | Route |
 |---|---|

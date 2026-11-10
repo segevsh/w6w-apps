@@ -15,6 +15,10 @@ import listProducts from "./actions/list-products.ts";
 import listOrders from "./actions/list-orders.ts";
 import getOrder from "./actions/get-order.ts";
 import updateOrder from "./actions/update-order.ts";
+import formSubmission from "./triggers/form-submission.ts";
+import collectionItemCreated from "./triggers/collection-item-created.ts";
+import collectionItemChanged from "./triggers/collection-item-changed.ts";
+import newOrder from "./triggers/new-order.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -36,5 +40,6 @@ export default {
     updateOrder,
   ],
   auth: [apiToken, oauth2],
+  triggers: [formSubmission, collectionItemCreated, collectionItemChanged, newOrder],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

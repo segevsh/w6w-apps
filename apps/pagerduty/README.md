@@ -6,9 +6,18 @@ policies.
 - **Categories** — monitoring, devops
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.pagerduty.com`
 - **Website** — https://www.pagerduty.com
 - **API docs** — https://developer.pagerduty.com/api-reference
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-incident` — New Incident | poll | `incident-list` | Newly listed incidents |
+
+Source: https://developer.pagerduty.com/api-reference/ (verified 2026-11-09).
 
 ## Setup
 

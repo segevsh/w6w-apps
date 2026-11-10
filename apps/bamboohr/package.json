@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bamboohr",
-  "version": "0.1.1",
-  "description": "Read and write BambooHR employees, time off, files, reports and metadata via the BambooHR API v1.",
+  "version": "0.2.0",
+  "description": "Read and write BambooHR employees, time off, files, reports and metadata via the BambooHR API v1, and trigger workflows on new employees.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://documentation.bamboohr.com/docs",
       "https://documentation.bamboohr.com/docs/getting-started"
     ],
-    "longDescription": "BambooHR is the HR system many growing companies use as their single source of truth for employee data, and this app brings that data into your workflows. Look up individual employees or pull the full company directory, create and update employee records, and read the tabular history behind a job title or compensation change rather than just its current value.\n\nTime off is a first-class citizen: submit and query time-off requests, approve or deny them, check whether someone has accrued enough leave for a future date, and see who's out today. Run whatever custom report has already been built in BambooHR's own UI instead of reassembling its columns and filters by hand.\n\nBecause BambooHR's field set is different per company, custom-field discovery is built in — list every field and every dropdown's allowed values before you build the rest of a workflow around them, so you're always working with fields your account actually has.",
+    "longDescription": "BambooHR is the HR system many growing companies use as their single source of truth for employee data, and this app brings that data into your workflows. Look up individual employees or pull the full company directory, create and update employee records, and read the tabular history behind a job title or compensation change rather than just its current value.\n\nTime off is a first-class citizen: submit and query time-off requests, approve or deny them, check whether someone has accrued enough leave for a future date, and see who's out today. Run whatever custom report has already been built in BambooHR's own UI instead of reassembling its columns and filters by hand.\n\nBecause BambooHR's field set is different per company, custom-field discovery is built in — list every field and every dropdown's allowed values before you build the rest of a workflow around them, so you're always working with fields your account actually has. A poll trigger starts workflows on new employees.",
     "categories": [
       "hr"
     ],
@@ -33,7 +33,12 @@
         "*.bamboohr.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

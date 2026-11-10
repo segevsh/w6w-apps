@@ -1,5 +1,7 @@
 # NocoDB
 
+Triggers: not shipped — record-list requires a user-selected table and its configurable sort field cannot be safely fixed to a universal creation field (https://nocodb.com/docs/product-docs/developer-resources/rest-apis).
+
 Read and write records in bases and tables, follow links, and inspect schemas
 and views.
 

@@ -76,6 +76,8 @@ callers of this app's `task-create` action supply `boxKey` exactly once.
 ### 5. Two different 401 bodies for two different auth failures — checked live
 
 ```
+
+Triggers: not shipped — `box-list` accepts `sortBy=creationTimestamp` but neither the action nor Streak's published reference (https://streak.readme.io/, JS-rendered, unreadable 2026-11-09) states the sort direction, and a poll needs newest-first guaranteed (https://streak.readme.io/).
 $ curl -s https://api.streak.com/api/v1/users/me
 {"error":"Authentication required"}
 

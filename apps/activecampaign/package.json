@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/activecampaign",
-  "version": "0.1.1",
-  "description": "Manage ActiveCampaign contacts, deals, campaigns and automations.",
+  "version": "0.2.0",
+  "description": "Manage ActiveCampaign contacts, deals, campaigns and automations, and trigger on new contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -19,7 +19,7 @@
       "https://developers.activecampaign.com/reference/rate-limits",
       "https://developers.activecampaign.com/reference/automation"
     ],
-    "longDescription": "ActiveCampaign combines email marketing, CRM and marketing automation in one account, and this app gives a workflow a direct line into all three: create, update and remove contacts, create and track deals, and look up campaigns as they go out.\n\nAutomations stay something built in ActiveCampaign's own editor — the vendor's API doesn't allow creating or editing them — but a workflow can list existing automations and enroll a contact into one the moment some other system says they qualify, which covers the common case of triggering a sequence from an external event without duplicating its logic elsewhere.\n\nBecause ActiveCampaign issues each account its own API hostname rather than a single fixed endpoint, that address is collected once alongside the credential, so every action reaches the right account automatically and a workflow never has to track the URL itself.",
+    "longDescription": "ActiveCampaign combines email marketing, CRM and marketing automation in one account, and this app gives a workflow a direct line into all three: create, update and remove contacts, create and track deals, and look up campaigns as they go out.\n\nAutomations stay something built in ActiveCampaign's own editor — the vendor's API doesn't allow creating or editing them — but a workflow can list existing automations and enroll a contact into one the moment some other system says they qualify, which covers the common case of triggering a sequence from an external event without duplicating its logic elsewhere. The New Contact trigger registers an ActiveCampaign webhook for subscribe events.\n\nBecause ActiveCampaign issues each account its own API hostname rather than a single fixed endpoint, that address is collected once alongside the credential, so every action reaches the right account automatically and a workflow never has to track the URL itself.",
     "categories": [
       "marketing",
       "crm"
