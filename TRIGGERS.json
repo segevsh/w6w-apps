@@ -9387,12 +9387,23 @@
     "path": "apps/redtail-crm",
     "mechanism": "poll",
     "candidates": [
+      "new-contact-address",
+      "new-contact-note",
+      "new-opportunity",
       "new-or-updated-contact"
     ],
     "pollAction": "contact-search",
-    "reason": "GET /contacts/search takes the documented updated_since filter; responses carry meta.total_pages, the action now takes page, and the trigger resumes across checks",
-    "verified": "apps/redtail-crm/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "contact-search takes the documented updated_since filter (since-filter poll); opportunities, one contact's notes and one contact's addresses document no sort or date filter and are read in full and diffed (snapshot) (https://documenter.getpostman.com/view/7873823/SVzxXyzn)",
+    "verified": "apps/redtail-crm/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-list": "new-or-updated-contact"
+    },
+    "skipped": {
+      "activity-list": "filters only by the activity's own start/end date (no created/updated filter, no sort), so an activity scheduled far ahead would be reported as new when it enters the window (https://documenter.getpostman.com/view/7873823/SVzxXyzn)",
+      "database-user-list": "reference list of the database's staff users, used to populate selectors",
+      "opportunity-stage-list": "reference list of pipeline stage definitions"
+    }
   },
   {
     "path": "apps/refiner",
@@ -9444,12 +9455,22 @@
     "path": "apps/replicate",
     "mechanism": "poll",
     "candidates": [
-      "new-prediction"
+      "new-deployment",
+      "new-model",
+      "new-model-version",
+      "new-or-updated-model",
+      "new-prediction",
+      "new-training"
     ],
     "pollAction": "prediction-list",
-    "reason": "prediction-list is newest-first per the vendor (https://replicate.com/docs/reference/http#predictions.list)",
-    "verified": "apps/replicate/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "predictions, trainings, deployments and model versions are documented newest first; /models takes sort_by (model_created_at) and sort_direction (https://replicate.com/docs/reference/http, https://api.replicate.com/openapi.json)",
+    "verified": "apps/replicate/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "collection-list": "curated catalogue maintained by Replicate staff: reference data with no recency order (https://api.replicate.com/openapi.json collections.list)",
+      "hardware-list": "static reference list of hardware SKUs (https://api.replicate.com/openapi.json hardware.list)",
+      "model-search": "relevance-ranked free-text search over public models, collections and docs with no recency order or filter (beta; https://api.replicate.com/openapi.json search); model-list backs the model triggers"
+    }
   },
   {
     "path": "apps/replyio",
@@ -9646,11 +9667,23 @@
     "path": "apps/salesloft",
     "mechanism": "poll",
     "candidates": [
-      "new-person"
+      "new-account",
+      "new-cadence",
+      "new-cadence-membership",
+      "new-call",
+      "new-note",
+      "new-or-updated-account",
+      "new-or-updated-cadence",
+      "new-or-updated-cadence-membership",
+      "new-or-updated-call",
+      "new-or-updated-note",
+      "new-or-updated-task",
+      "new-person",
+      "new-user"
     ],
     "pollAction": "person-list",
-    "reason": "shipped poll trigger(s) over list action person-list",
-    "verified": "apps/salesloft/README.md Triggers section (verified 2026-11-09)",
+    "reason": "every Salesloft list documents sort_by/sort_direction (created_at and/or updated_at; tasks sort by updated_at; users by id; cadence memberships by added_at); tasks have no created_at sort so only new-or-updated-task ships (https://developers.salesloft.com/docs/api)",
+    "verified": "apps/salesloft/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -9669,24 +9702,44 @@
     "path": "apps/salesmsg",
     "mechanism": "poll",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "new-member",
+      "new-or-updated-conversation"
     ],
     "pollAction": "contact-list",
-    "reason": "shipped poll trigger(s) over list action contact-list",
-    "verified": "apps/salesmsg/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "conversations are documented ordered by time of last event; team members are an unpaginated bounded list diffed as a snapshot; new-contact sort column still unverified (https://app.salesmessage.com/api/docs/salesmessage-public-api-v2.3.json)",
+    "verified": "apps/salesmsg/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-search": "new-contact"
+    },
+    "skipped": {
+      "message-list": "no sort order or since-filter documented for a conversation's messages, so new messages cannot be told from old without reading every page, unbounded (OpenAPI GET /messages/{conversation}/paginated); new-or-updated-conversation reports new activity",
+      "tag-list": "tag labels are organization configuration (reference data)",
+      "team-list": "inbox (team) definitions are organization configuration (reference data)",
+      "number-list": "organization phone-number inventory (provisioning data), rarely changes"
+    }
   },
   {
     "path": "apps/salla",
     "mechanism": "poll",
     "candidates": [
+      "new-brand",
+      "new-category",
+      "new-coupon",
+      "new-customer",
+      "new-or-updated-order",
       "new-order",
-      "new-or-updated-order"
+      "new-product"
     ],
     "pollAction": "order-list",
-    "reason": "order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md)",
-    "verified": "apps/salla/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "order-list sort_by=created_at-desc / updated_at-desc (https://docs.salla.dev/orders/list.md); brands, categories, coupons, products and customers document no sort order or created-since filter and are read in full (60 per page, capped) and diffed (https://docs.salla.dev/pagination.md)",
+    "verified": "apps/salla/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "order-status-list": "static reference list of order statuses (https://docs.salla.dev/order-status/list-order-statuses.md)",
+      "order-history-list": "status log of one order, a parent nobody picks; each status change already surfaces through new-or-updated-order (https://docs.salla.dev/order-histories/list.md)"
+    }
   },
   {
     "path": "apps/samcart",
@@ -9881,13 +9934,25 @@
     "path": "apps/sender",
     "mechanism": "poll",
     "candidates": [
-      "new-subscriber",
-      "new-or-updated-subscriber"
+      "new-campaign",
+      "new-group",
+      "new-group-subscriber",
+      "new-or-updated-campaign",
+      "new-or-updated-group",
+      "new-or-updated-segment",
+      "new-or-updated-subscriber",
+      "new-segment",
+      "new-segment-subscriber",
+      "new-subscriber"
     ],
     "pollAction": "subscriber-list",
-    "reason": "subscriber-list order=created / modified direction=desc (https://api.sender.net/pagination/); key names unproven",
-    "verified": "apps/sender/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "list endpoints take order/direction (https://api.sender.net/pagination/); campaign, group and segment examples show created/modified; subscriber key names still unproven",
+    "verified": "apps/sender/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "field-list": "custom-field definitions (reference data) (https://api.sender.net/fields/get-all/)",
+      "webhook-list": "account webhook configuration, paid plans only (https://api.sender.net/account-webhooks/list/)"
+    }
   },
   {
     "path": "apps/sendfox",
