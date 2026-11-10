@@ -2,17 +2,26 @@
 
 ## Triggers
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 
 | Key | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-call` | poll | `call-list` | Each call that has concluded since the last check |
+| `new-office` | poll (snapshot) | `offices-list` | Each newly added office |
+| `new-user` | poll (snapshot) | `users-list` | Each newly added (active) user |
+| `new-contact` | poll (snapshot) | `contacts-list` | Each newly added shared company contact |
+| `new-room` | poll (snapshot) | `rooms-list` | Each newly created room |
+| `new-call-router` | poll (snapshot) | `callrouters-list` | Each newly created API-based call router |
 
 `call-list` is documented as "reverse-chronological order by call start time (i.e. recent calls first)" and lists concluded calls only; a company-level key sees the whole company, a user-level key only that user's calls.
 
+The office, user, contact, room and call-router lists take only a `cursor` (no sort, no created/updated filter), so each of those triggers walks the whole cursor chain on every check and diffs the ids against the previous check (additions only; the first check records what exists without firing). A collection longer than 100 pages fails the check rather than reporting a partial snapshot.
+
+Not covered: `webhooks-list` and `call-event-subscription-list` (account integration configuration, not business records).
+
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Vendor reference: <https://developers.dialpad.com/reference/calllist> (verified 2026-11-09).
+Vendor reference: <https://developers.dialpad.com/reference/calllist>, <https://developers.dialpad.com/reference/officeslist>, <https://developers.dialpad.com/reference/userslist>, <https://developers.dialpad.com/reference/contactslist>, <https://developers.dialpad.com/reference/roomslist>, <https://developers.dialpad.com/reference/callrouterslist> (verified 2026-11-10).
 
 ## The three things most likely to go wrong
 

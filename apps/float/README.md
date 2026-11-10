@@ -6,7 +6,7 @@ Manage people, projects, allocations, time off, milestones, clients, statuses an
 - **Categories** — project-management, hr
 - **Auth methods** — api-token
 - **Actions** — 40 (full list/get/create/update/delete for each of 8 resources)
-- **Triggers** — 2 (poll)
+- **Triggers** — 12 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-token`
 - **Egress allowlist** — `api.float.com` (the `service` check adds `status.float.com` to its own
   hook allowlist, never to the app's)
@@ -142,9 +142,23 @@ above for the one case where you get something else entirely.
 |---|---|---|---|
 | `new-allocation` — New Allocation | poll | List Allocations (`GET /v3/tasks`, `sort=-created`) | each newly created allocation |
 | `new-or-updated-allocation` — New or Updated Allocation | poll | List Allocations (`sort=-modified`) | each created or edited allocation (an edit is a new event) |
+| `new-person` — New Person | poll | `person-list` (`GET /v3/people`, `sort=-created`) | each newly created record |
+| `new-or-updated-person` — New or Updated Person | poll | `person-list` (`sort=-modified`) | each created or edited record (an edit is a new event) |
+| `new-project` — New Project | poll | `project-list` (`GET /v3/projects`, `sort=-created`) | each newly created record |
+| `new-or-updated-project` — New or Updated Project | poll | `project-list` (`sort=-modified`) | each created or edited record (an edit is a new event) |
+| `new-logged-time` — New Logged Time | poll | `logged-time-list` (`GET /v3/logged-time`, `sort=-created`) | each newly created record |
+| `new-or-updated-logged-time` — New or Updated Logged Time | poll | `logged-time-list` (`sort=-modified`) | each created or edited record (an edit is a new event) |
+| `new-timeoff` — New Time Off | poll | `timeoff-list` (`GET /v3/timeoffs`, `sort=-created`) | each newly created record |
+| `new-or-updated-timeoff` — New or Updated Time Off | poll | `timeoff-list` (`sort=-modified`) | each created or edited record (an edit is a new event) |
+| `new-client` — New Client | poll (snapshot) | `client-list` (`GET /v3/clients`, `per-page=200`, every page) | each newly added client |
+| `new-milestone` — New Milestone | poll (snapshot) | `milestone-list` (`GET /v3/milestones`, `per-page=200`, every page) | each newly added milestone |
 
 Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
 
 Trust model: the `allocation-list` action is sorted by `created` or `modified` descending (a `-` prefix means descending). Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
 
-Vendor docs: https://developer.float.com/ (sorting and pagination) (verified 2026-11-09).
+The people, project, logged-time and time-off lists take `sort` ("prefix `-` to apply descending"; the swagger names `created` and `modified` fields on each) and are read 100 rows per check. Clients and milestones have no sort argument, so those triggers walk every page (at most 25 pages of 200) and diff the ids; a longer collection fails the check instead of reporting a partial snapshot. Logged time answers 403 when Time Tracking is off for the team.
+
+Not covered: `status-list` (people's dated status notes: no sort or created filter and an unbounded dated history, `paths/statuses.yaml`).
+
+Vendor docs (verified 2026-11-10): https://developer.float.com/swagger-api-v3.yaml and its `paths/people.yaml`, `projects.yaml`, `loggedtime.yaml`, `timeoffs.yaml`, `clients.yaml`, `milestones.yaml`, `statuses.yaml` fragments.

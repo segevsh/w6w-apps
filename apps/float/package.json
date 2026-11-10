@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/float",
-  "version": "0.2.0",
-  "description": "Manage people, projects, allocations, time off, milestones, clients, statuses and logged time in Float (resource scheduling), with poll triggers for new and updated allocations.",
+  "version": "0.3.0",
+  "description": "Manage people, projects, allocations, time off, milestones, clients, statuses and logged time in Float (resource scheduling), with poll triggers for new and updated records, clients and milestones.",
   "license": "MIT",
   "author": {
     "name": "w6w"

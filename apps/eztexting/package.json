@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/eztexting",
-  "version": "0.2.0",
-  "description": "Send SMS and MMS, manage contacts and groups, read the inbox, and subscribe webhooks on EZ Texting, with a poll trigger for new contacts.",
+  "version": "0.3.0",
+  "description": "Send SMS and MMS, manage contacts and groups, read the inbox, and subscribe webhooks on EZ Texting, with poll triggers for new contacts, messages, media files, contact groups and keywords.",
   "license": "MIT",
   "author": {
     "name": "w6w"
