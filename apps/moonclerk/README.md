@@ -1,6 +1,16 @@
 # MoonClerk
 
-Triggers: not shipped — payment and customer lists have date filters but no documented ordering, so offset pagination cannot safely find only new records (https://app.moonclerk.com/settings/api-key)
+- **Triggers** — 1 poll
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer` — New Customer | poll | `customer-list` with `checkout_from` | Each newly checked-out customer/plan |
+
+The trigger checks the existing bounded Customer list with its documented `checkout_from` filter,
+uses a two-day overlap for date granularity, and deduplicates customer IDs. The MoonClerk customer
+list API was verified 2026-11-09 at https://github.com/moonclerk/developer/blob/master/api/v1/customers.md.
 
 Read payment forms, customers and payments in **MoonClerk**, the Stripe-backed payment-form
 builder, over its **read-only v1 API**.
