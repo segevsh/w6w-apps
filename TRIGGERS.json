@@ -82,12 +82,62 @@
     "path": "apps/activecampaign",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "contact-updated",
+      "contact-unsubscribed",
+      "contact-tag-added",
+      "contact-tag-removed",
+      "deal-added",
+      "deal-updated",
+      "campaign-sent",
+      "campaign-opened",
+      "campaign-link-clicked",
+      "email-bounced",
+      "any-event",
+      "new-or-updated-contact",
+      "new-sent-campaign",
+      "new-automation",
+      "new-or-updated-automation"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/activecampaign/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-contacts",
+    "reason": "API-registered webhooks (POST /webhooks with a per-subscription secret header marked is_signature; ActiveCampaign has no HMAC) for contact, tag, deal and campaign events plus any-event; polls newest-first via orders[udate|sdate|cdate|mdate] (https://developers.activecampaign.com/page/webhooks)",
+    "verified": "apps/activecampaign/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-deals": "deal-added"
+    },
+    "events": {
+      "subscribe": "new-contact",
+      "update": "contact-updated",
+      "unsubscribe": "contact-unsubscribed",
+      "contact_tag_added": "contact-tag-added",
+      "contact_tag_removed": "contact-tag-removed",
+      "deal_add": "deal-added",
+      "deal_update": "deal-updated",
+      "sent": "campaign-sent",
+      "open": "campaign-opened",
+      "click": "campaign-link-clicked",
+      "bounce": "email-bounced",
+      "contact_task_add": "any",
+      "subscriber_note": "any",
+      "list_add": "any",
+      "reply": "any",
+      "forward": "any",
+      "share": "any",
+      "deal_note_add": "any",
+      "deal_pipeline_add": "any",
+      "deal_stage_add": "any",
+      "deal_task_add": "any",
+      "deal_task_complete": "any",
+      "deal_tasktype_add": "any",
+      "sms_sent": "any",
+      "sms_reply": "any",
+      "sms_unsub": "any",
+      "account_add": "any",
+      "account_update": "any",
+      "account_contact_add": "any",
+      "account_contact_update": "any"
+    }
   },
   {
     "path": "apps/acuityscheduling",
@@ -2491,12 +2541,26 @@
     "candidates": [
       "job-finished",
       "job-failed",
-      "job-created"
+      "job-created",
+      "any-event"
     ],
     "pollAction": null,
-    "reason": "POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp)",
+    "reason": "POST /v2/webhooks per subscription (events: the trigger's job events) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp); the three documented events are all shipped (https://cloudconvert.com/api/v2/webhooks)",
     "verified": "apps/cloudconvert/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "job-list": "job-created"
+    },
+    "skipped": {
+      "task-list": "no sort or created filter and unbounded (https://cloudconvert.com/api/v2/tasks lists only filter[job_id|status|operation]); every job event already carries its tasks",
+      "operation-list": "reference/static data: the supported operations and formats, not a record feed",
+      "webhook-list": "admin/configuration: the account's registered webhook endpoints, not a record feed"
+    },
+    "events": {
+      "job.created": "job-created",
+      "job.finished": "job-finished",
+      "job.failed": "job-failed"
+    }
   },
   {
     "path": "apps/cloudflare",
@@ -9114,12 +9178,40 @@
       "new-pipe",
       "new-card",
       "card-done",
-      "card-moved"
+      "card-moved",
+      "card-deleted",
+      "card-field-updated",
+      "card-comment-created",
+      "card-late",
+      "card-overdue",
+      "card-expired",
+      "any-event",
+      "new-phase",
+      "new-table",
+      "new-organization"
     ],
     "pollAction": "pipe-list",
-    "reason": "poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks)",
+    "reason": "API-registered createWebhook/deleteWebhook card webhooks (card.create/done/move/delete/field_update/comment_create/late/overdue/expired + any-event) with a per-subscription secret header (Pipefy does not sign); polls: new-pipe, new-phase, new-table (cursor-paged, first 50/after, cap 1000), new-organization snapshots (https://developers.pipefy.com/reference/pipe-table-webhooks)",
     "verified": "apps/pipefy/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "card-list": "new-card",
+      "table-record-list": "new-card"
+    },
+    "events": {
+      "card.create": "new-card",
+      "card.done": "card-done",
+      "card.move": "card-moved",
+      "card.delete": "card-deleted",
+      "card.field_update": "card-field-updated",
+      "card.comment_create": "card-comment-created",
+      "card.late": "card-late",
+      "card.overdue": "card-overdue",
+      "card.expired": "card-expired",
+      "card.email_received": "any",
+      "audit_log.export_finished": "any",
+      "automation.execution": "any"
+    }
   },
   {
     "path": "apps/placid",
@@ -13025,15 +13117,62 @@
     "path": "apps/webflow",
     "mechanism": "webhook-api",
     "candidates": [
-      "collection-item-changed",
-      "collection-item-created",
       "form-submission",
-      "new-order"
+      "collection-item-created",
+      "collection-item-changed",
+      "collection-item-deleted",
+      "collection-item-published",
+      "collection-item-unpublished",
+      "new-order",
+      "order-changed",
+      "inventory-changed",
+      "site-publish",
+      "page-created",
+      "page-metadata-updated",
+      "page-deleted",
+      "comment-created",
+      "any-event",
+      "new-collection",
+      "new-site",
+      "new-product"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/webflow/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-collections",
+    "reason": "signed site webhooks registered through POST /sites/{site_id}/webhooks (x-webflow-signature hex HMAC-SHA256 of timestamp:rawBody, 5-minute window) for every documented event plus any-event; snapshot polls for new collections, sites and products (https://developers.webflow.com/data/docs/working-with-webhooks)",
+    "verified": "apps/webflow/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-items": "collection-item-created",
+      "list-orders": "new-order"
+    },
+    "events": {
+      "form_submission": "form-submission",
+      "site_publish": "site-publish",
+      "page_created": "page-created",
+      "page_metadata_updated": "page-metadata-updated",
+      "page_deleted": "page-deleted",
+      "ecomm_new_order": "new-order",
+      "ecomm_order_changed": "order-changed",
+      "ecomm_inventory_changed": "inventory-changed",
+      "collection_item_created": "collection-item-created",
+      "collection_item_changed": "collection-item-changed",
+      "collection_item_deleted": "collection-item-deleted",
+      "collection_item_published": "collection-item-published",
+      "collection_item_unpublished": "collection-item-unpublished",
+      "comment_created": "comment-created",
+      "branch_created": "any",
+      "branch_merged": "any",
+      "branch_deleted": "any"
+    },
+    "n8n": {
+      "collection_item_created": "collection-item-created",
+      "collection_item_deleted": "collection-item-deleted",
+      "collection_item_changed": "collection-item-changed",
+      "ecomm_inventory_changed": "inventory-changed",
+      "ecomm_new_order": "new-order",
+      "ecomm_order_changed": "order-changed",
+      "form_submission": "form-submission",
+      "site_publish": "site-publish"
+    }
   },
   {
     "path": "apps/webinargeek",
@@ -13094,15 +13233,47 @@
     "path": "apps/wise",
     "mechanism": "manual-webhook",
     "candidates": [
+      "transfer-state-changed",
+      "transfer-payout-failed",
       "balance-updated",
       "profile-state-changed",
-      "transfer-payout-failed",
-      "transfer-state-changed"
+      "transfer-active-cases",
+      "transfer-refunded",
+      "balance-credited",
+      "recipient-changed",
+      "any-event",
+      "new-transfer",
+      "new-balance",
+      "new-profile",
+      "new-recipient"
     ],
-    "pollAction": null,
-    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
-    "verified": "apps/wise/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "transfer-list",
+    "reason": "signed manual-webhook receivers (RSA-SHA256 X-Signature-SHA256 against Wise's published key, bound to the user's profile id) for every profile-level event whose signed body names the profile (incl. recipients#state-change via data.resource.data.profileId) plus any-event; polls: new-transfer (createdDateStart since-filter), new-balance, new-profile (snapshots), new-recipient (sort=id,desc) (https://docs.wise.com/api-reference/webhook-event)",
+    "verified": "apps/wise/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "currency-list": "reference/static data: the currencies Wise supports for transfers (GET /currencies), not a record feed"
+    },
+    "events": {
+      "transfers#state-change": "transfer-state-changed",
+      "transfers#payout-failure": "transfer-payout-failed",
+      "transfers#active-cases": "transfer-active-cases",
+      "transfers#refund": "transfer-refunded",
+      "balances#update": "balance-updated",
+      "profiles#state-change": "profile-state-changed",
+      "profiles#verification-state-change": "any",
+      "hold-limit-breach#update": "any",
+      "account-details-payment#state-change": "any",
+      "swift-in#credit": "any",
+      "swift#message-received": "any",
+      "recipients#state-change": "recipient-changed"
+    },
+    "n8n": {
+      "balanceCredit": "balance-credited",
+      "balanceUpdate": "balance-updated",
+      "transferActiveCases": "transfer-active-cases",
+      "tranferStateChange": "transfer-state-changed"
+    }
   },
   {
     "path": "apps/wistia",

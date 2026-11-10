@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2862 triggers, 1411 unaccounted list actions in 380 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -113,7 +113,6 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/ontraport | 4 | 8 | 5 |
 | apps/paddle | 1 | 6 | 5 |
 | apps/pinterest | 0 | 5 | 5 |
-| apps/pipefy | 4 | 6 | 5 |
 | apps/printnode | 1 | 6 | 5 |
 | apps/recurly | 2 | 6 | 5 |
 | apps/resend | 1 | 6 | 5 |
@@ -133,22 +132,18 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/trustpilot | 1 | 6 | 5 |
 | apps/vapi | 1 | 6 | 5 |
 | apps/wave | 2 | 6 | 5 |
-| apps/webflow | 4 | 5 | 5 |
 | apps/webinargeek | 1 | 6 | 5 |
-| apps/wise | 4 | 5 | 5 |
 | apps/workiz | 0 | 5 | 5 |
 | apps/wrike | 1 | 6 | 5 |
 | apps/zendesk/zendesk-sell | 2 | 6 | 5 |
 | apps/zoho/bigin | 2 | 6 | 5 |
 | apps/zoho/zoho-campaigns | 1 | 6 | 5 |
-| apps/activecampaign | 1 | 4 | 4 |
 | apps/balena | 1 | 5 | 4 |
 | apps/bitwarden | 1 | 5 | 4 |
 | apps/blandai | 1 | 5 | 4 |
 | apps/bluesky | 1 | 5 | 4 |
 | apps/browseai | 1 | 5 | 4 |
 | apps/certifier | 2 | 5 | 4 |
-| apps/cloudconvert | 3 | 4 | 4 |
 | apps/coda | 0 | 4 | 4 |
 | apps/dub | 1 | 5 | 4 |
 | apps/ecwid | 1 | 5 | 4 |
@@ -405,6 +400,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/accelo | 4 | 0 | 0 |
 | apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
+| apps/activecampaign | 16 | 4 | 0 |
 | apps/acumbamail | 1 | 7 | 0 |
 | apps/addevent | 7 | 8 | 0 |
 | apps/affinity | 24 | 11 | 0 |
@@ -458,6 +454,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/clio | 14 | 7 | 0 |
 | apps/clockify | 16 | 3 | 0 |
 | apps/close | 7 | 9 | 0 |
+| apps/cloudconvert | 4 | 4 | 0 |
 | apps/cloudinary | 5 | 7 | 0 |
 | apps/cloze | 4 | 12 | 0 |
 | apps/companycam | 20 | 20 | 0 |
@@ -599,6 +596,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/pennylane | 6 | 9 | 0 |
 | apps/phrase | 11 | 10 | 0 |
 | apps/pipedrive | 13 | 3 | 0 |
+| apps/pipefy | 14 | 6 | 0 |
 | apps/podio | 8 | 9 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
@@ -671,6 +669,8 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/vimeo | 11 | 10 | 0 |
 | apps/wakatime | 7 | 11 | 0 |
 | apps/webex | 11 | 8 | 0 |
+| apps/webflow | 18 | 5 | 0 |
+| apps/wise | 13 | 5 | 0 |
 | apps/wix | 10 | 8 | 0 |
 | apps/woocommerce | 10 | 3 | 0 |
 | apps/workos | 8 | 8 | 0 |
@@ -688,7 +688,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
-| apps/activecampaign | 1 | new-contact | apps/activecampaign/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/activecampaign | 16 | new-contact, contact-updated, contact-unsubscribed, contact-tag-added, contact-tag-removed, deal-added, deal-updated, campaign-sent, campaign-opened, campaign-link-clicked, email-bounced, any-event, new-or-updated-contact, new-sent-campaign, new-automation, new-or-updated-automation | apps/activecampaign/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhooks (POST /webhooks with a per-subscription secret header marked is_signature; ActiveCampaign has no HMAC) for contact, tag, deal and campaign events plus any-event; polls newest-first via orders[udate\|sdate\|cdate\|mdate] (https://developers.activecampaign.com/page/webhooks) |
 | apps/acuityscheduling | 3 | appointment-canceled, appointment-rescheduled, appointment-scheduled | apps/acuityscheduling/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/affinity | 24 | any-event, field-created, field-deleted, field-updated, field-value-created, field-value-deleted, field-value-updated, list-created, list-deleted, list-entry-deleted, list-updated, new-list-entry, note-created, note-deleted, note-updated, opportunity-created, opportunity-deleted, opportunity-updated, organization-created, organization-deleted, organization-updated, person-created, person-deleted, person-updated | apps/affinity/README.md Triggers section (verified 2026-11-10) | hand | shipped: 23 named webhook triggers registered through the vendor API plus Any Event (events list); list/search actions are covered by the matching created webhooks (no documented order or created-since filter) or skipped as reference data |
 | apps/asana | 9 | any-event, new-comment, new-project, new-task, new-user, project-deleted, project-updated, task-deleted, task-updated | apps/asana/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
@@ -701,7 +701,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/calendly | 9 | invitee-created, invitee-canceled, invitee-no-show-created, invitee-no-show-deleted, event-type-created, event-type-updated, event-type-deleted, routing-form-submission-created, any-event | apps/calendly/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Calendly-Webhook-Signature) |
 | apps/clickup | 20 | any-event, folder-created, folder-deleted, folder-updated, list-created, list-deleted, list-updated, task-assignee-updated, task-comment-posted, task-comment-updated, task-created, task-deleted, task-due-date-updated, task-moved, task-priority-updated, task-status-updated, task-tag-updated, task-time-estimate-updated, task-time-tracked-updated, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/clockify | 16 | new-time-entry, timer-started, timer-stopped, new-project, new-client, new-task, time-entry-updated, time-entry-deleted, project-updated, project-deleted, client-updated, client-deleted, task-updated, task-deleted, any-event, new-workspace | apps/clockify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (one per event; any-event registers one webhook per listed event, signed by the per-webhook token in Clockify-Signature); new-workspace polls the bounded workspace list |
-| apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
+| apps/cloudconvert | 4 | job-finished, job-failed, job-created, any-event | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: the trigger's job events) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp); the three documented events are all shipped (https://cloudconvert.com/api/v2/webhooks) |
 | apps/copper | 19 | any-event, deleted-company, deleted-lead, deleted-opportunity, deleted-person, deleted-task, new-activity, new-company, new-lead, new-opportunity, new-person, new-related-item, new-task, new-user, updated-company, updated-lead, updated-opportunity, updated-person, updated-task | apps/copper/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (created/updated/deleted for person, lead, company, opportunity, task, plus any-event) and polls for new activities, users and related items |
 | apps/elastic-email | 10 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report, any-event, new-template, new-contact-in-list | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window) for each of the six notification types plus Any Event (registers the types in its events param); polls: New List (list-list) and New Template (template-list) as bounded snapshots, New Contact in List (list-contacts) as a capped per-list snapshot (no filter or order in the v4 spec) |
 | apps/eventbrite | 27 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated, new-or-updated-attendee, new-organizer, new-venue, new-ticket-group, new-inventory-tier, new-seat-map, new-event-team, new-discount, new-custom-question, new-default-question, new-organization-member | apps/eventbrite/README.md Triggers section (verified 2026-11-10) | hand | shipped: 16 webhook triggers registered through the vendor API (unsigned deliveries; callback URL is the secret, https://www.eventbrite.com/platform/docs/webhooks) plus 11 poll triggers for records with no webhook |
@@ -735,7 +735,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/patreon | 11 | new-pledge, post-published, member-created, member-updated, member-deleted, pledge-updated, pledge-deleted, post-updated, post-deleted, any-event, new-campaign | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per subscription (the trigger's v2 triggers); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks); new-campaign polls the campaign list |
 | apps/paypal | 6 | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | 13 | new-deal, new-person, person-updated, person-deleted, new-organization, organization-updated, organization-deleted, deal-updated, deal-deleted, new-activity, new-note, new-lead, any-event | apps/pipedrive/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks (v2) registered through the vendor API with a random HTTP Basic password per subscription (Pipedrive does not sign deliveries); list actions covered by the created-event webhooks (the v1 list endpoints the actions call are no longer documented) |
-| apps/pipefy | 4 | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
+| apps/pipefy | 14 | new-pipe, new-card, card-done, card-moved, card-deleted, card-field-updated, card-comment-created, card-late, card-overdue, card-expired, any-event, new-phase, new-table, new-organization | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | API-registered createWebhook/deleteWebhook card webhooks (card.create/done/move/delete/field_update/comment_create/late/overdue/expired + any-event) with a per-subscription secret header (Pipefy does not sign); polls: new-pipe, new-phase, new-table (cursor-paged, first 50/after, cap 1000), new-organization snapshots (https://developers.pipefy.com/reference/pipe-table-webhooks) |
 | apps/rendex | 1 | watch-event | apps/rendex/README.md Triggers section (verified 2026-11-10) | hand | Watch alerts (watch.changed/recovered/error) registered by PATCH /v1/watches/{id} webhookUrl, signed x-rendex-signature HMAC-SHA256 of timestamp.body (https://rendex.dev/docs/webhooks); job.*/batch.* callbacks not wired (completion callbacks) |
 | apps/sanity | 3 | document-created, document-updated, document-deleted | apps/sanity/README.md Triggers section (verified 2026-11-10) | hand | GROQ-powered document webhook created via POST /hooks/projects/{projectId}, signed sanity-webhook-signature t=,v1= base64url HMAC-SHA256 (https://www.sanity.io/docs/webhooks) |
 | apps/savvycal | 16 | any-event, event-approved, event-attendee-added, event-attendee-canceled, event-canceled, event-changed, event-checkout-completed, event-created, event-declined, event-requested, event-rescheduled, new-link, new-workflow, new-workflow-rule, poll-response-created, poll-response-updated | apps/savvycal/README.md Triggers section (verified 2026-11-10) | hand | webhook registered via POST /v1/webhooks, signed x-savvycal-signature sha256=HMAC-SHA256 of the raw body (https://docs.savvycal.com/developers/webhooks); polls snapshot links, workflows and workflow rules |
@@ -751,7 +751,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/toggl | 3 | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/typeform | 8 | new-response, new-partial-response, any-event, new-form, new-or-updated-form, new-workspace, new-theme, new-image | apps/typeform/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Typeform-Signature), plus list-backed polls for forms, workspaces, themes and images |
 | apps/webex | 11 | new-message, new-membership, message-deleted, membership-updated, membership-deleted, room-created, room-updated, any-event, new-room, new-team, new-team-member | apps/webex/README.md Triggers section (verified 2026-11-10) | hand | shipped: 8 signed webhook triggers registered through POST /v1/webhooks (per-subscription secret, X-Spark-Signature hex HMAC-SHA1 of the raw body; Any Event registers the all/all firehose and filters by resource.event) plus 3 bounded-snapshot polls (new-room, new-team, new-team-member) for lists with no webhook; Webex documents no usable list order for them |
-| apps/webflow | 4 | collection-item-changed, collection-item-created, form-submission, new-order | apps/webflow/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/webflow | 18 | form-submission, collection-item-created, collection-item-changed, collection-item-deleted, collection-item-published, collection-item-unpublished, new-order, order-changed, inventory-changed, site-publish, page-created, page-metadata-updated, page-deleted, comment-created, any-event, new-collection, new-site, new-product | apps/webflow/README.md Triggers section (verified 2026-11-10) | hand | signed site webhooks registered through POST /sites/{site_id}/webhooks (x-webflow-signature hex HMAC-SHA256 of timestamp:rawBody, 5-minute window) for every documented event plus any-event; snapshot polls for new collections, sites and products (https://developers.webflow.com/data/docs/working-with-webhooks) |
 | apps/woocommerce | 10 | customer-created, customer-deleted, customer-updated, event, order-created, order-deleted, order-updated, product-created, product-deleted, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API with a random per-subscription secret; created/updated/deleted for orders, customers and products plus `event` for any topic (https://woocommerce.github.io/woocommerce-rest-api-docs/#webhooks) |
 | apps/zendesk/zendesk | 12 | new-ticket, ticket-status-changed, ticket-comment-added, ticket-deleted, ticket-priority-changed, ticket-assignee-changed, new-user, user-deleted, user-details-changed, new-organization, organization-deleted, any-event | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed event-subscription webhooks registered through the Webhooks API (X-Zendesk-Webhook-Signature, HMAC-SHA256 over timestamp+body, signing secret read from the API); list actions are covered by the created-event webhooks |
 
@@ -793,7 +793,7 @@ depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-p
 | apps/todoist | 3 | task-added, task-completed, task-updated | apps/todoist/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Todoist-Hmac-SHA256 base64 HMAC-SHA256, client secret); no poll shipped: task-get-many has a free-form filter (created after:) but it is day-granular, active-only and unverified live (assumed) |
 | apps/twilio/twilio | 5 | incoming-message, message-status, call-status, call-summary-complete, any-event | apps/twilio/twilio/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user registers the callback URL at the vendor): SMS and call callbacks plus Event Streams; no list actions to poll |
 | apps/vero | 1 | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
-| apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/wise | 13 | transfer-state-changed, transfer-payout-failed, balance-updated, profile-state-changed, transfer-active-cases, transfer-refunded, balance-credited, recipient-changed, any-event, new-transfer, new-balance, new-profile, new-recipient | apps/wise/README.md Triggers section (verified 2026-11-10) | hand | signed manual-webhook receivers (RSA-SHA256 X-Signature-SHA256 against Wise's published key, bound to the user's profile id) for every profile-level event whose signed body names the profile (incl. recipients#state-change via data.resource.data.profileId) plus any-event; polls: new-transfer (createdDateStart since-filter), new-balance, new-profile (snapshots), new-recipient (sort=id,desc) (https://docs.wise.com/api-reference/webhook-event) |
 | apps/zoom | 22 | new-recording, new-meeting, new-webinar, new-user, meeting-created, meeting-updated, meeting-deleted, meeting-started, meeting-ended, meeting-registration-created, webinar-created, webinar-updated, webinar-deleted, webinar-started, webinar-ended, user-created, user-updated, user-deleted, recording-completed, recording-deleted, recording-trashed, any-event | apps/zoom/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook triggers (Marketplace event subscription, Secret Token) plus polls over recording-get-many (date window), meeting-get-many, webinar-get-many and user-get-many (bounded snapshots); recording.deleted and recording.trashed have named triggers; group.* events are reachable through any-event |
 
 ## poll (480)
