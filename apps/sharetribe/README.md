@@ -278,6 +278,21 @@ deno task test
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 |---|---|---|---|
-| `new-event` — New Event | poll | `event-list` | Each newly created event. |
+| `new-event` — New Marketplace Event | poll | `event-list` | Each event the marketplace appends to its event log (any resource: listing, transaction, user, message, ...). |
+
+The event log cannot be read newest-first: the vendor states "By default this query returns events
+starting from the earliest available one in the marketplace" and "Events are always returned in
+ascending order of their sequence ID", and documents `startAfterSequenceId` ("Return events with
+sequence ID strictly larger than the given sequence ID") and `createdAtStart` ("events with createdAt
+timestamp greater than or equal to the given timestamp"), at most one of the two. The poll therefore
+keeps a **token** instead of de-duplicating a page: the first check records the time it ran (no
+request, no events); the next check calls the `event-list` request
+`GET /v1/integration_api/events/query?createdAtStart=<that time>`; every later check calls
+`...events/query?startAfterSequenceId=<sequence id of the last event handed to a run>`. At most 1000
+events are handed over per check, the rest on the next one. Sharetribe notes that "there can be delay
+between an action taking place on the marketplace and the corresponding event becoming available in
+queries", and keeps history for 90 days (live) / 7 days (dev, test); a poll gap longer than that loses
+the older events. Narrow with the `event-list` filters (`eventTypes`, ...) in a workflow step if only
+some events matter.
 
 Vendor documentation: https://www.sharetribe.com/api-reference/integration.html (verified 2026-11-09).
