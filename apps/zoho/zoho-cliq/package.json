@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-cliq",
-  "version": "0.2.0",
-  "description": "Post messages, manage channels, teams, reminders and files in Zoho Cliq, and trigger workflows on new chats.",
+  "version": "0.3.0",
+  "description": "Post messages, manage channels, teams, reminders and files in Zoho Cliq, and trigger workflows on new chats, messages, channels, users, teams, members and reminders.",
   "license": "MIT",
   "author": {
     "name": "w6w"

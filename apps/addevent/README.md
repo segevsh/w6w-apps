@@ -12,7 +12,7 @@ subscribers, and generate "add to calendar" links, on **AddEvent's Calendar & Ev
 - **Website** — https://www.addevent.com/
 - **API docs** — https://www.addevent.com/c/documentation/calendar-events-api
 - **Status page** — https://addevent.statuspage.io/
-- **Triggers** — 1 (poll)
+- **Triggers** — 7 (poll)
 
 AddEvent turns a date and a title into a working "add to calendar" link — one that opens correctly in
 Google Calendar, Apple Calendar, Outlook, Office 365 and Yahoo without the caller having to know each
@@ -132,5 +132,23 @@ deno task test        # unit tests (87 cases across every action, auth and healt
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-event-template` — New Event Template | Poll | `event-template-list` | Each newly created event template |
+| `new-event` — New Event | Poll | `event-search` | Each newly created event |
+| `new-calendar` — New Calendar | Poll | `calendar-search` | Each newly created calendar |
+| `new-calendar-subscriber` — New Calendar Subscriber | Poll | `calendar-subscriber-search` | Each new subscriber to one of your calendars |
+| `new-rsvp-attendee` — New RSVP Attendee | Poll | `rsvp-attendee-search` | Each new RSVP response |
+| `new-rsvp-form` — New RSVP Form | Poll | `rsvp-form-list` | Each newly created custom RSVP form |
+| `new-calendar-template` — New Calendar Template | Poll | `calendar-template-list` | Each newly created calendar landing-page or embeddable-calendar template (pick the type) |
 
-Polled through `event-template-list`, which the API documents newest-first. Source: [AddEvent List event templates](https://docs.addevent.com/reference/list-event-templates) (verified 2026-11-09).
+The search triggers send `sort_by=created&sort_order=desc&page=1&page_size=20` (the API's default sort is
+`created, desc`; page size is capped at 20) and fire on ids not seen before; the template and form lists
+are documented newest-first. The first check only records what exists.
+
+Not covered: `timezone-list` (static reference data: the timezones AddEvent supports).
+
+Sources (verified 2026-11-10): [Search events](https://docs.addevent.com/reference/search-events),
+[Search calendars](https://docs.addevent.com/reference/search-calendars),
+[Search subscribers](https://docs.addevent.com/reference/search-subscribers),
+[Search RSVP attendees](https://docs.addevent.com/reference/search-rsvps),
+[List RSVP forms](https://docs.addevent.com/reference/list-rsvp-forms),
+[List calendar templates](https://docs.addevent.com/reference/list-calendar-templates),
+[List event templates](https://docs.addevent.com/reference/list-event-templates).

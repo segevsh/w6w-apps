@@ -47,6 +47,12 @@ import socialChannelList from "./actions/social-channel-list.ts";
 import socialStatsList from "./actions/social-stats-list.ts";
 import goalList from "./actions/goal-list.ts";
 import newList from "./triggers/new-list.ts";
+import newAudience from "./triggers/new-audience.ts";
+import newEmailTemplate from "./triggers/new-email-template.ts";
+import newGoal from "./triggers/new-goal.ts";
+import newSocialChannel from "./triggers/new-social-channel.ts";
+import newContact from "./triggers/new-contact.ts";
+import newCampaign from "./triggers/new-campaign.ts";
 
 export default {
   actions: [
@@ -79,5 +85,13 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newList],
+  triggers: [
+    newList,
+    newAudience,
+    newEmailTemplate,
+    newGoal,
+    newSocialChannel,
+    newContact,
+    newCampaign,
+  ],
 } satisfies AppDefinition;
