@@ -5,6 +5,7 @@ interface Input {
   groupGuid: string;
   query?: string;
   archived?: boolean;
+  createdAfter?: number;
   size?: number;
   searchAfter?: string;
 }
@@ -43,6 +44,12 @@ const listBitlinks: ActionDefinition<Input, ListBitlinksResult> = {
     },
     { key: "query", label: "Search query", type: "string" },
     { key: "archived", label: "Archived only", type: "boolean" },
+    {
+      key: "createdAfter",
+      label: "Created after",
+      type: "number",
+      hint: "Only Bitlinks created after this Unix timestamp (seconds).",
+    },
     { key: "size", label: "Page size", type: "number", default: 50 },
     { key: "searchAfter", label: "Search-after token", type: "string" },
   ],
@@ -57,6 +64,7 @@ const listBitlinks: ActionDefinition<Input, ListBitlinksResult> = {
       query: {
         query: input.query,
         archived: input.archived,
+        created_after: input.createdAfter,
         size: input.size ?? 50,
         search_after: input.searchAfter,
       },

@@ -3,6 +3,17 @@
 Send AI phone calls, manage conversational pathways, phone numbers, and voices, on the **Bland
 core REST API** (`api.bland.ai`).
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-call` | New Call | poll | `call-list` | Newly dispatched calls |
+
+The calls API's `ascending=false` request is used for the newest-first page; see
+<https://docs.bland.ai/api-v1/get/calls> (verified 2026-11-09). No webhook code is included.
+
 - **Categories** — ai, communication
 - **Auth methods** — api-key
 - **Actions** — 19

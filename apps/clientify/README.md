@@ -60,3 +60,22 @@ management, batch creates, GDPR queries, campaigns, calls, wall entries, product
 taxes, real estate, automations and settings: documented, but not part of this CRM core. Task edit
 was left out because its documented response shows deprecated `type`/`status` fields. The
 `/v1/api-auth/obtain_token/` login is not used so no password is collected.
+
+- **Triggers** — 4 (poll)
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-contact` | New Contact | poll (since-filter) | `contact-list` | Each contact created since the last check |
+| `new-or-updated-contact` | New or Updated Contact | poll (since-filter) | `contact-list` | Each contact created or edited, once per edit |
+| `new-deal` | New Deal | poll (since-filter) | `deal-list` | Each deal created since the last check |
+| `new-or-updated-deal` | New or Updated Deal | poll (since-filter) | `deal-list` | Each deal created or edited, once per edit |
+
+Each poll calls the same `GET /v1/contacts/` or `GET /v1/deals/` request as the list action, with
+`created[gte]` (new) or `modified[gte]` (new or updated) set to the UTC day of the previous check
+minus two minutes, 100 records per page, up to 10 pages per check, and de-duplicates on the record id
+(plus the `modified` stamp for the updated variants). Clientify documents the `created` / `modified`
+date filters with `[gt]`, `[lt]`, `[gte]` and `[lte]` (date granularity, e.g. `created[gt]=2020/01/01`)
+at <https://developer.clientify.com> (verified 2026-11-09). The first check records the current
+window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

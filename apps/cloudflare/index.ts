@@ -10,6 +10,7 @@ import dnsRecordDelete from "./actions/dns-record-delete.ts";
 import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDnsRecord from "./triggers/new-dns-record.ts";
 
 export default {
   actions: [
@@ -24,4 +25,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newDnsRecord],
 } satisfies AppDefinition;

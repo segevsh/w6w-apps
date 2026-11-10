@@ -263,6 +263,8 @@ is not formatted by `deno task fmt`, whose file list names only the `.ts` direct
 ## Layout
 
 ```
+
+Triggers: not shipped — webhook candidate queued for a webhook node: job.created, job.finished, job.failed (https://cloudconvert.com/api/v2/webhooks).
 cloudconvert/
 ├── package.json                 # manifest — the `w6w` identity block
 ├── index.ts                     # entry: { actions, auth, healthChecks }

@@ -294,3 +294,5 @@ The mark in `assets/icon.png` is Brex's own (`www.brex.com/apple-touch-icon.png`
 a 256×256 PNG), saved verbatim and declared as `appearance.icon.url` because
 `www.brex.com/favicon.svg` is a 404 — there is no SVG to declare and none was
 invented.
+
+Triggers: not shipped — webhook candidate queued for a webhook node: card.created, user.created (https://developer.brex.com/openapi/events_api/).

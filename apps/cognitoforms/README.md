@@ -163,3 +163,5 @@ live against `www.cognitoforms.com/api/forms` (both the `AccessTokenNotProvided`
 populated Statuspage). The icon is Cognito Forms' own favicon artwork, fetched directly from
 `static.cognitoforms.com` (the vendor's asset CDN — the apex domain's `favicon.ico`/`.svg` are
 non-functional redirects and were not used).
+
+Triggers: not shipped — webhook candidate queued for a webhook node: entry submitted (https://www.cognitoforms.com/support/476/data-integration/cognito-forms-api/rest-api-reference).
