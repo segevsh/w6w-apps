@@ -13,18 +13,21 @@ import { GitLabClient, projectPath } from "./client.ts";
 /**
  * GitLab project-webhook triggers (rfcs/trigger.md, webhook form).
  *
- *   - `onSubscribe` registers a project webhook pointed at the host's `callbackUrl` with a
- *     per-subscription SIGNING token (D5 (1)): `whsec_` + base64 of 32 random bytes, which GitLab's
- *     API accepts as `signing_token`. The same value is also sent as the legacy `token`, so a
- *     GitLab older than 19.0 (which ignores `signing_token`) still sends `X-Gitlab-Token`. It first
- *     deletes any webhook already pointed there.
+ *   - `onSubscribe` first probes `GET /version` through the app's client. GitLab 19.0 or later (or a
+ *     probe that fails / cannot be parsed) is SIGNED mode: a project webhook pointed at the host's
+ *     `callbackUrl` with a per-subscription SIGNING token (D5 (1)), `whsec_` + base64 of 32 random
+ *     bytes, sent as `signing_token` and nothing else (no `token`, so GitLab never sends
+ *     `X-Gitlab-Token`). A server that reports a version before 19.0 ignores `signing_token`, so it is
+ *     TOKEN mode: a NEW random `token`, distinct from any signing key, and no `signing_token`. It
+ *     first deletes any webhook already pointed there.
  *   - `onUnsubscribe` deletes that webhook; one GitLab no longer has counts as deleted.
- *   - `handleIngest` verifies the Standard Webhooks signature BEFORE parsing: `webhook-signature`
- *     is a space-separated list of `v1,<base64 HMAC-SHA256>` over `<webhook-id>.<webhook-timestamp>.<raw body>`
- *     keyed with the decoded token, and `webhook-timestamp` must be within 5 minutes. A delivery
- *     that carries `webhook-signature` is judged by it ALONE (never downgraded to the token). Only
- *     when that header is absent (GitLab before 19.0) is `X-Gitlab-Token` accepted, compared in
- *     constant time with the stored secret: a shared password in a header, not bound to the body.
+ *   - `handleIngest` is gated by the subscription's `mode`. Signed (or `mode` absent, a subscription
+ *     made before the probe existed): the Standard Webhooks signature is verified BEFORE parsing:
+ *     `webhook-signature` is a space-separated list of `v1,<base64 HMAC-SHA256>` over
+ *     `<webhook-id>.<webhook-timestamp>.<raw body>` keyed with the decoded token, `webhook-timestamp`
+ *     must be within 5 minutes, and `X-Gitlab-Token` is never consulted. Token mode: only
+ *     `X-Gitlab-Token`, compared in constant time with the stored `legacyToken` (a shared password
+ *     in a header, not bound to the body; such servers send no signature).
  *
  * Docs (verified 2026-11-09): https://docs.gitlab.com/user/project/integrations/webhooks/
  * (signing token, "Verify the signature") and https://docs.gitlab.com/api/project_webhooks/
@@ -44,8 +47,12 @@ export interface TriggerState {
   projectId: string;
   /** GitLab `object_kind` this subscription is for. */
   kind: string;
-  /** The per-subscription signing token, `whsec_<base64>` (plaintext jsonb: D5 amended). */
-  signingToken: string;
+  /** `signed` (GitLab 19.0+, the default when absent) or `token` (server reported before 19.0). */
+  mode?: "signed" | "token";
+  /** Signed mode: the per-subscription signing token, `whsec_<base64>` (plaintext jsonb: D5 amended). */
+  signingToken?: string;
+  /** Token mode: the `X-Gitlab-Token` secret, a random value distinct from any signing key. */
+  legacyToken?: string;
 }
 
 /** The run's `trigger.event`. */
@@ -160,7 +167,21 @@ async function deleteHook(client: GitLabClient, projectId: string, hookId: strin
   }
 }
 
-/** Verify a delivery and return its parsed payload; throws, echoing nothing, on any shortfall. */
+/** Token mode: the legacy shared secret in `X-Gitlab-Token`, constant time; throws, echoing nothing. */
+function tokenPayload(
+  raw: { rawBody?: unknown; headers: Record<string, string> },
+  legacyToken: unknown,
+): Record<string, unknown> {
+  const rawBody = requireRawBody(raw);
+  const secret = requireSecret(legacyToken);
+  const given = header(raw, "x-gitlab-token");
+  if (!given || !timingSafeEqual(given, secret)) {
+    throw new Error("GitLab delivery refused: it carries no valid token.");
+  }
+  return parseObject(rawBody);
+}
+
+/** Signed mode: verify a delivery's signature and return its payload; throws, echoing nothing. */
 async function verifiedPayload(
   raw: { rawBody?: unknown; headers: Record<string, string> },
   signingToken: unknown,
@@ -171,14 +192,6 @@ async function verifiedPayload(
   const id = header(raw, "webhook-id");
   const ts = header(raw, "webhook-timestamp");
   const signatures = header(raw, "webhook-signature");
-  if (signatures === undefined) {
-    // No signature header at all (GitLab before 19.0): the legacy shared token, constant time.
-    const given = header(raw, "x-gitlab-token");
-    if (!given || !timingSafeEqual(given, token)) {
-      throw new Error("GitLab delivery refused: it carries no valid signature or token.");
-    }
-    return parseObject(rawBody);
-  }
   const key = keyOf(token);
   if (!id || !ts || !signatures) {
     throw new Error("GitLab delivery refused: it carries no signature.");
@@ -193,6 +206,17 @@ async function verifiedPayload(
   for (const given of signatures.split(" ")) ok = timingSafeEqual(given, expected) || ok;
   if (!ok) throw new Error("GitLab delivery refused: the signature does not match.");
   return parseObject(rawBody);
+}
+
+/** True when `GET /version` reports a major before 19; a failed or unparseable probe is false. */
+async function isPre19(client: GitLabClient): Promise<boolean> {
+  try {
+    const v = await client.request<{ version?: unknown }>("/version");
+    const m = /^\s*(\d+)\.(\d+)/.exec(typeof v?.version === "string" ? v.version : "");
+    return m !== null && Number(m[1]) < 19;
+  } catch {
+    return false;
+  }
 }
 
 function parseObject(rawBody: string): Record<string, unknown> {
@@ -248,18 +272,18 @@ export function webhookTrigger(
     async onSubscribe({ params, callbackUrl }, ctx: HookContext) {
       const projectId = required(params.projectId, "Project");
       const client = new GitLabClient(ctx);
+      const tokenMode = await isPre19(client);
       for (const id of await hooksPointingAt(client, projectId, callbackUrl)) {
         await deleteHook(client, projectId, id);
       }
-      const signingToken = newSigningToken();
+      const secret = tokenMode ? randomSecret(32) : newSigningToken();
       const created = await client.request<{ id?: unknown }>(
         `/projects/${projectPath(projectId)}/hooks`,
         {
           method: "POST",
           body: {
             url: callbackUrl,
-            signing_token: signingToken,
-            token: signingToken,
+            ...(tokenMode ? { token: secret } : { signing_token: secret }),
             enable_ssl_verification: true,
             push_events: false,
             [spec.flag]: true,
@@ -268,7 +292,9 @@ export function webhookTrigger(
       );
       const hookId = str(created?.id);
       if (!hookId) throw new Error("GitLab created the webhook but returned no id.");
-      return { hookId, projectId, kind: spec.kind, signingToken };
+      return tokenMode
+        ? { hookId, projectId, kind: spec.kind, mode: "token", legacyToken: secret }
+        : { hookId, projectId, kind: spec.kind, mode: "signed", signingToken: secret };
     },
 
     async onUnsubscribe({ state }, ctx: HookContext) {
@@ -281,7 +307,9 @@ export function webhookTrigger(
       if (raw.method.toUpperCase() !== "POST") {
         throw new Error(`GitLab delivers webhooks with POST, not ${raw.method}.`);
       }
-      const payload = await verifiedPayload(raw, state?.signingToken, Date.now());
+      const payload = state?.mode === "token"
+        ? tokenPayload(raw, state.legacyToken)
+        : await verifiedPayload(raw, state?.signingToken, Date.now());
       if (str(payload.object_kind) !== spec.kind) return [];
       const action = actionOf(payload);
       if (spec.hasActions) {

@@ -34,7 +34,7 @@ self-hostable apps in this pack carry.
 
 ## Triggers
 
-Every trigger is a webhook trigger, signed where GitLab can sign it (see the trust model below)
+Every trigger is a webhook trigger, signed on GitLab 19.0 or later (see the trust model below)
 ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)). Activating one
 registers a project webhook on GitLab for you (`POST /projects/:id/hooks`) and removes it when the
 trigger is deactivated. The token needs the `api` scope and the Maintainer role on the project.
@@ -52,40 +52,38 @@ Every run also gets `kind` (GitLab's `object_kind`), `action`, `deliveryId` (`we
 `project`, `user` and the full GitLab `payload`. Merge request, issue and release triggers take an
 optional **Only these actions** list such as `open,merge`.
 
-**Trust model.** Two checks, chosen by what the delivery carries.
+**Trust model.** On activation the app asks the instance `GET /api/v4/version` (same connection,
+same base URL as the actions) and picks one of two modes, stored on the subscription.
 
-- **Signed (GitLab 19.0 or later) — body-bound.** GitLab 19.0 added a _signing token_ that signs
-  every delivery per the Standard Webhooks spec, and the project-hooks API accepts it as
-  `signing_token`. On activation a random signing token (`whsec_` + 32 random bytes, base64) is
-  generated per subscription, registered with the webhook and kept in the subscription's state. Each
-  delivery's `webhook-signature` (`v1,` + base64 HMAC-SHA256 of
-  `webhook-id.webhook-timestamp.raw body`, keyed with the decoded token) is checked in constant time
-  before the body is read, and `webhook-timestamp` must be within 5 minutes. A delivery that carries
-  `webhook-signature` is judged by the signature alone: a bad one is refused even when a correct
-  `X-Gitlab-Token` rides along.
-- **Unsigned (legacy `X-Gitlab-Token`) — a shared password, enabled on every subscription.** When
-  there is no `webhook-signature` header at all, the delivery is accepted if its `X-Gitlab-Token`
-  equals the subscription's secret (compared in constant time). That token is a shared password in a
-  header: nothing binds it to the body, so a captured delivery could be altered and replayed, and
-  the 5-minute window does not apply. This path is open on every subscription, GitLab 19.0 and later
-  and GitLab.com included, because activation always registers `token`: someone who captured a
-  signed delivery can strip its signature headers, alter the body and still be accepted. The token
-  is the same value as the signing token, so treat it as the signing key: anyone who learns it can
-  also forge signed deliveries.
+- **Signed — GitLab 19.0 or later, and the default — body-bound.** GitLab 19.0 added a _signing
+  token_ that signs every delivery per the Standard Webhooks spec, and the project-hooks API accepts
+  it as `signing_token`. A random signing token (`whsec_` + 32 random bytes, base64) is generated
+  per subscription and registered as `signing_token` ONLY: no `token` is sent, so GitLab never sends
+  `X-Gitlab-Token` and no secret rides in a header. Each delivery's `webhook-signature` (`v1,` +
+  base64 HMAC-SHA256 of `webhook-id.webhook-timestamp.raw body`, keyed with the decoded token) is
+  checked in constant time before the body is read, and `webhook-timestamp` must be within 5
+  minutes. `X-Gitlab-Token` is never consulted: a delivery without a valid signature is refused,
+  whatever token it carries. A probe that fails or returns an unparseable version also gives this
+  mode, as do subscriptions created before the probe existed.
+- **Token — only for servers that report a version before 19.0 at activation — a shared password.**
+  Those servers ignore `signing_token` and send no signature, so a NEW random secret (64 hex
+  characters, distinct from any signing key) is registered as the webhook's `token` ("Secret token
+  to validate received payloads") and a delivery is accepted if its `X-Gitlab-Token` equals it
+  (constant time). That is a shared password in a header: nothing binds it to the body, so a
+  captured delivery could be altered and replayed, and the 5-minute window does not apply. The
+  server stores inbound headers, so the token is readable by anyone who can read the delivery log;
+  it protects nothing else (it is not a signing key). A server upgraded to GitLab 19.x after
+  subscribing stays in token mode until the trigger is deactivated and activated again.
 
-Activation sends the same secret as both `signing_token` and the webhook's `token` (GitLab's "Secret
-token to validate received payloads"), so older servers, which ignore `signing_token`, still send
-`X-Gitlab-Token`. GitLab 19.0 and later send both headers when both are configured. Subscriptions
-created before this change hold the secret in state but were registered without `token`: on a GitLab
-older than 19.0 they keep failing closed until deactivated and activated again; there is no
-migration. A self-managed host must also be on the connection's egress allowlist.
+A self-managed host must also be on the connection's egress allowlist.
 
 Vendor docs (verified 2026-11-09):
 [webhooks and the signing token](https://docs.gitlab.com/user/project/integrations/webhooks/),
 [project webhooks API](https://docs.gitlab.com/api/project_webhooks/) (`token`: "Secret token to
 validate received payloads"; `signing_token`: introduced in 19.0). The webhooks page states the
 signing token works alongside the secret token, and `X-Gitlab-Token` is sent only when a secret
-token is configured.
+token is configured; `GET /version` is documented at
+[docs.gitlab.com/api/version](https://docs.gitlab.com/api/version/).
 
 ## Health check
 
