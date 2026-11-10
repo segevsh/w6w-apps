@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/digistore24",
   "version": "0.3.0",
-  "description": "Digistore24 digital-product commerce: purchases, refunds and rebilling, buyers, products, affiliate commissions, vouchers, deliveries and IPN connections. Poll for newly recorded purchases. Poll triggers emit new purchases, transactions, products, vouchers and deliveries.",
+  "description": "Digistore24 commerce: purchases, refunds, buyers, products, commissions, vouchers, deliveries and IPN. Poll for new purchases, transactions, products, vouchers and deliveries.",
   "license": "MIT",
   "author": {
     "name": "w6w"

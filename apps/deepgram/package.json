@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/deepgram",
   "version": "0.3.0",
-  "description": "Transcribe audio and video by URL, analyse text, generate speech, and trigger workflows on new Deepgram requests. Poll triggers emit new requests, projects, API keys, members, invitations and member scopes.",
+  "description": "Transcribe audio and video by URL, analyse text, generate speech, and trigger workflows on new requests, projects, API keys, members and invitations.",
   "license": "MIT",
   "author": {
     "name": "w6w"

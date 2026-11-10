@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/datadog",
   "version": "0.3.0",
-  "description": "Submit metrics and events to Datadog, read operational data, and poll for new log events across every Datadog site. Poll triggers emit new log events, events, monitors, dashboards, downtimes, hosts and users.",
+  "description": "Submit metrics and events to Datadog, read operational data, and poll new log events, events, monitors, dashboards, downtimes, hosts and users across every Datadog site.",
   "license": "MIT",
   "author": {
     "name": "w6w"
