@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -40,13 +40,7 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/google/looker | 0 | 7 | 7 |
 | apps/metabase | 0 | 7 | 7 |
 | apps/newrelic | 0 | 7 | 7 |
-| apps/sendpulse | 2 | 9 | 7 |
-| apps/servicetitan | 2 | 8 | 7 |
-| apps/smartsheet | 2 | 8 | 7 |
-| apps/solapi | 2 | 8 | 7 |
 | apps/square | 1 | 8 | 7 |
-| apps/streak | 2 | 8 | 7 |
-| apps/synthflow | 1 | 8 | 7 |
 | apps/teachable | 1 | 8 | 7 |
 | apps/videoask | 1 | 8 | 7 |
 | apps/wix | 1 | 8 | 7 |
@@ -638,7 +632,9 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/seamlessai | 11 | 16 | 0 |
 | apps/sendblue | 5 | 9 | 0 |
 | apps/sender | 10 | 8 | 0 |
+| apps/sendpulse | 11 | 9 | 0 |
 | apps/sentry | 9 | 9 | 0 |
+| apps/servicetitan | 13 | 8 | 0 |
 | apps/shopify | 18 | 4 | 0 |
 | apps/shortcut | 12 | 13 | 0 |
 | apps/signrequest | 4 | 10 | 0 |
@@ -646,11 +642,15 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/simpletexting | 6 | 8 | 0 |
 | apps/slack | 25 | 7 | 0 |
 | apps/slite | 1 | 9 | 0 |
+| apps/smartsheet | 7 | 8 | 0 |
 | apps/snyk | 9 | 10 | 0 |
+| apps/solapi | 7 | 8 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
+| apps/streak | 7 | 8 | 0 |
 | apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/superchat | 11 | 17 | 0 |
+| apps/synthflow | 6 | 8 | 0 |
 | apps/systemeio | 9 | 11 | 0 |
 | apps/tapfiliate | 9 | 14 | 0 |
 | apps/teamup | 7 | 13 | 0 |
@@ -1169,11 +1169,11 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/sendblue | 5 | message-list | new-message, new-contact, new-seat, new-verification, new-verified-contact | apps/sendblue/README.md Triggers section (verified 2026-11-10) | hand | newest-first message and contact feeds (order_by created_at / createdAt desc) plus an id snapshot over the bounded seat list (https://docs.sendblue.com/api-v2/contacts, https://docs.sendblue.com/api-v2/seats); since-filter (updated_at_gte, offset paging) over verifications and an id snapshot over verified contacts (https://docs.sendblue.com/api/resources/verify/subresources/verifications/methods/list/, https://docs.sendblue.com/api/resources/verified_contacts/methods/list/) |
 | apps/sender | 10 | subscriber-list | new-campaign, new-group, new-group-subscriber, new-or-updated-campaign, new-or-updated-group, new-or-updated-segment, new-or-updated-subscriber, new-segment, new-segment-subscriber, new-subscriber | apps/sender/README.md Triggers section (verified 2026-11-10) | hand | list endpoints take order/direction (https://api.sender.net/pagination/); campaign, group and segment examples show created/modified; subscriber key names still unproven |
 | apps/sendfox | 1 | contact-list | new-contact | apps/sendfox/README.md Triggers section (verified 2026-11-09) | hand | contact-list filter[created_after] since-filter with overlap and page resume (https://sendfox.com/openapi.yaml) |
-| apps/sendpulse | 2 | pipelines-list | new-pipeline, new-mailing-list | apps/sendpulse/README.md Triggers section (verified 2026-11-09) | hand | snapshot triggers on pipelines-list (unpaged, tariff-bounded) and mailing-lists-list (https://api.sendpulse.com/.well-known/openapi/crm.yaml); deals-list and campaigns-list do not fit |
+| apps/sendpulse | 11 | deals-list | new-pipeline, new-mailing-list, new-deal, new-or-updated-deal, new-contact, new-or-updated-contact, new-campaign, new-contact-tag, new-sender, new-team-member, new-pipeline-step | apps/sendpulse/README.md Triggers section (verified 2026-11-10) | hand | deals-list sortBy createdAt/updatedAt desc and contacts-list from/updateFrom day filters (https://api.sendpulse.com/.well-known/openapi/crm.yaml); campaigns-list order=desc; small unpaged lists as snapshots |
 | apps/sentry | 9 | issue-list | new-issue, new-release, new-project, new-team, new-member, new-organization, new-deploy, new-event, new-issue-event | apps/sentry/README.md Triggers section (verified 2026-11-10) | hand | issue-list sort=new and release-list (sorted by most recent) newest-first; id snapshots over the bounded project, team, member, organization and per-release deploy lists (https://docs.sentry.io/api/); start/end window polls over project events and one issue's events, drained through the action's Link cursor (returnAll) |
 | apps/servicem8 | 2 | category-list | new-category, new-or-updated-category | apps/servicem8/README.md Triggers section (verified 2026-11-09) | hand | snapshot (c) of the bounded Job Categories list (one GET /category.json?cursor=-1, <=1000 per response); no created_at field is documented |
 | apps/servicenow | 2 | table-record-get-many | new-table-record, new-or-updated-table-record | apps/servicenow/README.md Triggers section (verified 2026-11-09) | hand | Table API sys_created_on/sys_updated_on >= encoded query with ORDERBY and sysparm_offset paging, polled as a since-filter with offset resume and floor (vendor page is a JavaScript shell: ORDERBY syntax unverified) |
-| apps/servicetitan | 2 | customer-list | new-customer, new-or-updated-customer | apps/servicetitan/README.md Triggers section (verified 2026-11-09) | hand | customer-list createdOnOrAfter/modifiedOnOrAfter, polled as a since-filter with page resume and floor (vendor page is a JavaScript shell: filters unverified on 2026-11-09) |
+| apps/servicetitan | 13 | job-list | new-customer, new-or-updated-customer, new-job, new-or-updated-job, new-lead, new-or-updated-lead, new-location, new-or-updated-location, new-appointment, new-or-updated-appointment, new-employee, new-technician, new-business-unit | apps/servicetitan/README.md Triggers section (verified 2026-11-10) | hand | createdOnOrAfter/modifiedOnOrAfter since-filter windows with page resume and seed floor for customers, jobs, leads, locations, appointments; employee, technician and business-unit lists as snapshots (vendor docs are a JavaScript shell: filters are the actions' own params) |
 | apps/seven | 1 | contact-list | new-contact | apps/seven/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/sharetribe | 1 | event-list | new-event | apps/sharetribe/README.md Triggers section (verified 2026-11-09) | hand | sequence-id token: first check records createdAtStart, then startAfterSequenceId=last event (vendor log is ascending from the earliest event) |
 | apps/shippo | 1 | shipment-list | new-shipment | apps/shippo/README.md Triggers section (verified 2026-11-09) | hand | shipment-list takes object_created_gte (documented, https://docs.goshippo.com/api-reference/shipments/list-all-shipments); no documented list order and no updated-since filter, so only new-shipment ships (since-filter with page resume and floor) |
@@ -1186,11 +1186,11 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/simplybook | 1 | booking-get-many | new-booking | apps/simplybook/README.md Triggers section (verified 2026-11-10) | hand | GET /admin/bookings documents filter[record_date_from\|to] (YYYY-MM-DD, company time zone, read from GET /admin/company/info) and every booking carries record_date; the booking has no edit stamp, so filter[edited_date_from] cannot back a new-or-updated trigger: since-filter poll widened one day and filtered by record_date (https://simplybook.me/api/swagger-admin) |
 | apps/skyvern | 1 | run-list | new-run | apps/skyvern/README.md Triggers section (verified 2026-11-09) | hand | run-list is documented newest-first: OpenAPI GET /v1/runs says "List the organization's task and agent runs, newest first" (https://api.skyvern.com/openapi.json) |
 | apps/slite | 1 | note-list | new-or-updated-note | apps/slite/README.md Triggers section (verified 2026-11-10) | hand | GET /v1/notes?orderBy=lastEditedAt_DESC (documented enum); no created-time order is documented so no new-note |
-| apps/smartsheet | 2 | list-sheets | new-sheet, new-or-updated-sheet | apps/smartsheet/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /sheets (documented modifiedSince, no sort): new-sheet keeps createdAt in window; resumes by page; list-container-children/reports/workspaces/users considered and not shipped |
+| apps/smartsheet | 7 | list-sheets | new-sheet, new-or-updated-sheet, new-report, new-workspace, new-user, new-column, new-container-item | apps/smartsheet/README.md Triggers section (verified 2026-11-10) | hand | since-filter window on GET /sheets (modifiedSince, no sort) plus snapshots of reports, workspaces, users, a sheet's columns and a container's children (https://developers.smartsheet.com/_spec/api/smartsheet/openapi.yaml) |
 | apps/smartsuite | 2 | list-records | new-record, new-or-updated-record | apps/smartsuite/README.md Triggers section (verified 2026-11-09) | hand | POST records/list sorted by system field first_created / last_updated desc (documented sort syntax and sortable First Created / Last Updated fields) |
 | apps/snyk | 9 | issue-list | new-collection, new-collection-project, new-group, new-group-issue, new-issue, new-or-updated-group-issue, new-or-updated-issue, new-organization, new-target | apps/snyk/README.md Triggers section (verified 2026-11-10) | hand | since-filter on issues (org and group: created_after / updated_after) and targets (created_gte); bounded snapshots for organizations, groups, collections and one collection's projects |
 | apps/softr | 1 | database-list | new-database | apps/softr/README.md Triggers section (verified 2026-11-09) | hand | GET /databases takes no parameters and returns every database in one request: snapshot poll for new databases; record-list has no sort/filter and record-search sorts only by a table-specific field id (https://docs.softr.io/softr-api/softr-database-api/databases/get-databases) |
-| apps/solapi | 2 | list-messages | new-message, new-or-updated-message | apps/solapi/README.md Triggers section (verified 2026-11-09) | hand | list-messages takes startDate/endDate with dateType CREATED\|UPDATED and a startKey/nextKey cursor (limit up to 500, ours 100): since-filter poll with resume and seed floor (https://developers.solapi.com/references/messages/list-messages) |
+| apps/solapi | 7 | list-messages | new-message, new-or-updated-message, new-group, new-or-updated-group, new-sender-number, new-kakao-channel, new-kakao-template | apps/solapi/README.md Triggers section (verified 2026-11-10) | hand | startDate/endDate with dateType CREATED\|UPDATED and startKey/nextKey for messages and groups; sender numbers, Kakao channels and templates as snapshots (https://developers.solapi.com/references/messages/list-messages) |
 | apps/splitwise | 2 | list-expenses | new-expense, new-or-updated-expense | apps/splitwise/README.md Triggers section (verified 2026-11-09) | hand | since-filter window on GET /get_expenses (documented updated_after, no sort or created filter): new-expense keeps created_at in window; resumes by offset |
 | apps/spotify | 1 | playlist-get-user-playlists | new-playlist | apps/spotify/README.md Triggers section (verified 2026-11-09) | hand | snapshot (c) of the user's playlist library (limit=50 pages, refused above 500); search is a query-dependent catalog endpoint |
 | apps/square | 1 | customer-get-many | new-customer | apps/square/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-get-many |
@@ -1199,10 +1199,10 @@ depth: 682 apps, 2608 triggers, 1630 unaccounted list actions in 421 apps, n8n-p
 | apps/statuspage | 1 | subscriber-list | new-subscriber | apps/statuspage/README.md Triggers section (verified 2026-11-10) | hand | subscriber-list with the new newestFirst option sends the documented sort_field=created_at, sort_direction=desc, zero-based page + limit (https://developer.statuspage.io/#operation/getPagesPageIdSubscribers); incident-list and component-list document no sort order or created-since filter |
 | apps/storyblok | 1 | story-list | new-story | apps/storyblok/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action story-list |
 | apps/strapi | 1 | entry-list | new-entry | apps/strapi/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action entry-list |
-| apps/streak | 2 | box-list | new-box, new-or-updated-box | apps/streak/README.md Triggers section (verified 2026-11-09) | hand | sortBy=creationTimestamp \| lastUpdatedTimestamp, 'Both are in descending order' (https://streak.readme.io/reference/list-all-boxes-in-pipeline) |
+| apps/streak | 7 | box-list | new-box, new-or-updated-box, new-pipeline, new-or-updated-pipeline, new-stage, new-task, new-team | apps/streak/README.md Triggers section (verified 2026-11-10) | hand | sortBy=creationTimestamp \| lastUpdatedTimestamp, 'Both are in descending order' for boxes and pipelines (https://streak.readme.io/reference/list-all-pipelines); stages, tasks and teams as snapshots |
 | apps/supabase | 1 | rows-list | new-row | apps/supabase/README.md Triggers section (verified 2026-11-09) | hand | explicit PostgREST order=<creation column>.desc.nullslast,id.desc on the caller's named table and creation column (https://docs.postgrest.org/en/stable/references/api/tables_views.html) |
 | apps/superchat | 11 | contact-list | new-contact, new-channel, new-contact-list, new-contact-list-membership, new-conversation, new-conversation-message, new-file, new-inbox, new-template-folder, new-template, new-workspace-user | apps/superchat/README.md Triggers section (verified 2026-11-10) | hand | Contacts, channels and files are newest-first (documented sort) and polled through their list actions; every other Superchat list documents no sort order and is read whole (cursor-paged, 5000 rows) and snapshot-diffed. |
-| apps/synthflow | 1 | call-list | new-call | apps/synthflow/README.md Triggers section (verified 2026-11-09) | hand | since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls) |
+| apps/synthflow | 6 | call-list | new-call, new-agent, new-batch-call, new-batch-call-recipient, new-knowledge-base, new-phone-number | apps/synthflow/README.md Triggers section (verified 2026-11-10) | hand | call-list since-filter from_date; agents, batches, recipients, knowledge bases and phone numbers as snapshots of limit/offset lists with no documented sort (https://docs.synthflow.ai/openapi.json) |
 | apps/systemeio | 9 | contact-list | new-contact, new-campaign, new-community, new-course, new-enrollment, new-funnel, new-membership, new-newsletter, new-tag | apps/systemeio/README.md Triggers section (verified 2026-11-10) | hand | every collection takes order=desc with id cursors, so each new-<record> trigger polls newest first (https://developer.systeme.io/reference/api) |
 | apps/tableau | 2 | workbook-list | new-workbook, new-or-updated-workbook | apps/tableau/README.md Triggers section (verified 2026-11-09) | hand | sort=createdAt:desc / updatedAt:desc, 'You can sort on the same fields that you use to filter' and Workbooks filter on createdAt/updatedAt (https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_filtering_and_sorting.htm); users list has no creation stamp |
 | apps/tailscale | 1 | user-list | new-user | apps/tailscale/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot: 'The Tailscale API does not currently support pagination. All results are returned at once.' (https://tailscale.com/api) |

@@ -9970,11 +9970,20 @@
     "mechanism": "poll",
     "candidates": [
       "new-pipeline",
-      "new-mailing-list"
+      "new-mailing-list",
+      "new-deal",
+      "new-or-updated-deal",
+      "new-contact",
+      "new-or-updated-contact",
+      "new-campaign",
+      "new-contact-tag",
+      "new-sender",
+      "new-team-member",
+      "new-pipeline-step"
     ],
-    "pollAction": "pipelines-list",
-    "reason": "snapshot triggers on pipelines-list (unpaged, tariff-bounded) and mailing-lists-list (https://api.sendpulse.com/.well-known/openapi/crm.yaml); deals-list and campaigns-list do not fit",
-    "verified": "apps/sendpulse/README.md Triggers section (verified 2026-11-09)",
+    "pollAction": "deals-list",
+    "reason": "deals-list sortBy createdAt/updatedAt desc and contacts-list from/updateFrom day filters (https://api.sendpulse.com/.well-known/openapi/crm.yaml); campaigns-list order=desc; small unpaged lists as snapshots",
+    "verified": "apps/sendpulse/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -10034,11 +10043,22 @@
     "mechanism": "poll",
     "candidates": [
       "new-customer",
-      "new-or-updated-customer"
+      "new-or-updated-customer",
+      "new-job",
+      "new-or-updated-job",
+      "new-lead",
+      "new-or-updated-lead",
+      "new-location",
+      "new-or-updated-location",
+      "new-appointment",
+      "new-or-updated-appointment",
+      "new-employee",
+      "new-technician",
+      "new-business-unit"
     ],
-    "pollAction": "customer-list",
-    "reason": "customer-list createdOnOrAfter/modifiedOnOrAfter, polled as a since-filter with page resume and floor (vendor page is a JavaScript shell: filters unverified on 2026-11-09)",
-    "verified": "apps/servicetitan/README.md Triggers section (verified 2026-11-09)",
+    "pollAction": "job-list",
+    "reason": "createdOnOrAfter/modifiedOnOrAfter since-filter windows with page resume and seed floor for customers, jobs, leads, locations, appointments; employee, technician and business-unit lists as snapshots (vendor docs are a JavaScript shell: filters are the actions' own params)",
+    "verified": "apps/servicetitan/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -10731,12 +10751,21 @@
     "mechanism": "poll",
     "candidates": [
       "new-sheet",
-      "new-or-updated-sheet"
+      "new-or-updated-sheet",
+      "new-report",
+      "new-workspace",
+      "new-user",
+      "new-column",
+      "new-container-item"
     ],
     "pollAction": "list-sheets",
-    "reason": "since-filter window on GET /sheets (documented modifiedSince, no sort): new-sheet keeps createdAt in window; resumes by page; list-container-children/reports/workspaces/users considered and not shipped",
-    "verified": "apps/smartsheet/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter window on GET /sheets (modifiedSince, no sort) plus snapshots of reports, workspaces, users, a sheet's columns and a container's children (https://developers.smartsheet.com/_spec/api/smartsheet/openapi.yaml)",
+    "verified": "apps/smartsheet/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "search": "free-text search with a required query over an index the action says lags recent writes; the records are delivered by new-sheet, new-or-updated-sheet, new-report and new-container-item",
+      "search-sheet": "free-text search of one sheet with a required query and no other parameters; not a record feed (rows of a sheet have no list-rows action behind a trigger here)"
+    }
   },
   {
     "path": "apps/smartsuite",
@@ -10799,12 +10828,24 @@
     "mechanism": "poll",
     "candidates": [
       "new-message",
-      "new-or-updated-message"
+      "new-or-updated-message",
+      "new-group",
+      "new-or-updated-group",
+      "new-sender-number",
+      "new-kakao-channel",
+      "new-kakao-template"
     ],
     "pollAction": "list-messages",
-    "reason": "list-messages takes startDate/endDate with dateType CREATED|UPDATED and a startKey/nextKey cursor (limit up to 500, ours 100): since-filter poll with resume and seed floor (https://developers.solapi.com/references/messages/list-messages)",
-    "verified": "apps/solapi/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "startDate/endDate with dateType CREATED|UPDATED and startKey/nextKey for messages and groups; sender numbers, Kakao channels and templates as snapshots (https://developers.solapi.com/references/messages/list-messages)",
+    "verified": "apps/solapi/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "list-group-messages": "new-message",
+      "list-active-sender-numbers": "new-sender-number"
+    },
+    "skipped": {
+      "list-files": "storage file listing with only fileId/type/name filters, no sort and no date filter, grows without a bound (MMS uploads): no stable newest-first or since read"
+    }
   },
   {
     "path": "apps/splitwise",
@@ -10961,12 +11002,22 @@
     "mechanism": "poll",
     "candidates": [
       "new-box",
-      "new-or-updated-box"
+      "new-or-updated-box",
+      "new-pipeline",
+      "new-or-updated-pipeline",
+      "new-stage",
+      "new-task",
+      "new-team"
     ],
     "pollAction": "box-list",
-    "reason": "sortBy=creationTimestamp | lastUpdatedTimestamp, 'Both are in descending order' (https://streak.readme.io/reference/list-all-boxes-in-pipeline)",
-    "verified": "apps/streak/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "sortBy=creationTimestamp | lastUpdatedTimestamp, 'Both are in descending order' for boxes and pipelines (https://streak.readme.io/reference/list-all-pipelines); stages, tasks and teams as snapshots",
+    "verified": "apps/streak/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "field-list": "custom-field definitions of a pipeline (configuration, not records)",
+      "search": "free-text search over boxes, contacts and organizations with a required query; boxes are delivered by new-box and new-or-updated-box",
+      "box-search-by-name": "free-text name search with a required name; boxes are delivered by new-box and new-or-updated-box per pipeline"
+    }
   },
   {
     "path": "apps/streamtime",
@@ -11498,12 +11549,21 @@
     "path": "apps/synthflow",
     "mechanism": "poll",
     "candidates": [
-      "new-call"
+      "new-call",
+      "new-agent",
+      "new-batch-call",
+      "new-batch-call-recipient",
+      "new-knowledge-base",
+      "new-phone-number"
     ],
     "pollAction": "call-list",
-    "reason": "since-filter from_date (ms) + limit/offset, no documented sort: window resumed across pages, floor at seed (https://docs.synthflow.ai/api-reference/platform-api/calls/list-calls)",
-    "verified": "apps/synthflow/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "call-list since-filter from_date; agents, batches, recipients, knowledge bases and phone numbers as snapshots of limit/offset lists with no documented sort (https://docs.synthflow.ai/openapi.json)",
+    "verified": "apps/synthflow/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-list": "GET /contacts documents only a search (phone number) parameter: no limit/offset to advance the response's page_number/page_size, so a contact feed cannot be read in full (https://docs.synthflow.ai/openapi.json)",
+      "voice-list": "catalogue of voices available to every agent (reference data)"
+    }
   },
   {
     "path": "apps/systemeio",
