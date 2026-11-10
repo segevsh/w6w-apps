@@ -71,6 +71,8 @@ import getFileUrls from "./actions/get-file-urls.ts";
 
 import service from "./health/service.ts";
 import requestRate from "./health/request-rate.ts";
+import newSubmission from "./triggers/new-submission.ts";
+import newForm from "./triggers/new-form.ts";
 
 export default {
   actions: [
@@ -109,4 +111,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, requestRate],
+  triggers: [newSubmission, newForm],
 } satisfies AppDefinition;

@@ -1,5 +1,15 @@
 # WhatConverts
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-lead` — New Lead | Poll | `leads-list` | Each newly captured lead |
+
+Polled newest-first through `leads-list`. Source: https://www.whatconverts.com/api/leads/ (verified 2026-11-09).
+
 Read and write call, form, chat, email, transaction, appointment, text-message and custom-event
 leads from WhatConverts's conversion tracking and attribution platform, over the **WhatConverts API
 v1**.

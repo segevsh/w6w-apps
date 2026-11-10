@@ -6,6 +6,7 @@ workspace's users, teams and meeting types, via the Grain Public API (v2).
 - **Categories** — ai, productivity, video
 - **Auth methods** — api-key
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.grain.com`
 
 ## Links
@@ -196,6 +197,16 @@ Only" (the `attendance` recording filter, `private_notes` include) or "**Workspa
 this app cannot tell at runtime which token type is connected. Mint either kind at
 **grain.com → Settings → Integrations → API**.
 
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-recording` — New Recording | poll | `recording-list` | Each newly available recording |
+
+Source: <https://developers.grain.com/reference/list-recordings> (verified 2026-11-09).
+
+The list documents no sort order, so the trigger sets the recording filter `after_datetime` (the field name this app already trusts, see the note above about the vendor's swapped descriptions) to the last check minus 24 hours, reads up to 5 cursor pages and dedupes by recording id. If Grain's filter direction is in fact the reverse of its name, a brand-new recording would never match, so recordings would only surface once they age past the 24-hour cutoff (delayed and partial, never a flood); this was not verifiable without a live workspace (the reference page answers 403 to a plain fetch).
+
 ### Why OAuth2 is not implemented
 
 Grain documents a complete OAuth2 Authorization Code + PKCE flow
@@ -286,3 +297,7 @@ deno task lint         # deno lint
 deno task fmt           # format (use this, never bare `deno fmt` — see CLAUDE.md)
 deno task test           # unit tests, mocked HookContext
 ```
+
+## Trigger floor assumption
+
+The new-recording trigger floors on the meeting's `start_datetime`: a recording of a meeting that started before the first check is never emitted, and a recording with no parseable timestamp is kept.

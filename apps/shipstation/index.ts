@@ -5,6 +5,8 @@
  * deprecated V1 API and the beta Sales Order API are both out of scope.
  */
 import type { AppDefinition } from "@w6w/types";
+import newShipment from "./triggers/new-shipment.ts";
+import newOrUpdatedShipment from "./triggers/new-or-updated-shipment.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -32,6 +34,7 @@ import tagList from "./actions/tag-list.ts";
 import shipmentTagAdd from "./actions/shipment-tag-add.ts";
 
 const app: AppDefinition = {
+  triggers: [newShipment, newOrUpdatedShipment],
   actions: [
     shipmentCreate,
     shipmentGet,

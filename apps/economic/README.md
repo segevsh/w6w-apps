@@ -14,6 +14,7 @@ reads and writes an agreement's customers, products and invoices through the e-c
   demo-account responses. e-conomic also publishes newer per-module OpenAPI services (an
   "OpenAPI" component sits beside "REST API" on its status page); the reference this app is built
   on does not document them for these resources, so they are not used.
+- **Triggers** — 1 (poll)
 
 ## Actions (29)
 
@@ -62,3 +63,15 @@ Creating an invoice: pick the reference numbers with the List actions (or have
   their per-property detail.
 - Tokens can only be created by e-conomic (app secret) and the customer (grant), so there is no
   self-service sign-up flow here.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-booked-invoice` — New Booked Invoice | poll | List Booked Invoices (`GET /invoices/booked`, `sort=-bookedInvoiceNumber`) | each newly booked invoice |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `invoice-booked-list` action is called sorted by booked invoice number descending, so a newly booked invoice is always on the first page. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://restdocs.e-conomic.com/ (sorting: a `-` prefix sorts descending) (verified 2026-11-09).

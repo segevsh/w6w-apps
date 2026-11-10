@@ -1,13 +1,12 @@
 # Typesense
 
-Triggers: not shipped — document search has schema-defined sort fields, so no universally newest-first document feed exists (https://typesense.org/docs/28.0/api/search.html).
-
 Search collections, index documents, and manage the collections, aliases and
 API keys around them.
 
 - **Categories** — search, databases
 - **Auth methods** — api-key
 - **Actions** — 16
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://typesense.org
 - **API docs** — https://typesense.org/docs/
@@ -224,3 +223,11 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: the import action **parses the
 per-document result** and fails a partial write by default, search **controls
 both widening thresholds**, and the two destructive actions gate themselves.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | Poll | `document-search` | Each new document in the collection you choose |
+
+Typesense has no built-in creation order, so the order is yours: you supply `sortBy` (Typesense's documented `sort_by`) on a sortable field that puts the newest document first, for example `created_at:desc`. The trigger runs `document-search` with `q=*`, your `sortBy`, strict matching and 100 results per check; the first check records what exists without firing, later checks emit only unseen document ids. A sort that is not newest-first means new documents are never seen, so check it in Test. Nothing to set up on the vendor side. Source: [Typesense search parameters](https://typesense.org/docs/28.0/api/search.html) (verified 2026-11-09).

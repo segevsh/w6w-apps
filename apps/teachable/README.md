@@ -6,6 +6,7 @@ Transactions on the **Teachable Public API v1**.
 - **Categories** — commerce, crm
 - **Auth methods** — api-key
 - **Actions** — 21
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `developers.teachable.com` (the `service` check adds
   `www.teachablestatus.com` to its own hook allowlist, never to the app's)
@@ -104,3 +105,11 @@ deno task fmt          # format (lineWidth 100, semicolons, double quotes)
 deno task test          # unit tests (mocked HookContext, no network)
 deno task validate       # manifest + behavior audit
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transaction` — New Transaction | Poll (since filter) | `transaction-list` | Each new sales transaction in the school |
+
+Polled through the `transaction-list` action with `start` set to the last check minus a two-minute overlap, paging with `page`/`per` (a window longer than three pages resumes on the next check), deduped by transaction id. The first check reads nothing and emits nothing; transactions from before it are never emitted. New transactions can take up to two minutes to appear after the sale. Source: `start` — "The beginning of the time period to return results for (exclusive), in ISO8601 format" ([List transactions](https://docs.teachable.com/reference/listtransactions), verified 2026-11-09). The users list was not used: it has no sort and no created-since filter.

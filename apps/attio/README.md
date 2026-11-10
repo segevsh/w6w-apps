@@ -3,11 +3,20 @@
 Attio CRM records, list entries, attributes, notes, tasks and workspace members, on the **Attio REST
 API v2**.
 
+- **Triggers** — 1 (poll)
 - **Categories** — crm
 - **Auth methods** — api-key (a workspace access token, sent as `Authorization: Bearer …`)
 - **Actions** — 29
 - **Egress allowlist** — `api.attio.com`
 - **Health checks** — `service` (live), `quota` (declared unavailable)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-task` — New Task | poll | `list-tasks` with `sort=created_at:desc` pinned (params: linked record, assignee, completion) | Each newly created task |
+
+Vendor reference: https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks (verified 2026-11-09). The vendor documents `sort=created_at:desc` as returning the newest results first (the default is `created_at:asc`), so the trigger sends it explicitly. The task id is `id.task_id`.
 
 ## Links
 

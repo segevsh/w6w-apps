@@ -30,6 +30,8 @@ import getMe from "./actions/get-me.ts";
 import service from "./health/service.ts";
 import site from "./health/site.ts";
 import quota from "./health/quota.ts";
+import newUser from "./triggers/new-user.ts";
+import newOrUpdatedUser from "./triggers/new-or-updated-user.ts";
 
 export default {
   actions: [
@@ -61,4 +63,5 @@ export default {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, site, quota],
+  triggers: [newUser, newOrUpdatedUser],
 } satisfies AppDefinition;

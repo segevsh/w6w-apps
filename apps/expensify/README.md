@@ -100,3 +100,16 @@ The split of work:
   pass (it proves the Integration Server answered).
 - **quota** — declared absence (`informational`): limits are documented but no header or endpoint
   exposes headroom.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-policy` — New Policy | Poll | `list-policies` | Each policy (workspace) newly available to the account |
+
+The `get`/`policyList` job returns every policy in one unpaginated response. Each check diffs it
+against the previous check and emits only additions (more than 5000 rows fails the check with an
+error naming the cap). The first check only records what exists. Reports and expenses are fetched
+through `export-reports`, which is an export job with no created-since cursor, so it has no poll
+trigger. Expensify's Integration Server documents no webhook or event subscription. Source:
+[Integration Server documentation](https://integrations.expensify.com/Integration-Server/doc/) (verified 2026-11-09).

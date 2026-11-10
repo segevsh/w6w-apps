@@ -82,6 +82,7 @@ import submitterList from "./actions/submitter-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCompletedSubmitter from "./triggers/new-completed-submitter.ts";
 
 export default {
   actions: [
@@ -112,6 +113,7 @@ export default {
     submitterUpdate,
     submitterList,
   ],
+  triggers: [newCompletedSubmitter],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

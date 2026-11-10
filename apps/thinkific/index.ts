@@ -67,6 +67,8 @@ import bundlesCoursesList from "./actions/bundles-courses-list.ts";
 import bundlesEnrollmentsList from "./actions/bundles-enrollments-list.ts";
 import bundlesEnrollmentCreate from "./actions/bundles-enrollment-create.ts";
 import bundlesEnrollmentUpdate from "./actions/bundles-enrollment-update.ts";
+import newEnrollment from "./triggers/new-enrollment.ts";
+import newOrUpdatedEnrollment from "./triggers/new-or-updated-enrollment.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -105,4 +107,5 @@ export default {
   // integration is meant to use. See auth/api-key.ts.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newEnrollment, newOrUpdatedEnrollment],
 } satisfies AppDefinition;

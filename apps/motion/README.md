@@ -1,5 +1,7 @@
 # Motion
 
+Triggers: not shipped — task and project actions use opaque cursors with no documented creation-time order or since filter (https://docs.usemotion.com/api-reference/)
+
 [Motion](https://www.usemotion.com) is an AI calendar and task manager: you give it work and it
 decides when the work happens. This app covers the whole of Motion's public API — tasks, projects,
 comments, recurring tasks, custom fields, and the workspaces, users, statuses and schedules that

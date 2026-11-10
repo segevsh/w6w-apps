@@ -58,6 +58,7 @@ import teamMemberList from "./actions/team-member-list.ts";
 import eventList from "./actions/event-list.ts";
 import eventGet from "./actions/event-get.ts";
 import auditEventList from "./actions/audit-event-list.ts";
+import newDocument from "./triggers/new-document.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -99,4 +100,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newDocument],
 } satisfies AppDefinition;

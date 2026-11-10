@@ -1,5 +1,7 @@
 # OpenRouter
 
+Triggers: not shipped — list-models is offset-paged (limit up to 1000) and returns no total, so one request cannot be shown to hold the whole catalog for a snapshot, and the other actions are inference, usage or single-resource lookups with no record feed (https://openrouter.ai/docs/api_reference/overview).
+
 Chat completions, embeddings, and model/usage introspection via OpenRouter's unified LLM API.
 
 - **Categories** — ai

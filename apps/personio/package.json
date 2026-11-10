@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/personio",
-  "version": "0.1.1",
-  "description": "Manage employees, absences and documents, and read custom reports, through Personio's HR platform API.",
+  "version": "0.2.0",
+  "description": "Manage employees, absences and documents, and read custom reports, through Personio's HR platform API. Includes poll triggers for new and updated employees.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -38,7 +38,12 @@
         "api.personio.de"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

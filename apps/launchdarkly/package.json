@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/launchdarkly",
-  "version": "0.1.0",
-  "description": "Read and change LaunchDarkly feature flags, segments and the audit trail behind them.",
+  "version": "0.2.0",
+  "description": "Read and change LaunchDarkly feature flags, segments and the audit trail behind them, and trigger workflows on new feature flags and audit log entries.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "app.launchdarkly.us"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

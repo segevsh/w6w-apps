@@ -1,5 +1,15 @@
 # Authorize.Net
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-customer-transaction` — New Customer Transaction | poll | `list-customer-transactions` sorted by `submitTimeUTC` descending | Each new transaction for the selected customer profile |
+
+Vendor reference: https://developer.authorize.net/api/reference/index.html (verified 2026-11-09).
+
 `io.w6w.authorize-net` provides 40 actions for Authorize.Net's JSON API. The connection uses an
 API Login ID and Transaction Key and selects either **sandbox** (the default) or **production**.
 

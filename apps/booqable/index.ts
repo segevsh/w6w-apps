@@ -37,6 +37,7 @@ import planningGet from "./actions/planning-get.ts";
 import service from "./health/service.ts";
 import companyDomain from "./health/company-domain.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -67,6 +68,7 @@ export default {
     planningList,
     planningGet,
   ],
+  triggers: [newCustomer],
   auth: [accessToken],
   healthChecks: [service, companyDomain, quota],
 } satisfies AppDefinition;

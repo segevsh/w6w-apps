@@ -55,6 +55,7 @@ import listbuildingSignoff from "./actions/listbuilding-signoff.ts";
 import listbuildingSignout from "./actions/listbuilding-signout.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
+import contactChanged from "./triggers/contact-changed.ts";
 
 export default {
   actions: [
@@ -86,4 +87,5 @@ export default {
   ],
   auth: [session, listbuildingKey],
   healthChecks: [service, api],
+  triggers: [contactChanged],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mighty-networks",
-  "version": "0.1.0",
-  "description": "Manage members, spaces, posts, comments, events, invites and tags in a Mighty Networks community via the Admin API.",
+  "version": "0.2.0",
+  "description": "Manage members, spaces, posts, comments, events, invites and tags in a Mighty Networks community via the Admin API, plus webhook triggers for member joins, new posts and any other Network event.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.mightynetworks.com/llms.txt"
     ],
-    "longDescription": "Mighty Networks is a community platform for creators and brands — spaces, courses, events, posts and paid plans under one branded Network — and this app runs it through the Mighty Networks Admin API.\n\nIt covers the operational core of a Network: members (list, look up by id or email, create, update, add to or remove from spaces, tag), spaces, posts and comments, events with RSVPs, invitations, tags, plans and course content. A connection is one Network: the Network ID or subdomain is stored with the Admin API token, so no action asks for it again.\n\nGood for onboarding automation — create a member or send an invite and drop them into the right spaces and tags — for publishing posts and scheduling events from another system, and for reading a Network's membership, plans and course structure into a CRM or reporting tool. The Admin API needs the Scale, Growth or Mighty Pro plan.",
+    "longDescription": "Mighty Networks is a community platform for creators and brands — spaces, courses, events, posts and paid plans under one branded Network — and this app runs it through the Mighty Networks Admin API.\n\nIt covers the operational core of a Network: members (list, look up by id or email, create, update, add to or remove from spaces, tag), spaces, posts and comments, events with RSVPs, invitations, tags, plans and course content. A connection is one Network: the Network ID or subdomain is stored with the Admin API token, so no action asks for it again.\n\nGood for onboarding automation — create a member or send an invite and drop them into the right spaces and tags — for publishing posts and scheduling events from another system, and for reading a Network's membership, plans and course structure into a CRM or reporting tool. The Admin API needs the Scale, Growth or Mighty Pro plan.\n\nWebhook triggers start a workflow when a member joins, a post is created, or any other Network event the webhook sends arrives; you set the callback URL and an API key on the webhook in your Network settings.",
     "categories": [
       "communication",
       "social-media"
@@ -33,7 +33,12 @@
         "api.mn.co"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

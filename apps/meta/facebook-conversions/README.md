@@ -1,5 +1,7 @@
 # Meta Conversions API
 
+Triggers: not shipped — dataset diagnostics and quality endpoints are analytics/report resources, not durable record lists (https://developers.facebook.com/docs/marketing-api/conversions-api/).
+
 Send server-side conversion events to a Meta dataset (pixel) through the Conversions API,
 with Meta's required SHA-256 customer-data hashing applied **inside the app**.
 

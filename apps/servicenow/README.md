@@ -5,6 +5,7 @@ Manage ServiceNow incidents, plus any other table, via the Table API.
 - **Categories** — support, devops
 - **Auth methods** — basic, oauth2
 - **Actions** — 9
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*.service-now.com`
 - **Website** — https://www.servicenow.com
 - **API docs** — https://developer.servicenow.com
@@ -168,3 +169,16 @@ ServiceNow's CDN refuses requests without a browser user-agent, which is why thi
 Researched and endpoint-verified 2026-07-31 against ServiceNow's public Table
 API documentation and n8n's `ServiceNow` node. Status/rate-limit surfaces
 move; re-verify if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-table-record` — New Table Record | poll | `table-record-get-many` | the new row of the chosen `table` |
+| `new-or-updated-table-record` — New or Updated Table Record | poll | `table-record-get-many` | a row created or updated (each new `sys_updated_on` is a new event) |
+
+The first check only records the time (`floor`) and emits nothing, and anything stamped (`sys_created_on` / `sys_updated_on`) before that time is never emitted. Each later check re-reads `sys_created_on>=` / `sys_updated_on>=` (with `ORDERBY<field>^ORDERBYsys_id`, `sysparm_limit=100` and `sysparm_offset` paging)` from the last drained cursor minus 2 minutes, remembers up to 500 emitted ids and skips them. A window larger than 200 rows is drained over successive checks (the position is kept in state) and the cursor only advances once it is drained.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `table-record-get-many` with the connection's credentials.
+
+Vendor docs: https://www.servicenow.com/docs/bundle/xanadu-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html (URL fetched 2026-11-09; the page is rendered by JavaScript and returned no readable text, so the encoded-query `ORDERBY` syntax and `sysparm_offset` paging are **unverified** here — they are ServiceNow's Table API conventions the existing action already uses for `sysparm_query`, `sysparm_limit` and `sysparm_offset`)

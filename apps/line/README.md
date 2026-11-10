@@ -7,6 +7,7 @@ Taiwan, Thailand and Indonesia) uses to talk to its users.
 - **Categories** — communication, marketing
 - **Auth methods** — channel-access-token (`bearer`)
 - **Actions** — 17
+- **Triggers** — 1 (webhook)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:channel-access-token`
 - **Egress allowlist** — `api.line.me`, `api-data.line.me` (the `service` health check adds
   `api.line-status.info` to its own hook allowlist, never to the app's)
@@ -23,6 +24,18 @@ Taiwan, Thailand and Indonesia) uses to talk to its users.
 > [reference page](https://developers.line.biz/en/reference/messaging-api/) renders its endpoint
 > detail client-side (a Nuxt app), so the markdown source it is built from was fetched directly
 > rather than scraping the rendered HTML for accuracy.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `event-received` — LINE Event | webhook (manual, signed) | `message`, `follow`, `unfollow`, `postback` by default; any other [webhook event type](https://developers.line.biz/en/reference/messaging-api/) via the `eventTypes` param | event type, reply token, source user/group/room, message or postback object, `webhookEventId`, redelivery flag, full event |
+
+**Setup (manual webhook).** LINE takes one webhook URL per channel, which is why one trigger carries every event type. Create the trigger, paste your channel's **Channel secret** (LINE Developers Console, your channel, Basic settings) into its `signingSecret` param, optionally list the `eventTypes` you want, then copy the trigger's webhook URL into the channel's **Messaging API → Webhook URL**, turn on **Use webhook** and press **Verify** (LINE sends an empty delivery, which is acknowledged without starting a run). One delivery can hold several events; each event of a chosen type starts its own run.
+
+**Trust model.** LINE signs the exact request body: `x-line-signature` is the base64 HMAC-SHA256 of the body under the channel secret. The trigger checks it in constant time before it parses anything, and refuses a delivery whose signature is missing or wrong, whose raw body is unavailable, or when no channel secret is configured. LINE's signature carries no timestamp, so there is no freshness window, and LINE redelivers webhooks that failed (`isRedelivery` is `true`): de-duplicate on `webhookEventId` if your workflow is not idempotent.
+
+Docs (verified 2026-11-10): https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/ and https://developers.line.biz/en/docs/messaging-api/receiving-messages/
 
 ## Findings worth recording
 
@@ -203,6 +216,7 @@ that its `<title>` and opening `<svg>` tag are unchanged.
 ## Layout
 
 ```
+
 line/
 ├── package.json                    # manifest — the `w6w` identity block
 ├── index.ts                        # entry: { actions, auth, healthChecks }

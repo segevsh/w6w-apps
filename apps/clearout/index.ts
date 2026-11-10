@@ -30,6 +30,9 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import emailVerifierBulkCompleted from "./triggers/email-verifier-bulk-completed.ts";
+import emailFinderBulkCompleted from "./triggers/email-finder-bulk-completed.ts";
+import formGuardEmailValidated from "./triggers/form-guard-email-validated.ts";
 
 /**
  * Clearout — email verification, email finder, reverse lookup and domain utilities.
@@ -74,6 +77,7 @@ const app: AppDefinition = {
     verifyEmail,
   ],
   auth: [apiKey],
+  triggers: [emailVerifierBulkCompleted, emailFinderBulkCompleted, formGuardEmailValidated],
   healthChecks: [service, api, quota],
 };
 

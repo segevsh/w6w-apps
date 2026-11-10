@@ -1,5 +1,7 @@
 # Recruit CRM
 
+Triggers: not shipped — GET /v1/jobs and /v1/jobs/search document `sort_by`/`sort_order` as bare strings ("Sorting order key", "Sort order") with no value list and no created/updated-since filter on the jobs list, so a newest-first read cannot be shown (https://api.recruitcrm.io/docs)
+
 Search and manage Recruit CRM candidates, companies, contacts and jobs, assign candidates to jobs
 and move them through hiring stages. REST API at `https://api.recruitcrm.io/v1`, read from the
 vendor's OpenAPI 3.0 document (`https://api.recruitcrm.io/docs`); the unsigned error shapes were

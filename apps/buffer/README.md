@@ -6,6 +6,7 @@ on the **Buffer GraphQL Public API** (`api.buffer.com`).
 - **Categories** — social-media, marketing
 - **Auth methods** — `api-key`, `oauth2`
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.buffer.com` (plus `auth.buffer.com`, added by the loader from the
   OAuth endpoints, and `status.buffer.com` on the service health check alone)
 - **Health checks** — `service` (live), `quota` (live), plus 2 derived `auth:*`
@@ -390,6 +391,18 @@ A test pins the six experimental root fields so that adding one is a conscious a
 change beside it, rather than something that drifts in.
 
 ---
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `post-list` | Each newly created post in the organization |
+
+Polled newest-first through `post-list` with `sort: [{ field: createdAt, direction: desc }]`. Buffer's `PostsInput.sort` accepts `createdAt`/`dueAt` only, so there is no updated-time feed and no `new-or-updated-post` trigger. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://developers.buffer.com/) (verified 2026-11-09).
 
 ## Health checks
 

@@ -76,6 +76,7 @@ import userCreate from "./actions/user-create.ts";
 import userUpdate from "./actions/user-update.ts";
 
 import service from "./health/service.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -116,4 +117,5 @@ export default {
   // surface is published for third-party apps.
   auth: [basic],
   healthChecks: [service],
+  triggers: [newLead],
 } satisfies AppDefinition;

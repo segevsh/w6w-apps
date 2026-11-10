@@ -1,6 +1,14 @@
 # Vercel
 
-Triggers: not shipped — deployment events are build-log sub-resources and require a deployment ID, not a primary new-record feed (https://vercel.com/docs/rest-api/endpoints/deployments/get-deployment-events).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-deployment` — New Deployment | Poll | `deployment-list` | Each newly created deployment |
+
+Polled through `deployment-list` with the documented `since` filter ("Get Deployments created after this JavaScript timestamp") set to the last check minus 2 minutes, paging on with `until`. Vercel documents no sort order, so none is relied on. The first check stores a floor (now) and reads nothing; a window over 5 pages is drained across successive checks. Source: https://vercel.com/docs/rest-api/deployments/list-deployments (verified 2026-11-09).
 
 Ship and inspect Vercel deployments — projects, aliases, env vars, domains and
 logs.

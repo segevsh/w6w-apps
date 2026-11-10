@@ -85,6 +85,7 @@ import likeRemove from "./actions/like-remove.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newVideo from "./triggers/new-video.ts";
 
 export default {
   actions: [
@@ -138,4 +139,5 @@ export default {
   // `auth/access-token.ts`.
   auth: [accessToken],
   healthChecks: [service, quota],
+  triggers: [newVideo],
 } satisfies AppDefinition;

@@ -66,6 +66,8 @@ import emailReportingOverviewGet from "./actions/email-reporting-overview-get.ts
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newSequenceContact from "./triggers/new-sequence-contact.ts";
 
 export default {
   actions: [
@@ -97,4 +99,5 @@ export default {
   // third-party apps — the key from Settings > API Key is the whole story.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newContact, newSequenceContact],
 } satisfies AppDefinition;

@@ -15,6 +15,7 @@ import getUser from "./actions/get-user.ts";
 import listGroups from "./actions/list-groups.ts";
 import listNetworkMembers from "./actions/list-network-members.ts";
 import checkNetworkAccess from "./actions/check-network-access.ts";
+import newGroup from "./triggers/new-group.ts";
 
 import personCreate from "./actions/person-create.ts";
 import personUpdate from "./actions/person-update.ts";
@@ -49,4 +50,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newGroup],
 } satisfies AppDefinition;

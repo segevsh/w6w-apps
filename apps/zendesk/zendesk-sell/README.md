@@ -10,6 +10,7 @@ the **Sell API v2**.
 - **Categories** — crm, marketing
 - **Auth methods** — oauth2 (Authorization Code, the vendor's own recommended flow)
 - **Actions** — 31
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:oauth2`
 - **Egress allowlist** — `api.getbase.com` (the `service` check adds `status.zendesk.com` to its own
   hook allowlist, never to the app's)
@@ -187,3 +188,20 @@ cd ../../../_tools && deno run --no-check -A --config ./deno.json ./audit.ts zen
 ```
 
 — passes with 0 errors, 0 warnings.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` | poll | `contact-list` | a contact (person or organization) when it is created |
+| `new-or-updated-contact` | poll | `contact-list` | a contact whenever it is created or edited (`id:updated_at` is the identity) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests use `sort_by=created_at:desc` / `sort_by=updated_at:desc`, page 1, 100 per page.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Contacts `sort_by` — "Possible values: id, name, first_name, last_name, email, custom_fields, updated_at, created_at … append :desc to the field": https://developer.zendesk.com/api-reference/sales-crm/resources/contacts/

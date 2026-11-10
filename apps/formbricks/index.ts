@@ -26,6 +26,7 @@ import webhookList from "./actions/webhook-list.ts";
 import webhookGet from "./actions/webhook-get.ts";
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
+import newSurvey from "./triggers/new-survey.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
@@ -74,4 +75,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newSurvey],
 } satisfies AppDefinition;

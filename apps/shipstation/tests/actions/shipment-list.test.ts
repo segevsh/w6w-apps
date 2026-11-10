@@ -42,3 +42,14 @@ test("shipment-list: returns pagination fields alongside the results", async () 
   assertEquals(result.total, 5);
   assertEquals(result.pages, 3);
 });
+
+test("shipment-list: sends sort_by and sort_dir when asked, and omits them otherwise", async () => {
+  const sorted = mockCtx([{ status: 200, body: { shipments: [] } }]);
+  await action.execute!({ sortBy: "created_at", sortDir: "desc" }, sorted.ctx);
+  const url = new URL(sorted.calls[0].url);
+  assertEquals(url.searchParams.get("sort_by"), "created_at");
+  assertEquals(url.searchParams.get("sort_dir"), "desc");
+  const plain = mockCtx([{ status: 200, body: { shipments: [] } }]);
+  await action.execute!({}, plain.ctx);
+  assertEquals(new URL(plain.calls[0].url).searchParams.has("sort_by"), false);
+});

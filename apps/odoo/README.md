@@ -378,3 +378,19 @@ for field names.
 [json2]: https://www.odoo.com/documentation/19.0/developer/reference/external_api.html
 [rpc]: https://www.odoo.com/documentation/19.0/developer/reference/external_rpc_api.html
 [pricing]: https://www.odoo.com/pricing
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `list-contacts` | each newly created contact or company (`order=create_date desc`) |
+| `new-or-updated-contact` — New or Updated Contact | poll | `list-contacts` | each contact created or edited since the last check (`order=write_date desc`; the dedupe id includes `write_date`) |
+
+Each check runs `res.partner` `search_read` for the 100 newest records. `create_date` and `write_date` exist on every model that keeps access logs (the Odoo ORM reference).
+
+Trust model: Poll only: nothing is registered in Odoo. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html (verified 2026-11-09)
+- https://www.odoo.com/documentation/19.0/developer/reference/external_api.html (verified 2026-11-09)

@@ -6,6 +6,7 @@ produces — on the **Gamma Public API v1.0**.
 - **Categories** — ai, productivity, documents
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (`service`) + the derived `auth:api-key`
 - **Egress allowlist** — `public-api.gamma.app` (the `service` check reads a feed from
   `status.gamma.app`, added to that hook's own allowlist implicitly — never to the app's)
@@ -109,3 +110,17 @@ Every Gamma failure is `{"message": string, "statusCode": number}`. `formatGamma
 [`lib/client.ts`](lib/client.ts) surfaces the vendor's own message verbatim and adds an actionable
 sentence for `402` (out of credits) and `429` (rate limited), because "check your input" is the wrong
 fix for either.
+
+## Triggers
+
+Poll triggers built on the app's existing `list-gamma-comments` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-or-updated-gamma-comment` — New or Updated Gamma Comment | poll | `list-gamma-comments` | Each comment thread on the chosen Gamma that is new or has new activity (an edit or reply), once per change. |
+
+How the feed is read: `GET /v1.0/gammas/{gammaId}/comments` with `updatedSince` ("Supports an updatedSince filter for efficient delta polling"); the action exposes no sort, so the trigger is a since-filter poll.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://developers.gamma.app/management/get-gamma-comments> (verified 2026-11-09).

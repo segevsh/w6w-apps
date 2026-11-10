@@ -304,3 +304,7 @@ deno task lint
 deno task fmt        # never bare `deno fmt`
 deno task test
 ```
+
+## Triggers
+
+- **New Customer** wraps `customer-list` with descending order. [Mollie list customers](https://docs.mollie.com/reference/list-customers), verified 2026-11-09.

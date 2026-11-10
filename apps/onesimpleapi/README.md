@@ -1,5 +1,7 @@
 # OneSimpleApi
 
+Triggers: not shipped — stateless conversion, generation, lookup, and validation utility API with no account records (https://www.onesimpleapi.com/docs)
+
 A toolbox of small utility APIs: page metadata, screenshots, PDFs, QR codes, email
 validation, URL expansion, and currency conversion.
 

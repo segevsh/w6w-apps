@@ -28,6 +28,7 @@ import uploadAttachment from "./actions/upload-attachment.ts";
 import api from "./health/api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import messengerEvent from "./triggers/messenger-event.ts";
 
 export default {
   actions: [
@@ -51,6 +52,7 @@ export default {
     takeThreadControl,
     uploadAttachment,
   ],
+  triggers: [messengerEvent],
   auth: [pageToken],
   healthChecks: [api, service, quota],
 } satisfies AppDefinition;

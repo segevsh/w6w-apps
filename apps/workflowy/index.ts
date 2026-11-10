@@ -32,6 +32,7 @@ import targetsList from "./actions/targets-list.ts";
 
 import service from "./health/service.ts";
 import rateLimit from "./health/rate-limit.ts";
+import newNode from "./triggers/new-node.ts";
 
 export default {
   actions: [
@@ -50,4 +51,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, rateLimit],
+  triggers: [newNode],
 } satisfies AppDefinition;

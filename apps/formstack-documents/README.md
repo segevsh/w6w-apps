@@ -10,11 +10,20 @@ data routes, deliveries and PDF tools.
 - **Auth** — HTTP Basic: **API Key** as username, **Secret** as password (`basic`, field type
   `secret`, credential only ever touched in `sign`).
 - **Network** — one host: `www.webmerge.me`.
+- **Triggers** — 1 (poll).
 - **Icon** — the Formstack mark, verbatim (same `assets/icon.svg` as `apps/formstack`; Formstack
   Documents ships under the Formstack brand and the vendor serves no separate favicon SVG).
 
 Verified 2026-10-06 against the developer docs and live unauthenticated probes
 (`/api/documents` and `/api/routes` answer a bare 401).
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-document` — New Document | poll | `document-list` | Each document template newly added to the account |
+
+`GET /api/documents` returns the account document templates in one response; this trigger snapshots up to 5,000 documents and emits additions only. Verified 2026-11-09 against Formstack Documents's [API reference](https://www.webmerge.me/developers).
 
 ## Actions
 

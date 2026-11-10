@@ -39,6 +39,8 @@ import keyCreate from "./actions/key-create.ts";
 import keyDelete from "./actions/key-delete.ts";
 import nodeStats from "./actions/node-stats.ts";
 
+import newDocument from "./triggers/new-document.ts";
+
 const app: AppDefinition = {
   actions: [
     documentSearch,
@@ -60,6 +62,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, node, capacity],
+  triggers: [newDocument],
 };
 
 export default app;

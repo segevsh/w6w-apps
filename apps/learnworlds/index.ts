@@ -81,6 +81,7 @@ import paymentsList from "./actions/payments-list.ts";
 import service from "./health/service.ts";
 import school from "./health/school.ts";
 import quota from "./health/quota.ts";
+import newUser from "./triggers/new-user.ts";
 
 export default {
   actions: [
@@ -103,4 +104,5 @@ export default {
   ],
   auth: [clientCredentials],
   healthChecks: [service, school, quota],
+  triggers: [newUser],
 } satisfies AppDefinition;

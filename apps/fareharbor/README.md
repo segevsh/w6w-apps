@@ -5,6 +5,7 @@ Booking software for tour and activity operators. This app reads FareHarbor's co
 bookings, over the External API.
 
 - App id: `io.w6w.fareharbor` · categories: `calendar`, `commerce`
+- **Triggers** — 1 (poll)
 - Host: `fareharbor.com` (the only entry in `network.allow`) · API prefix `/api/external/v1`
 - Source of truth: FareHarbor's OpenAPI 3.1 document, the file the Redoc page at
   developer.fareharbor.com loads
@@ -94,3 +95,16 @@ Notes:
 `deno task test` — 102 tests: every action (request path, query, body, vendor-error surfacing, path
 guards), the entry module, auth `sign`/`test`, the client, and the three health checks, all against
 a mocked `HookContext`.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-booking` — New Booking | Poll | `booking-list-by-create-date` | Each newly created booking of one company (minimal record: `pk`, `uuid`, `status`) |
+
+Each check lists bookings created today and yesterday (UTC calendar days, which the endpoint filters
+on) and dedupes by `pk`, so a booking created just before midnight is still delivered. The first check
+only records what exists. Fetch the full booking with `booking-get`. FareHarbor's support-configured
+booking notifications are a separate, not yet shipped webhook path. Source:
+[FareHarbor External API](https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home)
+(`get-bookings-by-create-date`, verified 2026-11-09).

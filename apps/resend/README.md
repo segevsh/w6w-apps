@@ -224,3 +224,11 @@ document (v1.5.0, 47 paths), its API reference, and live probes of
 `api.resend.com` and every plausible path on `status.resend.com`. Status
 surfaces move; re-check if a probe starts failing for everyone at once — and if
 Resend ever ships a real status API, `health/service.ts` is where it goes.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-email` | poll | `email-list` | Each newly sent email |
+
+`GET /emails` is listed newest first by the vendor. Vendor API reference: https://resend.com/docs/api-reference/emails/list-emails (verified 2026-11-09).

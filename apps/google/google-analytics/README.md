@@ -264,3 +264,5 @@ documents for the Analytics Data API v1beta and Admin API v1beta, plus live
 probes of both Google status dashboards. The OAuth shape and scope-namespace
 convention follow this pack's `google-ads` app. Status surfaces move; re-check
 if a probe starts failing for everyone at once.
+
+Triggers: not shipped — account and property lists are paginated configuration reads with no documented newest-first order or changed-since filter (https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1beta/accounts/list).

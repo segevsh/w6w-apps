@@ -32,8 +32,10 @@ import pickupCreate from "./actions/pickup-create.ts";
 import pickupBuy from "./actions/pickup-buy.ts";
 import pickupCancel from "./actions/pickup-cancel.ts";
 import eventList from "./actions/event-list.ts";
+import newEvent from "./triggers/new-event.ts";
 
 const app: AppDefinition = {
+  triggers: [newEvent],
   actions: [
     shipmentCreate,
     shipmentBuy,

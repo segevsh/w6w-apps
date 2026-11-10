@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-creator",
-  "version": "0.1.0",
-  "description": "List, add, update and delete records — plus upload/download files — in Zoho Creator custom applications, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "List, add, update and delete records, trigger on new applications, and upload/download files in Zoho Creator, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -41,7 +41,8 @@
         "www.zohoapis.ae"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

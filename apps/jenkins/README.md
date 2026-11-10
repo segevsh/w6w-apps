@@ -5,6 +5,7 @@ Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance
 - **Categories** — devops
 - **Auth methods** — basic
 - **Actions** — 6
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://www.jenkins.io
 - **API docs** — https://www.jenkins.io/doc/book/using/remote-access-api/
@@ -123,3 +124,14 @@ access API, CSRF protection / API-token exemption) and the community-maintained
 `n8n-nodes-base` Jenkins node's job/build/trigger endpoints, which agree with the official
 docs. Jenkins' REST surface is stable across versions; re-check if a probe starts failing
 for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-build` | poll | `get-job-info` | Each new build of the chosen job (sorted by build number, highest first, by the trigger) |
+| `new-job` | poll | `list-jobs` | Each job newly created at the root or in a folder (snapshot diff) |
+
+`GET /job/<name>/api/json` carries the job's `builds` (number and URL); the trigger sorts them by build number itself rather than trusting the response order, and Jenkins returns only the most recent builds, so a burst of more than that between two checks is not fully visible. `GET /api/json?tree=jobs[...]` lists every job of the root or one folder in a single request, which is the snapshot behind `new-job`.
+
+Polling only: nothing is registered with the vendor and no extra credential is needed. Vendor API documentation: https://www.jenkins.io/doc/book/using/remote-access-api/ (verified 2026-11-09).

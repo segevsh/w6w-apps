@@ -35,6 +35,7 @@ import clientCredentials from "./auth/client-credentials.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newProduct from "./triggers/new-product.ts";
 
 export default {
   actions: [
@@ -65,4 +66,5 @@ export default {
   // wrapped in a third, vendor-generated "Basic" secret. See the auth file.
   auth: [clientCredentials],
   healthChecks: [service, quota],
+  triggers: [newProduct],
 } satisfies AppDefinition;

@@ -90,3 +90,5 @@ coherent:
 - `update-booking`: Lodgify warns "not all fields can be updated via this endpoint"; only the
   fields you set are sent.
 - Date inputs are passed through as written; `YYYY-MM-DD` is accepted for the date-time fields.
+
+Triggers: not shipped — `list-bookings` is the only booking feed and has no sort order and no created-since filter, only `updatedSince`, with no documented booking created/updated stamp to tell a new booking from an edited one; the vendor docs return 403 to curl, so the default order could not be verified (https://docs.lodgify.com/reference/list-bookings).

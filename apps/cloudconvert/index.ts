@@ -62,6 +62,9 @@ import webhookDelete from "./actions/webhook-delete.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
+import jobFinished from "./triggers/job-finished.ts";
+import jobFailed from "./triggers/job-failed.ts";
+import jobCreated from "./triggers/job-created.ts";
 
 export default {
   actions: [
@@ -95,5 +98,6 @@ export default {
   // authenticates as the connecting account itself, so a bearer API key — CloudConvert's
   // own recommended path for that case — is the whole authentication story.
   auth: [apiToken],
+  triggers: [jobFinished, jobFailed, jobCreated],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

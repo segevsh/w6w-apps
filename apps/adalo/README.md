@@ -1,5 +1,7 @@
 # Adalo
 
+Triggers: not shipped — list-records offers only offset/limit paging and a single-property equality filter (filterKey/filterValue); Adalo's Collections API documents no sort order or created-since filter (https://help.adalo.com/integrations/the-adalo-api/collections).
+
 Read and write records in an Adalo app's Collections via the Adalo Collections API.
 
 - **Categories** — developer-tools, databases

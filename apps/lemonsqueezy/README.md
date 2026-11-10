@@ -240,3 +240,16 @@ deno task lint
 deno task validate   # @w6w/validator manifest checks
 deno task fmt        # NEVER bare `deno fmt` — it rewrites assets/*.svg
 ```
+
+
+## Triggers
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Order (`new-order`) | poll | `order-list` — in the vendor's documented default order (`created_at` descending) | each newly created order |
+
+The trigger polls every 5 minutes, read one page of 100 from the app's existing `order-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://docs.lemonsqueezy.com/api/orders/list-all-orders (verified 2026-11-09). It states the list returns "order objects ordered by created_at in descending" and its example links carry `sort=-createdAt`. The trigger relies on that documented default because the existing action exposes no sort parameter. Lemon Squeezy documents no update-time sort or filter for orders, so no new-or-updated trigger ships.

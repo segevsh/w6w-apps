@@ -1,5 +1,7 @@
 # Refiner
 
+- **Triggers** — 1 (poll)
+
 [Refiner](https://refiner.io) is an in-product survey tool for NPS, CSAT and product-feedback
 surveys. This app lets a workflow read responses and reports, manage surveys, contacts and
 segments, and push user traits, events and externally collected responses back in, over the
@@ -109,3 +111,16 @@ deno task check
 deno task lint
 deno task test
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-survey` — New Survey | Poll (snapshot) | `form-list` | Each survey created since the last check |
+
+- Refiner API, Get Forms: "Fetch all forms from your account" — the list is ordered by name and an account holds a small set (`page_length` up to 1000), so `form-list` is read once (`list=all`, `page_length=1000`) and diffed (snapshot kit, added only). A second page fails the check loudly.
+- The `contact-list` endpoint (`order_by` first_seen_at) is not used: the docs give an `order_by` field but no direction, so a newest-first read cannot be shown.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://refiner.io/docs/api/.

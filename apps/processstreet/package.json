@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/processstreet",
-  "version": "0.1.0",
-  "description": "Start and manage Process Street workflow runs (checklists), their tasks and form fields, via the Process Street Public API.",
+  "version": "0.2.0",
+  "description": "Start and manage Process Street workflow runs (checklists), their tasks and form fields, via the Process Street Public API. Includes a poll trigger for newly created workflow run.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,12 @@
         "public-api.process.st"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

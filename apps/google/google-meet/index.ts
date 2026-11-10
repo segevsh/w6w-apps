@@ -21,6 +21,7 @@ import listTranscriptEntries from "./actions/list-transcript-entries.ts";
 import getTranscriptEntry from "./actions/get-transcript-entry.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newConferenceRecord from "./triggers/new-conference-record.ts";
 
 export default {
   actions: [
@@ -45,4 +46,5 @@ export default {
   ],
   auth: [oauth2, serviceAccount],
   healthChecks: [service, quota],
+  triggers: [newConferenceRecord],
 } satisfies AppDefinition;

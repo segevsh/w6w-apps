@@ -1,5 +1,7 @@
 # Pushover
 
+Triggers: not shipped — Pushover's API has only four calls (message send, user validate, sounds list, limits get) and none lists records: sounds-list is a static sound catalogue, limits-get a quota counter; sent messages are not listable, only a receipt can be polled by id (https://pushover.net/api)
+
 Push notifications to phones, tablets and desktops on the **Pushover API**.
 
 - **Categories** — communication, monitoring

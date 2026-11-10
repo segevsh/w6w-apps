@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/placid",
-  "version": "0.1.0",
-  "description": "Generate images, PDFs and videos from Placid templates, and manage templates, collections, fonts and uploaded media.",
+  "version": "0.2.0",
+  "description": "Generate images, PDFs and videos from Placid templates, and manage templates, collections, fonts and uploaded media. Includes a poll trigger for newly created template.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -37,7 +37,12 @@
         "api.placid.app"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

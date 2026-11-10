@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/jira-data-center",
-  "version": "0.1.0",
-  "description": "Create, search and transition issues on a self-hosted Jira Data Center or Jira Server instance.",
+  "version": "0.2.0",
+  "description": "Create, search and transition issues, and poll new comments on a self-hosted Jira Data Center or Jira Server instance.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.jira-data-center",
     "displayName": "Jira Data Center",
     "apiDocs": [

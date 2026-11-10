@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/whatconverts",
-  "version": "0.1.0",
-  "description": "Read and write call, form, chat and transaction leads from WhatConverts's conversion tracking and attribution platform.",
+  "version": "0.2.0",
+  "description": "Read WhatConverts leads and trigger workflows on newly captured leads.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,8 @@
         "status.whatconverts.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,13 +1,27 @@
 # Axonaut
 
+- **Triggers** — 2 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-invoice` — New Invoice | poll | `invoice-list` filtered by `creation_date_after` | Each newly created invoice |
+| `new-or-updated-invoice` — New or Updated Invoice | poll | `invoice-list` filtered by `updated_after` | Each newly created or updated invoice |
+
+Vendor reference: https://axonaut.com/api/v2/doc (verified 2026-11-09). The spec documents `GET /invoices`
+filters `creation_date_after` and `updated_after` in `DD/MM/YYYY` (date-only), with no sort argument.
+The triggers therefore filter, not sort: each check sends the cursor minus one day (UTC) as
+`DD/MM/YYYY`, reads up to 5 pages, and dedupes by id (up to 1000 remembered). The first check records
+the current window and the cursor "now" and emits nothing. Live filter semantics (inclusive or strict
+`after`) are unverified; the one-day overlap plus id dedupe makes either safe.
+
 French all-in-one CRM and invoicing for small businesses, driven through the Axonaut REST API v2
 (`https://axonaut.com/api/v2`). Docs are mostly French; this app is in English.
 
 Every path, verb, parameter and enum was verified on 2026-10-06 against the OpenAPI 3.0 document
 embedded in `https://axonaut.com/api/v2/doc` (`<script id="swagger-data">`, 78 paths). The catalog's
 old `/manager/ecommerceApi` documentation URL is a 404.
-
-Triggers: not shipped — company-list sorts only by id, name or city with no direction argument, so newest-first cannot be requested (https://axonaut.com/api/v2/doc)
 
 ## Auth
 

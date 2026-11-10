@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mongodb-atlas",
-  "version": "0.1.1",
-  "description": "Manage MongoDB Atlas: projects and clusters, database users and IP access lists, alerts and events — the control plane, not the data.",
+  "version": "0.2.0",
+  "description": "Manage the MongoDB Atlas control plane and trigger workflows on new project events.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,12 @@
         "status.mongodb.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

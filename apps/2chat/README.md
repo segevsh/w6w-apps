@@ -6,11 +6,22 @@ send WhatsApp Business API (WABA) templates through [2Chat](https://2chat.co).
 - **Categories** — communication, marketing
 - **Auth methods** — api-key (`X-User-API-Key` header)
 - **Actions** — 28
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.p.2chat.io` (the only host any hook calls)
 - **Website** — https://2chat.co
 - **API docs** — https://developers.2chat.co (Docusaurus; indexed by https://developers.2chat.co/llms.txt,
   the only real machine-readable index — `llms-full.txt` is the site's 404 shell). Every endpoint
   here was read from its reference page on 2026-10-06.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` | poll | `messages-list` | Each new message on a connected number (optionally one conversation). |
+
+Set **Your number** (the number connected to 2Chat), and optionally **Remote number** to follow one conversation. `GET /whatsapp/messages/{number}` returns "the last or newest 100 messages"; each check reads page 0 and emits the messages it has not seen (id: `uuid`). Source: https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages (verified 2026-11-10).
+
+2Chat also pushes events (`message.received` and others) through webhooks, listed at https://developers.2chat.co/docs/API/Webhooks/supported-types; no webhook trigger ships here.
 
 ## Setup
 

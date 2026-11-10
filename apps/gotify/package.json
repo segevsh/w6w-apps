@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/gotify",
-  "version": "0.1.0",
-  "description": "Send and manage push notifications through a self-hosted Gotify server.",
+  "version": "0.2.0",
+  "description": "Manage Gotify notifications and trigger workflows on new messages.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "*"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

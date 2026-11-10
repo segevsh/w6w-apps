@@ -2,6 +2,7 @@
 
 Shorten, manage and track Bitly links via the Bitly REST API v4.
 
+- **Triggers** — 1 (poll)
 - **Categories** — marketing, analytics
 - **Auth methods** — access-token
 - **Actions** — 8
@@ -113,3 +114,16 @@ Researched and endpoint-verified 2026-08-01 against `dev.bitly.com/api-reference
 production Bitly node (`api-ssl.bitly.com/v4`, Bearer "Generic Access Token"). Status
 surfaces move; re-check with `_tools/audit.ts` conventions in mind if a probe starts failing
 for everyone at once.
+
+## Triggers
+
+| Key | Title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- | --- |
+| `new-bitlink` | New Bitlink | poll (since-filter) | `list-bitlinks` | Each Bitlink created in a group since the last check |
+
+The poll calls the same `GET /groups/{group_guid}/bitlinks` request as `list-bitlinks`, with the new
+optional `createdAfter` input (sent as `created_after`) set to the previous check minus two minutes,
+50 per page, following `search_after` for up to 5 pages, and de-duplicates on the Bitlink id. Bitly
+documents `created_after` as "Timestamp as an integer unix epoch (seconds only)" at
+<https://dev.bitly.com/api-reference/> (verified 2026-11-09). The first check records the current
+window and emits nothing. A window longer than the page cap is cut at the cap with a warning in the run log. No webhook code is included.

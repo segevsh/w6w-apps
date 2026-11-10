@@ -51,6 +51,9 @@ import presenceGet from "./actions/presence-get.ts";
 import ringOutCreate from "./actions/ring-out-create.ts";
 import ringOutGet from "./actions/ring-out-get.ts";
 
+import newCallLogRecord from "./triggers/new-call-log-record.ts";
+import newMessage from "./triggers/new-message.ts";
+
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
@@ -80,6 +83,7 @@ export default {
     ringOutCreate,
     ringOutGet,
   ],
+  triggers: [newCallLogRecord, newMessage],
   auth: [oauth2, jwtBearer],
   healthChecks: [service, api, quota],
 } satisfies AppDefinition;

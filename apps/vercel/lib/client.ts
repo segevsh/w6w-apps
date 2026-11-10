@@ -148,7 +148,7 @@ export class VercelClient {
     while (items.length < wantTotal) {
       const page = await this.request<Record<string, unknown>>(path, {
         ...options,
-        query: { ...options.query, limit: pageSize, until },
+        query: { ...options.query, limit: pageSize, until: until ?? options.query?.until },
       });
       const chunk = (page?.[collectionKey] as T[] | undefined) ?? [];
       items.push(...chunk);

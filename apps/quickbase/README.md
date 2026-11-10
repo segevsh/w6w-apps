@@ -1,5 +1,7 @@
 # Quickbase
 
+- **Triggers** — 1 (poll)
+
 Records, tables, fields, relationships and reports on the **Quickbase JSON RESTful API v1** —
 the low-code application platform's modern API, not its legacy XML one.
 
@@ -365,3 +367,16 @@ Researched and endpoint-verified 2026-08-03 against Quickbase's published Swagge
 possible, so anything requiring a real user token — the populated `x-ratelimit-*` headers, EU realm
 routing — is flagged as such above rather than asserted. Status surfaces move; re-check if a probe
 starts failing for everyone at once.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-table` — New Table | Poll (snapshot) | `list-tables` | Each table added to the application (param `appId`, default: the connection's application) |
+
+- `list-tables` (`GET /tables?appId=…`) returns every table of one application as a single bare JSON array with no paging, so the set is bounded; the trigger diffs it (snapshot kit, added only). Renaming a table does not fire it. Tables are not documented as returned in any creation order, which is why a snapshot is used.
+- No `new-or-updated-table`: a table's `updated` stamp moves for every schema or record change, which would fire on routine activity.
+
+Trust model: polling only — the trigger calls the app's own list action with the connection's credentials; nothing is received inbound, so there is no callback URL or signature to protect. The first check records the current state without firing.
+
+Sources (verified 2026-11-09): https://developer.quickbase.com/operation/getAppTables.

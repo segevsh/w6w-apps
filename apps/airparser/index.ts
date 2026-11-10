@@ -56,6 +56,7 @@ import schemaClone from "./actions/schema-clone.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import documentParsed from "./triggers/document-parsed.ts";
 
 export default {
   actions: [
@@ -76,5 +77,6 @@ export default {
   ],
   // API key only. Airparser's Public API documents exactly one auth scheme.
   auth: [apiKey],
+  triggers: [documentParsed],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

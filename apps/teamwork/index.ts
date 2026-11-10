@@ -57,6 +57,7 @@ import personList from "./actions/person-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newProject from "./triggers/new-project.ts";
 
 export default {
   actions: [
@@ -86,4 +87,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newProject],
 } satisfies AppDefinition;

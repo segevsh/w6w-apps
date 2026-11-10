@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/statuspage",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Publish to an Atlassian Statuspage — set component statuses, open and update incidents, and manage subscribers and metrics.",
   "license": "MIT",
   "author": {
@@ -40,7 +40,12 @@
         "api.statuspage.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

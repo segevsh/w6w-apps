@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/regfox",
-  "version": "0.1.0",
-  "description": "Search RegFox (Webconnex) orders, registrants, tickets, transactions, customers and memberships, check attendees in and out, manage coupons and webhooks, and read forms and inventory.",
+  "version": "0.2.0",
+  "description": "Search RegFox (Webconnex) orders, registrants, tickets, transactions and customers, check attendees in and out, manage coupons and webhooks, read forms, and trigger on new or updated forms.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -33,7 +33,8 @@
         "api.webconnex.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -73,6 +73,8 @@ import secretDelete from "./actions/secret-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSession from "./triggers/new-session.ts";
+import newOrUpdatedSession from "./triggers/new-or-updated-session.ts";
 
 export default {
   actions: [
@@ -97,4 +99,5 @@ export default {
   // cog_-prefixed). Devin publishes no OAuth surface for third-party apps.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newSession, newOrUpdatedSession],
 } satisfies AppDefinition;

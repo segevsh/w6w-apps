@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/boldsign",
-  "version": "0.1.0",
-  "description": "Send documents for e-signature, manage templates and track status via the BoldSign REST API.",
+  "version": "0.2.0",
+  "description": "Send documents for e-signature, manage templates, and poll newly active BoldSign documents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -12,6 +12,7 @@
     "lastReviewed": null
   },
   "w6w": {
+    "build": { "include": ["../_shared"] },
     "id": "io.w6w.boldsign",
     "displayName": "BoldSign",
     "apiDocs": [

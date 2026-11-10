@@ -86,6 +86,8 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSubscriber from "./triggers/new-subscriber.ts";
+import newOrUpdatedSubscriber from "./triggers/new-or-updated-subscriber.ts";
 
 export default {
   actions: [
@@ -140,4 +142,5 @@ export default {
   // docs the token "carries full access to your account" — no scoping.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newSubscriber, newOrUpdatedSubscriber],
 } satisfies AppDefinition;

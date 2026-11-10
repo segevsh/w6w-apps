@@ -78,6 +78,7 @@ import companyGet from "./actions/company-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import event from "./triggers/event.ts";
 
 export default {
   actions: [
@@ -116,5 +117,6 @@ export default {
   // it needs a registered OAuth application and a live consent screen, so this
   // app declares the static user token only (see auth/api-token.ts and README).
   auth: [apiToken],
+  triggers: [event],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

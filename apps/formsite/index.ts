@@ -24,6 +24,7 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import domain from "./health/domain.ts";
+import newResult from "./triggers/new-result.ts";
 
 export default {
   actions: [
@@ -36,6 +37,7 @@ export default {
     webhookCreate,
     webhookDelete,
   ],
+  triggers: [newResult],
   auth: [token],
   healthChecks: [service, domain],
 } satisfies AppDefinition;

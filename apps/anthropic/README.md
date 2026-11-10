@@ -5,9 +5,20 @@ Call Anthropic's REST API — Claude messages, token counting, batches, files.
 - **Categories** — ai
 - **Auth methods** — api-key
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.anthropic.com`
 - **Website** — https://www.anthropic.com
 - **API docs** — https://docs.anthropic.com
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-batch` | poll | `batch-list` | Each newly created Message Batch. |
+
+`GET /v1/messages/batches` lists "most recently created batches first", so each check reads one page of 100 and emits the batches it has not seen. Source: https://platform.claude.com/docs/en/api/python/messages/batches/list (verified 2026-11-10).
+
+The API has no batch webhook (checked 2026-11-10 against https://platform.claude.com/docs/en/build-with-claude/batch-processing), so polling is the only trigger.
 
 ## Pickers
 

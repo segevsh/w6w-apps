@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fareharbor",
-  "version": "0.1.0",
-  "description": "Read FareHarbor companies, items and availability, and validate, create, cancel and check in bookings over the External API.",
+  "version": "0.2.0",
+  "description": "Read FareHarbor companies, items and availability, and validate, create, cancel and check in bookings over the External API, and trigger workflows for newly created bookings.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://fareharbor.com/api/external/v1/FareHarbor-External-API.yaml/home"
     ],
-    "longDescription": "FareHarbor is booking and reservation software for tour and activity operators. This app lets a workflow work with the External API that FareHarbor issues to approved integration partners: list the companies your keys may book, read their items (bookable products), pull availability for a date or a date range, and read bookings by availability, by creation date or by UUID.\n\nIt can also write: validate a booking before creating it, create one (with transportation, rebooking and custom fields), update a booking's note, check customers in, cancel a booking and re-send confirmation emails.\n\nAuthentication is FareHarbor's two keys, an App key and a User key; the User key is tied to one currency, so use one connection per currency. FareHarbor limits requests per IP address (30 a second and 3,000 per 5 minutes) and times availability ranges out at 60 seconds, so pull availability in short ranges. Only the production API is supported, not the demo sandbox.",
+    "longDescription": "FareHarbor is booking and reservation software for tour and activity operators. This app lets a workflow work with the External API that FareHarbor issues to approved integration partners: list the companies your keys may book, read their items (bookable products), pull availability for a date or a date range, and read bookings by availability, by creation date or by UUID.\n\nIt can also write: validate a booking before creating it, create one (with transportation, rebooking and custom fields), update a booking's note, check customers in, cancel a booking and re-send confirmation emails.\n\nAuthentication is FareHarbor's two keys, an App key and a User key; the User key is tied to one currency, so use one connection per currency. FareHarbor limits requests per IP address (30 a second and 3,000 per 5 minutes) and times availability ranges out at 60 seconds, so pull availability in short ranges. Only the production API is supported, not the demo sandbox.\n\nA poll trigger starts workflows for newly created bookings.",
     "categories": [
       "calendar",
       "commerce"
@@ -39,7 +39,12 @@
         "fareharbor.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -25,6 +25,7 @@ import listGuides from "./actions/list-guides.ts";
 import reportResults from "./actions/report-results.ts";
 import runAggregation from "./actions/run-aggregation.ts";
 import bulkDelete from "./actions/bulk-delete.ts";
+import newGuide from "./triggers/new-guide.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -42,6 +43,7 @@ const app: AppDefinition = {
   ],
   auth: [integrationKey],
   healthChecks: [service, quota],
+  triggers: [newGuide],
 };
 
 export default app;

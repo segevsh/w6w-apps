@@ -50,6 +50,7 @@ import placementChangeStage from "./actions/placement-change-stage.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCandidate from "./triggers/new-candidate.ts";
 
 export default {
   actions: [
@@ -84,4 +85,5 @@ export default {
   // email + password as a separate, legacy mechanism this app does not use.
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newCandidate],
 } satisfies AppDefinition;

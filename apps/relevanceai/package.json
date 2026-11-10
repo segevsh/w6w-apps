@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/relevanceai",
-  "version": "0.1.0",
-  "description": "Trigger and manage Relevance AI agents and tools — run an agent, start and poll tool jobs, list agents, tools and conversations, and read the connection's identity.",
+  "version": "0.2.0",
+  "description": "Trigger and manage Relevance AI agents and tools — run an agent, start and poll tool jobs, list agents, tools and conversations, and trigger on new or updated agents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "*.stack.tryrelevance.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

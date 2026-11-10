@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/outseta",
-  "version": "0.1.0",
-  "description": "Manage Outseta people, accounts, deals, email lists, support cases, plans, subscriptions and invoices through the Outseta REST API.",
+  "version": "0.2.0",
+  "description": "Manage Outseta people, accounts, deals, email lists, support cases, plans, subscriptions and invoices through the Outseta REST API, and poll triggers on new accounts, people, deals, cases and invoices",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.outseta.com/api-reference/openapi.json"
     ],
-    "longDescription": "Outseta is an all-in-one back office for SaaS products: user accounts and sign-up, subscription billing, a CRM, email marketing and a support desk, sold as one platform. This app lets a workflow read and change that data without a second integration.\n\nOn the CRM side it can list, look up, create, update and delete people, accounts and deals, attach people to accounts and record or withdraw a cancellation request. For marketing it lists email lists and their subscribers and subscribes or removes people. Support cases can be listed, read and opened, and the knowledge base can be searched.\n\nFor billing it reads plans, plan families, subscriptions, invoices and an account's transactions, and records metered usage against a usage-billed add-on. Activity feeds can be read, and custom events written, so a workflow can drive Outseta's drip campaigns.\n\nEvery Outseta account lives on its own subdomain, so a connection takes the subdomain plus an API key and secret from Settings > Integrations > API Keys. List actions share Outseta's paging, field-selection, ordering and property-filter options.",
+    "longDescription": "Outseta is an all-in-one back office for SaaS products: user accounts and sign-up, subscription billing, a CRM, email marketing and a support desk, sold as one platform. This app lets a workflow read and change that data without a second integration.\n\nOn the CRM side it can list, look up, create, update and delete people, accounts and deals, attach people to accounts and record or withdraw a cancellation request. For marketing it lists email lists and their subscribers and subscribes or removes people. Support cases can be listed, read and opened, and the knowledge base can be searched.\n\nFor billing it reads plans, plan families, subscriptions, invoices and an account's transactions, and records metered usage against a usage-billed add-on. Activity feeds can be read, and custom events written, so a workflow can drive Outseta's drip campaigns.\n\nEvery Outseta account lives on its own subdomain, so a connection takes the subdomain plus an API key and secret from Settings > Integrations > API Keys. List actions share Outseta's paging, field-selection, ordering and property-filter options.\n\nAnd poll triggers on new accounts, people, deals, cases and invoices.",
     "categories": [
       "crm",
       "finance",
@@ -34,7 +34,12 @@
         "*.outseta.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

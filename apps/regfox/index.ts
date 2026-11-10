@@ -53,6 +53,8 @@ import webhookResend from "./actions/webhook-resend.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newForm from "./triggers/new-form.ts";
+import newOrUpdatedForm from "./triggers/new-or-updated-form.ts";
 
 export default {
   actions: [
@@ -100,4 +102,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
+  triggers: [newForm, newOrUpdatedForm],
 } satisfies AppDefinition;

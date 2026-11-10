@@ -1,5 +1,15 @@
 # Sentry
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-issue` — New Issue | poll | `issue-list` | Each newly first-seen issue. |
+
+Sentry documents `sort=new` on [List Organization Issues](https://docs.sentry.io/api/events/list-an-organizations-issues/). Verified 2026-11-09.
+
 Triage Sentry issues, read events, and manage projects, releases and deploys.
 
 - **Categories** — monitoring, developer-tools

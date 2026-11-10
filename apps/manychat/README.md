@@ -6,6 +6,7 @@ custom fields, bot fields, Automations, and sending — on the **Manychat Public
 - **Categories** — marketing, communication, social-media
 - **Auth methods** — bearer (one API token per Page)
 - **Actions** — 25
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.manychat.com` (plus `status.manychat.com`, on the service health hook only)
 - **Website** — https://manychat.com
 - **API docs** — https://api.manychat.com/swagger
@@ -466,3 +467,13 @@ assuming a 200.
   `.../articles/14959510331420-…`, 403s to non-browser clients)*
 - **Community forum** — https://community.manychat.com *(source of the two quoted-but-unverified
   behaviours above)*
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-flow` — New Flow | Poll | `list-flows` | Each flow newly added to the Page |
+
+Collection shape: `GET /fb/page/getFlows` takes no paging parameters and returns the Page's whole flow set in one response, so the check diffs the full set of flow `ns` keys with the snapshot kit and emits only `added` flows (a rename or removal is not an event). The snapshot is capped at 5000 rows. The vendor reference is a client-rendered page curl cannot read; the single-response shape rests on the action. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API reference](https://api.manychat.com/swagger) (verified 2026-11-10).

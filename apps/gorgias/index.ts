@@ -57,6 +57,8 @@ import surveyUpdate from "./actions/survey-update.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newCustomer from "./triggers/new-customer.ts";
+import newOrUpdatedCustomer from "./triggers/new-or-updated-customer.ts";
 
 export default {
   actions: [
@@ -91,4 +93,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota, domain],
+  triggers: [newCustomer, newOrUpdatedCustomer],
 } satisfies AppDefinition;

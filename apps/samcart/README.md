@@ -1,5 +1,15 @@
 # SamCart
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| key — title | mechanism | wrapped action | what the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | poll | `order-list` | Each newly created order. |
+
+SamCart documents the `created_at_min` filter and the offset/limit pagination on `GET /v1/orders` in its [OpenAPI document](https://developer.samcart.com/specs/openapi.yaml); the orders endpoint has no sort argument, so the trigger asks for orders created since the saved cursor minus a 2-minute overlap, de-duplicates by `id`, and walks a window larger than one page across checks (saved `offset`) before moving the cursor. Verified 2026-11-09.
+
 Read SamCart orders, charges, failed charges, customers, products, refunds and subscriptions, and
 add a product to an order, refund a charge, cancel or reschedule a subscription, on the
 **SamCart Public API**.

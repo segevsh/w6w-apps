@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/xai",
-  "version": "0.1.1",
-  "description": "Grok chat, Responses and Messages calls, embeddings, image generation, tokenization, models and files via the xAI API.",
+  "version": "0.2.0",
+  "description": "Use xAI files and trigger workflows on new files.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -45,7 +45,8 @@
         "api.x.ai"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

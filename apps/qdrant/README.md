@@ -250,3 +250,11 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source — no global `fetch`, no `Deno.*`, no credential handling outside the auth
 hook — plus two Qdrant-specific ones: nothing calls a retired search path, and
 nothing logs a payload, a vector or a point.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-collection` | poll snapshot | `collection-list` | Each collection newly added to the instance |
+
+The collection directory is returned in one `GET /collections` response and is snapshotted with additions only. Vendor API reference: https://api.qdrant.tech/api-reference/collections/get-collections (verified 2026-11-09).

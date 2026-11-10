@@ -21,6 +21,7 @@ import basic from "./auth/basic.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newLead from "./triggers/new-lead.ts";
 
 export default {
   actions: [
@@ -40,4 +41,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newLead],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/missive",
-  "version": "0.1.0",
-  "description": "Enrich Missive conversations with posts, drafts and comments; manage contacts, shared labels, teams and tasks.",
+  "version": "0.2.0",
+  "description": "Manage Missive conversations and contacts, and trigger workflows on new or updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,12 @@
         "public.missiveapp.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

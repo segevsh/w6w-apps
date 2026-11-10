@@ -1,5 +1,15 @@
 # Bitrix24
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | poll | `contact-list` ordered by `DATE_CREATE` descending | Each newly created CRM contact |
+
+Vendor reference: https://apidocs.bitrix24.com/api-reference/crm/contacts/crm-contact-list.html (verified 2026-11-09).
+
 Manage Bitrix24 CRM leads, contacts and deals via a portal's own inbound
 webhook.
 

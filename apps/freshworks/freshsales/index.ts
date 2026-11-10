@@ -65,6 +65,8 @@ import viewGetMany from "./actions/view-get-many.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -95,6 +97,7 @@ export default {
     // views (backs every *-get-many action's "View ID" param)
     viewGetMany,
   ],
+  triggers: [newContact, newOrUpdatedContact],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

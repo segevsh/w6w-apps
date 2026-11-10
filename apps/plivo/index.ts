@@ -23,6 +23,8 @@ import getApplication from "./actions/get-application.ts";
 import createApplication from "./actions/create-application.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
+import newCall from "./triggers/new-call.ts";
 
 export default {
   actions: [
@@ -50,4 +52,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, quota],
+  triggers: [newMessage, newCall],
 } satisfies AppDefinition;

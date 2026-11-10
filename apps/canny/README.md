@@ -6,6 +6,7 @@ changelog and the status-change feed.
 - **Categories** — project-management, support
 - **Auth methods** — api-key
 - **Actions** — 39
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `canny.io`
 - **Website** — https://canny.io
 - **API docs** — https://developers.canny.io/api-reference
@@ -133,3 +134,15 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 Researched and endpoint-verified 2026-08-29 against Canny's own generated API reference
 (`developers.canny.io/api-reference`) and live probes against `canny.io`. The reference is a
 client-rendered SPA — see `lib/client.ts` for how its content was recovered.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-post` — New Post | Poll | `post-list` | Each newly created feedback post across the workspace |
+
+Polled through `post-list` with `sort: newest` (a documented sort value). Canny offers no updated-time sort, so there is no `new-or-updated-post` trigger. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://developers.canny.io/api-reference) (verified 2026-11-09).

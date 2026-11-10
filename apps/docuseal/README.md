@@ -1,11 +1,11 @@
 # DocuSeal
-
 Build DocuSeal templates, send submissions out for signature, manage
 submitters, and read completed documents.
 
 - **Categories** — documents, legal, productivity
 - **Auth methods** — api-key
 - **Actions** — 23
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.docuseal.com`, `api.docuseal.eu`
 - **Website** — https://www.docuseal.com
 - **API docs** — https://www.docuseal.com/docs/api ·
@@ -176,3 +176,13 @@ Declared `unavailable`, `severity: "informational"` for the same reason as
   the *payload shapes* DocuSeal sends to a webhook URL configured in the
   DocuSeal UI — it is not a `POST /webhooks` management endpoint, so there is
   nothing here to wrap.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-completed-submitter` — New Completed Submitter | Poll | `submitter-list` | Each submitter who has just completed signing |
+
+Each check requests `GET /submitters` (the `submitter-list` endpoint) with the documented `completed_after` filter set two minutes before the previous check and de-duplicates by submitter id; the first check reads nothing and stores the instant it ran, and later checks drop any submitter completed before that instant. A window of more than three pages of 100 is read across successive checks by following DocuSeal's `after` cursor, and the checkpoint moves forward only once the whole window has been read.
+
+Source: [DocuSeal API: list all submitters](https://www.docuseal.com/docs/api#list-all-submitters) (verified 2026-11-09).

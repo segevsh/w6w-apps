@@ -108,6 +108,8 @@ import metricList from "./actions/metric-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newFlag from "./triggers/new-flag.ts";
+import newAuditLogEntry from "./triggers/new-audit-log-entry.ts";
 
 export default {
   actions: [
@@ -141,4 +143,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newFlag, newAuditLogEntry],
 } satisfies AppDefinition;

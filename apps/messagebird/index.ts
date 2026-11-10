@@ -9,6 +9,7 @@ import lookupNumber from "./actions/lookup-number.ts";
 import voiceMessageSend from "./actions/voice-message-send.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import inboundSms from "./triggers/inbound-sms.ts";
 
 export default {
   actions: [
@@ -20,6 +21,7 @@ export default {
     lookupNumber,
     voiceMessageSend,
   ],
+  triggers: [inboundSms],
   auth: [accessKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

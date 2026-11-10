@@ -9,6 +9,7 @@ import insightList from "./actions/insight-list.ts";
 import annotationCreate from "./actions/annotation-create.ts";
 import personalApiKey from "./auth/personal-api-key.ts";
 import service from "./health/service.ts";
+import eventCaptured from "./triggers/event-captured.ts";
 
 export default {
   actions: [
@@ -21,6 +22,7 @@ export default {
     insightList,
     annotationCreate,
   ],
+  triggers: [eventCaptured],
   auth: [personalApiKey],
   healthChecks: [service],
 } satisfies AppDefinition;

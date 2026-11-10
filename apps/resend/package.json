@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/resend",
-  "version": "0.1.0",
-  "description": "Send transactional email and manage domains, audiences, contacts and broadcasts via Resend.",
+  "version": "0.2.0",
+  "description": "Send transactional email, manage domains, audiences, contacts and broadcasts, and trigger workflows for newly sent emails via Resend.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,7 +39,8 @@
         "api.resend.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -29,6 +29,8 @@ import listUsers from "./actions/list-users.ts";
 import listCustomFields from "./actions/list-custom-fields.ts";
 
 import service from "./health/service.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -62,4 +64,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;

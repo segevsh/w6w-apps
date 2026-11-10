@@ -17,6 +17,8 @@ import apiKey from "./auth/api-key.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import newPosting from "./triggers/new-posting.ts";
+import newOrUpdatedPosting from "./triggers/new-or-updated-posting.ts";
 import opportunityList from "./actions/opportunity-list.ts";
 import opportunityGet from "./actions/opportunity-get.ts";
 import opportunityCreate from "./actions/opportunity-create.ts";
@@ -47,6 +49,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newPosting, newOrUpdatedPosting],
 };
 
 export default app;

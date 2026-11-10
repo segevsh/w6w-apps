@@ -27,6 +27,7 @@ import taxList from "./actions/tax-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 /**
  * Alegra — Latin American cloud accounting and invoicing (`api.alegra.com/api/v1`).
@@ -73,4 +74,5 @@ export default {
   ],
   auth: [basic],
   healthChecks: [service, api, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

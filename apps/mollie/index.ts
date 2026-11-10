@@ -114,6 +114,7 @@ import profileList from "./actions/profile-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCustomer from "./triggers/new-customer.ts";
 
 export default {
   actions: [
@@ -168,6 +169,7 @@ export default {
     profileGet,
     profileList,
   ],
+  triggers: [newCustomer],
   auth: [bearer],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

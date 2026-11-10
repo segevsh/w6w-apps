@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/hubstaff",
-  "version": "0.1.1",
-  "description": "Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that make up a Hubstaff organization, and write back time entries and tasks.",
+  "version": "0.2.0",
+  "description": "Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that make up a Hubstaff organization, and write back time entries and tasks, with new-project triggers.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "api.hubstaff.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

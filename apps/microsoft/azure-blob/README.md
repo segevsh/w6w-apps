@@ -6,12 +6,28 @@ completing the pack's object-storage set alongside `apps/aws/s3` and `apps/gcs`.
 - **Categories** — storage, devops
 - **Auth methods** — shared-key
 - **Actions** — 14
+- **Triggers** — 2 (webhook)
 - **Egress allowlist** — `*.blob.core.windows.net`, `azurestatuscdn.azureedge.net`
 - **Website** — https://azure.microsoft.com/products/storage/blobs
 - **API docs** — https://learn.microsoft.com/rest/api/storageservices/blob-service-rest-api
 
 Built against Microsoft's REST documentation and probed live against a public
 storage account on 2026-08-19. API version `2021-12-02`.
+
+## Triggers
+
+2 webhook triggers (manual setup, via Azure Event Grid; unsigned).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `blob-created` — Blob Created | webhook (manual) | `Microsoft.Storage.BlobCreated` | event type, id and time, container, blob name, blob URL, content type and length, blob type, ETag, full event data |
+| `blob-deleted` — Blob Deleted | webhook (manual) | `Microsoft.Storage.BlobDeleted` | event type, id and time, container, blob name, blob URL, content type, blob type, full event data |
+
+**Setup (manual).** Azure delivers blob events through Event Grid, and creating the Event Grid subscription needs an Azure Resource Manager call under Microsoft Entra authentication that this app's shared-key credential cannot make. Subscribe the trigger in w6w and copy its callback URL. In the Azure portal open the storage account, **Events**, **Event Subscription**, choose **Web Hook**, paste the callback URL, pick the event types (`Blob Created` / `Blob Deleted`) and select the **Event Grid Event Schema** (the CloudEvents schema validates with an HTTP OPTIONS handshake the host cannot answer). When you save, Event Grid sends a validation event and the trigger answers it with the `validationResponse` Event Grid requires, so the trigger must already be subscribed. Optionally narrow with `container`, and set `eventSubscriptionName` to the name you gave the Event Grid subscription to refuse deliveries from any other.
+
+**Trust model.** Event Grid does not sign deliveries, so **the callback URL is the secret**: anyone who learns it can post events to the trigger, and Event Grid's stronger option (Microsoft Entra-protected webhook endpoints) is not available here. Keep the URL private. The optional subscription-name pin checks the `aeg-subscription-name` header, which narrows who can post but is a name, not a secret. Every request must carry an `aeg-event-type` header of `SubscriptionValidation`, `Notification` or `SubscriptionDeletion`; the validation reply echoes only a short alphanumeric code taken from that request.
+
+Docs (verified 2026-11-10): https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage and https://learn.microsoft.com/en-us/azure/event-grid/end-point-validation-event-grid-events-schema
 
 ## It answers XML, and there is no JSON option
 

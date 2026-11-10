@@ -6,6 +6,7 @@ Manage**, the legal practice management platform, on the **Clio Manage API v4**.
 - **Categories** — legal, crm, productivity
 - **Auth methods** — `oauth2` (US), `oauth2-eu`, `oauth2-ca`, `oauth2-au` — one per Clio region
 - **Actions** — 25
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, `quota`) + 4 derived `auth:oauth2*` checks
 - **Egress allowlist** — `app.clio.com`, `eu.app.clio.com`, `ca.app.clio.com`, `au.app.clio.com`
   (the `service` check adds `status.clio.com` to its own hook allowlist, never to the app's)
@@ -200,6 +201,19 @@ exposed by this app — cursor pagination has no ceiling and is the vendor's own
   Clio's own documented behavior, not a bug if a price you expected to stick doesn't.
 - **`matter-create`'s `display_number`** is optional; leaving it empty lets Clio assign one
   automatically unless the account has manual matter numbering enabled.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll | `contact-list` | Each contact created since the last check |
+| `new-or-updated-contact` — New or Updated Contact | Poll | `contact-list` | Each contact created or edited (id + updated_at) |
+
+`contact-list` takes `created_since` / `updated_since` and lists by `id(asc)`, so each check pages (up to 5 pages of 100) with the filter set to last check − 120 s and de-duplicates by id (`id:updated_at` for the second trigger). Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
+
+Source: [vendor docs](https://app.clio.com/api/v4/documentation) (verified 2026-11-09).
 
 ## Health checks
 

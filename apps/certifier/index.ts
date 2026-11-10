@@ -30,6 +30,8 @@ import api from "./health/api.ts";
  * (`developers.certifier.io/api/openapi.json`, `info.version` 2022-10-26) and
  * live probes of `api.certifier.io`.
  */
+import newCredential from "./triggers/new-credential.ts";
+import newOrUpdatedCredential from "./triggers/new-or-updated-credential.ts";
 export default {
   actions: [
     credentialList,
@@ -54,4 +56,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, api],
+  triggers: [newCredential, newOrUpdatedCredential],
 } satisfies AppDefinition;

@@ -41,6 +41,15 @@ const action: ActionDefinition = {
       advanced: true,
       hint: "Narrow to one company or entity.",
     },
+    {
+      key: "sortOrder",
+      label: "Sort Order",
+      type: "select",
+      default: "",
+      advanced: true,
+      hint: "Chronological order. Empty leaves Gusto's default, which is oldest first.",
+      options: [{ value: "asc", label: "Oldest first" }, { value: "desc", label: "Newest first" }],
+    },
     ...LIST_PARAMS,
   ],
   output: [
@@ -62,6 +71,7 @@ const action: ActionDefinition = {
       query: {
         event_types: String(p.eventTypes ?? "") || undefined,
         resource_uuid: String(p.resourceUuid ?? "") || undefined,
+        sort_order: String(p.sortOrder ?? "") || undefined,
       },
     }, returnAll ? Infinity : limit);
   },

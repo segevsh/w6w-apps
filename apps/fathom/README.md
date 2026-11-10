@@ -6,6 +6,7 @@ users, and manage webhooks via the Fathom External API.
 - **Categories** — ai, productivity, video
 - **Auth methods** — api-key
 - **Actions** — 11
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.fathom.ai`
 
 > ## ⚠ This is Fathom the meeting assistant, not Fathom Analytics
@@ -277,3 +278,15 @@ vendor's schema and prose rather than from observation.
 The icon is Fathom's own logomark, copied verbatim from the vendor's site
 (`cdn.prod.website-files.com/…/68e7961ff28d093095bdf392_logotype-new.svg`, the mark used on
 fathom.ai).
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event / wrapped action | What the run gets |
+|---|---|---|---|
+| `new-meeting` — New Meeting | poll | Get Many Meetings (`GET /external/v1/meetings`) | each newly created meeting |
+
+Setup: none. Subscribing starts polling (every 5 minutes by default); the first check only records what already exists, so the run starts with records that appear afterwards.
+
+Trust model: the `meeting-get-many` action is called without filters; Fathom lists meetings newest first. Nothing is sent to the vendor to register, and no inbound webhook or callback URL exists, so there is nothing to sign or verify.
+
+Vendor docs: https://developers.fathom.ai/api-reference/meetings/list-meetings (verified 2026-11-09).

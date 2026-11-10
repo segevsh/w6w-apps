@@ -81,3 +81,5 @@ while chart and QR default to PNG.
   5xx is `down`, an unrelated 200 is `unknown`. The vendor's Statuspage is stale (last update 2020), so it is not a signal.
 - ~~`quota`~~ — declared unavailable (`informational`): the free tier is rate limited (HTTP 429,
   `Retry-After` when present) but no limit, remaining-requests header or usage endpoint is published.
+
+Triggers: not shipped — this is a stateless chart, QR, barcode and image rendering API with no account record lists (https://quickchart.io/documentation/)

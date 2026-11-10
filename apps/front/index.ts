@@ -102,6 +102,7 @@ import statusList from "./actions/status-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -143,6 +144,7 @@ export default {
     tagList,
     statusList,
   ],
+  triggers: [newOrUpdatedContact],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

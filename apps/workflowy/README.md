@@ -11,6 +11,18 @@ API v1 (`https://workflowy.com/api/v1`). Reference: <https://workflowy.com/api-r
   `workflowy.com/media/home/images/workflowy-logo.svg` (no `favicon.svg` exists; the
   apple-touch-icon is PNG only).
 
+## Triggers
+
+| Key | Mechanism | Wrapped list action | The run gets |
+|---|---|---|---|
+| `new-node` | poll (5 min) | `node-list` | each node newly added under a chosen parent (default: the inbox) |
+
+`GET /api/v1/nodes?parent_id=` is unpaginated and returns every child of one parent, unordered, so
+the trigger snapshot-diffs the children (additions only; more than 5000 children throws). The
+first check only records the children. WorkFlowy documents no webhooks.
+
+Source: https://workflowy.com/api-reference/ (verified 2026-11-09).
+
 ## Actions (12)
 
 | Action               | Endpoint                          | Notes                                        |

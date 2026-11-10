@@ -8,6 +8,8 @@
  * multi-file media upload (this app uploads one file per call).
  */
 import type { AppDefinition } from "@w6w/types";
+import newOrUpdatedTemplate from "./triggers/new-or-updated-template.ts";
+import newTemplate from "./triggers/new-template.ts";
 import bearerToken from "./auth/bearer-token.ts";
 
 import imageCreate from "./actions/image-create.ts";
@@ -72,4 +74,5 @@ export default {
   ],
   auth: [bearerToken],
   healthChecks: [service, api, quota],
+  triggers: [newTemplate, newOrUpdatedTemplate],
 } satisfies AppDefinition;

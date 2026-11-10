@@ -71,3 +71,5 @@ Plus the derived `auth:api-key` check from the connection test. Every check is a
 ```bash
 deno task fmt && deno task validate && deno task check && deno task lint && deno task test
 ```
+
+Triggers: not shipped — Brand search is a stateless lookup catalog, not an account record collection that can change (https://docs.brandfetch.com/openapi.json).

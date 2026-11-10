@@ -101,6 +101,7 @@
  *    build, and an unverified action is worse than a missing one.
  */
 import type { AppDefinition } from "@w6w/types";
+import newTask from "./triggers/new-task.ts";
 
 import appAuth from "./auth/app-auth.ts";
 import oauth2 from "./auth/oauth2.ts";
@@ -190,4 +191,5 @@ export default {
   ],
   auth: [appAuth, oauth2],
   healthChecks: [service, api, quota],
+  triggers: [newTask],
 } satisfies AppDefinition;

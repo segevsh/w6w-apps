@@ -4,6 +4,7 @@ Create, update, list and delete branded short links on your own Short.io domains
 domains, tags, folders and QR codes around them, over the Short.io REST API (`api.short.io`).
 
 - **Categories** — marketing, developer-tools
+- **Triggers** — 1 (poll)
 - **Auth methods** — `api-key`
 - **Actions** — 18
 - **Egress allowlist** — `api.short.io`
@@ -102,3 +103,15 @@ Things worth knowing:
   password page, IP exclusions, universal links, S3 export, QR settings, link-signature keys,
   favorite.
 - Organization: `planInfo` (no response schema), audit log (`GET /audit`), `tags/bulk`.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-link` — New Link | poll | `link-list` | Each newly created link on the chosen domain. |
+
+The poll reads `GET /api/links?domain_id=<id>&limit=100&dateSortOrder=desc` — the vendor's documented
+`dateSortOrder` parameter (`asc`/`desc`) on the same request `link-list` makes — and emits links whose
+`idString` has not been seen. Links have no update stamp, so there is no `new-or-updated-link`.
+
+Vendor documentation: https://developers.short.io/reference/get_api-links (verified 2026-11-09).

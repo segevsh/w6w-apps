@@ -30,6 +30,7 @@ import reservedIpList from "./actions/reserved-ip-list.ts";
 import domainRecordList from "./actions/domain-record-list.ts";
 import domainRecordCreate from "./actions/domain-record-create.ts";
 import databaseList from "./actions/database-list.ts";
+import newDomainRecord from "./triggers/new-domain-record.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -51,6 +52,7 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [service, quota],
+  triggers: [newDomainRecord],
 };
 
 export default app;

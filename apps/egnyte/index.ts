@@ -29,6 +29,7 @@ import fileLock from "./actions/file-lock.ts";
 import fileUnlock from "./actions/file-unlock.ts";
 import linkCreate from "./actions/link-create.ts";
 import linkList from "./actions/link-list.ts";
+import newLink from "./triggers/new-link.ts";
 import linkGet from "./actions/link-get.ts";
 import linkDelete from "./actions/link-delete.ts";
 import search from "./actions/search.ts";
@@ -40,6 +41,7 @@ import service from "./health/service.ts";
 import domain from "./health/domain.ts";
 
 export default {
+  triggers: [newLink],
   actions: [
     itemGet,
     itemGetById,

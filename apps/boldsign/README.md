@@ -1,5 +1,15 @@
 # BoldSign
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | poll | `document-list`, whose API returns newest activity first | Each newly active document |
+
+Vendor reference: https://developers.boldsign.com/api/document/list-document/ (verified 2026-11-09).
+
 Send documents out for signature, track their status, download the signed PDF and its audit
 trail, nudge pending signers, revoke a document, mint an embedded signing link, and send from a
 template — against **BoldSign's REST API**.

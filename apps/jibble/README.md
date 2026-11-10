@@ -1,6 +1,14 @@
 # Jibble
 
-Triggers: not shipped — `timesheet-list` returns computed date-period totals rather than stable source records, so it is not a New <record> feed (https://docs.api.jibble.io/).
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-activity` — New Activity | poll | `activity-list` | Each new time-tracking activity |
+
+Jibble documents its API collection at https://docs.api.jibble.io/ and the workspace OData model at https://workspace.prod.jibble.io/v1/$metadata (both verified 2026-11-09); `Activity` carries a `createdAt` (`Edm.DateTimeOffset`), so the trigger's `$orderby=createdAt desc` returns the newest activities first.
 
 Track time, manage people, and run attendance reports against the **Jibble** time-tracking API.
 

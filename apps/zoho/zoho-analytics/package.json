@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-analytics",
-  "version": "0.1.0",
-  "description": "Manage workspaces, rows and data exports/imports in Zoho Analytics, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Manage workspaces, rows and data exports/imports and trigger on new workspaces in Zoho Analytics, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "analyticsapi.zoho.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -1,5 +1,39 @@
 # Moneybird
 
+- **Triggers** — 3 (2 poll, 1 webhook)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-sales-invoice` — New Sales Invoice | poll | `sales-invoice-list`, filter `created_after:<cursor − 10 min>` | Each newly created sales invoice |
+| `new-or-updated-sales-invoice` — New or Updated Sales Invoice | poll | `sales-invoice-list`, filter `updated_after:<cursor − 10 min>` | Each sales invoice that is new or edited since the last check (ID plus `updated_at` is the event identity) |
+| `new-contact` — New Contact | webhook (API-registered) | `contact_created` | the contact id, name, email, phone, customer id and the contact as the API returns it |
+
+The two poll triggers call the existing List Sales Invoices action with a one-page (100) `filter`. Moneybird's filter replaces its defaults (including the `period:this_year` window), so a bare `created_after` / `updated_after` reaches every invoice; both filters are documented as exclusive ISO 8601 UTC times, hence the ten-minute overlap plus ID deduplication. The first check seeds and emits nothing. Limit: more than 100 invoices created or changed inside the overlap window in one check would be cut to the first page. Contacts are not polled: `contact-list` exposes no `filter` parameter, so new contacts arrive by webhook instead (below). Verified 2026-11-10 at https://developer.moneybird.com/api/sales_invoices.
+
+### New Contact webhook
+
+**Setup.** Nothing to paste. Subscribing runs `POST /{administration_id}/webhooks` with the
+subscription's callback URL and `enabled_events: ["contact_created"]` for the connection's
+administration; Moneybird returns the webhook's signing `secret` in that response only, and it is kept in
+the subscription's state (a webhook created without a secret is deleted again and the subscription
+fails). Unsubscribing runs `DELETE /{administration_id}/webhooks/{id}` (a 404/410 counts as already
+deleted). The connection's token needs the `settings` scope (Moneybird's webhooks API requires it); this app's OAuth sign-in requests only `sales_invoices estimates`, so use a personal API token, or an OAuth app granted `settings`. Moneybird retries a non-200 answer 10 times
+and sends an `Idempotency-Key` header, so the same contact may arrive more than once.
+
+**Trust model.** Every delivery's `Moneybird-Signature: t=<unix seconds>,v1=<hex>` header is verified
+before the body is parsed: `v1` is the hex HMAC-SHA256 of `<t>.<raw body>` under the webhook's secret
+(during a secret rotation the header carries one `v1` per active secret and any match is accepted), the
+compare is constant-time and `t` must be within five minutes of now. A missing, malformed or wrong
+signature, a stale timestamp, an absent raw body or an unset secret refuses the delivery (one failed
+row, no run).
+
+Docs (verified 2026-11-10): https://developer.moneybird.com/webhooks/getting-started,
+https://developer.moneybird.com/webhooks/verifying-signatures,
+https://developer.moneybird.com/webhooks/payload,
+https://developer.moneybird.com/webhooks/events and https://developer.moneybird.com/api/webhooks
+
 Manage contacts and sales invoices in [Moneybird](https://www.moneybird.com/), the Dutch online
 accounting and invoicing service.
 

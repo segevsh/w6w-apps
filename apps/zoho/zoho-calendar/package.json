@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zoho-calendar",
-  "version": "0.1.0",
-  "description": "Create, read, update and delete calendars and events in Zoho Calendar, across every Zoho data centre.",
+  "version": "0.2.0",
+  "description": "Create, read, update and delete calendars and events, and trigger on new calendars in Zoho Calendar, across every Zoho data centre.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "calendar.zoho.sa"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

@@ -6,6 +6,7 @@ stashing, and finish the file-upload handshake — over the classic Glide API.
 - **Categories** — databases, developer-tools, productivity
 - **Auth methods** — api-token (bearer)
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-token`
 - **Egress allowlist** — `api.glideapps.com`
 - **Website** — https://www.glideapps.com
@@ -50,6 +51,14 @@ address `network.allow` cannot enumerate ahead of time. `upload-create` and `upl
 ever talk to the Glide API that brackets the actual byte transfer; PUTting the file itself to
 `uploadLocation` is left to a plain HTTP request step elsewhere in the workflow, with
 `content-type` set to the same value passed to `upload-create`.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-table` — New Big Table | poll | `table-list` | Each Big Table newly added to the team |
+
+`GET /tables` returns the authenticated team's Big Tables in one response; this trigger snapshots up to 5,000 tables and emits additions only. Verified 2026-11-09 against Glide's [Classic API reference](https://www.glideapps.com/docs/reference).
 
 ## Auth
 

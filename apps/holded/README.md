@@ -198,3 +198,5 @@ deno task fmt      # NEVER bare `deno fmt`
 deno task test
 deno task validate
 ```
+
+Triggers: not shipped — CRM list endpoints return uncapped full collections with no documented ordering or since filter. The funnel list is account configuration that rarely changes, so a "new funnel" event was rejected as having no workflow use (https://holded.readme.io/reference).

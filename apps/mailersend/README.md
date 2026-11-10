@@ -7,6 +7,7 @@ analytics.
 - **Categories** — email, communication
 - **Auth methods** — api-token (Bearer)
 - **Actions** — 43
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.mailersend.com`
 - **Website** — https://www.mailersend.com
 - **API docs** — https://developers.mailersend.com
@@ -81,3 +82,13 @@ variants of sender-identity routes, per-domain recipient routes and bulk-email w
 
 `assets/icon.svg` is the vendor favicon (`https://www.mailersend.com/favicon/favicon.svg`),
 verbatim, 1079 bytes. Format with `deno task fmt`, never bare `deno fmt`.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-sender-identity` — New Sender Identity | Poll | `list-sender-identities` | Each newly created sender identity |
+
+Calls `list-sender-identities` with `order_by=created_at&order=desc` (the vendor default is ascending, so the order is set explicitly), first page of 100. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor docs: sender identities](https://developers.mailersend.com/api/v1/email/sender-identity.html) (verified 2026-11-10).

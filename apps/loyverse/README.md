@@ -6,6 +6,8 @@ Verified 2026-10-06 against the vendor's OpenAPI 3.0 document
 (`developer.loyverse.com/docs/API-Reference__v1.0.yaml`, 33 paths). Host: `api.loyverse.com`,
 prefix `/v1.0`.
 
+- **Triggers** — 2 (poll)
+
 ## Auth
 
 Two methods, both `Authorization: Bearer <token>` (set only in `sign`):
@@ -74,3 +76,14 @@ writes, `/userinfo`. All are documented in the OpenAPI file; add them when a wor
 
 `assets/icon.svg` is the vendor's own favicon, byte-for-byte:
 `https://loyverse.com/sites/default/files/user1/icons/favicon.svg` (2,109 bytes).
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-receipt` — New Receipt | Poll | `receipt-list` | Each newly created receipt |
+| `new-or-updated-receipt` — New or Updated Receipt | Poll | `receipt-list` | Each receipt that was created or changed |
+
+`new-receipt` reads the first page (`limit=100`) of `receipt-list`, which the action documents as newest first. `new-or-updated-receipt` is a since-filter poll over the same action: `updated_at_min` = stored cursor minus 120 s, following the vendor's `cursor` page token, deduped on `id:updated_at`. The vendor reference is a client-rendered page curl cannot read, so the ordering rests on the existing action's own description and its `updated_at_min` parameter. The first check records what exists without firing; later checks emit only unseen items.
+
+Source: [vendor API reference](https://developer.loyverse.com/docs/) (verified 2026-11-10).

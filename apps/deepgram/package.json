@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/deepgram",
-  "version": "0.1.0",
-  "description": "Transcribe audio and video by URL, analyse text for sentiment, topics and intent, generate speech, and watch the spend and request history behind it.",
+  "version": "0.2.0",
+  "description": "Transcribe audio and video by URL, analyse text, generate speech, and trigger workflows on new Deepgram requests.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -34,7 +34,8 @@
         "api.deepgram.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

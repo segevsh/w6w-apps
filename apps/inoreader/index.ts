@@ -25,6 +25,7 @@ import oauth2 from "./auth/oauth2.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newArticle from "./triggers/new-article.ts";
 
 export default {
   actions: [
@@ -46,4 +47,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, api, quota],
+  triggers: [newArticle],
 } satisfies AppDefinition;

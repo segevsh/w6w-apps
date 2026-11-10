@@ -49,3 +49,11 @@ test("booking-get-many: an empty select value omits the status filter", async ()
   await action.execute({ status: "" }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[status]"], undefined);
 });
+
+test("booking-get-many: sends the creation-date filters as filter[record_date_from|to]", async () => {
+  const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
+  await action.execute({ recordDateFrom: "2026-11-08", recordDateTo: "2026-11-10" }, ctx);
+  const q = new URL(calls[0].url).searchParams;
+  assertEquals(q.get("filter[record_date_from]"), "2026-11-08");
+  assertEquals(q.get("filter[record_date_to]"), "2026-11-10");
+});

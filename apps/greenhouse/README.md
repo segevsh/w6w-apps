@@ -6,6 +6,7 @@ and offers — on the **Harvest v3 API**.
 - **Categories** — hr
 - **Auth methods** — `oauth-client-credentials`, `api-key` (transitional)
 - **Actions** — 24 (17 reads, 7 writes)
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 live (`service`, `api`, `quota`) + 1 declared absence (~~`silo`~~) + the two
   derived `auth:*` checks
 - **Egress allowlist** — `harvest.greenhouse.io`, `auth.greenhouse.io` (the `service` check adds
@@ -456,3 +457,13 @@ deno task test       # 238 tests
 The icon is the Greenhouse mark from [Simple Icons](https://simpleicons.org/), taken verbatim
 (936 bytes, md5 `503eae18e5712bc3fcf4bbcc5eb90f9f`, `<title>Greenhouse</title>`). `greenhouse.io`
 serves a catch-all HTML page for every asset path, so the vendor-favicon route is closed.
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-interview` — New Interview | poll | `list-interviews` | Each newly scheduled interview |
+
+Source: <https://harvestdocs.greenhouse.io/reference/get_v3-interviews> (verified 2026-11-09).
+
+The v3 `GET /v3/interviews` reference documents a `created_at` filter (`gte|<timestamp>`) and a cursor that must travel alone, but no sort order. The trigger therefore filters `created_at` to the last check minus two minutes, reads up to 5 pages of 100 by following the cursor, and dedupes by interview id.

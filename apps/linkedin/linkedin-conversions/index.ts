@@ -35,6 +35,7 @@ import conversionEventReport from "./actions/conversion-event-report.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newConversionRule from "./triggers/new-conversion-rule.ts";
 
 export default {
   actions: [
@@ -51,4 +52,5 @@ export default {
   ],
   auth: [oauth2],
   healthChecks: [service, quota],
+  triggers: [newConversionRule],
 } satisfies AppDefinition;

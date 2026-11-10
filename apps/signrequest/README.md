@@ -222,3 +222,17 @@ Every URL below was verified live on 2026-09-05.
 - OpenAPI specification (the machine-readable contract this app was built against):
   <https://signrequest.com/api/v1/schema/swagger.json>
 - Status page: <https://signrequest.statuspage.io/>
+
+## Triggers
+
+- **Triggers** — 1 (poll)
+
+| Trigger | Mechanism | Wraps | The run gets |
+|---|---|---|---|
+| `new-document` — New Document | poll | `document-search` (no query) | the new document |
+
+Each check reads page 1 (`limit=100`) of `GET /documents-search/` with no `q`, `name` or `autocomplete`, which SignRequest documents as ordered by `created`, newest first, and emits the documents it has not seen. The first check records the current page and emits nothing. `document-search` lists the account's own documents; documents of a team subdomain are not covered because the action does not expose `subdomain`.
+
+Trust model: Poll triggers receive nothing from the vendor, so there is no signature to verify: each check calls the app's own `document-search` with the connection's credentials.
+
+Vendor docs: https://signrequest.com/api/v1/docs/?format=openapi (verified 2026-11-09: the `/documents-search/` description says documents are "ordered by created (newest first) when q, autocomplete or name are not used"; `/documents/` documents no order, so `document-list` is not used)

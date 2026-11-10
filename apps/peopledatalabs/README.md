@@ -7,6 +7,7 @@ and search job postings, over the **People Data Labs (PDL) v5 API**.
 - **Categories** — crm, marketing
 - **Auth methods** — api-key (`X-Api-Key: <key>`)
 - **Actions** — 15
+- **Triggers** — 1 (webhook)
 - **Health checks** — `service` (status.peopledatalabs.com, a real Statuspage; the production API
   components decide, the dashboard and sandbox are detail), `api` (unsigned reachability), `quota`
   (credits left from a response header) + the derived `auth:api-key`
@@ -15,6 +16,28 @@ and search job postings, over the **People Data Labs (PDL) v5 API**.
 - **API docs** — https://docs.peopledatalabs.com (index: https://docs.peopledatalabs.com/llms.txt)
 - **Icon** — the vendor's own mark, https://docs.peopledatalabs.com/favicon.svg, saved verbatim as
   `assets/icon.svg`
+
+## Triggers
+
+| Key | Mechanism | Vendor event | What the run gets |
+| --- | --- | --- | --- |
+| `person-updates` | webhook (manual) | PDL's person-update webhook (records updated in a data release that match your registered filters) | One batch of PDL person ids (up to 1,000 per delivery) and their count. |
+
+The search and enrichment endpoints compute or query external data and expose no account-owned feed, so there is no poll. The only event source is PDL's webhook, and it has three limits worth knowing before you plan on it:
+
+- **Enterprise only.** PDL offers webhooks "only [to] our subscribing enterprise API and Data License customers".
+- **Registered by PDL, not by API.** There is no registration endpoint: you work with your PDL team, who need a target URL, headers and filters (the kinds of update to watch, e.g. `job_change`, `work_email`, `location`).
+- **Monthly batches.** Payloads are JSON arrays of PDL ids, sent in batches of 1,000, around PDL's monthly data release. If your endpoint does not answer 200, PDL does not resend by itself; ask your PDL team to resend the batch.
+
+**Setup (manual).**
+
+1. Subscribe the `person-updates` trigger in w6w, giving it a **Shared Key**: a long random string, entered as the exact header value you will tell PDL to send (for example `Bearer <random string>`). Copy the callback URL it shows.
+2. Give your PDL team that URL as the Target URL (it must be https), the header `Authorization` with that value (use `Authorization`: w6w redacts that header in stored event history, but a custom name set in the trigger's advanced **Header Name** param is stored readable, key included, in the event's raw record), and the filters you want.
+3. Each delivery arrives as one event with the batch of ids; look the people up with the enrich actions.
+
+**Trust model.** PDL does not sign deliveries. Its documentation says the registered headers should at a minimum carry a shared key for secure authorization, so the trigger refuses any delivery whose header is missing or differs from the Shared Key (constant-time comparison, an unset key is refused before any comparison), and reads the body only after that. A shared key is not a signature: it proves the sender knows the key, not that the body is unmodified, and a captured delivery could be replayed because there is no timestamp. Keep the key and the callback URL private.
+
+Vendor documentation: https://docs.peopledatalabs.com/docs/webhooks (verified 2026-11-10).
 
 Everything here was verified on 2026-10-06 against the per-endpoint reference pages and live,
 credential-free probes of the API and the status page.

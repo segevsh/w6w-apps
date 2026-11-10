@@ -74,6 +74,8 @@ import solutionArticleSearch from "./actions/solution-article-search.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import domain from "./health/domain.ts";
+import newOrUpdatedTicket from "./triggers/new-or-updated-ticket.ts";
+import newTicket from "./triggers/new-ticket.ts";
 
 export default {
   actions: [
@@ -107,6 +109,7 @@ export default {
     serviceItemGetMany,
     solutionArticleSearch,
   ],
+  triggers: [newOrUpdatedTicket, newTicket],
   auth: [apiKey],
   healthChecks: [service, quota, domain],
 } satisfies AppDefinition;

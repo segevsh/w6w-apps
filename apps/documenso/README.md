@@ -1,11 +1,11 @@
 # Documenso
-
 Send Documenso envelopes for signature, manage their recipients and fields, and
 read the audit trail behind them.
 
 - **Categories** — legal, documents, productivity
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `app.documenso.com`, `*` (self-hostable — see below)
 - **Website** — https://documenso.com
 - **API docs** — https://docs.documenso.com/developers ·
@@ -211,3 +211,13 @@ answer for a self-hosted instance that does not rate limit, not a fault.
 Documenso answers a validation failure with a Zod issue tree under `bodyErrors`
 or `headerErrors`, naming the exact field — far more useful than the top-level
 `message`, so the whole body is surfaced.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped list action | What the run gets |
+| --- | --- | --- | --- |
+| `new-envelope` — New Document | Poll | `envelope-find` | Each newly created document |
+
+Each check reads the first page of `envelope-find` (documents only); Documenso's OpenAPI lists `orderByDirection` with default `desc` and a single sort column, `createdAt`, so the first page is the newest. The first check only records. Each check reads one page, so a burst of more than one page of new envelopes between two checks emits only the newest page; the older ones are skipped.
+
+Source: [Documenso v2 OpenAPI: GET /envelope](https://app.documenso.com/api/v2/openapi.json) (verified 2026-11-09).

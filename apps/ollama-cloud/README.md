@@ -1,5 +1,7 @@
 # Ollama Cloud
 
+Triggers: not shipped — hosted model listing is a capability catalog, not a changing user-record feed (https://github.com/ollama/ollama/blob/main/docs/api.md)
+
 Run prompts, chats and embeddings against Ollama's hosted cloud API with an API
 key.
 

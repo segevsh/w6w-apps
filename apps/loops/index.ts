@@ -82,6 +82,8 @@ import campaignGet from "./actions/campaign-get.ts";
 import workflowList from "./actions/workflow-list.ts";
 import workflowGet from "./actions/workflow-get.ts";
 
+import newTransactional from "./triggers/new-transactional.ts";
+
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -117,4 +119,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newTransactional],
 } satisfies AppDefinition;

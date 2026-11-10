@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/dice",
-  "version": "0.1.0",
-  "description": "Read DICE partner events, ticket holders, orders, returns and transfers through the Ticket Holders GraphQL API.",
+  "version": "0.2.0",
+  "description": "Read DICE partner events, ticket holders, orders, returns and transfers through the Ticket Holders GraphQL API, and trigger workflows on new order, return, ticket transfer.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
     "apiDocs": [
       "https://partners-endpoint.dice.fm/graphql/docs/index.html"
     ],
-    "longDescription": "Connect a DICE MIO partner API token to fetch events, ticket holders, orders, returns, extras, ticket transfers and genre types. Named list actions return rows and cursor pagination for reporting and workflow iteration; a native GraphQL action accepts a query and variables for custom selections. This integration reads the partner Ticket Holders API; it does not sell tickets, create events, or perform check-in.",
+    "longDescription": "Connect a DICE MIO partner API token to fetch events, ticket holders, orders, returns, extras, ticket transfers and genre types. Named list actions return rows and cursor pagination for reporting and workflow iteration; a native GraphQL action accepts a query and variables for custom selections. This integration reads the partner Ticket Holders API; it does not sell tickets, create events, or perform check-in. Poll triggers start workflows on: new order, new return, new ticket transfer.",
     "categories": [
       "commerce",
       "analytics"
@@ -40,7 +40,12 @@
         "partners-endpoint.dice.fm"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",

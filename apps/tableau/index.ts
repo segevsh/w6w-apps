@@ -68,6 +68,8 @@ import datasourceRefresh from "./actions/datasource-refresh.ts";
 import userList from "./actions/user-list.ts";
 import userGet from "./actions/user-get.ts";
 
+import newWorkbook from "./triggers/new-workbook.ts";
+import newOrUpdatedWorkbook from "./triggers/new-or-updated-workbook.ts";
 import instance from "./health/instance.ts";
 import service from "./health/service.ts";
 
@@ -96,5 +98,6 @@ export default {
     userGet,
   ],
   auth: [personalAccessToken],
+  triggers: [newWorkbook, newOrUpdatedWorkbook],
   healthChecks: [instance, service],
 } satisfies AppDefinition;

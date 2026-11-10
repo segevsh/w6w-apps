@@ -6,9 +6,25 @@ appointments, conversations and location (sub-account) metadata.
 - **Categories** — crm, marketing
 - **Auth methods** — oauth2
 - **Actions** — 18
+- **Triggers** — 4 (webhook)
 - **Egress allowlist** — `services.leadconnectorhq.com`
 - **Website** — https://www.gohighlevel.com
 - **API docs** — https://marketplace.gohighlevel.com/docs/
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `contact-created` — New Contact | webhook (manual, signed) | `ContactCreate` | location id, contact id, full contact payload |
+| `opportunity-created` — New Opportunity | webhook (manual, signed) | `OpportunityCreate` | location id, opportunity id, contact id, full payload |
+| `appointment-created` — New Appointment | webhook (manual, signed) | `AppointmentCreate` | location id, appointment id, contact id, full payload |
+| `inbound-message` — New Inbound Message | webhook (manual, signed) | `InboundMessage` | location, conversation, contact and message ids, full payload |
+
+**Setup (manual webhook).** HighLevel webhooks are set on the Marketplace app, not through the API. Create the trigger, copy its webhook URL, then in the HighLevel Marketplace app's **Advanced Settings → Webhooks**, turn on the event (`ContactCreate`, `OpportunityCreate`, `AppointmentCreate` or `InboundMessage`) and paste the URL beside it. There is nothing to paste into the trigger: the signature is checked against HighLevel's published public key. A URL pasted beside several events still works: an event of another type is acknowledged without a run, so give each trigger its own URL beside its own event. HighLevel retries a non-2xx answer up to 12 times.
+
+**Trust model.** HighLevel signs the exact request body with an Ed25519 private key and sends the base64 signature in `X-GHL-Signature`; the trigger verifies it with HighLevel's documented public key (`crypto.subtle`, Ed25519) before it parses anything, and refuses a delivery whose signature is missing, wrong, malformed or whose raw body is unavailable. There is no shared secret, so there is no secret param. The legacy RSA header `X-WH-Signature` was documented as deprecated on 2026-09-01 and is not accepted. HighLevel documents no timestamp in the signed text, so there is no freshness window: keep the URL private.
+
+Docs (verified 2026-11-10): https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html and the event pages, e.g. https://marketplace.gohighlevel.com/docs/webhook/ContactCreate/index.html
 
 ## Auth: location scope
 

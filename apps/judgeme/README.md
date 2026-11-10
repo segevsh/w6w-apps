@@ -6,6 +6,7 @@ webhooks, on the **Judge.me API v1**.
 - **Categories** — commerce, marketing
 - **Auth methods** — api-key
 - **Actions** — 16
+- **Triggers** — 2 (webhook)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.judge.me` (the `service` check adds `status.judge.me` to its own hook
   allowlist, never to the app's)
@@ -19,6 +20,19 @@ webhooks, on the **Judge.me API v1**.
 > `application/x-yaml`) — the Redoc page at `https://judge.me/api/docs` is only a viewer for that
 > same file and was never used as a source — plus live probes against `api.judge.me` and
 > `status.judge.me`. Nothing here came from a third-party integration directory.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `review-created` — New Review | webhook (API-registered, signed) | `review/created` | webhook key, review id when the payload has one, full payload |
+| `review-updated` — Review Updated | webhook (API-registered, signed) | `review/updated` | webhook key, review id when the payload has one, full payload |
+
+**Setup.** Subscribing registers the trigger's URL with `POST /webhooks` (`{ "webhook": { "key", "url" } }`) through the connection's API key; unsubscribing deletes exactly that key and URL pair (`DELETE /webhooks`; one Judge.me no longer has counts as deleted). Paste the shop's **Private API token** (the one this connection uses) into the trigger's `signingSecret` param: Judge.me signs webhooks created through the API with it. Judge.me's reference documents the webhook keys but not the delivery body, so the run gets the payload as Judge.me sent it rather than a reshaped record. `review/created_fail` and the `widget/*` keys are not wired.
+
+**Trust model.** Each delivery carries a `JUDGEME-HMAC-SHA256` header (some servers rewrite it to `X-Judgeme-Hmac-SHA256`; both are read): the hex HMAC-SHA256 of the exact request body under the signing secret. The trigger checks it in constant time before it parses anything, and refuses a delivery whose signature is missing or wrong, whose raw body is unavailable, or when no secret is configured. Judge.me's scheme has no timestamp, so there is no freshness window. A webhook created through a Judge.me OAuth app would be signed with that app's secret instead; these triggers register through the API, so use the Private API token.
+
+Docs (verified 2026-11-10): https://judge.me/api/docs.yaml and https://help.judge.me/en/articles/8299679-verifying-webhooks-from-judge-me
 
 ## The three things most likely to cost someone a day
 

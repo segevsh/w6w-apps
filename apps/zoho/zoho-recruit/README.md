@@ -10,6 +10,7 @@ Scoped to **Zoho Recruit specifically**. This pack already ships `zoho` (Zoho CR
 - **Categories** — hr
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 22
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `recruit.zoho.com`, `recruit.zoho.eu`, `recruit.zoho.in`,
   `recruit.zoho.com.au`, `recruit.zoho.jp`, `recruit.zoho.com.cn`, `recruit.zoho.sa`,
   `recruit.zohocloud.ca`, `recruit.zoho.sg`, `recruit.zoho.ae`
@@ -225,3 +226,20 @@ update-records, delete-records, search-records, change-status, get/create/update
 get-attachments, get-users, oauth-overview, multi-dc, limits), plus live probes against all ten
 `recruit.zoho.<tld>` API hosts, their accounts hosts, and `us.zohostatus.com`. Status surfaces move;
 re-check with `_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-candidate` | poll | `candidate-list` | a candidate when it is created |
+| `new-or-updated-candidate` | poll | `candidate-list` | a candidate whenever it is created or edited (`id:Modified_Time` is the identity) |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests sort by `Created_Time` / `Modified_Time` descending, page 1, 100 per page, `converted=both` and `approved=both` so no candidate is hidden by the list's own defaults.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- Recruit get-records — "sort_order (optional) … asc … desc; sort_by (optional) … To sort the available list of records based on the given field — Field API name": https://www.zoho.com/recruit/developer-guide/apiv2/get-records.html

@@ -6,6 +6,7 @@ communities and memberships, and outbound webhooks on **systeme.io's Public API*
 - **Categories** — marketing
 - **Auth methods** — api-key (`X-API-Key` header)
 - **Actions** — 41
+- **Triggers** — 1 (poll)
 - **Health checks** — 1 (~~`service`~~, declared unavailable) + the derived `auth:api-key`
 - **Egress allowlist** — `api.systeme.io`
 - **Website** — https://systeme.io/
@@ -155,3 +156,11 @@ Every action, the auth method, the health check, and the entry module (`index.ts
 under `tests/`. `tests/_helpers.ts` provides `mockCtx()` (a queued fake `ctx.fetch`), `page()` and
 `problemBody()` (the vendor's own response envelopes), and `pathOf()`/`queryOf()` for asserting on the
 recorded request.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact` — New Contact | Poll (newest first) | `contact-list` | Each newly registered contact |
+
+Polled through the `contact-list` action with `order=desc`; the first check records what exists without firing. Source: the pagination guide says the cursor is "the ID of the last item you received" and "Specify the order of the data using the `order` parameter, with options for ascending (`asc`) or descending (`desc`) order. The default setting is descending (`desc`)." Contact ids only grow, so descending is newest first ([API reference](https://developer.systeme.io/reference/api), verified 2026-11-09).

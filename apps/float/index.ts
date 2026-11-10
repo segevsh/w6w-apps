@@ -69,6 +69,8 @@ import allocationGet from "./actions/allocation-get.ts";
 import allocationCreate from "./actions/allocation-create.ts";
 import allocationUpdate from "./actions/allocation-update.ts";
 import allocationDelete from "./actions/allocation-delete.ts";
+import newAllocation from "./triggers/new-allocation.ts";
+import newOrUpdatedAllocation from "./triggers/new-or-updated-allocation.ts";
 
 import statusList from "./actions/status-list.ts";
 import statusGet from "./actions/status-get.ts";
@@ -136,6 +138,7 @@ export default {
     loggedTimeUpdate,
     loggedTimeDelete,
   ],
+  triggers: [newAllocation, newOrUpdatedAllocation],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

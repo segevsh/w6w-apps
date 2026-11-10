@@ -57,3 +57,7 @@ Instagram Login.
 ## Icon
 
 `assets/icon.svg` is the simple-icons Instagram mark; `assets/icon.dark.svg` is a white variant.
+
+## Triggers
+
+- **New Media** wraps `list-media`, whose media edge returns the most recent media. [Instagram IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media), verified 2026-11-09.

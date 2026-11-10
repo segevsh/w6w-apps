@@ -7,6 +7,7 @@ subscriptions that feed those steps.
 - **Categories** — documents, legal, productivity
 - **Auth methods** — api-key
 - **Actions** — 16
+- **Triggers** — 2 (poll)
 - **Egress allowlist** — `api.pandadoc.com`
 
 ## Links
@@ -300,3 +301,18 @@ Researched and endpoint-verified 2026-08-03 against PandaDoc's official referenc
 `developers.pandadoc.com/reference/*`, cross-checked live against `api.pandadoc.com` and
 `status.pandadoc.com`. No endpoint or parameter in this app was inferred from a naming pattern.
 Status surfaces move; re-check if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-document` — New Document | poll | `document-get-many` | each newly created document (`order_by=-date_created`) |
+| `new-or-updated-document` — New or Updated Document | poll | `document-get-many` | each document created or modified since the last check (`order_by=-date_modified`; the dedupe id includes `date_modified`) |
+
+Each check lists the 100 newest documents. PandaDoc documents `order_by` values including `date_created` and `date_modified`, with a `-` prefix for descending, and a maximum `count` of 100.
+
+Trust model: Poll only: nothing is registered with PandaDoc. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developers.pandadoc.com/reference/list-documents (verified 2026-11-09)

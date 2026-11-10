@@ -8,6 +8,7 @@ REST APIs.
   `/calendar/v2`, `/giving/v2`, `/check-ins/v2`, `/current/v2`)
 - **Auth**: Personal Access Token — HTTP Basic, `client_id` as the username, `secret` as the password
 - **Actions**: 6 · **Health checks**: `service` · `quota` · 1 derived (`auth:personal-access-token`)
+- **Triggers** — 1 (poll)
 
 Everything below was verified on **2026-09-05** against Planning Center's own machine-readable
 OpenAPI documents — fetched live from `https://api.planningcenteronline.com/{product}/v2/open_api/{version}`
@@ -126,3 +127,15 @@ logs and previews, so this action does not surface that trio by default — see 
 - **`auth:personal-access-token`** (derived) — `GET /current/v2/me`, chosen because the guide states it
   explicitly works "without requiring any scopes and without imposing any access or permission rules"
   beyond being a valid credential — the narrowest possible probe across every product this app touches.
+
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-event-instance` — New Event Instance | Poll | `list-event-instances` | Each event occurrence created since the previous check |
+| `new-or-updated-event-instance` — New or Updated Event Instance | Poll | `list-event-instances` | Each occurrence created or edited (the id carries `updatedAt`) |
+
+The triggers call the existing `list-event-instances` action with its additive `order` input set to `-created_at` / `-updated_at`. Planning Center lists `created_at` and `updated_at` as orderable on `GET /calendar/v2/event_instances` and documents "prefix with a hyphen (-created_at) to reverse the order", so page 1 holds the newest rows. Without a date range the endpoint's own default scope applies. The first check records the current page without emitting events.
+
+Source: [EventInstance vertex, Calendar API 2022-07-07](https://api.planningcenteronline.com/calendar/v2/documentation/2022-07-07/vertices/event_instance) (`can_order`; verified 2026-11-10).

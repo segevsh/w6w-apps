@@ -75,6 +75,7 @@ import boardShare from "./actions/board-share.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBoard from "./triggers/new-board.ts";
 
 export default {
   actions: [
@@ -112,6 +113,7 @@ export default {
     boardMemberList,
     boardShare,
   ],
+  triggers: [newBoard],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,5 +1,7 @@
 # WebScraping.AI
 
+Triggers: not shipped — `serp-search` is a query-driven search result, not a persistent record feed (https://docs.webscraping.ai/web-scraping-api/serp-api/) (verified 2026-11-09).
+
 Scrape pages from a workflow: full HTML or Markdown text through headless Chromium and rotating
 proxies, CSS-selector extraction, LLM question answering and field extraction over a page, parsed
 Google results and structured JSON for supported sites. Vendor docs: <https://webscraping.ai/docs>;

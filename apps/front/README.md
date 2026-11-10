@@ -7,6 +7,7 @@ behind it current.
 - **Categories** — support, communication, productivity
 - **Auth methods** — api-token
 - **Actions** — 30
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api2.frontapp.com`
 - **Website** — https://front.com
 - **API docs** — https://dev.frontapp.com/reference ·
@@ -253,3 +254,17 @@ is fine, a loop hammering one is not.
 Front answers with `{"_error":{"status","title","message","details"}}`. The
 `message` names the field and `details` usually holds the actual reason, so both
 are surfaced rather than the top-level status alone.
+
+## Triggers
+
+Poll triggers built on the app's existing `contact-list` action (same client, endpoint and authentication; no new API path). The host checks every 5 minutes; the first check only records what already exists, so enabling a trigger never replays history.
+
+| Trigger | Mechanism | Wrapped list action | What the run gets |
+|---|---|---|---|
+| `new-or-updated-contact` — New or Updated Contact | poll | `contact-list` | Each Front contact that is newly created or edited, once per edit. |
+
+How the feed is read: `GET /contacts` with the `q[updated_after]` filter only: the action exposes no sort, so the trigger is a since-filter poll. Each check reads its whole window in one go, at most 2000 contacts and with no way to resume; a window longer than that (only after a long outage of the checks) fires the first 2000 and the surplus is not guaranteed.
+
+Trust model: polling only — no inbound endpoint, no webhook secret; the connection's own credential makes the request.
+
+Vendor docs: <https://dev.frontapp.com/reference/list-contacts> (verified 2026-11-09).

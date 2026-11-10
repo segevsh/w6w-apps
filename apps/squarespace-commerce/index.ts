@@ -51,6 +51,8 @@
  * rate-limit headers (`health/quota.ts`).
  */
 import type { AppDefinition } from "@w6w/types";
+import newOrder from "./triggers/new-order.ts";
+import newOrUpdatedOrder from "./triggers/new-or-updated-order.ts";
 
 import apiKey from "./auth/api-key.ts";
 
@@ -86,6 +88,7 @@ import listTransactions from "./actions/list-transactions.ts";
 import getTransactions from "./actions/get-transactions.ts";
 
 export default {
+  triggers: [newOrder, newOrUpdatedOrder],
   actions: [
     // Website / authorization
     getWebsiteProfile,

@@ -58,6 +58,8 @@ import workflowSignersList from "./actions/workflow-signers-list.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newRecord from "./triggers/new-record.ts";
+import newOrUpdatedRecord from "./triggers/new-or-updated-record.ts";
 
 export default {
   actions: [
@@ -92,4 +94,5 @@ export default {
   ],
   auth: [oauth2, oauth2Eu1, oauth2Demo, clientCredentials],
   healthChecks: [service, quota],
+  triggers: [newRecord, newOrUpdatedRecord],
 } satisfies AppDefinition;

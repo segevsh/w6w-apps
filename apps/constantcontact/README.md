@@ -1,12 +1,18 @@
 # Constant Contact
 
-Manage Constant Contact contacts, contact lists, custom fields, and email campaigns through the
-V3 API.
+## Triggers
 
-- **Categories** — marketing, email
-- **Auth methods** — oauth2 (authorization code + refresh)
-- **Actions** — 22
-- **Egress allowlist** — `api.cc.email`
+- **Triggers** — 1 (poll)
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-contact-list` | poll | `list-contact-lists` | Each contact list newly created in the account |
+
+`list-contact-lists` has no sort argument and no date filter (the action documents the vendor has none), so the account's lists are watched as a snapshot of one request of up to 500; an account with more than 500 lists fails the check with a clear error instead of missing lists.
+
+Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
+
+Vendor reference: <https://developer.constantcontact.com/api_reference/index.html> (verified 2026-11-09).
 
 ## Which Constant Contact API this targets — and what "V2 is retired" actually means
 

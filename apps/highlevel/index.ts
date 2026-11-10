@@ -35,7 +35,13 @@ import listForms from "./actions/list-forms.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import contactCreated from "./triggers/contact-created.ts";
+import opportunityCreated from "./triggers/opportunity-created.ts";
+import appointmentCreated from "./triggers/appointment-created.ts";
+import inboundMessage from "./triggers/inbound-message.ts";
+
 export default {
+  triggers: [contactCreated, opportunityCreated, appointmentCreated, inboundMessage],
   auth: [oauth2],
   actions: [
     // contact

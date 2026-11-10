@@ -97,6 +97,8 @@ import webhookDelete from "./actions/webhook-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -158,6 +160,7 @@ export default {
   // API key only. Givebutter publishes no OAuth surface for third-party apps;
   // the two `/sso/v1/*` endpoints that look like they might be a session/JWT
   // alternative are unreachable with a bearer API key (see module doc, #4).
+  triggers: [newContact, newOrUpdatedContact],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

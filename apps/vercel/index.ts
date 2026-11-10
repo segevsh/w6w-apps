@@ -70,6 +70,7 @@ import userGet from "./actions/user-get.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newDeployment from "./triggers/new-deployment.ts";
 
 export default {
   actions: [
@@ -110,4 +111,5 @@ export default {
   ],
   auth: [accessToken, oauth2],
   healthChecks: [service, quota],
+  triggers: [newDeployment],
 } satisfies AppDefinition;

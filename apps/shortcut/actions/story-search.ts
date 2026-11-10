@@ -27,6 +27,8 @@ interface Input {
   workflowStateTypes?: string | string[];
   archived?: boolean;
   includesDescription?: boolean;
+  createdAtStart?: string;
+  updatedAtStart?: string;
 }
 
 const storySearch: ActionDefinition<Input> = {
@@ -60,6 +62,22 @@ const storySearch: ActionDefinition<Input> = {
     },
     { key: "archived", label: "Archived", type: "boolean" },
     { key: "includesDescription", label: "Include description", type: "boolean" },
+    {
+      key: "createdAtStart",
+      label: "Created on or after",
+      type: "string",
+      advanced: true,
+      placeholder: "2026-11-09T12:00:00Z",
+      hint: "ISO 8601 UTC date-time; sent as `created_at_start`.",
+    },
+    {
+      key: "updatedAtStart",
+      label: "Updated on or after",
+      type: "string",
+      advanced: true,
+      placeholder: "2026-11-09T12:00:00Z",
+      hint: "ISO 8601 UTC date-time; sent as `updated_at_start`.",
+    },
   ],
   output: [{ key: "data", type: "array", label: "Matching Stories" }],
 
@@ -81,6 +99,8 @@ const storySearch: ActionDefinition<Input> = {
         workflow_state_types: toStringList(input.workflowStateTypes),
         archived: input.archived,
         includes_description: input.includesDescription,
+        created_at_start: input.createdAtStart,
+        updated_at_start: input.updatedAtStart,
       }),
     );
   },

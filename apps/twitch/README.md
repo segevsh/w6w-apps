@@ -3,7 +3,7 @@
 Read Twitch channels, streams, videos, clips, chat metadata, schedules and teams over the
 **Helix REST API** (`https://api.twitch.tv/helix`), and update a broadcaster's own channel.
 
-**28 actions · 2 auth methods · 4 declared health checks (+2 derived) · 137 unit tests.**
+**28 actions · 1 poll trigger · 2 auth methods · 4 declared health checks (+2 derived) · 137 unit tests.**
 
 Everything in this app was verified on **2026-08-11** against Twitch's own sources and live
 probes — never a third-party integration directory:
@@ -225,8 +225,9 @@ user-scoped ones.
 them are one of four families this app does not attempt:
 
 - **EventSub** (`/helix/eventsub/*`) — subscriptions are only useful with a webhook callback
-  or a WebSocket the app can hold open. That is a Trigger, not an Action; the app declares no
-  triggers, and `core/rfcs/trigger.md` is the thing to read before adding them.
+  or a WebSocket the app can hold open. That is a Trigger, not an Action; the app ships only the
+  poll trigger `new-follower` (see Triggers), and
+  `core/rfcs/trigger.md` is the thing to read before adding more.
 - **Extensions and Bits products** — the separate JWT auth model described above.
 - **Analytics and insights** (`/helix/analytics/*`, `/helix/bits/leaderboard`,
   `/helix/subscriptions`) — each needs a scope tied to a broadcaster's monetisation, and none
@@ -373,3 +374,11 @@ There is no `deno` on the devcontainer host; run them in the `api` service:
 docker compose -f .devcontainer/docker-compose.yml exec -T api \
   sh -c 'cd /app/packages/apps/apps/twitch && deno task test'
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-follower` — New Follower | Poll | `get-channel-followers` | Each new follower of the channel (Broadcaster ID) you choose |
+
+Polled through the `get-channel-followers` action: Twitch lists followers "in descending order by followed_at (with the most recent follower first)", and each follower has a stable `user_id`. The first check records the current first page without firing; later checks emit only unseen user ids (page of 100). The token must be a user access token with the `moderator:read:followers` scope belonging to the broadcaster or one of their moderators; without it Twitch answers 200 with an empty list, so the trigger sees nothing rather than failing. Nothing else to set up on the vendor side. Source: [Twitch Get Channel Followers](https://dev.twitch.tv/docs/api/reference/#get-channel-followers) (verified 2026-11-09).

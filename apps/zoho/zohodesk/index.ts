@@ -118,6 +118,7 @@ import searchRecords from "./actions/search-records.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
 
 export default {
   actions: [
@@ -163,4 +164,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newContact],
 } satisfies AppDefinition;

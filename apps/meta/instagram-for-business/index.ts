@@ -34,6 +34,7 @@ import searchHashtag from "./actions/search-hashtag.ts";
 import setCommentsEnabled from "./actions/set-comments-enabled.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMedia from "./triggers/new-media.ts";
 
 export default {
   actions: [
@@ -64,6 +65,7 @@ export default {
     searchHashtag,
     setCommentsEnabled,
   ],
+  triggers: [newMedia],
   auth: [oauth2, accessToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -6,6 +6,7 @@ rewards, products and campaigns behind them, on the **Tremendous API v2**.
 - **Categories** — commerce, hr
 - **Auth methods** — api-key (bearer)
 - **Actions** — 14
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `quota`, ~~`request-rate`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.tremendous.com` (the `service` check adds `status.tremendous.com` to
   its own hook allowlist, never to the app's)
@@ -143,3 +144,11 @@ Tremendous integrations" per the vendor's own authentication guide.
 - **Querying rewards by custom-field label/value** (`list-rewards`'s documented query-param
   extension) — requires knowing the caller's own custom field labels ahead of time; left out rather
   than guessing a shape.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-order` — New Order | Poll | `order-list` | Each order created after the trigger was turned on |
+
+Polled through the `order-list` action with its `createdAtGte` filter (`created_at[gte]`, the same request the action makes). The first check records the time it ran and reads nothing; later checks read the window since the last fully read check (5 minutes of overlap), drop anything older than that first check, dedupe by id, and resume at the next page when a window is longer than two pages. Nothing to set up on the vendor side; the poll uses the app's own connection. Source: [Tremendous list orders](https://developers.tremendous.com/reference/orders) (verified 2026-11-09).

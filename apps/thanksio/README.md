@@ -1,5 +1,7 @@
 # thanks.io
 
+Triggers: not shipped — `order-list` documents only "recent orders" with no sort or since filter, so its order is not guaranteed; `mailing-list-recipients-list` (`GET /mailing-lists-utils/recipients/{mailingListId}`) filters only by `updated_since` (an edit also matches), documents no sort order, writes `created_at` as a zone-less `YYYY-MM-DD HH:MM:SS`, and the action sends no `page`, so a first-check floor cannot tell a new recipient from an edited old one and a window over one page cannot be drained (https://docs.thanks.io/api-reference/openapi.json, checked 2026-11-10).
+
 Send handwritten-style direct mail — postcards, letters, notecards, Magnacards and gift cards — from
 a workflow, manage the mailing lists they go to, price an order before placing it, and follow it to
 delivery.

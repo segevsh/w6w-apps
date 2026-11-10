@@ -10,6 +10,7 @@ not confuse Zoho Sign with them, and do not modify their app directories from he
 - **Categories** — documents, legal, productivity
 - **Auth methods** — oauth2, one per Zoho data centre (see below)
 - **Actions** — 12
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `sign.zoho.com`, `sign.zoho.eu`, `sign.zoho.in`, `sign.zoho.com.au`,
   `sign.zoho.jp`, `sign.zohocloud.ca`, `sign.zoho.sa`, `sign.zoho.uk`, `sign.zoho.sg`, `sign.zoho.ae`
 - **Website** — https://www.zoho.com/sign/
@@ -231,3 +232,19 @@ individual pages (`api-endpoint.html`, `oauth.html`, `getting-started.html`,
 that path and fetched live — plus live probes against all ten `sign.zoho.<tld>` API hosts, their
 accounts hosts, and `us.zohostatus.com`. Status surfaces move; re-check with `_tools/audit.ts`
 conventions in mind if a probe starts failing for everyone at once.
+
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-request` | poll | `request-list` | a signature request (document) when it is created |
+
+There is no setup: enable the trigger on a connection and it polls about every 5 minutes.
+
+Requests `sort_column=created_time`, `sort_order=DESC`, 100 rows from index 1. The documented sort columns do not include a modified time, so there is no new-or-updated trigger.
+
+**Trust model.** Polling uses the connection's own credentials through the wrapped action's existing client; there is no webhook and no callback URL to protect. The first check only records where it is (nothing fires), every later check fires once per new record, and a retried check returns the same events.
+
+**Vendor docs (verified 2026-11-09).**
+
+- List documents — `page_context.sort_column` ("request_name | folder_name | owner_full_name | recipient_email | form_name | created_time") and `sort_order` ("ASC | DESC"): https://www.zoho.com/sign/api/document-managment/get-document-list.html

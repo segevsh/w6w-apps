@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/salesmate",
-  "version": "0.1.0",
-  "description": "Manage Salesmate contacts, companies, deals, activities and notes (API v4).",
+  "version": "0.2.0",
+  "description": "Manage Salesmate contacts, companies, deals, activities and notes (API v4), and poll for new or updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -13,6 +13,7 @@
   },
   "w6w": {
     "id": "io.w6w.salesmate",
+    "build": { "include": ["../_shared"] },
     "displayName": "Salesmate",
     "apiDocs": [
       "https://apidocs.salesmate.io/"

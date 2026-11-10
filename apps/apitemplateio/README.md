@@ -60,6 +60,14 @@ side-effect-free probe can observe without spending a generation to find it.
 
 ## Declared health checks
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-object` | poll | `list-objects` | Each newly generated PDF or image object. |
+
+The APITemplate.io v2 list-objects API is documented at https://apitemplate.io/apiv2/ (verified 2026-11-09).
+
 Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
 
 | Key | Kind | Scope | Credential | Severity | Probe |

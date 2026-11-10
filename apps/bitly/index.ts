@@ -12,6 +12,7 @@ import listGroups from "./actions/list-groups.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newBitlink from "./triggers/new-bitlink.ts";
 
 export default {
   actions: [
@@ -28,4 +29,5 @@ export default {
   ],
   auth: [accessToken],
   healthChecks: [service, quota],
+  triggers: [newBitlink],
 } satisfies AppDefinition;

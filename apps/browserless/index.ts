@@ -19,6 +19,7 @@ import apiToken from "./auth/api-token.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newCrawl from "./triggers/new-crawl.ts";
 
 /**
  * Browserless — headless-browser REST APIs. Findings that shaped this app (2026-10-06):
@@ -56,6 +57,7 @@ const app: AppDefinition = {
   ],
   auth: [apiToken],
   healthChecks: [service, api, quota],
+  triggers: [newCrawl],
 };
 
 export default app;

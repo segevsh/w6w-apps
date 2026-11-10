@@ -26,6 +26,7 @@ import invoiceUpdateStatus from "./actions/invoice-update-status.ts";
 
 import account from "./health/account.ts";
 import service from "./health/service.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   actions: [
@@ -47,6 +48,7 @@ export default {
     invoiceGet,
     invoiceUpdateStatus,
   ],
+  triggers: [newOrUpdatedContact],
   auth: [apiKey],
   healthChecks: [account, service],
 } satisfies AppDefinition;

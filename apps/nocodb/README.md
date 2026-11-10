@@ -1,13 +1,12 @@
 # NocoDB
 
-Triggers: not shipped — record-list requires a user-selected table and its configurable sort field cannot be safely fixed to a universal creation field (https://nocodb.com/docs/product-docs/developer-resources/rest-apis).
-
 Read and write records in bases and tables, follow links, and inspect schemas
 and views.
 
 - **Categories** — spreadsheets, databases
 - **Auth methods** — api-token
 - **Actions** — 13
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `*`
 - **Website** — https://nocodb.com
 - **API docs** — https://data-apis-v2.nocodb.com
@@ -188,3 +187,17 @@ The `index.ts` suite also enforces the pack-wide sandbox rules on this app's own
 source, plus three specific to this app: both filtering actions **validate the
 `where` before sending**, both write actions **send an array in one request**,
 and deleting requires a confirmation.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-record` — New Record | poll | `record-list` | each row newly added to a table (`sort=-Id`, newest first) |
+
+Setup: set the **Table ID**. The **Auto-increment column** defaults to NocoDB's primary key `Id`; change it only if your table's auto-increment column has another name. Each check lists the 100 newest rows by that column. NocoDB's REST API documents `sort` as a column name, `-` prefix for descending. Tables whose primary key does not grow with insertion are not a fit.
+
+Trust model: Poll only: the trigger reads through the same connection as the action; nothing is registered with NocoDB. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://nocodb.com/docs/apis/query-parameters (verified 2026-11-09)

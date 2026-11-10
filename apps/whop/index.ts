@@ -90,6 +90,7 @@ import userCheckAccess from "./actions/user-check-access.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMembership from "./triggers/new-membership.ts";
 
 export default {
   actions: [
@@ -145,4 +146,5 @@ export default {
   // rather than force one flow to cover both.
   auth: [apiKey],
   healthChecks: [service, quota],
+  triggers: [newMembership],
 } satisfies AppDefinition;

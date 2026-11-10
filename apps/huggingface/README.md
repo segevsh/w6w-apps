@@ -1,5 +1,15 @@
 # Hugging Face
 
+- **Triggers** — 1 (poll)
+
+## Triggers
+
+| Key — title | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| `new-inference-model` — New Inference Model | poll | `inference-model-list` | Each model newly available from the inference router |
+
+Hugging Face documents Hub APIs at https://huggingface.co/docs/hub/api (verified 2026-11-09). The trigger is a snapshot of the router's model list (`GET router.huggingface.co/v1/models`, no order and no paging, the whole catalogue in one response): the router serves only the models some inference provider has deployed, a few hundred, so the collection is bounded.
+
 Search the Hub for models, datasets and Spaces; read repository files and
 dataset rows without downloading anything; create and delete repositories; and
 run chat inference through the router.
