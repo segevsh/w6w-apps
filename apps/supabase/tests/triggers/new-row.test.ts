@@ -8,7 +8,7 @@ const input = {
   subscriptionId: "sub-1",
 };
 const ctx = (items: unknown[]) => mockSupabaseCtx([{ body: items }]);
-const item = (id: number, v = 0) => ({ id: `row_${id}`, created_at: `2026-11-09T00:00:0${id}Z` });
+const item = (id: number, _v = 0) => ({ id: `row_${id}`, created_at: `2026-11-09T00:00:0${id}Z` });
 
 test("new-row: seeds without emitting", async () => {
   const seeded = await trigger.poll!({ ...input, state: {} }, ctx([item(2), item(1)]).ctx);

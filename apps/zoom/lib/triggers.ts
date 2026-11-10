@@ -126,8 +126,9 @@ async function fetchSince(
   ctx: HookContext,
 ): Promise<{ items: Meeting[]; next?: Pos }> {
   const now = clock.now();
-  const to = day(now + DAY_MS);
-  const from = day(Math.max(Date.parse(sinceIso), now - 30 * DAY_MS));
+  const toMs = now + DAY_MS;
+  const to = day(toMs);
+  const from = day(Math.max(Date.parse(sinceIso), toMs - 30 * DAY_MS));
   const call = (nextPageToken?: string) =>
     action.execute!({ userId, from, to, pageSize: 300, nextPageToken }, ctx) as Promise<
       RecordingPage

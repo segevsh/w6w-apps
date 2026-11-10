@@ -7,7 +7,7 @@ import { clock } from "../../lib/triggers.ts";
 const T0 = Date.parse("2026-11-09T12:00:00.000Z");
 const T1 = T0 + 300_000;
 const input = { params: { orgId: "org-1" }, subscriptionId: "sub-1" };
-const SINCE_OLD = "2026-11-09T11:00:00.000Z"; // before the window start (T0 - 120 s)
+const _SINCE_OLD = "2026-11-09T11:00:00.000Z"; // before the window start (T0 - 120 s)
 const SINCE_NEW = "2026-11-09T12:03:00.000Z"; // inside the window
 const rec = (id: string, created: string, updated: string) => ({
   id,

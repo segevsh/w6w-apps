@@ -117,7 +117,7 @@ test("new-or-updated-contact never emits a pre-seed record (floor), then emits t
   const OLD = "2026-11-10T09:00:00Z";
   const NEW = "2026-11-10T10:03:00Z";
   const mk = (tag: number, stamp: string) => ({ id: tag, type: "individual", updated_at: stamp });
-  const pageReply = (n: number, items: unknown[], more: boolean) => ({
+  const pageReply = (_n: number, items: unknown[], more: boolean) => ({
     body: { contacts: items, meta: { total_records: SIZE * 4, total_pages: more ? 4 : 1 } },
   });
   const oldPage = (n: number) =>

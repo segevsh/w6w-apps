@@ -33,7 +33,7 @@ function parseTime(value: unknown): number | undefined {
  */
 function check(
   state: unknown,
-  ctx: HookContext,
+  _ctx: HookContext,
   overlapMs: number,
   stamp: "startTime" | "creationTime",
   list: (dateFrom: string, page: number) => unknown,

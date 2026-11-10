@@ -7,7 +7,7 @@ const input = { params: {}, subscriptionId: "sub-1" };
 const ctx = (items: unknown[]) => mockCtx([{ body: { items, hasMore: false } }]);
 const item = (
   id: number,
-  v = 0,
+  _v = 0,
 ) => ({ id: id, email: `c${id}@example.com`, registeredAt: "2026-11-09T00:00:00+00:00" });
 
 test("new-contact: seeds without emitting", async () => {

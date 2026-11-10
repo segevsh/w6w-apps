@@ -71,7 +71,7 @@ test("new-order: a window of maxPages + 1 full pages drains across checks, each 
     log: () => {},
     connection: { display: {} },
     fetch: (_input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof _input === "string"
+      const _url = typeof _input === "string"
         ? _input
         : _input instanceof URL
         ? _input.toString()
@@ -138,7 +138,7 @@ test("new-order: a seed emits nothing, a pre-seed window of more than maxPages p
     log: () => {},
     connection: { display: {} },
     fetch: (_input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof _input === "string"
+      const _url = typeof _input === "string"
         ? _input
         : _input instanceof URL
         ? _input.toString()

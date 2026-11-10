@@ -3,7 +3,7 @@ import { assert, assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import trigger from "../../triggers/new-contact.ts";
 
-const COLUMN = "created_time";
+const _COLUMN = "created_time";
 const BASE = Date.parse("2026-10-01T00:00:00.000Z");
 const stampAt = (n: number) => new Date(BASE + n * 60_000).toISOString().replace(".000Z", "+0000");
 
@@ -19,12 +19,12 @@ interface Contact {
  * vendor happens to default to (`asc` or `desc`; the docs do not say), 200 per page, with a
  * `page_context` that may or may not carry `sort_order`. A page past the end is empty.
  */
-function vendor(dir: "asc" | "desc", reportOrder: boolean, total: number) {
+function vendor(dir: "asc" | "desc", reportOrder: boolean, total: number, flat = false) {
   const contacts: Contact[] = Array.from({ length: total }, (_, i) => ({
     contact_id: `c${i}`,
     contact_name: `Contact ${i}`,
-    created_time: stampAt(i),
-    last_modified_time: stampAt(i),
+    created_time: stampAt(flat ? 0 : i),
+    last_modified_time: stampAt(flat ? 0 : i),
   }));
   let clock = total;
   const mock = mockInvoiceCtx([]);
@@ -56,11 +56,12 @@ function vendor(dir: "asc" | "desc", reportOrder: boolean, total: number) {
     mock,
     add(id: string) {
       clock++;
+      const at = flat ? 0 : clock;
       contacts.push({
         contact_id: id,
         contact_name: id,
-        created_time: stampAt(clock),
-        last_modified_time: stampAt(clock),
+        created_time: stampAt(at),
+        last_modified_time: stampAt(at),
       });
     },
     edit(id: string) {
@@ -124,4 +125,26 @@ test("new-contact reads a single page when the list fits in one", async () => {
   const out = await check(v, seeded.nextState);
   assertEquals(ids(out), ["n1"]);
   assertEquals(v.mock.calls.length, 2);
+});
+
+test("new-contact (asc): last page is 2 - a new contact on page 1 is emitted, once", async () => {
+  const v = vendor("asc", true, 190);
+  const seeded = await check(v, {});
+  assertEquals(seeded.events, []);
+  for (let i = 0; i < 20; i++) v.add(`n${i}`);
+  // 210 contacts: n0..n9 sit on page 1 (index 190..199), n10..n19 on page 2 (the last page)
+  const out = await check(v, seeded.nextState);
+  assertEquals(ids(out), Array.from({ length: 20 }, (_, i) => `n${i}`).sort());
+  const again = await check(v, out.nextState);
+  assertEquals(again.events, []);
+});
+
+test("new-contact (asc): identical stamps on both pages emit each new contact once", async () => {
+  const v = vendor("asc", true, 190, true);
+  const seeded = await check(v, {});
+  for (let i = 0; i < 20; i++) v.add(`n${i}`);
+  const out = await check(v, seeded.nextState);
+  const got = (out.events as Contact[]).map((e) => e.contact_id);
+  assertEquals(got.length, new Set(got).size);
+  assertEquals(ids(out), Array.from({ length: 20 }, (_, i) => `n${i}`).sort());
 });

@@ -8,7 +8,7 @@ const ctx = (items: unknown[]) =>
   mockCtx([{ body: { results: items, pagination: { next_cursor: null } } }]);
 const item = (
   id: number,
-  v = 0,
+  _v = 0,
 ) => ({ id: `ct_${id}`, first_name: "A", created_at: `2026-11-09T00:00:0${id}Z` });
 
 test("new-contact: seeds without emitting", async () => {

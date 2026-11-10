@@ -130,3 +130,15 @@ test("new-recording: records from before the seed are never emitted; one after i
   const r = await trigger.poll!({ ...input, state } as never, mockCtx([page([post])]).ctx);
   assertEquals(events(r), [post]);
 });
+
+test("new-recording: from is clamped to 30 days before `to` (tomorrow), never 31", async () => {
+  clock.now = () => T0; // to = tomorrow = 2026-11-10; to - 30 days = 2026-10-11
+  const old = T0 - 60 * 86_400_000;
+  const state = { v: 1, kind: "ids", seeded: true, ids: [], cursor: old, floor: old };
+  const c = mockCtx([page([])]);
+  await trigger.poll!({ ...input, state } as never, c.ctx);
+  assertEquals(
+    c.calls[0].url,
+    "https://api.zoom.us/v2/users/me/recordings?from=2026-10-11&to=2026-11-10&page_size=300",
+  );
+});

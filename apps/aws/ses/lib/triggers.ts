@@ -9,7 +9,6 @@ export interface SesPage {
 }
 
 const MIN_INTERVAL_MS = 300_000;
-const PAGE_SIZE = 100;
 const SNAPSHOT_PAGE_SIZE = 1000;
 const SNAPSHOT_PAGES = 5;
 export const OVERLAP_MS = 120_000;
