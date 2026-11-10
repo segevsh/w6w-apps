@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/avoma",
-  "version": "0.2.0",
-  "description": "Read Avoma meetings, recordings, transcripts, AI notes, insights, scorecards and users, and submit call recordings for analysis. Adds a poll trigger for new meetings.",
+  "version": "0.3.0",
+  "description": "Read Avoma meetings, recordings, transcripts, AI notes, insights, scorecards and users, and submit call recordings for analysis. Poll triggers: new meetings, calls, users.",
   "license": "MIT",
   "author": {
     "name": "w6w"
