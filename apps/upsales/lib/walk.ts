@@ -30,6 +30,11 @@ export interface WalkState {
   resume?: Record<string, unknown>;
   /** Epoch ms of the check that began the drain in `resume`; the cursor lands here when it ends. */
   windowStart?: number;
+  /**
+   * Ids created within OVERLAP_MS of `windowStart`, carried through a drain and the check that
+   * completes it: the next check re-reads that span, so they must outlive the SEEN_WINDOW cap.
+   */
+  recent?: string[];
   /** Vendor position (last id / event id) when the vendor pages by position, not by time. */
   mark?: unknown;
 }
@@ -106,6 +111,8 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
       // not have been in the pages read, so the cursor must return there, not jump to `now`.
       const windowStart = state.resume ? (state.windowStart ?? state.cursor) : now;
       const seen = new Set(state.ids);
+      const recent = new Set(state.resume ? (state.recent ?? []) : []);
+      const recentFrom = windowStart - OVERLAP_MS;
       const events: unknown[] = [];
       const read: unknown[] = [];
       let req: Record<string, unknown> | undefined = state.resume ?? spec.first({
@@ -130,6 +137,7 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
           const stamp = spec.stampOf?.(item);
           if (stamp !== undefined && stamp < state.floor) continue;
           const id = spec.idOf(item);
+          if (id && stamp !== undefined && stamp >= recentFrom) recent.add(id);
           if (id && !seen.has(id)) {
             seen.add(id);
             events.push(item);
@@ -137,14 +145,17 @@ export function walkTrigger<P>(spec: WalkSpec<P>): TriggerDefinition<P> {
         }
         req = spec.next(req, result, got);
       }
+      // Keep a drain's overlap span out of the eviction: the next check re-lists it.
+      const keep = truncated || state.resume ? recent : new Set<string>();
       const nextState: WalkState = {
         v: 1,
         kind: "ids",
         seeded: true,
-        ids: [...seen].slice(-SEEN_WINDOW),
+        ids: [...[...seen].filter((id) => !keep.has(id)).slice(-SEEN_WINDOW), ...keep],
         cursor: truncated ? state.cursor : windowStart,
         floor: state.floor,
         ...(truncated && req ? { resume: req, windowStart } : {}),
+        ...(keep.size ? { recent: [...keep] } : {}),
         ...(spec.markOf ? { mark: spec.markOf(state.mark, read) } : {}),
       };
       return { events, nextState };
