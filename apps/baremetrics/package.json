@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/baremetrics",
-  "version": "0.2.0",
-  "description": "Read SaaS subscription metrics and manage API-sourced customers, plans, subscriptions and charges in Baremetrics, and trigger workflows on new customers.",
+  "version": "0.3.0",
+  "description": "Read SaaS subscription metrics and manage API-sourced customers, plans, subscriptions and charges in Baremetrics, and trigger workflows on new customers, subscriptions, charges, refunds, plans, goals and sources.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -45,6 +45,12 @@ import annotationsList from "./actions/annotations-list.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newCustomer from "./triggers/new-customer.ts";
+import newCharge from "./triggers/new-charge.ts";
+import newGoal from "./triggers/new-goal.ts";
+import newPlan from "./triggers/new-plan.ts";
+import newRefund from "./triggers/new-refund.ts";
+import newSource from "./triggers/new-source.ts";
+import newSubscription from "./triggers/new-subscription.ts";
 
 export default {
   actions: [
@@ -81,5 +87,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newCustomer],
+  triggers: [newCustomer, newSubscription, newCharge, newRefund, newPlan, newGoal, newSource],
 } satisfies AppDefinition;
