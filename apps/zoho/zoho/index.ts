@@ -62,6 +62,8 @@ import searchRecords from "./actions/search-records.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
 
 export default {
   auth: [oauth2],
@@ -95,4 +97,5 @@ export default {
     searchRecords,
   ],
   healthChecks: [service, quota],
+  triggers: [newContact, newOrUpdatedContact],
 } satisfies AppDefinition;

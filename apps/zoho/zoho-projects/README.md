@@ -83,3 +83,5 @@ surface; each can be added later:
 - Project permanent delete, the portal bin, comments, attachments and WorkDrive links, followers,
   dependencies, baselines, custom fields/layouts/modules, templates, automation, users
   administration and invitations, clients/contacts, calendar events, forums, documents.
+
+Triggers: not shipped — the existing issue-list needs a caller-selected portal and project, and its `sortBy` option has no direction while the V3 reference page (https://projects.zoho.com/api-docs) is script-rendered and does not expose the issues sort/criteria syntax to verify a newest-first request; project-list and task-list (whose shared `sortBy` documents `DESC(created_time)` in `lib/params.ts`) were re-checked and the same script-rendered page cannot confirm that syntax against the vendor, so they stay unshipped

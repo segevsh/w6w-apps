@@ -86,6 +86,8 @@ import searchRecords from "./actions/search-records.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newCandidate from "./triggers/new-candidate.ts";
+import newOrUpdatedCandidate from "./triggers/new-or-updated-candidate.ts";
 
 export default {
   actions: [
@@ -121,4 +123,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newCandidate, newOrUpdatedCandidate],
 } satisfies AppDefinition;

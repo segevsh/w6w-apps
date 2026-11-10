@@ -64,6 +64,7 @@ import messageDelete from "./actions/message-delete.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newMessage from "./triggers/new-message.ts";
 
 export default {
   actions: [
@@ -92,4 +93,5 @@ export default {
   // lib/regions.ts.
   auth: oauth2,
   healthChecks: [service, quota],
+  triggers: [newMessage],
 } satisfies AppDefinition;

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/zuora",
-  "version": "0.1.0",
-  "description": "Manage customer accounts, subscriptions, invoices, payments and orders in Zuora, across every Zuora region and cloud.",
+  "version": "0.2.0",
+  "description": "Manage customer accounts, subscriptions, invoices, payments and orders in Zuora, and trigger workflows on new or updated invoices.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -41,7 +41,8 @@
         "rest.test.ap.zuora.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",

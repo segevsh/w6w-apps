@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/bigin",
-  "version": "0.1.0",
-  "description": "Create, read, update, search and delete Contacts, Companies, Pipelines and Tasks in Bigin by Zoho CRM.",
+  "version": "0.2.0",
+  "description": "Create, read, update, search and delete Contacts, Companies, Pipelines and Tasks in Bigin by Zoho CRM, and trigger workflows on new or updated contacts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -40,7 +40,8 @@
         "accounts.zoho.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": { "include": ["../_shared"] }
   },
   "type": "module",
   "main": "./dist/app.js",
