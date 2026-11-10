@@ -13,7 +13,11 @@ const t0 = Date.parse("2026-11-10T12:00:00Z");
 const at = (ms: number) => {
   clock.now = () => ms;
 };
-const inv = (id: string, updated = "2026-11-10T10:00:00.000Z") => ({ id, updated_at: updated });
+const inv = (
+  id: string,
+  updated = "2026-11-10T10:00:00.000Z",
+  created = updated,
+) => ({ id, created_at: created, updated_at: updated });
 const poll = (
   trigger: typeof newInvoice,
   state: unknown,
@@ -29,19 +33,22 @@ test("new-sales-invoice: seeds, emits only new invoices, retries idempotently", 
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
   at(t0 + 300_000);
-  const first = poll(newInvoice, seeded.nextState, [inv("2"), inv("1")]);
-  const retry = poll(newInvoice, seeded.nextState, [inv("2"), inv("1")]);
-  assertEquals((await first.result).events, [inv("2")]);
+  // "1" existed before the first check (its stamp is before the floor); "2" was created after it.
+  const fresh = inv("2", "2026-11-10T12:01:00.000Z");
+  const first = poll(newInvoice, seeded.nextState, [fresh, inv("1")]);
+  const retry = poll(newInvoice, seeded.nextState, [fresh, inv("1")]);
+  assertEquals((await first.result).events, [fresh]);
   assertEquals(await retry.result, await first.result);
 });
 
 test("new-sales-invoice: requests sales_invoices.json with created_after = cursor - 10 min", async () => {
   at(t0);
-  const seed = poll(newInvoice, {}, []);
-  await seed.result;
-  assertEquals(seed.mock.calls[0].method, "GET");
-  assertEquals(pathOf(seed.mock.calls[0].url), "/api/v2/123/sales_invoices.json");
-  assertEquals(queryOf(seed.mock.calls[0].url), {
+  const seeded = await poll(newInvoice, {}, []).result;
+  const next = poll(newInvoice, seeded.nextState, []);
+  await next.result;
+  assertEquals(next.mock.calls[0].method, "GET");
+  assertEquals(pathOf(next.mock.calls[0].url), "/api/v2/123/sales_invoices.json");
+  assertEquals(queryOf(next.mock.calls[0].url), {
     filter: "created_after:2026-11-10T11:50:00Z",
     page: "1",
     per_page: "100",
@@ -71,10 +78,11 @@ test("new-or-updated-sales-invoice: an edit is a new event (idOf includes update
 
 test("new-or-updated-sales-invoice: requests updated_after = cursor - 10 min", async () => {
   at(t0);
-  const seed = poll(updatedInvoice, {}, []);
-  await seed.result;
-  assertEquals(pathOf(seed.mock.calls[0].url), "/api/v2/123/sales_invoices.json");
-  assertEquals(queryOf(seed.mock.calls[0].url), {
+  const seeded = await poll(updatedInvoice, {}, []).result;
+  const next = poll(updatedInvoice, seeded.nextState, []);
+  await next.result;
+  assertEquals(pathOf(next.mock.calls[0].url), "/api/v2/123/sales_invoices.json");
+  assertEquals(queryOf(next.mock.calls[0].url), {
     filter: "updated_after:2026-11-10T11:50:00Z",
     page: "1",
     per_page: "100",
