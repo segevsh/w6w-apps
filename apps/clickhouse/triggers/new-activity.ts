@@ -19,7 +19,8 @@ interface Activity {
  * `GET /v1/organizations/{id}/activities?from_date=` answers the whole window in ONE unpaged
  * response, so a check cannot stall on a long window (brief 9.8): every record in it is emitted,
  * whatever its size, and the cursor moves to the check time. The seed stores `floor = now` and later
- * checks drop activities created before it (brief 9.9).
+ * checks drop activities created before it (brief 9.9). The endpoint documents no pagination, so there is
+ * nothing to resume: a response the vendor shortened would lose its tail (README states this).
  */
 const trigger: TriggerDefinition = {
   key: "new-activity",

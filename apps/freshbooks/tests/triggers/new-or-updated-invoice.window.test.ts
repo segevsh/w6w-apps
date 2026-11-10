@@ -15,7 +15,7 @@ const OLD = T0 - 24 * 3_600_000;
 const iso = (ms: number): string => new Date(ms).toISOString();
 const stamp = (ms: number): string => iso(ms).slice(0, 19).replace("T", " ");
 let seq = 0;
-const rec = (id: string, at: number) => ({ id: ++seq, updated: stamp(at) });
+const rec = (_id: string, at: number) => ({ id: ++seq, updated: stamp(at) });
 const pageOf = (items: unknown[]) => ({ body: { response: { result: { invoices: items } } } });
 const realNow = Date.now;
 const at = (ms: number): void => {
@@ -80,6 +80,8 @@ test("new-or-updated-invoice: a window of maxPages + 1 pages is emitted once acr
     state = r1.nextState;
     at(T0 + 600_000);
     const r2 = await run(state, [full(MAX_PAGES + 1, T0 + 100_000, true), ...TAIL]);
+    // The resumed check must continue from the persisted position, not read the window from the start again.
+    assertEquals(JSON.stringify(r2.calls[0]) === JSON.stringify(r1.calls[0]), false);
     assertEquals(r2.calls.length, 1 + TAIL.length);
     assertEquals(r2.events.length, 1);
     const n2 = r2.nextState as { cursor?: number; resume?: unknown };

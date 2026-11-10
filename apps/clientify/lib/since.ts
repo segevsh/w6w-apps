@@ -6,7 +6,7 @@ export const OVERLAP_MS = 120_000;
 /** Pages read per check; a longer window is resumed on the next check (brief 9.8), never cut. */
 export const MAX_PAGES = 10;
 export const MAX_ITEMS = 1000;
-export const SEEN_WINDOW = 2000;
+export const SEEN_WINDOW = 4000;
 
 /** Clock seam. Tests replace `clock.now`; the host has no clock in `ctx`. */
 export const clock = { now: (): number => Date.now() };
@@ -69,6 +69,7 @@ export function sinceTrigger<T, P = Record<string, unknown>>(
         maxPages: MAX_PAGES,
         pageSize: spec.pageSize ?? 100,
         seenWindow: SEEN_WINDOW,
+        clientSince: true,
         idOf: spec.idOf,
         tsOf: spec.tsOf ?? (() => undefined),
         async load(since, pos) {

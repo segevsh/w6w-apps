@@ -36,7 +36,7 @@ const trigger: TriggerDefinition<TicketParams> = {
       overlapMs: OVERLAP_MS,
       maxPages: MAX_PAGES,
       pageSize: 100,
-      seenWindow: 400,
+      seenWindow: 1500,
       idOf: (item) => String((item as { id?: unknown }).id ?? ""),
       tsOf: (item) => {
         const t = item as Record<string, unknown>;

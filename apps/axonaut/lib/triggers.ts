@@ -12,6 +12,7 @@ type Invoice = {
 };
 
 const DAY_MS = 86_400_000;
+const OVERLAP_MS = 120_000;
 export const MAX_PAGES = 5;
 const PAGE_SIZE = 100;
 
@@ -44,10 +45,11 @@ function invoiceTrigger(
       const polled = await pollWindow<Invoice, number>({
         state: call.state,
         now: Date.now(),
-        overlapMs: 0, // axonautDate() already looks back one day
+        overlapMs: OVERLAP_MS, // axonautDate() looks back one day from the cursor; clientSince trims to this
+        clientSince: true,
         maxPages: MAX_PAGES,
         pageSize: PAGE_SIZE,
-        seenWindow: 1000,
+        seenWindow: 3000, // a date-only creation_date cannot be trimmed: the whole day is re-served
         idOf: (item) => {
           const stamp = item.updated_at ?? item.updatedAt ?? "";
           return updated ? `${item.id}:${stamp}` : String(item.id);
@@ -63,7 +65,7 @@ function invoiceTrigger(
           const result = await invoiceList.execute(
             {
               ...(call.params as Record<string, unknown>),
-              [field]: axonautDate(new Date(sinceMs).toISOString()),
+              [field]: axonautDate(new Date(sinceMs + OVERLAP_MS).toISOString()),
               page,
             },
             ctx,

@@ -78,6 +78,8 @@ test("new-crawl: a window of maxPages + 1 pages is emitted once across checks an
     state = r1.nextState;
     at(T0 + 600_000);
     const r2 = await run(state, [full(MAX_PAGES + 1, T0 + 100_000, true), ...TAIL]);
+    // The resumed check must continue from the persisted position, not read the window from the start again.
+    assertEquals(JSON.stringify(r2.calls[0]) === JSON.stringify(r1.calls[0]), false);
     assertEquals(r2.calls.length, 1 + TAIL.length);
     assertEquals(r2.events.length, 1);
     const n2 = r2.nextState as { cursor?: number; resume?: unknown };
@@ -86,6 +88,19 @@ test("new-crawl: a window of maxPages + 1 pages is emitted once across checks an
     const all = [...r1.events, ...r2.events].map((e) => JSON.stringify(e));
     assertEquals(all.length, MAX_PAGES * PAGE + 1);
     assertEquals(new Set(all).size, all.length);
+  } finally {
+    Date.now = realNow;
+  }
+});
+
+test("new-crawl: a crawl stamped inside the overlap but before the seed never fires (the floor, not the since filter, drops it)", async () => {
+  try {
+    const state = await seed();
+    at(T0 + 300_000);
+    const inOverlap = rec("pre-seed", T0 - 60_000);
+    const fresh = rec("fresh", T0 + 100_000);
+    const r = await run(state, [pageOf([inOverlap, fresh], false, 1), ...TAIL]);
+    assertEquals(r.events, [fresh]);
   } finally {
     Date.now = realNow;
   }

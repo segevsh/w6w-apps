@@ -11,7 +11,6 @@ const TAIL: MockResponse[] = [];
 const PAGE = 50;
 const T0 = Date.UTC(2026, 10, 10, 0, 30, 0);
 const OLD = T0 - 3_600_000;
-const iso = (ms: number): string => new Date(ms).toISOString();
 const rec = (id: string, at: number) => ({ session_id: id, created_at: at, updated_at: at });
 const pageOf = (items: unknown[]) => ({ body: { error: false, data: items } });
 const realNow = Date.now;
@@ -76,6 +75,8 @@ test("new-conversation: a window of maxPages + 1 pages is emitted once across ch
     state = r1.nextState;
     at(T0 + 600_000);
     const r2 = await run(state, [full(MAX_PAGES + 1, T0 + 100_000, true), ...TAIL]);
+    // The resumed check must continue from the persisted position, not read the window from the start again.
+    assertEquals(JSON.stringify(r2.calls[0]) === JSON.stringify(r1.calls[0]), false);
     assertEquals(r2.calls.length, 1 + TAIL.length);
     assertEquals(r2.events.length, 1);
     const n2 = r2.nextState as { cursor?: number; resume?: unknown };

@@ -146,7 +146,7 @@ real one.
 | --- | --- | --- | --- |
 | `new-activity` — New Activity | Poll | `activity-list` | Each new organization activity event |
 
-`activity-list` filters by `from_date` and returns one unpaged response, so each check asks for events since last check − 120 s and de-duplicates by activity id. Each check emits only unseen items, oldest first; the first check records what exists without firing.
+`activity-list` filters by `from_date` and returns one unpaged response, so each check asks for events since last check − 120 s and de-duplicates by activity id. The endpoint documents no pagination, so each check is one request and nothing can be resumed: if ClickHouse ever shortened a very large response, the events it left out would not be fired. Each check emits only unseen items, oldest first; the first check records what exists without firing.
 
 Trust model: poll triggers call the same endpoint, client and credentials as the wrapped action; nothing is registered with the vendor and no webhook secret is involved.
 

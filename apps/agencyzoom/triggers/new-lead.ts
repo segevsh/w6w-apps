@@ -2,7 +2,9 @@ import type { TriggerDefinition } from "@w6w/types";
 import { pollWindow, toMs } from "../lib/window.ts";
 import action from "../actions/lead-list.ts";
 
-export const OVERLAP_MS = 86_400_000;
+/** Look-back before the previous check. The vendor filter is a whole day, so the day before is requested and `clientSince` trims the rest. */
+export const OVERLAP_MS = 120_000;
+const DAY_MS = 86_400_000;
 /** Pages read per check; a longer window is resumed on the next check (brief 9.8). */
 export const MAX_PAGES = 10;
 const PAGE_SIZE = 100;
@@ -28,12 +30,14 @@ const trigger: TriggerDefinition = {
       overlapMs: OVERLAP_MS,
       maxPages: MAX_PAGES,
       pageSize: PAGE_SIZE,
-      seenWindow: 400,
+      // Covers a day of leads re-served whole when the stamp carries no time (cannot be trimmed).
+      seenWindow: 2000,
+      clientSince: true,
       idOf: (item) => String((item as { id?: unknown }).id ?? ""),
       tsOf: leadCreatedAt,
       async load(since, pos) {
         const page = pos ?? 1;
-        const startDate = new Date(since).toISOString().slice(0, 10);
+        const startDate = new Date(since - DAY_MS).toISOString().slice(0, 10);
         const result = await action.execute({ startDate, page, pageSize: PAGE_SIZE }, ctx) as {
           leads?: unknown[];
           totalCount?: number;

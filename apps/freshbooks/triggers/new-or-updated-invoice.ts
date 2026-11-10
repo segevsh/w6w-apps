@@ -5,7 +5,8 @@ import { pollWindow, toMs } from "../lib/window.ts";
 // FreshBooks documents `search[updated_min]` on invoices as a YYYY-MM-DD, greater-than-or-equal
 // filter (https://www.freshbooks.com/api/invoices), so each check re-reads the whole day and the
 // day before (timezone slack) and de-duplicates on id + update stamp.
-const OVERLAP_MS = 86_400_000;
+const OVERLAP_MS = 120_000;
+const DAY_MS = 86_400_000;
 const PAGE_SIZE = 100;
 const MAX_PAGES = 5;
 export const clock = { now: (): number => Date.now() };
@@ -22,7 +23,7 @@ interface Invoice {
  * the five hours before the seed may still fire once, nothing post-seed is ever dropped (brief 9.9).
  */
 const ZONE_SLACK_MS = 5 * 3_600_000;
-const SEEN_WINDOW = MAX_PAGES * PAGE_SIZE + PAGE_SIZE;
+const SEEN_WINDOW = 2000;
 
 const trigger: TriggerDefinition = {
   key: "new-or-updated-invoice",
@@ -53,6 +54,7 @@ const trigger: TriggerDefinition = {
       maxPages: MAX_PAGES,
       pageSize: PAGE_SIZE,
       seenWindow: SEEN_WINDOW,
+      clientSince: true,
       idOf: (invoice) => `${invoice.id ?? ""}:${invoice.updated ?? ""}`,
       tsOf: (invoice) => {
         const ms = toMs(invoice.updated);
@@ -60,7 +62,7 @@ const trigger: TriggerDefinition = {
       },
       async load(sinceMs, pos) {
         const page = pos ?? 1;
-        const updatedMin = new Date(sinceMs).toISOString().slice(0, 10);
+        const updatedMin = new Date(sinceMs - DAY_MS).toISOString().slice(0, 10);
         const result = await invoiceList.execute(
           { page, perPage: PAGE_SIZE, search: { updated_min: updatedMin } },
           ctx,

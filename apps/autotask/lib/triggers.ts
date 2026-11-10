@@ -30,7 +30,7 @@ export function pollTicketsSince(o: {
     overlapMs: OVERLAP_MS,
     maxPages: MAX_PAGES,
     pageSize: 500,
-    seenWindow: 1000,
+    seenWindow: 2000,
     idOf: o.idOf,
     tsOf: (item) => toMs((item as Record<string, unknown>)[o.field]),
     async load(sinceMs, pageUrl) {

@@ -45,6 +45,8 @@ export async function pollWindow<T, P extends Pos>(o: {
   seenWindow: number;
   /** Read the first page on the seed to record its ids (default true); false seeds with no request. */
   seedRead?: boolean;
+  /** Also drop items whose stamp precedes `since`: for a vendor filter coarser than a second (a whole day), which re-serves the rest of the day on every check. */
+  clientSince?: boolean;
   idOf(item: T): string;
   /** Creation time (ms) of an item, from the field the since-filter compares; undefined = unknown. */
   tsOf(item: T): number | undefined;
@@ -80,6 +82,7 @@ export async function pollWindow<T, P extends Pos>(o: {
     const res = await o.load(since, pos);
     for (const item of res.items) {
       const ts = o.tsOf(item);
+      if (o.clientSince && ts !== undefined && ts < since) continue;
       if (floor === undefined || ts === undefined || ts >= floor) items.push(item);
     }
     pos = res.items.length > 0 ? res.next : undefined;

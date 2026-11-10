@@ -289,4 +289,4 @@ is granted in the Ashby app rather than here.
 | --- | --- | --- | --- |
 | `new-candidate` — New Candidate | Poll | `candidate-list` | Each candidate created since the prior check |
 
-`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check requests at most 100 candidates; a busier interval is retried with the overlap window. Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-09).
+`candidate-list` uses the documented `createdAfter` creation-date filter with a rolling cursor and id deduplication. Each check reads its whole window in one request of up to 50 pages (5000 candidates); the action has no page cursor, so a window longer than 5000 fires the first 5000 and the surplus past that is not guaranteed (the trigger logs a warning). Source: [Ashby Candidate List](https://developers.ashbyhq.com/reference/candidatelist) (verified 2026-11-09).

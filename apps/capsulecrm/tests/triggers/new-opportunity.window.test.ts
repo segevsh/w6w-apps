@@ -88,6 +88,8 @@ test("new-opportunity: a window of maxPages + 1 pages is emitted once across che
     state = r1.nextState;
     at(T0 + 600_000);
     const r2 = await run(state, [full(MAX_PAGES + 1, T0 + 100_000, true), ...TAIL]);
+    // The resumed check must continue from the persisted position, not read the window from the start again.
+    assertEquals(JSON.stringify(r2.calls[0]) === JSON.stringify(r1.calls[0]), false);
     assertEquals(r2.calls.length, 1 + TAIL.length);
     assertEquals(r2.events.length, 1);
     const n2 = r2.nextState as { cursor?: number; resume?: unknown };
