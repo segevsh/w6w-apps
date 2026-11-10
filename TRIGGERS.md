@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 395, none: 230
+**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 393, none: 232
 
 ## webhook-api (44)
 
@@ -78,7 +78,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (395)
+## poll (393)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -192,25 +192,23 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/firestore | document-list | new-document | apps/firestore/README.md Triggers section (verified 2026-11-09) | hand | document-list orderBy a user-named creation timestamp field desc; Firestore has no built-in creation ordering |
 | apps/float | allocation-list | new-allocation, new-or-updated-allocation | apps/float/README.md Triggers section (verified 2026-11-09) | hand | allocation-list sort=-created / -modified (a - prefix sorts descending) |
 | apps/folk | list-groups | new-group | apps/folk/README.md Triggers section (verified 2026-11-09) | hand | unpaginated group collection is snapshotted for additions |
-| apps/followupboss | list-users | new-users | no | scan | list action list-users has pagination and order/since params |
+| apps/followupboss | search-people | new-person, new-or-updated-person | apps/followupboss/README.md Triggers section (verified 2026-11-09) | hand | search-people sorted -created / -updated (documented sort values, '-' = descending) |
 | apps/formbricks | survey-list | new-survey | apps/formbricks/README.md Triggers section (verified 2026-11-09) | hand | workspace survey collection is snapshotted for additions |
-| apps/formidableforms | entry-get-many | new-entry-get-many | no | scan | list action entry-get-many has pagination and order/since params |
-| apps/formsite | result-list | new-result-list | no | scan | list action result-list has pagination and order/since params |
+| apps/formsite | result-list | new-result | apps/formsite/README.md Triggers section (verified 2026-11-09) | hand | result-list with sort_direction=desc on the documented default result_id sort |
 | apps/formstack-documents | document-list | new-document | apps/formstack-documents/README.md Triggers section (verified 2026-11-09) | hand | unpaginated document template collection is snapshotted for additions |
-| apps/fortnox | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
-| apps/freeagent | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/freeagent | contact-list | new-contact, new-or-updated-contact | apps/freeagent/README.md Triggers section (verified 2026-11-09) | hand | contact-list sort=-created_at / -updated_at; identity is the contact url |
 | apps/freshbooks | invoice-list | new-or-updated-invoice | apps/freshbooks/README.md Triggers section (verified 2026-11-09) | hand | polls invoice-list with documented search[updated_min] (day granularity) and dedupes on id+updated (https://www.freshbooks.com/api/invoices) |
-| apps/freshworks/freshdesk | ticket-get-many | new-ticket-get-many | no | scan | list action ticket-get-many has pagination and order/since params |
-| apps/freshworks/freshsales | contact-get-many | new-contact-get-many | no | scan | list action contact-get-many has pagination and order/since params |
-| apps/freshworks/freshservice | ticket-get-many | new-ticket-get-many | no | scan | list action ticket-get-many has pagination and order/since params |
-| apps/front | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/gamma | list-gamma-comments | new-gamma-comments | no | scan | list action list-gamma-comments has pagination and order/since params |
-| apps/gerrit | change-search | new-change-search | no | scan | list action change-search has pagination and order/since params |
+| apps/freshworks/freshdesk | ticket-get-many | new-ticket, new-or-updated-ticket | apps/freshworks/freshdesk/README.md Triggers section (verified 2026-11-09) | hand | ticket-get-many order_by created_at/updated_at order_type=desc |
+| apps/freshworks/freshsales | contact-get-many | new-contact, new-or-updated-contact | apps/freshworks/freshsales/README.md Triggers section (verified 2026-11-09) | hand | contact-get-many on a saved view, sort created_at/updated_at sort_type=desc |
+| apps/freshworks/freshservice | ticket-get-many | new-ticket, new-or-updated-ticket | apps/freshworks/freshservice/README.md Triggers section (verified 2026-11-09) | hand | ticket-get-many order_type=desc for new; updated_since filter (since-filter poll) for updated |
+| apps/front | contact-list | new-or-updated-contact | apps/front/README.md Triggers section (verified 2026-11-09) | hand | contact-list has only the q[updated_after] filter and no sort, so only a since-filter new-or-updated trigger fits |
+| apps/gamma | list-gamma-comments | new-or-updated-gamma-comment | apps/gamma/README.md Triggers section (verified 2026-11-09) | hand | list-gamma-comments has the updatedSince filter and no sort, so only a since-filter new-or-updated trigger fits |
+| apps/gerrit | change-search | new-or-updated-change | apps/gerrit/README.md Triggers section (verified 2026-11-09) | hand | change-search output is documented sorted most-recently-updated first; only the update-ordered trigger fits (no created-order sort documented) |
 | apps/getresponse | contact-list | new-contact | apps/getresponse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/ghost | list-posts | new-post | no | hand | shipped poll trigger(s) over list action list-posts |
-| apps/gitea | pull-request-list | new-pull-request-list | no | scan | list action pull-request-list has pagination and order/since params |
-| apps/givebutter | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
-| apps/gladia | transcription-list | new-transcription-list | no | scan | list action transcription-list has pagination and order/since params |
+| apps/gitea | pull-request-list | new-or-updated-pull-request | apps/gitea/README.md Triggers section (verified 2026-11-09) | hand | pull-request-list sort=recentupdate (documented sort enum has no created-order value), state=all; only the update-ordered trigger fits |
+| apps/givebutter | contact-list | new-contact, new-or-updated-contact | apps/givebutter/README.md Triggers section (verified 2026-11-09) | hand | contact-list sortByDesc=created_at for new; updatedAfter filter (since-filter poll) for updated |
+| apps/gladia | transcription-list | new-transcription | apps/gladia/README.md Triggers section (verified 2026-11-09) | hand | transcription-list has no documented order, so a since-filter poll on after_date |
 | apps/glide | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
 | apps/gocardless | list-customers | new-customers | no | scan | list action list-customers has pagination and order/since params |
 | apps/google/bigquery | job-list | new-job-list | no | scan | list action job-list has pagination and order/since params |
@@ -478,7 +476,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (230)
+## none (232)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -540,6 +538,8 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/fireflies |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/fivetran |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/flodesk |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/formidableforms |  | apps/formidableforms/README.md Triggers section (verified 2026-11-09) | hand | entries list documents no sort token, created-since semantics or page size (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/) |
+| apps/fortnox |  | apps/fortnox/README.md Triggers section (verified 2026-11-09) | hand | customer-list orders only by customer number or name and its lastmodified filter cannot separate new from edited customers (https://developer.fortnox.se/documentation/resources/customers/) |
 | apps/gcs |  | apps/gcs/README.md Triggers section (verified 2026-11-09) | hand | object listings are lexicographic by object name and object-change notifications publish to Pub/Sub rather than an HTTP event subscription |
 | apps/giphy |  | apps/giphy/README.md Triggers section (verified 2026-11-09) | hand | search, trending, random, and translate endpoints return catalog results rather than account records that change |
 | apps/google/gemini |  | apps/google/gemini/README.md Triggers section (verified 2026-11-09) | hand | model-list and generation APIs are stateless inference resources, not user records with change events |

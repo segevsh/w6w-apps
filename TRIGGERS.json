@@ -2032,12 +2032,13 @@
     "path": "apps/followupboss",
     "mechanism": "poll",
     "candidates": [
-      "new-users"
+      "new-person",
+      "new-or-updated-person"
     ],
-    "pollAction": "list-users",
-    "reason": "list action list-users has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "search-people",
+    "reason": "search-people sorted -created / -updated (documented sort values, '-' = descending)",
+    "verified": "apps/followupboss/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/formbricks",
@@ -2052,25 +2053,23 @@
   },
   {
     "path": "apps/formidableforms",
-    "mechanism": "poll",
-    "candidates": [
-      "new-entry-get-many"
-    ],
-    "pollAction": "entry-get-many",
-    "reason": "list action entry-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "entries list documents no sort token, created-since semantics or page size (https://formidableforms.com/knowledgebase/formidable-api-rest-endpoints/)",
+    "verified": "apps/formidableforms/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/formsite",
     "mechanism": "poll",
     "candidates": [
-      "new-result-list"
+      "new-result"
     ],
     "pollAction": "result-list",
-    "reason": "list action result-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "result-list with sort_direction=desc on the documented default result_id sort",
+    "verified": "apps/formsite/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/formspark",
@@ -2108,25 +2107,24 @@
   },
   {
     "path": "apps/fortnox",
-    "mechanism": "poll",
-    "candidates": [
-      "new-customer-list"
-    ],
-    "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "none",
+    "candidates": [],
+    "pollAction": null,
+    "reason": "customer-list orders only by customer number or name and its lastmodified filter cannot separate new from edited customers (https://developer.fortnox.se/documentation/resources/customers/)",
+    "verified": "apps/fortnox/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/freeagent",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list sort=-created_at / -updated_at; identity is the contact url",
+    "verified": "apps/freeagent/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/freshbooks",
@@ -2143,45 +2141,48 @@
     "path": "apps/freshworks/freshdesk",
     "mechanism": "poll",
     "candidates": [
-      "new-ticket-get-many"
+      "new-ticket",
+      "new-or-updated-ticket"
     ],
     "pollAction": "ticket-get-many",
-    "reason": "list action ticket-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "ticket-get-many order_by created_at/updated_at order_type=desc",
+    "verified": "apps/freshworks/freshdesk/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/freshworks/freshsales",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-get-many"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-get-many",
-    "reason": "list action contact-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-get-many on a saved view, sort created_at/updated_at sort_type=desc",
+    "verified": "apps/freshworks/freshsales/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/freshworks/freshservice",
     "mechanism": "poll",
     "candidates": [
-      "new-ticket-get-many"
+      "new-ticket",
+      "new-or-updated-ticket"
     ],
     "pollAction": "ticket-get-many",
-    "reason": "list action ticket-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "ticket-get-many order_type=desc for new; updated_since filter (since-filter poll) for updated",
+    "verified": "apps/freshworks/freshservice/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/front",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list has only the q[updated_after] filter and no sort, so only a since-filter new-or-updated trigger fits",
+    "verified": "apps/front/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/fullenrich",
@@ -2198,12 +2199,12 @@
     "path": "apps/gamma",
     "mechanism": "poll",
     "candidates": [
-      "new-gamma-comments"
+      "new-or-updated-gamma-comment"
     ],
     "pollAction": "list-gamma-comments",
-    "reason": "list action list-gamma-comments has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "list-gamma-comments has the updatedSince filter and no sort, so only a since-filter new-or-updated trigger fits",
+    "verified": "apps/gamma/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gcs",
@@ -2218,12 +2219,12 @@
     "path": "apps/gerrit",
     "mechanism": "poll",
     "candidates": [
-      "new-change-search"
+      "new-or-updated-change"
     ],
     "pollAction": "change-search",
-    "reason": "list action change-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "change-search output is documented sorted most-recently-updated first; only the update-ordered trigger fits (no created-order sort documented)",
+    "verified": "apps/gerrit/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/getresponse",
@@ -2260,12 +2261,12 @@
     "path": "apps/gitea",
     "mechanism": "poll",
     "candidates": [
-      "new-pull-request-list"
+      "new-or-updated-pull-request"
     ],
     "pollAction": "pull-request-list",
-    "reason": "list action pull-request-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "pull-request-list sort=recentupdate (documented sort enum has no created-order value), state=all; only the update-ordered trigger fits",
+    "verified": "apps/gitea/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/github",
@@ -2303,23 +2304,24 @@
     "path": "apps/givebutter",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact",
+      "new-or-updated-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "contact-list sortByDesc=created_at for new; updatedAfter filter (since-filter poll) for updated",
+    "verified": "apps/givebutter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gladia",
     "mechanism": "poll",
     "candidates": [
-      "new-transcription-list"
+      "new-transcription"
     ],
     "pollAction": "transcription-list",
-    "reason": "list action transcription-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "transcription-list has no documented order, so a since-filter poll on after_date",
+    "verified": "apps/gladia/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/glide",
