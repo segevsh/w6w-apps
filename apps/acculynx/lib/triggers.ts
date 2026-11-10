@@ -70,7 +70,7 @@ export function recordSnapshot(
       );
       const { events, nextState } = await pollSnapshot({
         state,
-        emit: { added: true },
+        emit: { added: true, updated: false },
         rows: items.map((item) => ({
           key: (spec.keyOf ?? ((i) => String(i.id ?? "")))(item),
           values: item,

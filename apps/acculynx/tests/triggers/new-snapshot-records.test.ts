@@ -105,6 +105,19 @@ for (const c of cases) {
   });
 }
 
+test("a record edited in place is not a new record", async () => {
+  const input = { params: { jobId: "job-1" }, subscriptionId: "s" };
+  const seeded = await newJobEstimate.poll!(
+    { ...input, state: {} },
+    mockCtx([{ body: page([{ id: "e1", isPrimary: false }], 1) }]).ctx,
+  );
+  const out = await newJobEstimate.poll!(
+    { ...input, state: seeded.nextState },
+    mockCtx([{ body: page([{ id: "e1", isPrimary: true }], 1) }]).ctx,
+  );
+  assertEquals(out.events, []);
+});
+
 test("a job with no estimates (416 on the first page) is an empty list, not an error", async () => {
   const { ctx } = mockCtx([{ status: 416, body: { message: "Range Not Satisfiable" } }]);
   const out = await newJobEstimate.poll!(
