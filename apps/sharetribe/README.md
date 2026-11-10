@@ -292,7 +292,6 @@ request, no events); the next check calls the `event-list` request
 events are handed over per check, the rest on the next one. Sharetribe notes that "there can be delay
 between an action taking place on the marketplace and the corresponding event becoming available in
 queries", and keeps history for 90 days (live) / 7 days (dev, test); a poll gap longer than that loses
-the older events. Narrow with the `event-list` filters (`eventTypes`, ...) in a workflow step if only
-some events matter.
+the older events.
 
 Vendor documentation: https://www.sharetribe.com/api-reference/integration.html (verified 2026-11-09).
