@@ -55,6 +55,7 @@ import transcriptRedactedAudioGet from "./actions/transcript-redacted-audio-get.
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTranscript from "./triggers/new-transcript.ts";
 
 export default {
   actions: [
@@ -72,4 +73,5 @@ export default {
   ],
   auth: [apiToken],
   healthChecks: [service, quota],
+  triggers: [newTranscript],
 } satisfies AppDefinition;

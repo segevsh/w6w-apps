@@ -1,5 +1,7 @@
 # Adalo
 
+Triggers: not shipped — list-records is offset-paginated with no documented creation order, since filter, or bounded collection guarantee (https://developers.adalo.com/docs/api).
+
 Read and write records in an Adalo app's Collections via the Adalo Collections API.
 
 - **Categories** — developer-tools, databases

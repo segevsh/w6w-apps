@@ -1,5 +1,7 @@
 # Airtop
 
+Triggers: not shipped — session-list is offset-paginated and has no documented creation order, update cursor, or bounded collection (https://docs.airtop.ai/api-reference).
+
 Drive real, cloud-hosted Chromium sessions with Airtop's AI browser automation: create sessions and
 windows, load and interact with pages using natural-language element descriptions, and extract or
 summarize what's on the page.

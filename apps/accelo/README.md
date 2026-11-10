@@ -1,5 +1,7 @@
 # Accelo
 
+Triggers: not shipped — the existing list actions expose filters and pagination but no documented newest-first order in their wrapped request (https://docs.accelo.com/api/).
+
 Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, issues, requests, prospects, invoices and staff.
 
 - **Categories** — project-management, crm, productivity

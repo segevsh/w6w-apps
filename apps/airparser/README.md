@@ -1,5 +1,7 @@
 # Airparser
 
+Triggers: not shipped — document-list accepts date filters but the vendor does not document its result order and the action preserves the ambiguous response envelope (https://help.airparser.com/portal/en/kb/airparser-api).
+
 Parse emails and documents — PDF, DOCX, XLSX, CSV, HTML, images and more — into structured JSON
 using an AI extraction schema, on Airparser's **Public API**.
 

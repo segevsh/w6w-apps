@@ -1,5 +1,7 @@
 # Anthropic
 
+Triggers: not shipped — batch-list is cursor-paginated but the checked list reference does not state a newest-first ordering for this action (https://docs.anthropic.com/en/api/batches/list).
+
 Call Anthropic's REST API — Claude messages, token counting, batches, files.
 
 - **Categories** — ai

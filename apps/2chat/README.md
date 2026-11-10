@@ -1,5 +1,7 @@
 # 2Chat
 
+Triggers: not shipped — contacts and conversations lists expose pagination but no documented newest-first order or created-since filter (https://docs.2chat.co/).
+
 Send WhatsApp messages and statuses, manage contacts, groups, webhooks and connected numbers, and
 send WhatsApp Business API (WABA) templates through [2Chat](https://2chat.co).
 

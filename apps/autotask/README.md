@@ -1,5 +1,7 @@
 # Autotask PSA
 
+Triggers: not shipped — ticket-note-list is scoped to a ticket and has no documented created-since or newest-first list contract (https://ww1.autotask.net/help/DeveloperHelp/Content/REST_API_HOW_TOS/REST_API_How_To.htm).
+
 Query, read and write the records of a Datto/Kaseya **Autotask PSA** tenant (tickets, companies,
 contacts, time entries, projects, tasks, opportunities) on the **Autotask REST API v1.0**.
 

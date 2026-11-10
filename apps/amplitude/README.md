@@ -1,5 +1,7 @@
 # Amplitude
 
+Triggers: not shipped — annotation-list is an undated analytics configuration listing without a documented bounded collection contract (https://www.docs.developers.amplitude.com/).
+
 Send events to Amplitude and query its analytics — segmentation, funnels,
 retention, cohorts, user activity and chart results.
 

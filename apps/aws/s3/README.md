@@ -1,5 +1,7 @@
 # Amazon S3
 
+Triggers: not shipped — object-list is lexicographically keyed rather than created-ordered and is not a bounded collection (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html).
+
 Store and retrieve objects in Amazon S3, signed with AWS Signature Version 4 (SigV4).
 
 - **Categories** — storage

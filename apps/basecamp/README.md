@@ -1,5 +1,7 @@
 # Basecamp
 
+Triggers: not shipped — message-list requires a board and the existing action exposes no explicit descending sort parameter (https://github.com/basecamp/bc3-api/blob/master/sections/messages.md).
+
 Projects, people, to-dos, messages, comments and Campfire lines on the **Basecamp 5 API**.
 
 - **Categories** — project-management, productivity

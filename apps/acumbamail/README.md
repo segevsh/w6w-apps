@@ -1,5 +1,7 @@
 # Acumbamail
 
+Triggers: not shipped — campaigns-list has date range filters but its response order is not documented as newest-first (https://apidocs.acumbamail.com/).
+
 Drive **Acumbamail** (email and SMS marketing) from a workflow: lists, subscribers, campaigns,
 templates, transactional email, SMS and list webhooks, over the REST API at
 `https://acumbamail.com/api/1/{function}/`.

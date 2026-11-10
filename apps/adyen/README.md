@@ -1,5 +1,7 @@
 # Adyen
 
+Triggers: not shipped — existing list actions are account configuration and stored-payment-method lookups, not a created-record feed (https://docs.adyen.com/api-explorer/).
+
 Payment sessions, payments, payment links, captures, refunds, cancels, stored payment methods,
 donations and partial-payment orders on **Adyen's Checkout API v72**.
 

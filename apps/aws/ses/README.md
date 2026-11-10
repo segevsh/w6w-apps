@@ -1,5 +1,7 @@
 # Amazon SES
 
+Triggers: not shipped — suppression-list exposes LastUpdateTime but has no updated-since filter or documented update order in the existing action (https://docs.aws.amazon.com/ses/latest/APIReference-V2/API_ListSuppressedDestinations.html).
+
 Send transactional, templated and bulk email through your own AWS account, and manage the
 identities, templates, suppression list and contacts around it — Amazon SES **v2** REST API,
 signed locally with AWS Signature Version 4.

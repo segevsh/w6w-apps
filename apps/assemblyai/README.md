@@ -168,6 +168,14 @@ shapes. **A transcript submitted on one region's host exists only on that host**
 
 ## Health checks
 
+## Triggers
+
+| Key | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transcript` | poll | `transcript-list` | Each newly submitted transcript. |
+
+AssemblyAI documents that transcript listings are newest-to-oldest at https://www.assemblyai.com/docs/api-reference/transcripts/list (verified 2026-11-09).
+
 Two declared checks plus the derived `auth:api-token`.
 
 ### `service` — `status.assemblyai.com` is Atlassian Statuspage

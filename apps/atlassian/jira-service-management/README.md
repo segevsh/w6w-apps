@@ -1,5 +1,7 @@
 # Jira Service Management
 
+Triggers: not shipped — request-search is a JQL-style search without a fixed created-descending query in the existing action (https://developer.atlassian.com/cloud/jira/service-desk/rest/).
+
 Manage Jira Service Management service desks, request types, customer requests, queues,
 SLAs and organizations.
 
