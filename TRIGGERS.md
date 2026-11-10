@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1208 triggers, 3272 unaccounted list actions in 607 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -362,7 +362,6 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/gamma | 1 | 5 | 4 |
 | apps/gerrit | 1 | 5 | 4 |
 | apps/ghost | 1 | 5 | 4 |
-| apps/gitlab | 6 | 4 | 4 |
 | apps/google/google-admin | 0 | 4 | 4 |
 | apps/google/youtube | 1 | 5 | 4 |
 | apps/grain | 1 | 5 | 4 |
@@ -403,7 +402,6 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/smartsuite | 2 | 5 | 4 |
 | apps/softr | 1 | 5 | 4 |
 | apps/statuspage | 1 | 5 | 4 |
-| apps/stripe | 10 | 4 | 4 |
 | apps/terraform | 4 | 4 | 4 |
 | apps/ticktick | 1 | 5 | 4 |
 | apps/toggl | 3 | 4 | 4 |
@@ -439,7 +437,6 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/firestore | 1 | 4 | 3 |
 | apps/folk | 1 | 4 | 3 |
 | apps/formstack-documents | 1 | 4 | 3 |
-| apps/github | 6 | 3 | 3 |
 | apps/google/gmail | 1 | 4 | 3 |
 | apps/google/google-contacts | 1 | 4 | 3 |
 | apps/google/google-vertex-ai | 0 | 3 | 3 |
@@ -640,6 +637,8 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
+| apps/github | 15 | 3 | 0 |
+| apps/gitlab | 13 | 4 | 0 |
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
@@ -670,6 +669,7 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
 | apps/stackexchange | 11 | 32 | 0 |
+| apps/stripe | 33 | 4 | 0 |
 | apps/supabase | 1 | 1 | 0 |
 | apps/telegram | 2 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
@@ -710,8 +710,8 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/fivetran | 4 | new-connection, sync-started, sync-ended, connection-failure | apps/fivetran/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret; X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); the earlier New Connection poll (connection-list) is kept. |
 | apps/flodesk | 4 | new-segment, new-subscriber, subscriber-unsubscribed, subscriber-added-to-segment | apps/flodesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment; no updated or complaint event exists). Flodesk publishes no signature, so the README says the callback URL is the secret; the earlier New Segment poll (list-segments) is kept. |
 | apps/formstack | 2 | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
-| apps/github | 6 | issue, issue-comment, pull-request, push, release, workflow-run | apps/github/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
-| apps/gitlab | 6 | push, merge-request, issue, comment, pipeline, release | https://docs.gitlab.com/api/version/ and https://docs.gitlab.com/user/project/integrations/webhooks/ (conductor-verified 2026-11-09) | hand | API-registered project webhook (POST /projects/:id/hooks); onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
+| apps/github | 15 | any-event, fork, issue-comment, issue, pull-request-review-comment, pull-request-review, pull-request, push, ref-created, ref-deleted, release, repository-event, star, workflow-job, workflow-run | apps/github/README.md Triggers section (verified 2026-11-10) | hand | shipped: repository webhook registered through the vendor API (POST /repos/{owner}/{repo}/hooks); 14 named event triggers plus Any Event, X-Hub-Signature-256 HMAC-SHA256 verified |
+| apps/gitlab | 13 | any-event, comment, deployment, issue, job, merge-request, milestone, new-project, pipeline, push, release, tag-push, wiki-page | apps/gitlab/README.md Triggers section (verified 2026-11-10) | hand | API-registered project webhook (POST /projects/:id/hooks); 11 named event triggers, the `new-project` poll trigger and Any Event; onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
 | apps/gocanvas | 5 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks); unsigned (no signature documented), callback URL is the secret; delivery body undocumented so passed through whole |
 | apps/goto-webinar | 5 | registrant-added, registrant-joined, webinar-created, webinar-changed, survey-submitted | apps/goto-webinar/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/PUT /webhooks + POST /userSubscriptions); X-Webhook-Signature base64 HMAC-SHA256 of timestamp:body under the webhook secret key, 300 s window; no poll: webinar list filters scheduled time, not creation |
 | apps/gumroad | 2 | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
@@ -741,7 +741,7 @@ depth: 682 apps, 1169 triggers, 3283 unaccounted list actions in 610 apps, n8n-p
 | apps/shopify | 18 | customer-created, customer-deleted, customer-updated, event, inventory-level-updated, location-created, location-deleted, location-updated, order-cancelled, order-created, order-deleted, order-fulfilled, order-paid, order-updated, product-created, product-deleted, product-updated, refund-created | apps/shopify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/signnow | 3 | document-created, document-completed, invite-signed | apps/signnow/README.md Triggers section (verified 2026-11-10) | hand | user-level event subscription via POST /v2/event-subscriptions with a host-chosen secret_key, signed X-SignNow-Signature base64 HMAC-SHA256 of the body (https://docs.signnow.com/docs/signnow/webhooks) |
 | apps/signwell | 3 | document-completed, document-signed, document-event | apps/signwell/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST /api/v1/hooks, id kept for DELETE /hooks/{id}); event.hash = HMAC-SHA256 of type@time keyed with the webhook id, 300 s window; the body is not bound by the hash |
-| apps/stripe | 10 | charge-refunded, checkout-completed, customer-created, event, invoice-paid, invoice-payment-failed, payment-failed, payment-succeeded, subscription-canceled, subscription-created | apps/stripe/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/stripe | 33 | charge-captured, charge-failed, charge-refunded, charge-succeeded, charge-updated, checkout-completed, checkout-expired, customer-created, customer-deleted, customer-updated, event, invoice-created, invoice-deleted, invoice-finalized, invoice-paid, invoice-payment-failed, invoice-updated, invoice-voided, payment-failed, payment-intent-canceled, payment-intent-created, payment-succeeded, price-created, price-deleted, price-updated, product-created, product-deleted, product-updated, refund-created, refund-updated, subscription-canceled, subscription-created, subscription-updated | apps/stripe/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (POST /v1/webhook_endpoints); 32 named event triggers plus the Any-event trigger `event`, Stripe-Signature HMAC-SHA256 verified with the endpoint secret |
 | apps/surveymonkey | 1 | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | 2 | new-message, update | apps/telegram/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/terraform | 4 | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
