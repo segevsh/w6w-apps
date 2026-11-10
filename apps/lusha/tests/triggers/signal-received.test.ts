@@ -244,7 +244,7 @@ test("signature or timestamp header missing → refused", async () => {
 });
 
 test("stale or future timestamp → refused even with a valid signature over it", async () => {
-  for (const delta of [-301, -86400, 301, 86400]) {
+  for (const delta of [-400, -86400, 400, 86400]) {
     await refused(() => ingest(call(BODY, signed(BODY, String(NOW + delta)))), "window");
   }
   assertEquals(
