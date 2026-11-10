@@ -1,14 +1,27 @@
 # Braze
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 10 (poll)
 
 ## Triggers
 
 | Key — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-or-updated-campaign` — New or Updated Campaign | poll | `campaign-list` ordered by latest edit | Each newly created or updated campaign |
+| `new-canvas` — New Canvas | poll | `canvas-list`, `sort_direction=desc` | Each newly created Canvas |
+| `new-or-updated-canvas` — New or Updated Canvas | poll | `canvas-list`, `last_edit.time[gt]` | Each Canvas created or edited |
+| `new-segment` — New Segment | poll | `segment-list`, `sort_direction=desc` | Each newly created segment |
+| `new-catalog` — New Catalog | poll | `catalog-list` | Each newly created catalog |
+| `new-content-block` — New Content Block | poll | `content-block-list`, `modified_after` | Each newly created Content Block |
+| `new-or-updated-content-block` — New or Updated Content Block | poll | `content-block-list`, `modified_after` | Each Content Block created or edited |
+| `new-email-unsubscribe` — New Email Unsubscribe | poll | `email-unsubscribes-list` | Each email address that unsubscribes |
+| `new-email-hard-bounce` — New Email Hard Bounce | poll | `email-hard-bounces-list` | Each email address that hard bounces |
+| `new-invalid-phone-number` — New Invalid Phone Number | poll | `sms-invalid-phone-number-list` | Each phone number found undeliverable |
 
-Vendor reference: https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaign_list/ (verified 2026-11-09).
+Newest-first triggers (`new-canvas`, `new-segment`) and the first check of every trigger record what exists without firing. The edited-since and date-range triggers ask for `last check - 120 s`, resume from the saved page/offset when a window is longer than five pages, and store a floor on the first check so anything older than it never fires. Catalogs are the workspace's few catalogs read whole.
+
+Not covered: `catalog-item-list` (one request returns a catalog's items with no sort or since filter, and a catalog can hold a very large number of items).
+
+Vendor reference: [canvas list](https://www.braze.com/docs/api/endpoints/export/canvas/get_canvases/), [segment list](https://www.braze.com/docs/api/endpoints/export/segments/get_segment/), [campaign list](https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaigns/), [hard bounces](https://www.braze.com/docs/api/endpoints/email/get_list_hard_bounces/), [unsubscribes](https://www.braze.com/docs/api/endpoints/email/get_query_unsubscribed_email_addresses), [invalid phone numbers](https://www.braze.com/docs/api/endpoints/sms/get_query_invalid_numbers) (verified 2026-11-10).
 
 Track user data, trigger campaigns and Canvases, send messages, and manage
 email subscriptions in Braze — the customer engagement / marketing automation
