@@ -1673,12 +1673,68 @@
     "path": "apps/brevo",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-contact"
+      "new-contact",
+      "contact-created",
+      "new-sender",
+      "contact-updated",
+      "contact-deleted",
+      "email-delivered",
+      "email-opened",
+      "email-clicked",
+      "email-bounced",
+      "email-unsubscribed",
+      "inbound-email",
+      "any-event"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/brevo/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-contacts",
+    "reason": "shipped: webhooks registered through the vendor API with a caller-chosen bearer token (Brevo publishes no body signature); new-contact (list addition) keeps its older unauthenticated callback URL; contact-created and new-sender are polls",
+    "verified": "apps/brevo/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-attributes": "reference data: the account's contact field definitions (https://developers.brevo.com/reference/get-attributes), not records"
+    },
+    "events": {
+      "transactional:sent": "any",
+      "transactional:request": "any",
+      "transactional:delivered": "email-delivered",
+      "transactional:hardBounce": "email-bounced",
+      "transactional:softBounce": "email-bounced",
+      "transactional:blocked": "any",
+      "transactional:spam": "any",
+      "transactional:invalid": "any",
+      "transactional:deferred": "any",
+      "transactional:click": "email-clicked",
+      "transactional:opened": "email-opened",
+      "transactional:uniqueOpened": "any",
+      "transactional:unsubscribed": "email-unsubscribed",
+      "marketing:spam": "any",
+      "marketing:opened": "any",
+      "marketing:click": "any",
+      "marketing:hardBounce": "any",
+      "marketing:softBounce": "any",
+      "marketing:unsubscribed": "any",
+      "marketing:listAddition": "new-contact",
+      "marketing:delivered": "any",
+      "marketing:contactUpdated": "contact-updated",
+      "marketing:contactDeleted": "contact-deleted",
+      "inbound:inboundEmailProcessed": "inbound-email"
+    },
+    "n8n": {
+      "blocked": "any-event",
+      "click": "email-clicked",
+      "deferred": "any-event",
+      "delivered": "email-delivered",
+      "hardBounce": "email-bounced",
+      "invalid": "any-event",
+      "spam": "any-event",
+      "opened": "email-opened",
+      "request": "any-event",
+      "softBounce": "email-bounced",
+      "uniqueOpened": "any-event",
+      "unsubscribed": "email-unsubscribed",
+      "listAddition": "new-contact",
+      "inboundEmailProcessed": "inbound-email"
+    }
   },
   {
     "path": "apps/brex",
@@ -2188,17 +2244,87 @@
     "path": "apps/clockify",
     "mechanism": "webhook-api",
     "candidates": [
-      "new-client",
-      "new-project",
-      "new-task",
       "new-time-entry",
       "timer-started",
-      "timer-stopped"
+      "timer-stopped",
+      "new-project",
+      "new-client",
+      "new-task",
+      "time-entry-updated",
+      "time-entry-deleted",
+      "project-updated",
+      "project-deleted",
+      "client-updated",
+      "client-deleted",
+      "task-updated",
+      "task-deleted",
+      "any-event",
+      "new-workspace"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API",
-    "verified": "apps/clockify/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "workspace-list",
+    "reason": "shipped: webhooks registered through the vendor API (one per event; any-event registers one webhook per listed event, signed by the per-webhook token in Clockify-Signature); new-workspace polls the bounded workspace list",
+    "verified": "apps/clockify/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "project-list": "new-project",
+      "client-list": "new-client"
+    },
+    "events": {
+      "NEW_PROJECT": "new-project",
+      "NEW_TASK": "new-task",
+      "NEW_CLIENT": "new-client",
+      "NEW_TIMER_STARTED": "timer-started",
+      "TIMER_STOPPED": "timer-stopped",
+      "TIME_ENTRY_UPDATED": "time-entry-updated",
+      "TIME_ENTRY_DELETED": "time-entry-deleted",
+      "TIME_ENTRY_SPLIT": "any",
+      "NEW_TIME_ENTRY": "new-time-entry",
+      "TIME_ENTRY_RESTORED": "any",
+      "NEW_TAG": "any",
+      "USER_DELETED_FROM_WORKSPACE": "any",
+      "USER_JOINED_WORKSPACE": "any",
+      "USER_DEACTIVATED_ON_WORKSPACE": "any",
+      "USER_ACTIVATED_ON_WORKSPACE": "any",
+      "USER_EMAIL_CHANGED": "any",
+      "USER_UPDATED": "any",
+      "NEW_INVOICE": "any",
+      "INVOICE_UPDATED": "any",
+      "NEW_APPROVAL_REQUEST": "any",
+      "APPROVAL_REQUEST_STATUS_UPDATED": "any",
+      "TIME_OFF_REQUESTED": "any",
+      "TIME_OFF_REQUEST_UPDATED": "any",
+      "TIME_OFF_REQUEST_APPROVED": "any",
+      "TIME_OFF_REQUEST_REJECTED": "any",
+      "TIME_OFF_REQUEST_STARTED": "any",
+      "TIME_OFF_REQUEST_WITHDRAWN": "any",
+      "BALANCE_UPDATED": "any",
+      "TAG_UPDATED": "any",
+      "TAG_DELETED": "any",
+      "TASK_UPDATED": "task-updated",
+      "CLIENT_UPDATED": "client-updated",
+      "TASK_DELETED": "task-deleted",
+      "CLIENT_DELETED": "client-deleted",
+      "EXPENSE_RESTORED": "any",
+      "ASSIGNMENT_CREATED": "any",
+      "ASSIGNMENT_DELETED": "any",
+      "ASSIGNMENT_PUBLISHED": "any",
+      "ASSIGNMENT_UPDATED": "any",
+      "EXPENSE_CREATED": "any",
+      "EXPENSE_DELETED": "any",
+      "EXPENSE_UPDATED": "any",
+      "PROJECT_UPDATED": "project-updated",
+      "PROJECT_DELETED": "project-deleted",
+      "USER_GROUP_CREATED": "any",
+      "USER_GROUP_UPDATED": "any",
+      "USER_GROUP_DELETED": "any",
+      "USERS_INVITED_TO_WORKSPACE": "any",
+      "LIMITED_USERS_ADDED_TO_WORKSPACE": "any",
+      "COST_RATE_UPDATED": "any",
+      "BILLABLE_RATE_UPDATED": "any"
+    },
+    "n8n": {
+      "NEW_TIME_ENTRY": "new-time-entry"
+    }
   },
   {
     "path": "apps/clockodo",
@@ -8434,12 +8560,39 @@
     "mechanism": "webhook-api",
     "candidates": [
       "new-pledge",
-      "post-published"
+      "post-published",
+      "member-created",
+      "member-updated",
+      "member-deleted",
+      "pledge-updated",
+      "pledge-deleted",
+      "post-updated",
+      "post-deleted",
+      "any-event",
+      "new-campaign"
     ],
-    "pollAction": null,
-    "reason": "POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks)",
+    "pollAction": "list-campaigns",
+    "reason": "POST /webhooks per subscription (the trigger's v2 triggers); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks); new-campaign polls the campaign list",
     "verified": "apps/patreon/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "list-campaign-members": "member-created",
+      "list-campaign-posts": "post-published"
+    },
+    "skipped": {
+      "list-webhooks": "admin configuration: the app's own webhook registrations, not a record feed"
+    },
+    "events": {
+      "members:create": "member-created",
+      "members:update": "member-updated",
+      "members:delete": "member-deleted",
+      "members:pledge:create": "new-pledge",
+      "members:pledge:update": "pledge-updated",
+      "members:pledge:delete": "pledge-deleted",
+      "posts:publish": "post-published",
+      "posts:update": "post-updated",
+      "posts:delete": "post-deleted"
+    }
   },
   {
     "path": "apps/payhip",
@@ -8879,12 +9032,27 @@
     "path": "apps/posthog",
     "mechanism": "manual-webhook",
     "candidates": [
-      "event-captured"
+      "event-captured",
+      "pageview",
+      "person-identified",
+      "feature-flag-called",
+      "new-cohort",
+      "new-feature-flag",
+      "new-or-updated-insight"
     ],
-    "pollAction": null,
-    "reason": "HTTP Webhook destination added by hand in PostHog; PostHog's POST /api/projects/:project_id/hog_functions/ (https://posthog.com/docs/api/hog-functions) could register it, queued as a webhook-api follow-up, not built; deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook)",
+    "pollAction": "insight-list",
+    "reason": "HTTP Webhook destination added by hand in PostHog (it forwards captured events only); deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook); cohorts, flags and insights are polls",
     "verified": "apps/posthog/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "person-list": "no sort or created/updated filter in the persons_list schema (https://us.posthog.com/api/schema/) and the person set is unbounded"
+    },
+    "events": {
+      "$pageview": "pageview",
+      "$identify": "person-identified",
+      "$feature_flag_called": "feature-flag-called",
+      "(any other captured event)": "any"
+    }
   },
   {
     "path": "apps/postmark",
@@ -11818,12 +11986,46 @@
       "run-completed",
       "run-errored",
       "run-needs-attention",
-      "run-event"
+      "run-event",
+      "run-created",
+      "run-applying",
+      "run-canceled",
+      "run-pending-apply-approval",
+      "workspace-deleted",
+      "drift-detected",
+      "any-event",
+      "new-organization",
+      "new-workspace",
+      "new-variable"
     ],
-    "pollAction": null,
-    "reason": "API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected)",
+    "pollAction": "organization-list",
+    "reason": "API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected); organization, workspace and variable lists are polls",
     "verified": "apps/terraform/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "covers": {
+      "run-list": "run-event"
+    },
+    "events": {
+      "run:created": "run-created",
+      "run:planning": "any",
+      "run:needs_attention": "run-needs-attention",
+      "run:pending_apply_approval": "run-pending-apply-approval",
+      "run:cost_estimated": "any",
+      "run:policy_override_required": "any",
+      "run:policies_checked": "any",
+      "run:applying": "run-applying",
+      "run:completed": "run-completed",
+      "run:errored": "run-errored",
+      "run:run_errored": "any",
+      "run:run_canceled": "run-canceled",
+      "run:policy_soft_failed": "any",
+      "assessment:drifted": "drift-detected",
+      "assessment:check_failure": "any",
+      "assessment:failed": "any",
+      "workspace:auto_destroy_reminder": "any",
+      "workspace:auto_destroy_run_results": "any",
+      "workspace:deleted": "workspace-deleted"
+    }
   },
   {
     "path": "apps/textmagic",

@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2694 triggers, 1570 unaccounted list actions in 410 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -208,9 +208,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/pagerduty | 1 | 5 | 4 |
 | apps/paperform | 2 | 6 | 4 |
 | apps/parseur | 1 | 5 | 4 |
-| apps/patreon | 2 | 4 | 4 |
 | apps/pinecone | 2 | 6 | 4 |
-| apps/posthog | 1 | 4 | 4 |
 | apps/quickbase | 1 | 5 | 4 |
 | apps/rdstation | 1 | 5 | 4 |
 | apps/regfox | 2 | 5 | 4 |
@@ -223,7 +221,6 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/smartsuite | 2 | 5 | 4 |
 | apps/softr | 1 | 5 | 4 |
 | apps/statuspage | 1 | 5 | 4 |
-| apps/terraform | 4 | 4 | 4 |
 | apps/ticktick | 1 | 5 | 4 |
 | apps/toggl | 3 | 4 | 4 |
 | apps/tremendous | 1 | 5 | 4 |
@@ -244,9 +241,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/atlassian/jira-data-center | 1 | 4 | 3 |
 | apps/aws/ses | 3 | 6 | 3 |
 | apps/basecamp | 1 | 4 | 3 |
-| apps/brevo | 1 | 3 | 3 |
 | apps/cal | 3 | 3 | 3 |
-| apps/clockify | 6 | 3 | 3 |
 | apps/constantcontact | 1 | 4 | 3 |
 | apps/contentful | 1 | 4 | 3 |
 | apps/crunchbase | 0 | 3 | 3 |
@@ -468,6 +463,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/box | 20 | 2 | 0 |
 | apps/braze | 10 | 9 | 0 |
 | apps/breezyhr | 6 | 11 | 0 |
+| apps/brevo | 12 | 3 | 0 |
 | apps/brex | 8 | 6 | 0 |
 | apps/bubble | 2 | 1 | 0 |
 | apps/calendly | 9 | 4 | 0 |
@@ -477,6 +473,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
+| apps/clockify | 16 | 3 | 0 |
 | apps/close | 7 | 9 | 0 |
 | apps/cloze | 4 | 12 | 0 |
 | apps/companycam | 20 | 20 | 0 |
@@ -602,6 +599,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/outreach | 2 | 0 | 0 |
 | apps/outseta | 10 | 13 | 0 |
 | apps/pardot | 2 | 0 | 0 |
+| apps/patreon | 11 | 4 | 0 |
 | apps/payhip | 4 | 0 | 0 |
 | apps/paystack | 3 | 0 | 0 |
 | apps/pennylane | 6 | 9 | 0 |
@@ -610,6 +608,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/podio | 8 | 9 | 0 |
 | apps/podium | 11 | 16 | 0 |
 | apps/postgres | 1 | 0 | 0 |
+| apps/posthog | 7 | 4 | 0 |
 | apps/practicebetter | 9 | 11 | 0 |
 | apps/printavo | 2 | 10 | 0 |
 | apps/productboard | 12 | 20 | 0 |
@@ -656,6 +655,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/teamup | 7 | 13 | 0 |
 | apps/telegram | 11 | 0 | 0 |
 | apps/telnyx | 1 | 1 | 0 |
+| apps/terraform | 14 | 4 | 0 |
 | apps/thrivecart | 20 | 6 | 0 |
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
 | apps/tumblr | 6 | 10 | 0 |
@@ -695,12 +695,12 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/atlassian/bitbucket | 19 | issue-created, pull-request-comment, pull-request-created, pull-request-declined, pull-request-merged, pull-request-updated, push, any-event, issue-updated, issue-comment-created, pull-request-approved, pull-request-changes-requested, repo-fork, repo-updated, commit-status-created, commit-status-updated, new-repository, new-or-updated-repository, new-workspace | apps/atlassian/bitbucket/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed repository webhooks registered through the vendor API (X-Hub-Signature, per-subscription secret) for the main PR/issue/push/build-status events plus an Any-event trigger over all 24 documented keys; polls for new and updated repositories (sort=-created_on / -updated_on) and new workspaces. |
 | apps/atlassian/trello | 21 | any-event, board-member-added, board-updated, card-created, card-deleted, card-member-added, card-moved, card-updated, check-item-created, check-item-state-updated, checklist-added, comment-added, comment-updated, label-added-to-card, label-created, label-deleted, label-removed-from-card, label-updated, list-created, list-updated, new-card-in-list | apps/atlassian/trello/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
 | apps/box | 20 | file-uploaded, file-trashed, file-deleted, file-restored, file-moved, file-copied, file-renamed, folder-created, folder-renamed, folder-moved, folder-copied, folder-trashed, folder-deleted, folder-restored, shared-link-created, shared-link-updated, shared-link-deleted, new-folder-item, new-or-updated-search-result, activity | apps/box/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks registered through the vendor API (one trigger per file/folder/shared-link event, plus Item Activity for the rest), and polls over list-folder-items and search |
-| apps/brevo | 1 | new-contact | apps/brevo/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/brevo | 12 | new-contact, contact-created, new-sender, contact-updated, contact-deleted, email-delivered, email-opened, email-clicked, email-bounced, email-unsubscribed, inbound-email, any-event | apps/brevo/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API with a caller-chosen bearer token (Brevo publishes no body signature); new-contact (list addition) keeps its older unauthenticated callback URL; contact-created and new-sender are polls |
 | apps/brex | 8 | event, user-updated, new-user, new-card, new-department, new-location, new-title, new-legal-entity | apps/brex/README.md Triggers section (verified 2026-11-10) | hand | signed webhook registered with POST /v1/webhooks (Webhook-Id/Timestamp/Signature v1 HMAC-SHA256, 5 minute window; Brex allows one endpoint per client, so one Any-event trigger `event` with an eventTypes filter plus `user-updated`); every list endpoint (users, cards, departments, locations, titles, legal entities) has no sort or since filter, so each has a whole-collection snapshot poll. |
 | apps/cal | 3 | booking-cancelled, booking-created, booking-rescheduled | apps/cal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/calendly | 9 | invitee-created, invitee-canceled, invitee-no-show-created, invitee-no-show-deleted, event-type-created, event-type-updated, event-type-deleted, routing-form-submission-created, any-event | apps/calendly/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API, signed (Calendly-Webhook-Signature) |
 | apps/clickup | 20 | any-event, folder-created, folder-deleted, folder-updated, list-created, list-deleted, list-updated, task-assignee-updated, task-comment-posted, task-comment-updated, task-created, task-deleted, task-due-date-updated, task-moved, task-priority-updated, task-status-updated, task-tag-updated, task-time-estimate-updated, task-time-tracked-updated, task-updated | apps/clickup/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API |
-| apps/clockify | 6 | new-client, new-project, new-task, new-time-entry, timer-started, timer-stopped | apps/clockify/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/clockify | 16 | new-time-entry, timer-started, timer-stopped, new-project, new-client, new-task, time-entry-updated, time-entry-deleted, project-updated, project-deleted, client-updated, client-deleted, task-updated, task-deleted, any-event, new-workspace | apps/clockify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (one per event; any-event registers one webhook per listed event, signed by the per-webhook token in Clockify-Signature); new-workspace polls the bounded workspace list |
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
 | apps/copper | 19 | any-event, deleted-company, deleted-lead, deleted-opportunity, deleted-person, deleted-task, new-activity, new-company, new-lead, new-opportunity, new-person, new-related-item, new-task, new-user, updated-company, updated-lead, updated-opportunity, updated-person, updated-task | apps/copper/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (created/updated/deleted for person, lead, company, opportunity, task, plus any-event) and polls for new activities, users and related items |
 | apps/elastic-email | 7 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept. |
@@ -732,7 +732,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/mautic | 18 | any-event, company-deleted, company-saved, contact-channel-subscription-changed, contact-company-changed, contact-deleted, contact-points-changed, contact-updated, email-opened, email-sent, form-submitted, new-campaign, new-contact, new-email, new-segment, new-tag, page-hit, sms-sent | apps/mautic/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhooks registered through the Webhooks REST API (Webhook-Signature base64 HMAC-SHA256) for every catalog event plus any-event, and snapshot polls for campaigns, segments, emails and tags |
 | apps/monday | 2 | item-created, column-value-changed | apps/monday/README.md Triggers section (verified 2026-11-10) | hand | create_webhook GraphQL mutation with challenge handshake; ordinary monday webhooks are unsigned (JWT only for integration-app tokens), so the callback URL is the secret (https://developer.monday.com/api-reference/docs/webhooks) |
 | apps/onfleet | 21 | any-event, new-hub, new-team, sms-recipient-opt-out, sms-recipient-response-missed, task-arrival, task-assigned, task-cloned, task-completed, task-created, task-delayed, task-deleted, task-eta, task-failed, task-started, task-unassigned, task-updated, worker-created, worker-deleted, worker-duty, worker-updated | apps/onfleet/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed webhook triggers registered through POST /webhooks (HMAC-SHA512 X-Onfleet-Signature) for every task and worker event plus any-event, and snapshot polls for teams and hubs |
-| apps/patreon | 2 | new-pledge, post-published | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per trigger (members:pledge:create, posts:publish); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks) |
+| apps/patreon | 11 | new-pledge, post-published, member-created, member-updated, member-deleted, pledge-updated, pledge-deleted, post-updated, post-deleted, any-event, new-campaign | apps/patreon/README.md Triggers section (verified 2026-11-10) | hand | POST /webhooks per subscription (the trigger's v2 triggers); X-Patreon-Signature is HMAC-MD5 of the body under the webhook secret returned at creation (https://docs.patreon.com/#webhooks); new-campaign polls the campaign list |
 | apps/paypal | 6 | event, invoice-paid, order-approved, payment-captured, payment-refunded, payout-item-succeeded | apps/paypal/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/pipedrive | 13 | new-deal, new-person, person-updated, person-deleted, new-organization, organization-updated, organization-deleted, deal-updated, deal-deleted, new-activity, new-note, new-lead, any-event | apps/pipedrive/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks (v2) registered through the vendor API with a random HTTP Basic password per subscription (Pipedrive does not sign deliveries); list actions covered by the created-event webhooks (the v1 list endpoints the actions call are no longer documented) |
 | apps/pipefy | 4 | new-pipe, new-card, card-done, card-moved | apps/pipefy/README.md Triggers section (verified 2026-11-10) | hand | poll new-pipe kept; plus API-registered (createWebhook/deleteWebhook) card.create / card.done / card.move webhooks — Pipefy does not sign, so a random per-subscription secret is registered as a custom header and compared in constant time on each delivery (https://developers.pipefy.com/reference/pipe-table-webhooks) |
@@ -745,7 +745,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/stripe | 33 | charge-captured, charge-failed, charge-refunded, charge-succeeded, charge-updated, checkout-completed, checkout-expired, customer-created, customer-deleted, customer-updated, event, invoice-created, invoice-deleted, invoice-finalized, invoice-paid, invoice-payment-failed, invoice-updated, invoice-voided, payment-failed, payment-intent-canceled, payment-intent-created, payment-succeeded, price-created, price-deleted, price-updated, product-created, product-deleted, product-updated, refund-created, refund-updated, subscription-canceled, subscription-created, subscription-updated | apps/stripe/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (POST /v1/webhook_endpoints); 32 named event triggers plus the Any-event trigger `event`, Stripe-Signature HMAC-SHA256 verified with the endpoint secret |
 | apps/surveymonkey | 1 | response-completed | apps/surveymonkey/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/telegram | 11 | callback-query, channel-post, chat-member-updated, edited-channel-post, edited-message, inline-query, new-message, poll, pre-checkout-query, shipping-query, update | apps/telegram/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhook registered through the vendor API (setWebhook with a secret_token); one trigger per update type plus the Any-event trigger `update`; no list actions (https://core.telegram.org/bots/api#update) |
-| apps/terraform | 4 | run-completed, run-errored, run-needs-attention, run-event | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected) |
+| apps/terraform | 14 | run-completed, run-errored, run-needs-attention, run-event, run-created, run-applying, run-canceled, run-pending-apply-approval, workspace-deleted, drift-detected, any-event, new-organization, new-workspace, new-variable | apps/terraform/README.md Triggers section (verified 2026-11-10) | hand | API-registered workspace notification configuration (generic destination, per-subscription random token); X-TFE-Notification-Signature = HMAC-SHA512 of the exact body, no timestamp in the scheme (replay not rejected); organization, workspace and variable lists are polls |
 | apps/thrivecart | 20 | new-purchase, subscription-payment, subscription-cancelled, thrivecart-event, new-bump-purchase, new-upsell-purchase, new-downsell-purchase, payment-declined, order-refunded, subscription-payment-failed, cart-abandoned, subscription-paused, subscription-resumed, affiliate-created, affiliate-approved, commission-earned, new-product, new-bump, new-upsell, new-downsell | apps/thrivecart/README.md Triggers section (verified 2026-11-10) | hand | API-registered event subscriptions (POST /api/external/subscribe, removed by URL via /unsubscribe), unsigned (callback URL is the secret); polls snapshot the unpaginated product, bump, upsell and downsell lists |
 | apps/tiktok-lead-generation | 1 | new-lead | apps/tiktok-lead-generation/README.md Triggers section (verified 2026-11-10) | hand | signed lead webhook registered via POST /subscription/subscribe/ (subscribe_entity LEAD); TikTok-Signature t=,s= HMAC-SHA256 over t.rawBody keyed with the app secret (https://business-api.tiktok.com/portal/docs/webhook-verification/v1.3) |
 | apps/toggl | 3 | project-created, time-entry-created, time-entry-updated | apps/toggl/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
@@ -786,7 +786,7 @@ depth: 682 apps, 2648 triggers, 1588 unaccounted list actions in 415 apps, n8n-p
 | apps/payhip | 4 | new-sale, sale-refunded, new-subscription, subscription-cancelled | apps/payhip/README.md Triggers section (verified 2026-11-10) | hand | webhooks are set in the seller's Developer settings; body signature is sha256 of the API key (a shared token, not a body HMAC) (https://help.payhip.com/article/115-webhooks) |
 | apps/peopledatalabs | 1 | person-updates | apps/peopledatalabs/README.md Triggers section (verified 2026-11-10) | hand | enterprise-only person-update webhook registered by the PDL team (no API); deliveries carry a customer-chosen shared-key header, checked in constant time (https://docs.peopledatalabs.com/docs/webhooks) |
 | apps/phantombuster | 2 | new-agent, agent-run-finished | apps/phantombuster/README.md Triggers section (verified 2026-11-10) | hand | poll new-agent kept; added manual unsigned agent-run-finished webhook set per agent in the dashboard, callback URL is the secret (https://hub.phantombuster.com/docs/using-webhooks) |
-| apps/posthog | 1 | event-captured | apps/posthog/README.md Triggers section (verified 2026-11-10) | hand | HTTP Webhook destination added by hand in PostHog; PostHog's POST /api/projects/:project_id/hog_functions/ (https://posthog.com/docs/api/hog-functions) could register it, queued as a webhook-api follow-up, not built; deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook) |
+| apps/posthog | 7 | event-captured, pageview, person-identified, feature-flag-called, new-cohort, new-feature-flag, new-or-updated-insight | apps/posthog/README.md Triggers section (verified 2026-11-10) | hand | HTTP Webhook destination added by hand in PostHog (it forwards captured events only); deliveries verified with the Standard Webhooks signature, secret required (https://posthog.com/docs/data-pipelines/destinations/webhook); cohorts, flags and insights are polls |
 | apps/slack | 25 | app-mention, channel-archived, channel-created, channel-deleted, channel-renamed, channel-unarchived, event, file-created, file-deleted, file-shared, member-joined-channel, member-left-channel, message-deleted, message-edited, new-message, new-search-match, reaction-added, reaction-removed, star-added, star-removed, team-join, user-updated, usergroup-created, usergroup-members-changed, usergroup-updated | apps/slack/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (user registers the callback URL at the vendor) plus a newest-first search.messages poll |
 | apps/strava | 3 | activity-created, activity-deleted, activity-updated | apps/strava/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/tldv | 2 | meeting-ready, transcript-ready | apps/tldv/README.md Triggers section (verified 2026-11-10) | hand | webhook set up inside tl;dv (user, team or organization level) with the trigger's callback URL; MeetingReady and TranscriptReady; unsigned (no signature documented), callback URL is the secret |
