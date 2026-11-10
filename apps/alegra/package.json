@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/alegra",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Manage Alegra accounting data — invoices, contacts, items, payments, quotes and supplier bills — through Alegra's REST API; includes a poll trigger for new contacts.",
   "license": "MIT",
   "author": {

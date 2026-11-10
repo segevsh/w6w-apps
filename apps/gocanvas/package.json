@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/gocanvas",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Forms, submissions, dispatches, customers, sites, projects, users and webhooks in GoCanvas, plus webhook triggers for submissions, dispatches, workflow handoffs and status changes.",
   "license": "MIT",
   "author": {

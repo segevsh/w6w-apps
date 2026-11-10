@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/donorbox",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "List campaigns, donations, recurring plans, donors, events, tickets and purchases on Donorbox, the nonprofit fundraising platform, with a poll trigger for new events.",
   "license": "MIT",
   "author": {
