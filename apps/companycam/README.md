@@ -13,7 +13,7 @@
 
 Trust model: polling only — no inbound endpoint, no webhook, no signature; each check makes the same authenticated request the wrapped action makes, with the connection's own credential.
 
-Vendor reference: <https://docs.companycam.com/reference/listchecklists> (verified 2026-11-09).
+Vendor reference: <https://docs.companycam.com/reference/listchecklists> (verified 2026-11-10).
 
 ## Read this first: the API this app targets has an announced end date
 
