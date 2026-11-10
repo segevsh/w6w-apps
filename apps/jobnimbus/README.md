@@ -251,4 +251,13 @@ which picks up `_tools/deno.json`'s own import map, is what was actually used to
 
 ## Triggers
 
-- **New Contact** wraps the existing `contact-list` action and polls its newest-first feed. Vendor documentation: https://documenter.getpostman.com/view/3919598/S11PpG4x (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Contact (`new-contact`) | poll | `contact-list` — by `date_created` descending | each newly created contact |
+| New or Updated Contact (`new-or-updated-contact`) | poll | `contact-list` — by `date_updated` descending | each contact that is new or edited (one event per edit) |
+
+Both triggers poll every 5 minutes, read one page of 100 from the app's existing `contact-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://documenter.getpostman.com/view/3919598/S11PpG4x (verified 2026-11-09). Its list-parameters section documents `sort_field` (default `date_created`) and `sort_direction` (default `desc`) and the `date_updated` record field.
