@@ -8,7 +8,7 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 50, manual-webhook: 17, poll: 400, none: 216
+**Totals:** 683 apps — webhook-api: 50, manual-webhook: 17, poll: 399, none: 217
 
 ## webhook-api (50)
 
@@ -87,7 +87,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (400)
+## poll (399)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -239,31 +239,30 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/granola | audit-event-list | new-audit-event | apps/granola/README.md Triggers section (verified 2026-11-09) | hand | Audit log is oldest-first with page_size max 30; polled with occurred_after since-filter plus id dedupe (shape b). |
 | apps/gravityforms | entry-get-many | new-entry, new-or-updated-entry | apps/gravityforms/README.md Triggers section (verified 2026-11-09) | hand | Entries support created and updated descending ordering. |
 | apps/greenhouse | list-interviews | new-interview | apps/greenhouse/README.md Triggers section (verified 2026-11-09) | hand | Harvest v3 interviews documents no order; polled with created_at gte since-filter, cursor paging and id dedupe (shape b). |
-| apps/grist | list-records | new-records | no | scan | list action list-records has pagination and order/since params |
 | apps/guru | card-search | new-card | apps/guru/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action card-search |
-| apps/gusto | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/gusto | event-list | new-event | apps/gusto/README.md Triggers section (verified 2026-11-09) | hand | shape a: event-list now takes sort_order and the trigger sends sort_order=desc (https://docs.gusto.com/app-integrations/docs/events: asc default, desc supported, 30-day window) |
 | apps/hackernews | list-new-stories | new-story | apps/hackernews/README.md Triggers section (verified 2026-11-09) | hand | the official API documents /v0/newstories.json as the newest stories, capped at 500 ids; event is {id} (https://github.com/HackerNews/API) |
-| apps/harvest | task-get-many | new-task-get-many | no | scan | list action task-get-many has pagination and order/since params |
-| apps/hex | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
-| apps/heyreach | list-get-leads | new-get-leads | no | scan | list action list-get-leads has pagination and order/since params |
+| apps/harvest | task-get-many | new-task | apps/harvest/README.md Triggers section (verified 2026-11-09) | hand | Task page exposes stable task IDs. |
+| apps/hex | user-list | new-user | apps/hex/README.md Triggers section (verified 2026-11-09) | hand | shape c: /v1/users has only NAME/EMAIL sorts, so the trigger walks every page (limit 500, after cursor) and snapshots user ids; walk past the 5000-row cap throws (https://static.hex.site/openapi.json) |
+| apps/heyreach | list-get-leads | new-lead | apps/heyreach/README.md Triggers section (verified 2026-11-09) | hand | shape b: createdFrom since-filter (cursor minus 2 min) on list-get-leads, every page of the window read, deduped by lead id (https://docs.heyreach.io/openapi.json) |
 | apps/hibob | tasks-list | new-task | apps/hibob/README.md Triggers section (verified 2026-11-09) | hand | the task endpoint caps one response at 5,000 open tasks and is snapshotted for additions (https://apidocs.hibob.com/reference); the 5,000 bound is the trigger's own snapshot cap, above it the check fails with a cap error |
 | apps/honeybook | project-list | new-project | no | hand | shipped poll trigger(s) over list action project-list |
-| apps/hospitable | reservation-list | new-reservation-list | no | scan | list action reservation-list has pagination and order/since params |
+| apps/hospitable | reservation-list | new-reservation | apps/hospitable/README.md Triggers section (verified 2026-11-09) | hand | Reservations can be requested newest booked first with stable IDs. |
 | apps/hostaway | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
-| apps/hotmart | product-list | new-product-list | no | scan | list action product-list has pagination and order/since params |
-| apps/housecallpro | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
+| apps/hotmart | product-list | new-product | apps/hotmart/README.md Triggers section (verified 2026-11-09) | hand | shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/) |
+| apps/housecallpro | customer-list | new-customer | apps/housecallpro/README.md Triggers section (verified 2026-11-09) | hand | Customers are sorted newest created first with stable IDs. |
 | apps/hubspot | search-contacts | new-contact | apps/hubspot/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action search-contacts |
-| apps/hubstaff | project-list | new-project-list | no | scan | list action project-list has pagination and order/since params |
-| apps/huggingface | inference-model-list | new-inference-model-list | no | scan | list action inference-model-list has pagination and order/since params |
-| apps/hunter | lead-list | new-lead-list | no | scan | list action lead-list has pagination and order/since params |
+| apps/hubstaff | project-list | new-project | apps/hubstaff/README.md Triggers section (verified 2026-11-09) | hand | shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs) |
+| apps/huggingface | inference-model-list | new-inference-model | apps/huggingface/README.md Triggers section (verified 2026-11-09) | hand | shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api) |
+| apps/hunter | lead-list | new-lead | apps/hunter/README.md Triggers section (verified 2026-11-09) | hand | Lead list is most recent first and exposes stable IDs. |
 | apps/hyros | leads-list | new-lead, new-sale | apps/hyros/README.md Triggers section (verified 2026-11-09) | hand | leads-list and sales-list take the documented fromDate (only records whose join date is more recent) with an opaque nextPageId cursor: since-filter + id dedupe; no update stamp, so no new-or-updated (https://jsapi.apiary.io/apis/hyros.apib) |
 | apps/iclosed | deal-list | new-deal | no | hand | shipped poll trigger(s) over list action deal-list |
-| apps/inoreader | stream-preferences-list | new-stream-preferences-list | no | scan | list action stream-preferences-list has pagination and order/since params |
+| apps/inoreader | stream-contents | new-article | apps/inoreader/README.md Triggers section (verified 2026-11-09) | hand | shape a: stream/contents r defaults to newest first, order=newest sends no r (https://www.inoreader.com/developers/stream-contents) |
 | apps/insightly | contact-get-many | new-contact, new-lead, new-opportunity, new-organisation, new-or-updated-contact, new-or-updated-lead, new-or-updated-opportunity, new-or-updated-organisation | apps/insightly/README.md Triggers section (verified 2026-11-09) | hand | *-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded |
 | apps/instantly | email-list | new-email | apps/instantly/README.md Triggers section (verified 2026-08-29) | hand | shipped poll trigger(s) over list action email-list |
-| apps/ironclad | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
+| apps/ironclad | record-list | new-record, new-or-updated-record | apps/ironclad/README.md Triggers section (verified 2026-11-09) | hand | Records support descending agreement-date and last-updated sorts with stable IDs. |
 | apps/iterable | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
-| apps/jibble | activity-list | new-activity-list | no | scan | list action activity-list has pagination and order/since params |
+| apps/jibble | activity-list | new-activity | apps/jibble/README.md Triggers section (verified 2026-11-09) | hand | shape a: Activity has createdAt (OData $metadata), trigger sends $orderby=createdAt desc (https://workspace.prod.jibble.io/v1/$metadata) |
 | apps/jobber | invoice-list | new-invoice, new-or-updated-invoice | apps/jobber/README.md Triggers section (verified 2026-11-09) | hand | invoice-list sorted by CREATED_AT / UPDATED_AT descending (sort keys pinned in the request; Jobber docs host returns 403 to automated fetch, https://developer.getjobber.com/docs/) |
 | apps/jobnimbus | contact-list | new-contact, new-or-updated-contact | apps/jobnimbus/README.md Triggers section (verified 2026-11-09) | hand | contact-list sorted by date_created / date_updated descending (https://documenter.getpostman.com/view/3919598/S11PpG4x) |
 | apps/jobtread | list-jobs | new-job | no | hand | shipped poll trigger(s) over list action list-jobs |
@@ -492,7 +491,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (216)
+## none (217)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -568,6 +567,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/google/google-vertex-ai |  | apps/google/google-vertex-ai/README.md Triggers section (verified 2026-11-09) | hand | batch prediction job listing has no documented newest-first order or created/updated-since filter (https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.batchPredictionJobs/list) |
 | apps/google/googlesearchconsole |  | apps/google/googlesearchconsole/README.md Triggers section (verified 2026-11-09) | hand | the site list returns every accessible site with no documented bounded collection cap or change filter (https://developers.google.com/webmaster-tools/v1/sites/list); 'new site' rejected: adding a verified site is a rare admin act, not a record stream |
 | apps/google/looker |  | apps/google/looker/README.md Triggers section (verified 2026-11-09) | hand | existing dashboard and Look actions read unbounded collections without a newest-first order or since filter (https://cloud.google.com/looker/docs/reference/looker-api/latest); connection and model lists are rarely-changing admin configuration, rejected |
+| apps/grist | new-record | apps/grist/README.md Triggers section (verified 2026-11-09) | hand | list-records has no app-independent creation-time sort; each table chooses its own schema. |
 | apps/groq |  | apps/groq/README.md Triggers section (verified 2026-11-09) | hand | the existing batch list action exposes no documented newest-first order or created/updated-since filter (https://console.groq.com/docs/batch) |
 | apps/hedy |  | apps/hedy/README.md Triggers section (verified 2026-11-09) | hand | session and highlight lists are cursor-paged without a documented newest-first order or created/updated-since filter (https://api.swaggerhub.com/apis/HedyAI/hedy-api/1.0.1) |
 | apps/holded |  | apps/holded/README.md Triggers section (verified 2026-11-09) | hand | CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference); the funnel list is rarely-changing account configuration, rejected as a 'new funnel' event |

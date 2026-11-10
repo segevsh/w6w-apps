@@ -2680,14 +2680,14 @@
   },
   {
     "path": "apps/grist",
-    "mechanism": "poll",
+    "mechanism": "none",
     "candidates": [
-      "new-records"
+      "new-record"
     ],
-    "pollAction": "list-records",
-    "reason": "list action list-records has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": null,
+    "reason": "list-records has no app-independent creation-time sort; each table chooses its own schema.",
+    "verified": "apps/grist/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/groq",
@@ -2725,12 +2725,12 @@
     "path": "apps/gusto",
     "mechanism": "poll",
     "candidates": [
-      "new-event-list"
+      "new-event"
     ],
     "pollAction": "event-list",
-    "reason": "list action event-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape a: event-list now takes sort_order and the trigger sends sort_order=desc (https://docs.gusto.com/app-integrations/docs/events: asc default, desc supported, 30-day window)",
+    "verified": "apps/gusto/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hackernews",
@@ -2747,12 +2747,12 @@
     "path": "apps/harvest",
     "mechanism": "poll",
     "candidates": [
-      "new-task-get-many"
+      "new-task"
     ],
     "pollAction": "task-get-many",
-    "reason": "list action task-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Task page exposes stable task IDs.",
+    "verified": "apps/harvest/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/heartbeat",
@@ -2799,12 +2799,12 @@
     "path": "apps/hex",
     "mechanism": "poll",
     "candidates": [
-      "new-user-list"
+      "new-user"
     ],
     "pollAction": "user-list",
-    "reason": "list action user-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape c: /v1/users has only NAME/EMAIL sorts, so the trigger walks every page (limit 500, after cursor) and snapshots user ids; walk past the 5000-row cap throws (https://static.hex.site/openapi.json)",
+    "verified": "apps/hex/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/heygen",
@@ -2822,12 +2822,12 @@
     "path": "apps/heyreach",
     "mechanism": "poll",
     "candidates": [
-      "new-get-leads"
+      "new-lead"
     ],
     "pollAction": "list-get-leads",
-    "reason": "list action list-get-leads has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape b: createdFrom since-filter (cursor minus 2 min) on list-get-leads, every page of the window read, deduped by lead id (https://docs.heyreach.io/openapi.json)",
+    "verified": "apps/heyreach/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hibob",
@@ -2889,12 +2889,12 @@
     "path": "apps/hospitable",
     "mechanism": "poll",
     "candidates": [
-      "new-reservation-list"
+      "new-reservation"
     ],
     "pollAction": "reservation-list",
-    "reason": "list action reservation-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Reservations can be requested newest booked first with stable IDs.",
+    "verified": "apps/hospitable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hostaway",
@@ -2911,23 +2911,23 @@
     "path": "apps/hotmart",
     "mechanism": "poll",
     "candidates": [
-      "new-product-list"
+      "new-product"
     ],
     "pollAction": "product-list",
-    "reason": "list action product-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape c: product-list documents max_results/page_token/next_page_token and no sort, so the trigger walks the creator's catalogue and snapshots product ids (https://developers.hotmart.com/docs/en/v1/product/product-list/)",
+    "verified": "apps/hotmart/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/housecallpro",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customers are sorted newest created first with stable IDs.",
+    "verified": "apps/housecallpro/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/htmlcsstoimage",
@@ -2953,34 +2953,34 @@
     "path": "apps/hubstaff",
     "mechanism": "poll",
     "candidates": [
-      "new-project-list"
+      "new-project"
     ],
     "pollAction": "project-list",
-    "reason": "list action project-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape c: projects endpoint has page_start_id/page_limit and no sort, so the trigger walks every page (status=all) and snapshots project ids (https://api.hubstaff.com/v2/docs)",
+    "verified": "apps/hubstaff/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/huggingface",
     "mechanism": "poll",
     "candidates": [
-      "new-inference-model-list"
+      "new-inference-model"
     ],
     "pollAction": "inference-model-list",
-    "reason": "list action inference-model-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api)",
+    "verified": "apps/huggingface/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hunter",
     "mechanism": "poll",
     "candidates": [
-      "new-lead-list"
+      "new-lead"
     ],
     "pollAction": "lead-list",
-    "reason": "list action lead-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Lead list is most recent first and exposes stable IDs.",
+    "verified": "apps/hunter/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hyros",
@@ -3009,12 +3009,12 @@
     "path": "apps/inoreader",
     "mechanism": "poll",
     "candidates": [
-      "new-stream-preferences-list"
+      "new-article"
     ],
-    "pollAction": "stream-preferences-list",
-    "reason": "list action stream-preferences-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "stream-contents",
+    "reason": "shape a: stream/contents r defaults to newest first, order=newest sends no r (https://www.inoreader.com/developers/stream-contents)",
+    "verified": "apps/inoreader/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/insightly",
@@ -3082,12 +3082,13 @@
     "path": "apps/ironclad",
     "mechanism": "poll",
     "candidates": [
-      "new-record-list"
+      "new-record",
+      "new-or-updated-record"
     ],
     "pollAction": "record-list",
-    "reason": "list action record-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Records support descending agreement-date and last-updated sorts with stable IDs.",
+    "verified": "apps/ironclad/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/iterable",
@@ -3122,12 +3123,12 @@
     "path": "apps/jibble",
     "mechanism": "poll",
     "candidates": [
-      "new-activity-list"
+      "new-activity"
     ],
     "pollAction": "activity-list",
-    "reason": "list action activity-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "shape a: Activity has createdAt (OData $metadata), trigger sends $orderby=createdAt desc (https://workspace.prod.jibble.io/v1/$metadata)",
+    "verified": "apps/jibble/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/jinaai",
