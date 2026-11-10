@@ -1,5 +1,7 @@
 # Mux
 
+Triggers: not shipped — asset-list has no documented sort order or created-since filter (its parameters are only limit, page, live_stream_id and upload_id: https://github.com/muxinc/mux-node-sdk/blob/master/src/resources/video/assets.ts, AssetListParams; reference https://www.mux.com/docs/api-reference/video/assets/list-assets, verified 2026-11-09).
+
 Manage video from a workflow — create assets from a URL, run live streams, mint
 playback IDs, build delivery URLs and read how it all performed for viewers.
 

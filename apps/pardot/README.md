@@ -7,6 +7,7 @@ Engagement** (still called Pardot in its API, hostnames and error messages), on 
 - **Auth methods** — `oauth2` (login.salesforce.com), `oauth2-sandbox` (test.salesforce.com),
   `access-token` (pasted Salesforce access token)
 - **Actions** — 25
+- **Triggers** — 2 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:*` checks
 - **Egress allowlist** — `pi.pardot.com`, `pi.demo.pardot.com` (a connection uses exactly one;
   the `service` check adds `api.status.salesforce.com` to its own hook allowlist, never to the app's)
@@ -138,3 +139,20 @@ Left out because they were not needed for a first cut or a detail was unconfirme
 is the Salesforce cloud). That file in turn comes from n8n's `Salesforce` node
 (`packages/nodes-base/nodes/Salesforce/salesforce.svg`). Always format with `deno task fmt`,
 never bare `deno fmt`, which rewrites the SVG.
+
+## Triggers
+
+| Key — title | Mechanism | Wraps | The run gets |
+| --- | --- | --- | --- |
+| `new-landing-page` — New Landing Page | poll | `landing-page-list` | each newly created landing page (`orderBy=id DESC`) |
+| `new-or-updated-landing-page` — New or Updated Landing Page | poll | `landing-page-list` | each landing page created or changed (since-filter); the dedupe id includes `updatedAt` |
+
+Each check queries the 200 highest-id landing pages. Pardot's v5 `orderBy` for landing pages accepts `id` with ASC/DESC; ids are assigned in creation order. (The Salesforce developer site refused automated fetches on 2026-11-09, so the `orderBy` fields are taken from the action's own source, which cites that guide.)
+
+Mechanism of `new-or-updated-landing-page`: **since-filter**. Each check lists landing pages with `updatedAtAfter` set to the last check minus a 120-second overlap (`orderBy=id DESC`, 200 per page, up to 5 pages, following `nextPageToken`) and dedupes on `id:updatedAt`. The first check only records the cursor and what it sees.
+
+Trust model: Poll only: nothing is registered with Pardot. Polls run at most every 5 minutes and reuse the wrapped action's request and connection.
+
+Vendor documentation:
+
+- https://developer.salesforce.com/docs/marketing/pardot/guide/landing-pages-v5.html (verified 2026-11-09)

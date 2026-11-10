@@ -51,6 +51,8 @@ import visitorActivityList from "./actions/visitor-activity-list.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newLandingPage from "./triggers/new-landing-page.ts";
+import newOrUpdatedLandingPage from "./triggers/new-or-updated-landing-page.ts";
 
 export default {
   actions: [
@@ -87,4 +89,5 @@ export default {
   ],
   auth: [oauth2, oauth2Sandbox, accessToken],
   healthChecks: [service, api, quota],
+  triggers: [newLandingPage, newOrUpdatedLandingPage],
 } satisfies AppDefinition;

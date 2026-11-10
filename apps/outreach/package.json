@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/outreach",
-  "version": "0.1.0",
-  "description": "Manage prospects, accounts, opportunities, sequences, tasks and webhooks in Outreach through its JSON:API REST API.",
+  "version": "0.2.0",
+  "description": "Manage prospects, accounts, opportunities, sequences, tasks and webhooks in Outreach through its JSON:API REST API. Includes poll triggers for new records.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,7 +18,7 @@
       "https://developers.outreach.io/api/",
       "https://developers.outreach.io/api/reference/"
     ],
-    "longDescription": "Outreach is a sales engagement platform: prospects and accounts are worked through multi-step sequences of emails, calls and tasks, and the results flow into opportunities. This app gives a workflow the core of that surface over Outreach's JSON:API REST API (v2).\n\nIt covers the full create/read/update/delete lifecycle for prospects and accounts, reading and creating opportunities, listing sequences, and the sequence-state lifecycle that actually starts and stops outreach to a prospect: enrolling a prospect in a sequence, then pausing, resuming or finishing them. It also lists and creates tasks, marks them complete, creates prospect notes, lists mailings and users, and manages webhooks so a workflow can react to Outreach events instead of polling.\n\nEvery list action speaks Outreach's own filter, sort, include, sparse-fieldset and cursor-pagination grammar, and returns the JSON:API document as Outreach sent it plus a ready-to-use `nextCursor`. Webhook signing secrets and cleanup tokens are removed from every response, and the health checks read Outreach's documented rate-limit headers.",
+    "longDescription": "Outreach is a sales engagement platform: prospects and accounts are worked through multi-step sequences of emails, calls and tasks, and the results flow into opportunities. This app gives a workflow the core of that surface over Outreach's JSON:API REST API (v2).\n\nIt covers the full create/read/update/delete lifecycle for prospects and accounts, reading and creating opportunities, listing sequences, and the sequence-state lifecycle that actually starts and stops outreach to a prospect: enrolling a prospect in a sequence, then pausing, resuming or finishing them. It also lists and creates tasks, marks them complete, creates prospect notes, lists mailings and users, and manages webhooks so a workflow can react to Outreach events instead of polling.\n\nEvery list action speaks Outreach's own filter, sort, include, sparse-fieldset and cursor-pagination grammar, and returns the JSON:API document as Outreach sent it plus a ready-to-use `nextCursor`. Webhook signing secrets and cleanup tokens are removed from every response, and the health checks read Outreach's documented rate-limit headers.\n\nPoll triggers start workflows when new records appear.",
     "categories": [
       "crm",
       "marketing"
@@ -34,7 +34,12 @@
         "api.outreach.io"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
