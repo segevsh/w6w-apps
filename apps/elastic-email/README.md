@@ -70,3 +70,17 @@ measured live without a key.
 (5,920 bytes) is actually a 270x270 RGBA PNG, embedded unmodified as a base64 `<image>` (verified by
 decoding it back and comparing md5 `b64a23a96eb09e7823dea2481513781b`). `/favicon.svg` and
 `/apple-touch-icon.png` answer an HTML shell, not an image. Nothing was redrawn.
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-list` — New List | Poll | `list-list` | Each contact list newly created in the account |
+
+The v4 `GET /lists` "returns all your existing lists". Each check asks for up to 5000, diffs the
+answer against the previous check and emits only additions (an answer that fills the request fails
+the check with an error naming the cap). The first check only records what exists. Contacts,
+campaigns, templates and suppressions page by `limit`/`offset` with no documented created-since filter
+or newest-first order, so they have no poll trigger. Elastic Email also offers notification webhooks
+(`GET/POST /webhook`, signing secret) that are a separate, not yet shipped path. Source:
+[Elastic Email v4 API](https://elasticemail.com/api/redoc-spec/api-v4) (verified 2026-11-09).

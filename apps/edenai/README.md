@@ -76,3 +76,5 @@ Files and discovery: `file-list`, `file-delete` (by ids only), `features-list`, 
 - Anthropic-messages passthrough
 - Decisions, collections and the Management API
 - The EU host `api.eu.edenai.run` (single allowlisted host kept deliberately)
+
+Triggers: not shipped — async-job and file lists hold only the caller's own submitted jobs and uploads, with no documented order or since filter; job-completion callbacks are a per-request `webhook_receiver` on each job start, not an account subscription (https://www.edenai.co/docs/v3/expert-models/webhooks.md).

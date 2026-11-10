@@ -49,6 +49,8 @@ auth probe (`GET /team/credit-usage`) is a dedicated, credential-only endpoint i
 {"success": false, "code": "SCRAPE_DNS_RESOLUTION_ERROR", "error": "DNS resolution failed for hostname \"...\". ..."}
 ```
 
+Triggers: not shipped — crawl, batch-scrape, and extract status endpoints describe caller-started jobs rather than a general account record feed; completion callbacks are queued separately (https://docs.firecrawl.dev/).
+
 — measured live against a nonexistent domain. Checking only `res.ok` would report that scrape as a
 success with an empty page. [`lib/client.ts`](lib/client.ts) checks every response body for
 `success === false` regardless of status code, and a pinned test

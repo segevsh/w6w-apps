@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/fireberry",
-  "version": "0.1.0",
-  "description": "Read, create, update, delete and query Fireberry CRM records across any object, and read object, field and picklist metadata.",
+  "version": "0.2.0",
+  "description": "Read, create, update, delete and query Fireberry CRM records across any object, and read object, field and picklist metadata, and trigger workflows for new records of an object.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://developers.fireberry.com/reference"
     ],
-    "longDescription": "Fireberry (formerly Powerlink) is a CRM for managing accounts, contacts, opportunities, tasks, support cases and custom objects. This app lists, reads, creates, updates and deletes records of any object, built-in or custom, by system name or object number, fetches related records, and batch-creates or batch-updates up to 20 records at a time.\n\nIt searches with Fireberry's v3 query (filters, sorting, grouping and aggregation, up to 500 rows a page) and reads the metadata API: every object, an object's fields, and a picklist field's options.\n\nHealth checks verify the API access token, whether api.fireberry.com is answering, and Fireberry's own status page.",
+    "longDescription": "Fireberry (formerly Powerlink) is a CRM for managing accounts, contacts, opportunities, tasks, support cases and custom objects. This app lists, reads, creates, updates and deletes records of any object, built-in or custom, by system name or object number, fetches related records, and batch-creates or batch-updates up to 20 records at a time.\n\nIt searches with Fireberry's v3 query (filters, sorting, grouping and aggregation, up to 500 rows a page) and reads the metadata API: every object, an object's fields, and a picklist field's options.\n\nHealth checks verify the API access token, whether api.fireberry.com is answering, and Fireberry's own status page.\n\nA poll trigger starts workflows for new records of an object.",
     "categories": [
       "crm"
     ],
@@ -41,7 +41,12 @@
         "api.fireberry.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
