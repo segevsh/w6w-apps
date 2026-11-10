@@ -14,11 +14,15 @@ export default snapshotTrigger({
   input: () => ({}),
   items: (result) => (result as { active_meetings?: unknown[] }).active_meetings ?? [],
   keyOf: (item) => String((item as { id?: unknown }).id ?? ""),
+  // `meeting_link` is a join URL that can carry the room passcode, so it is never emitted.
+  project: (item) => {
+    const { meeting_link: _link, ...rest } = item as Record<string, unknown>;
+    return rest;
+  },
   output: [
     { key: "id", type: "string", label: "Meeting ID" },
     { key: "title", type: "string", label: "Title" },
     { key: "organizer_email", type: "string", label: "Organizer email" },
-    { key: "meeting_link", type: "string", label: "Meeting link" },
     { key: "start_time", type: "string", label: "Start time" },
     { key: "state", type: "string", label: "State" },
   ],
@@ -26,7 +30,6 @@ export default snapshotTrigger({
     id: "meeting-1",
     title: "Weekly sync",
     organizer_email: "ada@example.com",
-    meeting_link: "https://meet.example.com/abc",
     start_time: "2026-11-10T09:00:00.000Z",
     state: "active",
   },

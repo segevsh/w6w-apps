@@ -93,3 +93,22 @@ test("new-active-meeting forgets a meeting once it ends", async () => {
   );
   assertEquals(s3.events, [{ id: "m2" }]);
 });
+
+test("new-active-meeting never emits the join link", async () => {
+  const row = {
+    id: "m1",
+    title: "One",
+    meeting_link: "https://meet.example.com/j/1?pwd=test-secret",
+  };
+  const s1 = await newActiveMeeting.poll!(
+    { params: {}, state: {} },
+    mockCtx([gql({ active_meetings: [] })]).ctx,
+  );
+  const out = await newActiveMeeting.poll!(
+    { params: {}, state: s1.nextState },
+    mockCtx([gql({ active_meetings: [row] })]).ctx,
+  );
+  assertEquals(out.events, [{ id: "m1", title: "One" }]);
+  assertEquals(JSON.stringify(out.events).includes("meeting_link"), false);
+  assertEquals(JSON.stringify(newActiveMeeting.output).includes("meeting_link"), false);
+});

@@ -18,6 +18,8 @@ export function snapshotTrigger<P extends Record<string, unknown>>(spec: {
   keyOf(item: unknown): string;
   output: OutputField[];
   sample: unknown;
+  /** Shapes the emitted record (default: the row as listed). Keys still come from `keyOf`. */
+  project?(item: unknown): unknown;
   minIntervalMs?: number;
 }): TriggerDefinition {
   return {
@@ -40,7 +42,10 @@ export function snapshotTrigger<P extends Record<string, unknown>>(spec: {
         rows: [...byKey.keys()].map((key) => ({ key, values: key })),
         emit: { added: true, updated: false },
       });
-      return { events: events.map((e) => byKey.get(e.key)), nextState };
+      return {
+        events: events.map((e) => (spec.project ?? ((i) => i))(byKey.get(e.key))),
+        nextState,
+      };
     },
   };
 }

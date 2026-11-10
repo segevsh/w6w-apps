@@ -32,7 +32,7 @@ const cases = [
     query: "prefix=campaign%3A&max_results=500",
     before: { tags: ["campaign:a"] },
     after: { tags: ["campaign:a", "campaign:b"] },
-    emitted: ["campaign:b"],
+    emitted: [{ tag: "campaign:b" }],
   },
   {
     trigger: newTransformation,
@@ -49,7 +49,13 @@ const cases = [
     path: "/v1_1/acme/upload_presets",
     query: "max_results=500",
     before: { presets: [{ name: "p1", unsigned: false }] },
-    after: { presets: [{ name: "p1", unsigned: false }, { name: "p2", unsigned: true }] },
+    after: {
+      presets: [{ name: "p1", unsigned: false }, {
+        name: "p2",
+        unsigned: true,
+        settings: { notification_url: "https://hooks.example.com/x" },
+      }],
+    },
     emitted: [{ name: "p2", unsigned: true }],
   },
 ];
@@ -87,4 +93,23 @@ test("new-folder with no parent lists the top level and pages on next_cursor", a
     m.calls.map((c) => new URL(c.url).pathname + new URL(c.url).search),
     ["/v1_1/acme/folders?max_results=500", "/v1_1/acme/folders?max_results=500&next_cursor=cur1"],
   );
+});
+
+test("new-upload-preset does not emit the preset settings (notification URLs)", async () => {
+  const preset = (extra: Record<string, unknown>) => ({ presets: [{ name: "p1", ...extra }] });
+  const seeded = await newUploadPreset.poll!(
+    { params: {}, state: {} },
+    mockCtx([{ body: { presets: [] } }], options).ctx,
+  );
+  const out = await newUploadPreset.poll!(
+    { params: {}, state: seeded.nextState },
+    mockCtx([{
+      body: preset({
+        unsigned: false,
+        settings: { notification_url: "https://hooks.example.com/x" },
+      }),
+    }], options).ctx,
+  );
+  assertEquals(out.events, [{ name: "p1", unsigned: false }]);
+  assertEquals("settings" in (out.events[0] as object), false);
 });

@@ -18,5 +18,6 @@ export default snapshotTrigger({
   items: (result) => (result as { tags?: unknown[] }).tags ?? [],
   keyOf: (item) => String(item ?? ""),
   output: [{ key: "tag", type: "string", label: "Tag" }],
-  sample: "campaign:spring",
+  project: (item) => ({ tag: String(item) }),
+  sample: { tag: "campaign:spring" },
 });
