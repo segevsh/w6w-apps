@@ -5,7 +5,6 @@ import type { TriggerCall } from "@w6w/types";
 import { mockCtx } from "../_helpers.ts";
 import app from "../../index.ts";
 import memberSubscribed from "../../triggers/member-subscribed.ts";
-import memberUnsubscribed from "../../triggers/member-unsubscribed.ts";
 import anyEvent from "../../triggers/any-event.ts";
 import { parseForm, parseSignatureHeader } from "../../lib/triggers.ts";
 
@@ -95,94 +94,127 @@ test("handleIngest: a valid signature over the exact bytes yields the normalized
   }]);
 });
 
-test("handleIngest: a flipped byte in the SIGNATURE throws", async () => {
-  const ts = nowSec();
-  const good = sig(BODY, ts);
-  const at = good.length - 1;
-  const bad = good.slice(0, at) + (good[at] === "0" ? "1" : "0");
-  await assert.rejects(async () =>
-    await ingest(memberSubscribed, delivery(BODY, { "x-mailchimp-signature": bad }), STATE)
-  );
+/** Every signed trigger, with the Mailchimp event it is wired to written out as a literal. */
+const SIGNED: Array<[key: string, event: string]> = [
+  ["member-subscribed", "subscribe"],
+  ["member-unsubscribed", "unsubscribe"],
+  ["member-updated", "profile"],
+  ["member-cleaned", "cleaned"],
+  ["email-changed", "upemail"],
+  ["campaign-status", "campaign"],
+  ["any-event", "cleaned"],
+];
+const triggerByKey = (key: string): T => {
+  const t = (app.triggers ?? []).find((x) => x.key === key);
+  assert.ok(t, key);
+  return t;
+};
+const bodyFor = (event: string) => BODY.replace("type=subscribe", `type=${event}`);
+const stateFor = (event: string) => ({ ...STATE, events: [event] });
+/** `hex` with the character at `i` changed. */
+const flipAt = (hex: string, i: number) =>
+  hex.slice(0, i) + (hex[i] === "0" ? "1" : "0") + hex.slice(i + 1);
+const header = (v1: string, ts: number) => `t=${ts},v1=${v1}`;
+
+test("the table names every signed trigger the app declares, once", () => {
+  const declared = (app.triggers ?? []).filter((t) => typeof t.handleIngest === "function")
+    .map((t) => t.key).sort();
+  assert.deepEqual(SIGNED.map(([k]) => k).sort(), declared);
 });
 
-test("handleIngest: a flipped byte in the body throws", async () => {
-  const ts = nowSec();
-  const call = delivery(BODY.replace("Ada", "Adb"), { "x-mailchimp-signature": sig(BODY, ts) });
-  await assert.rejects(async () => await ingest(memberSubscribed, call, STATE));
-});
+for (const [key, event] of SIGNED) {
+  const trigger = triggerByKey(key);
+  const body = bodyFor(event);
+  const state = stateFor(event);
+  const other = bodyFor(event === "subscribe" ? "unsubscribe" : "subscribe");
 
-test("handleIngest: a signature made over the re-serialised form is refused", async () => {
-  const ts = nowSec();
-  const reencoded = new URLSearchParams(BODY).toString();
-  const call = delivery(BODY, { "x-mailchimp-signature": sig(reencoded, ts) });
-  await assert.rejects(async () => await ingest(memberSubscribed, call, STATE));
-});
+  test(`${key}: a signed ${event} delivery yields one run of that event; another event yields none`, async () => {
+    const out = evs(await ingest(trigger, signed(body), state)) as Array<{ type: string }>;
+    assert.deepEqual(out.map((e) => e.type), [event]);
+    assert.deepEqual(evs(await ingest(trigger, signed(other), state)), []);
+  });
 
-test("handleIngest: a missing or malformed signature header throws", async () => {
-  for (
-    const headers of [{}, { "x-mailchimp-signature": "" }, { "x-mailchimp-signature": "junk" }]
-  ) {
-    await assert.rejects(async () =>
-      await ingest(memberSubscribed, delivery(BODY, headers), STATE)
+  test(`${key}: a flipped byte of the SIGNATURE (first, middle and last position) throws`, async () => {
+    const ts = nowSec();
+    const good = createHmac("sha256", SECRET).update(`${ts}.${body}`).digest("hex");
+    assert.equal(good.length, 64);
+    for (const at of [0, 31, 63]) {
+      const call = delivery(body, { "x-mailchimp-signature": header(flipAt(good, at), ts) });
+      await assert.rejects(async () => await ingest(trigger, call, state), undefined, `pos ${at}`);
+    }
+    // control: the unflipped signature is accepted
+    assert.equal(
+      evs(
+        await ingest(trigger, delivery(body, { "x-mailchimp-signature": header(good, ts) }), state),
+      )
+        .length,
+      1,
     );
-  }
-  const ts = nowSec();
-  await assert.rejects(async () =>
-    await ingest(
-      memberSubscribed,
-      delivery(BODY, { "x-mailchimp-signature": `t=${ts},v1=abc` }),
-      STATE,
-    )
-  );
-});
+  });
 
-test("handleIngest: an absent rawBody throws (never falls back to the parsed body)", async () => {
-  const call = signed();
-  delete call.rawBody;
-  await assert.rejects(async () => await ingest(memberSubscribed, call, STATE), /raw body/);
-});
+  test(`${key}: a flipped byte in the body, or a re-serialised body, throws`, async () => {
+    const ts = nowSec();
+    const tampered = delivery(body.replace("Ada", "Adb"), {
+      "x-mailchimp-signature": sig(body, ts),
+    });
+    await assert.rejects(async () => await ingest(trigger, tampered, state));
+    const reencoded = new URLSearchParams(body).toString();
+    assert.notEqual(reencoded, body);
+    const call = delivery(body, { "x-mailchimp-signature": sig(reencoded, ts) });
+    await assert.rejects(async () => await ingest(trigger, call, state));
+  });
 
-test("handleIngest: a stale or future timestamp throws even with a correct signature", async () => {
-  const now = nowSec();
-  for (const ts of [now - 305, now + 305]) {
-    await assert.rejects(
-      async () => await ingest(memberSubscribed, signed(BODY, ts), STATE),
-      /tolerance/,
-    );
-  }
-  assert.equal(evs(await ingest(memberSubscribed, signed(BODY, now - 200), STATE)).length, 1);
-});
-
-test("handleIngest: an unset or empty secret refuses before any compare", async () => {
-  for (const secret of [undefined, ""]) {
+  test(`${key}: a missing or malformed signature header throws`, async () => {
+    const ts = nowSec();
     for (
-      const call of [delivery(BODY, {}), delivery(BODY, { "x-mailchimp-signature": "t=1,v1=" })]
+      const headers of [
+        {},
+        { "x-mailchimp-signature": "" },
+        { "x-mailchimp-signature": "junk" },
+        { "x-mailchimp-signature": `t=${ts},v1=abc` },
+      ]
     ) {
+      await assert.rejects(async () => await ingest(trigger, delivery(body, headers), state));
+    }
+  });
+
+  test(`${key}: an absent rawBody throws (never falls back to the parsed body)`, async () => {
+    const call = signed(body);
+    delete call.rawBody;
+    await assert.rejects(async () => await ingest(trigger, call, state), /raw body/);
+  });
+
+  test(`${key}: a stale or future timestamp throws even with a correct signature`, async () => {
+    const now = nowSec();
+    for (const ts of [now - 305, now + 305]) {
       await assert.rejects(
-        async () => await ingest(memberSubscribed, call, { ...STATE, secret }),
-        /secret/,
+        async () => await ingest(trigger, signed(body, ts), state),
+        /tolerance/,
       );
     }
-  }
-});
+    assert.equal(evs(await ingest(trigger, signed(body, now - 200), state)).length, 1);
+  });
 
-test("handleIngest: a non-POST delivery throws", async () => {
-  const call = delivery(BODY, { "x-mailchimp-signature": sig(BODY, nowSec()) }, "PUT");
-  await assert.rejects(async () => await ingest(memberSubscribed, call, STATE));
-});
+  test(`${key}: an unset or empty secret refuses before any compare`, async () => {
+    for (const secret of [undefined, ""]) {
+      for (
+        const call of [delivery(body, {}), delivery(body, { "x-mailchimp-signature": "t=1,v1=" })]
+      ) {
+        await assert.rejects(
+          async () => await ingest(trigger, call, { ...state, secret }),
+          /secret/,
+        );
+      }
+    }
+  });
 
-test("handleIngest: an event the trigger does not listen for is acknowledged without a run", async () => {
-  assert.deepEqual(evs(await ingest(memberSubscribed, signed(UNSUB_BODY), STATE)), []);
-  assert.equal(
-    evs(
-      await ingest(memberUnsubscribed, signed(UNSUB_BODY), {
-        ...STATE,
-        events: ["unsubscribe"],
-      }),
-    ).length,
-    1,
-  );
-});
+  test(`${key}: a non-POST delivery throws`, async () => {
+    for (const method of ["PUT", "GET"]) {
+      const call = delivery(body, { "x-mailchimp-signature": sig(body, nowSec()) }, method);
+      await assert.rejects(async () => await ingest(trigger, call, state), undefined, method);
+    }
+  });
+}
 
 test("any-event: only the events on record for the subscription pass; none on record passes all", async () => {
   const only = { ...STATE, events: ["unsubscribe"] };

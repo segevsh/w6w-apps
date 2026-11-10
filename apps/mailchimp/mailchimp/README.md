@@ -11,7 +11,7 @@
 | `member-updated` | Member Profile Updated | Webhook (registered by the app) | `profile` | The member's updated profile |
 | `member-cleaned` | Member Cleaned | Webhook (registered by the app) | `cleaned` | The audience ID and the event data for the cleaned address |
 | `email-changed` | Member Email Changed | Webhook (registered by the app) | `upemail` | The audience ID and the event data for the change |
-| `campaign-status` | Campaign Sent or Cancelled | Webhook (registered by the app) | `campaign` | The audience ID and the event data for the campaign |
+| `campaign-status` | Campaign Sent | Webhook (registered by the app) | `campaign` | The audience ID and the event data for the campaign |
 | `any-event` | Any Event | Webhook (registered by the app) | the `events` you list (empty = the six audience events; the SMS betas `sms_subscribe`, `sms_unsubscribe`, `upsms`, `sms_campaign` by name) | The event and its data |
 | `new-member` | New Audience Member | Poll | `list-members` ordered by `last_changed DESC` | The new audience member |
 | `new-campaign` | New Campaign | Poll | `list-campaigns` sorted `create_time DESC` | The new campaign |

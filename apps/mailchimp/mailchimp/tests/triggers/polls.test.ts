@@ -102,6 +102,18 @@ test("new-group-interest: a second page is read at offset 1000 when total_items 
   ]);
 });
 
+test("new-group-interest: a category larger than five pages is refused, not compared partly", async () => {
+  const full = Array.from({ length: 1000 }, (_, i) => interest(`a${i}`));
+  const { ctx, calls } = mockCtx(
+    Array.from({ length: 5 }, () => ({ body: { interests: full, total_items: 6000 } })),
+  );
+  await assert.rejects(
+    async () => await newGroupInterest.poll!({ ...GI, state: {} }, ctx),
+    /more interests/,
+  );
+  assert.equal(calls.length, 5);
+});
+
 test("new-group-interest: a missing audience or category is refused before any request", async () => {
   const { ctx, calls } = mockCtx();
   await assert.rejects(
