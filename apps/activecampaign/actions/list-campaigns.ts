@@ -5,6 +5,8 @@ interface Input {
   limit?: number;
   offset?: number;
   automationId?: string;
+  orderBy?: string;
+  orderDirection?: string;
 }
 
 const listCampaigns: ActionDefinition<Input> = {
@@ -16,6 +18,27 @@ const listCampaigns: ActionDefinition<Input> = {
   params: [
     { key: "limit", label: "Limit", type: "number", default: 20 },
     { key: "offset", label: "Offset", type: "number", default: 0 },
+    {
+      key: "orderBy",
+      label: "Order by",
+      type: "select",
+      options: [
+        { value: "sdate", label: "Send date" },
+        { value: "ldate", label: "Last send date" },
+      ],
+      hint: "Optional. Leave empty to keep ActiveCampaign's default order.",
+    },
+    {
+      key: "orderDirection",
+      label: "Order direction",
+      type: "select",
+      options: [
+        { value: "ASC", label: "Oldest first" },
+        { value: "DESC", label: "Newest first" },
+      ],
+      default: "DESC",
+      hint: "Used with Order by.",
+    },
     {
       key: "automationId",
       label: "Automation ID",
@@ -34,6 +57,9 @@ const listCampaigns: ActionDefinition<Input> = {
         limit: input.limit,
         offset: input.offset,
         "filters[seriesid]": input.automationId,
+        ...(input.orderBy
+          ? { [`orders[${input.orderBy}]`]: input.orderDirection === "ASC" ? "ASC" : "DESC" }
+          : {}),
       },
     });
   },

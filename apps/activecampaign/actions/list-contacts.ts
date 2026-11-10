@@ -9,6 +9,8 @@ interface Input {
   listId?: string;
   tagId?: string;
   status?: string;
+  orderBy?: string;
+  orderDirection?: string;
 }
 
 const listContacts: ActionDefinition<Input> = {
@@ -20,6 +22,27 @@ const listContacts: ActionDefinition<Input> = {
   params: [
     { key: "limit", label: "Limit", type: "number", default: 20, hint: "Max 100 per page." },
     { key: "offset", label: "Offset", type: "number", default: 0 },
+    {
+      key: "orderBy",
+      label: "Order by",
+      type: "select",
+      options: [
+        { value: "cdate", label: "Created" },
+        { value: "udate", label: "Last updated" },
+      ],
+      hint: "Optional. Leave empty to keep ActiveCampaign's default order.",
+    },
+    {
+      key: "orderDirection",
+      label: "Order direction",
+      type: "select",
+      options: [
+        { value: "ASC", label: "Oldest first" },
+        { value: "DESC", label: "Newest first" },
+      ],
+      default: "DESC",
+      hint: "Used with Order by.",
+    },
     { key: "email", label: "Email (exact match)", type: "string" },
     {
       key: "search",
@@ -57,6 +80,9 @@ const listContacts: ActionDefinition<Input> = {
         listid: input.listId,
         tagid: input.tagId,
         status: input.status,
+        ...(input.orderBy
+          ? { [`orders[${input.orderBy}]`]: input.orderDirection === "ASC" ? "ASC" : "DESC" }
+          : {}),
       },
     });
   },
