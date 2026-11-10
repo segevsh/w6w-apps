@@ -6,7 +6,7 @@ custom fields, bot fields, Automations, and sending — on the **Manychat Public
 - **Categories** — marketing, communication, social-media
 - **Auth methods** — bearer (one API token per Page)
 - **Actions** — 25
-- **Triggers** — 1 (poll)
+- **Triggers** — 3 (poll)
 - **Egress allowlist** — `api.manychat.com` (plus `status.manychat.com`, on the service health hook only)
 - **Website** — https://manychat.com
 - **API docs** — https://api.manychat.com/swagger
@@ -477,3 +477,16 @@ assuming a 200.
 Collection shape: `GET /fb/page/getFlows` takes no paging parameters and returns the Page's whole flow set in one response, so the check diffs the full set of flow `ns` keys with the snapshot kit and emits only `added` flows (a rename or removal is not an event). The snapshot is capped at 5000 rows. The vendor reference is a client-rendered page curl cannot read; the single-response shape rests on the action. The first check records what exists without firing; later checks emit only unseen items.
 
 Source: [vendor API reference](https://api.manychat.com/swagger) (verified 2026-11-10).
+
+### More triggers (depth, verified 2026-11-10)
+
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Growth Tool (`new-growth-tool`) | poll | `list-growth-tools` (`GET /fb/page/getGrowthTools`), whole collection diffed by id | each growth tool newly added to the Page |
+| New Tag (`new-tag`) | poll | `list-tags` (`GET /fb/page/getTags`), whole collection diffed by id | each tag newly created on the Page |
+
+Both endpoints take no paging parameters and return the Page's whole collection in one response, so each check diffs the full set of `id` keys with the snapshot kit and emits only `added` rows (a rename or removal is not an event; capped at 5000 rows).
+
+Not covered: `list-custom-fields`, `list-bot-fields` (field definitions, reference data); `list-otn-topics` (opt-in topic definitions, configuration data); `find-subscriber-by-system-field`, `find-subscribers-by-custom-field`, `find-subscribers-by-name` (keyed lookups that need one email, phone, field value or name and return that subscriber; ManyChat's API has no list-all-subscribers operation, so there is no collection to poll).
+
+Vendor documentation: https://api.manychat.com/swagger (verified 2026-11-10).
