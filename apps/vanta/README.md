@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | `new-issue` — New Issue | Poll | `issue-list` | Newly created Vanta issues |
 
-Vanta API docs: https://developer.vanta.com/ (verified 2026-11-09).
+Vanta API docs: https://developer.vanta.com/ (verified 2026-11-10).
 
 Read a compliance program: failing tests and the resources causing them,
 controls and their owners, issues against their due dates, vulnerabilities

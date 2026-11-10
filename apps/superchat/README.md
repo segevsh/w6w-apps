@@ -7,6 +7,7 @@ subscriptions around them, on Superchat's public REST API.
 - **Categories** — communication, crm
 - **Auth methods** — api-key (`X-API-KEY`, workspace-wide read + write)
 - **Actions** — 53
+- **Triggers** — 10 (poll)
 - **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.superchat.com` (the `service` check adds `status.superchat.de` to its own
@@ -101,5 +102,14 @@ wordmark paths dropped, only the `viewBox`/size changed).
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll (newest first) | `contact-list` | Each newly created contact in the workspace |
+| `new-channel` — New Channel | Poll (newest first) | `channel-list` | Each newly created workspace channel |
+| `new-contact-list` — New Contact List | Poll (newest first) | `contact-lists-list` | Each newly created contact list |
+| `new-contact-list-membership` — New Contact List Membership | Poll (newest first) | `contact-contact-lists-list` | Each list membership for the selected contact |
+| `new-conversation` — New Conversation | Poll (newest first) | `conversation-list` | Each newly created conversation |
+| `new-file` — New File | Poll (newest first) | `file-list` | Each newly uploaded file |
+| `new-inbox` — New Inbox | Poll (newest first) | `inbox-list` | Each newly created inbox |
+| `new-template-folder` — New Template Folder | Poll (newest first) | `template-folder-list` | Each newly created template folder |
+| `new-template` — New Template | Poll (newest first) | `template-list` | Each newly created message template |
+| `new-workspace-user` — New Workspace User | Poll (newest first) | `user-list` | Each newly added workspace user |
 
-Polled newest-first through the `contact-list` action; the first check records what exists without firing. Source: "Lists all contacts in workspace … Objects are sorted descendingly by their created_at value." ([List all contacts](https://developers.superchat.com/reference/get_contacts), verified 2026-11-09). Conversations and messages were not used: the conversation list documents no sort order.
+Polled newest-first through the listed actions; the first check records what exists without firing. Superchat documents its cursor pages and contact order at [List all contacts](https://developers.superchat.com/reference/get_contacts) (verified 2026-11-10). Conversation messages and notes are not polled because their endpoints do not document a newest-first order; custom attributes and labels are workspace definitions, and webhook subscriptions are administrative configuration.
