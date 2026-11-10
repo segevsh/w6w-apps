@@ -226,3 +226,7 @@ paths — confirmed via the GitHub API to be Miro's org repo and not a fork), pl
 live probes of `miro.com/oauth/authorize`, `api.miro.com/v1/oauth/token` and
 `status.miro.com`. Status surfaces move; re-check if a probe starts failing for
 everyone at once.
+
+## Triggers
+
+- **New Board** wraps `board-list` with `sort=last_created`. [Miro list boards](https://developers.miro.com/reference/get-boards), verified 2026-11-09.
