@@ -6,7 +6,7 @@ instance.
 - **Categories** — developer-tools, version-control
 - **Auth methods** — access-token, oauth2
 - **Actions** — 16
-- **Triggers** — 6 (webhook)
+- **Triggers** — 13 (12 webhook, 1 poll)
 - **Egress allowlist** — `gitlab.com`
 - **Website** — https://about.gitlab.com
 - **API docs** — https://docs.gitlab.com/ee/api/
@@ -34,23 +34,42 @@ self-hostable apps in this pack carry.
 
 ## Triggers
 
-Every trigger is a webhook trigger, signed on GitLab 19.0 or later (see the trust model below)
+Every trigger but `new-project` is a webhook trigger, signed on GitLab 19.0 or later (see the trust model below)
 ([`rfcs/trigger.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/trigger.md)). Activating one
 registers a project webhook on GitLab for you (`POST /projects/:id/hooks`) and removes it when the
 trigger is deactivated. The token needs the `api` scope and the Maintainer role on the project.
 
-| Trigger                               | Mechanism | GitLab event         | The run gets                      |
-| ------------------------------------- | --------- | -------------------- | --------------------------------- |
-| `push` — New Push                     | webhook   | Push events          | ref, before/after commit, commits |
-| `merge-request` — Merge Request Event | webhook   | Merge request events | action, merge request             |
-| `issue` — Issue Event                 | webhook   | Issues events        | action, issue                     |
-| `comment` — New Comment               | webhook   | Comments             | comment, what it is on            |
-| `pipeline` — Pipeline Event           | webhook   | Pipeline events      | pipeline, status, builds          |
-| `release` — Release Event             | webhook   | Releases events      | action, release                   |
+| Trigger                               | Mechanism | GitLab event                     | The run gets                      |
+| ------------------------------------- | --------- | -------------------------------- | --------------------------------- |
+| `push` — New Push                     | webhook   | Push events                      | ref, before/after commit, commits |
+| `merge-request` — Merge Request Event | webhook   | Merge request events             | action, merge request             |
+| `issue` — Issue Event                 | webhook   | Issues events                    | action, issue                     |
+| `comment` — New Comment               | webhook   | Comments                         | comment, what it is on            |
+| `pipeline` — Pipeline Event           | webhook   | Pipeline events                  | pipeline, status, builds          |
+| `release` — Release Event             | webhook   | Releases events                  | action, release                   |
+| `tag-push` — Tag Push Event           | webhook   | Tag events                       | tag ref, commit, message          |
+| `job` — Job Event                     | webhook   | Job events                       | job, stage, status, pipeline      |
+| `deployment` — Deployment Event       | webhook   | Deployment events                | status, environment               |
+| `wiki-page` — Wiki Page Event         | webhook   | Wiki page events                 | action, page                      |
+| `milestone` — Milestone Event         | webhook   | Milestone events                 | action, milestone                 |
+| `new-project` — New Project           | poll      | `GET /projects` (membership)     | project                           |
+| `any-event` — Any Event               | webhook   | the kinds you list (blank = all) | kind, action, payload             |
 
 Every run also gets `kind` (GitLab's `object_kind`), `action`, `deliveryId` (`webhook-id`),
-`project`, `user` and the full GitLab `payload`. Merge request, issue and release triggers take an
-optional **Only these actions** list such as `open,merge`.
+`project`, `user` and the full GitLab `payload`. Merge request, issue, release, wiki page and
+milestone triggers take an optional **Only these actions** list such as `open,merge`. **Any Event**
+takes an **Events** list of GitLab webhook kinds (the payload's `object_kind`: `push`, `tag_push`,
+`issue`, `note`, `merge_request`, `wiki_page`, `pipeline`, `build`, `deployment`, `release`,
+`milestone`, `feature_flag`, `emoji`, `access_token`, `deploy_token`) and switches on exactly the
+matching project-hook flags (issues and comments also turn on their confidential flag; the `emoji` flag is named only in the webhooks reference's test-trigger list, so an instance that ignores it delivers no emoji events); blank
+switches on all of them. Kinds the project hooks API has no flag for (vulnerability, work item,
+GitLab Duo flow) and the group-only kinds (group member, project, subgroup) cannot be registered
+this way and are not covered. `new-project` is the one poll trigger: GitLab announces a created
+project only to group and system hooks, never to a project hook, so it reads the newest page of
+`project-get-many` (membership projects, newest first by default) and emits each project it has not
+seen; the first check records a baseline and emits nothing. `issue-get-many`,
+`merge-request-get-many` and `release-get-many` return the same records the `issue`, `merge-request`
+and `release` webhook triggers deliver as they change, so they are not polled.
 
 **Trust model.** On activation the app asks the instance `GET /api/v4/version` (same connection,
 same base URL as the actions) and picks one of two modes, stored on the subscription.
@@ -77,7 +96,8 @@ same base URL as the actions) and picks one of two modes, stored on the subscrip
 
 A self-managed host must also be on the connection's egress allowlist.
 
-Vendor docs (verified 2026-11-09):
+Vendor docs (verified 2026-11-10):
+[webhook events](https://docs.gitlab.com/user/project/integrations/webhook_events/),
 [webhooks and the signing token](https://docs.gitlab.com/user/project/integrations/webhooks/),
 [project webhooks API](https://docs.gitlab.com/api/project_webhooks/) (`token`: "Secret token to
 validate received payloads"; `signing_token`: introduced in 19.0). The webhooks page states the
