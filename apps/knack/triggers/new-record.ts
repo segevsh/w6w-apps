@@ -1,3 +1,4 @@
+import type { ActionDefinition } from "@w6w/types";
 import { pollFromListAction } from "../../_shared/poll/mod.ts";
 import action from "../actions/record-list.ts";
 
@@ -6,7 +7,7 @@ export default pollFromListAction({
   title: "New Record",
   description:
     "The run gets each newly created record, oldest first, polled from the existing `record-list` action sorted by the creation-time field you choose, descending (`sort_field`, `sort_order=desc`).",
-  action,
+  action: action as unknown as ActionDefinition,
   input: (params) => ({
     objectKey: String(params.objectKey ?? ""),
     sortField: String(params.sortField ?? ""),
