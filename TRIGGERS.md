@@ -8,11 +8,11 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 682 apps — webhook-api: 65, manual-webhook: 32, poll: 485, none: 100
+**Totals:** 682 apps — webhook-api: 65, manual-webhook: 33, poll: 484, none: 100
 
 ## Depth
 
-depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1146 triggers, 3318 unaccounted list actions in 612 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -298,7 +298,6 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/justcall | 1 | 6 | 5 |
 | apps/kit | 1 | 6 | 5 |
 | apps/klicktipp | 1 | 5 | 5 |
-| apps/linear | 4 | 5 | 5 |
 | apps/lodgify | 0 | 5 | 5 |
 | apps/mailchimp/mandrill | 1 | 5 | 5 |
 | apps/mailgun | 1 | 5 | 5 |
@@ -425,7 +424,6 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/zuora | 1 | 5 | 4 |
 | apps/airtop | 0 | 3 | 3 |
 | apps/amplitude | 1 | 4 | 3 |
-| apps/atlassian/jira | 1 | 4 | 3 |
 | apps/atlassian/jira-data-center | 1 | 4 | 3 |
 | apps/aws/ses | 3 | 6 | 3 |
 | apps/basecamp | 1 | 4 | 3 |
@@ -478,7 +476,6 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/refiner | 1 | 4 | 3 |
 | apps/retellai | 2 | 4 | 3 |
 | apps/ringcentral | 2 | 5 | 3 |
-| apps/salesforce | 1 | 3 | 3 |
 | apps/short-io | 1 | 4 | 3 |
 | apps/strava | 3 | 3 | 3 |
 | apps/teamleader | 2 | 4 | 3 |
@@ -634,6 +631,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/accelo | 4 | 0 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/asana | 9 | 5 | 0 |
+| apps/atlassian/jira | 14 | 4 | 0 |
 | apps/atlassian/trello | 21 | 2 | 0 |
 | apps/authorize-net | 1 | 0 | 0 |
 | apps/bubble | 2 | 1 | 0 |
@@ -653,6 +651,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/klaviyo | 2 | 0 | 0 |
 | apps/knack | 1 | 1 | 0 |
 | apps/lexware-office | 2 | 0 | 0 |
+| apps/linear | 7 | 5 | 0 |
 | apps/linkedin/linkedin | 2 | 1 | 0 |
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
 | apps/linkupapi | 7 | 20 | 0 |
@@ -667,6 +666,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/paystack | 3 | 0 | 0 |
 | apps/postgres | 1 | 0 | 0 |
 | apps/productboard | 12 | 20 | 0 |
+| apps/salesforce | 2 | 3 | 0 |
 | apps/shopify | 18 | 4 | 0 |
 | apps/simplero | 2 | 0 | 0 |
 | apps/slack | 25 | 7 | 0 |
@@ -722,7 +722,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/jotform | 2 | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/judgeme | 2 | review-created, review-updated | apps/judgeme/README.md Triggers section (verified 2026-11-10) | hand | API-registered (POST/DELETE /webhooks, keys review/created and review/updated); JUDGEME-HMAC-SHA256 hex HMAC of the raw body under the Private API token; no poll: list-reviews has no sort or created-after filter |
 | apps/lemlist | 2 | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
-| apps/linear | 4 | comment, cycle, issue, project | apps/linear/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/linear | 7 | issue, comment, project, cycle, issue-label, user, any-event | apps/linear/README.md Triggers section (verified 2026-11-10) | hand | webhook-api: signed webhookCreate-registered triggers for Issue, Comment, Project, Cycle, IssueLabel and User plus any-event; list actions are covered by those webhook triggers or skipped as reference data |
 | apps/lokalise | 5 | key-added, key-modified, translation-updated, task-created, task-closed | apps/lokalise/README.md Triggers section (verified 2026-11-10) | hand | API-registered per-project webhooks (POST /projects/{id}/webhooks); Lokalise does not sign, it sends the webhook secret in X-Secret (shared-secret compare, body not bound) |
 | apps/lusha | 1 | signal-received | apps/lusha/README.md Triggers section (verified 2026-11-10) | hand | API-registered subscriptions (POST /api/subscriptions, up to 25 entity ids); HMAC-SHA256 over timestamp.body with the account webhook secret, 300 s window, required ack body returned |
 | apps/mailchimp/mandrill | 1 | email-event | apps/mailchimp/mandrill/README.md Triggers section (verified 2026-11-10) | hand | API-registered webhook (POST webhooks/add returns auth_key); base64 HMAC-SHA1 over callback URL + POST variables; no timestamp, so a replayed delivery is not detected |
@@ -754,12 +754,13 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/woocommerce | 7 | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | 3 | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (32)
+## manual-webhook (33)
 
 | app | triggers | candidates | verified | source | reason |
 |---|---|---|---|---|---|
 | apps/adyen | 4 | payment-authorisation, payment-capture, payment-cancellation, payment-refund | apps/adyen/README.md Triggers section (verified 2026-11-10) | hand | Standard webhook created in the Customer Area (no registration API in this app); each notification item verified with Adyen's HMAC-SHA256 field signature (additionalData.hmacSignature, hex key, 8 ':'-joined fields; no timestamp) |
 | apps/airparser | 1 | document-parsed | apps/airparser/README.md Triggers section (verified 2026-11-10) | hand | dashboard-created webhook (Integrations, Webhooks); airparser-signature base64 HMAC-SHA256 of the raw body under the per-webhook Signing Secret (no timestamp) |
+| apps/atlassian/jira | 14 | new-issue, issue-created, issue-updated, issue-deleted, comment-created, comment-updated, comment-deleted, project-created, project-updated, project-deleted, user-created, user-updated, user-deleted, any-event | apps/atlassian/jira/README.md Triggers section (verified 2026-11-10) | hand | manual-webhook: 12 signed named triggers (X-Hub-Signature sha256, admin-created webhook with secret) plus any-event, and the new-issue poll over issue-search |
 | apps/clearout | 3 | email-verifier-bulk-completed, email-finder-bulk-completed, form-guard-email-validated | apps/clearout/README.md Triggers section (verified 2026-11-10) | hand | webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window |
 | apps/cognitoforms | 3 | entry-submitted, entry-updated, entry-deleted | apps/cognitoforms/README.md Triggers section (verified 2026-11-10) | hand | per-form Post JSON Data to a Website endpoints (submit, update, delete) set in the form builder; Cognito documents no signature, so the callback URL is the secret and the README says so (https://www.cognitoforms.com/support/66/data-integration/webhooks) |
 | apps/customerio | 4 | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
@@ -791,7 +792,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/vero | 1 | vero-event | apps/vero/README.md Triggers section (verified 2026-11-10) | hand | webhook set in Vero (Settings, Integrations, Webhooks) to one notification address; email events and user created/updated; unsigned (no signature documented), callback URL is the secret; Vero does not retry |
 | apps/wise | 4 | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (485)
+## poll (484)
 
 | app | triggers | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|---|
@@ -817,7 +818,6 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/ashby | 1 | candidate-list | new-candidate | apps/ashby/README.md Triggers section (verified 2026-11-09) | hand | Candidate list supports the documented createdAfter creation-date filter with a rolling cursor (https://developers.ashbyhq.com/reference/candidatelist). |
 | apps/assemblyai | 1 | transcript-list | new-transcript | apps/assemblyai/README.md Triggers section (verified 2026-11-09) | hand | AssemblyAI documents transcript-list as newest-to-oldest |
 | apps/atlassian/confluence | 2 | page-list | new-page, new-or-updated-page | apps/atlassian/confluence/README.md Triggers section (verified 2026-11-09) | hand | Page list supports newest-created and newest-modified order (https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json). |
-| apps/atlassian/jira | 1 | issue-search | new-issue | apps/atlassian/jira/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-search |
 | apps/atlassian/jira-data-center | 1 | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
 | apps/atlassian/jira-service-management | 2 | servicedesk-get-many | new-service-desk, new-organization | apps/atlassian/jira-service-management/README.md Triggers section (verified 2026-11-10) | hand | servicedesk-get-many (GET /servicedesk, all service desks the user can access) and organization-get-many (GET /organization) are bounded id-keyed paged collections, polled as snapshots (https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/, .../api-group-organization/); request-search stays unpolled: ordered by latest activity, no created-since filter |
 | apps/attio | 1 | list-tasks | new-task | apps/attio/README.md Triggers section (verified 2026-11-09) | hand | list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks) |
@@ -1155,7 +1155,7 @@ depth: 682 apps, 1129 triggers, 3329 unaccounted list actions in 615 apps, n8n-p
 | apps/rippling | 2 | user-list | new-user, new-or-updated-user | apps/rippling/README.md Triggers section (verified 2026-11-09) | hand | user-list order_by created_at desc / updated_at desc (https://developer.rippling.com/documentation/rest-api/reference/list-users) |
 | apps/rocketchat | 2 | list-users | new-user, new-or-updated-user | apps/rocketchat/README.md Triggers section (verified 2026-11-09) | hand | list-users sort {createdAt:-1} / {_updatedAt:-1} (https://developer.rocket.chat/apidocs/get-users-list) |
 | apps/rootly | 1 | incident-list | new-incident | apps/rootly/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action incident-list |
-| apps/salesforce | 1 | query | new-record | apps/salesforce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action query |
+| apps/salesforce | 2 | query | new-record, new-or-updated-record | apps/salesforce/README.md Triggers section (verified 2026-11-10) | hand | poll over query (SOQL ORDER BY CreatedDate / LastModifiedDate DESC, any object); no webhook: Salesforce streams record changes (Change Data Capture) only to CometD and Pub/Sub API subscribers, not to a callback URL |
 | apps/salesloft | 1 | person-list | new-person | apps/salesloft/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action person-list |
 | apps/salesmate | 2 | contact-search | new-contact, new-or-updated-contact | apps/salesmate/README.md Triggers section (verified 2026-11-09) | hand | contact search supports documented createdAt and lastModifiedAt descending sort (the contact.-prefixed field names are unverified without a live request) |
 | apps/salesmsg | 1 | contact-list | new-contact | apps/salesmsg/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
