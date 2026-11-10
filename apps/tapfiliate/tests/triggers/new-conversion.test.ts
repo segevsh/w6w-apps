@@ -133,3 +133,19 @@ test("new-conversion first-check flood: 5 pages of pre-seed rows emit nothing, t
   );
   assertEquals(ids(r3.events), [999]);
 });
+
+test("new-conversion keeps only rows stamped inside the exact window (not before its start, not after its end)", async () => {
+  const state = await seedState();
+  at(T1);
+  const r1 = await trigger.poll!({ ...input, state }, mockCtx([page([])]).ctx);
+  at(T1 + 600_000); // window = [12:08, 12:20]
+  const r2 = await trigger.poll!(
+    { ...input, state: r1.nextState },
+    mockCtx([page([
+      conv(1, "2026-11-09T12:06:00+0000"), // after the seed, before this window: an earlier window's
+      conv(2, "2026-11-09T12:15:00+0000"),
+      conv(3, "2026-11-09T12:40:00+0000"), // after this window's end: the next window reads it
+    ])]).ctx,
+  );
+  assertEquals(ids(r2.events), [2]);
+});

@@ -156,3 +156,22 @@ test("new-booking accepts a bare-array response and pages while a page is full",
   assertEquals(ids(r2.events), [101, 102, 103]);
   assertEquals((r2.nextState as { resume?: unknown }).resume, undefined);
 });
+
+test("new-booking keeps only rows stamped inside the exact window (not before its start, not after its end)", async () => {
+  const state = await seedState();
+  at(T1);
+  const r1 = await trigger.poll!({ ...input, state }, ctxOf([info, page([], 1)]).ctx);
+  at(T1 + 600_000); // window = [12:08, 12:20] UTC = [13:08, 13:20] company time
+  const r2 = await trigger.poll!(
+    { ...input, state: r1.nextState },
+    ctxOf([
+      info,
+      page([
+        book(1, "2026-11-09 13:06:00"), // after the seed, before this window
+        book(2, "2026-11-09 13:15:00"),
+        book(3, "2026-11-09 13:40:00"), // after this window's end
+      ], 1),
+    ]).ctx,
+  );
+  assertEquals(ids(r2.events), [2]);
+});
