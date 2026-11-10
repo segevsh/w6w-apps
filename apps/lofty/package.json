@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/lofty",
   "version": "0.3.0",
-  "description": "Manage Lofty real-estate CRM leads, tasks and notes, register webhooks, read team members, send SMS and email, and pull communication history. Trigger workflows on new leads, tasks, appointments, notes and team members.",
+  "description": "Manage Lofty real-estate CRM leads, tasks and notes, register webhooks, read team members, send SMS and email. Triggers for new leads, tasks, appointments, notes and team members.",
   "license": "MIT",
   "author": {
     "name": "w6w"
