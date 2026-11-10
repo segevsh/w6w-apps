@@ -1,4 +1,5 @@
 # Dropbox
+Triggers: not shipped — list-folder paginates a folder snapshot but does not provide a created-record ordering or since filter (https://www.dropbox.com/developers/documentation/http/documentation)
 
 Upload, download, and manage files and folders in Dropbox.
 

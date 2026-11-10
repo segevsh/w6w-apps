@@ -1,4 +1,5 @@
 # Dixa
+Triggers: not shipped — conversation search requires a text query and is not a created-record feed (https://docs.dixa.io/)
 
 Work Dixa customer-service conversations from a workflow: open an email conversation, read it and
 its messages and notes, reply, add a private note, assign it, move it between queues, tag it, set

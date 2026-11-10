@@ -1,4 +1,5 @@
 # DocuMerge
+Triggers: not shipped — document-list has no documented ordering, time filter, or bounded-account guarantee (https://documerge.ai/)
 
 [DocuMerge](https://documerge.ai) generates documents (PDF, Word, Excel, HTML, images, email) by
 merging data into templates. This app lets a workflow manage documents and routes, their fields and

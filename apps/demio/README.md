@@ -1,4 +1,5 @@
 # Demio
+Triggers: not shipped — event-list is ordered by next session rather than record creation and exposes no since filter (https://developers.demio.com/)
 
 List Demio webinar events and sessions, register attendees, and read participant reports.
 

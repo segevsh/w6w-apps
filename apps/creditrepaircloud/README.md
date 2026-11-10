@@ -1,4 +1,5 @@
 # Credit Repair Cloud
+Triggers: not shipped — the existing API actions read individual records only; no documented collection feed with stable creation order or since filter (https://www.creditrepaircloud.com/api-documentation)
 
 Create, update, delete and read the Lead/Client and Affiliate records a Credit Repair Cloud
 account runs on, over the vendor's own Web API.

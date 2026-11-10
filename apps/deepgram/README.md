@@ -6,6 +6,7 @@ intent, generate speech, and watch the spend and request history behind it.
 - **Categories** — ai, video, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 19
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.deepgram.com` (the `service` health check adds
   `status.deepgram.com`)
 - **Website** — https://deepgram.com
@@ -215,6 +216,16 @@ where it can be acted on: on the `429` itself.
   deployments, which is infrastructure rather than automation.
 
 ## Errors
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-request` — New Request | Poll | `request-list` | Each newly recorded API request |
+
+The request log is read through its documented bounded time window. The first check records the
+window without firing; later checks deduplicate request ids over a two-minute overlap. Source:
+[Deepgram API reference](https://developers.deepgram.com/openapi.json) (verified 2026-11-09).
 
 A failure carries whichever of Deepgram's three shapes it arrived in, with the
 `request_id` when there is one — that is what support asks for. A `401` or `403`

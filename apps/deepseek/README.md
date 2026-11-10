@@ -1,4 +1,5 @@
 # DeepSeek
+Triggers: not shipped — stateless chat/model API with no user-created record collection (https://api-docs.deepseek.com/api/list-models)
 
 Chat completions, FIM code completion, model listing and account balance via the DeepSeek API.
 

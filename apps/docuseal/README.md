@@ -1,4 +1,5 @@
 # DocuSeal
+Triggers: not shipped — submission-list is paginated but its API reference does not document a creation order or since filter (https://www.docuseal.com/docs/api)
 
 Build DocuSeal templates, send submissions out for signature, manage
 submitters, and read completed documents.

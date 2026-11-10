@@ -1,4 +1,5 @@
 # Drata
+Triggers: not shipped — event-list has a created-at range but the vendor documentation does not state newest-first response order (https://developers.drata.com/openapi/reference/v2/overview/)
 
 Read compliance state from Drata (workspaces, users, personnel, controls, monitoring tests,
 evidence, vendors, risks, policies, devices, assets, events) and write vendors, risks and evidence,

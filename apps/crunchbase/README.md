@@ -1,4 +1,5 @@
 # Crunchbase
+Triggers: not shipped — search requires a caller-defined query and the existing action has no fixed created-record feed (https://data.crunchbase.com/docs/using-the-api)
 
 Look up companies, people and funding rounds from Crunchbase's licensed
 private-market dataset.

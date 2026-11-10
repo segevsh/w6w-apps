@@ -1,4 +1,5 @@
 # Diffbot
+Triggers: not shipped — extract and crawl-data actions return requested computation/job output, not an account record feed (https://docs.diffbot.com/reference/)
 
 Web data for a workflow: turn any page into structured data (articles, products, images, videos,
 discussions, events, lists, job posts), crawl whole sites, search and enrich the Diffbot Knowledge

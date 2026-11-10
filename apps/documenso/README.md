@@ -1,4 +1,5 @@
 # Documenso
+Triggers: not shipped — envelope-find is paginated but the documented endpoint exposes no creation order or since filter (https://docs.documenso.com/developers)
 
 Send Documenso envelopes for signature, manage their recipients and fields, and
 read the audit trail behind them.

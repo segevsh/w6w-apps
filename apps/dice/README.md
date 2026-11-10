@@ -1,4 +1,5 @@
 # DICE
+Triggers: not shipped — orders-list has a purchased-after filter but vendor documentation does not state newest-first response order (https://docs.dice.fm/)
 
 Read the [DICE Ticket Holders API](https://partners-endpoint.dice.fm/graphql/docs/index.html)
 from w6w. The integration uses the partner GraphQL endpoint at

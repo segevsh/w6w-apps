@@ -1,4 +1,5 @@
 # Drip
+Triggers: not shipped — subscriber listing filters by subscription date but does not document a newest-first feed order (https://developer.drip.com/)
 
 Manage Drip subscribers, tags, events and email series campaigns.
 

@@ -1,4 +1,5 @@
 # Cursor
+Triggers: not shipped — audit-log pagination and date range exist, but the vendor documentation does not guarantee event ordering for a new-record feed (https://cursor.com/docs/account/teams/admin-api)
 
 Manage a Cursor team programmatically: members, usage and spend, repo context blocklists,
 Enterprise billing groups, and model-access policy — over Cursor's **Admin API**.

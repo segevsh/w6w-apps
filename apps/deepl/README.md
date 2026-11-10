@@ -1,4 +1,5 @@
 # DeepL
+Triggers: not shipped — glossary listing is account metadata, not a documented created-record feed (https://developers.deepl.com/api-reference/glossaries)
 
 Translate text and documents, manage glossaries, and check quota via the DeepL API.
 
