@@ -139,4 +139,13 @@ once.
 
 ## Triggers
 
-- **New Customer** wraps the existing `customer-list` action and polls its newest-first feed. Vendor documentation: https://developer.kustomer.com (verified 2026-11-09).
+| Trigger | Mechanism | Wrapped action | What the run gets |
+|---|---|---|---|
+| New Customer (`new-customer`) | poll | `customer-list` — by `createdAt` descending (`sort=-createdAt`) | each newly created customer |
+| New or Updated Customer (`new-or-updated-customer`) | poll | `customer-list` — by `updatedAt` descending (`sort=-updatedAt`) | each customer that is new or edited (one event per edit) |
+
+Both triggers poll every 5 minutes, read one page of 100 from the app's existing `customer-list` action (same client, endpoint and credential), and dedupe by id. The first check seeds the feed and emits nothing.
+
+Trust model: polling only — each check calls the vendor API with the connection's own credential; no inbound delivery exists to verify.
+
+Vendor documentation: https://developer.kustomer.com/api/core-resources/get-customers (verified 2026-11-09). Its `sort` parameter reads "Prefix with '-' for descending order. Supported fields: createdAt, updatedAt".
