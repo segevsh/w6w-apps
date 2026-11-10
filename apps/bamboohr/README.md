@@ -8,6 +8,7 @@ Read and write BambooHR employees, time off, files, reports and metadata via the
   "BambooHR, Workday, Greenhouse, Rippling".
 - **Auth:** `api-key` — HTTP Basic, key as username (1 method)
 - **Actions:** 18
+- **Triggers:** 4 (poll)
 - **Health checks:** `service` (real, feed-backed) · `quota` (declared unavailable)
 
 Everything below was verified against BambooHR's own documentation on **2026-08-03**. Quoted lines
@@ -309,8 +310,13 @@ max 1000).
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-employee` — New Employee | Poll | `list-employees` | Each newly added employee |
+| `new-time-off-request` — New Time Off Request | Poll | `list-time-off-requests` | Each time off request created while the trigger is active |
+| `new-or-updated-time-off-request` — New or Updated Time Off Request | Poll | `list-time-off-requests` | Each request that is created, approved, denied, canceled or edited |
+| `new-employee-file` — New Employee File | Poll | `list-employee-files` | Each file newly added to the chosen employee (param: Employee ID) |
 
-Polled newest-first through the `list-employees` action; the first check records what exists without firing, later checks emit only unseen items. Source: [vendor docs](https://documentation.bamboohr.com/reference/get-employees) (verified 2026-11-09).
+`new-employee` is polled newest-first through `list-employees`; the first check records what exists without firing, later checks emit only unseen items. The two time off triggers read the `[today, today + 365 days]` window on every check (the endpoint filters by date overlap and has no creation order), dedupe by request id (or id plus the request's `updated` stamp), and drop anything created or changed before the trigger's first check, so a request that only comes into range never fires. `new-employee-file` diffs the employee's file listing (a 404 means no accessible categories, i.e. an empty list).
+
+Not covered: reference data and definitions (`list-fields`, `list-list-fields`, `list-time-off-policies`, `list-time-off-types`), saved report definitions (`list-reports`), and the Who's Out calendar (`list-whos-out`, a projection of the time off requests above plus company holidays). Source: [vendor docs](https://documentation.bamboohr.com/reference/list-time-off-requests) and [employee files](https://documentation.bamboohr.com/reference/list-employee-files) (verified 2026-11-10); employees: [vendor docs](https://documentation.bamboohr.com/reference/get-employees).
 
 ## Health checks
 

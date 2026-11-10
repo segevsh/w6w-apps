@@ -26,6 +26,9 @@ import getReport from "./actions/get-report.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import newEmployee from "./triggers/new-employee.ts";
+import newEmployeeFile from "./triggers/new-employee-file.ts";
+import newOrUpdatedTimeOffRequest from "./triggers/new-or-updated-time-off-request.ts";
+import newTimeOffRequest from "./triggers/new-time-off-request.ts";
 
 export default {
   actions: [
@@ -54,5 +57,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, quota],
-  triggers: [newEmployee],
+  triggers: [newEmployee, newTimeOffRequest, newOrUpdatedTimeOffRequest, newEmployeeFile],
 } satisfies AppDefinition;
