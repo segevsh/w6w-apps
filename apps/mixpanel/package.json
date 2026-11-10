@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/mixpanel",
   "version": "0.2.0",
-  "description": "Query Mixpanel product analytics and write events and user profiles into it — saved reports, segmentation, retention, cohorts, raw export, and deduplicated event import — and trigger workflows on newly saved cohorts.",
+  "description": "Query Mixpanel analytics and write events and user profiles into it: reports, segmentation, retention, cohorts, raw export, deduplicated import, plus a trigger on newly saved cohorts.",
   "license": "MIT",
   "author": {
     "name": "w6w"
