@@ -91,7 +91,6 @@ function ingest(
   );
 }
 
-const flip = (sig: string) => (sig[0] === "A" ? "B" : "A") + sig.slice(1);
 const signedForm = (body = FORM) => call(body, { "x-twilio-signature": formSig(URL_, body) });
 const signedStream = (body = STREAM) => call(body, { "x-twilio-signature": streamSig(URL_, body) });
 
@@ -158,23 +157,6 @@ test("call-status: a form with no CallStatus is acknowledged without an event", 
   assert.deepEqual(evs(await ingest(callStatus, signedForm(body))), []);
 });
 
-test("call-status: a flipped byte in the SIGNATURE throws", async () => {
-  const sig = formSig(URL_, FORM);
-  await assert.rejects(async () =>
-    await ingest(callStatus, call(FORM, { "x-twilio-signature": flip(sig) }))
-  );
-});
-
-test("call-status: a flipped byte in the body throws", async () => {
-  const sig = formSig(URL_, FORM);
-  await assert.rejects(async () =>
-    await ingest(
-      callStatus,
-      call(FORM.replace("CallDuration=42", "CallDuration=43"), { "x-twilio-signature": sig }),
-    )
-  );
-});
-
 test("call-status: a signature for another URL, a missing header and a non-POST throw", async () => {
   await assert.rejects(async () =>
     await ingest(callStatus, call(FORM, { "x-twilio-signature": formSig(URL_ + "x", FORM) }))
@@ -183,22 +165,6 @@ test("call-status: a signature for another URL, a missing header and a non-POST 
   await assert.rejects(async () =>
     await ingest(callStatus, call(FORM, { "x-twilio-signature": formSig(URL_, FORM) }, "GET"))
   );
-});
-
-test("call-status: an absent rawBody throws (never falls back to the parsed body)", async () => {
-  const c = signedForm();
-  delete c.rawBody;
-  await assert.rejects(async () => await ingest(callStatus, c), /raw body/);
-});
-
-test("call-status: an unset or empty Auth Token refuses before any compare", async () => {
-  for (const token of [null, ""]) {
-    await assert.rejects(async () => await ingest(callStatus, call(FORM, {}), token), /secret/);
-    await assert.rejects(
-      async () => await ingest(callStatus, call(FORM, { "x-twilio-signature": "" }), token),
-      /secret/,
-    );
-  }
 });
 
 // ------------------------------------------------------------------ Event Streams
@@ -227,29 +193,6 @@ test("any-event: the events filter keeps only the listed types", async () => {
   assert.deepEqual(evs(await ingest(anyEvent, signedStream(), TOKEN, "no.such.type")), []);
 });
 
-test("event streams: a flipped byte in the SIGNATURE throws", async () => {
-  const sig = streamSig(URL_, STREAM);
-  for (const t of [callSummary, anyEvent]) {
-    await assert.rejects(async () =>
-      await ingest(t, call(STREAM, { "x-twilio-signature": flip(sig) }))
-    );
-  }
-});
-
-test("event streams: a flipped byte in the body throws (the body hash is part of the signed URL)", async () => {
-  const sig = streamSig(URL_, STREAM);
-  for (const t of [callSummary, anyEvent]) {
-    await assert.rejects(async () =>
-      await ingest(
-        t,
-        call(STREAM.replace('"duration\\":5', '"duration\\":6'), {
-          "x-twilio-signature": sig,
-        }),
-      )
-    );
-  }
-});
-
 test("event streams: a signature over the re-serialised JSON, or a form-style signature, throws", async () => {
   const compact = JSON.stringify(JSON.parse(STREAM));
   await assert.rejects(async () =>
@@ -260,24 +203,6 @@ test("event streams: a signature over the re-serialised JSON, or a form-style si
   );
 });
 
-test("event streams: a missing header, an absent rawBody and a non-POST throw", async () => {
-  await assert.rejects(async () => await ingest(anyEvent, call(STREAM, {})));
-  const c = signedStream();
-  delete c.rawBody;
-  await assert.rejects(async () => await ingest(anyEvent, c), /raw body/);
-  await assert.rejects(async () =>
-    await ingest(anyEvent, call(STREAM, { "x-twilio-signature": streamSig(URL_, STREAM) }, "GET"))
-  );
-});
-
-test("event streams: an unset or empty Auth Token refuses before any compare", async () => {
-  for (const t of [callSummary, anyEvent]) {
-    for (const token of [null, ""]) {
-      await assert.rejects(async () => await ingest(t, call(STREAM, {}), token), /secret/);
-    }
-  }
-});
-
 test("event streams: a validly signed body that is not JSON is refused", async () => {
   const body = "not json";
   await assert.rejects(
@@ -285,3 +210,179 @@ test("event streams: a validly signed body that is not JSON is refused", async (
     /not JSON/,
   );
 });
+
+// ------------------------------------------------------------------ every signed trigger
+
+const MSG_IN =
+  "MessageSid=SMsample-msg-sid&AccountSid=sample-account-sid&From=%2B15017122661&To=%2B15558675310&Body=Hello+there&NumMedia=0";
+const MSG_STATUS =
+  "MessageSid=SMsample-msg-sid&AccountSid=sample-account-sid&From=%2B15017122661&To=%2B15558675310&MessageStatus=delivered&SmsStatus=delivered";
+const CALL_NONE = "CallSid=CAsample-call-sid&From=%2B15017122661";
+/** One CloudEvent of the other type, so a trigger listening for the first one must stay silent. */
+const STREAM_PREDICTED = `[
+  {
+    "specversion": "1.0",
+    "type": "com.twilio.voice.insights.call-summary.predicted-complete",
+    "source": "/v1/Voice/CAsample-call-sid/Summary",
+    "id": "EZsample-event-2",
+    "time": "2026-11-09T22:56:30.000Z",
+    "data": { "call_sid": "CAsample-call-sid" }
+  }
+]`;
+const COMPLETE = "com.twilio.voice.insights.call-summary.complete";
+
+interface Row {
+  key: string;
+  /** form = SMS/voice webhook (sorted-params scheme); stream = Event Streams (bodySHA256 scheme). */
+  scheme: "form" | "stream";
+  /** The vendor event this trigger fires on, as the literal the test is pinned to. */
+  event: string;
+  /** A signed body of that event. */
+  body: string;
+  /** A signed body of a different event: acknowledged without a run. */
+  other: string;
+  /** The Any Event `events` param, when the trigger takes one. */
+  listen?: string;
+  /** Reads the event string back out of one emitted run. */
+  seen: (run: Record<string, unknown>) => unknown;
+}
+const ROWS: Row[] = [
+  {
+    key: "incoming-message",
+    scheme: "form",
+    event: "Body=Hello there",
+    body: MSG_IN,
+    other: MSG_STATUS,
+    seen: (r) => `Body=${r.body}`,
+  },
+  {
+    key: "message-status",
+    scheme: "form",
+    event: "MessageStatus=delivered",
+    body: MSG_STATUS,
+    other: MSG_IN,
+    seen: (r) => `MessageStatus=${r.messageStatus}`,
+  },
+  {
+    key: "call-status",
+    scheme: "form",
+    event: "CallStatus=completed",
+    body: FORM,
+    other: CALL_NONE,
+    seen: (r) => `CallStatus=${r.callStatus}`,
+  },
+  {
+    key: "call-summary-complete",
+    scheme: "stream",
+    event: COMPLETE,
+    body: STREAM,
+    other: STREAM_PREDICTED,
+    seen: (r) => r.type,
+  },
+  {
+    key: "any-event",
+    scheme: "stream",
+    event: COMPLETE,
+    body: STREAM,
+    other: STREAM_PREDICTED,
+    listen: COMPLETE,
+    seen: (r) => r.type,
+  },
+];
+const triggerByKey = (key: string): T => {
+  const t = (app.triggers ?? []).find((x) => x.key === key);
+  assert.ok(t, key);
+  return t;
+};
+const flipAt = (s: string, i: number) =>
+  s.slice(0, i) + (s[i] === "A" ? "B" : "A") + s.slice(i + 1);
+
+test("the table names every signed trigger the app declares, once", () => {
+  const declared = (app.triggers ?? []).filter((t) => typeof t.handleIngest === "function")
+    .map((t) => t.key).sort();
+  assert.deepEqual(ROWS.map((r) => r.key).sort(), declared);
+});
+
+for (const row of ROWS) {
+  const trigger = triggerByKey(row.key);
+  const sign = row.scheme === "form" ? formSig : streamSig;
+  const run = (c: TriggerCall, token: string | undefined | null = TOKEN) =>
+    ingest(trigger, c, token as string | undefined, row.listen);
+  const signedBody = (body: string) => call(body, { "x-twilio-signature": sign(URL_, body) });
+
+  test(`${row.key}: a signed ${row.event} delivery yields a run of that event; another event yields none`, async () => {
+    const out = evs(await run(signedBody(row.body))) as Array<Record<string, unknown>>;
+    assert.equal(out.length, 1);
+    assert.equal(row.seen(out[0]), row.event);
+    assert.deepEqual(evs(await run(signedBody(row.other))), []);
+  });
+
+  test(`${row.key}: a flipped byte of the SIGNATURE (first, middle, last-data and padding position) throws`, async () => {
+    const good = sign(URL_, row.body);
+    assert.equal(good.length, 28);
+    for (const at of [0, 14, 26, 27]) {
+      await assert.rejects(
+        async () => await run(call(row.body, { "x-twilio-signature": flipAt(good, at) })),
+        undefined,
+        `pos ${at}`,
+      );
+    }
+    // control: the unflipped signature is accepted
+    assert.equal(evs(await run(call(row.body, { "x-twilio-signature": good }))).length, 1);
+  });
+
+  test(`${row.key}: a flipped byte in the body, or a re-serialised body, throws`, async () => {
+    const good = sign(URL_, row.body);
+    const tampered = row.scheme === "form"
+      ? row.body.replace(/(%2B\d)(\d)/, "$1" + "9")
+      : row.body.replace('"duration\\":5', '"duration\\":6');
+    assert.notEqual(tampered, row.body);
+    await assert.rejects(async () => await run(call(tampered, { "x-twilio-signature": good })));
+    const reserialised = row.scheme === "form"
+      ? new URLSearchParams(row.body).toString()
+      : JSON.stringify(JSON.parse(row.body));
+    if (reserialised !== row.body) {
+      await assert.rejects(async () =>
+        await run(call(row.body, { "x-twilio-signature": sign(URL_, reserialised) }))
+      );
+    }
+  });
+
+  test(`${row.key}: a missing header throws`, async () => {
+    await assert.rejects(async () => await run(call(row.body, {})));
+    await assert.rejects(async () => await run(call(row.body, { "x-twilio-signature": "" })));
+  });
+
+  test(`${row.key}: an absent rawBody throws (never falls back to the parsed body)`, async () => {
+    const c = signedBody(row.body);
+    delete c.rawBody;
+    await assert.rejects(async () => await run(c), /raw body/);
+  });
+
+  test(`${row.key}: an unset or empty Auth Token refuses before any compare`, async () => {
+    for (const token of [null, ""]) {
+      await assert.rejects(async () => await run(call(row.body, {}), token), /secret/);
+      await assert.rejects(
+        async () => await run(call(row.body, { "x-twilio-signature": "" }), token),
+        /secret/,
+      );
+    }
+  });
+
+  test(`${row.key}: a non-POST delivery throws`, async () => {
+    for (const method of ["GET", "PUT"]) {
+      await assert.rejects(
+        async () =>
+          await run(call(row.body, { "x-twilio-signature": sign(URL_, row.body) }, method)),
+        undefined,
+        method,
+      );
+    }
+  });
+
+  test(`${row.key}: a signature for another URL throws`, async () => {
+    await assert.rejects(async () =>
+      await run(call(row.body, { "x-twilio-signature": sign(URL_ + "x", row.body) }))
+    );
+  });
+}
