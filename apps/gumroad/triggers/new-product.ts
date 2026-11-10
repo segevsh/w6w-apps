@@ -18,13 +18,11 @@ export default newRecordSnapshot({
     { key: "name", type: "string", label: "Name" },
     { key: "price", type: "number", label: "Price (cents)" },
     { key: "published", type: "boolean", label: "Published" },
-    { key: "short_url", type: "string", label: "Product URL" },
   ],
   sample: {
     id: "A-m3CDDC5dlrSdKZp0RFhA==",
     name: "Pencil Icon PSD",
     price: 100,
     published: true,
-    short_url: "https://seller.gumroad.com/l/pencil",
   },
 });
