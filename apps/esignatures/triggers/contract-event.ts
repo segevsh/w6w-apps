@@ -5,7 +5,8 @@ const contractEvent = webhookTrigger({
   key: "contract-event",
   title: "Contract Event",
   description:
-    "Fires for every webhook notification eSignatures.com sends: contract sent, reminder, signed, withdrawn, signer viewed, signer signed, signer declined, mobile update request, SMS reply and delivery errors. The run gets the notification status, the contract and the signer, so branch on status.",
+    "Fires for every webhook notification eSignatures.com sends, or only the statuses listed in Events: contract sent, reminder, signed, withdrawn, signer viewed, signer signed, signer declined, mobile update request, SMS reply and delivery errors. The run gets the notification status, the contract and the signer, so branch on status.",
+  anyEvent: true,
 
   sample: {
     status: "contract-signed",

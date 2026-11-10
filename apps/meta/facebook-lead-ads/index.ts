@@ -21,12 +21,14 @@ import pageToken from "./auth/page-token.ts";
 import listForms from "./actions/list-forms.ts";
 import listRecentLeads from "./actions/list-recent-leads.ts";
 import newLead from "./triggers/new-lead.ts";
+import newLeadPoll from "./triggers/new-lead-poll.ts";
+import newLeadForm from "./triggers/new-lead-form.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
 export default {
   actions: [listForms, listRecentLeads],
-  triggers: [newLead],
+  triggers: [newLead, newLeadPoll, newLeadForm],
   auth: [oauth2, pageToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

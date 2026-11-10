@@ -33,6 +33,12 @@ import contractSent from "./triggers/contract-sent.ts";
 import contractSigned from "./triggers/contract-signed.ts";
 import signerSigned from "./triggers/signer-signed.ts";
 import signerDeclined from "./triggers/signer-declined.ts";
+import contractReminderSent from "./triggers/contract-reminder-sent.ts";
+import contractWithdrawn from "./triggers/contract-withdrawn.ts";
+import signerViewed from "./triggers/signer-viewed.ts";
+import deliveryError from "./triggers/delivery-error.ts";
+import newTemplate from "./triggers/new-template.ts";
+import newTemplateCollaborator from "./triggers/new-template-collaborator.ts";
 
 export default {
   actions: [
@@ -64,5 +70,17 @@ export default {
   // Secret Token over HTTP Basic only. eSignatures publishes no OAuth surface.
   auth: [secretToken],
   healthChecks: [service, api],
-  triggers: [contractEvent, contractSent, contractSigned, signerSigned, signerDeclined],
+  triggers: [
+    contractEvent,
+    contractSent,
+    contractSigned,
+    signerSigned,
+    signerDeclined,
+    contractReminderSent,
+    contractWithdrawn,
+    signerViewed,
+    deliveryError,
+    newTemplate,
+    newTemplateCollaborator,
+  ],
 } satisfies AppDefinition;

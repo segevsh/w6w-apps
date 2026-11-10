@@ -5,7 +5,7 @@ Forms, fields, folders and submissions on the **Formstack V2025 API**.
 - **Categories** — forms, productivity
 - **Auth methods** — access-token
 - **Actions** — 9
-- **Triggers** — 2 (webhook, poll)
+- **Triggers** — 4 (1 webhook, 3 poll)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:access-token`
 - **Egress allowlist** — `www.formstack.com`
 - **Website** — https://www.formstack.com/
@@ -214,6 +214,18 @@ deno task fmt      # NEVER bare `deno fmt` — it rewrites assets/icon.svg
 |---|---|---|---|
 | `new-submission` — New Submission | webhook (API) | `POST /forms/{formId}/webhooks` (V2025) | Form id, submission id, every answer under `fields` |
 | `new-submission-poll` — New Submission (poll) | poll | `submission-list` (`GET /forms/{formId}/submissions`, `order=DESC`, `pageSize=50`) | Each submission not seen on an earlier check |
+| `new-form` — New Form | poll | `form-list` (`GET /forms`, `pageSize=500`) | Each form newly created in the account |
+| `new-folder` — New Folder | poll | `folder-list` (`GET /folders`, `page=1&perPage=500`) | Each folder newly created in the account |
+
+Formstack's webhooks fire for one thing only, a form submission (the webhook reference describes them as pushing
+"submission data ... as forms are submitted"), so `new-submission` is the app's only event trigger and there is no
+separate Any Event trigger.
+
+`new-form` and `new-folder` read the whole collection in one request and diff it by id: `GET /forms` takes
+`pageSize` (default 50, maximum 500) with no created-since filter, and `GET /folders` takes `page`/`perPage`
+(minimum 10) with no filter or order. Both answers carry `page.totalPages`; when it is more than 1 (more than 500
+forms or folders) the check fails with an error naming the cap instead of reading part of the account. The first
+check only records what exists; renames and edits are not announced.
 
 `new-submission` registers a JSON-bodied webhook on the chosen form with a random 256-bit
 `sharedSecret` (Formstack accepts a caller-chosen one; the older v2 API calls it `handshake_key`),
@@ -232,8 +244,10 @@ form delivers it under another name, use `new-submission-poll`, which needs no w
 
 `new-submission-poll` runs the existing `submission-list` action — same client, endpoint and auth —
 at most every five minutes, one page of 50 (newest first) per check; more than 50 new submissions
-between checks would be missed.
+between checks would be missed. The V2025 list answers `{ page, submissions: [...] }`, which is what the
+trigger reads.
 
 Vendor docs: <https://developers.formstack.com/reference/createwebhook-1> and
 <https://developers.formstack.com/v2.0/reference/form-id-webhook-post> (the v2 `handshake_key`),
-verified 2026-11-09.
+<https://developers.formstack.com/reference/getformslist-1> and
+<https://developers.formstack.com/reference/listfolders-1>, verified 2026-11-10.

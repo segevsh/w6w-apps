@@ -7,7 +7,7 @@ content, and manage templates and their collaborators on [eSignatures.com](https
 - Built against the API reference at <https://esignatures.com/docs/api> (version 1.3, fetched
   2026-10-06) and live probes on the same day. Nothing here is inferred from another app.
 - Network: `esignatures.com` only.
-- **Triggers** — 5 (webhook)
+- **Triggers** — 11 (9 webhook, 2 poll)
 
 ## Authentication
 
@@ -100,11 +100,29 @@ Gate: `deno task fmt && deno task validate && deno task check && deno task lint 
 
 | trigger — title | mechanism | vendor event | what the run gets |
 |---|---|---|---|
-| `contract-event` — Contract Event | webhook (manual, signed) | every notification | the notification status, the contract, the signer(s) and the raw data |
+| `contract-event` — Contract Event (Any Event) | webhook (manual, signed) | every notification, or only the statuses listed in the optional `events` param (comma-separated; empty = all) | the notification status, the contract, the signer(s) and the raw data |
 | `contract-sent` — Contract Sent to Signer | webhook (manual, signed) | `contract-sent-to-signer` | the contract and the signer it was sent to |
 | `contract-signed` — Contract Signed | webhook (manual, signed) | `contract-signed` (all signers have signed) | the contract, every signer and a link to the signed PDF (valid 3 days) |
 | `signer-signed` — Signer Signed | webhook (manual, signed) | `signer-signed` | the contract and the signer, with the values they entered |
 | `signer-declined` — Signer Declined | webhook (manual, signed) | `signer-declined` | the contract, the signer and the reason given |
+| `contract-reminder-sent` — Contract Reminder Sent | webhook (manual, signed) | `contract-reminder-sent-to-signer` | the contract and the signer reminded |
+| `contract-withdrawn` — Contract Withdrawn | webhook (manual, signed) | `contract-withdrawn` (also sent when a signer declines) | the contract and its signers |
+| `signer-viewed` — Signer Viewed Contract | webhook (manual, signed) | `signer-viewed-the-contract` | the contract and the signer |
+| `delivery-error` — Delivery Error | webhook (manual, signed) | `error` (`email-delivery-failed`, `sms-delivery-failed`) | the contract id, its metadata and the error code and message |
+| `new-template` — New Template | poll | `template-list` | each template newly created in the account |
+| `new-template-collaborator` — New Template Collaborator | poll | `collaborator-list` | each collaborator newly added to the chosen template (the editor link is left out) |
+
+The webhook catalog has ten notifications; `contract-sent-to-signer`, `contract-reminder-sent-to-signer`,
+`contract-signed`, `contract-withdrawn`, `signer-viewed-the-contract`, `signer-signed`, `signer-declined` and
+`error` have a trigger of their own; `signer-mobile-update-request` and `sms-incoming` (and the
+`contract-pdf-generated` notification that `contract-pdf-preview` queues, which the reference names but
+does not document a payload for) arrive through Contract Event.
+
+The two polls read bounded collections: `GET /api/templates` answers every template of the account in one
+response with no paging, filter or order, and `GET /api/templates/{id}/collaborators` answers one
+template's collaborators the same way. Each check diffs the answer against the previous one and emits
+additions only (the first check records what exists; renames are not announced). The vendor offers no list of
+contracts, so contracts are tracked by the webhook triggers above, never polled.
 
 ### Setup
 
@@ -133,4 +151,4 @@ hex and the base64 form of that same HMAC are both accepted. The scheme carries 
 captured delivery could be replayed within the signature's lifetime; eSignatures.com also publishes the
 source IP addresses of its webhook calls (listed in the reference) for allow-listing at your edge.
 
-Docs (verified 2026-11-10): https://esignatures.com/docs/api (Webhooks section)
+Docs (verified 2026-11-10): https://esignatures.com/docs/api (Webhooks, Templates - List and Collaborators - List sections)
