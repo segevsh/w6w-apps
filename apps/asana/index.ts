@@ -39,6 +39,13 @@ import listProjects from "./actions/list-projects.ts";
 import updateProject from "./actions/update-project.ts";
 import newTask from "./triggers/new-task.ts";
 import taskUpdated from "./triggers/task-updated.ts";
+import taskDeleted from "./triggers/task-deleted.ts";
+import newComment from "./triggers/new-comment.ts";
+import newProject from "./triggers/new-project.ts";
+import projectUpdated from "./triggers/project-updated.ts";
+import projectDeleted from "./triggers/project-deleted.ts";
+import newUser from "./triggers/new-user.ts";
+import anyEvent from "./triggers/any-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -68,6 +75,16 @@ export default {
     updateProject,
   ],
   auth: [accessToken, oauth2],
-  triggers: [newTask, taskUpdated],
+  triggers: [
+    newTask,
+    taskUpdated,
+    taskDeleted,
+    newComment,
+    newProject,
+    projectUpdated,
+    projectDeleted,
+    newUser,
+    anyEvent,
+  ],
   healthChecks: [service, quota],
 } satisfies AppDefinition;
