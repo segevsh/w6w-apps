@@ -40,7 +40,7 @@ function makeTrigger(
     key,
     title,
     description: `The run gets each ${updated ? "new or updated" : "new"} ${
-      title.replace(/^(New|New or Updated) /, "").toLowerCase()
+      title.replace(/^(New or Updated|New) /, "").toLowerCase()
     }.`,
     output: [
       { key: "id", type: "number", label: "ID" },

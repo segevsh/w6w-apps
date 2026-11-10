@@ -57,14 +57,39 @@ for (const trigger of pollTriggers) {
       firstCtx.calls[0].url,
       `https://harvest.greenhouse.io/v3/${endpoint}?per_page=100&${field}=gte%7C2026-11-10T11%3A58%3A00.000Z`,
     );
+  });
+}
 
-    if (updated) {
-      const edited = { id: 1, updated_at: "2026-11-10T12:04:00Z" };
-      const edit = await trigger.poll!(
-        { params: {}, state: seeded.nextState, subscriptionId: "sub-1" },
-        mockCtx([listPage([edited, old])]).ctx,
-      );
-      assertEquals(edit.events, [edited]);
-    }
+// Brief 9.2: an edit is a new event only for the update feeds; a re-listed unchanged record never is.
+for (const trigger of pollTriggers) {
+  test(`${trigger.key}: an edited record is emitted again only when it is an update feed`, async () => {
+    const updated = trigger.key.startsWith("new-or-updated-");
+    const field = updated ? "updated_at" : "created_at";
+    const t1 = "2026-11-10T12:01:00Z";
+    const t2 = "2026-11-10T12:07:00Z";
+    clock.now = () => T0;
+    const seeded = await trigger.poll!(
+      { params: {}, state: {}, subscriptionId: "sub-1" },
+      mockCtx([]).ctx,
+    );
+    clock.now = () => T0 + 300_000;
+    const v1 = { id: 1, [field]: t1 };
+    const first = await trigger.poll!(
+      { params: {}, state: seeded.nextState, subscriptionId: "sub-1" },
+      mockCtx([listPage([v1])]).ctx,
+    );
+    assertEquals(first.events, [v1]);
+    clock.now = () => T0 + 600_000;
+    const v2 = { id: 1, created_at: t1, updated_at: t2 };
+    const edit = await trigger.poll!(
+      { params: {}, state: first.nextState, subscriptionId: "sub-1" },
+      mockCtx([listPage([v2])]).ctx,
+    );
+    assertEquals(edit.events.length, updated ? 1 : 0);
+    const repeat = await trigger.poll!(
+      { params: {}, state: first.nextState, subscriptionId: "sub-1" },
+      mockCtx([listPage([v1])]).ctx,
+    );
+    assertEquals(repeat.events, []);
   });
 }
