@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/signnow",
-  "version": "0.1.1",
-  "description": "Send existing documents out for signature, track and cancel invites, download signed PDFs, work from templates, and manage folders and webhooks on SignNow.",
+  "version": "0.2.0",
+  "description": "Send existing documents out for signature, track and cancel invites, download signed PDFs, use templates and folders, plus triggers for new, completed and signed documents.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -43,7 +43,12 @@
         "api-eval.signnow.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
