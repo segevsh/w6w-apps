@@ -34,11 +34,14 @@ action needs.
 | `new-subscriber` — New Subscriber | poll | `subscriber-find` with `sort_key=subscribed_at`, `sort_order=desc` pinned (params: `accountId`, `listId`) | Each new subscriber on the list |
 | `new-list` — New List | poll (snapshot) | `list-list` (param: `accountId`) | Each newly created list |
 | `new-segment` — New Segment | poll (snapshot) | `segment-list` (params: `accountId`, `listId`) | Each newly created saved segment |
+| `new-broadcast` — New Sent Broadcast | poll (snapshot) | `broadcast-list` (`status=sent`; params: `accountId`, `listId`) | Each broadcast newly sent from the selected list (up to 500 sent broadcasts are compared, 5 pages of 100) |
 | `new-tag` — New Tag | poll (snapshot) | `tag-list` (params: `accountId`, `listId`) | Each tag that newly appears among the list's most popular tags (AWeber returns up to 500, by popularity) |
 
 Vendor reference: https://api.aweber.com/ (verified 2026-11-10). The vendor documents `sort_key` and `sort_order` on the find-subscribers operation; the trigger sends both explicitly. Lists, segments and tags are small collections returned whole in one request (`ws.size` max 100), so they are polled as snapshots and only additions are emitted. `subscriber-list` returns the same subscribers as `subscriber-find` and `list-find` the same lists as `list-list`, so both are covered by `new-subscriber` and `new-list`.
 
-Not covered: `account-list` (a developer connection sees one account: reference data), `custom-field-list` (custom field definitions), `broadcast-list` (the reference says broadcasts are "sorted by `sent_at`" / `scheduled_for` / `broadcast_id` per status but documents no sort direction, no sort parameter and no since filter, so newest-first cannot be relied on).
+Not covered: `account-list` (a developer connection sees one account: reference data), `custom-field-list` (custom field definitions).
+
+Broadcasts: `broadcast-list` backs `new-broadcast` with `status=sent`. The reference says sent broadcasts are "sorted by `sent_at`" but states no direction and offers no sort parameter or since filter, so the trigger relies on no order: it reads up to five pages of 100 and emits only additions.
 
 ## The five things most likely to cost you a day
 
