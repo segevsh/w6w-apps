@@ -8,6 +8,8 @@ OpenAPI 3.0.2 documents embedded in each page, `servers: https://api.clearout.io
 unauthenticated probes of `api.clearout.io`. No `deprecat`/`sunset`/`end of life` wording appears
 anywhere in the API reference; `v2` is the only version documented.
 
+- **Triggers** — 3 (webhook)
+
 ## Auth
 
 **API token**, sent as `Authorization: Bearer <token>` by the Auth `sign` hook (nothing in an action
@@ -19,6 +21,26 @@ this could not be settled without a live token. Bearer is what is sent.
 The connect-time `test` calls `GET /account/credits` (free, counters only, never echoes the token)
 and classifies from the body: a 2xx without `status: "failed"` passes, error code 1000 / HTTP 401 is
 a rejected token.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `email-verifier-bulk-completed` — Bulk Verification Completed | webhook (manual, signed) | `email_verifier.bulk.completed` | list id and name, event id and mode, the full payload |
+| `email-finder-bulk-completed` — Bulk Finder Completed | webhook (manual, signed) | `email_finder.bulk.completed` | list id and name, event id and mode, the full payload |
+| `form-guard-email-validated` — Form Guard Email Validated | webhook (manual, signed) | `form_guard.email_validation.completed` | the verification result, page URL, event id and mode, the full payload |
+
+**Setup (manual webhook).** Clearout webhooks are created in the Clearout app, not through the API this app calls, so:
+
+1. Create the trigger and copy its callback URL.
+2. In the Clearout app open **Developers, Webhook**, choose **Create Webhook**, paste the URL and select the trigger's event (a trigger ignores, and acknowledges without a run, any other event sent to its URL).
+3. Under **Secret Token** click **Generate Token**, copy it immediately (Clearout shows it only when it is generated or rotated) and paste it into the trigger's `signingSecret` param. The token is account-wide, so every Clearout trigger takes the same one; rotating it means updating each trigger.
+
+**Trust model.** Clearout sends `x-co-webhook-signature: t=<unix seconds>,v1=<hex>`, where `v1` is the HMAC-SHA256 of `<t>.<raw body>` under the secret token. The trigger recomputes it over the exact bytes received, in constant time, and refuses a `t` more than five minutes from now (Clearout recommends 2 minutes and allows 2 to 5) before it parses anything; a missing secret, header or raw body, a malformed header, a stale timestamp or a mismatch refuses the delivery. A captured delivery can still be replayed inside that window. Clearout's own JavaScript and PHP samples hash a re-serialised body; its prose and Python sample hash the raw body, which is what this trigger checks.
+
+No poll trigger ships with the webhooks: a poll over `list-verify-lists` or `list-finder-lists` would announce a list when it is created, not when its verification or search completes, which only the webhook reports.
+
+Docs (verified 2026-11-10): https://docs.clearout.io/developers/webhooks, https://docs.clearout.io/developers/webhooks/set-up-and-edit-webhooks, https://docs.clearout.io/developers/webhooks/webhook-events-and-payloads and https://docs.clearout.io/developers/webhooks/validate-deliveries
 
 ## Actions
 
@@ -50,7 +72,7 @@ Credits are spent by verify, find and lookup calls. The vendor's `*@example.com`
 
 ## Not covered (and why)
 
-- **Webhooks** (`developers/webhooks/*`): a trigger surface, not an action; out of scope for this pass.
+- **Webhooks** (`developers/webhooks/*`): a trigger surface, not an action — see Triggers above.
 - **Form Guard, Data Pulse, Prospecting, Chrome extension, integrations**: dashboard products with no
   documented REST endpoints in the API reference.
 - **Bulk-finder CSV builder**: the docs name the required columns (a Name column and a
@@ -91,4 +113,3 @@ deno task fmt && deno task validate && deno task check && deno task lint && deno
 The icon is Clearout's own 512x512 mark, fetched from `clearout.io/fav-icon/icon-512x512.png` (the
 vendor's `<link rel=icon>` set).
 
-Triggers: not shipped — webhook candidate queued for a webhook node: email_verifier.bulk.completed, email_finder.bulk.completed (signed with x-co-webhook-signature; https://docs.clearout.io/developers/webhooks).
