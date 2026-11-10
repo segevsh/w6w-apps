@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1438 triggers, 2964 unaccounted list actions in 583 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -20,9 +20,6 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/eventbrite | 16 | 23 | 23 |
 | apps/heartbeat | 8 | 16 | 16 |
 | apps/gocanvas | 5 | 15 | 15 |
-| apps/twist | 1 | 16 | 15 |
-| apps/acculynx | 2 | 15 | 14 |
-| apps/document360 | 2 | 15 | 14 |
 | apps/fortnox | 0 | 14 | 14 |
 | apps/copper | 7 | 13 | 13 |
 | apps/tapfiliate | 1 | 14 | 13 |
@@ -603,6 +600,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/zoho/zoho-sheet | 2 | 2 | 1 |
 | apps/zoho/zoho-sign | 1 | 2 | 1 |
 | apps/accelo | 4 | 0 | 0 |
+| apps/acculynx | 8 | 15 | 0 |
 | apps/actionnetwork | 1 | 0 | 0 |
 | apps/airtable | 3 | 2 | 0 |
 | apps/asana | 9 | 5 | 0 |
@@ -618,6 +616,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/customerio | 4 | 0 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/discord | 5 | 5 | 0 |
+| apps/document360 | 10 | 15 | 0 |
 | apps/drata | 13 | 14 | 0 |
 | apps/ebay | 1 | 1 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
@@ -673,6 +672,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/tiktok-lead-generation | 1 | 0 | 0 |
 | apps/twilio/sendgrid | 1 | 0 | 0 |
 | apps/twilio/twilio | 2 | 0 | 0 |
+| apps/twist | 11 | 16 | 0 |
 | apps/twitter | 1 | 1 | 0 |
 | apps/typeform | 8 | 5 | 0 |
 | apps/upsales | 17 | 18 | 0 |
@@ -799,7 +799,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 |---|---|---|---|---|---|---|
 | apps/2chat | 1 | messages-list | new-message | apps/2chat/README.md Triggers section (verified 2026-11-10) | hand | messages-list returns the newest 100 messages first (https://developers.2chat.co/docs/API/WhatsApp/Web/messages/get-messages); webhooks are separate and not shipped |
 | apps/accelo | 4 | activity-list | new-activity, new-or-updated-activity, new-company, new-job | apps/accelo/README.md Triggers section (verified 2026-11-10) | hand | list actions take the documented order_by_desc(<field>) filter (https://api.accelo.com/docs/): activity-list, company-list, job-list polled newest-first by id; new-or-updated-activity requests the documented date_modified field via _fields and orders activity-list by order_by_desc(date_modified), keyed on id:date_modified |
-| apps/acculynx | 2 | job-list | new-job, new-or-updated-job | apps/acculynx/README.md Triggers section (verified 2026-11-09) | hand | Job list supports documented CreatedDate and ModifiedDate descending order (https://apidocs.acculynx.com/reference/getjobs). |
+| apps/acculynx | 8 | job-list | new-job, new-or-updated-job, new-contact, new-invoice, new-job-estimate, new-job-representative, new-user, new-appointment | apps/acculynx/README.md Triggers section (verified 2026-11-10) | hand | poll triggers cover newest-first jobs, contacts and invoices, and bounded snapshots of per-job estimates and representatives, users and per-calendar appointments |
 | apps/actionnetwork | 1 | person-list | new-person, new-or-updated-person | apps/actionnetwork/README.md Triggers section (verified 2026-11-09) | hand | People list supports documented created_date and modified_date filters with a rolling cursor (https://actionnetwork.org/docs/v2/). |
 | apps/acumbamail | 1 | list-get-all | new-list | apps/acumbamail/README.md Triggers section (verified 2026-11-10) | hand | getLists returns every list in one request indexed by list ID (https://acumbamail.com/en/apidoc/function/getLists/); snapshot diff. campaigns-list not polled: getCampaigns documents only a dict 'List of campaigns' with no id keying or order |
 | apps/addevent | 1 | event-template-list | new-event-template | apps/addevent/README.md Triggers section (verified 2026-11-09) | hand | Event-template list is documented newest-first (https://docs.addevent.com/reference/list-event-templates). |
@@ -904,7 +904,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/dixa | 1 | agent-list | new-agent | apps/dixa/README.md Triggers section (verified 2026-11-09) | hand | agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) |
 | apps/docparser | 1 | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
 | apps/documenso | 1 | envelope-find | new-envelope | apps/documenso/README.md Triggers section (verified 2026-11-09) | hand | GET /envelope documents orderByDirection default desc with sole sort column createdAt, so page 1 is newest (https://app.documenso.com/api/v2/openapi.json); webhook upgrade also queued |
-| apps/document360 | 2 | workspace-article-list | new-article, new-or-updated-article | apps/document360/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash |
+| apps/document360 | 10 | workspace-article-list | new-article, new-or-updated-article, new-article-version, new-drive-folder, new-project, new-reader, new-team-group, new-team-account, new-workspace-category, new-workspace | apps/document360/README.md Triggers section (verified 2026-11-10) | hand | bounded snapshot triggers cover Document360 record collections |
 | apps/documerge | 1 | document-list | new-document | apps/documerge/README.md Triggers section (verified 2026-11-09) | hand | the OpenAPI lists no pagination or filter parameters for GET /api/documents (parameters: []), so one response is treated as the whole collection: bounded snapshot (https://app.documerge.ai/api-docs/openapi.yaml) |
 | apps/docuseal | 1 | submitter-list | new-completed-submitter | apps/docuseal/README.md Triggers section (verified 2026-11-09) | hand | submitter-list takes documented completed_after filter; since-filter poll with id dedupe; submission-list has no date filter or documented order (https://www.docuseal.com/docs/api) |
 | apps/docusign | 2 | envelope-list | new-envelope, new-or-updated-envelope | apps/docusign/README.md Triggers section (verified 2026-11-09) | hand | order_by=created\|status_changed with order=desc and a 30-day from_date |
@@ -1220,7 +1220,7 @@ depth: 682 apps, 1414 triggers, 3007 unaccounted list actions in 586 apps, n8n-p
 | apps/trustpilot | 1 | business-unit-reviews-list | new-review | apps/trustpilot/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): orderBy=createdat.desc, per business unit |
 | apps/tumblr | 1 | blog-posts-list | new-post | apps/tumblr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action blog-posts-list |
 | apps/twilio/sendgrid | 1 | list-get-all | new-list | apps/twilio/sendgrid/README.md Triggers section (verified 2026-11-09) | hand | list-get-all snapshot-diffed (page_size max 1000); contact triggers dropped: contacts/search returns at most 50 rows, no page token or sort (https://www.twilio.com/docs/sendgrid/api-reference/contacts/search-contacts); Event Webhook upgrade queued |
-| apps/twist | 1 | message-list | new-message | apps/twist/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): message-list orderBy=desc, per conversation; replaces round-1 not-shipped line |
+| apps/twist | 11 | message-list | new-message, new-comment, new-thread, new-or-updated-thread, new-conversation, new-or-updated-conversation, new-or-updated-inbox-thread, new-channel, new-group, new-workspace, new-workspace-user | apps/twist/README.md Triggers section (verified 2026-11-10) | hand | poll triggers cover Twist's record feeds: id-ordered new thread/conversation, activity-ordered new-or-updated siblings, and snapshots of the unordered whole collections |
 | apps/twitch | 1 | get-channel-followers | new-follower | apps/twitch/README.md Triggers section (verified 2026-11-09) | hand | newest-first (a): get-channel-followers lists most recent follower first (https://dev.twitch.tv/docs/api/reference/#get-channel-followers); needs moderator:read:followers |
 | apps/twitter | 1 | tweet-search-recent | new-tweet | apps/twitter/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action tweet-search-recent |
 | apps/typefully | 1 | draft-list | new-draft | apps/typefully/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action draft-list |

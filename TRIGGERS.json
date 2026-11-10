@@ -29,12 +29,30 @@
     "mechanism": "poll",
     "candidates": [
       "new-job",
-      "new-or-updated-job"
+      "new-or-updated-job",
+      "new-contact",
+      "new-invoice",
+      "new-job-estimate",
+      "new-job-representative",
+      "new-user",
+      "new-appointment"
     ],
     "pollAction": "job-list",
-    "reason": "Job list supports documented CreatedDate and ModifiedDate descending order (https://apidocs.acculynx.com/reference/getjobs).",
-    "verified": "apps/acculynx/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers cover newest-first jobs, contacts and invoices, and bounded snapshots of per-job estimates and representatives, users and per-calendar appointments",
+    "verified": "apps/acculynx/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "contact-list": "new-contact",
+      "contact-jobs-list": "new-job",
+      "job-search": "new-job"
+    },
+    "skipped": {
+      "calendar-list": "company calendar configuration is reference data",
+      "contact-type-list": "company contact-type lookup is reference data",
+      "country-list": "country lookup is reference data",
+      "lead-source-list": "company lead-source lookup is reference data",
+      "state-list": "country-state lookup is reference data"
+    }
   },
   {
     "path": "apps/actionnetwork",
@@ -2081,12 +2099,28 @@
     "mechanism": "poll",
     "candidates": [
       "new-article",
-      "new-or-updated-article"
+      "new-or-updated-article",
+      "new-article-version",
+      "new-drive-folder",
+      "new-project",
+      "new-reader",
+      "new-team-group",
+      "new-team-account",
+      "new-workspace-category",
+      "new-workspace"
     ],
     "pollAction": "workspace-article-list",
-    "reason": "bounded snapshot (max 1000 articles, 10 pages of 100) of workspace-article-list; added-only for new, added+updated via summary hash",
-    "verified": "apps/document360/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "bounded snapshot triggers cover Document360 record collections",
+    "verified": "apps/document360/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "drive-search": "keyword-required Drive search is not a primary record feed",
+      "label-list": "project label taxonomy is reference data",
+      "language-list": "workspace language configuration is reference data",
+      "tag-list": "project tag taxonomy is reference data",
+      "workflow-status-list": "workflow-status configuration is reference data",
+      "workspace-search": "keyword-required workspace search is not a primary record feed"
+    }
   },
   {
     "path": "apps/documerge",
@@ -9159,12 +9193,33 @@
     "path": "apps/twist",
     "mechanism": "poll",
     "candidates": [
-      "new-message"
+      "new-message",
+      "new-comment",
+      "new-thread",
+      "new-or-updated-thread",
+      "new-conversation",
+      "new-or-updated-conversation",
+      "new-or-updated-inbox-thread",
+      "new-channel",
+      "new-group",
+      "new-workspace",
+      "new-workspace-user"
     ],
     "pollAction": "message-list",
-    "reason": "newest-first (a): message-list orderBy=desc, per conversation; replaces round-1 not-shipped line",
-    "verified": "apps/twist/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "poll triggers cover Twist's record feeds: id-ordered new thread/conversation, activity-ordered new-or-updated siblings, and snapshots of the unordered whole collections",
+    "verified": "apps/twist/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "workspace-public-channels-list": "new-channel",
+      "workspace-user-ids-list": "new-workspace-user"
+    },
+    "skipped": {
+      "search": "query-required full-text search (https://developer.twist.com/v3/ search/get), not a record feed",
+      "search-thread": "query-required thread search, not a record feed; threads are delivered by new-thread / new-or-updated-thread",
+      "search-conversation": "query-required conversation search, not a record feed; conversations are delivered by new-conversation",
+      "thread-unread-list": "per-user unread markers {channel_id, thread_id, obj_index, direct_mention} with no id of their own: read state, not records (https://developer.twist.com/v3/ threads/get_unread)",
+      "conversation-unread-list": "per-user unread markers (conversation id + obj_index): read state, not records (https://developer.twist.com/v3/ conversations/get_unread)"
+    }
   },
   {
     "path": "apps/twitch",
