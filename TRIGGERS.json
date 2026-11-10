@@ -2876,12 +2876,29 @@
     "path": "apps/front",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-contact"
+      "new-or-updated-contact",
+      "new-conversation",
+      "new-or-updated-conversation",
+      "new-inbox",
+      "new-channel",
+      "new-tag",
+      "new-teammate"
     ],
-    "pollAction": "contact-list",
-    "reason": "contact-list has only the q[updated_after] filter and no sort, so only a since-filter new-or-updated trigger fits",
-    "verified": "apps/front/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "conversation-list",
+    "reason": "poll triggers over conversation-list (newest activity first, sort_order=desc, created_at/updated_at floor), contact-list since-filter, and whole-collection snapshots for inboxes, channels, tags and teammates",
+    "verified": "apps/front/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "conversation-search": "new-conversation",
+      "inbox-conversation-list": "new-conversation",
+      "contact-conversation-list": "new-conversation"
+    },
+    "skipped": {
+      "status-list": "reference data: the company's conversation/ticket status definitions, not records",
+      "conversation-message-list": "per-parent list under ONE conversation (a thread is a record, not a feed a user subscribes to); a company-wide message feed needs Front webhooks (queued)",
+      "conversation-comment-list": "per-parent list under ONE conversation (a thread is a record, not a feed a user subscribes to); a company-wide comment feed needs Front webhooks (queued)",
+      "conversation-event-list": "per-parent list under ONE conversation (a thread is a record, not a feed a user subscribes to); a company-wide event feed needs Front webhooks (queued)"
+    }
   },
   {
     "path": "apps/fullenrich",
@@ -4080,12 +4097,28 @@
     "path": "apps/iclosed",
     "mechanism": "poll",
     "candidates": [
-      "new-deal"
+      "new-deal",
+      "new-call",
+      "new-or-updated-call",
+      "new-contact",
+      "new-transaction",
+      "new-product",
+      "new-or-updated-product",
+      "new-event",
+      "new-user"
     ],
     "pollAction": "deal-list",
-    "reason": "shipped poll trigger(s) over list action deal-list",
-    "verified": false,
-    "source": "hand"
+    "reason": "poll triggers over newest-first list actions (orderColumn createdAt/updatedAt desc, sort=desc, latestFirst) plus a whole-collection snapshot for users (https://api-docs-iclosed.redocly.app/_bundle/openapi/v1/openapi.yaml)",
+    "verified": "apps/iclosed/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "contact-note-list": "per-contact notes: GET /v1/contacts/notes documents no sort and no since filter (unbounded per contact) in the OpenAPI file",
+      "contact-stage-list": "reference data: contact-stage definitions, not records",
+      "field-list": "reference data: custom-field definitions, not records",
+      "field-list-all": "reference data: custom-field definitions across objects, not records",
+      "event-dates-list": "availability calendar of bookable dates for an event, not records",
+      "user-availability-list": "working-hours availability of a user, not records"
+    }
   },
   {
     "path": "apps/inoreader",
@@ -4872,12 +4905,30 @@
     "mechanism": "poll",
     "candidates": [
       "new-event",
-      "new-or-updated-event"
+      "new-or-updated-event",
+      "new-session",
+      "new-or-updated-session",
+      "new-session-registrant",
+      "new-or-updated-session-registrant",
+      "new-session-question",
+      "new-session-recording",
+      "new-user"
     ],
     "pollAction": "event-list",
-    "reason": "since-filter poll: filter[created_since]/[updated_since]=cursor-120s over event-list, page[number] 0-indexed, id dedupe",
-    "verified": "apps/livestorm/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "since-filter polls (filter[created_since]/[updated_since]) over event-list, session-list and session-people-list, plus whole-collection snapshots for questions, recordings and users (https://developers.livestorm.co/reference/get_sessions)",
+    "verified": "apps/livestorm/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "event-session-list": "new-session"
+    },
+    "skipped": {
+      "people-list": "GET /people takes only filter[email]/filter[role]: no sort, no since filter, unbounded (https://developers.livestorm.co/reference/get_people); registrants are delivered per session by new-session-registrant",
+      "event-people-list": "GET /events/{id}/people takes only filter[email]/filter[role]: no sort, no since filter, unbounded (https://developers.livestorm.co/reference/get_events-id-people); registrants are delivered per session by new-session-registrant",
+      "session-chat-messages-list": "live chat stream: no sort and no since filter (https://developers.livestorm.co/reference/get_sessions-id-chat-messages), and a large session passes the 5000-row snapshot ceiling",
+      "webhook-list": "configuration: the workspace's webhook subscriptions, not records",
+      "people-attribute-list": "reference data: people-attribute definitions, not records",
+      "job-tasks-list": "per-parent list of the tasks of ONE bulk-register job, an implementation detail of an async job"
+    }
   },
   {
     "path": "apps/lob",

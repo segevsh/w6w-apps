@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1528 triggers, 2910 unaccounted list actions in 575 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -28,9 +28,6 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/chatbase | 0 | 12 | 12 |
 | apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
-| apps/front | 1 | 13 | 12 |
-| apps/iclosed | 1 | 13 | 12 |
-| apps/livestorm | 2 | 13 | 12 |
 | apps/pylon | 1 | 13 | 12 |
 | apps/rootly | 1 | 13 | 12 |
 | apps/shortcut | 2 | 13 | 12 |
@@ -617,6 +614,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/erpnext | 2 | 1 | 0 |
 | apps/everhour | 10 | 23 | 0 |
 | apps/fareharbor | 6 | 14 | 0 |
+| apps/front | 7 | 13 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
 | apps/greenhouse | 2 | 17 | 0 |
@@ -625,6 +623,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/housecallpro | 14 | 19 | 0 |
 | apps/hubspot | 23 | 11 | 0 |
 | apps/huggingface | 1 | 1 | 0 |
+| apps/iclosed | 9 | 13 | 0 |
 | apps/insightly | 8 | 4 | 0 |
 | apps/intercom | 17 | 5 | 0 |
 | apps/jenkins | 2 | 1 | 0 |
@@ -637,6 +636,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/linkedin/linkedin | 2 | 1 | 0 |
 | apps/linkedin/linkedin-conversions | 1 | 1 | 0 |
 | apps/linkupapi | 7 | 20 | 0 |
+| apps/livestorm | 9 | 13 | 0 |
 | apps/loyverse | 2 | 0 | 0 |
 | apps/mailchimp/mailchimp | 10 | 3 | 0 |
 | apps/millionverifier | 2 | 1 | 0 |
@@ -951,7 +951,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/freshworks/freshdesk | 2 | ticket-get-many | new-ticket, new-or-updated-ticket | apps/freshworks/freshdesk/README.md Triggers section (verified 2026-11-09) | hand | ticket-get-many order_by created_at/updated_at order_type=desc |
 | apps/freshworks/freshsales | 2 | contact-get-many | new-contact, new-or-updated-contact | apps/freshworks/freshsales/README.md Triggers section (verified 2026-11-09) | hand | contact-get-many on a saved view, sort created_at/updated_at sort_type=desc |
 | apps/freshworks/freshservice | 2 | ticket-get-many | new-ticket, new-or-updated-ticket | apps/freshworks/freshservice/README.md Triggers section (verified 2026-11-09) | hand | ticket-get-many order_type=desc for new; updated_since filter (since-filter poll) for updated |
-| apps/front | 1 | contact-list | new-or-updated-contact | apps/front/README.md Triggers section (verified 2026-11-09) | hand | contact-list has only the q[updated_after] filter and no sort, so only a since-filter new-or-updated trigger fits |
+| apps/front | 7 | conversation-list | new-or-updated-contact, new-conversation, new-or-updated-conversation, new-inbox, new-channel, new-tag, new-teammate | apps/front/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over conversation-list (newest activity first, sort_order=desc, created_at/updated_at floor), contact-list since-filter, and whole-collection snapshots for inboxes, channels, tags and teammates |
 | apps/gamma | 1 | list-gamma-comments | new-or-updated-gamma-comment | apps/gamma/README.md Triggers section (verified 2026-11-09) | hand | list-gamma-comments has the updatedSince filter and no sort, so only a since-filter new-or-updated trigger fits |
 | apps/gerrit | 1 | change-search | new-or-updated-change | apps/gerrit/README.md Triggers section (verified 2026-11-09) | hand | change-search output is documented sorted most-recently-updated first; only the update-ordered trigger fits (no created-order sort documented) |
 | apps/getresponse | 1 | contact-list | new-contact | apps/getresponse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
@@ -996,7 +996,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/huggingface | 1 | inference-model-list | new-inference-model | apps/huggingface/README.md Triggers section (verified 2026-11-09) | hand | shape c: router /v1/models is one unordered response of a few hundred provider-deployed models; snapshot on model id (https://huggingface.co/docs/hub/api) |
 | apps/hunter | 1 | lead-list | new-lead | apps/hunter/README.md Triggers section (verified 2026-11-09) | hand | Lead list is most recent first and exposes stable IDs. |
 | apps/hyros | 2 | leads-list | new-lead, new-sale | apps/hyros/README.md Triggers section (verified 2026-11-09) | hand | leads-list and sales-list take the documented fromDate (only records whose join date is more recent) with an opaque nextPageId cursor: since-filter + id dedupe; no update stamp, so no new-or-updated (https://jsapi.apiary.io/apis/hyros.apib) |
-| apps/iclosed | 1 | deal-list | new-deal | no | hand | shipped poll trigger(s) over list action deal-list |
+| apps/iclosed | 9 | deal-list | new-deal, new-call, new-or-updated-call, new-contact, new-transaction, new-product, new-or-updated-product, new-event, new-user | apps/iclosed/README.md Triggers section (verified 2026-11-10) | hand | poll triggers over newest-first list actions (orderColumn createdAt/updatedAt desc, sort=desc, latestFirst) plus a whole-collection snapshot for users (https://api-docs-iclosed.redocly.app/_bundle/openapi/v1/openapi.yaml) |
 | apps/inoreader | 1 | stream-contents | new-article | apps/inoreader/README.md Triggers section (verified 2026-11-09) | hand | shape a: stream/contents r defaults to newest first, order=newest sends no r (https://www.inoreader.com/developers/stream-contents) |
 | apps/insightly | 8 | contact-get-many | new-contact, new-lead, new-opportunity, new-organisation, new-or-updated-contact, new-or-updated-lead, new-or-updated-opportunity, new-or-updated-organisation | apps/insightly/README.md Triggers section (verified 2026-11-09) | hand | *-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded |
 | apps/instantly | 1 | email-list | new-email | apps/instantly/README.md Triggers section (verified 2026-08-29) | hand | shipped poll trigger(s) over list action email-list |
@@ -1037,7 +1037,7 @@ depth: 682 apps, 1507 triggers, 2946 unaccounted list actions in 578 apps, n8n-p
 | apps/linkupapi | 7 | account-list | new-candidate, new-connection, new-profile-post, new-account, new-invitation, new-job, new-webhook-event | apps/linkupapi/README.md Triggers section (verified 2026-11-10) | hand | Newest-first polls (accounts, stored connections, profile posts, candidates), bounded snapshots (received invitations, job postings) and the stored webhook-event stream by event_id cursor. Webhook push is queued separately. |
 | apps/littlegreenlight | 2 | constituent-search | new-constituent, new-or-updated-constituent | apps/littlegreenlight/README.md Triggers section (verified 2026-11-09) | hand | constituent-search sorted date_created! / date_updated! (vendor sort param, trailing ! reverses), limit 100; updated variant ids id:updated_at (vendor field; date_updated is only the sort key) |
 | apps/livechat | 1 | list-archives | new-chat-thread | apps/livechat/README.md Triggers section (verified 2026-11-09) | hand | list-archives with the documented filters.from since-filter and sort_order desc (https://platform.text.com/docs/messaging/agent-chat-api) |
-| apps/livestorm | 2 | event-list | new-event, new-or-updated-event | apps/livestorm/README.md Triggers section (verified 2026-11-09) | hand | since-filter poll: filter[created_since]/[updated_since]=cursor-120s over event-list, page[number] 0-indexed, id dedupe |
+| apps/livestorm | 9 | event-list | new-event, new-or-updated-event, new-session, new-or-updated-session, new-session-registrant, new-or-updated-session-registrant, new-session-question, new-session-recording, new-user | apps/livestorm/README.md Triggers section (verified 2026-11-10) | hand | since-filter polls (filter[created_since]/[updated_since]) over event-list, session-list and session-people-list, plus whole-collection snapshots for questions, recordings and users (https://developers.livestorm.co/reference/get_sessions) |
 | apps/lob | 1 | address-list | new-address | apps/lob/README.md Triggers section (verified 2026-11-09) | hand | address-list is documented newest-created first (https://docs.lob.com/#tag/Addresses/operation/addresses_list) |
 | apps/lofty | 1 | lead-list | new-lead | apps/lofty/README.md Triggers section (verified 2026-11-09) | hand | lead-list sort=CreateTime desc=true limit 100; id leadId (vendor reference is client-rendered, sort value rests on the action's documented list) |
 | apps/loop-returns | 1 | order-list | new-order | no | hand | shipped poll trigger(s) over list action order-list |
