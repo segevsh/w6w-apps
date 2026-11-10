@@ -136,4 +136,4 @@ The reference lists each endpoint's URL pattern, and they split cleanly:
 - **`output` schemas.** Responses are the vendor's loose, string-typed documents; the audit tool
   warns about this, and a schema would assert types the API does not keep.
 
-Triggers: not shipped — user, course, group and branch get-many operations are paged lookups with no documented sort or since filter (https://market.talentlms.com/pages/docs/TalentLMS-API-Documentation.pdf)
+Triggers: not shipped — the user, course, group, branch and ILT lists document no sort order and no created/updated-since filter, and TalentLMS offers no webhook API for them (https://market.talentlms.com/pages/docs/TalentLMS-API-Documentation.pdf)

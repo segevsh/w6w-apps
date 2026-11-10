@@ -5,6 +5,7 @@ Send SMS/MMS, place and control voice calls, and look up phone numbers via Telny
 - **Categories** — communication, devops
 - **Auth methods** — api-key (bearer)
 - **Actions** — 6
+- **Triggers** — 1 (poll)
 - **Egress allowlist** — `api.telnyx.com`
 - **Website** — https://telnyx.com
 - **API docs** — https://developers.telnyx.com/docs/overview
@@ -162,4 +163,16 @@ app at `unknown` forever.
 
 Researched and endpoint-verified 2026-09-05.
 
-Triggers: not shipped — webhook candidate queued for a webhook node: messaging delivery and call-control events; phone-number inventory has no created feed (https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks)
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-phone-number` — New Phone Number | Poll | `list-phone-numbers` | Each phone number newly added to the account |
+
+Polled newest-first through `list-phone-numbers` (page 1, 100 per page; the vendor caps pages at 250).
+The first check records what exists without firing; later checks emit only unseen ids. Telnyx documents
+the default order of this list as "sorted by created_at in descending order"
+(OpenAPI `GET /phone_numbers`, parameter `sort`). Source:
+[team-telnyx/openapi spec3.json](https://github.com/team-telnyx/openapi/blob/master/openapi/spec3.json)
+(verified 2026-11-09). Telnyx also offers signed webhooks (message and call events), which this app
+does not use yet: https://developers.telnyx.com/docs/v2/development/api-fundamentals/webhooks

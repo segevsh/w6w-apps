@@ -5,6 +5,7 @@ workflow: send one message or a batch, assemble large batches as groups and sche
 them, and read delivery status, balance, sender numbers, statistics, stored files and the Kakao
 channels and templates linked to the account.
 
+- **Triggers** — 2 (poll)
 - **Base URL** `https://api.solapi.com` (the only host in `network.allow`). SOLAPI also serves
   the same API from `api-static.solapi.com` on two fixed IPs for firewalled environments; this
   app does not use it.
@@ -98,4 +99,16 @@ size to reach further channels, and confirm paging on an account with many.
 
 ## Triggers
 
-- **New Message** and **New or Updated Message** poll the message-history feed. Source: https://developers.solapi.com/references/messages/list-messages (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-message` — New Message | Poll | `list-messages` | Each message created after the trigger was set up |
+| `new-or-updated-message` — New or Updated Message | Poll | `list-messages` | Each message created or whose status changed (`dateUpdated`) |
+
+`list-messages` documents no sort order, so these triggers use its `startDate` / `endDate` window with
+`dateType` `CREATED` / `UPDATED`, paged by the `startKey` / `nextKey` cursor (100 per page, one page per
+check). The first check stores the start time and reads nothing; later checks read the window from two
+minutes before the previous check (never before the start), resume a multi-page window from the saved
+cursor on the next check, and drop ids already emitted. Source:
+[SOLAPI list messages reference](https://developers.solapi.com/references/messages/list-messages)
+(verified 2026-11-09; the page is a client-rendered app, so the parameters were checked against this
+app's own `list-messages` action, which cites the same reference).

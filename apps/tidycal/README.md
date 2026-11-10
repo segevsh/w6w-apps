@@ -425,4 +425,4 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
   sh -c 'cd /app/packages/apps/apps/tidycal && deno task test'
 ```
 
-Triggers: not shipped — booking and contact lists expose page and date-window filters but no documented creation order or created-since filter (https://tidycal.com/developer/docs/)
+Triggers: not shipped — `booking-list` filters on the booking's own start/end time, not its creation, and `contact-list` takes only a page number; no sort order or created-since filter is documented (https://tidycal.com/developer/docs/)

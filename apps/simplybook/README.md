@@ -160,4 +160,4 @@ Researched and endpoint-verified 2026-09-05 by fetching the live OpenAPI documen
 live probes of `POST /admin/auth` and the status-page candidates above. Re-verify if a probe starts
 failing for everyone at once.
 
-Triggers: not shipped — booking and client lists are paged but document no created-order or creation filter (https://simplybook.me/api/swagger-admin)
+Triggers: not shipped — the booking creation/edit filters (`filter[record_date_from]`, `filter[edited_date_from]`) are day-granular in the company time zone, which this app cannot read, and the existing action does not expose them; the client list has no order or since filter (https://simplybook.me/api/swagger-admin)

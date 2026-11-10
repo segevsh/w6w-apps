@@ -144,4 +144,4 @@ Researched and endpoint-verified 2026-07-31 against Splunk's own documentation (
 help.splunk.com) and a live fetch of `status.splunkcloud.com/api/v2/summary.json`. Re-verify if a
 probe starts failing for everyone at once.
 
-Triggers: not shipped — search-job, saved-search and index lists have no documented created-since or newest-first contract (https://dev.splunk.com/enterprise/docs/reference/rest-api/)
+Triggers: not shipped — `search-get-many` lists short-lived search jobs with only count/offset (no sort or since filter), and saved searches and indexes are configuration, not events (https://dev.splunk.com/enterprise/docs/reference/rest-api/)

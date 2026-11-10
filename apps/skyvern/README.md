@@ -7,6 +7,7 @@ profiles and stored credentials around them. Skyvern Cloud only (`api.skyvern.co
 - **Categories** — ai, developer-tools
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 1 (poll)
 - **Health checks** — 3 (`service`, `api`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.skyvern.com` (the `service` check adds `status.skyvern.com` to its own
   hook allowlist, never to the app's)
@@ -104,4 +105,11 @@ client, auth and the health checks, all against a mocked `HookContext`.
 
 ## Triggers
 
-- **New Run** polls Skyvern's newest-first runs feed. Source: https://api.skyvern.com/openapi.json (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-run` — New Run | Poll | `run-list` | Each newly created task or agent run |
+
+Polled newest-first through `run-list` (page 1, 100 per page). Skyvern's OpenAPI describes `GET /v1/runs`
+as "List the organization's task and agent runs, newest first". The first check records what exists
+without firing; later checks emit only unseen `run_id`s. Source:
+[openapi.json](https://api.skyvern.com/openapi.json) (verified 2026-11-09).

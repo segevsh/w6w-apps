@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/signwell",
-  "version": "0.2.0",
-  "description": "Send documents and templates out for e-signature with SignWell, track and remind recipients, run bulk sends, fetch completed PDFs, and trigger on new bulk sends.",
+  "version": "0.1.0",
+  "description": "Send documents and templates out for e-signature with SignWell, track and remind recipients, run bulk sends, and fetch completed PDFs.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,8 +35,7 @@
         "status.signwell.com"
       ]
     },
-    "entry": "./index.ts",
-    "build": { "include": ["../_shared"] }
+    "entry": "./index.ts"
   },
   "type": "module",
   "main": "./dist/app.js",

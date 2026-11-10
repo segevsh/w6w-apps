@@ -126,6 +126,4 @@ were not observed on an authenticated 200. A 429 body names the limit and reset 
 Vector Graphics image"), not an ICO. Format with `deno task fmt`, never bare `deno fmt`, which
 rewrites it.
 
-## Triggers
-
-- **New Bulk Send** polls the newest bulk-send page. Source: https://developers.signwell.com (verified 2026-11-09).
+Triggers: not shipped — bulk-send-list documents only page/limit/user_email/api_application_id: no sort order and no since filter, and no document-list action exists (https://developers.signwell.com/openapi/resources-and-endpoints.json)

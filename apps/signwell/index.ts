@@ -37,7 +37,6 @@ import accountGet from "./actions/account-get.ts";
 import webhookList from "./actions/webhook-list.ts";
 import webhookCreate from "./actions/webhook-create.ts";
 import webhookDelete from "./actions/webhook-delete.ts";
-import newBulkSend from "./triggers/new-bulk-send.ts";
 
 import service from "./health/service.ts";
 import api from "./health/api.ts";
@@ -70,5 +69,4 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newBulkSend],
 } satisfies AppDefinition;

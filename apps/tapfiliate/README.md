@@ -175,4 +175,4 @@ deno task fmt         # format (run before check/lint, not after)
 deno task validate    # manifest + icon-legibility audit
 ```
 
-Triggers: not shipped — date-filtered collections do not document an ordering guarantee, so page one is not a safe new-record feed (https://tapfiliate.com/docs/rest/)
+Triggers: not shipped — the lists document only day-granular `date_from`/`date_to`, a fixed 25-per-page pager and no sort order, so a poll would re-read a whole day of records per check (https://tapfiliate.com/docs/rest/)

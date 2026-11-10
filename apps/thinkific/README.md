@@ -5,6 +5,7 @@ Manage Courses, Users, Enrollments, Orders, Products and Bundles on the **Thinki
 - **Categories** — commerce, crm
 - **Auth methods** — api-key
 - **Actions** — 20
+- **Triggers** — 2 (poll)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:api-key`
 - **Egress allowlist** — `api.thinkific.com` (the `service` check adds `status.thinkific.com` to its
   own hook allowlist, never to the app's)
@@ -301,4 +302,15 @@ deno task test
 
 ## Triggers
 
-- **New Enrollment** and **New or Updated Enrollment** poll the enrollment list. Source: https://developers.thinkific.com/api/api-documentation/ (verified 2026-11-09).
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-enrollment` — New Enrollment | Poll | `enrollments-list` | Each enrollment created after the trigger was set up |
+| `new-or-updated-enrollment` — New or Updated Enrollment | Poll | `enrollments-list` | Each enrollment created or changed (`updated_at`) |
+
+`GET /enrollments` documents no sort order, so these triggers use its `query[created_after]` /
+`query[created_before]` (or `query[updated_after]` / `query[updated_before]`) window, 100 per page, one
+page per check. The first check stores the start time and reads nothing; later checks read the window from
+two minutes before the previous check (never before the start), resume a multi-page window from the saved
+page on the next check, and drop ids already emitted. Source:
+[Thinkific Admin API OpenAPI](https://developers.thinkific.com/openapi/thinkific-admin-api-v1.yaml)
+(verified 2026-11-09).

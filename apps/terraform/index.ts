@@ -39,7 +39,6 @@ import stateOutputs from "./actions/state-outputs.ts";
 import variableList from "./actions/variable-list.ts";
 import variableSet from "./actions/variable-set.ts";
 import variableDelete from "./actions/variable-delete.ts";
-import newRun from "./triggers/new-run.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -66,7 +65,6 @@ const app: AppDefinition = {
   ],
   auth: [token],
   healthChecks: [service, instance, quota],
-  triggers: [newRun],
 };
 
 export default app;
