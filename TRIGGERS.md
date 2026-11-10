@@ -8,9 +8,9 @@ Generated from [TRIGGERS.json](TRIGGERS.json) (the source of truth) by
 Rows with `verified: false` come from a code scan or model knowledge, not vendor docs.
 Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
-**Totals:** 683 apps — webhook-api: 44, manual-webhook: 14, poll: 391, none: 234
+**Totals:** 683 apps — webhook-api: 46, manual-webhook: 17, poll: 396, none: 224
 
-## webhook-api (44)
+## webhook-api (46)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -37,7 +37,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/gitlab | push, merge-request, issue, comment, pipeline, release | https://docs.gitlab.com/api/version/ and https://docs.gitlab.com/user/project/integrations/webhooks/ (conductor-verified 2026-11-09) | hand | API-registered project webhook (POST /projects/:id/hooks); onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
 | apps/gocanvas | dispatch_create, submission_create, submission_edit, workflow_handoff_create, submission_custom_status_change | apps/gocanvas/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create |
 | apps/gumroad | new-sale, sale-webhook | apps/gumroad/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
+| apps/heartbeat | USER_JOIN, USER_UPDATE, GROUP_JOIN, THREAD_CREATE, EVENT_CREATE, EVENT_RSVP, COURSE_COMPLETED, DOCUMENT_CREATE | apps/heartbeat/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: USER_JOIN, USER_UPDATE, GROUP_JOIN, THREAD_CREATE, EVENT_CREATE, EVENT_RSVP, COURSE_COMPLETED, DOCUMENT_CREATE (PUT /webhooks, unsigned, https://heartbeat.readme.io/reference/webhooks); member and content list endpoints are uncapped with no documented change filter |
 | apps/helpscout | conversation-status-changed, customer-replied, new-conversation, new-customer | apps/helpscout/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
+| apps/heygen | avatar_video.success, avatar_video.fail | apps/heygen/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: avatar_video.success, avatar_video.fail (HMAC-SHA256 `signature` header, registered via POST /v3/webhooks/endpoints, https://developers.heygen.com/docs/webhooks); the video list GET /v3/videos documents no result order, sort or since-filter (https://developers.heygen.com/reference/list-videos) |
 | apps/invoiceninja | invoice-webhook, new-invoice | apps/invoiceninja/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/jotform | new-submission, submission-webhook | apps/jotform/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
 | apps/lemlist | activity-webhook, new-activity | apps/lemlist/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
@@ -59,7 +61,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/woocommerce | customer-created, event, order-created, order-deleted, order-updated, product-created, product-updated | apps/woocommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/zendesk/zendesk | new-ticket, ticket-comment-added, ticket-status-changed | apps/zendesk/zendesk/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 
-## manual-webhook (14)
+## manual-webhook (17)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -67,6 +69,9 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/cognitoforms | entry submitted | no | hand | webhook candidate queued for a webhook node: entry submitted |
 | apps/customerio | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/formspark | submission.created | apps/formspark/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: submission.created |
+| apps/goto-webinar | registrant, attendee, webinar | apps/goto-webinar/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: registrant, attendee, webinar events (https://developer.goto.com/GoToWebinarV2/); webinar-list filters scheduled time (fromTime/toTime), not creation or update time, and registrants/attendees are per-webinar |
+| apps/highlevel | contact, appointment, opportunity, conversation | apps/highlevel/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: contact, appointment, opportunity, conversation events (https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html); GET /contacts/ documents no order or since-filter; pipelines/forms/calendars are rarely-changing account configuration, and /opportunities/search and /conversations/search order/date params are not sent by the existing actions |
+| apps/homeassistant | webhook trigger | apps/homeassistant/README.md Triggers section (verified 2026-11-09) | hand | webhook candidate queued for a webhook node: automation webhook trigger (https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger); state listing is an uncapped full instance snapshot with no change filter (https://developers.home-assistant.io/docs/api/rest/) |
 | apps/intercom | conversation-created, contact-created | apps/intercom/README.md Triggers section (verified 2026-11-09) | hand | signed manual webhook (X-Hub-Signature HMAC-SHA1, client secret); no poll: conversation-get-many has no sort/since filter and no documented newest-first order |
 | apps/meta/facebook | new-comment, page-feed | apps/meta/facebook/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/meta/facebook-lead-ads | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
@@ -78,7 +83,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/twilio/twilio | incoming-message, message-status | apps/twilio/twilio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/wise | balance-updated, profile-state-changed, transfer-payout-failed, transfer-state-changed | apps/wise/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 
-## poll (391)
+## poll (396)
 
 | app | poll action | candidates | verified | source | reason |
 |---|---|---|---|---|---|
@@ -225,6 +230,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/google/youtube | list-comment-threads | new-comment-thread | apps/google/youtube/README.md Triggers section (verified 2026-11-09) | hand | Comment threads are requested in time order. |
 | apps/gorgias | customer-get-many | new-customer, new-or-updated-customer | apps/gorgias/README.md Triggers section (verified 2026-11-09) | hand | Customers support created and updated descending ordering. |
 | apps/gotify | message-list | new-message | apps/gotify/README.md Triggers section (verified 2026-11-09) | hand | Existing bounded messages page is polled. |
+| apps/grafana | dashboard-list | new-dashboard | apps/grafana/README.md Triggers section (verified 2026-11-09) | hand | dashboard search is capped at 5,000 records and is snapshotted for added dashboards (https://grafana.com/docs/grafana/latest/developers/http_api/folder_dashboard_search/); read to the 5,000 limit, so dashboards beyond it are neither seen nor reported |
 | apps/grain | recording-list | new-recording | apps/grain/README.md Triggers section (verified 2026-11-09) | hand | Recording list documents no order; polled with filter.after_datetime since-filter plus id dedupe (shape b); filter direction unverifiable live. |
 | apps/granola | audit-event-list | new-audit-event | apps/granola/README.md Triggers section (verified 2026-11-09) | hand | Audit log is oldest-first with page_size max 30; polled with occurred_after since-filter plus id dedupe (shape b). |
 | apps/gravityforms | entry-get-many | new-entry, new-or-updated-entry | apps/gravityforms/README.md Triggers section (verified 2026-11-09) | hand | Entries support created and updated descending ordering. |
@@ -232,9 +238,11 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/grist | list-records | new-records | no | scan | list action list-records has pagination and order/since params |
 | apps/guru | card-search | new-card | apps/guru/README.md Triggers section (verified 2026-09-05) | hand | shipped poll trigger(s) over list action card-search |
 | apps/gusto | event-list | new-event-list | no | scan | list action event-list has pagination and order/since params |
+| apps/hackernews | list-new-stories | new-story | apps/hackernews/README.md Triggers section (verified 2026-11-09) | hand | the official API documents /v0/newstories.json as the newest stories, capped at 500 ids; event is {id} (https://github.com/HackerNews/API) |
 | apps/harvest | task-get-many | new-task-get-many | no | scan | list action task-get-many has pagination and order/since params |
 | apps/hex | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/heyreach | list-get-leads | new-get-leads | no | scan | list action list-get-leads has pagination and order/since params |
+| apps/hibob | tasks-list | new-task | apps/hibob/README.md Triggers section (verified 2026-11-09) | hand | the task endpoint caps one response at 5,000 open tasks and is snapshotted for additions (https://apidocs.hibob.com/reference); the 5,000 bound is the trigger's own snapshot cap, above it the check fails with a cap error |
 | apps/honeybook | project-list | new-project | no | hand | shipped poll trigger(s) over list action project-list |
 | apps/hospitable | reservation-list | new-reservation-list | no | scan | list action reservation-list has pagination and order/since params |
 | apps/hostaway | list-reservations | new-reservation | no | hand | shipped poll trigger(s) over list action list-reservations |
@@ -244,8 +252,10 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/hubstaff | project-list | new-project-list | no | scan | list action project-list has pagination and order/since params |
 | apps/huggingface | inference-model-list | new-inference-model-list | no | scan | list action inference-model-list has pagination and order/since params |
 | apps/hunter | lead-list | new-lead-list | no | scan | list action lead-list has pagination and order/since params |
+| apps/hyros | leads-list | new-lead, new-sale | apps/hyros/README.md Triggers section (verified 2026-11-09) | hand | leads-list and sales-list take the documented fromDate (only records whose join date is more recent) with an opaque nextPageId cursor: since-filter + id dedupe; no update stamp, so no new-or-updated (https://jsapi.apiary.io/apis/hyros.apib) |
 | apps/iclosed | deal-list | new-deal | no | hand | shipped poll trigger(s) over list action deal-list |
 | apps/inoreader | stream-preferences-list | new-stream-preferences-list | no | scan | list action stream-preferences-list has pagination and order/since params |
+| apps/insightly | contact-get-many | new-contact, new-lead, new-opportunity, new-organisation, new-or-updated-contact, new-or-updated-lead, new-or-updated-opportunity, new-or-updated-organisation | apps/insightly/README.md Triggers section (verified 2026-11-09) | hand | *-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded |
 | apps/instantly | email-list | new-email | apps/instantly/README.md Triggers section (verified 2026-08-29) | hand | shipped poll trigger(s) over list action email-list |
 | apps/ironclad | record-list | new-record-list | no | scan | list action record-list has pagination and order/since params |
 | apps/iterable | list-campaigns | new-campaign | apps/iterable/README.md Triggers section (verified 2026-10-06) | hand | shipped poll trigger(s) over list action list-campaigns |
@@ -474,7 +484,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/zoho/zohomail | message-list | new-message-list | no | scan | list action message-list has pagination and order/since params |
 | apps/zuora | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
 
-## none (234)
+## none (224)
 
 | app | candidates | verified | source | reason |
 |---|---|---|---|---|
@@ -547,23 +557,13 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/google/google-docs |  | apps/google/google-docs/README.md Triggers section (verified 2026-11-09) | hand | the Docs API exposes get and mutation methods for a known document ID, but no document collection list endpoint |
 | apps/google/google-maps |  | apps/google/google-maps/README.md Triggers section (verified 2026-11-09) | hand | geocoding, routing, places, and elevation APIs are stateless request/response services with no user-record collection |
 | apps/google/google-slides |  | apps/google/google-slides/README.md Triggers section (verified 2026-11-09) | hand | the Slides API gets or modifies a known presentation ID but has no presentation list endpoint |
-| apps/google/google-vertex-ai |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/googlesearchconsole |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/google/looker |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/goto-webinar |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/grafana |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/groq |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/hackernews |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/heartbeat |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/hedy |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/heygen |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/hibob |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/highlevel |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/holded |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/homeassistant |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/htmlcsstoimage |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/hyros |  | no | scan | no newest-first list action found by scan; vendor events not researched |
-| apps/insightly |  | no | scan | no newest-first list action found by scan; vendor events not researched |
+| apps/google/google-vertex-ai |  | apps/google/google-vertex-ai/README.md Triggers section (verified 2026-11-09) | hand | batch prediction job listing has no documented newest-first order or created/updated-since filter (https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.batchPredictionJobs/list) |
+| apps/google/googlesearchconsole |  | apps/google/googlesearchconsole/README.md Triggers section (verified 2026-11-09) | hand | the site list returns every accessible site with no documented bounded collection cap or change filter (https://developers.google.com/webmaster-tools/v1/sites/list); 'new site' rejected: adding a verified site is a rare admin act, not a record stream |
+| apps/google/looker |  | apps/google/looker/README.md Triggers section (verified 2026-11-09) | hand | existing dashboard and Look actions read unbounded collections without a newest-first order or since filter (https://cloud.google.com/looker/docs/reference/looker-api/latest); connection and model lists are rarely-changing admin configuration, rejected |
+| apps/groq |  | apps/groq/README.md Triggers section (verified 2026-11-09) | hand | the existing batch list action exposes no documented newest-first order or created/updated-since filter (https://console.groq.com/docs/batch) |
+| apps/hedy |  | apps/hedy/README.md Triggers section (verified 2026-11-09) | hand | session and highlight lists are cursor-paged without a documented newest-first order or created/updated-since filter (https://api.swaggerhub.com/apis/HedyAI/hedy-api/1.0.1) |
+| apps/holded |  | apps/holded/README.md Triggers section (verified 2026-11-09) | hand | CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference); the funnel list is rarely-changing account configuration, rejected as a 'new funnel' event |
+| apps/htmlcsstoimage |  | apps/htmlcsstoimage/README.md Triggers section (verified 2026-11-09) | hand | the image list GET /v1/images documents only page_token and count: no stated order and no since-filter, so new images cannot be told from old ones (https://htmlcsstoimage.com/openapi/v1.json) |
 | apps/instapaper |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/jenkins |  | no | scan | no newest-first list action found by scan; vendor events not researched |
 | apps/jev |  | no | scan | no newest-first list action found by scan; vendor events not researched |

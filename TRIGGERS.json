@@ -2542,9 +2542,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "batch prediction job listing has no documented newest-first order or created/updated-since filter (https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.batchPredictionJobs/list)",
+    "verified": "apps/google/google-vertex-ai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/googlechat",
@@ -2562,18 +2562,18 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the site list returns every accessible site with no documented bounded collection cap or change filter (https://developers.google.com/webmaster-tools/v1/sites/list); 'new site' rejected: adding a verified site is a rare admin act, not a record stream",
+    "verified": "apps/google/googlesearchconsole/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/looker",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "existing dashboard and Look actions read unbounded collections without a newest-first order or since filter (https://cloud.google.com/looker/docs/reference/looker-api/latest); connection and model lists are rarely-changing admin configuration, rejected",
+    "verified": "apps/google/looker/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/google/youtube",
@@ -2611,21 +2611,27 @@
   },
   {
     "path": "apps/goto-webinar",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "registrant",
+      "attendee",
+      "webinar"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: registrant, attendee, webinar events (https://developer.goto.com/GoToWebinarV2/); webinar-list filters scheduled time (fromTime/toTime), not creation or update time, and registrants/attendees are per-webinar",
+    "verified": "apps/goto-webinar/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/grafana",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-dashboard"
+    ],
+    "pollAction": "dashboard-list",
+    "reason": "dashboard search is capped at 5,000 records and is snapshotted for added dashboards (https://grafana.com/docs/grafana/latest/developers/http_api/folder_dashboard_search/); read to the 5,000 limit, so dashboards beyond it are neither seen nor reported",
+    "verified": "apps/grafana/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/grain",
@@ -2688,9 +2694,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the existing batch list action exposes no documented newest-first order or created/updated-since filter (https://console.groq.com/docs/batch)",
+    "verified": "apps/groq/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/gumroad",
@@ -2728,12 +2734,14 @@
   },
   {
     "path": "apps/hackernews",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-story"
+    ],
+    "pollAction": "list-new-stories",
+    "reason": "the official API documents /v0/newstories.json as the newest stories, capped at 500 ids; event is {id} (https://github.com/HackerNews/API)",
+    "verified": "apps/hackernews/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/harvest",
@@ -2748,21 +2756,30 @@
   },
   {
     "path": "apps/heartbeat",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "USER_JOIN",
+      "USER_UPDATE",
+      "GROUP_JOIN",
+      "THREAD_CREATE",
+      "EVENT_CREATE",
+      "EVENT_RSVP",
+      "COURSE_COMPLETED",
+      "DOCUMENT_CREATE"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: USER_JOIN, USER_UPDATE, GROUP_JOIN, THREAD_CREATE, EVENT_CREATE, EVENT_RSVP, COURSE_COMPLETED, DOCUMENT_CREATE (PUT /webhooks, unsigned, https://heartbeat.readme.io/reference/webhooks); member and content list endpoints are uncapped with no documented change filter",
+    "verified": "apps/heartbeat/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hedy",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "session and highlight lists are cursor-paged without a documented newest-first order or created/updated-since filter (https://api.swaggerhub.com/apis/HedyAI/hedy-api/1.0.1)",
+    "verified": "apps/hedy/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/helpscout",
@@ -2791,12 +2808,15 @@
   },
   {
     "path": "apps/heygen",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "webhook-api",
+    "candidates": [
+      "avatar_video.success",
+      "avatar_video.fail"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: avatar_video.success, avatar_video.fail (HMAC-SHA256 `signature` header, registered via POST /v3/webhooks/endpoints, https://developers.heygen.com/docs/webhooks); the video list GET /v3/videos documents no result order, sort or since-filter (https://developers.heygen.com/reference/list-videos)",
+    "verified": "apps/heygen/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/heyreach",
@@ -2811,39 +2831,48 @@
   },
   {
     "path": "apps/hibob",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-task"
+    ],
+    "pollAction": "tasks-list",
+    "reason": "the task endpoint caps one response at 5,000 open tasks and is snapshotted for additions (https://apidocs.hibob.com/reference); the 5,000 bound is the trigger's own snapshot cap, above it the check fails with a cap error",
+    "verified": "apps/hibob/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/highlevel",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "contact",
+      "appointment",
+      "opportunity",
+      "conversation"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: contact, appointment, opportunity, conversation events (https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/index.html); GET /contacts/ documents no order or since-filter; pipelines/forms/calendars are rarely-changing account configuration, and /opportunities/search and /conversations/search order/date params are not sent by the existing actions",
+    "verified": "apps/highlevel/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/holded",
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "CRM list endpoints return uncapped full collections with no documented ordering or since filter (https://holded.readme.io/reference); the funnel list is rarely-changing account configuration, rejected as a 'new funnel' event",
+    "verified": "apps/holded/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/homeassistant",
-    "mechanism": "none",
-    "candidates": [],
+    "mechanism": "manual-webhook",
+    "candidates": [
+      "webhook trigger"
+    ],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "webhook candidate queued for a webhook node: automation webhook trigger (https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger); state listing is an uncapped full instance snapshot with no change filter (https://developers.home-assistant.io/docs/api/rest/)",
+    "verified": "apps/homeassistant/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/honeybook",
@@ -2905,9 +2934,9 @@
     "mechanism": "none",
     "candidates": [],
     "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "reason": "the image list GET /v1/images documents only page_token and count: no stated order and no since-filter, so new images cannot be told from old ones (https://htmlcsstoimage.com/openapi/v1.json)",
+    "verified": "apps/htmlcsstoimage/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/hubspot",
@@ -2955,12 +2984,15 @@
   },
   {
     "path": "apps/hyros",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-lead",
+      "new-sale"
+    ],
+    "pollAction": "leads-list",
+    "reason": "leads-list and sales-list take the documented fromDate (only records whose join date is more recent) with an opaque nextPageId cursor: since-filter + id dedupe; no update stamp, so no new-or-updated (https://jsapi.apiary.io/apis/hyros.apib)",
+    "verified": "apps/hyros/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/iclosed",
@@ -2986,12 +3018,21 @@
   },
   {
     "path": "apps/insightly",
-    "mechanism": "none",
-    "candidates": [],
-    "pollAction": null,
-    "reason": "no newest-first list action found by scan; vendor events not researched",
-    "verified": false,
-    "source": "scan"
+    "mechanism": "poll",
+    "candidates": [
+      "new-contact",
+      "new-lead",
+      "new-opportunity",
+      "new-organisation",
+      "new-or-updated-contact",
+      "new-or-updated-lead",
+      "new-or-updated-opportunity",
+      "new-or-updated-organisation"
+    ],
+    "pollAction": "contact-get-many",
+    "reason": "*-get-many on GET /{Object}/Search with the documented optional updated_after_utc (field_name/field_value optional), since-filter + id dedupe, new-or-updated keyed id:DATE_UPDATED_UTC (https://api.na1.insightly.com/v3.1/swagger/docs/v3.1); no live webhook doc found, so none recorded",
+    "verified": "apps/insightly/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/instantly",
