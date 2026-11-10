@@ -353,12 +353,12 @@
     "path": "apps/atlassian/jira-data-center",
     "mechanism": "poll",
     "candidates": [
-      "new-comment-get-many"
+      "new-comment"
     ],
     "pollAction": "comment-get-many",
-    "reason": "list action comment-get-many has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Newest-first comment list per issue.",
+    "verified": "apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/atlassian/jira-service-management",
@@ -387,12 +387,12 @@
     "path": "apps/attio",
     "mechanism": "poll",
     "candidates": [
-      "new-record-attribute-values"
+      "new-task"
     ],
-    "pollAction": "list-record-attribute-values",
-    "reason": "list action list-record-attribute-values has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "list-tasks",
+    "reason": "list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks)",
+    "verified": "apps/attio/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/auth0",
@@ -409,12 +409,12 @@
     "path": "apps/authorize-net",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-transactions"
+      "new-customer-transaction"
     ],
     "pollAction": "list-customer-transactions",
-    "reason": "list action list-customer-transactions has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customer transaction list explicitly sorts by submit time descending.",
+    "verified": "apps/authorize-net/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/autotask",
@@ -429,23 +429,23 @@
     "path": "apps/avoma",
     "mechanism": "poll",
     "candidates": [
-      "new-call-list"
+      "new-meeting"
     ],
-    "pollAction": "call-list",
-    "reason": "list action call-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "meeting-list",
+    "reason": "meeting-list with o=-start_at, page_size=100 and a rolling from/to window; late-synced older meetings are a documented residual (https://dev.avoma.com/openapi.yml)",
+    "verified": "apps/avoma/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/aweber",
     "mechanism": "poll",
     "candidates": [
-      "new-broadcast-list"
+      "new-subscriber"
     ],
-    "pollAction": "broadcast-list",
-    "reason": "list action broadcast-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "subscriber-find",
+    "reason": "subscriber-find with sort_key=subscribed_at, sort_order=desc pinned (https://api.aweber.com/)",
+    "verified": "apps/aweber/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/aws/s3",
@@ -469,23 +469,24 @@
     "path": "apps/axonaut",
     "mechanism": "poll",
     "candidates": [
-      "new-invoice-list"
+      "new-invoice",
+      "new-or-updated-invoice"
     ],
     "pollAction": "invoice-list",
-    "reason": "list action invoice-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Invoice list has creation_date_after and updated_after filters (DD/MM/YYYY, date-only); triggers filter with a one-day overlap and dedupe by id (https://axonaut.com/api/v2/doc).",
+    "verified": "apps/axonaut/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/balena",
     "mechanism": "poll",
     "candidates": [
-      "new-device-list"
+      "new-release"
     ],
-    "pollAction": "device-list",
-    "reason": "list action device-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "pollAction": "release-list",
+    "reason": "release-list ($orderby=created_at desc, successful builds) wrapped; https://docs.balena.io/reference/api/resources/release/",
+    "verified": "apps/balena/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bamboohr",
@@ -553,12 +554,12 @@
     "path": "apps/beehiiv",
     "mechanism": "poll",
     "candidates": [
-      "new-post-list"
+      "new-post"
     ],
     "pollAction": "post-list",
-    "reason": "list action post-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Post list supports created descending order.",
+    "verified": "apps/beehiiv/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/beeminder",
@@ -619,12 +620,12 @@
     "path": "apps/bitrix24",
     "mechanism": "poll",
     "candidates": [
-      "new-contact-list"
+      "new-contact"
     ],
     "pollAction": "contact-list",
-    "reason": "list action contact-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Contact list accepts DATE_CREATE descending order.",
+    "verified": "apps/bitrix24/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/bitwarden",
@@ -674,23 +675,23 @@
     "path": "apps/boldsign",
     "mechanism": "poll",
     "candidates": [
-      "new-document-list"
+      "new-document"
     ],
     "pollAction": "document-list",
-    "reason": "list action document-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Document list is newest activity first.",
+    "verified": "apps/boldsign/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/booqable",
     "mechanism": "poll",
     "candidates": [
-      "new-customer-list"
+      "new-customer"
     ],
     "pollAction": "customer-list",
-    "reason": "list action customer-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Customer list accepts -created_at descending sort.",
+    "verified": "apps/booqable/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/box",
@@ -708,12 +709,12 @@
     "path": "apps/braintree",
     "mechanism": "poll",
     "candidates": [
-      "new-transaction-search"
+      "new-transaction"
     ],
     "pollAction": "transaction-search",
-    "reason": "list action transaction-search has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Transaction search has a createdAt >= filter (createdFrom); the trigger filters cursor minus 120 s and dedupes by id, no default order assumed (https://developer.paypal.com/braintree/graphql/reference/).",
+    "verified": "apps/braintree/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/brandfetch",
@@ -728,12 +729,12 @@
     "path": "apps/braze",
     "mechanism": "poll",
     "candidates": [
-      "new-campaign-list"
+      "new-or-updated-campaign"
     ],
     "pollAction": "campaign-list",
-    "reason": "list action campaign-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Campaign list supports latest-edit descending order and update identity.",
+    "verified": "apps/braze/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/breezyhr",
@@ -773,12 +774,12 @@
     "path": "apps/browseai",
     "mechanism": "poll",
     "candidates": [
-      "new-task-list"
+      "new-task"
     ],
     "pollAction": "task-list",
-    "reason": "list action task-list has pagination and order/since params",
-    "verified": false,
-    "source": "scan"
+    "reason": "Task list sorted explicitly with sort=-createdAt (vendor default is ascending), page size capped at 10 (https://docs.browse.ai/api/).",
+    "verified": "apps/browseai/README.md Triggers section (verified 2026-11-09)",
+    "source": "hand"
   },
   {
     "path": "apps/browserless",

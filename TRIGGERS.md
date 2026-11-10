@@ -99,35 +99,35 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 | apps/ashby | user-list | new-user-list | no | scan | list action user-list has pagination and order/since params |
 | apps/atlassian/confluence | page-child-list | new-page-child-list | no | scan | list action page-child-list has pagination and order/since params |
 | apps/atlassian/jira | issue-search | new-issue | apps/atlassian/jira/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action issue-search |
-| apps/atlassian/jira-data-center | comment-get-many | new-comment-get-many | no | scan | list action comment-get-many has pagination and order/since params |
-| apps/attio | list-record-attribute-values | new-record-attribute-values | no | scan | list action list-record-attribute-values has pagination and order/since params |
+| apps/atlassian/jira-data-center | comment-get-many | new-comment | apps/atlassian/jira-data-center/README.md Triggers section (verified 2026-11-09) | hand | Newest-first comment list per issue. |
+| apps/attio | list-tasks | new-task | apps/attio/README.md Triggers section (verified 2026-11-09) | hand | list-tasks with sort=created_at:desc pinned (https://docs.attio.com/rest-api/endpoint-reference/tasks/list-tasks) |
 | apps/auth0 | log-list | new-log | apps/auth0/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action log-list |
-| apps/authorize-net | list-customer-transactions | new-customer-transactions | no | scan | list action list-customer-transactions has pagination and order/since params |
-| apps/avoma | call-list | new-call-list | no | scan | list action call-list has pagination and order/since params |
-| apps/aweber | broadcast-list | new-broadcast-list | no | scan | list action broadcast-list has pagination and order/since params |
-| apps/axonaut | invoice-list | new-invoice-list | no | scan | list action invoice-list has pagination and order/since params |
-| apps/balena | device-list | new-device-list | no | scan | list action device-list has pagination and order/since params |
+| apps/authorize-net | list-customer-transactions | new-customer-transaction | apps/authorize-net/README.md Triggers section (verified 2026-11-09) | hand | Customer transaction list explicitly sorts by submit time descending. |
+| apps/avoma | meeting-list | new-meeting | apps/avoma/README.md Triggers section (verified 2026-11-09) | hand | meeting-list with o=-start_at, page_size=100 and a rolling from/to window; late-synced older meetings are a documented residual (https://dev.avoma.com/openapi.yml) |
+| apps/aweber | subscriber-find | new-subscriber | apps/aweber/README.md Triggers section (verified 2026-11-09) | hand | subscriber-find with sort_key=subscribed_at, sort_order=desc pinned (https://api.aweber.com/) |
+| apps/axonaut | invoice-list | new-invoice, new-or-updated-invoice | apps/axonaut/README.md Triggers section (verified 2026-11-09) | hand | Invoice list has creation_date_after and updated_after filters (DD/MM/YYYY, date-only); triggers filter with a one-day overlap and dedupe by id (https://axonaut.com/api/v2/doc). |
+| apps/balena | release-list | new-release | apps/balena/README.md Triggers section (verified 2026-11-09) | hand | release-list ($orderby=created_at desc, successful builds) wrapped; https://docs.balena.io/reference/api/resources/release/ |
 | apps/bamboohr | list-employees | new-employee | apps/bamboohr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-employees |
 | apps/baremetrics | customer-list | new-customer | apps/baremetrics/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action customer-list |
 | apps/base44 | list-audit-logs | new-audit-log | apps/base44/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-audit-logs |
 | apps/baserow | row-list | new-row | apps/baserow/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action row-list |
-| apps/beehiiv | post-list | new-post-list | no | scan | list action post-list has pagination and order/since params |
+| apps/beehiiv | post-list | new-post | apps/beehiiv/README.md Triggers section (verified 2026-11-09) | hand | Post list supports created descending order. |
 | apps/beeminder | list-datapoints | new-datapoint | apps/beeminder/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-datapoints |
 | apps/betterstack | incident-list | new-incident | apps/betterstack/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: incident-list takes the documented from date (YYYY-MM-DD), 50 per page, id dedupe |
 | apps/bexio | contact-list | new-contact | apps/bexio/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/bigcommerce | order-list | new-order | apps/bigcommerce/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action order-list |
 | apps/bitly | list-bitlinks | new-bitlink | apps/bitly/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-bitlinks gained an additive createdAfter input for the documented created_after filter (https://dev.bitly.com/api-reference/) |
-| apps/bitrix24 | contact-list | new-contact-list | no | scan | list action contact-list has pagination and order/since params |
+| apps/bitrix24 | contact-list | new-contact | apps/bitrix24/README.md Triggers section (verified 2026-11-09) | hand | Contact list accepts DATE_CREATE descending order. |
 | apps/bitwarden | event-list | new-event | apps/bitwarden/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll windowed by the documented start filter of event-list with continuation tokens; order-independent, id dedupe |
 | apps/blandai | call-list | new-call | apps/blandai/README.md Triggers section (verified 2026-11-09) | hand | The existing call-list action explicitly requests newest-first calls with ascending=false |
 | apps/bloomerang | list-transactions | new-or-updated-transaction | apps/bloomerang/README.md Triggers section (verified 2026-11-09) | hand | Since-filter poll: list-transactions takes lastModified (documented in Bloomerang's OpenAPI document); ids dedupe on Id + AuditTrail.LastModifiedDate |
 | apps/bluesky | post-search | new-post | apps/bluesky/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action post-search |
-| apps/boldsign | document-list | new-document-list | no | scan | list action document-list has pagination and order/since params |
-| apps/booqable | customer-list | new-customer-list | no | scan | list action customer-list has pagination and order/since params |
-| apps/braintree | transaction-search | new-transaction-search | no | scan | list action transaction-search has pagination and order/since params |
-| apps/braze | campaign-list | new-campaign-list | no | scan | list action campaign-list has pagination and order/since params |
+| apps/boldsign | document-list | new-document | apps/boldsign/README.md Triggers section (verified 2026-11-09) | hand | Document list is newest activity first. |
+| apps/booqable | customer-list | new-customer | apps/booqable/README.md Triggers section (verified 2026-11-09) | hand | Customer list accepts -created_at descending sort. |
+| apps/braintree | transaction-search | new-transaction | apps/braintree/README.md Triggers section (verified 2026-11-09) | hand | Transaction search has a createdAt >= filter (createdFrom); the trigger filters cursor minus 120 s and dedupes by id, no default order assumed (https://developer.paypal.com/braintree/graphql/reference/). |
+| apps/braze | campaign-list | new-or-updated-campaign | apps/braze/README.md Triggers section (verified 2026-11-09) | hand | Campaign list supports latest-edit descending order and update identity. |
 | apps/breezyhr | candidate-search | new-candidate | apps/breezyhr/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action candidate-search |
-| apps/browseai | task-list | new-task-list | no | scan | list action task-list has pagination and order/since params |
+| apps/browseai | task-list | new-task | apps/browseai/README.md Triggers section (verified 2026-11-09) | hand | Task list sorted explicitly with sort=-createdAt (vendor default is ascending), page size capped at 10 (https://docs.browse.ai/api/). |
 | apps/browserless | crawl-list | new-crawl | apps/browserless/README.md Triggers section (verified 2026-11-09) | hand | Page-walk poll: the crawl listing documents no order, so the trigger walks nextCursor (10 pages) and dedupes on id; response array is crawls |
 | apps/bubble | data-list | new-thing, new-or-updated-thing | apps/bubble/README.md Triggers section (verified 2026-11-09) | hand | new-thing sorts data-list by Created Date desc; new-or-updated-thing by Modified Date desc |
 | apps/buffer | post-list | new-post | apps/buffer/README.md Triggers section (verified 2026-11-09) | hand | post-list sorted createdAt desc; Buffer only sorts by createdAt/dueAt so no updated feed |
