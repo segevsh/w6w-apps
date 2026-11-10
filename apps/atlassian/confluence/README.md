@@ -9,7 +9,7 @@ Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks.
 - **Website** — https://www.atlassian.com/software/confluence
 - **API docs** — https://developer.atlassian.com/cloud/confluence/rest/v2/ ·
   schema: https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json
-- **Triggers** — 2 (poll)
+- **Triggers** — 8 (poll)
 
 ## Setup
 
@@ -266,7 +266,19 @@ a probe starts failing for everyone at once.
 
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
-| `new-page` — New Page | Poll | `page-list` | Each newly created page |
-| `new-or-updated-page` — New or Updated Page | Poll | `page-list` | Each newly created or modified page |
+| `new-page` — New Page | Poll | `page-list` (`sort=-created-date`) | Each newly created page |
+| `new-or-updated-page` — New or Updated Page | Poll | `page-list` (`sort=-modified-date`) | Each newly created or modified page |
+| `new-blogpost` — New Blog Post | Poll | `blogpost-list` (`sort=-created-date`) | Each newly created blog post |
+| `new-or-updated-blogpost` — New or Updated Blog Post | Poll | `blogpost-list` (`sort=-modified-date`) | Each blog post created or edited (a new version) |
+| `new-page-attachment` — New Page Attachment | Poll | `page-attachment-list` (`sort=-created-date`; param: `pageId`) | Each file newly attached to the selected page |
+| `new-page-comment` — New Page Comment | Poll | `page-comment-list` (`sort=-created-date`; param: `pageId`) | Each new footer comment on the selected page |
+| `new-page-label` — New Page Label | Poll (snapshot) | `page-label-list` (param: `pageId`) | Each label newly added to the selected page |
+| `new-space` — New Space | Poll (snapshot) | `space-list` | Each newly created space |
 
-Polled through `page-list` with `sort=-created-date` and `sort=-modified-date`. Source: [Confluence OpenAPI](https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json) (verified 2026-11-09).
+Confluence's v2 OpenAPI document gives `getPages`, `getBlogPosts`, `getPageAttachments` and `getPageFooterComments` a `sort` enum with `created-date` / `modified-date` and `-` descending forms, so those triggers read page 1 of 100, newest first. `blogpost-list`, `page-attachment-list` and `page-comment-list` gained an optional `sort` input for this (empty by default, so their existing requests are unchanged). `getPageLabels` and `getSpaces` offer no creation-time sort (spaces sort by `id`, `key` or `name`), so those small collections are polled as snapshots and only additions are emitted. `page-child-list` and `space-page-list` return the same page records `new-page` delivers, so they are covered by `new-page`.
+
+Not covered: `content-search` (a free-form CQL query supplied per call, relevance-ordered unless the query says otherwise — the pages and blog posts it can match are delivered by `new-page` and `new-blogpost`) and `task-list` (`getTasks` documents no sort parameter and no created or updated filter, so neither a newest-first nor a since read exists).
+
+Each check emits only unseen items, oldest first; the first check records what exists without firing.
+
+Source: [Confluence OpenAPI](https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json) (verified 2026-11-10).
