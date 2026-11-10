@@ -1,6 +1,6 @@
 # Ironclad
 
-- **Triggers** — 2 (poll)
+- **Triggers** — 5 (poll)
 
 ## Triggers
 
@@ -8,8 +8,13 @@
 |---|---|---|---|
 | `new-record` — New Record | poll | `record-list` | Each new contract record |
 | `new-or-updated-record` — New or Updated Record | poll | `record-list` | Each newly created or updated contract record |
+| `new-workflow` — New Workflow | poll | `workflow-list` | Each newly launched workflow (`lastUpdated` since-filter; optional `status`) |
+| `new-or-updated-workflow` — New or Updated Workflow | poll | `workflow-list` | Each workflow launched or updated (deduped on `id:lastUpdated`) |
+| `new-or-updated-entity` — New or Updated Entity | poll | `entity-list` | Each legal entity created or edited (`sortField=lastUpdated`, `sortDirection=DESC`) |
 
-Ironclad documents repository records at https://developer.ironcladapp.com/reference (verified 2026-11-09).
+`GET /workflows` has no sort argument but takes `lastUpdated` (workflows updated since a UTC date), so the workflow triggers send the date of the last check minus two minutes, read 100 per page, resume a longer window from the saved page number, and never emit a workflow whose own `created`/`lastUpdated` stamp is before the trigger was first checked. Ironclad lists only active workflows unless `status` is given. Not covered: `webhook-list` (webhook registrations, integration setup), `workflow-schemas-list` (launch-form schemas, reference data), `workflow-approvals-list` and `workflow-signers-list` (approval groups and signers carry no ids), `workflow-comments-list` (no documented order or date filter).
+
+Ironclad documents records, workflows and entities at https://developer.ironcladapp.com/reference/list-all-workflows and https://developer.ironcladapp.com/reference/list-all-entities (verified 2026-11-10).
 
 Contract lifecycle management for w6w: launch and track workflows, read and edit the contract
 repository (records), manage legal entities, and register webhooks, over the Ironclad Public API v1

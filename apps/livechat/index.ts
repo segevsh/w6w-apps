@@ -35,7 +35,10 @@ import personalAccessToken from "./auth/personal-access-token.ts";
 import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
+import newAgent from "./triggers/new-agent.ts";
 import newChatThread from "./triggers/new-chat-thread.ts";
+import newGroup from "./triggers/new-group.ts";
+import newTag from "./triggers/new-tag.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -64,7 +67,7 @@ const app: AppDefinition = {
   ],
   auth: [personalAccessToken],
   healthChecks: [service, api, quota],
-  triggers: [newChatThread],
+  triggers: [newChatThread, newAgent, newGroup, newTag],
 };
 
 export default app;

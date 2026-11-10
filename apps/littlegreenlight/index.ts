@@ -59,7 +59,14 @@ import campaignList from "./actions/campaign-list.ts";
 import fundList from "./actions/fund-list.ts";
 import groupList from "./actions/group-list.ts";
 
+import newAppeal from "./triggers/new-appeal.ts";
+import newCampaign from "./triggers/new-campaign.ts";
 import newConstituent from "./triggers/new-constituent.ts";
+import newConstituentNote from "./triggers/new-constituent-note.ts";
+import newFund from "./triggers/new-fund.ts";
+import newGift from "./triggers/new-gift.ts";
+import newGroup from "./triggers/new-group.ts";
+import newOrUpdatedGift from "./triggers/new-or-updated-gift.ts";
 import newOrUpdatedConstituent from "./triggers/new-or-updated-constituent.ts";
 
 import service from "./health/service.ts";
@@ -85,5 +92,15 @@ export default {
   // authentication story.
   auth: [bearerToken],
   healthChecks: [service, quota],
-  triggers: [newConstituent, newOrUpdatedConstituent],
+  triggers: [
+    newConstituent,
+    newOrUpdatedConstituent,
+    newGift,
+    newOrUpdatedGift,
+    newAppeal,
+    newCampaign,
+    newFund,
+    newGroup,
+    newConstituentNote,
+  ],
 } satisfies AppDefinition;
