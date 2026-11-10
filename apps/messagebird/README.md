@@ -6,12 +6,27 @@ phone numbers, on MessageBird's classic REST API.
 - **Categories** — communication
 - **Auth methods** — access-key
 - **Actions** — 7
+- **Triggers** — 1 (webhook)
 - **Health checks** — 2 (`service`, ~~`quota`~~) + the derived `auth:access-key`
 - **Egress allowlist** — `rest.messagebird.com` (the `service` check adds `status.bird.com` to its
   own hook allowlist, never to the app's)
 - **Website** — https://bird.com (formerly messagebird.com)
 - **API docs** — https://developers.messagebird.com/api/
 - **Status page** — https://status.bird.com/ (formerly status.messagebird.com)
+
+## Triggers
+
+1 webhook trigger (manual setup, JWT-signed).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `inbound-sms` — Inbound SMS | webhook (manual, signed) | a message received on a virtual mobile number (MO SMS callback) | message id, your number, the sender, the text, the creation time, full callback data |
+
+**Setup (manual).** MessageBird has no API to register an inbound callback: it is set in **Flow Builder** with a **Forward to URL** step on the number's flow, or by MessageBird support. Subscribe the trigger in w6w, copy its callback URL, and use it exactly as given (the signature covers the URL). Choose **POST** as the method: GET callbacks, which MessageBird uses by default for some numbers and always for status reports, carry no body the host can hash and a query string it cannot reproduce byte for byte, so the trigger refuses them. Paste your **signing key** (the one MessageBird's Dashboard lets you regenerate; see "Verifying HTTP requests" in the docs) into `signingKey`. Delivery-status reports (`reportUrl`) are GET callbacks and are not covered; use the Get Message action to read a message's status.
+
+**Trust model.** Every request MessageBird sends carries `MessageBird-Signature-JWT`, a JWT signed HS256 with the signing key. The trigger refuses a callback whose key is unset, whose header is missing, whose algorithm is not HS256, whose signature does not match (constant-time compare), whose `iss` is not `MessageBird`, whose `nbf`/`exp` window (5 seconds of leeway) does not contain now, whose `url_hash` is not the SHA-256 of the callback URL stored with the subscription, or whose `payload_hash` is not the SHA-256 of the exact received body, all before it parses the body. The signature binds the URL and the body, so tampered data is refused. The `jti` claim could detect replays inside the token's window, but a handler cannot write state, so an identical callback replayed before `exp` is not detected; de-duplicate on the message id. MessageBird's docs do not spell out how it canonicalises the URL; the hash follows MessageBird's PHP SDK (SHA-256 of the URL string), so if a callback is refused as "another URL", check that the URL configured in MessageBird is the callback URL w6w shows, character for character.
+
+Docs (verified 2026-11-10): https://developers.messagebird.com/api/ (Verifying HTTP requests), https://developers.messagebird.com/api/sms-messaging/ (Receive and handle inbound SMS) and https://github.com/messagebird/php-rest-api/blob/master/src/MessageBird/RequestValidator.php
 
 ## MessageBird is now Bird — what that changes here
 
@@ -130,4 +145,3 @@ Researched and endpoint-verified 2026-09-01, including the MessageBird→Bird re
 host, icon, and status page. Status surfaces move; re-check with `_tools/audit.ts` conventions in
 mind if a probe starts failing for everyone at once.
 
-Triggers: not shipped — webhook candidate queued for a webhook node: inbound and message-status events (https://developers.messagebird.com/api/sms-messaging/#webhooks).

@@ -31,6 +31,9 @@ import memberTagAdd from "./actions/member-tag-add.ts";
 import memberTagRemove from "./actions/member-tag-remove.ts";
 import planList from "./actions/plan-list.ts";
 import courseworkList from "./actions/coursework-list.ts";
+import memberJoined from "./triggers/member-joined.ts";
+import postCreated from "./triggers/post-created.ts";
+import networkEvent from "./triggers/network-event.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -68,6 +71,7 @@ export default {
     planList,
     courseworkList,
   ],
+  triggers: [memberJoined, postCreated, networkEvent],
   auth: [apiToken],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -1,13 +1,12 @@
 # Marketo
 
-Triggers: not shipped — webhook candidate queued for a webhook node: Smart Campaign-triggered lead events (https://experienceleague.adobe.com/en/docs/marketo/using/product-docs/administration/additional-integrations/webhooks).
-
 Manage Marketo (Adobe Marketo Engage) leads, static lists, companies and
 smart campaigns.
 
 - **Categories** — marketing, crm
 - **Auth methods** — client-credentials (OAuth2 Client Credentials grant)
 - **Actions** — 15
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `*` (per-tenant pod — see below)
 - **Website** — https://business.adobe.com/products/marketo/adobe-marketo.html
 - **API docs** — https://github.com/AdobeDocs/marketo-developer.en
@@ -18,6 +17,20 @@ smart campaigns.
   `custom-services.md`, `error-codes.md`, `leads.md`, `list-membership.md`,
   `companies.md`, `smart-campaigns.md`, `usage.md`, `rest-api.md`,
   `getting-started.md`.
+
+## Triggers
+
+1 webhook trigger (manual setup, unsigned).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `lead-webhook` — Smart Campaign Webhook | webhook (manual) | a Smart Campaign's **Call Webhook** flow step | the payload your webhook template sends, with `leadId`, `email` and `campaign` lifted out when the payload has those keys |
+
+**Setup (manual).** Marketo webhooks are outbound calls made by a Smart Campaign, so there is nothing to register by API. Subscribe the trigger in w6w and copy its callback URL. In Marketo open **Admin**, **Webhooks**, **New Webhook**; set **URL** to the callback URL, **Request Type** to `POST`, **Request Token Encoding** to `JSON`, **Response type** to `JSON`, and write the **Template** with the lead tokens you need, for example `{"leadId": "{{lead.Id}}", "email": "{{lead.Email Address}}", "firstName": "{{lead.First Name}}", "campaign": "{{campaign.name}}"}` (tokens are inserted with **Insert Token**; check each against your instance). Then add a **Call Webhook** flow step that uses it to a **trigger** Smart Campaign (Marketo documents the step for trigger campaigns only) whose smart list holds the lead event you care about, such as *Fills Out Form* or *Data Value Changes*. A form-encoded payload (Request Token Encoding `Form/Url`) is accepted too. Marketo waits 30 seconds for the response and the trigger answers immediately.
+
+**Trust model.** Marketo does not sign webhook calls and has no shared-secret field for them, so **the callback URL is the secret**: anyone who learns it can post a payload that looks like a lead event. Keep the URL private and treat the payload as untrusted input. The payload is whatever your template produces, so the trigger cannot check it against a schema.
+
+Docs (verified 2026-11-10): https://experienceleague.adobe.com/en/docs/marketo/using/product-docs/administration/additional-integrations/create-a-webhook, https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/webhooks/webhooks and https://experienceleague.adobe.com/en/docs/marketo/using/product-docs/core-marketo-concepts/smart-campaigns/flow-actions/call-webhook
 
 ## Setup
 

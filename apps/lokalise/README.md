@@ -1,13 +1,12 @@
 # Lokalise
 
-Triggers: not shipped — webhook candidate queued for a webhook node: project, key, translation and task events (https://developers.lokalise.com/docs/webhooks).
-
 Manage Lokalise projects, keys, translations, languages, files, contributors, tasks and webhooks,
 on the **Lokalise REST API v2**.
 
 - **Categories** — developer-tools, cms
 - **Auth methods** — api-token
 - **Actions** — 31
+- **Triggers** — 5 (webhook)
 - **Health checks** — 3 (`service`, `quota`, `request-rate`) + the derived `auth:api-token`
 - **Egress allowlist** — `api.lokalise.com` (the `service` check adds `status.lokalise.com` to its
   own hook allowlist, never to the app's)
@@ -30,6 +29,24 @@ around that core content, plus **contributors** (who can translate what), **comm
 > 270,538 bytes), the `developers.lokalise.com` reference pages it links, and live probes against
 > `api.lokalise.com` and `status.lokalise.com`. Nothing here came from a third-party integration
 > directory.
+
+## Triggers
+
+5 webhook triggers (API-registered, shared-secret header).
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `key-added` — Key Added | webhook (API-registered) | `project.key.added` (and the bulk `project.keys.added`) | event, project, branch, user, time, the key or list of keys |
+| `key-modified` — Key Modified | webhook (API-registered) | `project.key.modified` (and the bulk `project.keys.modified`) | event, project, branch, user, time, the key or list of keys |
+| `translation-updated` — Translation Updated | webhook (API-registered) | `project.translation.updated` (and the bulk `project.translations.updated`) | event, project, branch, user, time, the translation (new and previous value) or list |
+| `task-created` — Task Created | webhook (API-registered) | `project.task.created` | event, project, branch, user, time, the task |
+| `task-closed` — Task Closed | webhook (API-registered) | `project.task.closed` | event, project, branch, user, time, the task |
+
+**Setup.** Pick the `projectId` (and optionally a `branch`). Subscribing registers the callback URL with `POST /projects/{project_id}/webhooks` for the trigger's event and stores the secret Lokalise returns with the subscription; unsubscribing deletes the webhook with `DELETE /projects/{project_id}/webhooks/{webhook_id}` (a webhook Lokalise no longer has counts as deleted). The token needs the **Manage settings** admin right and the `write_webhooks` scope. Lokalise disables a webhook handler that fails for 24 hours; re-enable it in the project settings.
+
+**Trust model.** Lokalise does not sign requests. It sends the webhook's secret in the `X-Secret` header of every delivery; the trigger refuses a delivery whose stored secret is unset, whose header is missing, or that does not match (constant-time compare), before it parses the body. The secret proves the sender knows it; it does not bind the event data, and a captured delivery could be replayed, so keep the callback URL private. Lokalise also publishes the IPs its webhooks come from (listed in the webhook guide) if you want to restrict the source at your edge.
+
+Docs (verified 2026-11-10): https://developers.lokalise.com/docs/webhooks-guide, https://developers.lokalise.com/docs/webhook-events and https://developers.lokalise.com/reference/create-a-webhook
 
 ## The findings that would have cost someone a day
 
