@@ -325,3 +325,7 @@ header were confirmed on the wire against `graph.microsoft.com`; everything requ
 docs-verified rather than wire-verified, since the To Do endpoints have no unauthenticated surface.
 All status-page candidates in the health section **were** probed on the wire — see the table for
 what each returned.
+
+## Triggers
+
+- **New Task Change** wraps `list-task-changes` with `receivedDateTime desc`. [Microsoft Graph To Do delta](https://learn.microsoft.com/en-us/graph/api/todotask-delta), verified 2026-11-09.

@@ -30,6 +30,7 @@ import createLinkedResource from "./actions/create-linked-resource.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newTaskChange from "./triggers/new-task-change.ts";
 
 export default {
   actions: [
@@ -53,6 +54,7 @@ export default {
     listLinkedResources,
     createLinkedResource,
   ],
+  triggers: [newTaskChange],
   auth: [oauth2],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

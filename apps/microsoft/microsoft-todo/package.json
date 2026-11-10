@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/microsoft-todo",
-  "version": "0.1.1",
-  "description": "Manage Microsoft To Do task lists, tasks, checklist items, and linked resources via the Microsoft Graph To Do API.",
+  "version": "0.2.0",
+  "description": "Manage Microsoft To Do tasks and trigger workflows on new task changes.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -35,7 +35,12 @@
         "graph.microsoft.com"
       ]
     },
-    "entry": "./index.ts"
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
   },
   "type": "module",
   "main": "./dist/app.js",
