@@ -2024,12 +2024,28 @@
     "candidates": [
       "new-or-updated-person",
       "new-or-updated-company",
-      "new-or-updated-project"
+      "new-or-updated-project",
+      "new-team-member"
     ],
     "pollAction": "person-feed",
-    "reason": "Change-feed polls on the cursored people/companies/projects feeds (pollToken); webhooks also exist, queued separately",
-    "verified": "apps/cloze/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "Change-feed polls on the cursored people/companies/projects feeds (pollToken); team members are a bounded snapshot of team-members-list; webhooks also exist, queued separately",
+    "verified": "apps/cloze/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "person-get-many": "new-or-updated-person",
+      "company-get-many": "new-or-updated-company",
+      "project-get-many": "new-or-updated-project"
+    },
+    "skipped": {
+      "custom-fields-list": "reference/field definitions",
+      "segments-list": "reference data (segment definitions)",
+      "stages-list": "reference data (pipeline stage definitions)",
+      "steps-list": "reference data (pipeline step definitions)",
+      "tags-list": "label reference list",
+      "team-roles-list": "roles reference data",
+      "team-nodes-list": "org structure/configuration",
+      "webhook-list": "admin webhook configuration"
+    }
   },
   {
     "path": "apps/coda",
@@ -2105,11 +2121,20 @@
     "path": "apps/connecteam",
     "mechanism": "poll",
     "candidates": [
-      "new-shift"
+      "new-shift",
+      "new-user",
+      "new-form",
+      "new-form-submission",
+      "new-job",
+      "new-task",
+      "new-schedule",
+      "new-task-board",
+      "new-time-clock",
+      "new-time-activity"
     ],
     "pollAction": "shift-list",
-    "reason": "shipped poll trigger(s) over list action shift-list",
-    "verified": "apps/connecteam/README.md Triggers section (verified 2026-11-09)",
+    "reason": "shipped poll trigger(s) over list actions: shift-list plus bounded snapshots of users, forms, jobs, tasks, schedules, task boards and time clocks, and a since-filter on form submissions; time activities as a since-filter on createdAt over the mandatory date window",
+    "verified": "apps/connecteam/README.md Triggers section (verified 2026-11-10)",
     "source": "hand"
   },
   {
@@ -2139,12 +2164,24 @@
     "mechanism": "poll",
     "candidates": [
       "new-asset",
-      "new-or-updated-asset"
+      "new-or-updated-asset",
+      "new-entry",
+      "new-or-updated-entry",
+      "new-release",
+      "new-branch"
     ],
     "pollAction": "list-assets",
-    "reason": "list-assets takes desc=created_at / desc=updated_at",
-    "verified": "apps/contentstack/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "list-assets takes desc=created_at / desc=updated_at; entries are a since-filter via the documented query param ($gt on created_at / updated_at); releases and branches are bounded snapshots walked with limit/skip",
+    "verified": "apps/contentstack/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "list-content-types": "schema definitions",
+      "list-global-fields": "schema definitions",
+      "list-locales": "reference/configuration data",
+      "list-environments": "reference/configuration data",
+      "list-webhooks": "admin webhook configuration",
+      "list-workflows": "admin workflow configuration"
+    }
   },
   {
     "path": "apps/copper",
@@ -2500,12 +2537,23 @@
     "path": "apps/dixa",
     "mechanism": "poll",
     "candidates": [
-      "new-agent"
+      "new-agent",
+      "new-queue",
+      "new-tag",
+      "new-conversation-message",
+      "new-conversation-note",
+      "new-conversation-tag",
+      "new-end-user-conversation"
     ],
     "pollAction": "agent-list",
-    "reason": "agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/)",
-    "verified": "apps/dixa/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "bounded snapshots (emit added ids) of the agent, queue and tag lists and of the per-conversation / per-end-user lists; Dixa v1 documents no order or created filter on these",
+    "verified": "apps/dixa/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "skipped": {
+      "end-user-list": "no order or created filter documented and unbounded across the whole customer base (Dixa v1 OpenAPI)",
+      "conversation-search": "deprecated GET search, replaced by a POST search; a text query, not a record feed",
+      "custom-attribute-list": "custom attribute definitions (reference data)"
+    }
   },
   {
     "path": "apps/docparser",
@@ -3506,12 +3554,26 @@
     "path": "apps/gitea",
     "mechanism": "poll",
     "candidates": [
-      "new-or-updated-pull-request"
+      "new-or-updated-pull-request",
+      "new-issue",
+      "new-or-updated-issue",
+      "new-issue-comment",
+      "new-commit",
+      "new-branch",
+      "new-tag",
+      "new-release",
+      "new-repo"
     ],
     "pollAction": "pull-request-list",
-    "reason": "pull-request-list sort=recentupdate (documented sort enum has no created-order value), state=all; only the update-ordered trigger fits",
-    "verified": "apps/gitea/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "reason": "pull-request-list sort=recentupdate; issues and commits via the documented since filter; branches, tags and releases as bounded snapshots; repositories via repo-search sort=created&order=desc; issue comments as a since-filter on the unpaged per-issue list",
+    "verified": "apps/gitea/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "covers": {
+      "org-repo-list": "new-repo"
+    },
+    "skipped": {
+      "label-list": "label definitions (reference data)"
+    }
   },
   {
     "path": "apps/github",

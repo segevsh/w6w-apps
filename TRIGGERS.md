@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 1947 triggers, 2335 unaccounted list actions in 513 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -20,7 +20,6 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/gocanvas | 5 | 15 | 15 |
 | apps/fortnox | 0 | 14 | 14 |
 | apps/chatbase | 0 | 12 | 12 |
-| apps/cloze | 3 | 12 | 12 |
 | apps/freshworks/freshservice | 2 | 13 | 12 |
 | apps/taskade | 0 | 12 | 12 |
 | apps/affinity | 1 | 11 | 11 |
@@ -31,10 +30,6 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/tickettailor | 0 | 10 | 10 |
 | apps/tidio | 0 | 10 | 10 |
 | apps/wakatime | 1 | 11 | 10 |
-| apps/connecteam | 1 | 10 | 9 |
-| apps/contentstack | 2 | 10 | 9 |
-| apps/dixa | 1 | 10 | 9 |
-| apps/gitea | 1 | 10 | 9 |
 | apps/highlevel | 4 | 9 | 9 |
 | apps/lusha | 1 | 9 | 9 |
 | apps/meta/instagram-for-business | 1 | 10 | 9 |
@@ -567,13 +562,17 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
 | apps/clickup | 20 | 5 | 0 |
+| apps/cloze | 4 | 12 | 0 |
 | apps/companycam | 20 | 20 | 0 |
+| apps/connecteam | 10 | 10 | 0 |
+| apps/contentstack | 6 | 10 | 0 |
 | apps/copper | 19 | 13 | 0 |
 | apps/customerio | 4 | 0 | 0 |
 | apps/dbtcloud | 11 | 12 | 0 |
 | apps/deel | 8 | 12 | 0 |
 | apps/dice | 3 | 0 | 0 |
 | apps/discord | 5 | 5 | 0 |
+| apps/dixa | 7 | 10 | 0 |
 | apps/document360 | 10 | 15 | 0 |
 | apps/drata | 13 | 14 | 0 |
 | apps/dropbox/dropbox | 2 | 2 | 0 |
@@ -585,6 +584,7 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/findymail | 5 | 12 | 0 |
 | apps/followupboss | 10 | 11 | 0 |
 | apps/front | 7 | 13 | 0 |
+| apps/gitea | 9 | 10 | 0 |
 | apps/github | 15 | 3 | 0 |
 | apps/gitlab | 13 | 4 | 0 |
 | apps/givebutter | 8 | 11 | 0 |
@@ -881,12 +881,12 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/cloudbeds | 2 | reservation-list | new-reservation, new-or-updated-reservation | apps/cloudbeds/README.md Triggers section (verified 2026-11-09) | hand | since-filter on reservation-list resultsFrom (booking date) / modifiedFrom, dedupe by reservationID (reservationID:dateModified for updated) |
 | apps/cloudflare | 1 | dns-record-list | new-dns-record | apps/cloudflare/README.md Triggers section (verified 2026-11-09) | hand | Bounded snapshot: dns-record-list with per_page=5000 returns a zone's whole record set in one request (documented per_page max 5,000,000) |
 | apps/cloudinary | 1 | asset-search | new-asset | apps/cloudinary/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action asset-search |
-| apps/cloze | 3 | person-feed | new-or-updated-person, new-or-updated-company, new-or-updated-project | apps/cloze/README.md Triggers section (verified 2026-11-09) | hand | Change-feed polls on the cursored people/companies/projects feeds (pollToken); webhooks also exist, queued separately |
+| apps/cloze | 4 | person-feed | new-or-updated-person, new-or-updated-company, new-or-updated-project, new-team-member | apps/cloze/README.md Triggers section (verified 2026-11-10) | hand | Change-feed polls on the cursored people/companies/projects feeds (pollToken); team members are a bounded snapshot of team-members-list; webhooks also exist, queued separately |
 | apps/companycam | 20 | checklist-list | new-checklist, new-group, new-or-updated-checklist, new-or-updated-group, new-or-updated-project, new-or-updated-tag, new-or-updated-user, new-photo, new-photo-comment, new-photo-tag, new-project, new-project-assigned-user, new-project-collaborator, new-project-comment, new-project-document, new-project-invitation, new-project-label, new-tag, new-user, new-video | apps/companycam/README.md Triggers section (verified 2026-11-10) | hand | 20 poll triggers: since-filter (project modified_since, photo/video start_date), newest-updated-first checklists, and bounded snapshots of users, tags, groups and per-project/per-photo lists (https://docs.companycam.com/reference/listprojects) |
-| apps/connecteam | 1 | shift-list | new-shift | apps/connecteam/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action shift-list |
+| apps/connecteam | 10 | shift-list | new-shift, new-user, new-form, new-form-submission, new-job, new-task, new-schedule, new-task-board, new-time-clock, new-time-activity | apps/connecteam/README.md Triggers section (verified 2026-11-10) | hand | shipped poll trigger(s) over list actions: shift-list plus bounded snapshots of users, forms, jobs, tasks, schedules, task boards and time clocks, and a since-filter on form submissions; time activities as a since-filter on createdAt over the mandatory date window |
 | apps/constantcontact | 1 | list-contact-lists | new-contact-list | apps/constantcontact/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=500 lists, no sort or date filter exists); added-only |
 | apps/contentful | 1 | list-entries | new-entry | apps/contentful/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action list-entries |
-| apps/contentstack | 2 | list-assets | new-asset, new-or-updated-asset | apps/contentstack/README.md Triggers section (verified 2026-11-09) | hand | list-assets takes desc=created_at / desc=updated_at |
+| apps/contentstack | 6 | list-assets | new-asset, new-or-updated-asset, new-entry, new-or-updated-entry, new-release, new-branch | apps/contentstack/README.md Triggers section (verified 2026-11-10) | hand | list-assets takes desc=created_at / desc=updated_at; entries are a since-filter via the documented query param ($gt on created_at / updated_at); releases and branches are bounded snapshots walked with limit/skip |
 | apps/crisp | 2 | list-conversations | new-conversation, new-or-updated-conversation | apps/crisp/README.md Triggers section (verified 2026-11-09) | hand | since-filter on filter_date_start (additive optional action param); new-conversation keeps created_at in window, dedupe by session_id; updated dedupes by session_id:updated_at |
 | apps/cursor | 1 | members-list | new-member | apps/cursor/README.md Triggers section (verified 2026-11-09) | hand | members-list (GET /teams/members) returns the whole team roster in one unpaginated response with stable ids: bounded snapshot, emit added ids; audit-logs-list not wrapped (action sends startDate/endDate, docs say startTime/endTime, oldest first) (https://cursor.com/docs/account/teams/admin-api) |
 | apps/databricks | 0 | catalog-list | job-run-finished | no | survey | AT RISK: no runs action; 8 actions are catalog/sql only. Needs a new action first or blocker. |
@@ -904,7 +904,7 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/digitalocean | 1 | domain-record-list | new-domain-record | apps/digitalocean/README.md Triggers section (verified 2026-11-09) | hand | bounded snapshot (<=200 records per domain, no sort); added-only; larger domains fail loudly |
 | apps/discord | 5 | list-messages | new-channel, new-guild, new-member, new-message, new-role | apps/discord/README.md Triggers section (verified 2026-11-10) | hand | Get Channel Messages returns messages newest to oldest, limit 100 (https://discord.com/developers/docs/resources/message#get-channel-messages); servers, channels, roles and members are bounded snapshots via their list actions (no newest-first order or since filter in the HTTP API); Webhook Events are app-level only and need a 204 acknowledgement the w6w ingest route cannot send (https://discord.com/developers/docs/events/webhook-events) |
 | apps/discourse | 1 | topic-list-latest | new-topic | apps/discourse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action topic-list-latest |
-| apps/dixa | 1 | agent-list | new-agent | apps/dixa/README.md Triggers section (verified 2026-11-09) | hand | agent-list over the whole roster via pageKey is the organisation's staff: bounded snapshot, emit added ids (https://docs.dixa.io/openapi/dixa-api/v1/tag/Agents/) |
+| apps/dixa | 7 | agent-list | new-agent, new-queue, new-tag, new-conversation-message, new-conversation-note, new-conversation-tag, new-end-user-conversation | apps/dixa/README.md Triggers section (verified 2026-11-10) | hand | bounded snapshots (emit added ids) of the agent, queue and tag lists and of the per-conversation / per-end-user lists; Dixa v1 documents no order or created filter on these |
 | apps/docparser | 1 | results-list | new-result | apps/docparser/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action results-list |
 | apps/documenso | 1 | envelope-find | new-envelope | apps/documenso/README.md Triggers section (verified 2026-11-09) | hand | GET /envelope documents orderByDirection default desc with sole sort column createdAt, so page 1 is newest (https://app.documenso.com/api/v2/openapi.json); webhook upgrade also queued |
 | apps/document360 | 10 | workspace-article-list | new-article, new-or-updated-article, new-article-version, new-drive-folder, new-project, new-reader, new-team-group, new-team-account, new-workspace-category, new-workspace | apps/document360/README.md Triggers section (verified 2026-11-10) | hand | bounded snapshot triggers cover Document360 record collections |
@@ -956,7 +956,7 @@ depth: 682 apps, 1919 triggers, 2383 unaccounted list actions in 518 apps, n8n-p
 | apps/gerrit | 1 | change-search | new-or-updated-change | apps/gerrit/README.md Triggers section (verified 2026-11-09) | hand | change-search output is documented sorted most-recently-updated first; only the update-ordered trigger fits (no created-order sort documented) |
 | apps/getresponse | 1 | contact-list | new-contact | apps/getresponse/README.md Triggers section (verified 2026-11-09) | hand | shipped poll trigger(s) over list action contact-list |
 | apps/ghost | 1 | list-posts | new-post | no | hand | shipped poll trigger(s) over list action list-posts |
-| apps/gitea | 1 | pull-request-list | new-or-updated-pull-request | apps/gitea/README.md Triggers section (verified 2026-11-09) | hand | pull-request-list sort=recentupdate (documented sort enum has no created-order value), state=all; only the update-ordered trigger fits |
+| apps/gitea | 9 | pull-request-list | new-or-updated-pull-request, new-issue, new-or-updated-issue, new-issue-comment, new-commit, new-branch, new-tag, new-release, new-repo | apps/gitea/README.md Triggers section (verified 2026-11-10) | hand | pull-request-list sort=recentupdate; issues and commits via the documented since filter; branches, tags and releases as bounded snapshots; repositories via repo-search sort=created&order=desc; issue comments as a since-filter on the unpaged per-issue list |
 | apps/givebutter | 8 | contact-list | new-contact, new-or-updated-contact, new-transaction, new-or-updated-transaction, new-campaign, new-fund, new-payout, new-message | apps/givebutter/README.md Triggers section (verified 2026-11-10) | hand | sortByDesc=created_at for contacts and transactions; updatedAfter since-filter for updates; bounded snapshots for campaigns, funds, payouts, messages |
 | apps/gladia | 1 | transcription-list | new-transcription | apps/gladia/README.md Triggers section (verified 2026-11-09) | hand | transcription-list has no documented order, so a since-filter poll on after_date |
 | apps/glide | 1 | table-list | new-table | apps/glide/README.md Triggers section (verified 2026-11-09) | hand | Big Table collection is snapshotted for additions |
