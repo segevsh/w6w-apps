@@ -6,7 +6,7 @@ Work orders, assets, locations, parts, users, teams, vendors and meters in
 comes from the vendor's OpenAPI 3.0 document (`/v1/openapi.json`, fetched
 2026-10-06) and was spot-checked against the live host. App id `io.w6w.maintainx`.
 
-- **Triggers** — 13 (poll)
+- **Triggers** — 12 (poll)
 
 ## Auth
 
