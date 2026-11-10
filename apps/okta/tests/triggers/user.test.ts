@@ -13,7 +13,12 @@ const t0 = Date.parse("2026-11-10T12:00:00Z");
 const at = (ms: number) => {
   clock.now = () => ms;
 };
-const user = (id: string, lastUpdated = "2026-11-10T09:00:00.000Z") => ({ id, lastUpdated });
+// Default stamps are before the first check (t0), i.e. the user existed at the floor.
+const user = (id: string, lastUpdated = "2026-11-10T09:00:00.000Z") => ({
+  id,
+  created: lastUpdated,
+  lastUpdated,
+});
 const poll = (trigger: typeof newUser, state: unknown, records: unknown[]) => {
   const mock = mockOktaCtx([{ body: records }]);
   return { mock, result: trigger.poll!({ params: {}, state, subscriptionId: "sub-1" }, mock.ctx) };
@@ -29,20 +34,27 @@ test("new-user: seeds, emits only new users, retries idempotently", async () => 
   assertEquals(seeded.events, []);
   assertEquals((seeded.nextState as { seeded?: boolean }).seeded, true);
   at(t0 + 300_000);
-  const first = poll(newUser, seeded.nextState, [user("u2"), user("u1")]);
-  const retry = poll(newUser, seeded.nextState, [user("u2"), user("u1")]);
-  assertEquals((await first.result).events, [user("u2")]);
+  const fresh = user("u2", "2026-11-10T12:02:00.000Z");
+  const first = poll(newUser, seeded.nextState, [fresh, user("u1")]);
+  const retry = poll(newUser, seeded.nextState, [fresh, user("u1")]);
+  assertEquals((await first.result).events, [fresh]);
   assertEquals(await retry.result, await first.result);
 });
 
 test("new-user: GET /users with search created gt (cursor - 30 min), limit 100", async () => {
   at(t0);
-  const seed = poll(newUser, {}, []);
+  const seeded = await poll(newUser, {}, []).result;
+  const seed = poll(newUser, seeded.nextState, []);
   await seed.result;
   assertEquals(seed.mock.calls[0].method, "GET");
   assertEquals(search(seed.mock.calls[0].url), {
     origin: "https://dev-1.okta.com/api/v1/users",
-    params: { search: 'created gt "2026-11-10T11:30:00.000Z"', limit: "100" },
+    params: {
+      search: 'created gt "2026-11-10T11:30:00.000Z"',
+      limit: "100",
+      sortBy: "created",
+      sortOrder: "desc",
+    },
   });
 });
 
@@ -62,10 +74,16 @@ test("new-or-updated-user: an edit is a new event (idOf includes lastUpdated)", 
 
 test("new-or-updated-user: GET /users with search lastUpdated gt (cursor - 30 min)", async () => {
   at(t0);
-  const seed = poll(updatedUser, {}, []);
+  const seeded = await poll(updatedUser, {}, []).result;
+  const seed = poll(updatedUser, seeded.nextState, []);
   await seed.result;
   assertEquals(search(seed.mock.calls[0].url), {
     origin: "https://dev-1.okta.com/api/v1/users",
-    params: { search: 'lastUpdated gt "2026-11-10T11:30:00.000Z"', limit: "100" },
+    params: {
+      search: 'lastUpdated gt "2026-11-10T11:30:00.000Z"',
+      limit: "100",
+      sortBy: "lastUpdated",
+      sortOrder: "desc",
+    },
   });
 });
