@@ -12,7 +12,7 @@ Shipped status is derived from code (`triggers/*.ts`), never stored here.
 
 ## Depth
 
-depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-parity misses n/a (report-only)
+depth: 682 apps, 2813 triggers, 1434 unaccounted list actions in 385 apps, n8n-parity misses n/a (report-only)
 
 | app | triggers | list actions | unaccounted |
 |---|---|---|---|
@@ -280,7 +280,6 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/bloomerang | 1 | 3 | 2 |
 | apps/canva | 1 | 3 | 2 |
 | apps/circleci | 1 | 3 | 2 |
-| apps/clearout | 3 | 2 | 2 |
 | apps/crisp | 2 | 3 | 2 |
 | apps/databricks | 0 | 2 | 2 |
 | apps/demio | 0 | 2 | 2 |
@@ -288,10 +287,7 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/docparser | 1 | 3 | 2 |
 | apps/duda | 1 | 3 | 2 |
 | apps/egnyte | 1 | 3 | 2 |
-| apps/elastic-email | 7 | 2 | 2 |
 | apps/encharge | 1 | 3 | 2 |
-| apps/esignatures | 5 | 2 | 2 |
-| apps/formstack | 2 | 3 | 2 |
 | apps/freshworks/freshdesk | 2 | 3 | 2 |
 | apps/fullenrich | 0 | 2 | 2 |
 | apps/gcs | 0 | 2 | 2 |
@@ -307,7 +303,6 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/matrix | 1 | 2 | 2 |
 | apps/mattermost | 1 | 2 | 2 |
 | apps/meta/facebook-custom-audiences | 0 | 2 | 2 |
-| apps/meta/facebook-lead-ads | 1 | 2 | 2 |
 | apps/meta/facebook-messenger | 1 | 2 | 2 |
 | apps/microsoft/azure-blob | 2 | 2 | 2 |
 | apps/mindee | 0 | 2 | 2 |
@@ -456,6 +451,7 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/chatwork | 8 | 8 | 0 |
 | apps/checkly | 7 | 11 | 0 |
 | apps/circle | 9 | 11 | 0 |
+| apps/clearout | 8 | 2 | 0 |
 | apps/clerk | 8 | 7 | 0 |
 | apps/cleverreach | 2 | 7 | 0 |
 | apps/clickup | 20 | 5 | 0 |
@@ -485,7 +481,9 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/drata | 13 | 14 | 0 |
 | apps/dropbox/dropbox | 2 | 2 | 0 |
 | apps/ebay | 1 | 1 | 0 |
+| apps/elastic-email | 10 | 2 | 0 |
 | apps/erpnext | 2 | 1 | 0 |
+| apps/esignatures | 11 | 2 | 0 |
 | apps/eventbrite | 27 | 23 | 0 |
 | apps/everhour | 10 | 23 | 0 |
 | apps/eztexting | 5 | 8 | 0 |
@@ -498,6 +496,7 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/flodesk | 6 | 7 | 0 |
 | apps/followupboss | 10 | 11 | 0 |
 | apps/formbricks | 3 | 7 | 0 |
+| apps/formstack | 4 | 3 | 0 |
 | apps/freeagent | 12 | 8 | 0 |
 | apps/front | 7 | 13 | 0 |
 | apps/gitea | 9 | 10 | 0 |
@@ -568,6 +567,7 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/mem | 10 | 9 | 0 |
 | apps/mercury | 9 | 10 | 0 |
 | apps/meta/facebook | 12 | 6 | 0 |
+| apps/meta/facebook-lead-ads | 3 | 2 | 0 |
 | apps/meta/instagram-for-business | 4 | 10 | 0 |
 | apps/microsoft/azuredevops | 9 | 8 | 0 |
 | apps/microsoft/microsoft-entra-id | 10 | 10 | 0 |
@@ -703,13 +703,13 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/clockify | 16 | new-time-entry, timer-started, timer-stopped, new-project, new-client, new-task, time-entry-updated, time-entry-deleted, project-updated, project-deleted, client-updated, client-deleted, task-updated, task-deleted, any-event, new-workspace | apps/clockify/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (one per event; any-event registers one webhook per listed event, signed by the per-webhook token in Clockify-Signature); new-workspace polls the bounded workspace list |
 | apps/cloudconvert | 3 | job-finished, job-failed, job-created | apps/cloudconvert/README.md Triggers section (verified 2026-11-10) | hand | POST /v2/webhooks per subscription (events: one job event) returns the signing_secret kept in state, DELETE /v2/webhooks/{id} on unsubscribe; CloudConvert-Signature hex HMAC-SHA256 of the raw body (no timestamp) |
 | apps/copper | 19 | any-event, deleted-company, deleted-lead, deleted-opportunity, deleted-person, deleted-task, new-activity, new-company, new-lead, new-opportunity, new-person, new-related-item, new-task, new-user, updated-company, updated-lead, updated-opportunity, updated-person, updated-task | apps/copper/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through the vendor API (created/updated/deleted for person, lead, company, opportunity, task, plus any-event) and polls for new activities, users and related items |
-| apps/elastic-email | 7 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept. |
+| apps/elastic-email | 10 | new-list, email-sent, email-opened, email-clicked, email-unsubscribed, email-error, abuse-report, any-event, new-template, new-contact-in-list | apps/elastic-email/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window) for each of the six notification types plus Any Event (registers the types in its events param); polls: New List (list-list) and New Template (template-list) as bounded snapshots, New Contact in List (list-contacts) as a capped per-list snapshot (no filter or order in the v4 spec) |
 | apps/eventbrite | 27 | activity, attendee-checked-in, attendee-checked-out, attendee-updated, event-created, event-published, event-unpublished, event-updated, order-placed, order-refunded, order-updated, organizer-updated, ticket-class-created, ticket-class-deleted, ticket-class-updated, venue-updated, new-or-updated-attendee, new-organizer, new-venue, new-ticket-group, new-inventory-tier, new-seat-map, new-event-team, new-discount, new-custom-question, new-default-question, new-organization-member | apps/eventbrite/README.md Triggers section (verified 2026-11-10) | hand | shipped: 16 webhook triggers registered through the vendor API (unsigned deliveries; callback URL is the secret, https://www.eventbrite.com/platform/docs/webhooks) plus 11 poll triggers for records with no webhook |
 | apps/exa | 2 | new-webset-item, webset-item-enriched | apps/exa/README.md Triggers section (verified 2026-11-10) | hand | shipped: Websets webhooks registered through POST /websets/v0/webhooks (webset.item.created, webset.item.enriched); Exa-Signature t=,v1= HMAC-SHA256 of '<t>.<raw body>' with the secret returned once at creation, 5-minute window. The research note 'unsigned monitors' was wrong: Exa signs both Monitors and Websets webhooks. |
 | apps/figma | 5 | comment-added, file-deleted, file-updated, file-version-created, library-published | apps/figma/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API |
 | apps/fivetran | 18 | new-connection, sync-started, sync-ended, connection-failure, connection-created, connection-updated, connection-deleted, connection-paused, connection-resumed, connection-successful, transformation-started, transformation-succeeded, transformation-failed, any-event, new-destination, new-transformation, new-transformation-project, new-user | apps/fivetran/README.md Triggers section (verified 2026-11-10) | hand | shipped: 13 signed webhook triggers registered through POST /v1/webhooks/account (or /group/{id}) with a random per-subscription secret, X-Fivetran-Signature-256 hex HMAC-SHA256 of the raw body (no timestamp); Any Event registers all 15 documented events or a chosen list; plus 5 bounded-snapshot polls (connections, destinations, transformations, transformation projects, users) over the cursor-paginated list actions |
 | apps/flodesk | 6 | new-segment, new-subscriber, subscriber-unsubscribed, subscriber-added-to-segment, any-event, new-workflow | apps/flodesk/README.md Triggers section (verified 2026-11-10) | hand | shipped: webhooks registered through POST /v1/webhooks for the three events Flodesk publishes (subscriber.created, subscriber.unsubscribed, subscriber.added_to_segment) plus an Any-event trigger; Flodesk publishes no signature, so the README says the callback URL is the secret; polls for new segments and new workflows. |
-| apps/formstack | 2 | new-submission, new-submission-poll | apps/formstack/README.md Triggers section (verified 2026-11-09) | hand | shipped: webhook registered through the vendor API; also ships a poll trigger |
+| apps/formstack | 4 | new-submission, new-submission-poll, new-form, new-folder | apps/formstack/README.md Triggers section (verified 2026-11-10) | hand | shipped: submission webhook registered through the vendor API (sharedSecret echoed in the payload; the V2025 reference does not document the HMAC algorithm or header, so it is not relied on); polls: New Submission (submission-list, newest first; now reads the V2025 submissions array), New Form (form-list) and New Folder (folder-list) as snapshots capped at 500 by the vendor's own page.totalPages |
 | apps/github | 15 | any-event, fork, issue-comment, issue, pull-request-review-comment, pull-request-review, pull-request, push, ref-created, ref-deleted, release, repository-event, star, workflow-job, workflow-run | apps/github/README.md Triggers section (verified 2026-11-10) | hand | shipped: repository webhook registered through the vendor API (POST /repos/{owner}/{repo}/hooks); 14 named event triggers plus Any Event, X-Hub-Signature-256 HMAC-SHA256 verified |
 | apps/gitlab | 13 | any-event, comment, deployment, issue, job, merge-request, milestone, new-project, pipeline, push, release, tag-push, wiki-page | apps/gitlab/README.md Triggers section (verified 2026-11-10) | hand | API-registered project webhook (POST /projects/:id/hooks); 11 named event triggers, the `new-project` poll trigger and Any Event; onSubscribe probes GET /version: 19+ or probe failure registers signing_token only (Standard Webhooks HMAC-SHA256 over id.timestamp.raw body, 5 min window, X-Gitlab-Token never consulted); a server reporting < 19.0 registers a separate random token checked in constant time |
 | apps/gocanvas | 17 | submission-created, submission-edited, dispatch-created, workflow-handoff-created, submission-status-changed, any-event, new-form, new-user, new-customer, new-site, new-project, new-group, new-department, new-department-user, new-form-assigned-user, new-submission, new-dispatch | apps/gocanvas/README.md Triggers section (verified 2026-11-10) | hand | shipped: API-registered form or company webhooks (POST /forms/{id}/webhooks, POST /webhooks) for the five documented event types plus an Any Event trigger; unsigned (no signature documented), callback URL is the secret; 9 snapshot polls for the collections without a webhook event; 2 created_at since-filter polls (new-submission, new-dispatch) for users who cannot register webhooks (Company Admin/Designer only, one webhook per form and event) |
@@ -762,11 +762,11 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/adyen | 4 | payment-authorisation, payment-capture, payment-cancellation, payment-refund | apps/adyen/README.md Triggers section (verified 2026-11-10) | hand | Standard webhook created in the Customer Area (no registration API in this app); each notification item verified with Adyen's HMAC-SHA256 field signature (additionalData.hmacSignature, hex key, 8 ':'-joined fields; no timestamp) |
 | apps/airparser | 1 | document-parsed | apps/airparser/README.md Triggers section (verified 2026-11-10) | hand | dashboard-created webhook (Integrations, Webhooks); airparser-signature base64 HMAC-SHA256 of the raw body under the per-webhook Signing Secret (no timestamp) |
 | apps/atlassian/jira | 14 | new-issue, issue-created, issue-updated, issue-deleted, comment-created, comment-updated, comment-deleted, project-created, project-updated, project-deleted, user-created, user-updated, user-deleted, any-event | apps/atlassian/jira/README.md Triggers section (verified 2026-11-10) | hand | manual-webhook: 12 signed named triggers (X-Hub-Signature sha256, admin-created webhook with secret) plus any-event, and the new-issue poll over issue-search |
-| apps/clearout | 3 | email-verifier-bulk-completed, email-finder-bulk-completed, form-guard-email-validated | apps/clearout/README.md Triggers section (verified 2026-11-10) | hand | webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window |
+| apps/clearout | 8 | email-verifier-bulk-completed, email-finder-bulk-completed, form-guard-email-validated, email-verifier-instant-completed, email-finder-instant-completed, form-guard-phone-validated, form-guard-name-validated, any-event | apps/clearout/README.md Triggers section (verified 2026-11-10) | hand | webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window; one trigger per event of the 7-event catalog plus Any Event with an events filter (https://docs.clearout.io/developers/webhooks/webhook-events-and-payloads) |
 | apps/cognitoforms | 3 | entry-submitted, entry-updated, entry-deleted | apps/cognitoforms/README.md Triggers section (verified 2026-11-10) | hand | per-form Post JSON Data to a Website endpoints (submit, update, delete) set in the form builder; Cognito documents no signature, so the callback URL is the secret and the README says so (https://www.cognitoforms.com/support/66/data-integration/webhooks) |
 | apps/customerio | 4 | customer-unsubscribed, email-clicked, email-opened, reporting-event | apps/customerio/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/dropbox/dropbox | 2 | new-file, files-changed | apps/dropbox/dropbox/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual webhook (X-Dropbox-Signature, set up in the App Console) plus a poll over list-folder on one named folder capped at 600 entries |
-| apps/esignatures | 5 | contract-event, contract-sent, contract-signed, signer-signed, signer-declined | apps/esignatures/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp). |
+| apps/esignatures | 11 | contract-event, contract-sent, contract-signed, signer-signed, signer-declined, contract-reminder-sent, contract-withdrawn, signer-viewed, delivery-error, new-template, new-template-collaborator | apps/esignatures/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp); named triggers for 8 of the 10 notifications, Contract Event is the Any Event trigger with an events filter; polls: New Template (template-list) and New Template Collaborator (collaborator-list), bounded snapshots |
 | apps/formspark | 1 | new-submission | apps/formspark/README.md Triggers section (verified 2026-11-10) | hand | shipped: manual webhook set per form in the dashboard (no webhook API); signing is optional at Formspark so the trigger requires it: Formspark-Signature v1= hex HMAC-SHA256 of '<Formspark-Timestamp>.<raw body>' under the pasted secret, 5-minute window. |
 | apps/highlevel | 22 | contact-created, opportunity-created, appointment-created, inbound-message, contact-updated, contact-deleted, contact-tag-updated, opportunity-updated, opportunity-deleted, opportunity-stage-changed, opportunity-status-changed, appointment-updated, appointment-deleted, outbound-message, location-created, location-updated, any-event, new-opportunity, conversation-active, new-pipeline, new-calendar, new-form | apps/highlevel/README.md Triggers section (verified 2026-11-10) | hand | manual webhook set on the Marketplace app; X-GHL-Signature Ed25519 over the raw body verified with HighLevel's published public key (legacy RSA header deprecated 2026-09-01, not accepted); named triggers for contact, opportunity, appointment, message and location events plus any-event; polls for opportunities (order=added_desc), conversations (sort=desc&sortBy=last_message_date) and snapshots of pipelines, calendars and forms; list-contacts has no sort or since filter (covered by contact-created) |
 | apps/homeassistant | 1 | automation-event | apps/homeassistant/README.md Triggers section (verified 2026-11-10) | hand | manual webhook receiving rest_command calls from the user's automations (Home Assistant has no outbound event feed); unsigned, callback URL is the secret; no poll: state list is an uncapped snapshot with no change filter |
@@ -776,7 +776,7 @@ depth: 682 apps, 2795 triggers, 1444 unaccounted list actions in 390 apps, n8n-p
 | apps/marketo | 1 | lead-webhook | apps/marketo/README.md Triggers section (verified 2026-11-10) | hand | unsigned Smart Campaign Call Webhook step posting a user-defined payload; the callback URL is the secret |
 | apps/messagebird | 1 | inbound-sms | apps/messagebird/README.md Triggers section (verified 2026-11-10) | hand | manual inbound-SMS callback (Flow Builder Forward to URL); MessageBird-Signature-JWT HS256 with url_hash and payload_hash verified; POST only (GET callbacks and status reports cannot be verified) |
 | apps/meta/facebook | 12 | any-event, comment-edited, comment-removed, new-ad-campaign, new-comment, new-page, new-photo, new-post, new-video, page-feed, post-edited, post-removed | apps/meta/facebook/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receivers (X-Hub-Signature-256, user registers the callback URL in the Meta dashboard) for Page feed events plus any-event, and snapshot polls for managed Pages and ad campaigns |
-| apps/meta/facebook-lead-ads | 1 | new-lead | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
+| apps/meta/facebook-lead-ads | 3 | new-lead, new-lead-poll, new-lead-form | apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-10) | hand | shipped: signed manual-webhook receiver for the Page leadgen field (X-Hub-Signature-256 under the App Secret; user registers the callback URL at the vendor); polls: New Lead (poll) over list-recent-leads with the documented time_created filter (carries the lead answers) and New Lead Ads Form over list-forms as a capped snapshot |
 | apps/meta/facebook-messenger | 1 | messenger-event | apps/meta/facebook-messenger/README.md Triggers section (verified 2026-11-10) | hand | manual Page webhook in the Meta App Dashboard; GET verify-token challenge plus X-Hub-Signature-256 HMAC-SHA256 with the App Secret over the raw body |
 | apps/meta/whatsapp | 2 | message-received, message-status | apps/meta/whatsapp/README.md Triggers section (verified 2026-11-09) | hand | shipped: signed manual-webhook receiver (user registers the callback URL at the vendor) |
 | apps/microsoft/azure-blob | 2 | blob-created, blob-deleted | apps/microsoft/azure-blob/README.md Triggers section (verified 2026-11-10) | hand | manual Event Grid webhook subscription (ARM registration needs Entra auth the shared-key credential lacks); Event Grid does not sign, validation handshake answered, callback URL is the secret |

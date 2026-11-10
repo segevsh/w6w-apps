@@ -2138,12 +2138,30 @@
     "candidates": [
       "email-verifier-bulk-completed",
       "email-finder-bulk-completed",
-      "form-guard-email-validated"
+      "form-guard-email-validated",
+      "email-verifier-instant-completed",
+      "email-finder-instant-completed",
+      "form-guard-phone-validated",
+      "form-guard-name-validated",
+      "any-event"
     ],
     "pollAction": null,
-    "reason": "webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window",
+    "reason": "webhook created in the Clearout app (Developers, Webhook; no API); x-co-webhook-signature t=<ts>,v1=<hex HMAC-SHA256 of ts.rawBody> under the account-level secret token, 5-minute window; one trigger per event of the 7-event catalog plus Any Event with an events filter (https://docs.clearout.io/developers/webhooks/webhook-events-and-payloads)",
     "verified": "apps/clearout/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "skipped": {
+      "find-email": "credit-consuming: each call spends a Clearout credit (POST /email_finder/instant documents a 402 Payment Required answer), so polling it would bill the account (https://docs.clearout.io/developers/api/email-finder)",
+      "find-company-domains": "free-text autocomplete keyed by a required query string with an undocumented response body and no stable id or order; not a record feed"
+    },
+    "events": {
+      "email_verifier.instant.completed": "email-verifier-instant-completed",
+      "email_verifier.bulk.completed": "email-verifier-bulk-completed",
+      "email_finder.instant.completed": "email-finder-instant-completed",
+      "email_finder.bulk.completed": "email-finder-bulk-completed",
+      "form_guard.email_validation.completed": "form-guard-email-validated",
+      "form_guard.phone_validation.completed": "form-guard-phone-validated",
+      "form_guard.name_validation.completed": "form-guard-name-validated"
+    }
   },
   {
     "path": "apps/clerk",
@@ -3409,12 +3427,23 @@
       "email-clicked",
       "email-unsubscribed",
       "email-error",
-      "abuse-report"
+      "abuse-report",
+      "any-event",
+      "new-template",
+      "new-contact-in-list"
     ],
     "pollAction": "list-list",
-    "reason": "shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window); the earlier New List poll (list-list) is kept.",
+    "reason": "shipped: signed notification webhooks registered through POST /v4/webhook (EnableSigning, PostJson; X-ElasticEmail-Signature v1 HMAC-SHA256 over timestamp, method, request target and raw body, 5-minute window) for each of the six notification types plus Any Event (registers the types in its events param); polls: New List (list-list) and New Template (template-list) as bounded snapshots, New Contact in List (list-contacts) as a capped per-list snapshot (no filter or order in the v4 spec)",
     "verified": "apps/elastic-email/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "events": {
+      "Sent": "email-sent",
+      "Opened": "email-opened",
+      "Clicked": "email-clicked",
+      "Unsubscribed": "email-unsubscribed",
+      "AbuseReport": "abuse-report",
+      "Error": "email-error"
+    }
   },
   {
     "path": "apps/elevenlabs",
@@ -3482,12 +3511,31 @@
       "contract-sent",
       "contract-signed",
       "signer-signed",
-      "signer-declined"
+      "signer-declined",
+      "contract-reminder-sent",
+      "contract-withdrawn",
+      "signer-viewed",
+      "delivery-error",
+      "new-template",
+      "new-template-collaborator"
     ],
-    "pollAction": null,
-    "reason": "shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp).",
+    "pollAction": "template-list",
+    "reason": "shipped: manual webhook (the dashboard holds one URL; no subscription API) verified with X-Signature-SHA256, an HMAC-SHA256 of the raw body under the account Secret Token (hex or base64; the vendor does not state the encoding; no timestamp); named triggers for 8 of the 10 notifications, Contract Event is the Any Event trigger with an events filter; polls: New Template (template-list) and New Template Collaborator (collaborator-list), bounded snapshots",
     "verified": "apps/esignatures/README.md Triggers section (verified 2026-11-10)",
-    "source": "hand"
+    "source": "hand",
+    "events": {
+      "contract-sent-to-signer": "contract-sent",
+      "contract-reminder-sent-to-signer": "contract-reminder-sent",
+      "contract-signed": "contract-signed",
+      "contract-withdrawn": "contract-withdrawn",
+      "signer-viewed-the-contract": "signer-viewed",
+      "signer-signed": "signer-signed",
+      "signer-declined": "signer-declined",
+      "signer-mobile-update-request": "any",
+      "sms-incoming": "any",
+      "error": "delivery-error",
+      "contract-pdf-generated": "any"
+    }
   },
   {
     "path": "apps/eventbrite",
@@ -4030,12 +4078,17 @@
     "mechanism": "webhook-api",
     "candidates": [
       "new-submission",
-      "new-submission-poll"
+      "new-submission-poll",
+      "new-form",
+      "new-folder"
     ],
-    "pollAction": null,
-    "reason": "shipped: webhook registered through the vendor API; also ships a poll trigger",
-    "verified": "apps/formstack/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "submission-list",
+    "reason": "shipped: submission webhook registered through the vendor API (sharedSecret echoed in the payload; the V2025 reference does not document the HMAC algorithm or header, so it is not relied on); polls: New Submission (submission-list, newest first; now reads the V2025 submissions array), New Form (form-list) and New Folder (folder-list) as snapshots capped at 500 by the vendor's own page.totalPages",
+    "verified": "apps/formstack/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "events": {
+      "form.submission": "new-submission"
+    }
   },
   {
     "path": "apps/formstack-documents",
@@ -7453,12 +7506,20 @@
     "path": "apps/meta/facebook-lead-ads",
     "mechanism": "manual-webhook",
     "candidates": [
-      "new-lead"
+      "new-lead",
+      "new-lead-poll",
+      "new-lead-form"
     ],
-    "pollAction": null,
-    "reason": "shipped: signed manual-webhook receiver (user registers the callback URL at the vendor)",
-    "verified": "apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-09)",
-    "source": "hand"
+    "pollAction": "list-recent-leads",
+    "reason": "shipped: signed manual-webhook receiver for the Page leadgen field (X-Hub-Signature-256 under the App Secret; user registers the callback URL at the vendor); polls: New Lead (poll) over list-recent-leads with the documented time_created filter (carries the lead answers) and New Lead Ads Form over list-forms as a capped snapshot",
+    "verified": "apps/meta/facebook-lead-ads/README.md Triggers section (verified 2026-11-10)",
+    "source": "hand",
+    "events": {
+      "leadgen": "new-lead"
+    },
+    "n8n": {
+      "newLead": "new-lead"
+    }
   },
   {
     "path": "apps/meta/facebook-messenger",
