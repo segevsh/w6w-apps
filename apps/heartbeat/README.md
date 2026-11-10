@@ -7,6 +7,7 @@ threads and comments, direct messages, events, webhooks, courses/lessons/videos 
 - **Categories** — communication, social-media
 - **Auth methods** — api-key
 - **Actions** — 54
+- **Triggers** — 8 (webhook)
 - **Health checks** — 2 (`service`, `quota`) + the derived `auth:api-key`
 - **Egress allowlist** — `api.heartbeat.chat` (the `service` check adds `status.heartbeat.chat` to
   its own hook allowlist, never to the app's)
@@ -21,6 +22,25 @@ threads and comments, direct messages, events, webhooks, courses/lessons/videos 
 > `1.0.0`), the "Authentication", "Request limits" and "Rich Text" prose pages, and live probes
 > against `api.heartbeat.chat` and `status.heartbeat.chat` the same day. Nothing here came from a
 > third-party integration directory.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `user-joined` — New Member | webhook (API-registered, unsigned) | `USER_JOIN` | user id, name, email |
+| `user-updated` — Member Updated | webhook (API-registered, unsigned) | `USER_UPDATE` | user id |
+| `thread-created` — New Thread | webhook (API-registered, unsigned) | `THREAD_CREATE` (filter: channel) | thread id, channel id |
+| `group-joined` — Member Joined Group | webhook (API-registered, unsigned) | `GROUP_JOIN` (filter: group) | user id, group id |
+| `event-created` — New Event | webhook (API-registered, unsigned) | `EVENT_CREATE` | event id |
+| `event-rsvp` — New Event RSVP | webhook (API-registered, unsigned) | `EVENT_RSVP` (optional filters: event, members or guests) | event id, email, user id (null for a guest) |
+| `course-completed` — Course Completed | webhook (API-registered, unsigned) | `COURSE_COMPLETED` (filter: course) | course id and name, user id |
+| `document-created` — New Document | webhook (API-registered, unsigned) | `DOCUMENT_CREATE` | document id |
+
+**Setup.** Nothing to paste beyond the filter ids a trigger asks for. Subscribing registers the trigger's URL with `PUT /webhooks` (`{ "action": { "name", "filter"? }, "url" }`) using the app's existing API key; unsubscribing deletes the webhook (`DELETE /webhooks/{id}`; one Heartbeat no longer has counts as deleted). Each run gets the action name beside the documented payload; the payloads are small (ids), so fetch the record with the matching Get action. The `MENTION`, `DIRECT_MESSAGE` and `ABANDONED_CART` actions are not wired.
+
+**Trust model.** Heartbeat does not sign its webhooks: its Webhooks reference documents no signature, secret or signing header, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
+
+Docs (verified 2026-11-10): https://heartbeat.readme.io/reference/webhooks and https://heartbeat.readme.io/reference/createwebhook
 
 ## The three things most likely to cost someone a day
 
@@ -95,7 +115,6 @@ Measured live: no `Authorization` header and a syntactically-plausible bogus tok
 
 ```
 
-Triggers: not shipped — member and content list endpoints are uncapped full collections with no documented change filter (https://heartbeat.readme.io/reference).
 401 {"error":true,"message":"Invalid API Key"}
 ```
 

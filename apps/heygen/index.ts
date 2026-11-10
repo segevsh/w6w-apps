@@ -25,6 +25,9 @@ import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 import requestRate from "./health/request-rate.ts";
 
+import videoCompleted from "./triggers/video-completed.ts";
+import videoFailed from "./triggers/video-failed.ts";
+
 export default {
   actions: [
     userGet,
@@ -46,6 +49,7 @@ export default {
     templateGet,
     templateVideoGenerate,
   ],
+  triggers: [videoCompleted, videoFailed],
   auth: [apiKey],
   healthChecks: [service, quota, requestRate],
 } satisfies AppDefinition;

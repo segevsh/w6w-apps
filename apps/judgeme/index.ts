@@ -86,6 +86,9 @@ import deleteWebhook from "./actions/delete-webhook.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
+import reviewCreated from "./triggers/review-created.ts";
+import reviewUpdated from "./triggers/review-updated.ts";
+
 export default {
   actions: [
     // Reviews
@@ -111,6 +114,7 @@ export default {
     createWebhook,
     deleteWebhook,
   ],
+  triggers: [reviewCreated, reviewUpdated],
   auth: [apiKey],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

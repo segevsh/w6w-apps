@@ -6,6 +6,24 @@ Mobile forms and field-data collection over the GoCanvas REST API v3
 Only the US host `www.gocanvas.com` is covered. The EU and AU regional hosts are not documented by
 the vendor, so they are not in `network.allow`.
 
+- **Triggers** — 5 (webhook)
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `submission-created` — New Submission | webhook (API-registered, unsigned) | `submission_create` | event type, form id, delivery payload |
+| `submission-edited` — Submission Edited | webhook (API-registered, unsigned) | `submission_edit` | event type, form id, delivery payload |
+| `dispatch-created` — New Dispatch | webhook (API-registered, unsigned) | `dispatch_create` | event type, form id, delivery payload |
+| `workflow-handoff-created` — Workflow Handoff | webhook (API-registered, unsigned) | `workflow_handoff_create` | event type, form id, delivery payload |
+| `submission-status-changed` — Submission Status Changed | webhook (API-registered, unsigned) | `submission_custom_status_change` | event type, form id, delivery payload |
+
+**Setup.** Set the trigger's `formId` (or leave it empty for a company-wide webhook, which needs an account administrator). Subscribing registers the trigger's URL with `POST /forms/{id}/webhooks` (or `POST /webhooks` company-wide) as `{ "event_type", "format": "json", "push_url", "push_tag": "w6w" }`; unsubscribing deletes the webhook (a webhook GoCanvas no longer has counts as deleted). A form holds only one webhook per event type, so a second subscription to the same form and event is refused by GoCanvas. `dispatch_create`, `workflow_handoff_create` and `submission_custom_status_change` only fire for forms with Dispatch, Workflow or Submission Statuses enabled. GoCanvas's API reference lists the event types but does not document the delivery body, so the run gets the payload exactly as GoCanvas sent it.
+
+**Trust model.** GoCanvas does not sign its webhooks: its API reference documents no signature, secret or signing header, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged delivery to it, so keep it private. The trigger only checks that the request is a POST with a JSON object body.
+
+Docs (verified 2026-11-10): https://api.gocanvas.com/api/v3/docs (Webhooks and Company-wide Webhooks)
+
 ## Auth
 
 One credential type, `basic`: the GoCanvas login (email) and password of an API user, sent as HTTP
@@ -101,5 +119,3 @@ create/update/delete, report (PDF) download, token exchange and OAuth.
 ## Icon
 
 `assets/icon.svg` is the vendor's own mark path, unmodified apart from the fill colour.
-
-Triggers: not shipped — webhook candidate queued for a webhook node: submission_create, submission_edit, dispatch_create (https://api.gocanvas.com/api/v3/docs).

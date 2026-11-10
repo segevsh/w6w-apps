@@ -6,6 +6,7 @@ history, templates, calendars and events.
 - **Categories** — iot, productivity
 - **Auth methods** — token
 - **Actions** — 19
+- **Triggers** — 1 (webhook)
 - **Egress allowlist** — `status.home-assistant.io`, `*`
 - **Website** — https://www.home-assistant.io
 - **API docs** — https://developers.home-assistant.io/docs/api/rest/
@@ -15,6 +16,41 @@ Built against the official REST API documentation, read 2026-08-18.
 > **On the allowlist.** Home Assistant is software you run, so the instance can
 > be at any hostname — the trailing `*` is what admits it. `status.home-assistant.io`
 > is named for the `service` health check alone.
+
+## Triggers
+
+| Trigger | Mechanism | Vendor event | The run gets |
+|---|---|---|---|
+| `automation-event` — Automation Event | webhook (manual, unsigned) | a `rest_command` action run by an automation | HTTP method, content type, query string, and the body the automation sent (JSON object or form fields, else the text) |
+
+**Setup (manual webhook).** Home Assistant has no outbound event feed; its documented way to call a URL is the `rest_command` integration. (Its `webhook` automation *trigger*, `/api/webhook/<id>`, is the opposite direction: it lets something call Home Assistant.) Create the trigger and copy its webhook URL, then in Home Assistant's `configuration.yaml` define a command that posts to it, restart or reload, and call it from the automation you want to react to:
+
+```yaml
+rest_command:
+  notify_w6w:
+    url: "PASTE_THE_TRIGGER_URL_HERE"
+    method: post
+    content_type: "application/json"
+    payload: '{"event": "{{ event }}", "entity_id": "{{ entity_id }}"}'
+
+automation:
+  - alias: "Tell w6w the front door opened"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.front_door
+        to: "on"
+    actions:
+      - action: rest_command.notify_w6w
+        data:
+          event: front_door_opened
+          entity_id: binary_sensor.front_door
+```
+
+Each call starts one run. The body is whatever your `payload` template produces, so put the fields your workflow needs in it. The instance must be able to reach the trigger URL, and this app's own actions still need the instance to be reachable from w6w the other way (see Setup below).
+
+**Trust model.** Home Assistant does not sign these calls: `rest_command` has no signing option, so there is nothing to verify and none is invented. The callback URL is the secret: the host issues it per subscription as a long unguessable id, and anyone who learns it can post a forged event to it, so keep it private like a password (it lives in your `configuration.yaml`, so use `!secret` there). The trigger accepts GET, POST, PUT, PATCH and DELETE, and does not copy request headers into the event.
+
+Docs (verified 2026-11-10): https://www.home-assistant.io/integrations/rest_command/
 
 ## Setup
 
@@ -251,5 +287,3 @@ source — no global `fetch`, no `Deno.*`, no credential handling outside the au
 hook — plus two specific to this app: `state-set` must keep its device guard,
 `history-get` must keep requiring entity ids, and nothing logs a state value, a
 template, event data or log content, because these entities are somebody's house.
-
-Triggers: not shipped — state listing is an uncapped full instance snapshot with no server-side change filter (https://developers.home-assistant.io/docs/api/rest/).
