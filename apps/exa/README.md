@@ -146,4 +146,4 @@ Researched and endpoint-verified 2026-09-01 against `https://exa.ai/docs/exa-spe
 `status.exa.ai`. Status/quota surfaces move; re-verify before wiring either health
 check further if a richer machine-readable option shows up later.
 
-Triggers: not shipped — Webset lists are paginated workspace-search results with no documented creation cursor; monitor/webhook delivery is queued separately (https://docs.exa.ai/).
+Triggers: not shipped — list-websets documents only cursor pagination and a search filter, with no order or created-since filter, and Websets are created only by the caller's own API calls; monitor webhook delivery is queued separately (https://exa.ai/docs/websets/api/websets/list-all-websets.md).

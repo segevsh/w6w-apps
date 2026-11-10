@@ -32,6 +32,7 @@ import deleteWebhook from "./actions/delete-webhook.ts";
 
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
+import newSegment from "./triggers/new-segment.ts";
 
 /**
  * Flodesk — one Action per documented endpoint, and no more.
@@ -74,4 +75,5 @@ export default {
   ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
+  triggers: [newSegment],
 } satisfies AppDefinition;

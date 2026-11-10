@@ -200,4 +200,4 @@ strings like `ev:123` / `as:456` (the colon stays literal in a path).
 query, JSON body, the version header, absence of a credential header, the output shape and an
 error path; plus `tests/index.test.ts`, `tests/lib/`, `tests/auth/` and `tests/health/`.
 
-Triggers: not shipped — time-record filters are calendar-date reporting ranges rather than a documented creation cursor, and configured webhooks are queued separately (https://jsapi.apiary.io/apis/everhour.apib).
+Triggers: not shipped — time-record filters are calendar-date reporting ranges rather than a creation cursor, and the Apiary reference the app cites (https://jsapi.apiary.io/apis/everhour.apib) no longer resolves (404 on 2026-11-10), so no project or client list could be verified as bounded; configured webhooks are queued separately (https://api.everhour.com/).

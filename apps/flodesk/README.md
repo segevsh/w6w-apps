@@ -213,7 +213,6 @@ constant:
 
 ```
 
-Triggers: not shipped — subscribers paginate without a documented created/updated-since filter or newest-first order; `subscriber.created` webhooks are queued separately (https://developers.flodesk.com/webhooks).
 X-Fd-RateLimit-Limit: 100
 X-Fd-RateLimit-Remaining: 68
 ```
@@ -304,3 +303,16 @@ deno task check
 deno task lint
 deno task fmt
 ```
+
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-segment` — New Segment | Poll | `list-segments` | Each segment newly created in the account |
+
+Segments are a small account-configuration collection. Each check reads them through `list-segments`
+(`per_page` 100, at most five pages; a larger account fails the check with an error naming the cap),
+diffs them against the previous check and emits only additions. The first check only records what
+exists. Subscribers have no created-since filter or documented order, so there is no New Subscriber
+poll; Flodesk's `subscriber.created` webhooks are a separate, not yet shipped path. Source:
+[Flodesk API reference](https://developers.flodesk.com/) (verified 2026-11-09).

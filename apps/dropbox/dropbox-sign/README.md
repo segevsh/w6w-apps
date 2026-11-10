@@ -231,4 +231,15 @@ The two 401 shapes are told apart at connect time, because they have different
 fixes: *"Unauthorized user. No credentials supplied."* means the header never
 arrived, and *"Unauthorized api key"* means it did and was wrong.
 
-Triggers: not shipped — the signature-request list search accepts a `created:` expression but the API does not document a stable order or a bounded result set; webhook events are queued separately (https://developers.hellosign.com/guides/events/overview/).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-signature-request` — New Signature Request | Poll | `signature-request-list` | Each newly created signature request of the account |
+
+Each check runs the list action with Dropbox Sign's search filter `created:[<yesterday> TO <today>]`
+(UTC days, inclusive) and dedupes by `signature_request_id`; the one-day lookback also covers the
+search index's documented minor delay. The first check only records what exists. Signature events
+(sent, viewed, signed, declined) are a separate, not yet shipped webhook path. Sources:
+[search syntax](https://developers.hellosign.com/api/manual-reference-pages/search.md) and
+[events and callbacks](https://developers.hellosign.com/docs/guides/events-and-callbacks) (verified 2026-11-09).

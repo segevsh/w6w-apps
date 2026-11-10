@@ -267,4 +267,16 @@ Tests call every hook directly with a mocked `HookContext` (`tests/_helpers.ts`:
 unexpected request fails rather than hanging. `AUTH_FAILED_500` in that file is the live-measured
 bad-credential response, reused everywhere the "500 is not an outage" behaviour is asserted.
 
-Triggers: not shipped — transcript search's date range is meeting-date search rather than a documented creation cursor or order; no webhook subscription endpoint is published in the GraphQL reference (https://docs.fireflies.ai/).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-transcript` — New Transcript | Poll | `transcript-search` | Each transcript newly available for a meeting from the last two days |
+
+`transcripts(fromDate: …)` filters by meeting date, not by creation time, so each check asks for
+meetings from the last two days (limit 50, the Fireflies cap) and dedupes by transcript `id`; a
+transcript for a meeting older than that window is not seen. The first check only records what exists.
+Fireflies Webhooks V2 (`meeting.transcribed`, `meeting.summarized`, `meeting.bot_joined`, HMAC-SHA256
+`X-Hub-Signature`) is a separate, not yet shipped path that delivers sooner. Sources:
+[GraphQL API](https://docs.fireflies.ai/) and
+[Webhooks V2](https://docs.fireflies.ai/graphql-api/webhooks-v2.md) (verified 2026-11-09).

@@ -36,6 +36,7 @@ import transformationProjectList from "./actions/transformation-project-list.ts"
 import accountInfoGet from "./actions/account-info-get.ts";
 import userList from "./actions/user-list.ts";
 import connectorTypeList from "./actions/connector-type-list.ts";
+import newConnection from "./triggers/new-connection.ts";
 
 const app: AppDefinition = {
   actions: [
@@ -62,6 +63,7 @@ const app: AppDefinition = {
   ],
   auth: [apiKey],
   healthChecks: [service, connectionsHealth, quota],
+  triggers: [newConnection],
 };
 
 export default app;

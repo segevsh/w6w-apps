@@ -214,4 +214,15 @@ docker compose -f .devcontainer/docker-compose.yml exec -T api \
 entry module — all against a mocked `HookContext` (fake `ctx.fetch`, no-op `ctx.log`), no real Feedly
 account or network access required.
 
-Triggers: not shipped — folders, boards, and AI feeds are configuration lists without a documented bounded collection limit; Feedly webhook subscriptions are queued separately (https://developers.feedly.com/reference/webhooks).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-article` — New Article | Poll | `articles-collect` | Each new article collected into one stream (folder, board or AI Feed) |
+
+Each check calls `GET /v3/streams/contents` with `newerThan` set to the previous check's time minus a
+two-minute overlap (never older than Feedly's 31-day limit) and dedupes by article `id`. The first
+check only records what exists. Feedly's enterprise trigger webhooks are a separate, not yet shipped
+webhook path. Sources:
+[Collect articles from streamId](https://developers.feedly.com/reference/collect-articles.md) and
+[webhooks reference](https://developers.feedly.com/reference/get-the-list-of-webhooks.md) (verified 2026-11-09).

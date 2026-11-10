@@ -36,6 +36,8 @@ import service from "./health/service.ts";
 import api from "./health/api.ts";
 import quota from "./health/quota.ts";
 import newContact from "./triggers/new-contact.ts";
+import newOrUpdatedContact from "./triggers/new-or-updated-contact.ts";
+import newList from "./triggers/new-list.ts";
 
 /**
  * EmailOctopus — one action per operation in the v2 OpenAPI document, which
@@ -80,5 +82,5 @@ export default {
   ],
   auth: [apiKey],
   healthChecks: [service, api, quota],
-  triggers: [newContact],
+  triggers: [newContact, newOrUpdatedContact, newList],
 } satisfies AppDefinition;

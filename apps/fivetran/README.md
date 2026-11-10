@@ -235,4 +235,16 @@ queueing it. A `429` reports the `Retry-After`, the limit from the header, and
 the trial-versus-paid difference that usually caused it. A `401` names the three
 kinds of key, since they reach different things.
 
-Triggers: not shipped — connection pages are cursor-paginated operational inventory with no documented created/updated-since filter or bounded collection limit (https://fivetran.com/docs/rest-api/api-reference/connections/list-connections).
+## Triggers
+
+| Trigger — title | Mechanism | Wrapped action | What the run gets |
+| --- | --- | --- | --- |
+| `new-connection` — New Connection | Poll | `connection-list` | Each connection newly created in the account |
+
+Connections are an account-inventory collection (hundreds at most). Each check lists them through
+`connection-list` (cursor-paginated at `limit` 1000, up to six pages; an account beyond 5000
+connections fails the check with an error naming the cap), diffs them against the previous check and
+emits only additions. The first check only records what exists. Fivetran also offers a Webhook API
+(`sync_start`, `sync_end`, …) that is a separate, not yet shipped path. Sources:
+[List all connections](https://fivetran.com/docs/rest-api/api-reference/connections/list-connections)
+and [Webhooks](https://fivetran.com/docs/rest-api/webhooks) (verified 2026-11-09).
