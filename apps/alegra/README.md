@@ -5,7 +5,7 @@ w6w workflow. API host `api.alegra.com`, prefix `/api/v1`. Every path, parameter
 read from Alegra's own OpenAPI reference (`developer.alegra.com`, each page's `.md` form) on
 2026-10-06.
 
-- **Triggers** — 1 (poll)
+- **Triggers** — 6 (poll)
 
 ## Auth
 
@@ -81,5 +81,13 @@ Costa Rica, Chile, …) — e.g. `{"stamp":{"generateStamp":true}}` for an elect
 | Trigger — title | Mechanism | Wrapped action | What the run gets |
 | --- | --- | --- | --- |
 | `new-contact` — New Contact | Poll | `contact-list` | Each newly created contact |
+| `new-bill` — New Supplier Bill | Poll | `bill-list` | Each newly created supplier bill |
+| `new-estimate` — New Estimate | Poll | `estimate-list` | Each newly created estimate (quote) |
+| `new-invoice` — New Invoice | Poll | `invoice-list` | Each newly created sales invoice |
+| `new-item` — New Item | Poll | `item-list` | Each newly created item |
+| `new-payment` — New Payment | Poll | `payment-list` | Each newly created payment |
 
-Polled through `contact-list` ordered by descending ID. Source: [Alegra API docs](https://developer.alegra.com/) (verified 2026-11-09).
+Each list is polled newest-first (`order_direction=DESC&order_field=id`, 30 per page). Source: [Alegra API docs](https://developer.alegra.com/) (verified 2026-11-10).
+
+Not covered: `tax-list` (reference data: the account's tax definitions)
+
