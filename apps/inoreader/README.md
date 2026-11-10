@@ -8,7 +8,7 @@
 |---|---|---|---|
 | `new-article` — New Article | poll | `stream-contents` | Each new article in the selected stream |
 
-Inoreader documents stream contents at https://www.inoreader.com/developers/ (verified 2026-11-09).
+Inoreader's stream/contents page (https://www.inoreader.com/developers/stream-contents, verified 2026-11-09) says `r` is the order, "By default, it is newest first", and `o` gives oldest first. The trigger asks for `order: newest`, which the action sends as no `r` at all, so the request is `?n=100` and the stream arrives newest first.
 
 Read and manage an Inoreader account from a workflow: subscriptions, folders and tags, unread
 counts, article streams and item ids, read/starred state.

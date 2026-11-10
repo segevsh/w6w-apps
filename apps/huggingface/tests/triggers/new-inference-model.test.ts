@@ -9,6 +9,18 @@ test("new-inference-model seeds, emits, retries, and reads the router catalogue"
   const seeded = await trigger.poll!({ params: {}, state: {} } as never, seed.ctx);
   assertEquals(seeded.events, []);
   assertEquals(seeded.nextState.seeded, true);
+  const many = Array.from({ length: 300 }, (_, i) => ({ id: `m${i}` }));
+  const big = await trigger.poll!(
+    { params: {}, state: {} } as never,
+    mockCtx([{ body: { data: many } }]).ctx,
+  );
+  assertEquals(
+    (await trigger.poll!(
+      { params: {}, state: big.nextState } as never,
+      mockCtx([{ body: { data: many } }]).ctx,
+    )).events,
+    [],
+  );
   const result = await trigger.poll!(
     { params: {}, state: seeded.nextState } as never,
     mockCtx([{ body: { data: [fresh, old] } }]).ctx,

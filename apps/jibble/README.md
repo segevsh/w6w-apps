@@ -8,7 +8,7 @@
 |---|---|---|---|
 | `new-activity` — New Activity | poll | `activity-list` | Each new time-tracking activity |
 
-Jibble documents activities in its API collection at https://docs.api.jibble.io/ (verified 2026-11-09).
+Jibble documents its API collection at https://docs.api.jibble.io/ and the workspace OData model at https://workspace.prod.jibble.io/v1/$metadata (both verified 2026-11-09); `Activity` carries a `createdAt` (`Edm.DateTimeOffset`), so the trigger's `$orderby=createdAt desc` returns the newest activities first.
 
 Track time, manage people, and run attendance reports against the **Jibble** time-tracking API.
 

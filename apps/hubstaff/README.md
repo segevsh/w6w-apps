@@ -8,7 +8,7 @@
 |---|---|---|---|
 | `new-project` — New Project | poll | `project-list` | Each new project |
 
-Hubstaff documents organization projects at https://developer.hubstaff.com/docs/api/v2/ (verified 2026-11-09).
+Hubstaff's OpenAPI document (https://api.hubstaff.com/v2/docs, verified 2026-11-09) lists `GET /v2/organizations/{organization_id}/projects` with `status`, `project_ids`, `page_start_id` and `page_limit` and no sort parameter, so the trigger is a snapshot: it walks every page of the organization's projects (`status=all`, 100 per page, cursor `pagination.next_page_start_id`) and diffs the project ids. An organization's project list is the bounded collection; a walk past the 5000-row snapshot cap fails loudly.
 
 Read the organizations, projects, members, teams, clients, tasks, activities and timesheets that
 make up a **Hubstaff** organization (time tracking and workforce management), and write back

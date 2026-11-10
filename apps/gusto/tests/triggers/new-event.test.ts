@@ -25,8 +25,8 @@ test("new-event seeds, emits, retries, and requests the event feed", async () =>
     ),
     result,
   );
-  assertEquals({ method: seed.calls[0].method, path: new URL(seed.calls[0].url).pathname }, {
-    method: "GET",
-    path: "/v1/events",
-  });
+  assertEquals(
+    new URL(seed.calls[0].url).toString(),
+    "https://api.gusto.com/v1/events?sort_order=desc&page=1&per=100",
+  );
 });

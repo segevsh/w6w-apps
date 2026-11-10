@@ -8,7 +8,7 @@
 |---|---|---|---|
 | `new-event` — New Event | poll | `event-list` | Each new account event |
 
-Gusto's Events API is the source for this feed: https://docs.gusto.com/app-integrations/docs/events (verified 2026-11-09).
+Gusto's Events API (https://docs.gusto.com/app-integrations/docs/events, verified 2026-11-09) takes `sort_order` (`asc` or `desc` chronological) and returns up to 30 days of events; the trigger sends `sort_order=desc` through `event-list`, so page 1 is the newest events.
 
 Read and update a Gusto payroll account from a workflow — employees,
 contractors, compensation, payrolls, pay schedules, time off and departments.

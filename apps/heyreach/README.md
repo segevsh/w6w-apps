@@ -8,7 +8,7 @@
 |---|---|---|---|
 | `new-lead` — New Lead | poll | `list-get-leads` | Each new lead added to the selected list |
 
-HeyReach documents this list endpoint at https://api-docs.heyreach.io/ (verified 2026-11-09).
+HeyReach's OpenAPI document (https://docs.heyreach.io/openapi.json, verified 2026-11-09) documents `createdFrom` on `GetLeadsFromList` ("only leads created on or after this date") and no sort order, so the trigger sets `createdFrom` to the last check minus a 2-minute overlap, reads every page of that window and dedupes by lead id.
 
 Run **HeyReach** LinkedIn outreach from a workflow: leads, lead/company lists, campaigns and
 their sequences, sender LinkedIn accounts, inbox conversations, workspace statistics, webhooks,
